@@ -1,3 +1,4 @@
+aiosqlite==0.17.0
 anyio==3.6.1
 asgiref==3.5.2
 click==8.1.3
