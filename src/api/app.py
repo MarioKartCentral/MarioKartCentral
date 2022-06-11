@@ -4,8 +4,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 import aiosqlite
 
-# Hardcoded location for now, eventually should be managed as a docker or kubernetes volume 
-DB_PATH = "mkc.db"
+DB_PATH = "/var/lib/mkc-api/data/mkc.db"
 
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
