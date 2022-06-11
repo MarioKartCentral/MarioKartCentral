@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  api:
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - mkc-db:/var/lib/mkc-api/data
+
+volumes:
+  mkc-db:
