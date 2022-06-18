@@ -27,9 +27,9 @@ async def homepage(request):
     return JSONResponse({'hello': 'world'})
 
 routes = [
-    Route('/', homepage),
-    Route('/user/list', list_users),
-    Route('/user', add_user, methods=["POST"])
+    Route('/api', homepage),
+    Route('/api/user/list', list_users),
+    Route('/api/user', add_user, methods=["POST"])
 ]
 
 app = Starlette(debug=True, routes=routes, on_startup=[init_db])

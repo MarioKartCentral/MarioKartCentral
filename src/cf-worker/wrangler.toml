@@ -1,0 +1,10 @@
+name = "cf-worker-dev"
+main = "src/index.ts"
+compatibility_date = "2022-06-18"
+
+[vars]
+API_ENDPOINT = "api:8000"
+FRONTEND_ENDPOINT = "frontend:8001"
+
+[env.production]
+name = "cf-worker"
