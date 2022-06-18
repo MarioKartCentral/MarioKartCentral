@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "src/frontend"
+		},
+		{
+			"path": "src/cf-worker"
 		}
 	]
 }

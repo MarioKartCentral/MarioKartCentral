@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  api:
+    build:
+      context: ./src/api
+      target: api-no-debug
+    ports:
+      - 8000:8000
+      - 5678:5678
+    volumes:
+      - mkc-db:/var/lib/mkc-api/data
+      - ./src/api/app.py:/usr/src/app/app.py
+  frontend:
+    build: ./src/frontend
+    ports:
+      - 8001:8001
+    volumes:
+      - ./src/frontend:/usr/src/app
+  cf-worker:
+    build: ./src/cf-worker
+    ports:
+      - 5000:5000
+
+volumes:
+  mkc-db:
