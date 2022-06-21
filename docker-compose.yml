@@ -2,9 +2,7 @@ version: '3.4'
 
 services:
   api:
-    build:
-      context: ./src/api
-      target: api-no-debug
+    build: ./src/api
     ports:
       - 8000:8000
       - 5678:5678
