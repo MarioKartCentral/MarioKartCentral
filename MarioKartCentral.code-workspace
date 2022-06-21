@@ -12,5 +12,14 @@
 		{
 			"path": "src/cf-worker"
 		}
-	]
+	],
+	"extensions": {
+		"recommendations": [
+			"svelte.svelte-vscode",
+			"esbenp.prettier-vscode",
+			"eg2.vscode-npm-script",
+			"dbaeumer.vscode-eslint",
+			"ms-azuretools.vscode-docker"
+		]
+	}
 }

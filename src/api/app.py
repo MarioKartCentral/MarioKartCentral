@@ -6,6 +6,12 @@ import aiosqlite
 
 DB_PATH = "/var/lib/mkc-api/data/mkc.db"
 
+DEBUG = False
+if DEBUG:
+    import debugpy
+    debugpy.listen(("0.0.0.0", 5678))
+    debugpy.wait_for_client()  # blocks execution until client is attached
+
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY)")

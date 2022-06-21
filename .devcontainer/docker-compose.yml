@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  dev-environment:
+    build: .devcontainer
+    init: true
+    volumes:
+      # Forward the local Docker socket to the container
+      - /var/run/docker.sock:/var/run/docker.sock 
+      # Ensure that file changes are synchronised inside and outside the dev container
+      - .:/workspace:cached

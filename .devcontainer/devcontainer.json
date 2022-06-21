@@ -1,0 +1,27 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.238.1/containers/ubuntu
+{
+	"name": "Mario Kart Central",
+	"dockerComposeFile": [ "../docker-compose.yml", "docker-compose.yml" ],
+	"service": "dev-environment",
+	"workspaceFolder": "/workspace",
+	"remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/bin/python3.10"
+			},
+			"extensions": [
+				"svelte.svelte-vscode",
+				"ms-python.python",
+				"esbenp.prettier-vscode",
+				"eg2.vscode-npm-script",
+				"dbaeumer.vscode-eslint",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	},
+	"postCreateCommand": "./install.sh",
+	"remoteUser": "vscode",
+	"forwardPorts": [ "api:5678" ]
+}
