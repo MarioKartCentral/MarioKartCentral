@@ -6,7 +6,9 @@ Mario Kart Central is a community run by volunteers, and so any help we can get 
 ## Getting Started
 
 ### Operating system
-Our production machines run Ubuntu, so it is best if your development environment is also using Ubuntu or another unix-based system. For Windows users, you can install WSL for this purpose using [these instructions](https://docs.microsoft.com/en-us/windows/wsl/setup/environment#set-up-windows-terminal).
+Since we will be running our apps inside linux containers, and we are also going to use a ubuntu dev container for the dev environment, it is easiest if we clone the repo onto a unix-based machine. For Windows users, you should install WSL for this purpose using [these instructions](https://docs.microsoft.com/en-us/windows/wsl/setup/environment). 
+
+If you have never used linux before, I would recommend at minimum to go through a tutorial to understand how to use the command line and some basic commands. Ubuntu's [Command Line for Beginners](https://ubuntu.com/tutorials/command-line-for-beginners) tutorial should be enough to get you started.
 
 ### Cloning the repo
 Once you have your operating system of choice set up, you need to get the code onto your machine (WSL for Windows users). If you are not part of the developer team, make sure that you fork the repo first and clone your fork instead. To clone the repo, I recommend using the [Github CLI](https://cli.github.com/) as it makes authenticating to your Github account much easier. Installation instructions for Ubuntu/WSL can be [found here](https://github.com/cli/cli/blob/trunk/docs/install_linux.md#debian-ubuntu-linux-raspberry-pi-os-apt). 
@@ -16,7 +18,7 @@ Once you have the Github CLI installed, run `gh auth login` to authenticate to y
 If you want to clone just using git the old-fashioned way, I would strongly encourage you to clone using HTTPS with a [PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) as using SSH will cause issues when needing to use git from within the dev containers.
 
 ### Docker
-We will be running our services (and development environment) inside docker containers, so you will need to install docker. For Windows I recommend installing [Docker Desktop](https://docs.docker.com/desktop/windows/install/) outside of WSL on your Windows host and configuring it to use WSL as the backend.
+We will be running our services (and development environment) inside docker containers, so you will need to install docker. For Windows I recommend installing [Docker Desktop](https://docs.docker.com/desktop/windows/install/) outside of WSL on your Windows host and configuring it to use WSL as the backend. 
 
 ### IDE
 It is recommended to use [Visual Studio Code](https://code.visualstudio.com/) as your editor as this repo contains a number of files that are used to improve the developer experience when using VS Code. For Windows users, you should install VS Code on your Windows host outside of WSL, you can then follow [these instructions](https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-vscode) to use your Windows installation of VS Code to open folders inside WSL. 
@@ -38,7 +40,17 @@ The docker compose file defines three services which each run in their own conta
 
 The cf-worker project is listening to requests on `localhost:5000`. An example request that will go through the cf-worker to the frontend is `localhost:5000/en-us` and a request that will go through the cf-worker to the API is `localhost:5000/api/user/list`. You can test both of these URLs in the browser and you should get back a response.
 
-Hot reloading is enabled for the Starlette API and Svelte-Kit Frontend which means that edits to the code will reflect immediately, but if you want to redeploy a service container after making some changes you can always do so by right clicking the `docker-compose.yml` file in the explorer and selecting `Compose Up - Select Services`.
+Hot reloading is enabled for the Starlette API and Svelte-Kit Frontend which means that edits to the code will reflect immediately, but if you want to rebuild a container after making some changes you can always do so by presing `CTRL+SHIFT+P` and running `Remote-Containers: Rebuild Container`.
 
-### Frontend Localizations
+### Frontend localizations
 Localizations are handled by the typesafe-i18n npm package. It works by taking as input the localization files and generating code files containing types representing what localizations are available. If you are adding a new localization, make sure to run `npx typesafe-i18n` inside the `/src/frontend` folder and it will generate the files again.
+
+### Debugging the Starlette API
+It is often useful to use breakpoints when developing to debug your app and step things through line by line to look for errors. The container for the API is set up with debugpy which allows us to connect to a debugging server inside the container from within VS Code. 
+
+To enable this, set `DEBUG` to `True` inside `app.py` ([link to source](https://github.com/MarioKartCentral/MarioKartCentral/blob/b6f855d8ce3a39b346c1ce49b8d4a0f66f319bc4/src/api/app.py#L9)). This will cause the app to restart since the files have changed and it will reach the `wait_for_client` line to wait until you have attached your editor to the debugger. Assuming you had the code workspace opened from earlier, you should be able to open the debug menu on the sidebar (or `CTRL+SHIFT+D`) and select the `Python: Remote Attach` launch task and run it. 
+
+After you have done this breakpoints should be working. Also after you have done this once you will be able to use F5 to attach to the debugger rather than having to use the debug menu.
+
+### Debugging the Svelte app
+Svelte's debugging story is not as good as Starlette's, but if you need to debug some javascript code you can place down a `debugger;` line in the code and the browser will allow you to debug from within the browser rather than from within VS Code.
