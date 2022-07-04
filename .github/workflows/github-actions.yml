@@ -37,6 +37,7 @@ jobs:
         working-directory: src/cf-worker
     steps:
       - name: Use Node.js
+        working-directory: src/cf-worker
         uses: actions/setup-node@v3
         with:
           node-version: '16.15.1'
@@ -52,6 +53,7 @@ jobs:
         working-directory: src/frontend
     steps:
       - name: Use Node.js
+        working-directory: src/frontend
         uses: actions/setup-node@v3
         with:
           node-version: '16.15.1'
