@@ -44,7 +44,7 @@ jobs:
       - name: Install cf-worker dependencies
         run: npm ci
       - name: Build cf-worker environment
-        run: npm run build
+        run: npm run check
   frontend:
     runs-on: ubuntu-latest
     defaults:
