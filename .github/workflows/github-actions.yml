@@ -36,6 +36,7 @@ jobs:
       run:
         working-directory: src/cf-worker
     steps:
+      - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -50,6 +51,7 @@ jobs:
       run:
         working-directory: src/frontend
     steps:
+      - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
