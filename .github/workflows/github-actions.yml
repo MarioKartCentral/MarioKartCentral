@@ -43,8 +43,6 @@ jobs:
           node-version: '16.15.1'
       - name: Install cf-worker dependencies
         run: npm ci
-      - name: Build cf-worker environment
-        run: npm run check
   frontend:
     runs-on: ubuntu-latest
     defaults:
