@@ -40,8 +40,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16.15.1'
-          cache: 'npm'
-          cache-dependency-path: src/cf-worker/package-lock.json
       - name: Install cf-worker dependencies
         run: npm ci
       - name: Build cf-worker environment
@@ -56,8 +54,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16.15.1'
-          cache: 'npm'
-          cache-dependency-path: src/frontend/package-lock.json
       - name: Install frontend dependencies
         run: npm ci
       - name: Build frontend environment
