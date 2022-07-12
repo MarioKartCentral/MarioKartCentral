@@ -50,9 +50,6 @@ async def minio_read(request: Request):
     except RuntimeError:
         return JSONResponse({'error':'No correct body send'})
 
-    print(bucket_name)
-    print(file_name)
-
     try:
         response = minio_client.get_object(bucket_name, file_name)
         # Read data from response.
@@ -85,8 +82,6 @@ async def minio_write(request):
         io.BytesIO(message), 
         length=len(message)
     )    
-
-    print(result.object_name)
 
     return JSONResponse(result.object_name)
 
