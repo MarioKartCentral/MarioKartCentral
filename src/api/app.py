@@ -9,8 +9,8 @@ from starlette.routing import Route
 
 minio_client = Minio(
     "s3-emulator:9000", 
-    access_key="mkcdev", 
-    secret_key="mk4thewin",
+    access_key="admin", 
+    secret_key="mkcadmin123",
     secure=False
 )
 
