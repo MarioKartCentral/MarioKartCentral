@@ -1,4 +1,5 @@
 import io
+import os
 
 import aiosqlite
 from minio import Minio
@@ -9,8 +10,8 @@ from starlette.routing import Route
 
 minio_client = Minio(
     "s3-emulator:9000", 
-    access_key="admin", 
-    secret_key="mkcadmin123",
+    access_key=os.environ["MINIO_ROOT_USER"], 
+    secret_key=os.environ["MINIO_ROOT_PASSWORD"],
     secure=False
 )
 

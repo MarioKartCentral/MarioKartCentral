@@ -6,6 +6,9 @@ services:
     ports:
       - 8000:8000
       - 5678:5678
+    environment:
+      MINIO_ROOT_USER : ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD : ${MINIO_ROOT_PASSWORD}
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/api/app.py:/usr/src/app/app.py
@@ -34,8 +37,8 @@ services:
     volumes:
       - mkc-s3:/s3/data
     environment:
-      MINIO_ROOT_USER : admin
-      MINIO_ROOT_PASSWORD : mkcadmin123
+      MINIO_ROOT_USER : ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD : ${MINIO_ROOT_PASSWORD}
     networks:
       - minio
     healthcheck:
