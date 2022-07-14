@@ -2,18 +2,19 @@ import io
 import os
 
 import aiosqlite
+import boto3
 from minio import Minio
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
-minio_client = Minio(
-    "s3-emulator:9000", 
-    access_key=os.environ["MINIO_ROOT_USER"], 
-    secret_key=os.environ["MINIO_ROOT_PASSWORD"],
-    secure=False
-)
+clientArgs = {
+    'aws_access_key_id': os.environ["MINIO_ROOT_USER"],
+    'aws_secret_access_key': os.environ["MINIO_ROOT_PASSWORD"],
+    'endpoint_url': 'http://s3-emulator:9000/'
+}
+client = boto3.resource("s3", **clientArgs)
 
 DB_PATH = "/var/lib/mkc-api/data/mkc.db"
 
@@ -43,7 +44,7 @@ async def list_users(request: Request) -> JSONResponse:
 async def homepage(request):
     return JSONResponse({'hello': 'world'})
 
-async def minio_read(request: Request):
+async def s3_read(request: Request):
     try:
         data = await request.json()
         bucket_name = data['bucket']
@@ -51,18 +52,16 @@ async def minio_read(request: Request):
     except RuntimeError:
         return JSONResponse({'error':'No correct body send'})
 
-    try:
-        response = minio_client.get_object(bucket_name, file_name)
-        # Read data from response.
-        return JSONResponse({
-            '{b} - {fn}'.format(b=bucket_name, fn=file_name): 
-            '{res}'.format(res=response.data.decode())
-        })
-    finally:
-        response.close()
-        response.release_conn()
+    obj = client.Object(bucket_name, file_name)
 
-async def minio_write(request):
+    body = obj.get()['Body'].read()
+
+    return JSONResponse({
+        f'{bucket_name} - {file_name}': 
+        f'{body}'
+    })
+
+async def s3_write(request):
     try:
         data = await request.json()
         bucket_name = data['bucket']
@@ -71,26 +70,17 @@ async def minio_write(request):
     except RuntimeError:
         return JSONResponse({'error':'No correct body send'})
 
-    if not minio_client.bucket_exists(bucket_name):
-        print('creating {bucket}...'.format(bucket=bucket_name))
-        minio_client.make_bucket(bucket_name)
-
     message = message.encode('utf-8')
 
-    result = minio_client.put_object(
-        bucket_name, 
-        file_name, 
-        io.BytesIO(message), 
-        length=len(message)
-    )    
+    result = client.Object(bucket_name, file_name).put(Body=message)
 
-    return JSONResponse(result.object_name)
+    return JSONResponse(result)
 
 routes = [
     Route('/api', homepage),
     Route('/api/user/list', list_users),
-    Route('/api/minio', minio_read),
-    Route('/api/minio', minio_write, methods=["POST"]),
+    Route('/api/minio', s3_read),
+    Route('/api/minio', s3_write, methods=["POST"]),
     Route('/api/user', add_user, methods=["POST"])
 ]
 
