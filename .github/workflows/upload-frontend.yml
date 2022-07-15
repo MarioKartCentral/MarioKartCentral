@@ -28,7 +28,7 @@ jobs:
         with:
           args: --follow-symlinks --delete
         env:
-          AWS_S3_ENDPOINT: 's3.us-west-1.wasabisys.com'
+          AWS_S3_ENDPOINT: 'https://s3.us-west-1.wasabisys.com'
           AWS_S3_BUCKET: '${{ secrets.S3_BUCKET }}'
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
