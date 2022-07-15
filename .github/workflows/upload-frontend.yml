@@ -3,6 +3,9 @@ name: Upload Frontend
 on:
   push:
     branches: [ main ]
+  # temporary while testing on branch
+  pull_request:
+    branches: [ main ]
 
 jobs:
   upload-frontend:
