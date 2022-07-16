@@ -33,5 +33,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_KEY }}
           AWS_REGION: 'us-west-1'
-          SOURCE_DIR: 'build'
+          SOURCE_DIR: '.\build'
           DEST_DIR: 'testing'
