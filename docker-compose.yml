@@ -22,6 +22,8 @@ services:
     build: ./src/cf-worker
     ports:
       - 5000:5000
+    volumes:
+      - ./src/cf-worker:/usr/src/app
   s3-emulator:
     command: server /s3/data --console-address ":9001"
     image: minio/minio
