@@ -9,12 +9,11 @@ FRONTEND_USE_S3 = false
 FRONTEND_HOST = "frontend"
 FRONTEND_PORT = "8001"
 
-
 [env.production]
 name = "cf-worker"
 
 [env.production.vars]
-API_HOST = "invalid"
+API_HOST = "mkc-api.vps.mariokartcentral-beta.com"
 API_PORT = ""
 FRONTEND_USE_S3 = true
 FRONTEND_HOST = "s3.us-west-1.wasabisys.com"
