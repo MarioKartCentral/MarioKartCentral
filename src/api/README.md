@@ -1,5 +1,5 @@
 # API
-Example bodies for the /api/minio endpoints:
+Example bodies for the /api/s3 endpoints:
 
 GET: {
     "bucket":"test",
@@ -9,5 +9,5 @@ GET: {
 POST: {
     "bucket":"test",
     "file":"file1.txt",
-    "message":"Hello, MinIO! I am content in a MinIO object."
+    "message":"Hello, S3! I am content in a S3 object."
 }

@@ -1,20 +1,17 @@
-import io
 import os
 
 import aiosqlite
 import boto3
-from minio import Minio
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
-clientArgs = {
-    'aws_access_key_id': os.environ["MINIO_ROOT_USER"],
-    'aws_secret_access_key': os.environ["MINIO_ROOT_PASSWORD"],
-    'endpoint_url': 'http://s3-emulator:9000/'
-}
-client = boto3.resource("s3", **clientArgs)
+s3 = boto3.resource(
+    service_name="s3",
+    aws_access_key_id=os.environ["S3_ACCESS_KEY"],
+    aws_secret_access_key=os.environ["S3_SECRET_KEY"],
+    endpoint_url=os.environ["S3_ENDPOINT"])
 
 DB_PATH = "/var/lib/mkc-api/data/mkc.db"
 
@@ -46,13 +43,12 @@ async def homepage(request):
 
 async def s3_read(request: Request):
     try:
-        data = await request.json()
-        bucket_name = data['bucket']
-        file_name = data['file']
+        bucket_name = request.query_params['bucket']
+        file_name = request.query_params['file']
     except RuntimeError:
         return JSONResponse({'error':'No correct body send'})
 
-    obj = client.Object(bucket_name, file_name)
+    obj = s3.Object(bucket_name, file_name)
 
     body = obj.get()['Body'].read()
 
@@ -61,26 +57,25 @@ async def s3_read(request: Request):
         f'{body}'
     })
 
-async def s3_write(request):
+async def s3_write(request: Request):
     try:
-        data = await request.json()
-        bucket_name = data['bucket']
-        file_name = data['file']
-        message = data['message']
+        bucket_name = request.query_params['bucket']
+        file_name = request.query_params['file']
+        message = request.query_params['message']
     except RuntimeError:
         return JSONResponse({'error':'No correct body send'})
 
     message = message.encode('utf-8')
 
-    result = client.Object(bucket_name, file_name).put(Body=message)
+    result = s3.Object(bucket_name, file_name).put(Body=message)
 
     return JSONResponse(result)
 
 routes = [
     Route('/api', homepage),
     Route('/api/user/list', list_users),
-    Route('/api/minio', s3_read),
-    Route('/api/minio', s3_write, methods=["POST"]),
+    Route('/api/s3', s3_read),
+    Route('/api/s3', s3_write, methods=["POST"]),
     Route('/api/user', add_user, methods=["POST"])
 ]
 

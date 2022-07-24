@@ -9,7 +9,6 @@ FRONTEND_USE_S3 = false
 FRONTEND_HOST = "frontend"
 FRONTEND_PORT = "8001"
 
-
 [env.production]
 name = "cf-worker"
 
