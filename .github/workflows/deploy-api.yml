@@ -2,7 +2,7 @@ name: Deploy API
 
 on:
   push:
-    branches: [ main, vike/api-deploy ]
+    branches: [ main ]
 
 jobs:
   deploy:
