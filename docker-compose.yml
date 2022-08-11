@@ -20,12 +20,11 @@ services:
     ports:
       - 5000:5000
   redis:
-    redis:
     image: 'bitnami/redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
-      - ./redis/redis-data:/bitnami/redis/data
+      - ./src/redis/redis-data:/bitnami/redis/data
     ports:
       - 6379:6379
       
