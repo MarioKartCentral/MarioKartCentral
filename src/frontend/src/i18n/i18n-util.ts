@@ -14,7 +14,7 @@ export const locales: Locales[] = [
 	'en-us',
 	'es',
 	'fr',
-	'jp'
+	'ja'
 ]
 
 export const loadedLocales = {} as Record<Locales, Translations>

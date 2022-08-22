@@ -1,7 +1,7 @@
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 
-const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'jp'];
+const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
