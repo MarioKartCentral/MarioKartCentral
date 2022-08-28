@@ -116,10 +116,8 @@ function isStaticResource(pathName: string) {
 }
 
 function convertUrlPathToFilePath(pathName: string) {
-  if (pathName.length == 0) {
+  if (pathName === '' || pathName === '/') {
     return "/index.html";
-  } else if (pathName.endsWith("/")) {
-    return pathName + "index.html";
   } else {
     const filename = pathName.substring(1 + pathName.lastIndexOf("/"));
     if (filename.indexOf(".") == -1) {
@@ -182,6 +180,12 @@ async function fetchFrontend(request: Request, env: Env) {
 async function handleFrontend(request: Request, env: Env) {
   const url = new URL(request.url);
 
+  // always normalise URLs so that there are no trailing slashes
+  if (url.pathname.endsWith('/') && url.pathname !== '/') {
+    url.pathname = url.pathname.slice(0, url.pathname.length - 1);
+    return Response.redirect(url.toString(), 301); // use a permanent redirect
+  }
+  
   let headers = [];
 
   let response : Response;
@@ -202,7 +206,7 @@ async function handleFrontend(request: Request, env: Env) {
     }
 
     if (languageFromUrl === null) {
-      url.pathname = "/" + languagePreference.language + url.pathname;
+      url.pathname = "/" + languagePreference.language + (url.pathname === '/' ? '' : url.pathname);
       response = Response.redirect(url.toString(), 302);
     } else if (languageFromUrl !== languagePreference.language && languagePreference.hasLanguageCookie) {
       url.pathname = "/" + languagePreference.language + url.pathname.slice(1 + languageFromUrl.length);

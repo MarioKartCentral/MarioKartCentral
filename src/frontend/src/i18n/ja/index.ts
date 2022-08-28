@@ -1,6 +1,6 @@
 import type { Translation } from '../i18n-types';
 
-const jp: Translation = {
+const ja: Translation = {
   // TODO
   WELCOME: 'Welcome to <strong>Mario Kart Central</strong>!',
   // TODO
@@ -9,4 +9,4 @@ const jp: Translation = {
   LANGUAGE: '日本語'
 };
 
-export default jp;
+export default ja;
