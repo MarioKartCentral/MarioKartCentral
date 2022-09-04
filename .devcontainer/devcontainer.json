@@ -23,5 +23,8 @@
 	},
 	"postCreateCommand": "./install.sh",
 	"remoteUser": "vscode",
-	"forwardPorts": [ "api:5678" ]
+	"forwardPorts": [ "api:5678" ],
+	"features": {
+	  "ghcr.io/devcontainers/features/github-cli:1": {}
+	}
 }
