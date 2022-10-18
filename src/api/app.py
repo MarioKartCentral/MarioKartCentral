@@ -18,8 +18,8 @@ ADMIN_EMAIL=os.environ["API_ADMIN_EMAIL"]
 ADMIN_PASSWORD=os.environ["API_ADMIN_PASSWORD"]
 
 DB_PATH = "/var/lib/mkc-api/data/mkc.db"
-DEBUG = True
-RESET_DATABASE = True
+DEBUG = False
+RESET_DATABASE = False
 
 if DEBUG:
     import debugpy
