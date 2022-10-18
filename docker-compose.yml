@@ -11,7 +11,7 @@ services:
       S3_SECRET_KEY : ${MINIO_ROOT_PASSWORD:-mkcadmin123}
       S3_ENDPOINT: http://s3-emulator:9000/
       API_ADMIN_EMAIL : ${API_ADMIN_EMAIL:-admin@admin.com}
-      API_ADMIN_PASSWORD : ${API_ADMIN_EMAIL:-admin}
+      API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
       PORT : 8000
     volumes:
       - mkc-db:/var/lib/mkc-api/data

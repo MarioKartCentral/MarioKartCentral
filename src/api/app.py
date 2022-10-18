@@ -18,8 +18,8 @@ ADMIN_EMAIL=os.environ["API_ADMIN_EMAIL"]
 ADMIN_PASSWORD=os.environ["API_ADMIN_PASSWORD"]
 
 DB_PATH = "/var/lib/mkc-api/data/mkc.db"
-DEBUG = False
-RESET_DATABASE = False
+DEBUG = True
+RESET_DATABASE = True
 
 if DEBUG:
     import debugpy
@@ -67,9 +67,9 @@ async def init_db():
         permissions = [ (0, 'grant_administrator'), (1, 's3_read'), (2, 's3_write') ]
         role_permissions = [ (0, 0), (0, 1), (0, 2), (1, 1), (1, 2) ] # assign permissions to roles
         
-        await db.execute("INSERT INTO roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING", roles)
-        await db.execute("INSERT INTO permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING", permissions)
-        await db.execute("INSERT INTO role_permissions(role_id, permission_id) VALUES (?, ?) ON CONFLICT DO NOTHING", role_permissions)
+        await db.executemany("INSERT INTO roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING", roles)
+        await db.executemany("INSERT INTO permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING", permissions)
+        await db.executemany("INSERT INTO role_permissions(role_id, permission_id) VALUES (?, ?) ON CONFLICT DO NOTHING", role_permissions)
 
         # create the root admin user and give it Super Administrator
         await db.execute("INSERT INTO users(id, email, password_hash) VALUES (0, ?, ?) ON CONFLICT DO NOTHING", (ADMIN_EMAIL, hasher.hash(ADMIN_PASSWORD)))
@@ -78,7 +78,7 @@ async def init_db():
         await db.commit()
 
 async def current_user_has_permission(request: Request, permission_name: str):
-    session_id = request.cookies["session"]
+    session_id = request.cookies.get("session", None)
     if session_id is None:
         return False
 
@@ -96,7 +96,7 @@ async def current_user_has_permission(request: Request, permission_name: str):
             row = await cursor.fetchone()
             return row is not None and bool(row[0])
 
-async def sign_up(request: Request) -> Response:
+async def sign_up(request: Request) -> JSONResponse:
     body = await request.json()
     email = body["email"] # TODO: Email Verification
     password_hash = hasher.hash(body["password"])
@@ -106,7 +106,7 @@ async def sign_up(request: Request) -> Response:
     
     return JSONResponse({'id': user_id, 'email': email}, status_code=201)
 
-async def login(request: Request) -> Response:
+async def login(request: Request) -> JSONResponse:
     body = await request.json()
     email = body["email"]
     password = body["password"]
@@ -114,14 +114,17 @@ async def login(request: Request) -> Response:
         async with db.execute("SELECT id, password_hash FROM users WHERE email = ?", (email, )) as cursor:
             row = await cursor.fetchone()
             if row is None:
-                return Response("Invalid login details", status_code=401)
+                return JSONResponse({'error':'Invalid login details'}, status_code=401)
             user_id = row[0]
             password_hash = row[1]
 
-    is_valid_password = hasher.verify(password_hash, password)
-    if not is_valid_password:
-        return Response("Invalid login details", status_code=401)
-    
+    try:
+        is_valid_password = hasher.verify(password_hash, password)
+        if not is_valid_password:
+            return JSONResponse({'error':'Invalid login details'}, status_code=401)
+    except:
+        return JSONResponse({'error':'Invalid login details'}, status_code=401)
+
     session_id = secrets.token_hex(16)
     max_age = timedelta(days=365)
     expiration_date = datetime.now(timezone.utc) + max_age
@@ -130,28 +133,37 @@ async def login(request: Request) -> Response:
         await db.execute("INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)", (session_id, user_id, expiration_date.timestamp()))
         await db.commit()
 
-    resp = RedirectResponse('/', status_code=303)
+    resp = JSONResponse({}, status_code=200)
     resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
     return resp
 
-async def logout(request: Request) -> Response:
-    session_id = request.cookies["session"]
+async def logout(request: Request) -> JSONResponse:
+    session_id = request.cookies.get("session", None)
 
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("DELETE FROM sessions WHERE session_id = ?", (session_id, ))
         await db.commit()
-    resp = RedirectResponse('/', status_code=303)
+    resp = JSONResponse({}, status_code=200)
     resp.delete_cookie('session')
     return resp
 
-async def current_user(request: Request) -> Response:
-    session_id = request.cookies["session"]
+async def current_user(request: Request) -> JSONResponse:
+    session_id = request.cookies.get("session", None)
+    if session_id is None:
+        return JSONResponse({'error': 'Not logged in'}, status_code=401)
+
     async with aiosqlite.connect(DB_PATH) as db:
         async with db.execute("SELECT u.id, u.email, u.password_hash FROM users u JOIN sessions s on s.user_id = u.id WHERE session_id = ?", (session_id, )) as cursor:
             row = await cursor.fetchone()
             if row is None:
-                return Response("Not logged in", status_code=401)
-            return JSONResponse({ 'id': row[0], 'email': row[1], 'password_hash': row[2] })
+                return JSONResponse({'error':'Not logged in'}, status_code=401)
+            user_id = row[0]
+            user_email = row[1]
+            user_pw_hash = row[2]
+
+        roles_rows = await db.execute_fetchall("SELECT r.name FROM roles r JOIN user_roles ur on ur.role_id = r.id WHERE ur.user_id = ?", (user_id,))
+        roles = [row[0] for row in roles_rows]
+        return JSONResponse({ 'id': user_id, 'email': user_email, 'password_hash': user_pw_hash, 'roles': roles })
 
 async def list_users(request: Request) -> JSONResponse:
     async with aiosqlite.connect(DB_PATH) as db:
@@ -167,7 +179,7 @@ async def list_players(request: Request) -> JSONResponse:
 
 async def grant_administrator(request: Request) -> JSONResponse:
     if not await current_user_has_permission(request, 'grant_administrator'):
-        return JSONResponse({'error':'Unauthorized to grant administrator'}, status_code=403)
+        return JSONResponse({'error':'Unauthorized to grant administrator'}, status_code=401)
     
     body = await request.json()
     user_id = body["user_id"]
@@ -196,9 +208,9 @@ def create_s3_client(session: aiobotocore.session.AioSession):
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         endpont_url=AWS_ENDPOINT_URL)
 
-async def s3_read(request: Request):
+async def s3_read(request: Request) -> JSONResponse:
     if not await current_user_has_permission(request, 's3_read'):
-        return JSONResponse({'error':'Unauthorized to read from S3'}, status_code=403)
+        return JSONResponse({'error':'Unauthorized to read from S3'}, status_code=401)
 
     try:
         bucket_name = request.query_params['bucket']
@@ -218,9 +230,9 @@ async def s3_read(request: Request):
         f'{body}'
     })
 
-async def s3_write(request: Request):
+async def s3_write(request: Request) -> JSONResponse:
     if not await current_user_has_permission(request, 's3_write'):
-        return JSONResponse({'error':'Unauthorized to write to S3'}, status_code=403)
+        return JSONResponse({'error':'Unauthorized to write to S3'}, status_code=401)
 
     try:
         bucket_name = request.query_params['bucket']
@@ -247,6 +259,7 @@ routes = [
     Route('/api/player/list', list_players),
     Route('/api/user/list', list_users),
     Route('/api/user/me', current_user),
+    Route('/api/user/grant_admin', grant_administrator),
 ]
 
 app = Starlette(debug=True, routes=routes, on_startup=[init_db])
