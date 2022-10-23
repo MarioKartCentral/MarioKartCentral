@@ -19,15 +19,15 @@ export type Translations = RootTranslation
 
 type RootTranslation = {
 	/**
-	 * Welcome to <strong>Mario Kart Central</strong>!
+	 * W​e​l​c​o​m​e​ ​t​o​ ​<​s​t​r​o​n​g​>​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​<​/​s​t​r​o​n​g​>​!
 	 */
 	WELCOME: string
 	/**
-	 * We are the home of <strong>Mario Kart Tournaments</strong>, where you'll find <strong>tournaments</strong> for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for <strong>Mario Kart 8 Deluxe, Tour, and more</strong>, with a variety of matches happening weekly!
+	 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​<​s​t​r​o​n​g​>​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​<​/​s​t​r​o​n​g​>​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​<​s​t​r​o​n​g​>​t​o​u​r​n​a​m​e​n​t​s​<​/​s​t​r​o​n​g​>​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​<​s​t​r​o​n​g​>​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​<​/​s​t​r​o​n​g​>​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
 	 */
 	SUMMARY: string
 	/**
-	 * American English
+	 * A​m​e​r​i​c​a​n​ ​E​n​g​l​i​s​h
 	 */
 	LANGUAGE: string
 }

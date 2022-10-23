@@ -1,5 +1,3 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.238.1/containers/ubuntu
 {
 	"name": "Mario Kart Central",
 	"dockerComposeFile": [ "../docker-compose.yml", "docker-compose.yml" ],
@@ -25,6 +23,15 @@
 	"remoteUser": "vscode",
 	"forwardPorts": [ "api:5678" ],
 	"features": {
-	  "ghcr.io/devcontainers/features/github-cli:1": {}
+	  "ghcr.io/devcontainers/features/github-cli:1": {},
+	  "ghcr.io/devcontainers/features/node:1": {
+		"version": "16.18.0"
+	  },
+	  "ghcr.io/devcontainers/features/python:1": {
+        "version": "3.10.8"
+      },
+	  "ghcr.io/devcontainers/features/docker-from-docker:1": {
+		"dockerDashComposeVersion": "v2"
+	  }
 	}
 }

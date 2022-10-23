@@ -73,7 +73,7 @@ async def init_db():
 
         # create the root admin user and give it Super Administrator
         await db.execute("INSERT INTO users(id, email, password_hash) VALUES (0, ?, ?) ON CONFLICT DO NOTHING", (ADMIN_EMAIL, hasher.hash(ADMIN_PASSWORD)))
-        await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (0, 0)")
+        await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (0, 0) ON CONFLICT DO NOTHING")
 
         await db.commit()
 

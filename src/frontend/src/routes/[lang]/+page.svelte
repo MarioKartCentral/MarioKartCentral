@@ -41,8 +41,7 @@
 
   async function logout(event: SubmitEvent & {currentTarget: EventTarget & HTMLFormElement}) {
     const response = await fetch("/api/user/logout", {method: 'POST'});
-    const result = await response.json();
-
+    
     if (response.status < 300) {
       goto('/');
     } else {

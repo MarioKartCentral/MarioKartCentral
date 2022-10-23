@@ -9,3 +9,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock 
       # Ensure that file changes are synchronised inside and outside the dev container
       - .:/workspace:cached
+    
+    entrypoint: /usr/local/share/docker-init.sh
+    command: sleep infinity 
