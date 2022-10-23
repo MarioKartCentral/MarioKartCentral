@@ -7,7 +7,7 @@
   export let isLoggedIn = false;
 
   onMount(async () => {
-		const res = await fetch(`/api/user/me`);
+    const res = await fetch(`/api/user/me`);
     if (res.status === 200) {
       const body = await res.json();
       userEmail = body["email"]
@@ -17,7 +17,7 @@
       userEmail = "Not logged in"
       isLoggedIn = false;
     }
-	});
+  });
 
   async function loginOrSignup(event: SubmitEvent & {currentTarget: EventTarget & HTMLFormElement}) {
     const data = new FormData(event.currentTarget);
@@ -41,8 +41,7 @@
 
   async function logout(event: SubmitEvent & {currentTarget: EventTarget & HTMLFormElement}) {
     const response = await fetch("/api/user/logout", {method: 'POST'});
-    const result = await response.json();
-
+    
     if (response.status < 300) {
       goto('/');
     } else {
