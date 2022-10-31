@@ -49,10 +49,11 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
-      - ./src/redis/redis-data:/data
+      - mkc-redis:/data
     ports:
       - 6379:6379
       
 volumes:
   mkc-db:
   mkc-s3:
+  mkc-redis:
