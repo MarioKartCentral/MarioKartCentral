@@ -12,6 +12,7 @@ services:
       S3_ENDPOINT: http://s3-emulator:9000/
       API_ADMIN_EMAIL : ${API_ADMIN_EMAIL:-admin@admin.com}
       API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
+      REDIS_URL : redis://redis:6379
       PORT : 8000
     volumes:
       - mkc-db:/var/lib/mkc-api/data
