@@ -11,6 +11,7 @@ from starlette.routing import Route
 import redis.asyncio as redis
 
 hasher = PasswordHasher()
+redis_conn = redis.Redis(host='redis', port=6379, decode_responses=True)
 
 AWS_ACCESS_KEY_ID=os.environ["S3_ACCESS_KEY"]
 AWS_SECRET_ACCESS_KEY=os.environ["S3_SECRET_KEY"]
@@ -252,10 +253,10 @@ async def s3_write(request: Request) -> JSONResponse:
 
 async def redis_write(request: Request) -> JSONResponse:
     text = request.path_params['text']
-    r = redis.Redis(host='redis', port=6379, decode_responses=True)
-    await r.append("test", text)
-    values = await r.get("test")
-    await r.close()
+    #r = redis.Redis(host='redis', port=6379, decode_responses=True)
+    await redis_conn.append("test", text)
+    values = await redis_conn.get("test")
+    await redis_conn.close()
     return JSONResponse({'test': values})
 
 routes = [
