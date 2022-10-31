@@ -30,6 +30,28 @@ type RootTranslation = {
 	 * A​m​e​r​i​c​a​n​ ​E​n​g​l​i​s​h
 	 */
 	LANGUAGE: string
+	NAVBAR: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​s
+		 */
+		TOURNAMENTS: string
+		/**
+		 * T​i​m​e​ ​T​r​i​a​l​s
+		 */
+		TIME_TRIALS: string
+		/**
+		 * L​o​u​n​g​e
+		 */
+		LOUNGE: string
+		/**
+		 * R​e​g​i​s​t​r​y
+		 */
+		REGISTRY: string
+		/**
+		 * D​i​s​c​o​r​d
+		 */
+		DISCORD: string
+	}
 }
 
 export type TranslationFunctions = {
@@ -45,6 +67,28 @@ export type TranslationFunctions = {
 	 * American English
 	 */
 	LANGUAGE: () => LocalizedString
+	NAVBAR: {
+		/**
+		 * Tournaments
+		 */
+		TOURNAMENTS: () => LocalizedString
+		/**
+		 * Time Trials
+		 */
+		TIME_TRIALS: () => LocalizedString
+		/**
+		 * Lounge
+		 */
+		LOUNGE: () => LocalizedString
+		/**
+		 * Registry
+		 */
+		REGISTRY: () => LocalizedString
+		/**
+		 * Discord
+		 */
+		DISCORD: () => LocalizedString
+	}
 }
 
 export type Formatters = {}
