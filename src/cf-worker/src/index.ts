@@ -113,7 +113,7 @@ function getLanguagePreference(request: Request) {
 function isStaticResource(pathName: string) {
   // All static resources in production will be under _app
   // Other paths here are used during local development
-  return pathName.startsWith("/_app/") || pathName.startsWith("/@fs/") || pathName.startsWith("/@vite/") || pathName.startsWith("/node_modules/") || pathName.startsWith("/.svelte-kit/") || pathName.startsWith("/src/");
+  return pathName.startsWith("/_app/") || pathName.startsWith("/@fs/") || pathName.startsWith("/@vite/") || pathName.startsWith("/node_modules/") || pathName.startsWith("/.svelte-kit/") || pathName.startsWith("/src/") || pathName === "/favicon.png";
 }
 
 function convertUrlPathToFilePath(pathName: string) {

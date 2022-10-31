@@ -8,5 +8,5 @@ export const prerender = true;
 export const load: LayoutLoad = async ({ params }) => {
   const lang = params.lang as Locales;
   await loadLocaleAsync(lang);
-  return { locale: lang };
+  return { locale: lang, activeNavItem: null };
 };
