@@ -8,8 +8,10 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, RedirectResponse
 from starlette.routing import Route
+import redis.asyncio as redis
 
 hasher = PasswordHasher()
+redis_conn = redis.Redis(host='redis', port=6379, decode_responses=True)
 
 AWS_ACCESS_KEY_ID=os.environ["S3_ACCESS_KEY"]
 AWS_SECRET_ACCESS_KEY=os.environ["S3_SECRET_KEY"]
@@ -249,6 +251,12 @@ async def s3_write(request: Request) -> JSONResponse:
 
     return JSONResponse(result)
 
+async def redis_write(request: Request) -> JSONResponse:
+    text = request.path_params['text']
+    await redis_conn.append("test", text)
+    values = await redis_conn.get("test")
+    return JSONResponse({'test': values})
+
 routes = [
     Route('/api', homepage),
     Route('/api/s3', s3_read),
@@ -260,6 +268,7 @@ routes = [
     Route('/api/user/list', list_users),
     Route('/api/user/me', current_user),
     Route('/api/user/grant_admin', grant_administrator),
+    Route('/api/redis_write/{text:str}', redis_write),
 ]
 
 app = Starlette(debug=True, routes=routes, on_startup=[init_db])
