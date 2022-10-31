@@ -253,10 +253,8 @@ async def s3_write(request: Request) -> JSONResponse:
 
 async def redis_write(request: Request) -> JSONResponse:
     text = request.path_params['text']
-    #r = redis.Redis(host='redis', port=6379, decode_responses=True)
     await redis_conn.append("test", text)
     values = await redis_conn.get("test")
-    await redis_conn.close()
     return JSONResponse({'test': values})
 
 routes = [
