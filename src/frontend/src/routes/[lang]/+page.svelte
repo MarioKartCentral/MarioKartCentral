@@ -50,6 +50,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Mario Kart Central</title>
+</svelte:head>
+
 <h1>{@html $LL.WELCOME()}</h1>
 <p>{@html $LL.SUMMARY()}</p>
 <p>Language: {$LL.LANGUAGE()}</p>
