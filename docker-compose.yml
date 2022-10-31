@@ -45,11 +45,11 @@ services:
       timeout: 20s
       retries: 3
   redis:
-    image: 'bitnami/redis:latest'
+    image: 'redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
-      - ./src/redis/redis-data:/bitnami/redis/data
+      - ./src/redis/redis-data:/data
     ports:
       - 6379:6379
       
