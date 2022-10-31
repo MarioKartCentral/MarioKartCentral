@@ -26,4 +26,8 @@
     display: flex;
     list-style: none;
   }
+
+  a {
+    text-decoration: none;
+  }
 </style>

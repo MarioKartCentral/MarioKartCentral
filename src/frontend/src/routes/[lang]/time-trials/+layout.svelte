@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>MKCentral | Time Trials</title>
+  <title>Mario Kart Central | Time Trials</title>
 </svelte:head>
 
 <slot/>
