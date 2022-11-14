@@ -39,7 +39,7 @@ async def init_db():
         await db.execute("pragma foreign_keys = ON;")
         await db.execute("""CREATE TABLE IF NOT EXISTS players(
             id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL)""")
+            name TEXT UNIQUE NOT NULL)""")
         await db.execute("""CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY,
             player_id INTEGER REFERENCES players(id),
