@@ -12,6 +12,9 @@ With this in mind, here are a few principles to follow when designing new featur
 - Offload as much computation as possible onto the client-side
   - This will mostly come in the form of page rendering
   - This could also come in the form of applying complicated filters over lots of data
+- Serve and cache as much data as possible through the CDN
+  - If a request is able to be fully handled by the CDN and it's cache, then that means less CPU usage on the server
+  - The more requests handled by the CDN, the cheaper
 - Centralise the data
   - If you keep all of your data in one place, then you can avoid all the pain that comes with distributed systems.
   - In our case, all relational data is stored in a single SQLite db, all other data is stored in an object storage with redis instance acting as an index over the object storage.
@@ -121,11 +124,88 @@ db.execute("""
 
 In the future, we will have roles that apply only to specific resources. For example, teams will have leaders/managers, events will have their organizers, or we may have roles tied to specific games. To handle these, we need to add new tables to store roles and permissions for each type of resource.
 
-## Registry Architecture
-TODO
+## Player Data and Registry
+Player entities will have all sorts of extra information associated with them including username, friend code, country, and profile picture. Some of these fields will be stored in the SQLite database while others may be stored in the object storage.
 
-## Tournaments Architecture
-TODO
+The data can be served to users in three formats:
+- Minimal
+  - Used for scenarios such as tables, time trial leaderboards, lounge leaderboards
+  - Consists only of player ID, name, and country
+  - Used for majority of API requests
+  - Should be served directly from SQLite DB
+- Basic
+  - Used for scenarios such as the player registry listing or team/squad roster
+  - Includes additional data such as friend code, ban status
+  - Next most common format
+  - Data should be stored in object storage, but cached in redis for efficient querying
+- Detailed
+  - Used for the player's registry page
+  - Contains every bit of player information we have, including bio, profile picture, tournament history, etc.
+  - Least common format
+  - Only supports looking up an exact player ID
+  - Data stored and served from object storage without redis
+  - Endpoints that return this data have should long cache expiration times so we can take advantage of browser and CDN caches.
 
-## Time Trials Architecture
-TODO
+The player registry is a page which allows people to filter, sort, and paginate through all the players on the site. As mentioned, we are going to be storing all the data needed for the registry page in the object storage, but cached in redis. At this early stage, this should be fine and we should not need any more caching on top of this. If we notice that this API call starts to cause us performance issues, we can look into pre-building some popular queries then making the clientside filter on those query results.
+
+## Tournaments
+Tournaments are a core component of the site, and includes in it lots of features that need to be supported. Below are links to the data design and API design for the tournaments functionality:
+
+- [Data Design](https://github.com/MarioKartCentral/MarioKartCentral/issues/47)
+- [API Design](https://github.com/MarioKartCentral/MarioKartCentral/issues/62)
+
+Much like the player data, tournament data can be served in different formats:
+- Minimal
+  - Used for scenarios such as event calendars or for a player's tournament history
+  - Consists of tournament id, name, date, game, and status (completed/active?) are all that is needed
+    - For tournament history, there may be some additional data containing information about the team or outcome of the player in the tournament
+  - Should be served directly from the SQLite db
+- Basic
+  - Used for the tournament registry
+  - Contains extra information such as a short description of the tournament, the series it belongs to, and the logo
+  - Cached in redis, but may be stored in either object storage or SQLite db depending on if the tournament is active
+- Detailed
+  - Used for the tournament details page
+  - Contains all information about the tournament including sign-up information
+  - Stored either in object storage or SQLite db depending on if the tournament is active
+
+One thing that's nice about tournaments is that once a tournament has completed, it is very rare for people to make API requests for them unless it's a user going through some old results. When it comes to designing how the data is stored and queried, we should go with different approaches depending on if the tournament is active or if it has completed.
+
+When a tournament has completed, it is likely that all the data related to it is immutable and won't change any more, so we can safely store all the data including sign-ups and team rosters inside our object storage and mark it as immutable to take advantage of browser and CDN caching.
+
+For tournaments that are active and still taking sign-ups, some parts of the data may be changing frequently and so we can't store it immutably as the object storage is not a good place to store data that changes often. Some parts of the data may not change frequently though such as the tournament description and could be stored in the object storage. This is unlikely to be needed though since the number of active tournament at any given time is likely going to be small and there is little risk we will have performance issues storing all this data in the SQLite db.
+
+### Teams and Squads
+Tournaments will allow sign-ups from either individuals, squads or teams. Squads and teams are almost identical except that teams are not tied to a specific tournament, whereas squads are only applicable to the tournament they sign up for. In addition, squads may restrict the number of players to an exact amount (e.g. a 2v2 FFA will only allow squads containing two people).
+
+Team data should be stored entirely in the SQLite database, this includes team rosters and team roles. Over time we can see if this is causing any performance issues and look into moving parts of the team data into object storage.
+
+Squad data should also be stored in the SQLite database, but only for events that are still allowing sign-ups. Once sign-ups have closed for a tournament, all the squad data should be stored in object storage and deleted from the SQLite database.
+
+For tournaments that allow sign-ups from teams, a snapshot of the team at the registration close data should be taken and stored in the object storage. This snapshot can then be treated as a squad that is linked to a team. By treating this snapshot as a squad, it should help make coding simpler rather than having to do checks to see if a tournament is a squad or team tournament all over the codebase.
+
+It is still a topic of discussion, but there is debate over whether a player is allowed to be in multiple teams. For example, a player may have a team that they play with for MKU, while they have another team that they play with in Japanese tournaments. As long as both teams that the player is in don't play in the same tournament, then there is no strong reason a player shouldn't be allowed in multiple teams. However, if a scenario arises where a player is in two teams for the same tournament, they may be forced to leave one of the teams.
+
+There will also exist a team registry page that will have a simliar look and feel to the player registry page. For the team registry page, since all the data is stored inside the SQLite db, it may be fine for API calls to directly access the SQLite db rather than having to use the redis cache. We should evaluate this over time in case performance issues arise.
+
+## Time Trials and Records
+Time trials form the other core component of the site. Not only do we need to store the records, but we will have lots and lots of leaderboards such as:
+
+- Leaderboards per track
+  - Multiple categories (e.g. NITA, glitch)
+- Player rankings per game
+  - Multiple ranking strategies (e.g. Average Finish, Sum of Times)
+
+It is likely we will end up with millions of time trials on the site over time, and so it is not efficient to generate all these leaderboards on the fly every time someone opens a page on the site. Time trials also have lots of data attached to them, as outlined in [the Time Trials Data Design issue](https://github.com/MarioKartCentral/MarioKartCentral/issues/48).
+
+Unlike the player/team/tournament registry pages which only support filters on a few properties, time trial leaderboards may support filters on almost any property of the TT including: game, track, mode, category, proof types, combination used, submission date, controller type etc. Combining this with having potentially millions of time trials in total, it will not be practical for us to store all of this data in SQLite or redis.
+
+The solution we will go with is by pre-generating a set of default leaderboards as static JSON files which are stored in the object storage. Whenever a user needs to fetch a leaderboard, it sends a query to the API which will send back a path to a static JSON file for one of the default leaderboards. The client-side should fetch this file to get all the time trials then apply all the filters again on what it downloaded to make the leaderboard that gets displayed to the user.
+
+As an example, say that a user wants to get a leaderboard of all the shroomless Waluigi Wiggler times on a specific track, they will fetch a static JSON file containing all the time trials for the track, then it will filter that JSON down on the client-side to only show shroomless times using Waluigi Wiggler.
+
+These default leaderboards should be generated by a separate process to the API so that it doesn't steal CPU time that can be used to handle requests. Whenever a new time trial has been approved by one of the verifiers, that time trial will sit inside a table in SQLite which represents a queue of all the unprocessed time trials. On a schedule (say, every 10 minutes), the separate process will query this table to get all the unprocessed time trials, it will then update all the default leaderboards that are relevant to that time trial, then it will remove the time from the queue.
+
+This approach may sound like it would cause all the leaderboards to potentially be out-of-date by up to 10 minutes depending on how recently the background schedule has been run. The solution to this is to make it so that the API call that gives us the URL of the JSON to fetch, can also send back all the entries from the unprocessed time trials queue, then the clientside will be able to merge them into the leaderboard.
+
+This all might sound a bit overkill, but a similar approach of pre-caching all the leaderboards is used by MKLeaderboards today for this same reason, this is not something that we should do in the future as an optimisation, as it is my belief that we will start struggling with leaderboard generation performance immediately if we don't go with the approach outlined here.
