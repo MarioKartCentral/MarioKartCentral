@@ -1,6 +1,5 @@
 import sys
 sys.path.insert(0, '../constants.py')
-import constants
 
 async def login(request: Request) -> JSONResponse:
     body = await request.json()
