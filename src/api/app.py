@@ -9,15 +9,10 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response, RedirectResponse
 from starlette.routing import Route
 import redis.asyncio as redis
+import constants
+import sys
+sys.path.insert(0, './services')
 
-AWS_ACCESS_KEY_ID=os.environ["S3_ACCESS_KEY"]
-AWS_SECRET_ACCESS_KEY=os.environ["S3_SECRET_KEY"]
-AWS_ENDPOINT_URL=os.environ["S3_ENDPOINT"]
-ADMIN_EMAIL=os.environ["API_ADMIN_EMAIL"]
-ADMIN_PASSWORD=os.environ["API_ADMIN_PASSWORD"]
-REDIS_URL=os.environ["REDIS_URL"]
-
-DB_PATH = "/var/lib/mkc-api/data/mkc.db"
 DEBUG = False
 RESET_DATABASE = False
 
@@ -79,127 +74,6 @@ async def init_db():
         await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (0, 0) ON CONFLICT DO NOTHING")
 
         await db.commit()
-
-async def current_user_has_permission(request: Request, permission_name: str):
-    session_id = request.cookies.get("session", None)
-    if session_id is None:
-        return False
-
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute("""
-            SELECT EXISTS(
-                SELECT 1 FROM roles r
-                JOIN user_roles ur ON ur.role_id = r.id
-                JOIN users u on ur.user_id = u.id
-                JOIN sessions s on s.user_id = u.id
-                JOIN role_permissions rp on rp.role_id = r.id
-                JOIN permissions p on rp.permission_id = p.id
-                WHERE s.session_id = ? AND p.name = ?
-            )""", (session_id, permission_name)) as cursor:
-            row = await cursor.fetchone()
-            return row is not None and bool(row[0])
-
-async def sign_up(request: Request) -> JSONResponse:
-    body = await request.json()
-    email = body["email"] # TODO: Email Verification
-    password_hash = hasher.hash(body["password"])
-    async with aiosqlite.connect(DB_PATH) as db:
-        user_id = await db.execute_insert("INSERT INTO users(email, password_hash) VALUES (?, ?)", (email, password_hash))
-        await db.commit()
-    
-    return JSONResponse({'id': user_id, 'email': email}, status_code=201)
-
-async def login(request: Request) -> JSONResponse:
-    body = await request.json()
-    email = body["email"]
-    password = body["password"]
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute("SELECT id, password_hash FROM users WHERE email = ?", (email, )) as cursor:
-            row = await cursor.fetchone()
-            if row is None:
-                return JSONResponse({'error':'Invalid login details'}, status_code=401)
-            user_id = row[0]
-            password_hash = row[1]
-
-    try:
-        is_valid_password = hasher.verify(password_hash, password)
-        if not is_valid_password:
-            return JSONResponse({'error':'Invalid login details'}, status_code=401)
-    except:
-        return JSONResponse({'error':'Invalid login details'}, status_code=401)
-
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
-
-    async with aiosqlite.connect(DB_PATH) as db:
-        await db.execute("INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)", (session_id, user_id, expiration_date.timestamp()))
-        await db.commit()
-
-    resp = JSONResponse({}, status_code=200)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
-    return resp
-
-async def logout(request: Request) -> JSONResponse:
-    session_id = request.cookies.get("session", None)
-
-    async with aiosqlite.connect(DB_PATH) as db:
-        await db.execute("DELETE FROM sessions WHERE session_id = ?", (session_id, ))
-        await db.commit()
-    resp = JSONResponse({}, status_code=200)
-    resp.delete_cookie('session')
-    return resp
-
-async def current_user(request: Request) -> JSONResponse:
-    session_id = request.cookies.get("session", None)
-    if session_id is None:
-        return JSONResponse({'error': 'Not logged in'}, status_code=401)
-
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute("SELECT u.id, u.email, u.password_hash FROM users u JOIN sessions s on s.user_id = u.id WHERE session_id = ?", (session_id, )) as cursor:
-            row = await cursor.fetchone()
-            if row is None:
-                return JSONResponse({'error':'Not logged in'}, status_code=401)
-            user_id = row[0]
-            user_email = row[1]
-            user_pw_hash = row[2]
-
-        roles_rows = await db.execute_fetchall("SELECT r.name FROM roles r JOIN user_roles ur on ur.role_id = r.id WHERE ur.user_id = ?", (user_id,))
-        roles = [row[0] for row in roles_rows]
-        return JSONResponse({ 'id': user_id, 'email': user_email, 'password_hash': user_pw_hash, 'roles': roles })
-
-async def list_users(request: Request) -> JSONResponse:
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute("SELECT id, email, password_hash FROM users") as cursor:
-            names = [{ 'id': row[0], 'email': row[1], 'password_hash': row[2] } for row in await cursor.fetchall()]
-    return JSONResponse({'users': names})
-
-async def list_players(request: Request) -> JSONResponse:
-    async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute("SELECT id, name FROM players") as cursor:
-            names = [{ 'id': row[0], 'name': row[1] } for row in await cursor.fetchall()]
-    return JSONResponse({'users': names})
-
-async def grant_administrator(request: Request) -> JSONResponse:
-    if not await current_user_has_permission(request, 'grant_administrator'):
-        return JSONResponse({'error':'Unauthorized to grant administrator'}, status_code=401)
-    
-    body = await request.json()
-    user_id = body["user_id"]
-
-    async with aiosqlite.connect(DB_PATH) as db:
-        try:
-            await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (?, 1)", (user_id,))
-            await db.commit()
-        except Exception as e:
-            async with db.execute("SELECT EXISTS(SELECT 1 FROM users where id = ?)", (user_id,)) as cursor:
-                row = await cursor.fetchone()
-                if row is None:
-                    return JSONResponse({'error':'User not found with given ID'}, status_code=404)
-                else:
-                    return JSONResponse({'error':'Unexpected error'}, status_code=500)
-
-    return JSONResponse({}, status_code=200)
 
 async def homepage(request):
     return JSONResponse({'hello': 'world'})
