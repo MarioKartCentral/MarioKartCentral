@@ -1,5 +1,13 @@
-import sys
-sys.path.insert(0, '../constants.py')
+from datetime import datetime, timedelta, timezone
+import secrets
+import aiosqlite
+from argon2 import PasswordHasher
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+from starlette.routing import Route
+from api.constants import *
+
+hasher = PasswordHasher()
 
 async def login(request: Request) -> JSONResponse:
     body = await request.json()
@@ -51,3 +59,10 @@ async def logout(request: Request) -> JSONResponse:
     resp = JSONResponse({}, status_code=200)
     resp.delete_cookie('session')
     return resp
+
+def get_routes():
+    return [
+        Route('/api/user/signup', sign_up, methods=["POST"]),
+        Route('/api/user/login', login, methods=["POST"]),
+        Route('/api/user/logout', logout, methods=["POST"]),
+    ]

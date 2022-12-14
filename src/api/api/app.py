@@ -1,17 +1,16 @@
-from datetime import datetime, timedelta, timezone
-import os
-import secrets
 import aiosqlite
 import aiobotocore.session
 from argon2 import PasswordHasher
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response, RedirectResponse
+from starlette.responses import JSONResponse
 from starlette.routing import Route
 import redis.asyncio as redis
-import constants
-import sys
-sys.path.insert(0, './services')
+from api.auth import current_user_has_permission
+from api.constants import *
+import api.services.authservice as authservice
+import api.services.userservice as userservice
+import api.services.roleservice as roleservice
 
 DEBUG = False
 RESET_DATABASE = False
@@ -23,6 +22,7 @@ if DEBUG:
     import debugpy
     debugpy.listen(("0.0.0.0", 5678))
     debugpy.wait_for_client()  # blocks execution until client is attached
+
 
 async def init_db():
     if RESET_DATABASE:
@@ -61,10 +61,13 @@ async def init_db():
         await db.commit()
 
         # create some default roles and permissions
-        roles = [ (0, 'Super Administrator'), (1, 'Administrator') ]
-        permissions = [ (0, 'grant_administrator'), (1, 's3_read'), (2, 's3_write') ]
-        role_permissions = [ (0, 0), (0, 1), (0, 2), (1, 1), (1, 2) ] # assign permissions to roles
-        
+        roles = [(0, 'Super Administrator'), (1, 'Administrator')]
+        permissions = [(0, 'grant_administrator'),
+                       (1, 's3_read'), (2, 's3_write')]
+
+        # assign permissions to roles
+        role_permissions = [(0, 0), (0, 1), (0, 2), (1, 1), (1, 2)]
+
         await db.executemany("INSERT INTO roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING", roles)
         await db.executemany("INSERT INTO permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING", permissions)
         await db.executemany("INSERT INTO role_permissions(role_id, permission_id) VALUES (?, ?) ON CONFLICT DO NOTHING", role_permissions)
@@ -75,8 +78,10 @@ async def init_db():
 
         await db.commit()
 
+
 async def homepage(request):
     return JSONResponse({'hello': 'world'})
+
 
 def create_s3_client(session: aiobotocore.session.AioSession):
     return session.create_client(
@@ -85,16 +90,17 @@ def create_s3_client(session: aiobotocore.session.AioSession):
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         endpont_url=AWS_ENDPOINT_URL)
 
+
 async def s3_read(request: Request) -> JSONResponse:
     if not await current_user_has_permission(request, 's3_read'):
-        return JSONResponse({'error':'Unauthorized to read from S3'}, status_code=401)
+        return JSONResponse({'error': 'Unauthorized to read from S3'}, status_code=401)
 
     try:
         bucket_name = request.query_params['bucket']
         file_name = request.query_params['file']
 
     except RuntimeError:
-        return JSONResponse({'error':'No correct body send'})
+        return JSONResponse({'error': 'No correct body send'})
 
     session = aiobotocore.session.get_session()
     async with create_s3_client(session) as s3_client:
@@ -103,20 +109,21 @@ async def s3_read(request: Request) -> JSONResponse:
             body = await stream.read()
 
     return JSONResponse({
-        f'{bucket_name} - {file_name}': 
+        f'{bucket_name} - {file_name}':
         f'{body}'
     })
 
+
 async def s3_write(request: Request) -> JSONResponse:
     if not await current_user_has_permission(request, 's3_write'):
-        return JSONResponse({'error':'Unauthorized to write to S3'}, status_code=401)
+        return JSONResponse({'error': 'Unauthorized to write to S3'}, status_code=401)
 
     try:
         bucket_name = request.query_params['bucket']
         file_name = request.query_params['file']
         message = request.query_params['message']
     except RuntimeError:
-        return JSONResponse({'error':'No correct body send'})
+        return JSONResponse({'error': 'No correct body send'})
 
     message = message.encode('utf-8')
 
@@ -125,6 +132,7 @@ async def s3_write(request: Request) -> JSONResponse:
         result = await s3_client.put_object(Bucket=bucket_name, Key=file_name, Body=message)
 
     return JSONResponse(result)
+
 
 async def redis_write(request: Request) -> JSONResponse:
     text = request.path_params['text']
@@ -136,13 +144,9 @@ routes = [
     Route('/api', homepage),
     Route('/api/s3', s3_read),
     Route('/api/s3', s3_write, methods=["POST"]),
-    Route('/api/user/signup', sign_up, methods=["POST"]),
-    Route('/api/user/login', login, methods=["POST"]),
-    Route('/api/user/logout', logout, methods=["POST"]),
-    Route('/api/player/list', list_players),
-    Route('/api/user/list', list_users),
-    Route('/api/user/me', current_user),
-    Route('/api/user/grant_admin', grant_administrator),
+    *authservice.get_routes(),
+    *userservice.get_routes(),
+    *roleservice.get_routes(),
     Route('/api/redis_write/{text:str}', redis_write),
 ]
 
