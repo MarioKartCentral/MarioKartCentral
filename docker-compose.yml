@@ -14,9 +14,10 @@ services:
       API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
       REDIS_URL : redis://redis:6379
       PORT : 8000
+      DB_PATH : /var/lib/mkc-api/data/mkc.db
     volumes:
       - mkc-db:/var/lib/mkc-api/data
-      - ./src/api/app.py:/usr/src/app/app.py
+      - ./src/api:/usr/src/app
   frontend:
     build: ./src/frontend
     ports:
