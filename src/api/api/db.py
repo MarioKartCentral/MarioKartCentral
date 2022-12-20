@@ -40,6 +40,12 @@ async def init_db():
             role_id INTEGER NOT NULL REFERENCES roles(id),
             permission_id INTEGER NOT NULL REFERENCES permissions(id),
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID""")
+        await db.execute("""CREATE TABLE IF NOT EXISTS tournaments(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            date INTEGER,
+            game TEXT,
+            status INTEGER)""")
         await db.commit()
 
         await db.executemany(
