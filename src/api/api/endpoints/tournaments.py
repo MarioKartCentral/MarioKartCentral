@@ -50,7 +50,7 @@ async def tournament_info(request: Request) -> JSONResponse:
         try:
             response = await s3_client.get_object(Bucket='tournaments', Key=f'{tournament_id}.json')
         except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'Invalid tournament ID'}, status_code=401)
+            return JSONResponse({'error':'No tournament found'}, status_code=404)
         async with response['Body'] as stream:
             body = await stream.read()
             json_body = json.loads(body)
