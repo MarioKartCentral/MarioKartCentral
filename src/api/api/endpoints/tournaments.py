@@ -55,8 +55,39 @@ async def tournament_info(request: Request) -> JSONResponse:
             body = await stream.read()
             json_body = json.loads(body)
     return JSONResponse(json_body)
+
+async def tournament_list_minimal(request: Request) -> JSONResponse:
+    async with connect_db() as db:
+        async with db.execute("SELECT id, name, date, game, status FROM tournaments") as cursor:
+            rows = await cursor.fetchall()
+    tournaments = []
+    for row in rows:
+        tournament = {}
+        tournament['id'] = row[0]
+        tournament['name'] = row[1]
+        tournament['date'] = row[2]
+        tournament['game'] = row[3]
+        tournament['status'] = row[4]
+        tournaments.append(tournament)
+    return JSONResponse({"tournaments": tournaments})
+
+async def tournament_list_basic(request: Request) -> JSONResponse:
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        response = await s3_client.list_objects_v2(Bucket='tournaments')
+        object_list = response['Contents']
+        tournaments = []
+        for object in object_list:
+            response = await s3_client.get_object(Bucket='tournaments', Key=object['Key'])
+            async with response['Body'] as stream:
+                body = await stream.read()
+                tournament = json.loads(body)
+                tournaments.append(tournament)
+    return JSONResponse({'tournaments': tournaments})
         
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
-    Route('/api/tournaments/{id:int}', tournament_info)
+    Route('/api/tournaments/{id:int}', tournament_info),
+    Route('/api/tournaments/list', tournament_list_minimal),
+    Route('/api/tournaments/list/basic', tournament_list_basic)
 ]
