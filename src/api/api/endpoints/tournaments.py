@@ -7,7 +7,7 @@ from api.s3 import create_s3_client
 from api.db import connect_db
 import json
 
-@require_permission(permissions.WRITE_S3)
+@require_permission(permissions.CREATE_TOURNAMENT)
 async def create_tournament(request: Request) -> JSONResponse:
     body = await request.json()
     try:
@@ -16,16 +16,20 @@ async def create_tournament(request: Request) -> JSONResponse:
         tournament_name = body['name']
         date = int(body['date'])
         game = body['game']
-        tournament_status = int(body['status'])
+        mode = body['mode']
+        series_id = int(body['series_id'])
+        is_squad = int(body['is_squad'])
+        is_completed = int(body['is_completed'])
         description = body['description']
+        logo = body['logo']
     except RuntimeError:
         return JSONResponse({'error': 'No correct body send'})
 
     # store minimal data about each tournament in the SQLite DB
     async with connect_db() as db:
         cursor = await db.execute(
-            "INSERT INTO tournaments(name, date, game, status) VALUES (?, ?, ?, ?)",
-            (tournament_name, date, game, tournament_status))
+            "INSERT INTO tournaments(name, date, game, mode, series_id, is_squad, is_completed, description, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (tournament_name, date, game, mode, series_id, is_squad, is_completed, description, logo))
         tournament_id = cursor.lastrowid
         await db.commit()
 
@@ -34,15 +38,19 @@ async def create_tournament(request: Request) -> JSONResponse:
                 "name": tournament_name,
                 "date": date,
                 "game": game,
-                "status": tournament_status,
-                "description": description}
+                "mode": mode,
+                "series_id": series_id,
+                "is_squad": is_squad,
+                "is_completed": is_completed,
+                "description": description,
+                "logo": logo
+                }
     s3_message = bytes(json.dumps(s3_json).encode('utf-8'))
     session = aiobotocore.session.get_session()
     async with create_s3_client(session) as s3_client:
         result = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
     return JSONResponse(s3_json)
 
-@require_permission(permissions.READ_S3)
 async def tournament_info(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
     session = aiobotocore.session.get_session()
@@ -56,38 +64,51 @@ async def tournament_info(request: Request) -> JSONResponse:
             json_body = json.loads(body)
     return JSONResponse(json_body)
 
-async def tournament_list_minimal(request: Request) -> JSONResponse:
+async def tournament_list_minimal():
     async with connect_db() as db:
-        async with db.execute("SELECT id, name, date, game, status FROM tournaments") as cursor:
+        async with db.execute("SELECT id, name, date, game, is_completed FROM tournaments") as cursor:
             rows = await cursor.fetchall()
     tournaments = []
     for row in rows:
-        tournament = {}
-        tournament['id'] = row[0]
-        tournament['name'] = row[1]
-        tournament['date'] = row[2]
-        tournament['game'] = row[3]
-        tournament['status'] = row[4]
+        tournament = {
+            'id': row[0],
+            'name': row[1],
+            'date': row[2],
+            'game': row[3],
+            'is_completed': row[4]
+        }
         tournaments.append(tournament)
     return JSONResponse({"tournaments": tournaments})
 
-async def tournament_list_basic(request: Request) -> JSONResponse:
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        response = await s3_client.list_objects_v2(Bucket='tournaments')
-        object_list = response['Contents']
-        tournaments = []
-        for object in object_list:
-            response = await s3_client.get_object(Bucket='tournaments', Key=object['Key'])
-            async with response['Body'] as stream:
-                body = await stream.read()
-                tournament = json.loads(body)
-                tournaments.append(tournament)
+async def tournament_list_basic():
+    async with connect_db() as db:
+        async with db.execute("SELECT id, name, date, game, mode, series_id, is_squad, is_completed, description, logo FROM tournaments") as cursor:
+            rows = await cursor.fetchall()
+    tournaments = []
+    for row in rows:
+        tournament = {
+            'id': row[0],
+            'name': row[1],
+            'date': row[2],
+            'game': row[3],
+            'mode': row[4],
+            'series_id': row[5],
+            'is_squad': row[6],
+            'is_completed': row[7],
+            'description': row[8],
+            'logo': row[9]
+        }
+        tournaments.append(tournament)
     return JSONResponse({'tournaments': tournaments})
-        
+
+async def tournament_list(request:Request) -> JSONResponse:
+    if 'detail' in request.query_params:
+        if request.query_params['detail'] == 'basic':
+            return await tournament_list_basic()
+    return await tournament_list_minimal()
+
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}', tournament_info),
-    Route('/api/tournaments/list', tournament_list_minimal),
-    Route('/api/tournaments/list/basic', tournament_list_basic)
+    Route('/api/tournaments/list', tournament_list)
 ]
