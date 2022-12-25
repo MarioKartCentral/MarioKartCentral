@@ -14,12 +14,13 @@ async def create_tournament(request: Request) -> JSONResponse:
         # there should be way more parameters than this in the final version;
         # however these are the minimum to make sure the basic functionality works
         tournament_name = body['name']
-        date = int(body['date'])
         game = body['game']
         mode = body['mode']
         series_id = int(body['series_id'])
         is_squad = int(body['is_squad'])
-        is_completed = int(body['is_completed'])
+        registrations_open = int(body['registrations_open'])
+        date_start = int(body['date_start'])
+        date_end = int(body['date_end'])
         description = body['description']
         logo = body['logo']
     except RuntimeError:
@@ -28,20 +29,21 @@ async def create_tournament(request: Request) -> JSONResponse:
     # store minimal data about each tournament in the SQLite DB
     async with connect_db() as db:
         cursor = await db.execute(
-            "INSERT INTO tournaments(name, date, game, mode, series_id, is_squad, is_completed, description, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (tournament_name, date, game, mode, series_id, is_squad, is_completed, description, logo))
+            "INSERT INTO tournaments(name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (tournament_name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, logo))
         tournament_id = cursor.lastrowid
         await db.commit()
 
     # store more detailed information about the tournament in object storage
     s3_json = {"id": tournament_id,
                 "name": tournament_name,
-                "date": date,
                 "game": game,
                 "mode": mode,
                 "series_id": series_id,
                 "is_squad": is_squad,
-                "is_completed": is_completed,
+                "registrations_open": registrations_open,
+                "date_start": date_start,
+                "date_end": date_end,
                 "description": description,
                 "logo": logo
                 }
@@ -66,37 +68,38 @@ async def tournament_info(request: Request) -> JSONResponse:
 
 async def tournament_list_minimal():
     async with connect_db() as db:
-        async with db.execute("SELECT id, name, date, game, is_completed FROM tournaments") as cursor:
+        async with db.execute("SELECT id, name, date_start, date_end, game FROM tournaments") as cursor:
             rows = await cursor.fetchall()
     tournaments = []
     for row in rows:
         tournament = {
             'id': row[0],
             'name': row[1],
-            'date': row[2],
-            'game': row[3],
-            'is_completed': row[4]
+            'date_start': row[2],
+            'date_end': row[3],
+            'game': row[4],
         }
         tournaments.append(tournament)
     return JSONResponse({"tournaments": tournaments})
 
 async def tournament_list_basic():
     async with connect_db() as db:
-        async with db.execute("SELECT id, name, date, game, mode, series_id, is_squad, is_completed, description, logo FROM tournaments") as cursor:
+        async with db.execute("SELECT id, name, game, mode, series_id, is_squad, registrations_open, description, date_start, date_end, logo FROM tournaments") as cursor:
             rows = await cursor.fetchall()
     tournaments = []
     for row in rows:
         tournament = {
             'id': row[0],
             'name': row[1],
-            'date': row[2],
-            'game': row[3],
-            'mode': row[4],
-            'series_id': row[5],
-            'is_squad': row[6],
-            'is_completed': row[7],
-            'description': row[8],
-            'logo': row[9]
+            'game': row[2],
+            'mode': row[3],
+            'series_id': row[4],
+            'is_squad': row[5],
+            'registrations_open': row[6],
+            'description': row[7],
+            'date_start': row[8],
+            'date_end': row[9],
+            'logo': row[10]
         }
         tournaments.append(tournament)
     return JSONResponse({'tournaments': tournaments})

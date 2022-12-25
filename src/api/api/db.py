@@ -43,12 +43,13 @@ async def init_db():
         await db.execute("""CREATE TABLE IF NOT EXISTS tournaments(
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
-            date INTEGER NOT NULL,
             game TEXT NOT NULL,
             mode TEXT NOT NULL,
             series_id INTEGER,
             is_squad INTEGER NOT NULL,
-            is_completed INTEGER NOT NULL,
+            registrations_open INTEGER NOT NULL,
+            date_start INTEGER NOT NULL,
+            date_end INTEGER NOT NULL,
             description TEXT NOT NULL,
             logo TEXT
             )""")
