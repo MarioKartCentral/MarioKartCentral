@@ -83,7 +83,7 @@ async def edit_tournament(request: Request) -> JSONResponse:
         return JSONResponse({'error': 'No correct body send'})
 
     async with connect_db() as db:
-        await db.execute("""UPDATE tournaments
+        cursor = await db.execute("""UPDATE tournaments
             SET name = ?,
             series_id = ?,
             registrations_open = ?,
@@ -93,6 +93,9 @@ async def edit_tournament(request: Request) -> JSONResponse:
             logo = ?
             WHERE id = ?""",
             (tournament_name, series_id, registrations_open, date_start, date_end, description, logo, tournament_id))
+        updated_rows = cursor.rowcount
+        if updated_rows == 0:
+            return JSONResponse({'error':'No tournament found'}, status_code=404)
         await db.commit()
 
     session = aiobotocore.session.get_session()
