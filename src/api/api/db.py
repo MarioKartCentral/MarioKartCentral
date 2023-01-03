@@ -53,6 +53,16 @@ async def init_db():
             description TEXT NOT NULL,
             logo TEXT
             )""")
+        await db.execute("""CREATE TABLE IF NOT EXISTS tournament_series(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            url TEXT UNIQUE,
+            game TEXT NOT NULL,
+            MODE TEXT NOT NULL,
+            description TEXT NOT NULL,
+            logo TEXT
+        )
+        """)
         await db.commit()
 
         await db.executemany(
