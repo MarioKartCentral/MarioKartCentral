@@ -6,6 +6,7 @@ from api.auth import permissions, require_permission
 from api.s3 import create_s3_client
 from api.db import connect_db
 import json
+from datetime import datetime
 
 @require_permission(permissions.CREATE_TOURNAMENT)
 async def create_tournament(request: Request) -> JSONResponse:
@@ -204,7 +205,7 @@ async def edit_tournament(request: Request) -> JSONResponse:
         json_body["date_end"] = date_end
         json_body["description"] = description
         json_body["use_series_description"] = use_series_description
-        json_body["series_stats_include"] = series_stats_include,
+        json_body["series_stats_include"] = series_stats_include
         json_body["logo"] = logo
         json_body["url"] = url
         json_body["registration_deadline"] = registration_deadline
@@ -245,9 +246,9 @@ async def tournament_info(request: Request) -> JSONResponse:
             json_body = json.loads(body)
     return JSONResponse(json_body)
 
-async def tournament_list_minimal():
+async def tournament_list_minimal(where_clause, variable_parameters):
     async with connect_db() as db:
-        async with db.execute("SELECT id, name, date_start, date_end, game FROM tournaments") as cursor:
+        async with db.execute(f"SELECT id, name, date_start, date_end, game FROM tournaments {where_clause}", variable_parameters) as cursor:
             rows = await cursor.fetchall()
     tournaments = []
     for row in rows:
@@ -261,9 +262,9 @@ async def tournament_list_minimal():
         tournaments.append(tournament)
     return JSONResponse({"tournaments": tournaments})
 
-async def tournament_list_basic():
+async def tournament_list_basic(where_clause, variable_parameters):
     async with connect_db() as db:
-        async with db.execute("SELECT id, name, game, mode, series_id, is_squad, registrations_open, description, date_start, date_end, logo FROM tournaments") as cursor:
+        async with db.execute(f"SELECT id, name, game, mode, series_id, is_squad, registrations_open, description, date_start, date_end, logo FROM tournaments {where_clause}", variable_parameters) as cursor:
             rows = await cursor.fetchall()
     tournaments = []
     for row in rows:
@@ -284,35 +285,56 @@ async def tournament_list_basic():
     return JSONResponse({'tournaments': tournaments})
 
 async def tournament_list(request:Request) -> JSONResponse:
+    # constructing WHERE clause for SQLite query
+    where_parameters = []
+    variable_parameters = []
+    if 'skipCompleted' in request.query_params:
+        # a completed tournament is one where the ending date is in the past
+        where_parameters.append("date_end > ?")
+        variable_parameters.append(int(datetime.utcnow().timestamp()))
+    if 'game' in request.query_params:
+        where_parameters.append("game = ?")
+        variable_parameters.append(request.query_params['game'].upper())
+    if 'mode' in request.query_params:
+        where_parameters.append("mode = ?")
+        variable_parameters.append(request.query_params['mode'])
+    if 'showPrivate' not in request.query_params:
+        where_parameters.append("is_viewable = 1")
+    if 'seriesId' in request.query_params:
+        where_parameters.append("series_id = ?")
+        variable_parameters.append(request.query_params['seriesId'])
+    where_clause = ""
+    if len(where_parameters) > 0:
+        where_clause = f"WHERE {' AND '.join(where_parameters)}"
     if 'detail' in request.query_params:
         if request.query_params['detail'] == 'basic':
-            return await tournament_list_basic()
-    return await tournament_list_minimal()
+            return await tournament_list_basic(where_clause, tuple(variable_parameters))
+    return await tournament_list_minimal(where_clause, tuple(variable_parameters))
 
 @require_permission(permissions.CREATE_SERIES)
 async def create_series(request: Request) -> JSONResponse:
     body = await request.json()
     try:
-        # there should be way more parameters than this in the final version;
-        # however these are the minimum to make sure the basic functionality works
         series_name = body['name']
         url = body['url']
         game = body['game']
         mode = body['mode']
+        is_historical = int(body['is_historical'])
+        is_public = int(body['is_public'])
         description = body['description']
         logo = body['logo']
         # object storage-only fields
         ruleset = body['ruleset']
         organizer = body['organizer']
         location = body['location']
-    except RuntimeError:
+    except Exception as e:
         return JSONResponse({'error': 'No correct body send'})
 
     # store minimal data about each series in the SQLite DB
     async with connect_db() as db:
         cursor = await db.execute(
-            "INSERT INTO tournament_series(name, url, game, mode, description, logo) VALUES (?, ?, ?, ?, ?, ?)",
-            (series_name, url, game, mode, description, logo))
+            "INSERT INTO tournament_series(name, url, game, mode, is_historical, is_public, description, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (series_name, url, game, mode, is_historical, is_public, description, logo))
         series_id = cursor.lastrowid
         await db.commit()
 
@@ -322,6 +344,8 @@ async def create_series(request: Request) -> JSONResponse:
                 "url": url,
                 "game": game,
                 "mode": mode,
+                "is_historical": is_historical,
+                "is_public": is_public,
                 "description": description,
                 "logo": logo,
                 "ruleset": ruleset,
@@ -335,10 +359,47 @@ async def create_series(request: Request) -> JSONResponse:
         result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
     return JSONResponse(s3_json)
 
+async def list_series(request: Request) -> JSONResponse:
+    # constructing WHERE clause for SQLite query
+    where_parameters = []
+    variable_parameters = []
+    if 'showHistorical' not in request.query_params:
+        where_parameters.append("is_historical = 0")
+    if 'game' in request.query_params:
+        where_parameters.append("game = ?")
+        variable_parameters.append(request.query_params['game'].upper())
+    if 'mode' in request.query_params:
+        where_parameters.append("mode = ?")
+        variable_parameters.append(request.query_params['mode'])
+    if 'showPrivate' not in request.query_params:
+        where_parameters.append("is_public = 1")
+    where_clause = ""
+    if len(where_parameters) > 0:
+        where_clause = f"WHERE {' AND '.join(where_parameters)}"
+    async with connect_db() as db:
+        async with db.execute(f"SELECT id, name, url, game, mode, is_historical, is_public, description, logo FROM tournament_series {where_clause}", variable_parameters) as cursor:
+            rows = await cursor.fetchall()
+        series = []
+        for row in rows:
+            curr_series = {
+                'id': row[0],
+                'name': row[1],
+                'url': row[2],
+                'game': row[3],
+                'mode': row[4],
+                'is_historical': row[5],
+                'is_public': row[6],
+                'description': row[7],
+                'logo': row[8]
+            }
+            series.append(curr_series)
+        return JSONResponse({'series': series})
+
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}/edit', edit_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}', tournament_info),
     Route('/api/tournaments/list', tournament_list),
-    Route('/api/tournaments/series/create', create_series, methods=['POST'])
+    Route('/api/tournaments/series/create', create_series, methods=['POST']),
+    Route('/api/tournaments/series/list', list_series)
 ]

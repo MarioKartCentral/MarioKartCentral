@@ -46,6 +46,8 @@ async def init_db():
             url TEXT UNIQUE,
             game TEXT NOT NULL,
             mode TEXT NOT NULL,
+            is_historical INTEGER NOT NULL,
+            is_public INTEGER NOT NULL,
             description TEXT NOT NULL,
             logo TEXT
         )
