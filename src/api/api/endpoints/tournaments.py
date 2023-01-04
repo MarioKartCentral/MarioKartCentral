@@ -7,7 +7,7 @@ from api.s3 import create_s3_client
 from api.db import connect_db
 import json
 
-#@require_permission(permissions.CREATE_TOURNAMENT)
+@require_permission(permissions.CREATE_TOURNAMENT)
 async def create_tournament(request: Request) -> JSONResponse:
     body = await request.json()
     try:
@@ -109,7 +109,7 @@ async def create_tournament(request: Request) -> JSONResponse:
         result = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
     return JSONResponse(s3_json)
 
-#@require_permission(permissions.EDIT_TOURNAMENT)
+@require_permission(permissions.EDIT_TOURNAMENT)
 async def edit_tournament(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
     body = await request.json()
