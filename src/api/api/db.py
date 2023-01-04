@@ -40,6 +40,18 @@ async def init_db():
             role_id INTEGER NOT NULL REFERENCES roles(id),
             permission_id INTEGER NOT NULL REFERENCES permissions(id),
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID""")
+        await db.execute("""CREATE TABLE IF NOT EXISTS tournament_series(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            url TEXT UNIQUE,
+            game TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            is_historical INTEGER NOT NULL,
+            is_public INTEGER NOT NULL,
+            description TEXT NOT NULL,
+            logo TEXT
+        )
+        """)
         await db.execute("""CREATE TABLE IF NOT EXISTS tournaments(
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
@@ -51,8 +63,30 @@ async def init_db():
             date_start INTEGER NOT NULL,
             date_end INTEGER NOT NULL,
             description TEXT NOT NULL,
-            logo TEXT
+            use_series_description INTEGER NOT NULL,
+            series_stats_include INTEGER NOT NULL,
+            logo TEXT,
+            url TEXT UNIQUE,
+            registration_deadline INTEGER,
+            registration_cap INTEGER,
+            teams_allowed INTEGER NOT NULL,
+            teams_only INTEGER NOT NULL,
+            team_members_only INTEGER NOT NULL,
+            min_squad_size INTEGER,
+            max_squad_size INTEGER,
+            squad_tag_required INTEGER NOT NULL,
+            squad_name_required INTEGER NOT NULL,
+            mii_name_required INTEGER NOT NULL,
+            host_status_required INTEGER NOT NULL,
+            checkins_open INTEGER NOT NULL,
+            min_players_checkin INTEGER NOT NULL,
+            verified_fc_required INTEGER NOT NULL,
+            is_viewable INTEGER NOT NULL,
+            is_public INTEGER NOT NULL,
+            show_on_profiles INTEGER NOT NULL,
+            FOREIGN KEY(series_id) REFERENCES tournament_series(id)
             )""")
+        
         await db.commit()
 
         await db.executemany(
