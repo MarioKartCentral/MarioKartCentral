@@ -11,7 +11,9 @@ permissions_by_id = {
     1: WRITE_S3,
     2: WRITE_REDIS,
     3: CREATE_TOURNAMENT,
-    4: EDIT_TOURNAMENT
+    4: EDIT_TOURNAMENT,
+    5: CREATE_SERIES,
+    6: EDIT_SERIES
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }
