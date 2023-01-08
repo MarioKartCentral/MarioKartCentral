@@ -286,26 +286,26 @@ async def tournament_list_basic(where_clause, variable_parameters):
 
 async def tournament_list(request:Request) -> JSONResponse:
     # constructing WHERE clause for SQLite query
-    where_parameters = []
+    where_clauses = []
     variable_parameters = []
     if 'skipCompleted' in request.query_params:
         # a completed tournament is one where the ending date is in the past
-        where_parameters.append("date_end > ?")
+        where_clauses.append("date_end > ?")
         variable_parameters.append(int(datetime.utcnow().timestamp()))
     if 'game' in request.query_params:
-        where_parameters.append("game = ?")
+        where_clauses.append("game = ?")
         variable_parameters.append(request.query_params['game'].upper())
     if 'mode' in request.query_params:
-        where_parameters.append("mode = ?")
+        where_clauses.append("mode = ?")
         variable_parameters.append(request.query_params['mode'])
     if 'showPrivate' not in request.query_params:
-        where_parameters.append("is_viewable = 1")
+        where_clauses.append("is_viewable = 1")
     if 'seriesId' in request.query_params:
-        where_parameters.append("series_id = ?")
+        where_clauses.append("series_id = ?")
         variable_parameters.append(request.query_params['seriesId'])
     where_clause = ""
-    if len(where_parameters) > 0:
-        where_clause = f"WHERE {' AND '.join(where_parameters)}"
+    if len(where_clauses) > 0:
+        where_clause = f"WHERE {' AND '.join(where_clauses)}"
     if 'detail' in request.query_params:
         if request.query_params['detail'] == 'basic':
             return await tournament_list_basic(where_clause, tuple(variable_parameters))
@@ -361,21 +361,21 @@ async def create_series(request: Request) -> JSONResponse:
 
 async def list_series(request: Request) -> JSONResponse:
     # constructing WHERE clause for SQLite query
-    where_parameters = []
+    where_clauses = []
     variable_parameters = []
     if 'showHistorical' not in request.query_params:
-        where_parameters.append("is_historical = 0")
+        where_clauses.append("is_historical = 0")
     if 'game' in request.query_params:
-        where_parameters.append("game = ?")
+        where_clauses.append("game = ?")
         variable_parameters.append(request.query_params['game'].upper())
     if 'mode' in request.query_params:
-        where_parameters.append("mode = ?")
+        where_clauses.append("mode = ?")
         variable_parameters.append(request.query_params['mode'])
     if 'showPrivate' not in request.query_params:
-        where_parameters.append("is_public = 1")
+        where_clauses.append("is_public = 1")
     where_clause = ""
-    if len(where_parameters) > 0:
-        where_clause = f"WHERE {' AND '.join(where_parameters)}"
+    if len(where_clauses) > 0:
+        where_clause = f"WHERE {' AND '.join(where_clauses)}"
     async with connect_db() as db:
         async with db.execute(f"SELECT id, name, url, game, mode, is_historical, is_public, description, logo FROM tournament_series {where_clause}", variable_parameters) as cursor:
             rows = await cursor.fetchall()
