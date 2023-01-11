@@ -86,7 +86,12 @@ async def init_db():
             show_on_profiles INTEGER NOT NULL,
             FOREIGN KEY(series_id) REFERENCES tournament_series(id)
             )""")
-        
+        await db.execute("""CREATE TABLE IF NOT EXISTS tournament_templates(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            series_id INTEGER,
+            FOREIGN KEY(series_id) REFERENCES tournament_series(id)
+            )""")
         await db.commit()
 
         await db.executemany(

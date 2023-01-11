@@ -15,7 +15,7 @@ async def init_s3():
         # names of currently existing buckets in s3
         bucket_names = [b['Name'] for b in resp['Buckets']]
         # all buckets we need for the API to run
-        api_buckets = ['tournaments', 'series']
+        api_buckets = ['tournaments', 'series', 'templates']
         # create buckets if they can't be found in s3
         for bucket in api_buckets:
             if bucket not in bucket_names:
