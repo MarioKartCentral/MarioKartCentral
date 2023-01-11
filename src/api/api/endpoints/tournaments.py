@@ -395,11 +395,25 @@ async def list_series(request: Request) -> JSONResponse:
             series.append(curr_series)
         return JSONResponse({'series': series})
 
+async def series_info(request: Request) -> JSONResponse:
+    series_id = request.path_params['id']
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No series found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+    return JSONResponse(json_body)
+
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}/edit', edit_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}', tournament_info),
     Route('/api/tournaments/list', tournament_list),
     Route('/api/tournaments/series/create', create_series, methods=['POST']),
-    Route('/api/tournaments/series/list', list_series)
+    Route('/api/tournaments/series/list', list_series),
+    Route('/api/tournaments/series/{id:int}', series_info)
 ]
