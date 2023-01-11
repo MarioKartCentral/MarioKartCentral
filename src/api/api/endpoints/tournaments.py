@@ -359,7 +359,79 @@ async def create_series(request: Request) -> JSONResponse:
         result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
     return JSONResponse(s3_json)
 
-async def list_series(request: Request) -> JSONResponse:
+@require_permission(permissions.EDIT_SERIES)
+async def edit_series(request: Request) -> JSONResponse:
+    series_id = request.path_params['id']
+    body = await request.json()
+    try:
+        series_name = body['name']
+        url = body['url']
+        game = body['game']
+        mode = body['mode']
+        is_historical = int(body['is_historical'])
+        is_public = int(body['is_public'])
+        description = body['description']
+        logo = body['logo']
+        # object storage-only fields
+        ruleset = body['ruleset']
+        organizer = body['organizer']
+        location = body['location']
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    async with connect_db() as db:
+        cursor = await db.execute("""UPDATE tournament_series
+            SET name = ?,
+            url = ?,
+            game = ?,
+            mode = ?,
+            is_historical = ?,
+            is_public = ?,
+            description = ?,
+            logo = ?
+            WHERE id = ?""",
+            (series_name, url, game, mode, is_historical, is_public, description, logo, series_id))
+        updated_rows = cursor.rowcount
+        if updated_rows == 0:
+            return JSONResponse({'error':'No tournament found'}, status_code=404)
+        await db.commit()
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No tournament found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+        json_body["name"] = series_name
+        json_body["url"] = url
+        json_body["game"] = game
+        json_body["mode"] = mode
+        json_body["is_historical"] = is_historical
+        json_body["is_public"] = is_public
+        json_body["description"] = description
+        json_body["logo"] = logo
+        json_body["ruleset"] = ruleset
+        json_body["organizer"] = organizer
+        json_body["location"] = location
+        s3_message = bytes(json.dumps(json_body).encode('utf-8'))
+        result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
+    return JSONResponse(json_body)
+
+async def series_info(request: Request) -> JSONResponse:
+    series_id = request.path_params['id']
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No series found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+    return JSONResponse(json_body)
+
+async def series_list(request: Request) -> JSONResponse:
     # constructing WHERE clause for SQLite query
     where_clauses = []
     variable_parameters = []
@@ -395,25 +467,14 @@ async def list_series(request: Request) -> JSONResponse:
             series.append(curr_series)
         return JSONResponse({'series': series})
 
-async def series_info(request: Request) -> JSONResponse:
-    series_id = request.path_params['id']
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No series found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
-    return JSONResponse(json_body)
-
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}/edit', edit_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}', tournament_info),
     Route('/api/tournaments/list', tournament_list),
     Route('/api/tournaments/series/create', create_series, methods=['POST']),
-    Route('/api/tournaments/series/list', list_series),
-    Route('/api/tournaments/series/{id:int}', series_info)
+    Route('/api/tournaments/series/{id:int}/edit', edit_series, methods=['POST']),
+    Route('/api/tournaments/series/{id:int}', series_info),
+    Route('/api/tournaments/series/list', series_list)
+    
 ]
