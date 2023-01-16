@@ -15,7 +15,7 @@ async def create_tournament(request: Request) -> JSONResponse:
         tournament_name = body['name']
         game = body['game']
         mode = body['mode']
-        series_id = int(body['series_id'])
+        series_id = body['series_id'] #might be None so don't convert to int
         is_squad = int(body['is_squad'])
         registrations_open = int(body['registrations_open'])
         date_start = int(body['date_start'])
@@ -116,7 +116,7 @@ async def edit_tournament(request: Request) -> JSONResponse:
     body = await request.json()
     try:
         tournament_name = body['name']
-        series_id = int(body['series_id'])
+        series_id = body['series_id'] #might be None so don't convert to int
         registrations_open = int(body['registrations_open'])
         date_start = int(body['date_start'])
         date_end = int(body['date_end'])
@@ -359,7 +359,79 @@ async def create_series(request: Request) -> JSONResponse:
         result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
     return JSONResponse(s3_json)
 
-async def list_series(request: Request) -> JSONResponse:
+@require_permission(permissions.EDIT_SERIES)
+async def edit_series(request: Request) -> JSONResponse:
+    series_id = request.path_params['id']
+    body = await request.json()
+    try:
+        series_name = body['name']
+        url = body['url']
+        game = body['game']
+        mode = body['mode']
+        is_historical = int(body['is_historical'])
+        is_public = int(body['is_public'])
+        description = body['description']
+        logo = body['logo']
+        # object storage-only fields
+        ruleset = body['ruleset']
+        organizer = body['organizer']
+        location = body['location']
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    async with connect_db() as db:
+        cursor = await db.execute("""UPDATE tournament_series
+            SET name = ?,
+            url = ?,
+            game = ?,
+            mode = ?,
+            is_historical = ?,
+            is_public = ?,
+            description = ?,
+            logo = ?
+            WHERE id = ?""",
+            (series_name, url, game, mode, is_historical, is_public, description, logo, series_id))
+        updated_rows = cursor.rowcount
+        if updated_rows == 0:
+            return JSONResponse({'error':'No tournament found'}, status_code=404)
+        await db.commit()
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No tournament found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+        json_body["name"] = series_name
+        json_body["url"] = url
+        json_body["game"] = game
+        json_body["mode"] = mode
+        json_body["is_historical"] = is_historical
+        json_body["is_public"] = is_public
+        json_body["description"] = description
+        json_body["logo"] = logo
+        json_body["ruleset"] = ruleset
+        json_body["organizer"] = organizer
+        json_body["location"] = location
+        s3_message = bytes(json.dumps(json_body).encode('utf-8'))
+        result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
+    return JSONResponse(json_body)
+
+async def series_info(request: Request) -> JSONResponse:
+    series_id = request.path_params['id']
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No series found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+    return JSONResponse(json_body)
+
+async def series_list(request: Request) -> JSONResponse:
     # constructing WHERE clause for SQLite query
     where_clauses = []
     variable_parameters = []
@@ -395,11 +467,240 @@ async def list_series(request: Request) -> JSONResponse:
             series.append(curr_series)
         return JSONResponse({'series': series})
 
+@require_permission(permissions.CREATE_TOURNAMENT_TEMPLATE)
+async def create_template(request: Request) -> JSONResponse:
+    body = await request.json()
+    try:
+        # database-only fields. we only need two of them since
+        # other data from templates probably won't ever need to be used in queries.
+        template_name = body['template_name']
+        series_id = body['series_id'] #might be None so don't convert to int
+        # object storage-only fields
+        tournament_name = body['tournament_name']
+        game = body['game']
+        mode = body['mode']
+        is_squad = int(body['is_squad'])
+        registrations_open = int(body['registrations_open'])
+        description = body['description']
+        use_series_description = int(body['use_series_description'])
+        series_stats_include = int(body['series_stats_include'])
+        logo = body['logo']
+        registration_deadline = body['registration_deadline']
+        registration_cap = body['registration_cap']
+        teams_allowed = int(body['teams_allowed'])
+        teams_only = int(body['teams_only'])
+        team_members_only = int(body['team_members_only'])
+        min_squad_size = int(body['min_squad_size'])
+        max_squad_size = int(body['max_squad_size'])
+        squad_tag_required = int(body['squad_tag_required'])
+        squad_name_required = int(body['squad_name_required'])
+        mii_name_required = int(body['mii_name_required'])
+        host_status_required = int(body['host_status_required'])
+        checkins_open = int(body['checkins_open'])
+        min_players_checkin = int(body['min_players_checkin'])
+        verified_fc_required = int(body['verified_fc_required'])
+        is_viewable = int(body['is_viewable'])
+        is_public = int(body['is_public'])
+        show_on_profiles = int(body['show_on_profiles'])
+        ruleset = body['ruleset']
+        use_series_ruleset = int(body['use_series_ruleset'])
+        organizer = body['organizer']
+        location = body['location']
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+
+    async with connect_db() as db:
+        cursor = await db.execute("INSERT INTO tournament_templates (name, series_id) VALUES (?, ?)",
+        (template_name, series_id))
+        template_id = cursor.lastrowid
+        await db.commit()
+
+    # store more detailed information about the template in object storage
+    s3_json = {"id": template_id,
+                "template_name": template_name,
+                "series_id": series_id,
+                "tournament_name": tournament_name,
+                "game": game,
+                "mode": mode,
+                "is_squad": is_squad,
+                "registrations_open": registrations_open,
+                "description": description,
+                "use_series_description": use_series_description,
+                "series_stats_include": series_stats_include,
+                "logo": logo,
+                "registration_deadline": registration_deadline,
+                "registration_cap": registration_cap,
+                "teams_allowed": teams_allowed,
+                "teams_only": teams_only,
+                "team_members_only": team_members_only,
+                "min_squad_size": min_squad_size,
+                "max_squad_size": max_squad_size,
+                "squad_tag_required": squad_tag_required,
+                "squad_name_required": squad_name_required,
+                "mii_name_required": mii_name_required,
+                "host_status_required": host_status_required,
+                "checkins_open": checkins_open,
+                "min_players_checkin": min_players_checkin,
+                "verified_fc_required": verified_fc_required,
+                "is_viewable": is_viewable,
+                "is_public": is_public,
+                "show_on_profiles": show_on_profiles,
+                "ruleset": ruleset,
+                "use_series_ruleset": use_series_ruleset,
+                "organizer": organizer,
+                "location": location
+                }
+    s3_message = bytes(json.dumps(s3_json).encode('utf-8'))
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        result = await s3_client.put_object(Bucket='templates', Key=f'{template_id}.json', Body=s3_message)
+    return JSONResponse(s3_json)
+
+@require_permission(permissions.EDIT_TOURNAMENT_TEMPLATE)
+async def edit_template(request: Request) -> JSONResponse:
+    template_id = request.path_params['id']
+    body = await request.json()
+    try:
+        # database-only fields. we only need two of them since
+        # other data from templates probably won't ever need to be used in queries.
+        template_name = body['template_name']
+        series_id = body['series_id'] #might be None so don't convert to int
+        # object storage-only fields
+        tournament_name = body['tournament_name']
+        game = body['game']
+        mode = body['mode']
+        is_squad = int(body['is_squad'])
+        registrations_open = int(body['registrations_open'])
+        description = body['description']
+        use_series_description = int(body['use_series_description'])
+        series_stats_include = int(body['series_stats_include'])
+        logo = body['logo']
+        registration_deadline = body['registration_deadline']
+        registration_cap = body['registration_cap']
+        teams_allowed = int(body['teams_allowed'])
+        teams_only = int(body['teams_only'])
+        team_members_only = int(body['team_members_only'])
+        min_squad_size = int(body['min_squad_size'])
+        max_squad_size = int(body['max_squad_size'])
+        squad_tag_required = int(body['squad_tag_required'])
+        squad_name_required = int(body['squad_name_required'])
+        mii_name_required = int(body['mii_name_required'])
+        host_status_required = int(body['host_status_required'])
+        checkins_open = int(body['checkins_open'])
+        min_players_checkin = int(body['min_players_checkin'])
+        verified_fc_required = int(body['verified_fc_required'])
+        is_viewable = int(body['is_viewable'])
+        is_public = int(body['is_public'])
+        show_on_profiles = int(body['show_on_profiles'])
+        ruleset = body['ruleset']
+        use_series_ruleset = int(body['use_series_ruleset'])
+        organizer = body['organizer']
+        location = body['location']
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+
+    async with connect_db() as db:
+        cursor = await db.execute("""UPDATE tournament_templates
+            SET name = ?,
+            series_id = ?
+            WHERE id = ?""", (template_name, series_id, template_id))
+        updated_rows = cursor.rowcount
+        if updated_rows == 0:
+            return JSONResponse({'error':'No template found'}, status_code=404)
+        await db.commit()
+
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='templates', Key=f'{template_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No template found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+        json_body["template_name"] = template_name
+        json_body["series_id"] = series_id
+        json_body["tournament_name"] = tournament_name
+        json_body["game"] = game
+        json_body["mode"] = mode
+        json_body["is_squad"] = is_squad
+        json_body["registrations_open"] = registrations_open
+        json_body["description"] = description
+        json_body["use_series_description"] = use_series_description
+        json_body["series_stats_include"] = series_stats_include
+        json_body["logo"] = logo
+        json_body["registration_deadline"] = registration_deadline
+        json_body["registration_cap"] = registration_cap
+        json_body["teams_allowed"] = teams_allowed
+        json_body["teams_only"] = teams_only
+        json_body["team_members_only"] = team_members_only
+        json_body["min_squad_size"] = min_squad_size
+        json_body["max_squad_size"] = max_squad_size
+        json_body["squad_tag_required"] = squad_tag_required
+        json_body["squad_name_required"] = squad_name_required
+        json_body["mii_name_required"] = mii_name_required
+        json_body["host_status_required"] = host_status_required
+        json_body["checkins_open"] = checkins_open
+        json_body["min_players_checkin"] = min_players_checkin
+        json_body["verified_fc_required"] = verified_fc_required
+        json_body["is_viewable"] = is_viewable
+        json_body["is_public"] = is_public
+        json_body["show_on_profiles"] = show_on_profiles
+        json_body["ruleset"] = ruleset
+        json_body["use_series_ruleset"] = use_series_ruleset
+        json_body["organizer"] = organizer
+        json_body["location"] = location
+        s3_message = bytes(json.dumps(json_body).encode('utf-8'))
+        result = await s3_client.put_object(Bucket='templates', Key=f'{template_id}.json', Body=s3_message)
+    return JSONResponse(json_body)
+
+async def template_info(request: Request) -> JSONResponse:
+    template_id = request.path_params['id']
+    session = aiobotocore.session.get_session()
+    async with create_s3_client(session) as s3_client:
+        try:
+            response = await s3_client.get_object(Bucket='templates', Key=f'{template_id}.json')
+        except s3_client.exceptions.NoSuchKey as e:
+            return JSONResponse({'error':'No template found'}, status_code=404)
+        async with response['Body'] as stream:
+            body = await stream.read()
+            json_body = json.loads(body)
+    return JSONResponse(json_body)
+
+async def template_list(request: Request) -> JSONResponse:
+    # constructing WHERE clause for SQLite query
+    where_clauses = []
+    variable_parameters = []
+    if 'seriesId' in request.query_params:
+        where_clauses.append("series_id = ?")
+        variable_parameters.append(request.query_params['series_id'])
+    where_clause = ""
+    if len(where_clauses) > 0:
+        where_clause = f"WHERE {' AND '.join(where_clauses)}"
+    async with connect_db() as db:
+        async with db.execute(f"SELECT id, name, series_id FROM tournament_templates {where_clause}", variable_parameters) as cursor:
+            rows = await cursor.fetchall()
+        templates = []
+        for row in rows:
+            template = {
+                'id': row[0],
+                'name': row[1],
+                'series_id': row[2]
+            }
+            templates.append(template)
+        return JSONResponse({'templates': templates})
+
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}/edit', edit_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}', tournament_info),
     Route('/api/tournaments/list', tournament_list),
     Route('/api/tournaments/series/create', create_series, methods=['POST']),
-    Route('/api/tournaments/series/list', list_series)
+    Route('/api/tournaments/series/{id:int}/edit', edit_series, methods=['POST']),
+    Route('/api/tournaments/series/{id:int}', series_info),
+    Route('/api/tournaments/series/list', series_list),
+    Route('/api/tournaments/templates/create', create_template, methods=['POST']),
+    Route('/api/tournaments/templates/{id:int}/edit', edit_template, methods=['POST']),
+    Route('/api/tournaments/templates/{id:int}', template_info),
+    Route('/api/tournaments/templates/list', template_list)    
 ]
