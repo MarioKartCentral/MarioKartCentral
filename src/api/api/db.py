@@ -92,6 +92,29 @@ async def init_db():
             series_id INTEGER,
             FOREIGN KEY(series_id) REFERENCES tournament_series(id)
             )""")
+        await db.execute("""CREATE TABLE IF NOT EXISTS tournament_squads(
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            tag TEXT,
+            color INTEGER NOT NULL,
+            timestamp INTEGER NOT NULL,
+            tournament_id INTEGER NOT NULL,
+            FOREIGN KEY(tournament_id) REFERENCES tournaments(id)
+            )""")
+        await db.execute("""CREATE TABLE IF NOT EXISTS tournament_players(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL,
+            tournament_id INTEGER NOT NULL,
+            squad_id INTEGER,
+            timestamp INTEGER NOT NULL,
+            is_checked_in INTEGER NOT NULL,
+            mii_name TEXT,
+            can_host INTEGER NOT NULL,
+            is_invite INTEGER NOT NULL,
+            FOREIGN KEY(player_id) REFERENCES players(id),
+            FOREIGN KEY(squad_id) REFERENCES tournament_squads(id),
+            FOREIGN KEY(tournament_id) REFERENCES tournaments(id)
+            )""")
         await db.commit()
 
         await db.executemany(

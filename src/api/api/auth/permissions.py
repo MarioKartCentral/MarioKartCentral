@@ -7,6 +7,7 @@ CREATE_SERIES = "series_create"
 EDIT_SERIES = "series_edit"
 CREATE_TOURNAMENT_TEMPLATE = "tournament_template_create"
 EDIT_TOURNAMENT_TEMPLATE = "tournament_template_edit"
+MANAGE_TOURNAMENT_REGISTRATIONS = "tournament_registrations_manage"
 
 permissions_by_id = {
     0: READ_S3,
@@ -17,7 +18,8 @@ permissions_by_id = {
     5: CREATE_SERIES,
     6: EDIT_SERIES,
     7: CREATE_TOURNAMENT_TEMPLATE,
-    8: EDIT_TOURNAMENT_TEMPLATE
+    8: EDIT_TOURNAMENT_TEMPLATE,
+    9: MANAGE_TOURNAMENT_REGISTRATIONS
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }
