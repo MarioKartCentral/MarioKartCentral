@@ -119,8 +119,6 @@ async def get_unread_count(request: Request) -> JSONResponse:
         async with db.execute("""SELECT COUNT (*) FROM notifications WHERE user_id = ? AND is_read = 0""", (user_id, )) as cursor:
             row = await cursor.fetchone()
             count = row[0]
-            if count > 0:
-                await db.commit()
 
     return JSONResponse({'count': count})
 
