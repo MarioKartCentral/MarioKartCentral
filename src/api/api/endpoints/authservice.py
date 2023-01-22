@@ -33,8 +33,16 @@ async def log_in(request: Request) -> JSONResponse:
         await db.execute("INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)", (session_id, user_id, expiration_date.timestamp()))
         await db.commit()
 
+        async with db.execute("SELECT language, color_scheme FROM user_settings WHERE user_id = ?", (user_id,)) as cursor:
+            settings_row = await cursor.fetchone()
+
     resp = JSONResponse({}, status_code=200)
     resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+
+    if settings_row is not None:
+        resp.set_cookie('language', settings_row[0])
+        resp.set_cookie('color_scheme', settings_row[1])
+
     return resp
 
 async def sign_up(request: Request) -> JSONResponse:
@@ -42,7 +50,12 @@ async def sign_up(request: Request) -> JSONResponse:
     email = body["email"] # TODO: Email Verification
     password_hash = pw_hasher.hash(body["password"])
     async with connect_db() as db:
-        user_id = await db.execute_insert("INSERT INTO users(email, password_hash) VALUES (?, ?)", (email, password_hash))
+        user_id_tuple = await db.execute_insert("INSERT INTO users(email, password_hash) VALUES (?, ?)", (email, password_hash))
+        user_id = user_id_tuple[0]
+        await db.commit()
+
+        # initialize user settings with default values
+        await db.execute("INSERT INTO user_settings(user_id) VALUES (?)", (user_id,))
         await db.commit()
     
     return JSONResponse({'id': user_id, 'email': email}, status_code=201)

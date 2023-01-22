@@ -92,6 +92,17 @@ async def init_db():
             series_id INTEGER,
             FOREIGN KEY(series_id) REFERENCES tournament_series(id)
             )""")
+
+        await db.execute("""CREATE TABLE IF NOT EXISTS user_settings(
+            user_id INTEGER PRIMARY KEY REFERENCES users(id),
+            avatar TEXT,
+            discord_tag TEXT,
+            about_me TEXT,
+            language TEXT DEFAULT 'en-us' NOT NULL,
+            color_scheme TEXT DEFAULT 'light' NOT NULL,
+            timezone TEXT DEFAULT 'UTC' NOT NULL
+            ) WITHOUT ROWID""")
+
         await db.commit()
 
         await db.executemany(
