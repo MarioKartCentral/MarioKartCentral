@@ -13,6 +13,7 @@ from datetime import datetime
 async def register_player(player_id, tournament_id, squad_id, is_checked_in, mii_name, can_host, is_invite):
     timestamp = int(datetime.utcnow().timestamp())
     async with connect_db() as db:
+        await db.execute("pragma foreign_keys = ON;")
         # check if player has already registered for the tournament
         async with db.execute("SELECT id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (player_id, tournament_id)) as cursor:
             row = await cursor.fetchone()
