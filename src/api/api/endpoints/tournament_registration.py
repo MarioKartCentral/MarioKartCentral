@@ -50,7 +50,6 @@ async def register_player(player_id, tournament_id, squad_id, is_squad_captain, 
 
 # helper function to create a squad and register the passed in player for a tournament.
 # this is used in two endpoints so it is separated as its own function.
-# returns a JSONResponse used by the two endpoints that create squads
 async def create_squad(squad_name, squad_tag, squad_color, player_id, tournament_id, is_checked_in, mii_name, can_host, admin=False):
     timestamp = int(datetime.utcnow().timestamp())
     async with connect_db() as db:
@@ -163,6 +162,41 @@ async def force_create_squad(request: Request) -> JSONResponse:
     json_resp = await create_squad(squad_name, squad_tag, squad_color, player_id, tournament_id, is_checked_in, mii_name, can_host)
     return json_resp
 
+# used when the captain of a squad invites a player to their squad.
+# use force_register_player in tournament staff contexts
+async def invite_player(request: Request) -> JSONResponse:
+    body = await request.json()
+    tournament_id = request.path_params['id']
+    try:
+        squad_id = int(body['squad_id'])
+        player_id = int(body['player_id'])
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    user_id = request.state.user_id
+    async with connect_db() as db:
+        # get player id from user id in request
+        async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
+            row = await cursor.fetchone()
+            squad_captain_id = row[0]
+        # check captain's permissions
+        async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_registrations WHERE player_id = ?, tournament_id = ?, is_invite = ?", (squad_captain_id, tournament_id, 0)) as cursor:
+            row = await cursor.fetchone()
+            if row is None:
+                return JSONResponse({'error': 'You are not registered for this tournament'}, status_code=400)
+            captain_squad_id = row[0]
+            if captain_squad_id != squad_id:
+                return JSONResponse({'error': 'You are not registered for this squad'}, status_code=400)
+            is_squad_captain = row[1]
+            if is_squad_captain == 0:
+                return JSONResponse({'error': 'You are not captain of your squad'}, status_code=400)
+        # make sure player isn't already registered
+        async with db.execute("SELECT squad_id FROM tournament_registrations WHERE player_id = ?, tournament_id = ?, is_invite = ?", (player_id, tournament_id, 0)) as cursor:
+            row = await cursor.fetchone()
+            if row is not None:
+                return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
+    json_resp = await register_player(player_id, tournament_id, squad_id, 0, 0, None, False, True)
+    return json_resp
+
 # endpoint used when a user registers themself for a tournament
 async def register_me(request: Request) -> JSONResponse:
     body = await request.json()
@@ -202,10 +236,12 @@ async def force_register_player(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
     try:
         player_id = int(body['player_id'])
-        squad_id = body['squad_id']
         is_squad_captain = None
+        squad_id = None
         mii_name = None
         can_host = False
+        if "squad_id" in body:
+            squad_id = body['squad_id']
         if "is_squad_captain" in body:
             is_squad_captain = body['is_squad_captain']
         if "mii_name" in body:
@@ -223,5 +259,6 @@ routes = [
     Route('/api/tournaments/{id:int}/register', register_me, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceRegister', force_register_player, methods=['POST']),
     Route('/api/tournaments/{id:int}/createSquad', create_my_squad, methods=['POST']),
-    Route('/api/tournaments/{id:int}/forceCreateSquad', force_create_squad, methods=['POST'])
+    Route('/api/tournaments/{id:int}/forceCreateSquad', force_create_squad, methods=['POST']),
+    Route('/api/tournaments/{id:int}/invitePlayer', invite_player, methods=['POST'])
 ]
