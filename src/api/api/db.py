@@ -106,6 +106,7 @@ async def init_db():
             player_id INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL,
             squad_id INTEGER,
+            is_squad_captain INTEGER,
             timestamp INTEGER NOT NULL,
             is_checked_in INTEGER NOT NULL,
             mii_name TEXT,
