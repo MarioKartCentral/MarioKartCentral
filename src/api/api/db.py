@@ -99,6 +99,7 @@ async def init_db():
             color INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL,
+            is_registered INTEGER NOT NULL,
             FOREIGN KEY(tournament_id) REFERENCES tournaments(id)
             )""")
         await db.execute("""CREATE TABLE IF NOT EXISTS tournament_players(

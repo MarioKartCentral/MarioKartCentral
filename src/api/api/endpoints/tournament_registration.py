@@ -14,10 +14,20 @@ async def register_player(player_id, tournament_id, squad_id, is_squad_captain, 
     async with connect_db() as db:
         await db.execute("pragma foreign_keys = ON;")
         # check if player has already registered for the tournament
-        async with db.execute("SELECT id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (player_id, tournament_id)) as cursor:
+        async with db.execute("SELECT squad_id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (player_id, tournament_id)) as cursor:
             row = await cursor.fetchone()
+            existing_squad_id = None
             if row:
-                return JSONResponse({'error': 'Player already registered for tournament'}, status_code=400)
+                existing_squad_id = row[0]
+                if not existing_squad_id:
+                    return JSONResponse({'error': 'Player already registered for tournament'}, status_code=400)
+        if existing_squad_id:
+            # make sure player's squad isn't withdrawn before giving error
+            async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
+                row = await cursor.fetchone()
+                is_registered = row[0]
+                if is_registered == 1:
+                    return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
         # check if mii name is required and if player's squad is at maximum number of players
         if squad_id is not None:
             async with db.execute("SELECT max_squad_size, mii_name_required FROM tournaments WHERE id = ?", (tournament_id)) as cursor:
@@ -52,13 +62,24 @@ async def register_player(player_id, tournament_id, squad_id, is_squad_captain, 
 # this is used in two endpoints so it is separated as its own function.
 async def create_squad(squad_name, squad_tag, squad_color, player_id, tournament_id, is_checked_in, mii_name, can_host, admin=False):
     timestamp = int(datetime.utcnow().timestamp())
+    is_registered = 1
+    is_squad_captain = 1
+    is_invite = 0
     async with connect_db() as db:
         await db.execute("pragma foreign_keys = ON;")
         # check if player has already registered for the tournament
-        async with db.execute("SELECT id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (player_id, tournament_id)) as cursor:
+        async with db.execute("SELECT squad_id FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (player_id, tournament_id)) as cursor:
             row = await cursor.fetchone()
+            existing_squad_id = None
             if row:
-                return JSONResponse({'error': 'Player already registered for tournament'}, status_code=400)
+                existing_squad_id = row[0]
+        if existing_squad_id is not None:
+            # make sure player's squad isn't withdrawn before giving error
+            async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
+                row = await cursor.fetchone()
+                is_registered = row[0]
+                if is_registered == 1:
+                    return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
         # check if tournament registrations are open
         async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
@@ -77,13 +98,13 @@ async def create_squad(squad_name, squad_tag, squad_color, player_id, tournament
                 return JSONResponse({'error': 'Tournament requires a name for squads'}, status_code=400)
             if mii_name_required == 1 and mii_name is None:
                 return JSONResponse({'error': 'Tournament requires a Mii Name'}, status_code=400)
-        async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id)
-            VALUES (?, ?, ?, ?, ?)""", (squad_name, squad_tag, squad_color, timestamp, tournament_id)) as cursor:
+        async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered)
+            VALUES (?, ?, ?, ?, ?, ?)""", (squad_name, squad_tag, squad_color, timestamp, tournament_id, is_registered)) as cursor:
             squad_id = cursor.lastrowid
         await db.commit()
 
         async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (player_id, tournament_id, squad_id, 1, timestamp, is_checked_in, mii_name, can_host, 0)) as cursor:
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite)) as cursor:
             tournament_player_id = cursor.lastrowid
         await db.commit()
     resp = {
@@ -93,15 +114,16 @@ async def create_squad(squad_name, squad_tag, squad_color, player_id, tournament
         'squad_color': squad_color,
         'timestamp': timestamp,
         'tournament_id': tournament_id,
+        'is_registered': is_registered,
         'players': [
             {
                 'id': tournament_player_id,
                 'player_id': player_id,
-                'is_squad_captain': True,
+                'is_squad_captain': is_squad_captain,
                 'is_checked_in': is_checked_in,
                 'mii_name': mii_name,
                 'can_host': can_host,
-                'is_invite': False
+                'is_invite': is_invite
             }
         ]
     }
@@ -162,6 +184,37 @@ async def force_create_squad(request: Request) -> JSONResponse:
     json_resp = await create_squad(squad_name, squad_tag, squad_color, player_id, tournament_id, is_checked_in, mii_name, can_host)
     return json_resp
 
+async def edit_squad(request: Request) -> JSONResponse:
+    body = await request.json()
+    tournament_id = request.path_params['id']
+    try:
+        squad_id = int(body['squad_id'])
+        squad_name = None
+        squad_tag = None
+        if "squad_name" in body:
+            squad_name = body['squad_name']
+        if "squad_tag" in body:
+            squad_tag = body['squad_tag']
+        squad_color = body['squad_color']
+        is_registered = int(body['is_registered'])
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    async with connect_db() as db:
+        async with db.execute("UPDATE tournament_squads SET name = ?, tag = ?, color = ?, is_registered = ? WHERE id = ?, tournament_id = ?", (squad_name, squad_tag, squad_color, is_registered, squad_id, tournament_id)) as cursor:
+            updated_rows = cursor.rowcount
+            if updated_rows == 0:
+                return JSONResponse({'error':'No squad found'}, status_code=404)
+        await db.commit()
+    resp = {
+        'squad_id': squad_id,
+        'squad_name': squad_name,
+        'squad_tag': squad_tag,
+        'squad_color': squad_color,
+        'tournament_id': tournament_id,
+        'is_registered': is_registered
+    }
+    return JSONResponse(resp, status_code=201)
+
 # used when the captain of a squad invites a player to their squad.
 # use force_register_player in tournament staff contexts
 async def invite_player(request: Request) -> JSONResponse:
@@ -179,7 +232,7 @@ async def invite_player(request: Request) -> JSONResponse:
             row = await cursor.fetchone()
             squad_captain_id = row[0]
         # check captain's permissions
-        async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_registrations WHERE player_id = ?, tournament_id = ?, is_invite = ?", (squad_captain_id, tournament_id, 0)) as cursor:
+        async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE player_id = ?, tournament_id = ?, is_invite = ?", (squad_captain_id, tournament_id, 0)) as cursor:
             row = await cursor.fetchone()
             if row is None:
                 return JSONResponse({'error': 'You are not registered for this tournament'}, status_code=400)
@@ -190,10 +243,18 @@ async def invite_player(request: Request) -> JSONResponse:
             if is_squad_captain == 0:
                 return JSONResponse({'error': 'You are not captain of your squad'}, status_code=400)
         # make sure player isn't already registered
-        async with db.execute("SELECT squad_id FROM tournament_registrations WHERE player_id = ?, tournament_id = ?, is_invite = ?", (player_id, tournament_id, 0)) as cursor:
+        async with db.execute("SELECT squad_id FROM tournament_players WHERE player_id = ?, tournament_id = ?, is_invite = ?", (player_id, tournament_id, 0)) as cursor:
             row = await cursor.fetchone()
-            if row is not None:
-                return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
+            existing_squad_id = None
+            if row:
+                existing_squad_id = row[0]
+        if existing_squad_id is not None:
+            # make sure player's squad isn't withdrawn before giving error
+            async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
+                row = await cursor.fetchone()
+                is_registered = row[0]
+                if is_registered == 1:
+                    return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
     json_resp = await register_player(player_id, tournament_id, squad_id, 0, 0, None, False, True)
     return json_resp
 
@@ -255,10 +316,153 @@ async def force_register_player(request: Request) -> JSONResponse:
     json_resp = await register_player(player_id, tournament_id, squad_id, is_squad_captain, is_checked_in, mii_name, can_host, is_invite)
     return json_resp
 
+async def edit_registration(request: Request) -> JSONResponse:
+    body = await request.json()
+    tournament_id = request.path_params['id']
+    try:
+        registration_id = int(body['registration_id'])
+        player_id = int(body['player_id'])
+        mii_name = None
+        can_host = False
+        if "mii_name" in body:
+            mii_name = body['mii_name']
+        if "can_host" in body:
+            can_host = body['can_host']
+        is_invite = int(body['is_invite'])
+        is_checked_in = int(body['is_checked_in'])
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    async with connect_db() as db:
+        # check if registration exists and get some values from it
+        async with db.execute("SELECT squad_id, is_squad_captain, timestamp FROM tournament_players WHERE id = ?", (registration_id)) as cursor:
+            row = await cursor.fetchone()
+            if row is None:
+                return JSONResponse({'error':'No registration found'}, status_code=404)
+            squad_id = row[0]
+            is_squad_captain = row[1]
+            timestamp = row[2]
+        await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ? WHERE id = ?, tournament_id = ?, player_id = ?", (
+            mii_name, can_host, is_invite, is_checked_in, registration_id, tournament_id, player_id))
+        await db.commit()
+    json_resp = {
+        'id': registration_id,
+        'player_id': player_id,
+        'tournament_id': tournament_id,
+        'squad_id': squad_id,
+        'is_squad_captain': is_squad_captain,
+        'timestamp': timestamp,
+        'is_checked_in': is_checked_in,
+        'mii_name': mii_name,
+        'can_host': can_host,
+        'is_invite': is_invite
+    }
+    return JSONResponse(json_resp, status_code=201)
+
+
+async def accept_invite(request: Request) -> JSONResponse:
+    body = await request.json()
+    tournament_id = request.path_params['id']
+    try:
+        mii_name = None
+        can_host = False
+        if 'mii_name' in body:
+            mii_name = body['mii_name']
+        if 'can_host' in body:
+            can_host = body['can_host']
+        invite_id = int(body['invite_id'])
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    user_id = request.state.user_id
+    async with connect_db() as db:
+        # check if tournament registrations are open
+        async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
+            row = await cursor.fetchone()
+            registrations_open = row[0]
+            if registrations_open == 0:
+                return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
+        # get player id from user id in request
+        async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
+            row = await cursor.fetchone()
+            player_id = row[0]
+        # get invite from id
+        async with db.execute("SELECT player_id, squad_id, is_squad_captain, timestamp, is_checked_in, is_invite FROM tournament_players WHERE id = ?", (invite_id,)) as cursor:
+            row = await cursor.fetchone()
+            if row is None:
+                return JSONResponse({'error': 'Invite cannot be found'}, status_code=400)
+            invite_player_id = row[0]
+            squad_id = row[1]
+            is_squad_captain = row[2]
+            timestamp = row[3]
+            is_checked_in = row[4]
+            is_invite = row[5]
+            if is_invite == 0:
+                return JSONResponse({'error': 'Not an invite'}, status_code=400)
+            if invite_player_id != player_id:
+                return JSONResponse({'error': 'Invited player ID different than accepting player ID'}, status_code=400)
+        await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ? WHERE id = ?", (mii_name, can_host, 0, invite_id))
+        await db.commit()
+        json_resp = {
+            'id': invite_id,
+            'player_id': player_id,
+            'tournament_id': tournament_id,
+            'squad_id': squad_id,
+            'is_squad_captain': is_squad_captain,
+            'timestamp': timestamp,
+            'is_checked_in': is_checked_in,
+            'mii_name': mii_name,
+            'can_host': can_host,
+            'is_invite': 0
+        }
+        return JSONResponse(json_resp, status_code=201)
+
+async def decline_invite(request: Request) -> JSONResponse:
+    body = await request.json()
+    tournament_id = request.path_params['id']
+    try:
+        invite_id = int(body['invite_id'])
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    user_id = request.state.user_id
+    async with connect_db() as db:
+        # check if tournament registrations are open
+        async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
+            row = await cursor.fetchone()
+            registrations_open = row[0]
+            if registrations_open == 0:
+                return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
+        # get player id from user id in request
+        async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
+            row = await cursor.fetchone()
+            player_id = row[0]
+        # get invite from id
+        async with db.execute("SELECT player_id, is_invite FROM tournament_players WHERE id = ?", (invite_id,)) as cursor:
+            row = await cursor.fetchone()
+            if row is None:
+                return JSONResponse({'error': 'Invite cannot be found'}, status_code=400)
+            invite_player_id = row[0]
+            if invite_player_id != player_id:
+                return JSONResponse({'error': 'Invited player ID different than accepting player ID'}, status_code=400)
+            squad_id = row[1]
+            is_squad_captain = row[2]
+            timestamp = row[3]
+            is_checked_in = row[4]
+            is_invite = row[5]
+            if is_invite == 0:
+                return JSONResponse({'error': 'Not an invite'}, status_code=400)
+            if invite_player_id != player_id:
+                return JSONResponse({'error': 'Invited player ID different than declining player ID'}, status_code=400)
+        await db.execute("DELETE FROM tournament_players WHERE id = ?", (invite_id,))
+        await db.commit()
+    return JSONResponse({'success': 'Successfully rejected invitation'}, status_code=201)
+
 routes = [
     Route('/api/tournaments/{id:int}/register', register_me, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceRegister', force_register_player, methods=['POST']),
+    Route('/api/tournaments/{id:int}/editRegistration', edit_registration, methods=['POST']),
     Route('/api/tournaments/{id:int}/createSquad', create_my_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceCreateSquad', force_create_squad, methods=['POST']),
-    Route('/api/tournaments/{id:int}/invitePlayer', invite_player, methods=['POST'])
+    Route('/api/tournaments/{id:int}/editSquad', edit_squad, methods=['POST']),
+    Route('/api/tournaments/{id:int}/invitePlayer', invite_player, methods=['POST']),
+    Route('/api/tournaments/{id:int}/acceptInvite', accept_invite, methods=['POST']),
+    Route('/api/tournaments/{id:int}/declineInvite', decline_invite, methods=['POST'])
 ]
