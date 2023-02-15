@@ -3,7 +3,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import permissions, require_permission
-from api.s3 import create_s3_client
+from api.data import create_s3_client
 
 @require_permission(permissions.READ_S3)
 async def s3_read(request: Request) -> JSONResponse:

@@ -2,7 +2,9 @@ version: '3.4'
 
 services:
   api:
-    build: ./src/api
+    build:
+      context: ./src/backend/
+      dockerfile: api.Dockerfile
     ports:
       - 8000:8000
       - 5678:5678
@@ -15,9 +17,19 @@ services:
       REDIS_URL : redis://redis:6379
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
+      PYTHONDONTWRITEBYTECODE : 1 # this is to prevent __pycache__ files during development
     volumes:
       - mkc-db:/var/lib/mkc-api/data
-      - ./src/api:/usr/src/app
+      - ./src/backend:/usr/src/app
+  worker:
+    build:
+      context: ./src/backend/
+      dockerfile: worker.Dockerfile
+    environment:
+      PYTHONDONTWRITEBYTECODE : 1
+      PYTHONUNBUFFERED : 1
+    volumes:
+      - ./src/backend:/usr/src/app
   frontend:
     build: ./src/frontend
     ports:

@@ -3,8 +3,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import permissions, require_permission
-from api.s3 import create_s3_client
-from api.db import connect_db
+from api.data import create_s3_client, connect_db
 import json
 from datetime import datetime
 

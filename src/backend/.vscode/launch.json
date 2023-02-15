@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Remote Attach",
+      "name": "Python Attach (API)",
       "type": "python",
       "request": "attach",
       "connect": { "host": "api", "port": 5678 },

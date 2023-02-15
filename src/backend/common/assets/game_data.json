@@ -1,0 +1,21 @@
+{
+    "games": {
+        "mk8d": {
+            "cups": [
+                {
+                    "name": { "en": "Mushroom Cup" }
+                }
+            ],
+            "tracks": [
+                {
+                    "id": "8d_mks",
+                    "name": { "en": "Mario Kart Stadium" }
+                },
+                {
+                    "id": "8d_wp",
+                    "name": { "en": "Water Park" }
+                }
+            ]
+        }
+    }
+}

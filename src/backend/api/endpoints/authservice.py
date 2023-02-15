@@ -4,7 +4,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import pw_hasher, require_logged_in
-from api.db import connect_db
+from api.data import connect_db
 
 async def log_in(request: Request) -> JSONResponse:
     body = await request.json()

@@ -2,7 +2,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import permissions, require_permission
-from api.redis import redis_conn
+from api.data import redis_conn
 
 @require_permission(permissions.WRITE_REDIS)
 async def redis_write(request: Request) -> JSONResponse:
