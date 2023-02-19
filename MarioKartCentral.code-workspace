@@ -4,7 +4,7 @@
             "path": "."
         },
         {
-            "path": "src/api"
+            "path": "src/backend"
         },
         {
             "path": "src/frontend"

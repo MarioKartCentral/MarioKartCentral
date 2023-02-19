@@ -7,11 +7,11 @@ on:
     branches: [ main ]
 
 jobs:
-  api:
+  backend:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/api
+        working-directory: src/backend
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.10
