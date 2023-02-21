@@ -1,7 +1,7 @@
 from starlette.applications import Starlette
 from api import settings
 from api.data import init_db, init_s3
-from api.endpoints import authservice, redisservice, roleservice, s3service, userservice, tournaments, tournament_registration
+from api.endpoints import authservice, redisservice, roleservice, s3service, userservice, tournaments, tournament_registration, player_registry
 
 if settings.DEBUG:
     import debugpy
@@ -16,6 +16,7 @@ routes = [
     *userservice.routes,
     *tournaments.routes,
     *tournament_registration.routes,
+    *player_registry.routes,
 ]
 
 app = Starlette(debug=True, routes=routes, on_startup=[init_db, init_s3])
