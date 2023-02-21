@@ -109,6 +109,35 @@ async def edit_player(request: Request) -> JSONResponse:
     }
     return JSONResponse(resp, status_code=201)
 
+async def view_player(request: Request) -> JSONResponse:
+    player_id = request.path_params['id']
+    async with connect_db() as db:
+        async with db.execute("SELECT * FROM players WHERE id = ?", (player_id,)) as cursor:
+            player_row = await cursor.fetchone()
+            if player_row is None:
+                return JSONResponse({'error':'No player found'}, status_code=404)
+        async with db.execute("SELECT * FROM friend_codes WHERE player_id = ?", (player_id,)) as cursor:
+            fc_rows = await cursor.fetchall()
+    resp_fcs = []
+    for fc in fc_rows:
+        curr_fc = {
+            'fc': fc[1],
+            'is_verified': fc[2],
+            'game': fc[3]
+        }
+        resp_fcs.append(curr_fc)
+    resp = {
+        'id': player_id,
+        'name': player_row[1],
+        'country_code': player_row[2],
+        'is_hidden': player_row[3],
+        'is_shadow': player_row[4],
+        'is_banned': player_row[5],
+        'discord_id': player_row[6],
+        'friend_codes': resp_fcs
+    }
+    return JSONResponse(resp)
+
 async def list_players(request: Request) -> JSONResponse:
     where_clauses = []
     variable_parameters = []
@@ -173,5 +202,6 @@ async def list_players(request: Request) -> JSONResponse:
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
+    Route('/api/registry/players/{id:int}', view_player),
     Route('/api/registry/players', list_players)
 ]
