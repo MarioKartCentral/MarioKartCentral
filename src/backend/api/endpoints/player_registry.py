@@ -58,6 +58,57 @@ async def create_player(request: Request) -> JSONResponse:
     
     return JSONResponse(resp, status_code=201)
 
+@require_permission(permissions.EDIT_PLAYER)
+async def edit_player(request: Request) -> JSONResponse:
+    body = await request.json()
+    try:
+        player_id = int(body['player_id'])
+        set_clauses = []
+        variable_parameters = []
+        if 'name' in body:
+            set_clauses.append("name = ?")
+            variable_parameters.append(body['name'])
+        if 'country_code' in body:
+            set_clauses.append("country_code = ?")
+            variable_parameters.append(body['country_code'])
+        if 'is_hidden' in body:
+            set_clauses.append("is_hidden = ?")
+            variable_parameters.append(int(body['is_hidden']))
+        if 'is_shadow' in body:
+            set_clauses.append("is_shadow = ?")
+            variable_parameters.append(int(body['is_shadow']))
+        if 'is_banned' in body:
+            set_clauses.append("is_banned = ?")
+            variable_parameters.append(int(body['is_banned']))
+        if 'discord_id' in body:
+            set_clauses.append("discord_id")
+            variable_parameters.append(int(body['discord_id']))
+    except Exception as e:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    # if we end up changing nothing about the player, give 400 error
+    if len(set_clauses) == 0:
+        return JSONResponse({'error': 'No correct body send'}, status_code=400)
+    set_clause = ", ".join(set_clauses)
+    variable_parameters.append(player_id)
+    async with connect_db() as db:
+        async with db.execute(f"UPDATE players SET {set_clause} WHERE id = ?", variable_parameters) as cursor:
+            updated_rows = cursor.rowcount
+            if updated_rows == 0:
+                return JSONResponse({'error':'No player found'}, status_code=404)
+        async with db.execute("SELECT * FROM players WHERE id = ?", (player_id,)) as cursor:
+            row = await cursor.fetchone()
+        await db.commit()
+    resp = {
+        'id': player_id,
+        'name': row[1],
+        'country_code': row[2],
+        'is_hidden': row[3],
+        'is_shadow': row[4],
+        'is_banned': row[5],
+        'discord_id': row[6]
+    }
+    return JSONResponse(resp, status_code=201)
+
 async def list_players(request: Request) -> JSONResponse:
     where_clauses = []
     variable_parameters = []
@@ -119,8 +170,8 @@ async def list_players(request: Request) -> JSONResponse:
             players.append(player)
         return JSONResponse({'players': players})
 
-
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
+    Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players', list_players)
 ]
