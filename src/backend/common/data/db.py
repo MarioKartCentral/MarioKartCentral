@@ -22,7 +22,19 @@ class DBWrapper():
             await db.execute("pragma foreign_keys = ON;")
             await db.execute("""CREATE TABLE IF NOT EXISTS players(
                 id INTEGER PRIMARY KEY,
-                name TEXT UNIQUE NOT NULL)""")
+                name TEXT UNIQUE NOT NULL,
+                country_code TEXT NOT NULL,
+                is_hidden INTEGER NOT NULL,
+                is_shadow INTEGER NOT NULL,
+                is_banned INTEGER NOT NULL,
+                discord_id INTEGER NOT NULL
+                )""")
+            await db.execute("""CREATE TABLE IF NOT EXISTS friend_codes(
+                player_id INTEGER NOT NULL,
+                fc TEXT NOT NULL,
+                is_verified INTEGER NOT NULL,
+                game TEXT NOT NULL,
+                PRIMARY KEY(player_id, fc, game)) WITHOUT ROWID""")
             await db.execute("""CREATE TABLE IF NOT EXISTS users(
                 id INTEGER PRIMARY KEY,
                 player_id INTEGER REFERENCES players(id),
