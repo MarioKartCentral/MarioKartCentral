@@ -17,8 +17,6 @@ const config = {
     prerender: {
       entries: locales.map((l) => `/${l}`)
     },
-    
-    trailingSlash: 'never'
   }
 };
 

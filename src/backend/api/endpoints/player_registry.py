@@ -97,7 +97,9 @@ async def edit_player(request: Request) -> JSONResponse:
                 return JSONResponse({'error':'No player found'}, status_code=404)
         async with db.execute("SELECT * FROM players WHERE id = ?", (player_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
         await db.commit()
+
     resp = {
         'id': player_id,
         'name': row[1],

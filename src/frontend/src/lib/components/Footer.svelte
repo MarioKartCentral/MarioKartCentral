@@ -7,7 +7,7 @@
     </ul>
   </div>
   <div class="footer-copyright">
-    &copy; 2018-2022 mariokartcentral.com Mario Kart&trade; and &copy; Nintendo.
+    &copy; 2018-2023 mariokartcentral.com Mario Kart&trade; and &copy; Nintendo.
   </div>
 </div>
 

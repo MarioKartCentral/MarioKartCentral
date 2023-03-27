@@ -24,6 +24,7 @@ async def register_player(player_id, tournament_id, squad_id, is_squad_captain, 
             # make sure player's squad isn't withdrawn before giving error
             async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 is_registered = row[0]
                 if is_registered == 1:
                     return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
@@ -31,6 +32,7 @@ async def register_player(player_id, tournament_id, squad_id, is_squad_captain, 
         if squad_id is not None:
             async with db.execute("SELECT max_squad_size, mii_name_required FROM tournaments WHERE id = ?", (tournament_id)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 max_squad_size = row[0]
                 mii_name_required = row[1]
                 if mii_name_required == 1 and mii_name is None:
@@ -76,12 +78,14 @@ async def create_squad(squad_name, squad_tag, squad_color, player_id, tournament
             # make sure player's squad isn't withdrawn before giving error
             async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 is_registered = row[0]
                 if is_registered == 1:
                     return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
         # check if tournament registrations are open
         async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             is_squad = row[0]
             registrations_open = row[1]
             squad_tag_required = row[2]
@@ -154,8 +158,9 @@ async def create_my_squad(request: Request) -> JSONResponse:
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             player_id = row[0]
-    json_resp = await create_squad(squad_name, squad_tag, squad_color, player_id, tournament_id, is_checked_in, mii_name, can_host)
+    return await create_squad(squad_name, squad_tag, squad_color, player_id, tournament_id, is_checked_in, mii_name, can_host)
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
@@ -229,6 +234,7 @@ async def invite_player(request: Request) -> JSONResponse:
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             squad_captain_id = row[0]
         # check captain's permissions
         async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", (squad_captain_id, tournament_id, 0)) as cursor:
@@ -251,6 +257,7 @@ async def invite_player(request: Request) -> JSONResponse:
             # make sure player's squad isn't withdrawn before giving error
             async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 is_registered = row[0]
                 if is_registered == 1:
                     return JSONResponse({'error': 'Player is already registered for this tournament'}, status_code=400)
@@ -279,12 +286,14 @@ async def register_me(request: Request) -> JSONResponse:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             registrations_open = row[0]
             if registrations_open == 0:
                 return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             player_id = row[0]
     json_resp = await register_player(player_id, tournament_id, squad_id, is_squad_captain, is_checked_in, mii_name, can_host, is_invite)
     return json_resp
@@ -375,12 +384,14 @@ async def accept_invite(request: Request) -> JSONResponse:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             registrations_open = row[0]
             if registrations_open == 0:
                 return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             player_id = row[0]
         # get invite from id
         async with db.execute("SELECT player_id, squad_id, is_squad_captain, timestamp, is_checked_in, is_invite FROM tournament_players WHERE id = ?", (invite_id,)) as cursor:
@@ -425,12 +436,14 @@ async def decline_invite(request: Request) -> JSONResponse:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             registrations_open = row[0]
             if registrations_open == 0:
                 return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             player_id = row[0]
         # get invite from id
         async with db.execute("SELECT player_id, is_invite FROM tournament_players WHERE id = ?", (invite_id,)) as cursor:
@@ -472,12 +485,14 @@ async def remove_player_from_squad(request: Request) -> JSONResponse:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             registrations_open = row[0]
             if registrations_open == 0:
                 return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             squad_captain_id = row[0]
         # check captain's permissions
         async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", (squad_captain_id, tournament_id, 0)) as cursor:
@@ -508,12 +523,14 @@ async def unregister_me(request: Request) -> JSONResponse:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             registrations_open = row[0]
             if registrations_open == 0:
                 return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
             row = await cursor.fetchone()
+            assert row is not None
             player_id = row[0]
     json_resp = await unregister_player(tournament_id, player_id, squad_id=squad_id)
     return json_resp
