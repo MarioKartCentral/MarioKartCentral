@@ -1,10 +1,9 @@
-import aiobotocore.session
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import permissions, require_permission, require_logged_in
-from api.data import create_s3_client, connect_db
-import json
+from api.data import handle_command, connect_db
+from common.data.commands import CreatePlayerCommand
 
 @require_logged_in
 async def create_player(request: Request) -> JSONResponse:
@@ -12,51 +11,25 @@ async def create_player(request: Request) -> JSONResponse:
     try:
         name = body['name']
         country_code = body['country_code']
-        is_hidden = int(body['is_hidden'])
-        is_shadow = int(body['is_shadow'])
-        is_banned = int(body['is_banned'])
-        discord_id = int(body['discord_id'])
+        is_hidden = bool(body['is_hidden'])
+        is_shadow = bool(body['is_shadow'])
+        is_banned = bool(body['is_banned'])
+        discord_id = body['discord_id']
+        switch_fc = body.get("switch_fc", None)
+        mkw_fc = body.get("mkw_fc", None)
+        mkt_fc = body.get("mkt_fc", None)
+        nnid = body.get("nnid", None)
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
     user_id = request.state.user_id
-    async with connect_db() as db:
-        async with db.execute("""INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned, discord_id)
-            VALUES (?, ?, ?, ?, ?, ?)""", (name, country_code, is_hidden, is_shadow, is_banned, discord_id)) as cursor:
-            player_id = cursor.lastrowid
-        await db.commit()
-        await db.execute("UPDATE users SET player_id = ? WHERE id = ?", (player_id, user_id))
-        # building a query to insert multiple rows to friend codes table
-        fc_variable_parameters = []
-        if "switch_fc" in body:
-            fc_variable_parameters.append((player_id, body['switch_fc'], 1, 'MK8DX'))
-        if "mkw_fc" in body:
-            fc_variable_parameters.append((player_id, body['mkw_fc'], 0, 'MKW'))
-        if "mkt_fc" in body:
-            fc_variable_parameters.append([player_id, body['mkt_fc'], 1, 'MKT'])
-        if "nnid" in body:
-            fc_variable_parameters.append([player_id, body['nnid'], 1, 'MK8'])
-        await db.executemany("INSERT INTO friend_codes VALUES (?, ?, ?, ?)", fc_variable_parameters)
-        await db.commit()
-    resp_fcs = []
-    for fc in fc_variable_parameters:
-        curr_fc = {
-            'fc': fc[1],
-            'is_verified': fc[2],
-            'game': fc[3]
-        }
-        resp_fcs.append(curr_fc)
-    resp = {
-        'id': player_id,
-        'name': name,
-        'country_code': country_code,
-        'is_hidden': is_hidden,
-        'is_shadow': is_shadow,
-        'is_banned': is_banned,
-        'discord_id': discord_id,
-        'friend_codes': resp_fcs
-    }
+
+    player_id = handle_command(
+        CreatePlayerCommand(name, user_id, country_code, is_hidden, is_shadow, is_banned, discord_id, switch_fc, mkw_fc, mkt_fc, nnid))
     
-    return JSONResponse(resp, status_code=201)
+    if player_id is None:
+        return JSONResponse({'error': 'Error occurred when creating player'})
+    
+    return JSONResponse({ player_id: player_id }, status_code=201)
 
 @require_permission(permissions.EDIT_PLAYER)
 async def edit_player(request: Request) -> JSONResponse:
