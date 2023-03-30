@@ -5,7 +5,9 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import pw_hasher, require_logged_in
 from api.data import handle_command
+from api.utils.responses import OrjsonResponse, ProblemJsonResponse
 from common.data.commands import CreateSessionCommand, CreateUserCommand, DeleteSessionCommand, GetUserDataFromEmailCommand
+from common.data.models import Error
 
 async def log_in(request: Request) -> JSONResponse:
     body = await request.json()
@@ -14,13 +16,10 @@ async def log_in(request: Request) -> JSONResponse:
 
     user = await handle_command(GetUserDataFromEmailCommand(email))
     if user is None:
-        return JSONResponse({'error':'Invalid login details'}, status_code=401)
+        return JSONResponse({'error':'User not found'}, status_code=404)
 
-    try:
-        is_valid_password = pw_hasher.verify(user.password_hash, password)
-        if not is_valid_password:
-            return JSONResponse({'error':'Invalid login details'}, status_code=401)
-    except:
+    is_valid_password = pw_hasher.verify(user.password_hash, password)
+    if not is_valid_password:
         return JSONResponse({'error':'Invalid login details'}, status_code=401)
     
     session_id = secrets.token_hex(16)
@@ -37,8 +36,11 @@ async def sign_up(request: Request) -> JSONResponse:
     body = await request.json()
     email = body["email"] # TODO: Email Verification
     password_hash = pw_hasher.hash(body["password"])
-    user_id = await handle_command(CreateUserCommand(email, password_hash))
-    return JSONResponse({'id': user_id, 'email': email}, status_code=201)
+    user = await handle_command(CreateUserCommand(email, password_hash))
+    if isinstance(user, Error):
+        return ProblemJsonResponse(user, status_code=500)
+
+    return OrjsonResponse(user, status_code=201)
 
 @require_logged_in
 async def log_out(request: Request) -> JSONResponse:

@@ -3,7 +3,9 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import permissions, require_permission, require_logged_in
 from api.data import handle_command, connect_db
-from common.data.commands import CreatePlayerCommand
+from api.utils.responses import OrjsonResponse, ProblemJsonResponse
+from common.data.commands import CreatePlayerCommand, GetPlayerDetailedCommand, UpdatePlayerCommand
+from common.data.models import Error
 
 @require_logged_in
 async def create_player(request: Request) -> JSONResponse:
@@ -15,103 +17,47 @@ async def create_player(request: Request) -> JSONResponse:
         is_shadow = bool(body['is_shadow'])
         is_banned = bool(body['is_banned'])
         discord_id = body['discord_id']
-        switch_fc = body.get("switch_fc", None)
-        mkw_fc = body.get("mkw_fc", None)
-        mkt_fc = body.get("mkt_fc", None)
-        nnid = body.get("nnid", None)
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
     user_id = request.state.user_id
 
-    player_id = handle_command(
-        CreatePlayerCommand(name, user_id, country_code, is_hidden, is_shadow, is_banned, discord_id, switch_fc, mkw_fc, mkt_fc, nnid))
+    command = CreatePlayerCommand(name, user_id, country_code, is_hidden, is_shadow, is_banned, discord_id)
+    player = await handle_command(command)
     
-    if player_id is None:
-        return JSONResponse({'error': 'Error occurred when creating player'})
+    if isinstance(player, Error):
+        return ProblemJsonResponse(player, status_code=500)
     
-    return JSONResponse({ player_id: player_id }, status_code=201)
+    return OrjsonResponse(player, status_code=201)
 
 @require_permission(permissions.EDIT_PLAYER)
 async def edit_player(request: Request) -> JSONResponse:
     body = await request.json()
     try:
         player_id = int(body['player_id'])
-        set_clauses = []
-        variable_parameters = []
-        if 'name' in body:
-            set_clauses.append("name = ?")
-            variable_parameters.append(body['name'])
-        if 'country_code' in body:
-            set_clauses.append("country_code = ?")
-            variable_parameters.append(body['country_code'])
-        if 'is_hidden' in body:
-            set_clauses.append("is_hidden = ?")
-            variable_parameters.append(int(body['is_hidden']))
-        if 'is_shadow' in body:
-            set_clauses.append("is_shadow = ?")
-            variable_parameters.append(int(body['is_shadow']))
-        if 'is_banned' in body:
-            set_clauses.append("is_banned = ?")
-            variable_parameters.append(int(body['is_banned']))
-        if 'discord_id' in body:
-            set_clauses.append("discord_id")
-            variable_parameters.append(int(body['discord_id']))
+        name = body['name']
+        country_code = body['country_code']
+        is_hidden = bool(body['is_hidden'])
+        is_shadow = bool(body['is_shadow'])
+        is_banned = bool(body['is_banned'])
+        discord_id = body['discord_id']
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    # if we end up changing nothing about the player, give 400 error
-    if len(set_clauses) == 0:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    set_clause = ", ".join(set_clauses)
-    variable_parameters.append(player_id)
-    async with connect_db() as db:
-        async with db.execute(f"UPDATE players SET {set_clause} WHERE id = ?", variable_parameters) as cursor:
-            updated_rows = cursor.rowcount
-            if updated_rows == 0:
-                return JSONResponse({'error':'No player found'}, status_code=404)
-        async with db.execute("SELECT * FROM players WHERE id = ?", (player_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-        await db.commit()
-
-    resp = {
-        'id': player_id,
-        'name': row[1],
-        'country_code': row[2],
-        'is_hidden': row[3],
-        'is_shadow': row[4],
-        'is_banned': row[5],
-        'discord_id': row[6]
-    }
-    return JSONResponse(resp, status_code=201)
+    
+    command = UpdatePlayerCommand(player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id)
+    succeeded = await handle_command(command)
+    
+    if not succeeded:
+        return JSONResponse({'error': 'Player does not exist'}, status_code=404)
+    
+    return JSONResponse({}, status_code=200)
 
 async def view_player(request: Request) -> JSONResponse:
     player_id = request.path_params['id']
-    async with connect_db() as db:
-        async with db.execute("SELECT * FROM players WHERE id = ?", (player_id,)) as cursor:
-            player_row = await cursor.fetchone()
-            if player_row is None:
-                return JSONResponse({'error':'No player found'}, status_code=404)
-        async with db.execute("SELECT * FROM friend_codes WHERE player_id = ?", (player_id,)) as cursor:
-            fc_rows = await cursor.fetchall()
-    resp_fcs = []
-    for fc in fc_rows:
-        curr_fc = {
-            'fc': fc[1],
-            'is_verified': fc[2],
-            'game': fc[3]
-        }
-        resp_fcs.append(curr_fc)
-    resp = {
-        'id': player_id,
-        'name': player_row[1],
-        'country_code': player_row[2],
-        'is_hidden': player_row[3],
-        'is_shadow': player_row[4],
-        'is_banned': player_row[5],
-        'discord_id': player_row[6],
-        'friend_codes': resp_fcs
-    }
-    return JSONResponse(resp)
+    player_detailed = await handle_command(GetPlayerDetailedCommand(player_id))
+    if player_detailed is None:
+        return JSONResponse({'error': 'Player does not exist'}, status_code=404)
+
+    return OrjsonResponse(player_detailed)
 
 async def list_players(request: Request) -> JSONResponse:
     where_clauses = []

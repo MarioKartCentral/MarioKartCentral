@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import List, Type
 
 class TableModel(ABC):
     @abstractmethod
+    @staticmethod
     def get_create_table_command() -> str:
         pass
 
@@ -14,7 +16,7 @@ class Player(TableModel):
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
-    discord_id: str
+    discord_id: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -22,26 +24,26 @@ class Player(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT UNIQUE NOT NULL,
             country_code TEXT NOT NULL,
-            is_hidden INTEGER NOT NULL,
-            is_shadow INTEGER NOT NULL,
-            is_banned INTEGER NOT NULL,
-            discord_id TEXT NOT NULL)"""
+            is_hidden BOOLEAN NOT NULL,
+            is_shadow BOOLEAN NOT NULL,
+            is_banned BOOLEAN NOT NULL,
+            discord_id TEXT)"""
 
 @dataclass
 class FriendCode(TableModel):
     player_id: int
+    game: str
     fc: str
     is_verified: int
-    game: str
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS friend_codes(
             player_id INTEGER NOT NULL,
-            fc TEXT NOT NULL,
-            is_verified INTEGER NOT NULL,
             game TEXT NOT NULL,
-            PRIMARY KEY(player_id, fc, game)) WITHOUT ROWID"""
+            fc TEXT NOT NULL,
+            is_verified BOOLEAN NOT NULL,
+            PRIMARY KEY(game, fc)) WITHOUT ROWID"""
 
 @dataclass
 class User(TableModel):
@@ -271,3 +273,7 @@ class TournamentPlayer(TableModel):
             mii_name TEXT,
             can_host INTEGER NOT NULL,
             is_invite INTEGER NOT NULL)"""
+    
+all_tables : List[Type[TableModel]] = [
+    Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
+    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer]
