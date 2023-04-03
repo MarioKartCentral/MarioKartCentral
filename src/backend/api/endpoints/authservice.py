@@ -1,51 +1,56 @@
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import secrets
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import Response
 from starlette.routing import Route
 from api.auth import pw_hasher, require_logged_in
-from api.data import handle_command
-from api.utils.responses import OrjsonResponse, ProblemJsonResponse
+from api.data import handle
+from api.utils.responses import JSONResponse, bind_request_body
 from common.data.commands import CreateSessionCommand, CreateUserCommand, DeleteSessionCommand, GetUserDataFromEmailCommand
-from common.data.models import Error
+from common.data.models import Problem
 
-async def log_in(request: Request) -> JSONResponse:
-    body = await request.json()
-    email = body["email"]
-    password = body["password"]
+@dataclass
+class LoginRequestData:
+    email: str
+    password: str
 
-    user = await handle_command(GetUserDataFromEmailCommand(email))
+@bind_request_body(LoginRequestData)
+async def log_in(request: Request, body: LoginRequestData) -> Response:
+    user = await handle(GetUserDataFromEmailCommand(body.email))
     if user is None:
-        return JSONResponse({'error':'User not found'}, status_code=404)
+        raise Problem("User not found", status=404)
 
-    is_valid_password = pw_hasher.verify(user.password_hash, password)
+    is_valid_password = pw_hasher.verify(user.password_hash, body.password)
     if not is_valid_password:
-        return JSONResponse({'error':'Invalid login details'}, status_code=401)
+        raise Problem("Invalid login details", status=401)
     
     session_id = secrets.token_hex(16)
     max_age = timedelta(days=365)
     expiration_date = datetime.now(timezone.utc) + max_age
 
-    await handle_command(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
 
     resp = JSONResponse({}, status_code=200)
     resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
     return resp
 
-async def sign_up(request: Request) -> JSONResponse:
-    body = await request.json()
-    email = body["email"] # TODO: Email Verification
-    password_hash = pw_hasher.hash(body["password"])
-    user = await handle_command(CreateUserCommand(email, password_hash))
-    if isinstance(user, Error):
-        return ProblemJsonResponse(user, status_code=500)
+@dataclass
+class SignupRequestData:
+    email: str
+    password: str
 
-    return OrjsonResponse(user, status_code=201)
+@bind_request_body(SignupRequestData)
+async def sign_up(request: Request, body: SignupRequestData) -> Response:
+    email = body.email # TODO: Email Verification
+    password_hash = pw_hasher.hash(body.password)
+    user = await handle(CreateUserCommand(email, password_hash))
+    return JSONResponse(user, status_code=201)
 
 @require_logged_in
-async def log_out(request: Request) -> JSONResponse:
+async def log_out(request: Request) -> Response:
     session_id = request.state.session_id
-    await handle_command(DeleteSessionCommand(session_id))
+    await handle(DeleteSessionCommand(session_id))
     resp = JSONResponse({}, status_code=200)
     resp.delete_cookie('session')
     return resp

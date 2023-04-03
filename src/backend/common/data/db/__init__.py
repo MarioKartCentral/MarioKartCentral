@@ -5,10 +5,11 @@ import aiosqlite
 @dataclass
 class DBWrapperConnection():
     connection: aiosqlite.Connection
+    readonly: bool = False
 
-    async def __aenter__(self, readonly = False) -> aiosqlite.Connection:
+    async def __aenter__(self) -> aiosqlite.Connection:
         db = await self.connection
-        if not readonly:
+        if not self.readonly:
             await db.execute("pragma foreign_keys = ON;")
         return db
 
@@ -22,5 +23,5 @@ class DBWrapper():
     def reset_db(self):
         open(self.db_path).close()
 
-    def connect(self):
-        return DBWrapperConnection(aiosqlite.connect(self.db_path))
+    def connect(self, readonly=False):
+        return DBWrapperConnection(aiosqlite.connect(self.db_path), readonly)

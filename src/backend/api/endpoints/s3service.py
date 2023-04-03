@@ -1,8 +1,8 @@
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import permissions, require_permission
-from api.data import create_s3_client, handle_command
+from api.data import handle
+from api.utils.responses import JSONResponse
 from common.data.commands import ReadFileInS3BucketCommand, WriteMessageToFileInS3BucketCommand
 
 @require_permission(permissions.READ_S3)
@@ -14,7 +14,7 @@ async def s3_read(request: Request) -> JSONResponse:
     except RuntimeError:
         return JSONResponse({'error': 'No correct body send'})
 
-    body = await handle_command(ReadFileInS3BucketCommand(bucket_name, file_name))
+    body = await handle(ReadFileInS3BucketCommand(bucket_name, file_name))
 
     return JSONResponse({
         f'{bucket_name} - {file_name}':
@@ -32,7 +32,7 @@ async def s3_write(request: Request) -> JSONResponse:
 
     message = message.encode('utf-8')
 
-    result = await handle_command(WriteMessageToFileInS3BucketCommand(bucket_name, file_name, message))
+    result = await handle(WriteMessageToFileInS3BucketCommand(bucket_name, file_name, message))
 
     return JSONResponse(result)
 

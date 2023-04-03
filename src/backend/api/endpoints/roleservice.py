@@ -1,8 +1,8 @@
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import require_logged_in, roles
 from api.data import connect_db
+from api.utils.responses import JSONResponse
 
 @require_logged_in
 async def grant_role(request: Request) -> JSONResponse:

@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from typing import List, Type
 
 class TableModel(ABC):
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def get_create_table_command() -> str:
         pass
 

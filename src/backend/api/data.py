@@ -8,7 +8,7 @@ db_wrapper = DBWrapper(settings.DB_PATH)
 s3_wrapper = S3Wrapper(settings.AWS_SECRET_ACCESS_KEY, settings.AWS_ACCESS_KEY_ID, settings.AWS_ENDPOINT_URL)
 redis_wrapper = RedisWrapper(settings.REDIS_URL)
 
-async def handle_command(command: Command[TCommandResponse]) -> TCommandResponse:
+async def handle(command: Command[TCommandResponse]) -> TCommandResponse:
     return await command.handle(db_wrapper, s3_wrapper)
 
 connect_db = db_wrapper.connect
@@ -17,12 +17,12 @@ redis_conn = redis_wrapper.connect()
 
 async def init_db():
     if settings.RESET_DATABASE:
-        await handle_command(ResetDbCommand())
-    await handle_command(InitializeDbSchemaCommand())
+        await handle(ResetDbCommand())
+    await handle(InitializeDbSchemaCommand())
 
     from api.auth import pw_hasher
     hashed_pw = pw_hasher.hash(str(settings.ADMIN_PASSWORD))
-    await handle_command(SeedDatabaseCommand(settings.ADMIN_EMAIL, hashed_pw))
+    await handle(SeedDatabaseCommand(settings.ADMIN_EMAIL, hashed_pw))
 
 async def init_s3():
-    await handle_command(InitializeS3BucketsCommand())
+    await handle(InitializeS3BucketsCommand())
