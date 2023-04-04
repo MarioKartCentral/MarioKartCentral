@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Generic, TypeVar
 import aiobotocore.session
+from common.auth import roles, permissions
 import common.data.db.tables as tables
 from common.data.db import DBWrapper
 from common.data.s3 import S3Wrapper
@@ -35,7 +37,6 @@ class SeedDatabaseCommand(Command[None]):
     hashed_pw: str
 
     async def handle(self, db_wrapper, s3_wrapper):
-        from api.auth import permissions, roles
         async with db_wrapper.connect() as db:
             await db.executemany(
                 "INSERT INTO roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
@@ -218,7 +219,7 @@ class CreatePlayerCommand(Command[Player]):
                 async with db.execute("UPDATE users SET player_id = ? WHERE id = ?", (player_id, self.user_id)) as cursor:
                     # handle case where user with the given ID doesn't exist
                     if cursor.rowcount != 1:
-                        raise Problem("Invalid User ID")
+                        raise Problem("Invalid User ID", status=404)
 
             await db.commit()
             return Player(int(player_id[0]), data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id)
@@ -326,3 +327,176 @@ class ListPlayersCommand(Command[List[Player]]):
                         players.append(Player(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
             
             return players
+
+@dataclass
+class GrantRoleCommand(Command[None]):
+    granter_user_id: int
+    target_user_id: int
+    role: str
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
+        # For now, the rules about which roles can grant other roles is defined here, but we could move it to  the database
+        # in the future.
+        if self.role in [roles.SUPER_ADMINISTRATOR, roles.ADMINISTRATOR]:
+            allowed_roles = [roles.SUPER_ADMINISTRATOR]
+        else:
+            allowed_roles = [roles.SUPER_ADMINISTRATOR, roles.ADMINISTRATOR]
+
+        allowed_role_ids = [roles.id_by_default_role[role] for role in allowed_roles]
+
+        async with db_wrapper.connect() as db:
+            async with db.execute(f"""
+                SELECT EXISTS(
+                    SELECT 1 FROM roles r
+                    JOIN user_roles ur ON ur.role_id = r.id
+                    JOIN users u on ur.user_id = u.id
+                    WHERE u.id = ? AND r.id IN ({','.join(map(str, allowed_role_ids))})
+                )""", (self.granter_user_id,)) as cursor:
+                row = await cursor.fetchone()
+                can_grant = row is not None and bool(row[0])
+
+            if not can_grant:
+                raise Problem("Not authorized to grant role", status=401)
+
+            try:
+                async with db.execute("SELECT id FROM roles where name = ?", (self.role,)) as cursor:
+                    row = await cursor.fetchone()
+                    role_id = None if row is None else int(row[0])
+
+                if role_id is None:
+                    raise Problem("Role not found", status=404)
+
+                await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (?, ?)", (self.target_user_id, role_id))
+                await db.commit()
+            except Exception as e:
+                async with db.execute("SELECT EXISTS(SELECT 1 FROM users where id = ?)", (self.target_user_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    user_exists = row is not None
+
+                if not user_exists:
+                    raise Problem("User not found", status=404)
+                else:
+                    raise Problem("Unexpected error")
+
+@dataclass
+class RegisterPlayerCommand(Command[None]):
+    player_id: int
+    tournament_id: int
+    squad_id: int | None
+    is_squad_captain: bool
+    is_checked_in: bool
+    mii_name: str | None
+    can_host: bool
+    is_invite: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
+        timestamp = int(datetime.utcnow().timestamp())
+        async with db_wrapper.connect() as db:
+            # check if player has already registered for the tournament
+            async with db.execute("SELECT squad_id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (self.player_id, self.tournament_id)) as cursor:
+                row = await cursor.fetchone()
+                existing_squad_id = None
+                if row:
+                    existing_squad_id = row[0]
+                    if not existing_squad_id:
+                        raise Problem("Player already registered for tournament", status=400)
+            if existing_squad_id:
+                # make sure player's squad isn't withdrawn before giving error
+                async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    is_registered = row[0]
+                    if is_registered == 1:
+                        raise Problem('Player is already registered for this tournament', status=400)
+            # check if mii name is required and if player's squad is at maximum number of players
+            if self.squad_id is not None:
+                async with db.execute("SELECT max_squad_size, mii_name_required FROM tournaments WHERE id = ?", (self.tournament_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    max_squad_size = row[0]
+                    mii_name_required = row[1]
+                    if mii_name_required == 1 and self.mii_name is None:
+                        raise Problem('Tournament requires a Mii Name', status=400)
+                async with db.execute("SELECT id FROM tournament_players WHERE tournament_id = ? AND squad_id = ?", (self.tournament_id, self.squad_id)) as cursor:
+                    player_squad_size = cursor.rowcount
+                    if player_squad_size == max_squad_size:
+                        raise Problem('Squad at maximum number of players', status=400)
+            async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, self.is_invite)) as cursor:
+                tournament_player_id = cursor.lastrowid
+            await db.commit()
+
+@dataclass
+class CreateSquadCommand(Command[None]):
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: str
+    player_id: int
+    tournament_id: int
+    is_checked_in: bool
+    mii_name: str | None
+    can_host: bool
+    admin: bool = False
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
+        timestamp = int(datetime.utcnow().timestamp())
+        is_registered = 1
+        is_squad_captain = 1
+        is_invite = 0
+        async with db_wrapper.connect() as db:
+            # check if player has already registered for the tournament
+            async with db.execute("SELECT squad_id FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (self.player_id, self.tournament_id)) as cursor:
+                row = await cursor.fetchone()
+                existing_squad_id = None
+                if row:
+                    existing_squad_id = row[0]
+            if existing_squad_id is not None:
+                # make sure player's squad isn't withdrawn before giving error
+                async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id = ?", (existing_squad_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    is_registered = row[0]
+                    if is_registered == 1:
+                        raise Problem('Player is already registered for this tournament', status=400)
+            # check if tournament registrations are open
+            async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required FROM tournaments WHERE ID = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                is_squad = row[0]
+                registrations_open = row[1]
+                squad_tag_required = row[2]
+                squad_name_required = row[3]
+                mii_name_required = row[4]
+                if is_squad == 0:
+                    raise Problem('This is not a squad tournament', status=400)
+                if self.admin is False and registrations_open == 0:
+                    raise Problem('Tournament registrations are closed', status=400)
+                if squad_tag_required == 1 and self.squad_tag is None:
+                    raise Problem('Tournament requires a tag for squads', status=400)
+                if squad_name_required == 1 and self.squad_name is None:
+                    raise Problem('Tournament requires a name for squads', status=400)
+                if mii_name_required == 1 and self.mii_name is None:
+                    raise Problem('Tournament requires a Mii Name', status=400)
+            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered)
+                VALUES (?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, is_registered)) as cursor:
+                squad_id = cursor.lastrowid
+            await db.commit()
+
+            async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, squad_id, is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite)) as cursor:
+                tournament_player_id = cursor.lastrowid
+            await db.commit()
+
+@dataclass
+class GetPlayerIdForUserCommand(Command[int]):
+    user_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> int:
+        async with db_wrapper.connect() as db:
+            # get player id from user id in request
+            async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("User does not exist", status=404)
+
+                return int(row[0])

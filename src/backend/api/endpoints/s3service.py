@@ -1,8 +1,9 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import permissions, require_permission
+from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse
+from common.auth import permissions
 from common.data.commands import ReadFileInS3BucketCommand, WriteMessageToFileInS3BucketCommand
 
 @require_permission(permissions.READ_S3)

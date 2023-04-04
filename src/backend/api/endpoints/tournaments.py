@@ -1,9 +1,10 @@
 import aiobotocore.session
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import permissions, require_permission
+from api.auth import require_permission
 from api.data import create_s3_client, connect_db
 from api.utils.responses import JSONResponse
+from common.auth import permissions
 import json
 from datetime import datetime
 
