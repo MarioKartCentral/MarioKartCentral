@@ -20,7 +20,7 @@ async def list_users(request: Request) -> JSONResponse:
 
 @require_logged_in
 async def current_user(request: Request) -> JSONResponse:
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         async with db.execute("SELECT id, email, password_hash FROM users WHERE id = ?", (user_id, )) as cursor:
             row = await cursor.fetchone()

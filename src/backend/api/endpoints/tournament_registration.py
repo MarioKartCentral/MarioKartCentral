@@ -1,38 +1,22 @@
 from dataclasses import dataclass
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission
+from api.auth import require_permission, require_logged_in
 from api.data import connect_db, handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
-from common.data.commands import CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand
-
-@dataclass
-class CreateSquadRequestData:
-    squad_color: str
-    squad_name: str | None = None
-    squad_tag: str | None = None
-    mii_name: str | None = None
-    can_host: bool = False
+from common.data.commands import CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand, EditSquadCommand
+from common.data.models import CreateSquadRequestData, ForceCreateSquadRequestData, EditSquadRequestData
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
 async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     player_id = await handle(GetPlayerIdForUserCommand(user_id))
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, player_id, tournament_id, False, body.mii_name, body.can_host)
     await handle(command)
     return JSONResponse({})
-
-@dataclass
-class ForceCreateSquadRequestData:
-    player_id: int
-    squad_color: str
-    squad_name: str | None = None
-    squad_tag: str | None = None
-    mii_name: str | None = None
-    can_host: bool = False
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
@@ -43,36 +27,12 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     await handle(command)
     return JSONResponse({})
 
-async def edit_squad(request: Request) -> JSONResponse:
-    body = await request.json()
+@bind_request_body(EditSquadRequestData)
+async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
-    try:
-        squad_id = int(body['squad_id'])
-        squad_name = None
-        squad_tag = None
-        if "squad_name" in body:
-            squad_name = body['squad_name']
-        if "squad_tag" in body:
-            squad_tag = body['squad_tag']
-        squad_color = body['squad_color']
-        is_registered = int(body['is_registered'])
-    except Exception as e:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    async with connect_db() as db:
-        async with db.execute("UPDATE tournament_squads SET name = ?, tag = ?, color = ?, is_registered = ? WHERE id = ? AND tournament_id = ?", (squad_name, squad_tag, squad_color, is_registered, squad_id, tournament_id)) as cursor:
-            updated_rows = cursor.rowcount
-            if updated_rows == 0:
-                return JSONResponse({'error':'No squad found'}, status_code=404)
-        await db.commit()
-    resp = {
-        'squad_id': squad_id,
-        'squad_name': squad_name,
-        'squad_tag': squad_tag,
-        'squad_color': squad_color,
-        'tournament_id': tournament_id,
-        'is_registered': is_registered
-    }
-    return JSONResponse(resp, status_code=201)
+    command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered)
+    await handle(command)
+    return JSONResponse({})
 
 # used when the captain of a squad invites a player to their squad.
 # use force_register_player in tournament staff contexts
@@ -84,7 +44,7 @@ async def invite_player(request: Request) -> JSONResponse:
         player_id = int(body['player_id'])
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         # get player id from user id in request
         async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
@@ -137,7 +97,7 @@ async def register_me(request: Request) -> JSONResponse:
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
     is_checked_in = False
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
@@ -224,6 +184,7 @@ async def edit_registration(request: Request) -> JSONResponse:
     }
     return JSONResponse(json_resp, status_code=201)
 
+@require_logged_in
 async def accept_invite(request: Request) -> JSONResponse:
     body = await request.json()
     tournament_id = request.path_params['id']
@@ -237,7 +198,7 @@ async def accept_invite(request: Request) -> JSONResponse:
         invite_id = int(body['invite_id'])
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
@@ -282,6 +243,7 @@ async def accept_invite(request: Request) -> JSONResponse:
         }
         return JSONResponse(json_resp, status_code=201)
 
+@require_logged_in
 async def decline_invite(request: Request) -> JSONResponse:
     body = await request.json()
     tournament_id = request.path_params['id']
@@ -289,7 +251,7 @@ async def decline_invite(request: Request) -> JSONResponse:
         invite_id = int(body['invite_id'])
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
@@ -329,6 +291,7 @@ async def unregister_player(tournament_id, player_id, squad_id=None):
                 return JSONResponse({'error': 'Player not found in tournament'}, status_code=400)
     return JSONResponse({'success': 'Successfully unregistered player'}, status_code=201)
 
+@require_logged_in
 # used when a squad captain wants to remove a member from their squad
 async def remove_player_from_squad(request: Request) -> JSONResponse:
     body = await request.json()
@@ -338,7 +301,7 @@ async def remove_player_from_squad(request: Request) -> JSONResponse:
         squad_id = int(body['squad_id'])
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
@@ -367,6 +330,7 @@ async def remove_player_from_squad(request: Request) -> JSONResponse:
     return json_resp
 
 # used when a player unregisters themself from the tournament
+@require_logged_in
 async def unregister_me(request: Request) -> JSONResponse:
     body = await request.json()
     tournament_id = request.path_params['id']
@@ -376,7 +340,7 @@ async def unregister_me(request: Request) -> JSONResponse:
             squad_id = int(body['squad_id'])
     except Exception as e:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user_id
+    user_id = request.state.user.id
     async with connect_db() as db:
         # check if tournament registrations are open
         async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:

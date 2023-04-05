@@ -93,7 +93,7 @@ class WriteMessageToFileInS3BucketCommand(Command[str]):
             return object_data
 
 @dataclass 
-class GetUserIdFromSessionCommand(Command[int | None]):
+class GetUserIdFromSessionCommand(Command[User | None]):
     session_id: str
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -103,18 +103,24 @@ class GetUserIdFromSessionCommand(Command[int | None]):
 
             if row is None:
                 return None
+
+            user_id = int(row[0])
+            async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
+                row = await cursor.fetchone()
+
+            player_id = int(row[0])
             
-            return int(row[0])
+            return User(user_id, player_id)
 
 @dataclass
-class GetUserWithPermissionFromSessionCommand(Command[int | None]):
+class GetUserWithPermissionFromSessionCommand(Command[User | None]):
     session_id: str
     permission_name: str
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""
-                SELECT u.id FROM roles r
+                SELECT u.id, u.player_id FROM roles r
                 JOIN user_roles ur ON ur.role_id = r.id
                 JOIN users u on ur.user_id = u.id
                 JOIN sessions s on s.user_id = u.id
@@ -127,7 +133,7 @@ class GetUserWithPermissionFromSessionCommand(Command[int | None]):
             if row is None:
                 return None
 
-            return int(row[0])
+            return User(int(row[0]), int(row[1]))
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -195,7 +201,7 @@ class CreateUserCommand(Command[User]):
                 raise Problem("Failed to create user")
 
             await db.commit()
-            return User(int(row[0]))
+            return User(int(row[0]), None)
         
 @dataclass
 class CreatePlayerCommand(Command[Player]):
@@ -267,7 +273,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             async with db.execute(user_query, (self.id,)) as cursor:
                 user_row = await cursor.fetchone()
             
-            user = None if user_row is None else User(int(user_row[0]))
+            user = None if user_row is None else User(int(user_row[0]), self.id)
 
             return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, user)
         
@@ -500,3 +506,21 @@ class GetPlayerIdForUserCommand(Command[int]):
                     raise Problem("User does not exist", status=404)
 
                 return int(row[0])
+
+@dataclass
+class EditSquadCommand(Command[None]):
+    tournament_id: int
+    squad_id: int
+    squad_name: str
+    squad_tag: str
+    squad_color: str
+    is_registered: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("UPDATE tournament_squads SET name = ?, tag = ?, color = ?, is_registered = ? WHERE id = ? AND tournament_id = ?",
+                (self.squad_name, self.squad_tag, self.squad_color, self.is_registered, self.squad_id, self.tournament_id)) as cursor:
+                updated_rows = cursor.rowcount
+                if updated_rows == 0:
+                    raise Problem("Squad not found", status=404)
+            await db.commit()

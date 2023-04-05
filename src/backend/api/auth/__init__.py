@@ -17,11 +17,11 @@ def require_logged_in(handle_request: Callable[Concatenate[Request, P], Awaitabl
         if session_id is None:
             raise Problem("Not logged in", status=401)
 
-        user_id = await handle(GetUserIdFromSessionCommand(session_id))
+        user = await handle(GetUserIdFromSessionCommand(session_id))
 
-        if user_id is not None:
+        if user is not None:
             request.state.session_id = session_id
-            request.state.user_id = user_id
+            request.state.user = user
             return await handle_request(request, *args, **kwargs)
         else:
             resp = ProblemResponse(Problem("Not logged in", status=401))
@@ -37,11 +37,11 @@ def require_permission(permission_name: str):
             if session_id is None:
                 raise Problem("Not logged in", status=401)
             
-            user_id = await handle(GetUserWithPermissionFromSessionCommand(session_id, permission_name))
+            user = await handle(GetUserWithPermissionFromSessionCommand(session_id, permission_name))
 
-            if user_id is not None:
+            if user is not None:
                 request.state.session_id = session_id
-                request.state.user_id = user_id
+                request.state.user = user
                 return await handle_request(request, *args, **kwargs)
             
             if await handle(IsValidSessionCommand(session_id)):

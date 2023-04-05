@@ -32,15 +32,12 @@ class FriendCode:
 @dataclass
 class User:
     id: int
+    player_id: int | None
 
 @dataclass
 class UserLoginData(User):
     email: str
     password_hash: str
-
-@dataclass
-class UserDetailed(User):
-    player: 'Player'
 
 @dataclass
 class Player:
@@ -52,6 +49,14 @@ class Player:
     is_banned: bool
     discord_id: str | None
 
+@dataclass
+class Squad:
+    id: int
+    name: str
+    tag: str
+    color: str
+    is_registered: bool
+    
 @dataclass
 class PlayerDetailed(Player):
     friend_codes: List[FriendCode]
@@ -86,3 +91,28 @@ class PlayerFilter:
     is_shadow: bool | None = None
     is_banned: bool | None = None
     discord_id: str | None = None
+
+@dataclass
+class CreateSquadRequestData:
+    squad_color: str
+    squad_name: str | None = None
+    squad_tag: str | None = None
+    mii_name: str | None = None
+    can_host: bool = False
+
+@dataclass
+class ForceCreateSquadRequestData:
+    player_id: int
+    squad_color: str
+    squad_name: str | None = None
+    squad_tag: str | None = None
+    mii_name: str | None = None
+    can_host: bool = False
+
+@dataclass
+class EditSquadRequestData:
+    squad_id: int
+    squad_name: str
+    squad_tag: str
+    squad_color: str
+    is_registered: bool
