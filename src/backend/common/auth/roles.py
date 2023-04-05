@@ -1,4 +1,4 @@
-from api.auth import permissions
+from common.auth import permissions
 
 SUPER_ADMINISTRATOR = "Super Administrator"
 ADMINISTRATOR = "Administrator"

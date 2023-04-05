@@ -1,7 +1,9 @@
 from starlette.applications import Starlette
+from starlette.middleware import Middleware
 from api import settings
 from api.data import init_db, init_s3
 from api.endpoints import authservice, redisservice, roleservice, s3service, userservice, tournaments, tournament_registration, player_registry
+from api.utils.middleware import ProblemHandlingMiddleware
 
 if settings.DEBUG:
     import debugpy
@@ -19,4 +21,8 @@ routes = [
     *player_registry.routes,
 ]
 
-app = Starlette(debug=True, routes=routes, on_startup=[init_db, init_s3])
+middleware = [
+    Middleware(ProblemHandlingMiddleware)
+]
+
+app = Starlette(debug=True, routes=routes, on_startup=[init_db, init_s3], middleware=middleware)

@@ -1,9 +1,10 @@
 import aiobotocore.session
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 from starlette.routing import Route
-from api.auth import permissions, require_permission
+from api.auth import require_permission
 from api.data import create_s3_client, connect_db
+from api.utils.responses import JSONResponse
+from common.auth import permissions
 import json
 from datetime import datetime
 
@@ -52,7 +53,6 @@ async def create_tournament(request: Request) -> JSONResponse:
 
     # store minimal data about each tournament in the SQLite DB
     async with connect_db() as db:
-        await db.execute("pragma foreign_keys = ON;")
         cursor = await db.execute(
             """INSERT INTO tournaments(
                 name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
@@ -151,7 +151,6 @@ async def edit_tournament(request: Request) -> JSONResponse:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
 
     async with connect_db() as db:
-        await db.execute("pragma foreign_keys = ON;")
         cursor = await db.execute("""UPDATE tournaments
             SET name = ?,
             series_id = ?,
@@ -511,7 +510,6 @@ async def create_template(request: Request) -> JSONResponse:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
 
     async with connect_db() as db:
-        await db.execute("pragma foreign_keys = ON;")
         cursor = await db.execute("INSERT INTO tournament_templates (name, series_id) VALUES (?, ?)",
         (template_name, series_id))
         template_id = cursor.lastrowid
@@ -602,7 +600,6 @@ async def edit_template(request: Request) -> JSONResponse:
         return JSONResponse({'error': 'No correct body send'}, status_code=400)
 
     async with connect_db() as db:
-        await db.execute("pragma foreign_keys = ON;")
         cursor = await db.execute("""UPDATE tournament_templates
             SET name = ?,
             series_id = ?

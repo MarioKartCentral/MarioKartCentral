@@ -1,8 +1,8 @@
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.auth import require_logged_in
 from api.data import connect_db
+from api.utils.responses import JSONResponse
 
 
 async def list_players(request: Request) -> JSONResponse:

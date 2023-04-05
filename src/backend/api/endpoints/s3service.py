@@ -1,9 +1,10 @@
-import aiobotocore.session
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 from starlette.routing import Route
-from api.auth import permissions, require_permission
-from api.data import create_s3_client
+from api.auth import require_permission
+from api.data import handle
+from api.utils.responses import JSONResponse
+from common.auth import permissions
+from common.data.commands import ReadFileInS3BucketCommand, WriteMessageToFileInS3BucketCommand
 
 @require_permission(permissions.READ_S3)
 async def s3_read(request: Request) -> JSONResponse:
@@ -14,11 +15,7 @@ async def s3_read(request: Request) -> JSONResponse:
     except RuntimeError:
         return JSONResponse({'error': 'No correct body send'})
 
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        response = await s3_client.get_object(Bucket=bucket_name, Key=file_name)
-        async with response['Body'] as stream:
-            body = await stream.read()
+    body = await handle(ReadFileInS3BucketCommand(bucket_name, file_name))
 
     return JSONResponse({
         f'{bucket_name} - {file_name}':
@@ -36,9 +33,7 @@ async def s3_write(request: Request) -> JSONResponse:
 
     message = message.encode('utf-8')
 
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        result = await s3_client.put_object(Bucket=bucket_name, Key=file_name, Body=message)
+    result = await handle(WriteMessageToFileInS3BucketCommand(bucket_name, file_name, message))
 
     return JSONResponse(result)
 
