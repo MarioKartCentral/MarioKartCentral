@@ -257,7 +257,7 @@ class TournamentPlayer(TableModel):
     timestamp: int
     is_checked_in: bool
     mii_name: str | None
-    can_hots: bool
+    can_host: bool
     is_invite: bool
 
     @staticmethod

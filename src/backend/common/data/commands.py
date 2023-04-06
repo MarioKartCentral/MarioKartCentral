@@ -399,6 +399,18 @@ class RegisterPlayerCommand(Command[None]):
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
         timestamp = int(datetime.utcnow().timestamp())
         async with db_wrapper.connect() as db:
+            # check if registrations are open and if mii name is required
+            async with db.execute("SELECT max_squad_size, mii_name_required, registrations_open FROM tournaments WHERE id = ?", (self.tournament_id)) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                max_squad_size, mii_name_required, registrations_open = row
+                if (not registrations_open) and (not self.is_privileged):
+                    raise Problem("Tournament registrations are closed", status=400)
+                if (not self.is_invite):
+                    if mii_name_required == 1 and self.mii_name is None:
+                        raise Problem("Tournament requires a Mii Name", status=400)
+                    if mii_name_required == 0 and self.mii_name:
+                        raise Problem("Tournament should not have a Mii Name", status=400)
             # check if player has already registered for the tournament
             async with db.execute("SELECT squad_id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (self.player_id, self.tournament_id)) as cursor:
                 row = await cursor.fetchone()
@@ -413,20 +425,8 @@ class RegisterPlayerCommand(Command[None]):
                     row = await cursor.fetchone()
                     assert row is not None
                     is_registered = row[0]
-                    if is_registered == 1:
+                    if is_registered == 1 and (not self.is_invite): # should still be able to invite someone if they are registered for the tournament
                         raise Problem('Player is already registered for this tournament', status=400)
-            # check if registrations are open and if mii name is required
-            async with db.execute("SELECT max_squad_size, mii_name_required, registrations_open FROM tournaments WHERE id = ?", (self.tournament_id)) as cursor:
-                row = await cursor.fetchone()
-                assert row is not None
-                max_squad_size, mii_name_required, registrations_open = row
-                if (not registrations_open) and (not self.is_privileged):
-                    raise Problem("Tournament registrations are closed", status=400)
-                if (not self.is_invite):
-                    if mii_name_required == 1 and self.mii_name is None:
-                        raise Problem("Tournament requires a Mii Name", status=400)
-                    if mii_name_required == 0 and self.mii_name:
-                        raise Problem("Tournament should not have a Mii Name", status=400)
             # check if player's squad is at maximum number of players
             if self.squad_id is not None:
                 async with db.execute("SELECT id FROM tournament_players WHERE tournament_id = ? AND squad_id = ?", (self.tournament_id, self.squad_id)) as cursor:
@@ -531,11 +531,10 @@ class EditSquadCommand(Command[None]):
             await db.commit()
 
 @dataclass
-class CheckInvitePlayerCommand(Command[None]):
+class CheckSquadCaptainPermissionsCommand(Command[None]):
     tournament_id: int
     squad_id: int
     captain_player_id: int
-    invited_player_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
@@ -545,10 +544,9 @@ class CheckInvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("You are not registered for this tournament", status=400)
-                captain_squad_id = row[0]
+                captain_squad_id, is_squad_captain = row
                 if captain_squad_id != self.squad_id:
                     raise Problem("You are not registered for this squad", status=400)
-                is_squad_captain = row[1]
                 if is_squad_captain == 0:
                     raise Problem("You are not captain of this squad", status=400)
 
@@ -579,8 +577,58 @@ class EditPlayerRegistrationCommand(Command[None]):
                     if mii_name_required == 0 and self.mii_name:
                         raise Problem("Tournament should not have a Mii Name", status=400)
             #check if registration exists
-            async with db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ? WHERE tournament_id = ? AND squad_id = ? AND player_id = ?", (
-                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, self.tournament_id, self.squad_id, self.player_id)) as cursor:
-                updated_rows = cursor.rowcount
-                if updated_rows == 0:
+            async with db.execute("SELECT id, is_invite FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
+                (self.tournament_id, self.squad_id, self.player_id)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
                     raise Problem("Registration not found", status=404)
+                registration_id, curr_is_invite = row
+            # if a player accepts an invite while already registered for a different squad, their old registration must be removed
+            if curr_is_invite and (not self.is_invite):
+                await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND is_invite = ?",
+                    (self.tournament_id, self.player_id, False))
+            await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ? WHERE id = ?", (
+                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, registration_id))
+
+@dataclass
+class UnregisterPlayerCommand(Command[None]):
+    tournament_id: int
+    squad_id: int | None
+    player_id: int
+    is_privileged: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT registrations_open FROM tournaments WHERE tournament_id = ?", (self.tournament_id)) as cursor:
+                row = await cursor.fetchone()
+                registrations_open = row[0]
+                if (not self.is_privileged) and (not registrations_open):
+                    raise Problem("Registrations are closed, so players cannot be unregistered from this tournament", status=400)
+            await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ?", (self.tournament_id, self.squad_id, self.tournament_id))
+
+@dataclass
+class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
+    tournament_id: int
+    squad_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads WHERE tournament_id = ?, squad_id = ?",
+                (self.tournament_id, self.squad_id)) as cursor:
+                squad_row = await cursor.fetchone()
+                if not squad_row:
+                    raise Problem("Squad not found", status=404)
+                squad_id, name, tag, color, timestamp, is_registered = squad_row
+            async with db.execute("""SELECT t.player_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
+                                    t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
+                                    FROM tournament_players t
+                                    JOIN players p on t.player_id = p.id
+                                    WHERE squad_id = ?""",
+                                    (self.squad_id)) as cursor:
+                player_rows = await cursor.fetchall()
+                players = []
+                for row in player_rows:
+                    player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
+                    players.append(TournamentPlayerDetails(player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite,
+                        player_name, country, discord_id))
+            return TournamentSquadDetails(squad_id, name, tag, color, timestamp, is_registered, players)

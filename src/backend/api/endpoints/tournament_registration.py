@@ -5,10 +5,11 @@ from api.auth import require_permission, require_logged_in
 from api.data import connect_db, handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
-from common.data.commands import (CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand, EditSquadCommand, CheckInvitePlayerCommand,
-    EditPlayerRegistrationCommand)
+from common.data.commands import (CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand, EditSquadCommand, CheckSquadCaptainPermissionsCommand,
+    EditPlayerRegistrationCommand, UnregisterPlayerCommand, GetSquadDetailsCommand)
 from common.data.models import (CreateSquadRequestData, ForceCreateSquadRequestData, EditSquadRequestData, InvitePlayerRequestData,
-    RegisterPlayerRequestData, ForceRegisterPlayerRequestData, EditPlayerRegistrationRequestData, AcceptInviteRequestData)
+    RegisterPlayerRequestData, ForceRegisterPlayerRequestData, EditPlayerRegistrationRequestData, AcceptInviteRequestData,
+    DeclineInviteRequestData, UnregisterPlayerRequestData, StaffUnregisterPlayerRequestData)
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
@@ -44,7 +45,7 @@ async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONRespon
 async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
-    command = CheckInvitePlayerCommand(tournament_id, body.squad_id, captain_player_id, body.player_id)
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
     await handle(command)
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, False, False, None, False, True, False)
     await handle(command)
@@ -90,43 +91,13 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     return JSONResponse({})
 
 @require_logged_in
-async def decline_invite(request: Request) -> JSONResponse:
-    body = await request.json()
+@bind_request_body(DeclineInviteRequestData)
+async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
-    try:
-        invite_id = int(body['invite_id'])
-    except Exception as e:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user.id
-    async with connect_db() as db:
-        # check if tournament registrations are open
-        async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-            registrations_open = row[0]
-            if registrations_open == 0:
-                return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
-        # get player id from user id in request
-        async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-            player_id = row[0]
-        # get invite from id
-        async with db.execute("SELECT player_id, is_invite FROM tournament_players WHERE id = ?", (invite_id,)) as cursor:
-            row = await cursor.fetchone()
-            if row is None:
-                return JSONResponse({'error': 'Invite cannot be found'}, status_code=400)
-            invite_player_id = row[0]
-            if invite_player_id != player_id:
-                return JSONResponse({'error': 'Invited player ID different than accepting player ID'}, status_code=400)
-            is_invite = row[1]
-            if is_invite == 0:
-                return JSONResponse({'error': 'Not an invite'}, status_code=400)
-            if invite_player_id != player_id:
-                return JSONResponse({'error': 'Invited player ID different than declining player ID'}, status_code=400)
-        await db.execute("DELETE FROM tournament_players WHERE id = ?", (invite_id,))
-        await db.commit()
-    return JSONResponse({'success': 'Successfully rejected invitation'}, status_code=201)
+    player_id = request.state.user.player_id
+    command = UnregisterPlayerCommand(tournament_id, body.squad_id, player_id, False)
+    await handle(command)
+    return JSONResponse({})
 
 async def unregister_player(tournament_id, player_id, squad_id=None):
     is_invite = 0
@@ -138,125 +109,42 @@ async def unregister_player(tournament_id, player_id, squad_id=None):
     return JSONResponse({'success': 'Successfully unregistered player'}, status_code=201)
 
 @require_logged_in
+@bind_request_body(InvitePlayerRequestData)
 # used when a squad captain wants to remove a member from their squad
-async def remove_player_from_squad(request: Request) -> JSONResponse:
-    body = await request.json()
+async def remove_player_from_squad(request: Request, body: InvitePlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
-    try:
-        player_id = int(body['player_id'])
-        squad_id = int(body['squad_id'])
-    except Exception as e:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user.id
-    async with connect_db() as db:
-        # check if tournament registrations are open
-        async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-            registrations_open = row[0]
-            if registrations_open == 0:
-                return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
-        # get player id from user id in request
-        async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-            squad_captain_id = row[0]
-        # check captain's permissions
-        async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", (squad_captain_id, tournament_id, 0)) as cursor:
-            row = await cursor.fetchone()
-            if row is None:
-                return JSONResponse({'error': 'You are not registered for this tournament'}, status_code=400)
-            captain_squad_id = row[0]
-            if captain_squad_id != squad_id:
-                return JSONResponse({'error': 'You are not registered for this squad'}, status_code=400)
-            is_squad_captain = row[1]
-            if is_squad_captain == 0:
-                return JSONResponse({'error': 'You are not captain of your squad'}, status_code=400)
-    json_resp = await unregister_player(tournament_id, player_id, squad_id=squad_id)
-    return json_resp
+    captain_player_id = request.state.user.player_id
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
+    await handle(command)
+    command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, False)
+    await handle(command)
+    return JSONResponse({})
 
 # used when a player unregisters themself from the tournament
 @require_logged_in
-async def unregister_me(request: Request) -> JSONResponse:
-    body = await request.json()
+@bind_request_body(UnregisterPlayerRequestData)
+async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
-    try:
-        squad_id = None
-        if 'squad_id' in body:
-            squad_id = int(body['squad_id'])
-    except Exception as e:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    user_id = request.state.user.id
-    async with connect_db() as db:
-        # check if tournament registrations are open
-        async with db.execute("SELECT registrations_open FROM tournaments WHERE ID = ?", (tournament_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-            registrations_open = row[0]
-            if registrations_open == 0:
-                return JSONResponse({'error': 'Tournament registrations are closed'}, status_code=400)
-        # get player id from user id in request
-        async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
-            row = await cursor.fetchone()
-            assert row is not None
-            player_id = row[0]
-    json_resp = await unregister_player(tournament_id, player_id, squad_id=squad_id)
-    return json_resp
+    player_id = request.state.user.player_id
+    command = UnregisterPlayerCommand(tournament_id, body.squad_id, player_id, False)
+    await handle(command)
+    return JSONResponse({})
 
 # used when a staff member force removes a player from the tournament
-async def staff_unregister(request: Request) -> JSONResponse:
-    body = await request.json()
+@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@bind_request_body(StaffUnregisterPlayerRequestData)
+async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
-    try:
-        player_id = int(body['player_id'])
-        squad_id = None
-        if 'squad_id' in body:
-            squad_id = int(body['squad_id'])
-    except Exception as e:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-    json_resp = await unregister_player(tournament_id, player_id, squad_id=squad_id)
-    return json_resp
+    command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, True)
+    await handle(command)
+    return JSONResponse({})
 
 async def view_squad(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
     squad_id = request.path_params['squad_id']
-    async with connect_db() as db:
-        async with db.execute("SELECT name, tag, color, timestamp, is_registered FROM tournament_squads WHERE id = ? AND tournament_id = ?", (squad_id, tournament_id)) as cursor:
-            row = await cursor.fetchone()
-            if not row:
-                return JSONResponse({'error': 'Squad not found'}, status_code=400)
-            squad_name = row[0]
-            squad_tag = row[1]
-            squad_color = row[2]
-            timestamp = row[3]
-            is_registered = row[4]
-        async with db.execute("SELECT id, player_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite FROM tournament_players WHERE squad_id = ?",
-            (squad_id,)) as cursor:
-            rows = await cursor.fetchall()
-            players = []
-            for row in rows:
-                curr_player = {
-                    'id': row[0],
-                    'player_id': row[1],
-                    'is_squad_captain': row[2],
-                    'timestamp': row[3],
-                    'is_checked_in': row[4],
-                    'mii_name': row[5],
-                    'can_host': row[6],
-                    'is_invite': row[7]
-                }
-                players.append(curr_player)
-    json_resp = {
-        'squad_id': squad_id,
-        'squad_name': squad_name,
-        'squad_tag': squad_tag,
-        'squad_color': squad_color,
-        'timestamp': timestamp,
-        'tournament_id': tournament_id,
-        'is_registered': is_registered,
-        'players': players
-    }
-    return JSONResponse(json_resp)
+    command = GetSquadDetailsCommand(tournament_id, squad_id)
+    squad = await handle(command)
+    return JSONResponse(squad)
 
 async def squad_registrations(tournament_id, eligible_only):
     where_clause = ""
