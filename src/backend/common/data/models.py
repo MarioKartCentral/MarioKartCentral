@@ -116,3 +116,37 @@ class EditSquadRequestData:
     squad_tag: str
     squad_color: str
     is_registered: bool
+
+@dataclass
+class InvitePlayerRequestData:
+    squad_id: int
+    player_id: int
+
+@dataclass
+class RegisterPlayerRequestData:
+    mii_name: str | None = None
+    can_host: bool = False
+
+@dataclass
+class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
+    squad_id: int | None = None
+    player_id: int
+    is_squad_captain: bool = False
+    is_invite: bool = False
+    is_checked_in: bool = False
+
+@dataclass
+class EditPlayerRegistrationRequestData():
+    player_id: int
+    squad_id: int | None = None
+    is_squad_captain: bool = False
+    is_invite: bool = False
+    is_checked_in: bool = False
+    can_host: bool = False
+    mii_name: str | None = None
+
+@dataclass
+class AcceptInviteRequestData():
+    squad_id: int
+    mii_name: str | None = None
+    can_host: bool = False
