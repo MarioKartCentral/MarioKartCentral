@@ -2,113 +2,20 @@ import aiobotocore.session
 from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission
-from api.data import create_s3_client, connect_db
-from api.utils.responses import JSONResponse
+from api.data import create_s3_client, connect_db, handle
+from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
 import json
 from datetime import datetime
+from common.data.models import (CreateTournamentRequestData)
+from common.data.commands import (CreateTournamentCommand)
 
-@require_permission(permissions.CREATE_TOURNAMENT)
-async def create_tournament(request: Request) -> JSONResponse:
-    body = await request.json()
-    try:
-        tournament_name = body['name']
-        game = body['game']
-        mode = body['mode']
-        series_id = body['series_id'] #might be None so don't convert to int
-        is_squad = int(body['is_squad'])
-        registrations_open = int(body['registrations_open'])
-        date_start = int(body['date_start'])
-        date_end = int(body['date_end'])
-        description = body['description']
-        use_series_description = int(body['use_series_description'])
-        series_stats_include = int(body['series_stats_include'])
-        logo = body['logo']
-        url = body['url']
-        registration_deadline = body['registration_deadline']
-        registration_cap = body['registration_cap']
-        teams_allowed = int(body['teams_allowed'])
-        teams_only = int(body['teams_only'])
-        team_members_only = int(body['team_members_only'])
-        min_squad_size = int(body['min_squad_size'])
-        max_squad_size = int(body['max_squad_size'])
-        squad_tag_required = int(body['squad_tag_required'])
-        squad_name_required = int(body['squad_name_required'])
-        mii_name_required = int(body['mii_name_required'])
-        host_status_required = int(body['host_status_required'])
-        checkins_open = int(body['checkins_open'])
-        min_players_checkin = int(body['min_players_checkin'])
-        verified_fc_required = int(body['verified_fc_required'])
-        is_viewable = int(body['is_viewable'])
-        is_public = int(body['is_public'])
-        show_on_profiles = int(body['show_on_profiles'])
-        # object storage-only fields
-        ruleset = body['ruleset']
-        use_series_ruleset = int(body['use_series_ruleset'])
-        organizer = body['organizer']
-        location = body['location']
-
-    except Exception as e:
-        return JSONResponse({'error': 'No correct body send'}, status_code=400)
-
-    # store minimal data about each tournament in the SQLite DB
-    async with connect_db() as db:
-        cursor = await db.execute(
-            """INSERT INTO tournaments(
-                name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
-                logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
-                squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verified_fc_required, is_viewable, is_public,
-                show_on_profiles
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (tournament_name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description,
-            series_stats_include, logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size,
-            max_squad_size, squad_tag_required, squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin,
-            verified_fc_required, is_viewable, is_public, show_on_profiles))
-        tournament_id = cursor.lastrowid
-        await db.commit()
-
-    # store more detailed information about the tournament in object storage
-    s3_json = {"id": tournament_id,
-                "name": tournament_name,
-                "game": game,
-                "mode": mode,
-                "series_id": series_id,
-                "is_squad": is_squad,
-                "registrations_open": registrations_open,
-                "date_start": date_start,
-                "date_end": date_end,
-                "description": description,
-                "use_series_description": use_series_description,
-                "series_stats_include": series_stats_include,
-                "logo": logo,
-                "url": url,
-                "registration_deadline": registration_deadline,
-                "registration_cap": registration_cap,
-                "teams_allowed": teams_allowed,
-                "teams_only": teams_only,
-                "team_members_only": team_members_only,
-                "min_squad_size": min_squad_size,
-                "max_squad_size": max_squad_size,
-                "squad_tag_required": squad_tag_required,
-                "squad_name_required": squad_name_required,
-                "mii_name_required": mii_name_required,
-                "host_status_required": host_status_required,
-                "checkins_open": checkins_open,
-                "min_players_checkin": min_players_checkin,
-                "verified_fc_required": verified_fc_required,
-                "is_viewable": is_viewable,
-                "is_public": is_public,
-                "show_on_profiles": show_on_profiles,
-                "ruleset": ruleset,
-                "use_series_ruleset": use_series_ruleset,
-                "organizer": organizer,
-                "location": location
-                }
-    s3_message = bytes(json.dumps(s3_json).encode('utf-8'))
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        result = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
-    return JSONResponse(s3_json)
+@bind_request_body(CreateTournamentRequestData)
+#@require_permission(permissions.CREATE_TOURNAMENT)
+async def create_tournament(request: Request, body: CreateTournamentRequestData) -> JSONResponse:
+    command = CreateTournamentCommand(body)
+    await handle(command)
+    return JSONResponse({})
 
 @require_permission(permissions.EDIT_TOURNAMENT)
 async def edit_tournament(request: Request) -> JSONResponse:

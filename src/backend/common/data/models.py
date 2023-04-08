@@ -125,12 +125,12 @@ class InvitePlayerRequestData:
 
 @dataclass
 class RegisterPlayerRequestData:
-    mii_name: str | None = None
-    can_host: bool = False
+    mii_name: str | None
+    can_host: bool
 
 @dataclass
 class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
-    squad_id: int | None = None
+    squad_id: int | None
     player_id: int
     is_squad_captain: bool = False
     is_invite: bool = False
@@ -190,3 +190,40 @@ class TournamentSquadDetails():
     timestamp: int
     is_registered: int
     players: List[TournamentPlayerDetails]
+
+@dataclass
+class CreateTournamentRequestData():
+    tournament_name: str
+    game: str
+    mode: str
+    series_id: int | None
+    is_squad: bool
+    registrations_open: bool
+    date_start: int
+    date_end: int
+    description: str
+    use_series_description: bool
+    series_stats_include: bool
+    logo: str | None
+    url: str | None
+    registration_deadline: int | None
+    registration_cap: int | None
+    teams_allowed: bool
+    teams_only: bool
+    team_members_only: bool
+    min_squad_size: int | None
+    max_squad_size: int | None
+    squad_tag_required: bool
+    squad_name_required: bool
+    mii_name_required: bool
+    host_status_required: bool
+    checkins_open: bool
+    min_players_checkin: int
+    verified_fc_required: bool
+    is_viewable: bool
+    is_public: bool
+    show_on_profiles: bool
+    ruleset: str
+    use_series_ruleset: bool
+    organizer: str
+    location: str

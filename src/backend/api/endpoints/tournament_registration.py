@@ -157,7 +157,8 @@ async def list_registrations(request: Request) -> JSONResponse:
         command = GetSquadRegistrationsCommand(tournament_id, eligible_only)
     else:
         command = GetFFARegistrationsCommand(tournament_id)
-    await handle(command)
+    registrations = await handle(command)
+    return JSONResponse(registrations)
 
 routes = [
     Route('/api/tournaments/{id:int}/register', register_me, methods=['POST']),

@@ -8,7 +8,7 @@ import common.data.db.tables as tables
 from common.data.db import DBWrapper
 from common.data.s3 import S3Wrapper
 from common.data.models import *
-
+import msgspec
 
 TCommandResponse = TypeVar('TCommandResponse', covariant=True)
 
@@ -428,7 +428,7 @@ class RegisterPlayerCommand(Command[None]):
                     if is_registered == 1 and (not self.is_invite): # should still be able to invite someone if they are registered for the tournament
                         raise Problem('Player is already registered for this tournament', status=400)
             # check if player's squad is at maximum number of players
-            if self.squad_id is not None:
+            if self.squad_id is not None and max_squad_size is not None:
                 async with db.execute("SELECT id FROM tournament_players WHERE tournament_id = ? AND squad_id = ?", (self.tournament_id, self.squad_id)) as cursor:
                     player_squad_size = cursor.rowcount
                     if player_squad_size >= max_squad_size:
@@ -698,3 +698,31 @@ class GetFFARegistrationsCommand(Command[List[TournamentPlayerDetails]]):
                     curr_player = TournamentPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id)
                     players.append(curr_player)
                 return players
+            
+@dataclass
+class CreateTournamentCommand(Command[None]):
+    body: CreateTournamentRequestData
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        # store minimal data about each tournament in the SQLite DB
+        async with db_wrapper.connect() as db:
+            b = self.body
+            cursor = await db.execute(
+                """INSERT INTO tournaments(
+                    name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
+                    logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
+                    squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verified_fc_required, is_viewable, is_public,
+                    show_on_profiles
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (b.tournament_name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
+                b.series_stats_include, b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
+                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin,
+                b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles))
+            tournament_id = cursor.lastrowid
+            await db.commit()
+
+        s3_message = bytes(msgspec.json.encode(self.body))
+        session = aiobotocore.session.get_session()
+        async with s3_wrapper.create_client(session) as s3_client:
+            object_data: str = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
+            
