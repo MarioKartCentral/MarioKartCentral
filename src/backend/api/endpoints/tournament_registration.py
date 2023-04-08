@@ -6,7 +6,7 @@ from api.data import connect_db, handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
 from common.data.commands import (CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand, EditSquadCommand, CheckSquadCaptainPermissionsCommand,
-    EditPlayerRegistrationCommand, UnregisterPlayerCommand, GetSquadDetailsCommand)
+    EditPlayerRegistrationCommand, UnregisterPlayerCommand, GetSquadDetailsCommand, CheckIfSquadTournament, GetSquadRegistrationsCommand, GetFFARegistrationsCommand)
 from common.data.models import (CreateSquadRequestData, ForceCreateSquadRequestData, EditSquadRequestData, InvitePlayerRequestData,
     RegisterPlayerRequestData, ForceRegisterPlayerRequestData, EditPlayerRegistrationRequestData, AcceptInviteRequestData,
     DeclineInviteRequestData, UnregisterPlayerRequestData, StaffUnregisterPlayerRequestData)
@@ -146,78 +146,18 @@ async def view_squad(request: Request) -> JSONResponse:
     squad = await handle(command)
     return JSONResponse(squad)
 
-async def squad_registrations(tournament_id, eligible_only):
-    where_clause = ""
-    if eligible_only:
-        where_clause = "AND is_registered = 1"
-    async with connect_db() as db:
-        async with db.execute(f"SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads WHERE tournament_id = ? {where_clause}", (tournament_id,)) as cursor:
-            rows = await cursor.fetchall()
-            squads = {}
-            for row in rows:
-                squad_id = int(row[0])
-                curr_squad = {
-                    'id': squad_id,
-                    'name': row[1],
-                    'tag': row[2],
-                    'color': row[3],
-                    'timestamp': row[4],
-                    'is_registered': row[5],
-                    'players': []
-                }
-                squads[squad_id] = curr_squad
-        async with db.execute(f"SELECT id, player_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite FROM tournament_players WHERE tournament_id = ?", (tournament_id,)) as cursor:
-            rows = await cursor.fetchall()
-            for row in rows:
-                squad_id = int(row[2])
-                if squad_id not in squads:
-                    continue
-                curr_player = {
-                    'id': row[0],
-                    'player_id': row[1],
-                    'is_squad_captain': row[3],
-                    'timestamp': row[4],
-                    'is_checked_in': row[5],
-                    'mii_name': row[6],
-                    'can_host': row[7],
-                    'is_invite': row[8]
-                }
-                squads[squad_id]['players'].append(curr_player)
-    return JSONResponse({'squads': [s for s in squads.values()]})
-            
-
-async def ffa_registrations(tournament_id):
-    async with connect_db() as db:
-        async with db.execute("SELECT id, player_id, timestamp, is_checked_in, mii_name, can_host FROM tournament_players WHERE tournament_id = ?", (tournament_id,)) as cursor:
-            rows = await cursor.fetchall()
-            players = []
-            for row in rows:
-                curr_player = {
-                    'id': row[0],
-                    'player_id': row[1],
-                    'timestamp': row[2],
-                    'is_checked_in': row[3],
-                    'mii_name': row[4],
-                    'can_host': row[5],
-                }
-                players.append(curr_player)
-    return JSONResponse({'players': players})
-
-
 async def list_registrations(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
     eligible_only = False
     if "eligibleOnly" in request.query_params:
         eligible_only = True
-    async with connect_db() as db:
-        async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (tournament_id,)) as cursor:
-            row = await cursor.fetchone()
-            if row is None:
-                return JSONResponse({'error': 'Tournament not found'}, status_code=404)
-            is_squad = row[0]
-    if is_squad == 1:
-        return await squad_registrations(tournament_id, eligible_only)
-    return await ffa_registrations(tournament_id)
+    command = CheckIfSquadTournament(tournament_id)
+    is_squad = await handle(command)
+    if is_squad:
+        command = GetSquadRegistrationsCommand(tournament_id, eligible_only)
+    else:
+        command = GetFFARegistrationsCommand(tournament_id)
+    await handle(command)
 
 routes = [
     Route('/api/tournaments/{id:int}/register', register_me, methods=['POST']),

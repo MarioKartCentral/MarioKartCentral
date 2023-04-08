@@ -629,6 +629,72 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 players = []
                 for row in player_rows:
                     player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
-                    players.append(TournamentPlayerDetails(player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite,
-                        player_name, country, discord_id))
+                    players.append(SquadPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host,
+                        player_name, country, discord_id, is_squad_captain, is_invite))
             return TournamentSquadDetails(squad_id, name, tag, color, timestamp, is_registered, players)
+
+@dataclass
+class CheckIfSquadTournament(Command[bool]):
+    tournament_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Tournament not found", status=404)
+                is_squad = row[0]
+                return bool(is_squad)
+
+@dataclass
+class GetSquadRegistrationsCommand(Command[List[TournamentSquadDetails]]):
+    tournament_id: int
+    eligible_only: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            where_clause = ""
+            if self.eligible_only:
+                where_clause = "AND is_registered = 1"
+            async with db.execute(f"SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads WHERE tournament_id = ? {where_clause}", (self.tournament_id,)) as cursor:
+                rows = await cursor.fetchall()
+                squads = {}
+                for row in rows:
+                    squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered = row
+                    curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, [])
+                    squads[squad_id] = curr_squad
+            async with db.execute("""SELECT t.player_id, t.squad_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
+                                    t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
+                                    FROM tournament_players t
+                                    JOIN players p on t.player_id = p.id
+                                    WHERE tournament_id = ?""",
+                                    (self.tournament_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, squad_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
+                    if squad_id not in squads:
+                        continue
+                    curr_player = SquadPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, is_squad_captain, is_invite)
+                    curr_squad = squads[squad_id]
+                    curr_squad.players.append(curr_player)
+        return list(squads.values())
+    
+@dataclass
+class GetFFARegistrationsCommand(Command[List[TournamentPlayerDetails]]):
+    tournament_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host,
+                                    p.name, p.country_code, p.discord_id
+                                    FROM tournament_players t
+                                    JOIN players p on t.player_id = p.id
+                                    WHERE tournament_id = ?""",
+                                    (self.tournament_id,)) as cursor:
+                rows = await cursor.fetchall()
+                players = []
+                for row in rows:
+                    player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id = row
+                    curr_player = TournamentPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id)
+                    players.append(curr_player)
+                return players

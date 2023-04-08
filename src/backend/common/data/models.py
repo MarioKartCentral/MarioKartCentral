@@ -168,15 +168,18 @@ class StaffUnregisterPlayerRequestData():
 @dataclass
 class TournamentPlayerDetails():
     player_id: int
-    is_squad_captain: int
     timestamp: int
     is_checked_in: bool
     mii_name: str | None
     can_host: bool
-    is_invite: bool
     name: str
     country_code: str | None
     discord_id: str | None
+
+@dataclass
+class SquadPlayerDetails(TournamentPlayerDetails):
+    is_squad_captain: int
+    is_invite: bool
 
 @dataclass
 class TournamentSquadDetails():
