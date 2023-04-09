@@ -13,7 +13,7 @@ class DBWrapperConnection():
             await db.execute("pragma foreign_keys = ON;")
         return db
 
-    async def __aexit__(self, *_) -> None:
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         await self.connection.close()
 
 @dataclass

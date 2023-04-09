@@ -33,9 +33,9 @@ async def s3_write(request: Request) -> JSONResponse:
 
     message = message.encode('utf-8')
 
-    result = await handle(WriteMessageToFileInS3BucketCommand(bucket_name, file_name, message))
+    await handle(WriteMessageToFileInS3BucketCommand(bucket_name, file_name, message))
 
-    return JSONResponse(result)
+    return JSONResponse({})
 
 routes = [
     Route('/api/s3', s3_read),
