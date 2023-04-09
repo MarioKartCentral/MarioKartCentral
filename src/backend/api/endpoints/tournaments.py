@@ -1,8 +1,7 @@
-import aiobotocore.session
 from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission
-from api.data import create_s3_client, connect_db
+from api.data import connect_db, s3_wrapper
 from api.utils.responses import JSONResponse
 from common.auth import permissions
 import json
@@ -105,9 +104,7 @@ async def create_tournament(request: Request) -> JSONResponse:
                 "location": location
                 }
     s3_message = bytes(json.dumps(s3_json).encode('utf-8'))
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        result = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
+    await s3_wrapper.put_object('tournaments', f'{tournament_id}.json', s3_message)
     return JSONResponse(s3_json)
 
 @require_permission(permissions.EDIT_TOURNAMENT)
@@ -189,61 +186,52 @@ async def edit_tournament(request: Request) -> JSONResponse:
             return JSONResponse({'error':'No tournament found'}, status_code=404)
         await db.commit()
 
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='tournaments', Key=f'{tournament_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No tournament found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
-        json_body["name"] = tournament_name
-        json_body["series_id"] = series_id
-        json_body["registrations_open"] = registrations_open
-        json_body["date_start"] = date_start
-        json_body["date_end"] = date_end
-        json_body["description"] = description
-        json_body["use_series_description"] = use_series_description
-        json_body["series_stats_include"] = series_stats_include
-        json_body["logo"] = logo
-        json_body["url"] = url
-        json_body["registration_deadline"] = registration_deadline
-        json_body["registration_cap"] = registration_cap
-        json_body["teams_allowed"] = teams_allowed
-        json_body["teams_only"] = teams_only
-        json_body["team_members_only"] = team_members_only
-        json_body["min_squad_size"] = min_squad_size
-        json_body["max_squad_size"] = max_squad_size
-        json_body["squad_tag_required"] = squad_tag_required
-        json_body["squad_name_required"] = squad_name_required
-        json_body["mii_name_required"] = mii_name_required
-        json_body["host_status_required"] = host_status_required
-        json_body["checkins_open"] = checkins_open
-        json_body["min_players_checkin"] = min_players_checkin
-        json_body["verified_fc_required"] = verified_fc_required
-        json_body["is_viewable"] = is_viewable
-        json_body["is_public"] = is_public
-        json_body["show_on_profiles"] = show_on_profiles
-        json_body["ruleset"] = ruleset
-        json_body["use_series_ruleset"] = use_series_ruleset
-        json_body["organizer"] = organizer
-        json_body["location"] = location
-        s3_message = bytes(json.dumps(json_body).encode('utf-8'))
-        result = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
+    body = await s3_wrapper.get_object('tournaments', f'{tournament_id}.json')
+    if body is None:
+        return JSONResponse({'error':'No tournament found'}, status_code=404)
+    json_body = json.loads(body)
+    json_body["name"] = tournament_name
+    json_body["series_id"] = series_id
+    json_body["registrations_open"] = registrations_open
+    json_body["date_start"] = date_start
+    json_body["date_end"] = date_end
+    json_body["description"] = description
+    json_body["use_series_description"] = use_series_description
+    json_body["series_stats_include"] = series_stats_include
+    json_body["logo"] = logo
+    json_body["url"] = url
+    json_body["registration_deadline"] = registration_deadline
+    json_body["registration_cap"] = registration_cap
+    json_body["teams_allowed"] = teams_allowed
+    json_body["teams_only"] = teams_only
+    json_body["team_members_only"] = team_members_only
+    json_body["min_squad_size"] = min_squad_size
+    json_body["max_squad_size"] = max_squad_size
+    json_body["squad_tag_required"] = squad_tag_required
+    json_body["squad_name_required"] = squad_name_required
+    json_body["mii_name_required"] = mii_name_required
+    json_body["host_status_required"] = host_status_required
+    json_body["checkins_open"] = checkins_open
+    json_body["min_players_checkin"] = min_players_checkin
+    json_body["verified_fc_required"] = verified_fc_required
+    json_body["is_viewable"] = is_viewable
+    json_body["is_public"] = is_public
+    json_body["show_on_profiles"] = show_on_profiles
+    json_body["ruleset"] = ruleset
+    json_body["use_series_ruleset"] = use_series_ruleset
+    json_body["organizer"] = organizer
+    json_body["location"] = location
+    s3_message = bytes(json.dumps(json_body).encode('utf-8'))
+    await s3_wrapper.put_object('tournaments', f'{tournament_id}.json', s3_message)
     return JSONResponse(json_body)
 
 async def tournament_info(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='tournaments', Key=f'{tournament_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No tournament found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
+    
+    body = await s3_wrapper.get_object('tournaments', f'{tournament_id}.json')
+    if body is None:
+        return JSONResponse({'error':'No tournament found'}, status_code=404)
+    json_body = json.loads(body)
     return JSONResponse(json_body)
 
 async def tournament_list_minimal(where_clause, variable_parameters):
@@ -354,9 +342,7 @@ async def create_series(request: Request) -> JSONResponse:
                 }
 
     s3_message = bytes(json.dumps(s3_json).encode('utf-8'))
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
+    result = await s3_wrapper.put_object('series', f'{series_id}.json', s3_message)
     return JSONResponse(s3_json)
 
 @require_permission(permissions.EDIT_SERIES)
@@ -394,41 +380,31 @@ async def edit_series(request: Request) -> JSONResponse:
         if updated_rows == 0:
             return JSONResponse({'error':'No tournament found'}, status_code=404)
         await db.commit()
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No tournament found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
-        json_body["name"] = series_name
-        json_body["url"] = url
-        json_body["game"] = game
-        json_body["mode"] = mode
-        json_body["is_historical"] = is_historical
-        json_body["is_public"] = is_public
-        json_body["description"] = description
-        json_body["logo"] = logo
-        json_body["ruleset"] = ruleset
-        json_body["organizer"] = organizer
-        json_body["location"] = location
-        s3_message = bytes(json.dumps(json_body).encode('utf-8'))
-        result = await s3_client.put_object(Bucket='series', Key=f'{series_id}.json', Body=s3_message)
+    body = await s3_wrapper.get_object('series', f'{series_id}.json')
+    if body is None:
+        return JSONResponse({'error':'No tournament found'}, status_code=404)
+    json_body = json.loads(body)
+    json_body["name"] = series_name
+    json_body["url"] = url
+    json_body["game"] = game
+    json_body["mode"] = mode
+    json_body["is_historical"] = is_historical
+    json_body["is_public"] = is_public
+    json_body["description"] = description
+    json_body["logo"] = logo
+    json_body["ruleset"] = ruleset
+    json_body["organizer"] = organizer
+    json_body["location"] = location
+    s3_message = bytes(json.dumps(json_body).encode('utf-8'))
+    await s3_wrapper.put_object('series', f'{series_id}.json', s3_message)
     return JSONResponse(json_body)
 
 async def series_info(request: Request) -> JSONResponse:
     series_id = request.path_params['id']
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='series', Key=f'{series_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No series found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
+    body = await s3_wrapper.get_object('series', f'{series_id}.json')
+    if body is None:
+        return JSONResponse({'error':'No series found'}, status_code=404)
+    json_body = json.loads(body)
     return JSONResponse(json_body)
 
 async def series_list(request: Request) -> JSONResponse:
@@ -551,9 +527,7 @@ async def create_template(request: Request) -> JSONResponse:
                 "location": location
                 }
     s3_message = bytes(json.dumps(s3_json).encode('utf-8'))
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        result = await s3_client.put_object(Bucket='templates', Key=f'{template_id}.json', Body=s3_message)
+    await s3_wrapper.put_object('templates', f'{template_id}.json', s3_message)
     return JSONResponse(s3_json)
 
 @require_permission(permissions.EDIT_TOURNAMENT_TEMPLATE)
@@ -609,62 +583,52 @@ async def edit_template(request: Request) -> JSONResponse:
             return JSONResponse({'error':'No template found'}, status_code=404)
         await db.commit()
 
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='templates', Key=f'{template_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No template found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
-        json_body["template_name"] = template_name
-        json_body["series_id"] = series_id
-        json_body["tournament_name"] = tournament_name
-        json_body["game"] = game
-        json_body["mode"] = mode
-        json_body["is_squad"] = is_squad
-        json_body["registrations_open"] = registrations_open
-        json_body["description"] = description
-        json_body["use_series_description"] = use_series_description
-        json_body["series_stats_include"] = series_stats_include
-        json_body["logo"] = logo
-        json_body["registration_deadline"] = registration_deadline
-        json_body["registration_cap"] = registration_cap
-        json_body["teams_allowed"] = teams_allowed
-        json_body["teams_only"] = teams_only
-        json_body["team_members_only"] = team_members_only
-        json_body["min_squad_size"] = min_squad_size
-        json_body["max_squad_size"] = max_squad_size
-        json_body["squad_tag_required"] = squad_tag_required
-        json_body["squad_name_required"] = squad_name_required
-        json_body["mii_name_required"] = mii_name_required
-        json_body["host_status_required"] = host_status_required
-        json_body["checkins_open"] = checkins_open
-        json_body["min_players_checkin"] = min_players_checkin
-        json_body["verified_fc_required"] = verified_fc_required
-        json_body["is_viewable"] = is_viewable
-        json_body["is_public"] = is_public
-        json_body["show_on_profiles"] = show_on_profiles
-        json_body["ruleset"] = ruleset
-        json_body["use_series_ruleset"] = use_series_ruleset
-        json_body["organizer"] = organizer
-        json_body["location"] = location
-        s3_message = bytes(json.dumps(json_body).encode('utf-8'))
-        result = await s3_client.put_object(Bucket='templates', Key=f'{template_id}.json', Body=s3_message)
+    body = await s3_wrapper.get_object('templates', f'{template_id}.json')
+    if body is None:
+        return JSONResponse({'error':'No template found'}, status_code=404)
+    json_body = json.loads(body)
+    json_body["template_name"] = template_name
+    json_body["series_id"] = series_id
+    json_body["tournament_name"] = tournament_name
+    json_body["game"] = game
+    json_body["mode"] = mode
+    json_body["is_squad"] = is_squad
+    json_body["registrations_open"] = registrations_open
+    json_body["description"] = description
+    json_body["use_series_description"] = use_series_description
+    json_body["series_stats_include"] = series_stats_include
+    json_body["logo"] = logo
+    json_body["registration_deadline"] = registration_deadline
+    json_body["registration_cap"] = registration_cap
+    json_body["teams_allowed"] = teams_allowed
+    json_body["teams_only"] = teams_only
+    json_body["team_members_only"] = team_members_only
+    json_body["min_squad_size"] = min_squad_size
+    json_body["max_squad_size"] = max_squad_size
+    json_body["squad_tag_required"] = squad_tag_required
+    json_body["squad_name_required"] = squad_name_required
+    json_body["mii_name_required"] = mii_name_required
+    json_body["host_status_required"] = host_status_required
+    json_body["checkins_open"] = checkins_open
+    json_body["min_players_checkin"] = min_players_checkin
+    json_body["verified_fc_required"] = verified_fc_required
+    json_body["is_viewable"] = is_viewable
+    json_body["is_public"] = is_public
+    json_body["show_on_profiles"] = show_on_profiles
+    json_body["ruleset"] = ruleset
+    json_body["use_series_ruleset"] = use_series_ruleset
+    json_body["organizer"] = organizer
+    json_body["location"] = location
+    s3_message = bytes(json.dumps(json_body).encode('utf-8'))
+    await s3_wrapper.put_object('templates', f'{template_id}.json', s3_message)
     return JSONResponse(json_body)
 
 async def template_info(request: Request) -> JSONResponse:
     template_id = request.path_params['id']
-    session = aiobotocore.session.get_session()
-    async with create_s3_client(session) as s3_client:
-        try:
-            response = await s3_client.get_object(Bucket='templates', Key=f'{template_id}.json')
-        except s3_client.exceptions.NoSuchKey as e:
-            return JSONResponse({'error':'No template found'}, status_code=404)
-        async with response['Body'] as stream:
-            body = await stream.read()
-            json_body = json.loads(body)
+    body = await s3_wrapper.get_object('templates', f'{template_id}.json')
+    if body is None:
+        return JSONResponse({'error':'No template found'}, status_code=404)
+    json_body = json.loads(body)
     return JSONResponse(json_body)
 
 async def template_list(request: Request) -> JSONResponse:

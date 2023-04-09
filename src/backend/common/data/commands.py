@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Generic, TypeVar
-import aiobotocore.session
 from common.auth import roles, permissions
 import common.data.db.tables as tables
 from common.data.db import DBWrapper
@@ -55,42 +54,30 @@ class SeedDatabaseCommand(Command[None]):
 
 class InitializeS3BucketsCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
-        session = aiobotocore.session.get_session()
-        async with s3_wrapper.create_client(session) as s3_client:
-            resp = await s3_client.list_buckets()
-            # names of currently existing buckets in s3
-            bucket_names = [b['Name'] for b in resp['Buckets']]
-            # all buckets we need for the API to run
-            api_buckets = ['tournaments', 'series', 'templates']
-            # create buckets if they can't be found in s3
-            for bucket in api_buckets:
-                if bucket not in bucket_names:
-                    await s3_client.create_bucket(Bucket=bucket)
+        bucket_names = await s3_wrapper.list_buckets()
+
+        # all buckets we need for the API to run
+        api_buckets = ['tournaments', 'series', 'templates']
+        for bucket in api_buckets:
+            if bucket not in bucket_names:
+                await s3_wrapper.create_bucket(bucket)
 
 @dataclass
-class ReadFileInS3BucketCommand(Command[str]):
+class ReadFileInS3BucketCommand(Command[bytes | None]):
     bucket: str
     file_name: str
 
     async def handle(self, db_wrapper, s3_wrapper):
-        session = aiobotocore.session.get_session()
-        async with s3_wrapper.create_client(session) as s3_client:
-            response = await s3_client.get_object(Bucket=self.bucket, Key=self.file_name)
-            async with response['Body'] as stream:
-                object_data: str = await stream.read()
-                return object_data
+        return await s3_wrapper.get_object(self.bucket, self.file_name)
 
 @dataclass
-class WriteMessageToFileInS3BucketCommand(Command[str]):
+class WriteMessageToFileInS3BucketCommand(Command[None]):
     bucket: str
     file_name: str
     message: bytes
 
     async def handle(self, db_wrapper, s3_wrapper):
-        session = aiobotocore.session.get_session()
-        async with s3_wrapper.create_client(session) as s3_client:
-            object_data: str = await s3_client.put_object(Bucket=self.bucket, Key=self.file_name, Body=self.message)
-            return object_data
+        await s3_wrapper.put_object(self.bucket, self.file_name, self.message)
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[int | None]):
