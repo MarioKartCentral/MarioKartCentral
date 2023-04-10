@@ -227,3 +227,119 @@ class CreateTournamentRequestData():
     use_series_ruleset: bool
     organizer: str
     location: str
+
+@dataclass
+class Tournament(CreateTournamentRequestData):
+    id: int
+
+@dataclass
+class EditTournamentRequestData():
+    tournament_name: str
+    series_id: int | None
+    registrations_open: bool
+    date_start: int
+    date_end: int
+    description: str
+    use_series_description: bool
+    series_stats_include: bool
+    logo: str | None
+    url: str | None
+    registration_deadline: int | None
+    registration_cap: int | None
+    teams_allowed: bool
+    teams_only: bool
+    team_members_only: bool
+    min_squad_size: int | None
+    max_squad_size: int | None
+    squad_tag_required: bool
+    squad_name_required: bool
+    mii_name_required: bool
+    host_status_required: bool
+    checkins_open: bool
+    min_players_checkin: int
+    verified_fc_required: bool
+    is_viewable: bool
+    is_public: bool
+    show_on_profiles: bool
+    ruleset: str
+    use_series_ruleset: bool
+    organizer: str
+    location: str
+
+@dataclass
+class TournamentDataMinimal():
+    id: int
+    tournament_name: str
+    game: str
+    mode: str
+    date_start: int
+    date_end: int
+
+@dataclass
+class TournamentDataBasic(TournamentDataMinimal):
+    series_id: int | None
+    is_squad: bool
+    registrations_open: bool
+    description: str
+    logo: str
+
+@dataclass
+class TournamentFilter():
+    is_minimal: bool = True
+    name: str | None = None
+    game: str | None = None
+    mode: str | None = None
+    series_id: int | None = None
+    is_viewable: bool | None = None
+    is_public: bool | None = None
+
+@dataclass
+class SeriesRequestData():
+    series_name: str
+    url: str | None
+    game: str
+    mode: str
+    is_historical: bool
+    is_public: bool
+    description: str
+    logo: str | None
+    ruleset: str
+    organizer: str
+    location: str
+    
+@dataclass
+class Series():
+    id: int
+    series_name: str
+    url: str | None
+    game: str
+    mode: str
+    is_historical: bool
+    is_public: bool
+    description: str
+    logo: str | None
+
+@dataclass
+class SeriesFilter():
+    is_historical: bool | None = None
+    is_public: bool | None = None
+    game: str | None = None
+    mode: str | None = None
+
+@dataclass
+class TournamentTemplateRequestData(CreateTournamentRequestData):
+    template_name: str
+
+@dataclass
+class TournamentTemplate(TournamentTemplateRequestData):
+    id: int | None
+
+@dataclass
+class TournamentTemplateMinimal():
+    id: int
+    template_name: str
+    series_id: int | None
+
+@dataclass
+class TemplateFilter():
+    series_id: int | None = None

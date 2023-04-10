@@ -490,7 +490,7 @@ class GetPlayerIdForUserCommand(Command[int]):
     user_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> int:
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             # get player id from user id in request
             async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -524,7 +524,7 @@ class CheckSquadCaptainPermissionsCommand(Command[None]):
     captain_player_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             # check captain's permissions
             async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", 
                 (self.captain_player_id, self.tournament_id, 0)) as cursor:
@@ -599,7 +599,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
     squad_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads WHERE tournament_id = ?, squad_id = ?",
                 (self.tournament_id, self.squad_id)) as cursor:
                 squad_row = await cursor.fetchone()
@@ -625,7 +625,7 @@ class CheckIfSquadTournament(Command[bool]):
     tournament_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
@@ -639,7 +639,7 @@ class GetSquadRegistrationsCommand(Command[List[TournamentSquadDetails]]):
     eligible_only: bool
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             where_clause = ""
             if self.eligible_only:
                 where_clause = "AND is_registered = 1"
@@ -671,7 +671,7 @@ class GetFFARegistrationsCommand(Command[List[TournamentPlayerDetails]]):
     tournament_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host,
                                     p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
@@ -709,7 +709,275 @@ class CreateTournamentCommand(Command[None]):
             await db.commit()
 
         s3_message = bytes(msgspec.json.encode(self.body))
-        session = aiobotocore.session.get_session()
-        async with s3_wrapper.create_client(session) as s3_client:
-            object_data: str = await s3_client.put_object(Bucket='tournaments', Key=f'{tournament_id}.json', Body=s3_message)
+        await s3_wrapper.put_object('tournaments', f'{tournament_id}.json', s3_message)
             
+@dataclass
+class EditTournamentCommand(Command[None]):
+    body: EditTournamentRequestData
+    id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            b = self.body
+            cursor = await db.execute("""UPDATE tournaments
+                SET name = ?,
+                series_id = ?,
+                registrations_open = ?,
+                date_start = ?,
+                date_end = ?,
+                description = ?,
+                use_series_description = ?,
+                series_stats_include = ?,
+                logo = ?,
+                url = ?,
+                registration_deadline = ?,
+                registration_cap = ?,
+                teams_allowed = ?,
+                teams_only = ?,
+                team_members_only = ?,
+                min_squad_size = ?,
+                max_squad_size = ?,
+                squad_tag_required = ?,
+                squad_name_required = ?,
+                mii_name_required = ?,
+                host_status_required = ?,
+                checkins_open = ?,
+                min_players_checkin = ?,
+                verified_fc_required = ?,
+                is_viewable = ?,
+                is_public = ?,
+                show_on_profiles = ?
+                WHERE id = ?""",
+                (b.tournament_name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
+                b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
+                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open,
+                b.min_players_checkin, b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles, self.id))
+            updated_rows = cursor.rowcount
+            if updated_rows == 0:
+                raise Problem('No tournament found', status=404)
+            await db.commit()
+
+        s3_message = bytes(msgspec.json.encode(self.body))
+        await s3_wrapper.put_object('tournaments', f'{self.id}.json', s3_message)
+    
+@dataclass
+class GetTournamentDataCommand(Command[Tournament]):
+    id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        body = await s3_wrapper.get_object('tournaments', f'{self.id}.json')
+        if body is None:
+            raise Problem('No tournament found', status=404)
+        tournament_data = msgspec.json.decode(body, type=Tournament)
+        return tournament_data
+
+@dataclass
+class GetTournamentListCommand(Command[List[TournamentDataMinimal]]):
+    filter: TournamentFilter
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        filter = self.filter
+        is_minimal = filter.is_minimal
+        async with db_wrapper.connect(readonly=True) as db:
+            where_clauses = []
+            variable_parameters = []
+
+            def append_equal_filter(filter_value, column_name):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            if filter.name is not None:
+                where_clauses.append(f"name LIKE ?")
+                variable_parameters.append(f"%{filter.name}%")
+
+            append_equal_filter(filter.game, "game")
+            append_equal_filter(filter.mode, "mode")
+            append_equal_filter(filter.series_id, "series_id")
+            append_equal_filter(filter.is_public, "is_public")
+            append_equal_filter(filter.is_viewable, "is_viewable")
+
+            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            if is_minimal:
+                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end FROM tournaments{where_clause}"
+            else:
+                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, description, logo FROM tournaments{where_clause}"
+            
+            tournaments = []
+            async with db.execute(tournaments_query, variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    if is_minimal:
+                        tournament_id, name, game, mode, date_start, date_end = row
+                        tournaments.append(TournamentDataMinimal(tournament_id, name, game, mode, date_start, date_end))
+                    else:
+                        tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, description, logo = row
+                        tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id,
+                            bool(is_squad), bool(registrations_open), description, logo))
+            return tournaments
+
+@dataclass
+class CreateSeriesCommand(Command[None]):
+    body: SeriesRequestData
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        b = self.body
+        # store minimal data about each series in the SQLite DB
+        async with db_wrapper.connect() as db:
+            cursor = await db.execute(
+                "INSERT INTO tournament_series(name, url, game, mode, is_historical, is_public, description, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (b.series_name, b.url, b.game, b.mode, b.is_historical, b.is_public, b.description, b.logo))
+            series_id = cursor.lastrowid
+            await db.commit()
+
+        s3_message = bytes(msgspec.json.encode(self.body))
+        await s3_wrapper.put_object('series', f'{series_id}.json', s3_message)
+
+@dataclass
+class EditSeriesCommand(Command[None]):
+    body: SeriesRequestData
+    series_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        b = self.body
+        async with db_wrapper.connect() as db:
+            cursor = await db.execute("""UPDATE tournament_series
+                SET name = ?,
+                url = ?,
+                game = ?,
+                mode = ?,
+                is_historical = ?,
+                is_public = ?,
+                description = ?,
+                logo = ?
+                WHERE id = ?""",
+                (b.series_name, b.url, b.game, b.mode, b.is_historical, b.is_public, b.description, b.logo, self.series_id))
+            updated_rows = cursor.rowcount
+            if updated_rows == 0:
+                raise Problem('No series found', status=404)
+            await db.commit()
+
+        s3_message = bytes(msgspec.json.encode(self.body))
+        await s3_wrapper.put_object('series', f'{self.series_id}.json', s3_message)
+
+@dataclass
+class GetSeriesDataCommand(Command[None]):
+    series_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        body = await s3_wrapper.get_object('series', f'{self.series_id}.json')
+        if body is None:
+            raise Problem('No series found', status=404)
+        series_data = msgspec.json.decode(body, type=Series)
+        return series_data
+
+@dataclass
+class GetSeriesListCommand(Command[List[Series]]):
+    filter: SeriesFilter
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        filter = self.filter
+        async with db_wrapper.connect(readonly=True) as db:
+            where_clauses = []
+            variable_parameters = []
+
+            def append_equal_filter(filter_value, column_name):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            append_equal_filter(filter.game, "game")
+            append_equal_filter(filter.mode, "mode")
+            append_equal_filter(filter.is_public, "is_public")
+            append_equal_filter(filter.is_historical, "is_historical")
+
+            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+
+            series_query = f"SELECT id, name, url, game, mode, is_historical, is_public, description, logo FROM tournament_series{where_clause}"
+
+            series = []
+            async with db.execute(series_query, variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    series_id, series_name, url, game, mode, is_historical, is_public, description, logo = row
+                    series.append(Series(series_id, series_name, url, game, mode, bool(is_historical), bool(is_public), description, logo))
+            return series
+
+@dataclass
+class CreateTournamentTemplateCommand(Command[None]):
+    body: TournamentTemplateRequestData
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        b = self.body
+
+        # we only need to put the template name and series ID into the database for querying, the rest can go into s3 since we won't be querying this
+        async with db_wrapper.connect() as db:
+            cursor = await db.execute("INSERT INTO tournament_templates (name, series_id) VALUES (?, ?)",
+            (b.template_name, b.series_id))
+            template_id = cursor.lastrowid
+            await db.commit()
+
+        s3_message = bytes(msgspec.json.encode(self.body))
+        await s3_wrapper.put_object('templates', f'{template_id}.json', s3_message)
+
+@dataclass
+class EditTournamentTemplateCommand(Command[None]):
+    body: TournamentTemplateRequestData
+    template_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        b = self.body
+
+        async with db_wrapper.connect() as db:
+            cursor = await db.execute("""UPDATE tournament_templates
+                SET name = ?,
+                series_id = ?
+                WHERE id = ?""", (b.template_name, b.series_id, self.template_id))
+            updated_rows = cursor.rowcount
+            if updated_rows == 0:
+                raise Problem('No template found', status=404)
+            await db.commit()
+
+        s3_message = bytes(msgspec.json.encode(self.body))
+        await s3_wrapper.put_object('templates', f'{self.template_id}.json', s3_message)
+
+@dataclass
+class GetTournamentTemplateDataCommand(Command[TournamentTemplate]):
+    template_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        body = await s3_wrapper.get_object('templates', f'{self.template_id}.json')
+        if body is None:
+            raise Problem('No template found', status=404)
+        template_data = msgspec.json.decode(body, type=TournamentTemplateRequestData)
+        template_data.id = self.template_id
+        return template_data
+
+@dataclass
+class GetTournamentTemplateListCommand(Command[List[TournamentTemplateMinimal]]):
+    filter: TemplateFilter
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        filter = self.filter
+        async with db_wrapper.connect(readonly=True) as db:
+            where_clauses = []
+            variable_parameters = []
+
+            def append_equal_filter(filter_value, column_name):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            append_equal_filter(filter.series_id, "series_id")
+
+            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+
+            template_query = f"SELECT id, name, series_id FROM tournament_templates{where_clause}"
+
+            templates = []
+            async with db.execute(template_query, variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    template_id, template_name, series_id = row
+                    templates.append(TournamentTemplateMinimal(template_id, template_name, series_id))
+            return templates
