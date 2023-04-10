@@ -31,19 +31,25 @@ class Player(TableModel):
 
 @dataclass
 class FriendCode(TableModel):
+    id: int
     player_id: int
     game: str
     fc: str
     is_verified: int
+    is_primary: int
+    description: str
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS friend_codes(
+            id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL,
             game TEXT NOT NULL,
             fc TEXT NOT NULL,
             is_verified BOOLEAN NOT NULL,
-            PRIMARY KEY(game, fc)) WITHOUT ROWID"""
+            is_primary BOOLEAN NOT NULL,
+            description TEXT
+            )"""
 
 @dataclass
 class User(TableModel):
@@ -177,6 +183,7 @@ class Tournament(TableModel):
     is_viewable: bool
     is_public: bool
     show_on_profiles: bool
+    require_single_fc: bool
 
     @staticmethod
     def get_create_table_command():
@@ -186,32 +193,34 @@ class Tournament(TableModel):
             game TEXT NOT NULL,
             mode TEXT NOT NULL,
             series_id INTEGER REFERENCES tournament_series(id),
-            is_squad INTEGER NOT NULL,
-            registrations_open INTEGER NOT NULL,
+            is_squad BOOLEAN NOT NULL,
+            registrations_open BOOLEAN NOT NULL,
             date_start INTEGER NOT NULL,
             date_end INTEGER NOT NULL,
             description TEXT NOT NULL,
-            use_series_description INTEGER NOT NULL,
-            series_stats_include INTEGER NOT NULL,
+            use_series_description BOOLEAN NOT NULL,
+            series_stats_include BOOLEAN NOT NULL,
             logo TEXT,
             url TEXT UNIQUE,
             registration_deadline INTEGER,
             registration_cap INTEGER,
-            teams_allowed INTEGER NOT NULL,
-            teams_only INTEGER NOT NULL,
-            team_members_only INTEGER NOT NULL,
+            teams_allowed BOOLEAN NOT NULL,
+            teams_only BOOLEAN NOT NULL,
+            team_members_only BOOLEAN NOT NULL,
             min_squad_size INTEGER,
             max_squad_size INTEGER,
-            squad_tag_required INTEGER NOT NULL,
-            squad_name_required INTEGER NOT NULL,
-            mii_name_required INTEGER NOT NULL,
-            host_status_required INTEGER NOT NULL,
-            checkins_open INTEGER NOT NULL,
+            squad_tag_required BOOLEAN NOT NULL,
+            squad_name_required BOOLEAN NOT NULL,
+            mii_name_required BOOLEAN NOT NULL,
+            host_status_required BOOLEAN NOT NULL,
+            checkins_open BOOLEAN NOT NULL,
             min_players_checkin INTEGER NOT NULL,
-            verified_fc_required INTEGER NOT NULL,
-            is_viewable INTEGER NOT NULL,
-            is_public INTEGER NOT NULL,
-            show_on_profiles INTEGER NOT NULL)"""
+            verified_fc_required BOOLEAN NOT NULL,
+            is_viewable BOOLEAN NOT NULL,
+            is_public BOOLEAN NOT NULL,
+            show_on_profiles BOOLEAN NOT NULL,
+            require_single_fc BOOLEAN NOT NULL
+            )"""
 
 @dataclass
 class TournamentTemplate(TableModel):
@@ -257,8 +266,9 @@ class TournamentPlayer(TableModel):
     timestamp: int
     is_checked_in: bool
     mii_name: str | None
-    can_hots: bool
+    can_host: bool
     is_invite: bool
+    selected_fc_id: int
 
     @staticmethod
     def get_create_table_command():
@@ -272,7 +282,9 @@ class TournamentPlayer(TableModel):
             is_checked_in INTEGER NOT NULL,
             mii_name TEXT,
             can_host INTEGER NOT NULL,
-            is_invite INTEGER NOT NULL)"""
+            is_invite INTEGER NOT NULL,
+            selected_fc_id INTEGER
+            )"""
     
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 

@@ -11,7 +11,7 @@ async def grant_role(request: Request) -> JSONResponse:
     user_id = body["user_id"]
     role = body["role"]
 
-    command = GrantRoleCommand(request.state.user_id, user_id, role)
+    command = GrantRoleCommand(request.state.user.id, user_id, role)
     await handle(command)
 
     return JSONResponse({}, status_code=200)
