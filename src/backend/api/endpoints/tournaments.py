@@ -1,16 +1,11 @@
 from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission
-from api.data import connect_db, s3_wrapper, handle
+from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
-import json
-from datetime import datetime
-from common.data.models import (CreateTournamentRequestData, EditTournamentRequestData, TournamentFilter, SeriesRequestData, SeriesFilter, TournamentTemplateRequestData,
-    TemplateFilter)
-from common.data.commands import (CreateTournamentCommand, EditTournamentCommand, GetTournamentDataCommand, GetTournamentListCommand, CreateSeriesCommand,
-    EditSeriesCommand, GetSeriesDataCommand, GetSeriesListCommand, CreateTournamentTemplateCommand, EditTournamentTemplateCommand, GetTournamentTemplateDataCommand,
-    GetTournamentTemplateListCommand)
+from common.data.models import *
+from common.data.commands import *
 
 @bind_request_body(CreateTournamentRequestData)
 @require_permission(permissions.CREATE_TOURNAMENT)

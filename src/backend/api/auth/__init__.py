@@ -1,5 +1,4 @@
 from typing import Awaitable, Callable, Concatenate, ParamSpec
-from argon2 import PasswordHasher
 from starlette.requests import Request
 from starlette.responses import Response
 from api.data import handle
@@ -8,7 +7,6 @@ from common.data.commands import GetUserIdFromSessionCommand, GetUserWithPermiss
 from common.data.models import Problem
 
 
-pw_hasher = PasswordHasher()
 P = ParamSpec('P')
 
 def require_logged_in(handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):

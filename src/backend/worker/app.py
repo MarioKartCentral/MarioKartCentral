@@ -1,3 +1,4 @@
+from typing import Any
 from common.gamedata import gamedata
 import asyncio
 from datetime import timedelta, datetime
@@ -11,9 +12,9 @@ jobs = [
 ]
 
 async def main():
-    job_tasks = []
-    job_last_run = []
-    job_longer_than_delay = []
+    job_tasks: list[asyncio.Task[Any]] = []
+    job_last_run: list[datetime] = []
+    job_longer_than_delay: list[bool] = []
     for i, (_, job_func, _) in enumerate(jobs):
         job_last_run.append(datetime.utcnow())
         job_tasks.append(asyncio.create_task(job_func()))

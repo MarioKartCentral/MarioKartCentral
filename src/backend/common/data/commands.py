@@ -146,6 +146,20 @@ class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
                 return None
             
             return UserLoginData(int(row[0]), self.email, str(row[2]))
+
+@dataclass
+class GetUserDataFromIdCommand(Command[User | None]):
+    id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id, player_id FROM users WHERE id = ?", (self.id, )) as cursor:
+                row = await cursor.fetchone()
+
+            if row is None:
+                return None
+            
+            return User(int(row[0]), int(row[1]))
             
 @dataclass
 class CreateSessionCommand(Command[None]):
@@ -929,7 +943,7 @@ class EditSeriesCommand(Command[None]):
         await s3_wrapper.put_object('series', f'{self.series_id}.json', s3_message)
 
 @dataclass
-class GetSeriesDataCommand(Command[None]):
+class GetSeriesDataCommand(Command[Series]):
     series_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
@@ -1017,7 +1031,7 @@ class GetTournamentTemplateDataCommand(Command[TournamentTemplate]):
         body = await s3_wrapper.get_object('templates', f'{self.template_id}.json')
         if body is None:
             raise Problem('No template found', status=404)
-        template_data = msgspec.json.decode(body, type=TournamentTemplateRequestData)
+        template_data = msgspec.json.decode(body, type=TournamentTemplate)
         template_data.id = self.template_id
         return template_data
 
