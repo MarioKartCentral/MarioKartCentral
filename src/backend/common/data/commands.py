@@ -422,7 +422,7 @@ class RegisterPlayerCommand(Command[None]):
                     if player_squad_size >= max_squad_size:
                         raise Problem('Squad at maximum number of players', status=400)
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
                 self.is_invite, self.selected_fc_id))
             await db.commit()
 
@@ -484,7 +484,7 @@ class CreateSquadCommand(Command[None]):
             await db.commit()
 
             async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, squad_id, is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite,
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, squad_id, is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite,
                 self.selected_fc_id)) as cursor:
                 tournament_player_id = cursor.lastrowid
             await db.commit()
