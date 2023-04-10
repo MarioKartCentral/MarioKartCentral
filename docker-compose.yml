@@ -66,6 +66,14 @@ services:
       - mkc-redis:/data
     ports:
       - 6379:6379
+  swagger:
+    image: 'swaggerapi/swagger-ui'
+    environment:
+      - BASE_URL=/swagger
+      - SWAGGER_JSON_URL=http://localhost:5000/api/schema
+      - PERSIST_AUTHORIZATION=true
+    ports:
+      - 80:8080
       
 volumes:
   mkc-db:

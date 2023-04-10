@@ -4,6 +4,7 @@ from api import settings
 from api.data import init_db, init_s3, close_s3
 from api.endpoints import authservice, redisservice, roleservice, s3service, userservice, tournaments, tournament_registration, player_registry
 from api.utils.middleware import ProblemHandlingMiddleware
+from api.utils.schema_gen import schema_route
 
 if settings.DEBUG:
     import debugpy
@@ -19,6 +20,7 @@ routes = [
     *tournaments.routes,
     *tournament_registration.routes,
     *player_registry.routes,
+    schema_route
 ]
 
 middleware = [

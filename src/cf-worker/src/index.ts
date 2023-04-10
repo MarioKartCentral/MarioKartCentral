@@ -3,6 +3,8 @@ import { AwsClient } from "aws4fetch";
 export interface Env {
   API_HOST: string;
   API_PORT: string | undefined;
+  SWAGGER_HOST: string;
+  SWAGGER_PORT: string | undefined;
   FRONTEND_HOST: string;
   FRONTEND_PORT: string | undefined;
   FRONTEND_USE_S3: boolean;
@@ -150,6 +152,13 @@ async function handleApi(request: Request, env: Env) {
   return await fetch(new Request(url.toString(), request));
 }
 
+async function handleSwagger(request: Request, env: Env) {
+  const url = new URL(request.url);
+  url.host = env.SWAGGER_HOST;
+  url.port = env.SWAGGER_PORT || "";
+  return await fetch(new Request(url.toString(), request));
+}
+
 async function fetchFrontendFromS3(url: URL, env: Env) {
   url.protocol = "https";
   url.pathname = `/${env.S3_BUCKET}/${env.S3_FOLDER}${convertUrlPathToFilePath(url.pathname)}`;
@@ -235,6 +244,8 @@ export default {
     
     if (url.pathname.startsWith("/api")) {
       return await handleApi(request, env);
+    } else if (url.pathname.startsWith("/swagger")) {
+      return await handleSwagger(request, env);
     } else {
       return await handleFrontend(request, env);
     }

@@ -5,6 +5,8 @@ compatibility_date = "2022-06-18"
 [vars]
 API_HOST = "api"
 API_PORT = "8000"
+SWAGGER_HOST = "swagger"
+SWAGGER_PORT = "8080"
 FRONTEND_USE_S3 = false
 FRONTEND_HOST = "frontend"
 FRONTEND_PORT = "8001"
