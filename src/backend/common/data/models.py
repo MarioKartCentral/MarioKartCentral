@@ -350,3 +350,11 @@ class TournamentTemplateMinimal():
 class TemplateFilter():
     series_id: int | None = None
 
+@dataclass
+class CreateTeamRequestData():
+    name: str
+    tag: str
+    description: str
+    language: str
+    color: int
+    logo: str | None

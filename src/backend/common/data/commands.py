@@ -1070,3 +1070,30 @@ class GetTournamentTemplateListCommand(Command[List[TournamentTemplateMinimal]])
                     template_id, template_name, series_id = row
                     templates.append(TournamentTemplateMinimal(template_id, template_name, series_id))
             return templates
+
+@dataclass
+class CreateTeamCommand(Command[None]):
+    name: str
+    tag: str
+    description: str
+    language: str
+    color: int
+    logo: str | None
+    is_approved: bool
+    is_historical: bool
+    is_privileged: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
+            if not self.is_privileged:
+                async with db.execute("SELECT COUNT(id) FROM teams WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    if row[0] > 0:
+                        raise Problem('An existing team already has this name or tag', status=400)
+            creation_date = int(datetime.utcnow().timestamp())
+            await db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, is_approved, is_historical)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.is_approved,
+                self.is_historical))
+            await db.commit()
