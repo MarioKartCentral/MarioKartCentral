@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Concatenate, ParamSpec, Type, TypeVar
 import msgspec
 from starlette.requests import Request
@@ -8,9 +9,17 @@ from common.data.models import Problem
 TBind = TypeVar("TBind")
 P = ParamSpec('P')
 
+@dataclass
+class RouteSpecTypes:
+    query_type: Type | None = None
+    body_type: Type | None = None
+
 def bind_request_query(type: Type[TBind]):
     def decorator(handle_request: Callable[Concatenate[Request, TBind, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+            all_params = dict(request.query_params.__dict__)
+            all_params.update(request.path_params)
+
             query_as_json = msgspec.json.encode(request.query_params._dict)
 
             try:
@@ -19,6 +28,12 @@ def bind_request_query(type: Type[TBind]):
                 raise Problem("Invalid query string parameter", detail=str(e), status=400)
 
             return await handle_request(request, body, *args, **kwargs)
+
+        spec_types = RouteSpecTypes(query_type=type, body_type=None)
+        if hasattr(handle_request, 'spec_types'):
+            spec_types.body_type = handle_request.spec_types.body_type
+
+        wrapper.spec_types = spec_types
         return wrapper
     return decorator
 
@@ -32,6 +47,12 @@ def bind_request_body(type: Type[TBind]):
                 raise Problem("Invalid request body", detail=str(e), status=400)
 
             return await handle_request(request, body, *args, **kwargs)
+
+        spec_types = RouteSpecTypes(query_type=None, body_type=type)
+        if hasattr(handle_request, 'spec_types'):
+            spec_types.query_type = handle_request.spec_types.query_type
+
+        wrapper.spec_types = spec_types
         return wrapper
     return decorator
 
