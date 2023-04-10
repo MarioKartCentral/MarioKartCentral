@@ -154,8 +154,8 @@ class EditPlayerRegistrationRequestData():
 @dataclass
 class AcceptInviteRequestData():
     squad_id: int
-    mii_name: str | None = None
-    can_host: bool = False
+    mii_name: str | None
+    can_host: bool
     selected_fc_id: int | None
 
 @dataclass
@@ -181,6 +181,7 @@ class TournamentPlayerDetails():
     name: str
     country_code: str | None
     discord_id: str | None
+    friend_codes: List[str]
 
 @dataclass
 class SquadPlayerDetails(TournamentPlayerDetails):
@@ -235,10 +236,6 @@ class CreateTournamentRequestData():
     use_series_ruleset: bool
     organizer: str
     location: str
-
-@dataclass
-class Tournament(CreateTournamentRequestData):
-    id: int
 
 @dataclass
 class EditTournamentRequestData():
@@ -352,3 +349,4 @@ class TournamentTemplateMinimal():
 @dataclass
 class TemplateFilter():
     series_id: int | None = None
+

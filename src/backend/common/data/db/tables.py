@@ -31,10 +31,13 @@ class Player(TableModel):
 
 @dataclass
 class FriendCode(TableModel):
+    id: int
     player_id: int
     game: str
     fc: str
     is_verified: int
+    is_primary: int
+    description: str
 
     @staticmethod
     def get_create_table_command():

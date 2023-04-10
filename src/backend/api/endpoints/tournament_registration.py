@@ -98,16 +98,7 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, player_id, False)
     await handle(command)
     return JSONResponse({})
-
-async def unregister_player(tournament_id, player_id, squad_id=None):
-    is_invite = 0
-    async with connect_db() as db:
-        async with db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND squad_id = ? AND is_invite = ?", (tournament_id, player_id, squad_id, is_invite)) as cursor:
-            edited_rows = cursor.rowcount
-            if edited_rows == 0:
-                return JSONResponse({'error': 'Player not found in tournament'}, status_code=400)
-    return JSONResponse({'success': 'Successfully unregistered player'}, status_code=201)
-
+    
 @require_logged_in
 @bind_request_body(InvitePlayerRequestData)
 # used when a squad captain wants to remove a member from their squad
