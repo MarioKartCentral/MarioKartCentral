@@ -21,5 +21,24 @@
             "dbaeumer.vscode-eslint",
             "ms-azuretools.vscode-docker"
         ]
+    },
+    "settings": {
+        "python.analysis.typeCheckingMode": "strict",
+        "python.analysis.diagnosticMode": "workspace",
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.inlayHints.variableTypes": true,
+        "python.analysis.inlayHints.functionReturnTypes": true,
+        "python.analysis.diagnosticSeverityOverrides": {
+            "reportMissingParameterType": "none",
+            "reportMissingTypeStubs": "none",
+            "reportUnknownArgumentType": "information",
+            "reportUnknownMemberType": "information",
+            "reportUnknownParameterType": "information",
+            "reportUnknownVariableType": "information",
+            "reportFunctionMemberAccess": "information",
+            "reportInvalidTypeVarUse": "warning",
+            "reportUnusedVariable": "warning",
+            "reportUnusedImport": "warning"
+        }
     }
 }

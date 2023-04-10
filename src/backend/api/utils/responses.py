@@ -11,8 +11,8 @@ P = ParamSpec('P')
 
 @dataclass
 class RouteSpecTypes:
-    query_type: Type | None = None
-    body_type: Type | None = None
+    query_type: type | None = None
+    body_type: type | None = None
 
 def bind_request_query(type: Type[TBind]):
     def decorator(handle_request: Callable[Concatenate[Request, TBind, P], Awaitable[Response]]):
@@ -20,7 +20,7 @@ def bind_request_query(type: Type[TBind]):
             all_params = dict(request.query_params.__dict__)
             all_params.update(request.path_params)
 
-            query_as_json = msgspec.json.encode(request.query_params._dict)
+            query_as_json = msgspec.json.encode(dict(request.query_params))
 
             try:
                 body = msgspec.json.decode(query_as_json, type=type)

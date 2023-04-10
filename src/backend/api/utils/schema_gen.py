@@ -1,8 +1,9 @@
 import dataclasses
 import re
-from types import UnionType
-from typing import List
+from types import NoneType, UnionType
+from typing import Any, List, get_args, get_origin
 import msgspec
+from starlette.requests import Request
 from starlette.routing import BaseRoute, Route
 from starlette.schemas import BaseSchemaGenerator
 from api.utils.responses import RouteSpecTypes, JSONResponse
@@ -11,8 +12,8 @@ from common.data.models import Problem
 PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 class SchemaGenerator(BaseSchemaGenerator):
-    def get_schema(self, routes: List[BaseRoute]) -> dict:
-        schema = { 
+    def get_schema(self, routes: List[BaseRoute]):
+        schema: dict[Any, Any] = { 
             "openapi": "3.0.0", 
             "info": {"title": "Mario Kart Central API", "version": "1.0"},
         }
@@ -30,7 +31,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                     path_data["requestBody"] = { "content": { "application/json": { "schema": { "$ref": f"#/components/schemas/{spec_types.body_type.__name__}" } } } }
                 if spec_types.query_type is not None:
                     if dataclasses.is_dataclass(spec_types.query_type):
-                        def serialize_simple_type(typ):
+                        def serialize_simple_type(typ: type):
                             if typ == str:
                                 type_str = "string"
                             elif typ == int:
@@ -39,7 +40,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                                 type_str = "boolean"
                             elif typ == float:
                                 type_str = "number"
-                            elif typ == type(None):
+                            elif typ == NoneType:
                                 type_str = "null"
                             else:
                                 raise Problem("Failed to map request param to type")
@@ -48,9 +49,9 @@ class SchemaGenerator(BaseSchemaGenerator):
                         params = []
                         for field in dataclasses.fields(spec_types.query_type):
                             is_required = True
-                            if isinstance(field.type, UnionType):
+                            if get_origin(field.type) == UnionType:
                                 types = []
-                                for union_type in field.type.__args__:
+                                for union_type in get_args(field.type):
                                     if union_type == None:
                                         is_required = False
                                     types.append(serialize_simple_type(union_type))
@@ -128,7 +129,7 @@ class SchemaGenerator(BaseSchemaGenerator):
 
 schemas = SchemaGenerator()
 
-def openapi_schema(request):
+def openapi_schema(request: Request):
     schema = schemas.get_schema(request.app.routes)
     return JSONResponse(schema, media_type="application/vnd.oai.openapi+json")
 

@@ -1,4 +1,5 @@
 from api import settings
+from common.auth import pw_hasher
 from common.data.commands import *
 from common.data.db import DBWrapper
 from common.data.redis import RedisWrapper
@@ -12,7 +13,6 @@ redis_wrapper = RedisWrapper(settings.REDIS_URL)
 async def handle(command: Command[TCommandResponse]) -> TCommandResponse:
     return await command.handle(db_wrapper, s3_wrapper)
 
-connect_db = db_wrapper.connect
 redis_conn = redis_wrapper.connect()
 
 async def init_db():
@@ -20,7 +20,6 @@ async def init_db():
         await handle(ResetDbCommand())
     await handle(InitializeDbSchemaCommand())
 
-    from api.auth import pw_hasher
     hashed_pw = pw_hasher.hash(str(settings.ADMIN_PASSWORD))
     await handle(SeedDatabaseCommand(settings.ADMIN_EMAIL, hashed_pw))
 

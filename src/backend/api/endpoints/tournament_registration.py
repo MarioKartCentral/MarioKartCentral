@@ -1,8 +1,7 @@
-from dataclasses import dataclass
 from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission, require_logged_in
-from api.data import connect_db, handle
+from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
 from common.data.commands import (CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand, EditSquadCommand, CheckSquadCaptainPermissionsCommand,
