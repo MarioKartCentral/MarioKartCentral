@@ -285,7 +285,30 @@ class TournamentPlayer(TableModel):
             is_invite INTEGER NOT NULL,
             selected_fc_id INTEGER
             )"""
+
+@dataclass
+class UserSettings(TableModel):
+    user_id: int
+    avatar: str | None
+    discord_tag: str | None
+    about_me: str | None
+    language: str
+    color_scheme: str
+    timezone: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_settings(
+            user_id INTEGER PRIMARY KEY REFERENCES users(id),
+            avatar TEXT,
+            discord_tag TEXT,
+            about_me TEXT,
+            language TEXT DEFAULT 'en-us' NOT NULL,
+            color_scheme TEXT DEFAULT 'light' NOT NULL,
+            timezone TEXT DEFAULT 'UTC' NOT NULL
+            ) WITHOUT ROWID"""
     
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
-    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer]
+    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
+    UserSettings]
