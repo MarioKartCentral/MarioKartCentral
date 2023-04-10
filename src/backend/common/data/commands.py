@@ -252,9 +252,9 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             name, country_code, is_hidden, is_shadow, is_banned, discord_id = player_row
             
-            fc_query = "SELECT game, fc, is_verified FROM friend_codes WHERE player_id = ?"
+            fc_query = "SELECT game, fc, is_verified, is_primary FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
-            friend_codes = [FriendCode(fc, game, self.id, bool(is_verified)) for game, fc, is_verified in friend_code_rows]
+            friend_codes = [FriendCode(fc, game, self.id, bool(is_verified), bool(is_primary)) for game, fc, is_verified, is_primary in friend_code_rows]
 
             user_query = "SELECT id FROM users WHERE player_id = ?"
             async with db.execute(user_query, (self.id,)) as cursor:
@@ -381,6 +381,7 @@ class RegisterPlayerCommand(Command[None]):
     mii_name: str | None
     can_host: bool
     is_invite: bool
+    selected_fc_id: int | None
     is_privileged: bool #if True, bypasses check for tournament registrations being open
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
@@ -420,8 +421,9 @@ class RegisterPlayerCommand(Command[None]):
                     player_squad_size = cursor.rowcount
                     if player_squad_size >= max_squad_size:
                         raise Problem('Squad at maximum number of players', status=400)
-            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, self.is_invite))
+            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
+                self.is_invite, self.selected_fc_id))
             await db.commit()
 
 @dataclass
@@ -434,6 +436,7 @@ class CreateSquadCommand(Command[None]):
     is_checked_in: bool
     mii_name: str | None
     can_host: bool
+    selected_fc_id: int | None
     admin: bool = False
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
@@ -480,8 +483,9 @@ class CreateSquadCommand(Command[None]):
                 squad_id = cursor.lastrowid
             await db.commit()
 
-            async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, squad_id, is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite)) as cursor:
+            async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, squad_id, is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite,
+                self.selected_fc_id)) as cursor:
                 tournament_player_id = cursor.lastrowid
             await db.commit()
 
@@ -548,6 +552,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     is_checked_in: bool
     is_squad_captain: bool
     is_privileged: bool
+    selected_fc_id: int | None
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
@@ -574,8 +579,8 @@ class EditPlayerRegistrationCommand(Command[None]):
             if curr_is_invite and (not self.is_invite):
                 await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND is_invite = ?",
                     (self.tournament_id, self.player_id, False))
-            await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ? WHERE id = ?", (
-                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, registration_id))
+            await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, selected_fc_id = ? WHERE id = ?", (
+                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, self.selected_fc_id, registration_id))
 
 @dataclass
 class UnregisterPlayerCommand(Command[None]):
@@ -610,7 +615,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                                     t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
-                                    WHERE squad_id = ?""",
+                                    WHERE t.squad_id = ?""",
                                     (self.squad_id)) as cursor:
                 player_rows = await cursor.fetchall()
                 players = []
@@ -654,7 +659,7 @@ class GetSquadRegistrationsCommand(Command[List[TournamentSquadDetails]]):
                                     t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
-                                    WHERE tournament_id = ?""",
+                                    WHERE t.tournament_id = ?""",
                                     (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -676,7 +681,7 @@ class GetFFARegistrationsCommand(Command[List[TournamentPlayerDetails]]):
                                     p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
-                                    WHERE tournament_id = ?""",
+                                    WHERE t.tournament_id = ?""",
                                     (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
                 players = []
@@ -699,12 +704,12 @@ class CreateTournamentCommand(Command[None]):
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
                     logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
                     squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verified_fc_required, is_viewable, is_public,
-                    show_on_profiles
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    show_on_profiles, require_single_fc
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.tournament_name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
                 b.series_stats_include, b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin,
-                b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles))
+                b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles, b.require_single_fc))
             tournament_id = cursor.lastrowid
             await db.commit()
 
@@ -746,7 +751,7 @@ class EditTournamentCommand(Command[None]):
                 verified_fc_required = ?,
                 is_viewable = ?,
                 is_public = ?,
-                show_on_profiles = ?
+                show_on_profiles = ?,
                 WHERE id = ?""",
                 (b.tournament_name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
                 b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,

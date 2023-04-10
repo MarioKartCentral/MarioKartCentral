@@ -28,6 +28,7 @@ class FriendCode:
     game: str
     player_id: int
     is_verified: int
+    is_primary: int
 
 @dataclass
 class User:
@@ -95,19 +96,21 @@ class PlayerFilter:
 @dataclass
 class CreateSquadRequestData:
     squad_color: str
-    squad_name: str | None = None
-    squad_tag: str | None = None
-    mii_name: str | None = None
-    can_host: bool = False
+    squad_name: str | None
+    squad_tag: str | None
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
 
 @dataclass
 class ForceCreateSquadRequestData:
     player_id: int
     squad_color: str
-    squad_name: str | None = None
-    squad_tag: str | None = None
-    mii_name: str | None = None
-    can_host: bool = False
+    squad_name: str | None
+    squad_tag: str | None
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
 
 @dataclass
 class EditSquadRequestData:
@@ -127,30 +130,33 @@ class InvitePlayerRequestData:
 class RegisterPlayerRequestData:
     mii_name: str | None
     can_host: bool
+    selected_fc_id: int | None
 
 @dataclass
 class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     squad_id: int | None
     player_id: int
-    is_squad_captain: bool = False
-    is_invite: bool = False
-    is_checked_in: bool = False
+    is_squad_captain: bool
+    is_invite: bool
+    is_checked_in: bool
 
 @dataclass
 class EditPlayerRegistrationRequestData():
     player_id: int
-    squad_id: int | None = None
-    is_squad_captain: bool = False
-    is_invite: bool = False
-    is_checked_in: bool = False
-    can_host: bool = False
-    mii_name: str | None = None
+    squad_id: int | None
+    is_squad_captain: bool
+    is_invite: bool
+    is_checked_in: bool
+    can_host: bool
+    mii_name: str | None
+    selected_fc_id: int | None
 
 @dataclass
 class AcceptInviteRequestData():
     squad_id: int
     mii_name: str | None = None
     can_host: bool = False
+    selected_fc_id: int | None
 
 @dataclass
 class DeclineInviteRequestData():
@@ -223,6 +229,8 @@ class CreateTournamentRequestData():
     is_viewable: bool
     is_public: bool
     show_on_profiles: bool
+    require_single_fc: bool
+    # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
     organizer: str
@@ -261,6 +269,7 @@ class EditTournamentRequestData():
     is_viewable: bool
     is_public: bool
     show_on_profiles: bool
+    # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
     organizer: str
