@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from re import I
 from typing import List, Type
 
 class TableModel(ABC):
@@ -285,7 +286,129 @@ class TournamentPlayer(TableModel):
             is_invite INTEGER NOT NULL,
             selected_fc_id INTEGER
             )"""
+
+@dataclass
+class Team(TableModel):
+    id: int
+    name: str
+    tag: str
+    description: str
+    creation_date: int
+    language: str
+    color: int
+    logo: str | None
+    is_approved: bool
+    is_historical: bool
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS teams(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            tag TEXT NOT NULL,
+            description TEXT NOT NULL,
+            creation_date INTEGER NOT NULL,
+            language TEXT NOT NULL,
+            color INTEGER NOT NULL,
+            logo TEXT,
+            is_approved BOOLEAN NOT NULL,
+            is_historical BOOLEAN NOT NULL
+            )
+            """
+
+@dataclass
+class TeamRoster(TableModel):
+    id: int
+    team_id: int
+    game: str
+    mode: str
+    name: str | None
+    creation_date: int
+    is_recruiting: bool
+    is_active: bool
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_rosters(
+            id INTEGER PRIMARY KEY,
+            team_id INTEGER NOT NULL REFERENCES teams(id),
+            game TEXT NOT NULL,
+            mode TEXT NOT NULL,
+            name TEXT,
+            creation_date INTEGER NOT NULL,
+            is_recruiting BOOLEAN NOT NULL,
+            is_active BOOLEAN NOT NULL
+            )
+            """
     
+@dataclass
+class TeamMember(TableModel):
+    id: int
+    roster_id: int
+    player_id: int
+    join_date: int
+    leave_date: int | None
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_members(
+            id INTEGER PRIMARY KEY,
+            roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            join_date INTEGER NOT NULL,
+            leave_date INTEGER
+            )
+            """
+
+@dataclass
+class TeamSquadRegistration(TableModel):
+    roster_id: int
+    squad_id: int
+    tournament_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS team_squad_registrations(
+            roster_id INTEGER NOT NULL,
+            squad_id INTEGER NOT NULL,
+            tournament_id INTEGER NOT NULL,
+            PRIMARY KEY (roster_id, squad_id, tournament_id)
+            ) WITHOUT ROWID
+            """
+
+@dataclass
+class UserTeamRole(TableModel):
+    user_id: int
+    role_id: int
+    team_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_team_roles(
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            role_id INTEGER NOT NULL REFERENCES roles(id),
+            team_id INTEGER NOT NULL REFERENCES teams(id),
+            PRIMARY KEY (user_id, role_id, team_id)
+            ) WITHOUT ROWID
+            """
+
+@dataclass
+class UserSeriesRole(TableModel):
+    user_id: int
+    role_id: int
+    series_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_series_roles (
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            role_id INTEGER NOT NULL REFERENCES roles(id),
+            series_id INTEGER NOT NULL REFERENCES series(id),
+            PRIMARY KEY (user_id, role_id, series_id)
+            ) WITHOUT ROWID
+            """
+
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
-    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer]
+    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
+    Team, TeamRoster, TeamMember, TeamSquadRegistration, UserTeamRole, UserSeriesRole]
