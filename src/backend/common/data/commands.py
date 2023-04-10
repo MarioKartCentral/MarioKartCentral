@@ -94,7 +94,7 @@ class GetUserIdFromSessionCommand(Command[User | None]):
             user_id = int(row[0])
             async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
                 row = await cursor.fetchone()
-
+            assert row is not None
             player_id = int(row[0])
             
             return User(user_id, player_id)
@@ -145,7 +145,7 @@ class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
             if row is None:
                 return None
             
-            return UserLoginData(int(row[0]), self.email, str(row[2]))
+            return UserLoginData(int(row[0]), int(row[1]), self.email, str(row[2]))
 
 @dataclass
 class GetUserDataFromIdCommand(Command[User | None]):
@@ -565,13 +565,15 @@ class EditPlayerRegistrationCommand(Command[None]):
     is_invite: bool
     is_checked_in: bool
     is_squad_captain: bool
-    is_privileged: bool
     selected_fc_id: int | None
-
+    is_privileged: bool
+    
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT registrations_open, mii_name_required FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('Tournament not found', status=404)
                 registrations_open, mii_name_required = row
                 # make sure players can't edit their registration details after registrations have closed
                 if (not self.is_privileged) and (not registrations_open):
@@ -607,6 +609,8 @@ class UnregisterPlayerCommand(Command[None]):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT registrations_open FROM tournaments WHERE tournament_id = ?", (self.tournament_id)) as cursor:
                 row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('Tournament not found', status=404)
                 registrations_open = row[0]
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so players cannot be unregistered from this tournament", status=400)
@@ -647,6 +651,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
             # check if only single FCs are allowed or not
             async with db.execute("SELECT require_single_fc FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 require_single_fc = bool(row[0])
                 fc_where_clause = ""
                 if require_single_fc:
@@ -713,6 +718,7 @@ class GetSquadRegistrationsCommand(Command[List[TournamentSquadDetails]]):
             # check if only single FCs are allowed or not
             async with db.execute("SELECT require_single_fc FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 require_single_fc = bool(row[0])
                 fc_where_clause = ""
                 if require_single_fc:
@@ -755,6 +761,7 @@ class GetFFARegistrationsCommand(Command[List[TournamentPlayerDetails]]):
             # check if only single FCs are allowed or not
             async with db.execute("SELECT require_single_fc FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 require_single_fc = bool(row[0])
                 fc_where_clause = ""
                 if require_single_fc:
