@@ -12,7 +12,7 @@ from common.data.models import CreatePlayerRequestData, EditPlayerRequestData, P
 @bind_request_body(CreatePlayerRequestData)
 @require_logged_in
 async def create_player(request: Request, body: CreatePlayerRequestData) -> Response:
-    command = CreatePlayerCommand(request.state.user_id, body)
+    command = CreatePlayerCommand(request.state.user.id, body)
     player = await handle(command)
     return JSONResponse(player, status_code=201)
 
