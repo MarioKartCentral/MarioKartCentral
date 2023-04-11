@@ -308,7 +308,40 @@ class UserSettings(TableModel):
             timezone TEXT DEFAULT 'UTC' NOT NULL
             ) WITHOUT ROWID"""
     
+@dataclass
+class NotificationContent(TableModel):
+    id: int
+    content: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS notification_content(
+            id INTEGER PRIMARY KEY,
+            content TEXT NOT NULL)"""
+
+@dataclass
+class Notifications(TableModel):
+    id: int
+    user_id: int
+    type: int
+    content_id: int
+    created_date: int
+    content_is_shared: int
+    is_read: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS notifications(
+            id INTEGER PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            type INTEGER DEFAULT 0 NOT NULL,
+            content_id INTEGER NOT NULL REFERENCES notification_content(id),
+            created_date INTEGER NOT NULL,
+            content_is_shared INTEGER NOT NULL,
+            is_read INTEGER DEFAULT 0 NOT NULL)"""
+
+    
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
-    UserSettings]
+    UserSettings, NotificationContent, Notifications]
