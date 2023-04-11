@@ -758,17 +758,19 @@ class GetFFARegistrationsCommand(Command[List[TournamentPlayerDetails]]):
                     player_dict[player_id] = curr_player
                     fc_id_list.append(selected_fc_id) # Add this FC's ID to the list of FCs we query for if require_single_fc is true for the current tournament
 
-            # check if only single FCs are allowed or not
-            async with db.execute("SELECT require_single_fc FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
+            # check if only single FCs are allowed or not and get the tournament's game
+            async with db.execute("SELECT require_single_fc, game FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 require_single_fc = bool(row[0])
+                game = row[1]
                 fc_where_clause = ""
                 if require_single_fc:
                     fc_where_clause = f" AND id IN ({','.join(map(str, fc_id_list))})" # convert all FC IDs to str and join with a comma
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"SELECT id, player_id, fc FROM friend_codes WHERE player_id IN {','.join(map(str, player_dict.keys()))}{fc_where_clause}"
-            async with db.execute(fc_query) as cursor:
+            fc_query = f"SELECT id, player_id, fc FROM friend_codes WHERE game = ? AND player_id IN {','.join(map(str, player_dict.keys()))}{fc_where_clause}"
+            variable_parameters = (game,)
+            async with db.execute(fc_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, fc = row
@@ -1081,19 +1083,102 @@ class CreateTeamCommand(Command[None]):
     logo: str | None
     is_approved: bool
     is_historical: bool
+    game: str
+    mode: str
+    is_recruiting: bool
+    is_active: bool
     is_privileged: bool
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
             if not self.is_privileged:
-                async with db.execute("SELECT COUNT(id) FROM teams WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
+                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
                         raise Problem('An existing team already has this name or tag', status=400)
             creation_date = int(datetime.utcnow().timestamp())
-            await db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, is_approved, is_historical)
+            async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, is_approved, is_historical)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.is_approved,
-                self.is_historical))
+                self.is_historical)) as cursor:
+                team_id = cursor.lastrowid
             await db.commit()
+            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.is_approved))
+
+@dataclass
+class GetTeamInfoCommand(Command[Team]):
+    team_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT name, tag, description, creation_date, language, color, logo, is_approved, is_historical FROM teams WHERE id = ?",
+                (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('Team not found', status=404)
+                team_name, team_tag, description, team_date, language, color, logo, team_is_approved, is_historical = row
+                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_is_approved, is_historical, [])
+            
+            # get all rosters for our team
+            rosters = []
+            roster_dict = {}
+            async with db.execute("SELECT id, game, mode, name, tag, creation_date, is_recruiting, is_approved FROM team_rosters WHERE team_id = ?",
+                (self.team_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    roster_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_is_approved = row
+                    if roster_name is None:
+                        roster_name = team_name
+                    if roster_tag is None:
+                        roster_tag = team_tag
+                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_is_approved, [])
+                    rosters.append(curr_roster)
+                    roster_dict[curr_roster.id] = curr_roster
+            
+            team_members = []
+            # get all current team members who are in a roster that belongs to our team
+            roster_id_query = ','.join(map(str, roster_dict.keys()))
+            async with db.execute(f"""SELECT player_id, roster_id, join_date
+                                    FROM team_members
+                                    WHERE roster_id IN ({roster_id_query}) AND leave_date = ?
+                                    """, (None,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, roster_id, join_date = row
+                    curr_team_member = PartialTeamMember(player_id, roster_id, join_date)
+                    team_members.append(curr_team_member)
+
+            player_dict = {}
+
+            if len(team_members) > 0:
+                # get info about all players who are in at least 1 roster on our team
+                member_id_query = ','.join(set([str(m.player_id) for m in team_members]))
+                async with db.execute(f"SELECT id, name, country_code, is_banned, discord_id FROM players WHERE id IN ({member_id_query})") as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        player_id, player_name, country, is_banned, discord_id = row
+                        player_dict[player_id] = PartialPlayer(player_id, player_name, country, bool(is_banned), discord_id, [])
+
+                # get all friend codes for members of our team that are from a game that our team has a roster for
+                game_query = ','.join(set([r.game for r in rosters]))
+                async with db.execute(f"SELECT player_id, game, fc, is_verified, is_primary FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        player_id, game, fc, is_verified, is_primary = row
+                        curr_fc = FriendCode(fc, game, player_id, bool(is_verified), bool(is_primary))
+                        player_dict[player_id].friend_codes.append(curr_fc)
+
+            for member in team_members:
+                curr_roster = roster_dict[member.roster_id]
+                p = player_dict[member.player_id]
+                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, member.join_date,
+                    [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
+                curr_roster.players.append(curr_player)
+
+            team.rosters = rosters
+            return team
+
+
+            

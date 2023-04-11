@@ -358,3 +358,59 @@ class CreateTeamRequestData():
     language: str
     color: int
     logo: str | None
+    game: str
+    mode: str
+    is_recruiting: bool
+
+@dataclass
+class PartialTeamMember():
+    player_id: int
+    roster_id: int
+    join_date: int
+
+@dataclass
+class PartialPlayer():
+    player_id: int
+    name: str
+    country_code: str
+    is_banned: bool
+    discord_id: str
+    friend_codes: List[str]
+
+@dataclass
+class RosterPlayerInfo():
+    player_id: int
+    name: str
+    country_code: str
+    is_banned: bool
+    discord_id: str
+    join_date: int
+    friend_codes: List[FriendCode]
+    
+@dataclass
+class TeamRoster():
+    id: int
+    team_id: int
+    game: str
+    mode: str
+    name: str
+    tag: str
+    creation_date: int
+    is_recruiting: bool
+    is_approved: bool
+    players: List[RosterPlayerInfo]
+
+@dataclass
+class Team():
+    id: int
+    name: str
+    tag: str
+    description: str
+    creation_date: int
+    language: str
+    color: int
+    logo: str | None
+    is_approved: bool
+    is_historical: bool
+    rosters: List[TeamRoster]
+

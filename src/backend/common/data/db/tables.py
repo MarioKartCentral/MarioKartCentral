@@ -323,9 +323,11 @@ class TeamRoster(TableModel):
     game: str
     mode: str
     name: str | None
+    tag: str | None
     creation_date: int
     is_recruiting: bool
     is_active: bool
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -335,9 +337,11 @@ class TeamRoster(TableModel):
             game TEXT NOT NULL,
             mode TEXT NOT NULL,
             name TEXT,
+            tag TEXT,
             creation_date INTEGER NOT NULL,
             is_recruiting BOOLEAN NOT NULL,
-            is_active BOOLEAN NOT NULL
+            is_active BOOLEAN NOT NULL,
+            is_approved BOOLEAN NOT NULL
             )
             """
     
