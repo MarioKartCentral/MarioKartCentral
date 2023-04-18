@@ -1180,5 +1180,114 @@ class GetTeamInfoCommand(Command[Team]):
             team.rosters = rosters
             return team
 
+@dataclass
+class EditTeamCommand(Command[None]):
+    team_id: int
+    name: str
+    tag: str
+    description: str
+    language: str
+    color: int
+    logo: str | None
+    is_approved: bool
+    is_historical: bool
+    game: str
+    mode: str
+    is_recruiting: bool
+    is_active: bool
+    is_privileged: bool
 
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""UPDATE teams SET name = ?,
+                tag = ?,
+                description = ?,
+                language = ?,
+                color = ?,
+                logo = ?,
+                is_approved = ?,
+                is_historical = ?,
+                game = ?,
+                mode = ?,
+                is_recruiting = ?,
+                is_active = ?
+                WHERE id = ?""",
+                (self.name, self.tag, self.description, self.language, self.color, self.logo, self.is_approved, self.is_historical,
+                 self.game, self.mode, self.is_recruiting, self.is_active)) as cursor:
+                updated_rows = cursor.rowcount
+                if updated_rows == 0:
+                    raise Problem('No team found', status=404)
+                await db.commit()
+
+@dataclass
+class CreateRosterCommand(Command[None]):
+    team_id: int
+    game: str
+    mode: str
+    name: str | None
+    tag: str | None
+    is_recruiting: bool
+    is_active: bool
+    is_approved: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            # get team name and tag
+            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('No team found', status=404)
+                team_name, team_tag = row
+            # set name and tag to None if they are equal to main team so that they change if the team does
+            if self.name == team_name:
+                self.name = None
+            if self.tag == team_tag:
+                self.tag = None
+            # check to make sure we aren't making 2 rosters with the same name
+            async with db.execute("SELECT name FROM team_rosters WHERE team_id = ? AND game = ? AND mode = ? AND name = ?", (self.team_id, self.game, self.mode, self.name)) as cursor:
+                row = await cursor.fetchone()
+                if row is not None:
+                    raise Problem('Only one roster per game/mode may use the same name', status=400)
+            creation_date = int(datetime.utcnow().timestamp())
+            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.is_approved))
             
+@dataclass
+class EditRosterCommand(Command[None]):
+    roster_id: int
+    team_id: int
+    game: str
+    mode: str
+    name: str | None
+    tag: str | None
+    is_recruiting: bool
+    is_active: bool
+    is_approved: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            # get team name and tag
+            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('No team found', status=404)
+                team_name, team_tag = row
+            # set name and tag to None if they are equal to main team so that they change if the team does
+            if self.name == team_name:
+                self.name = None
+            if self.tag == team_tag:
+                self.tag = None
+            # get the current roster's name and check if it exists
+            async with db.execute("SELECT name FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('No roster found')
+                roster_name = row[0]
+            if roster_name != self.name:
+                # check to make sure another roster doesn't have the name we're changing to
+                async with db.execute("SELECT name FROM team_rosters WHERE team_id = ? AND game = ? AND mode = ? AND name = ? AND roster_id != ?", (self.team_id, self.game, self.mode, self.name, )) as cursor:
+                    row = await cursor.fetchone()
+                    if row is not None:
+                        raise Problem('Only one roster per game/mode may use the same name', status=400)
+            await db.execute("UPDATE team_rosters SET team_id = ?, game = ?, mode = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, is_approved = ?",
+                             (self.team_id, self.game, self.mode, self.name, self.tag, self.is_recruiting, self.is_active, self.is_approved))

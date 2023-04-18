@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from re import I
 from typing import List, Type
 
 class TableModel(ABC):
@@ -411,6 +410,27 @@ class UserSeriesRole(TableModel):
             PRIMARY KEY (user_id, role_id, series_id)
             ) WITHOUT ROWID
             """
+    
+@dataclass
+class RosterInvite(TableModel):
+    id: int
+    player_id: int
+    roster_id: int
+    date: int
+    roster_leave_id: int
+    is_accepted: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS roster_invites (
+        id INTEGER PRIMARY KEY,
+        player_id INTEGER NOT NULL,
+        roster_id INTEGER NOT NULL,
+        date INTEGER NOT NULL,
+        roster_leave_id INTEGER,
+        is_accepted BOOLEAN NOT NULL
+        )"""
+
 
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 

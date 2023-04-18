@@ -361,6 +361,9 @@ class CreateTeamRequestData():
     game: str
     mode: str
     is_recruiting: bool
+    is_approved: bool
+    is_historical: bool
+    is_active: bool
 
 @dataclass
 class PartialTeamMember():
@@ -413,4 +416,20 @@ class Team():
     is_approved: bool
     is_historical: bool
     rosters: List[TeamRoster]
+
+
+@dataclass
+class CreateRosterRequestData():
+    team_id: int
+    game: str
+    mode: str
+    name: str | None
+    tag: str | None
+    is_recruiting: bool
+    is_active: bool
+    is_approved: bool
+
+@dataclass
+class EditRosterRequestData(CreateRosterRequestData):
+    roster_id: int
 
