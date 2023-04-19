@@ -1081,7 +1081,7 @@ class CreateTeamCommand(Command[None]):
     language: str
     color: int
     logo: str | None
-    is_approved: bool
+    approval_status: Approval
     is_historical: bool
     game: str
     mode: str
@@ -1099,13 +1099,13 @@ class CreateTeamCommand(Command[None]):
                     if row[0] > 0:
                         raise Problem('An existing team already has this name or tag', status=400)
             creation_date = int(datetime.utcnow().timestamp())
-            async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, is_approved, is_historical)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.is_approved,
+            async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.approval_status,
                 self.is_historical)) as cursor:
                 team_id = cursor.lastrowid
             await db.commit()
-            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.is_approved))
+            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
 
 @dataclass
 class GetTeamInfoCommand(Command[Team]):
@@ -1113,27 +1113,27 @@ class GetTeamInfoCommand(Command[Team]):
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT name, tag, description, creation_date, language, color, logo, is_approved, is_historical FROM teams WHERE id = ?",
+            async with db.execute("SELECT name, tag, description, creation_date, language, color, logo, approval_status, is_historical FROM teams WHERE id = ?",
                 (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('Team not found', status=404)
-                team_name, team_tag, description, team_date, language, color, logo, team_is_approved, is_historical = row
-                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_is_approved, is_historical, [])
+                team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical = row
+                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [])
             
             # get all rosters for our team
             rosters = []
             roster_dict = {}
-            async with db.execute("SELECT id, game, mode, name, tag, creation_date, is_recruiting, is_approved FROM team_rosters WHERE team_id = ?",
+            async with db.execute("SELECT id, game, mode, name, tag, creation_date, is_recruiting, approval_status FROM team_rosters WHERE team_id = ?",
                 (self.team_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    roster_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_is_approved = row
+                    roster_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_approval_status = row
                     if roster_name is None:
                         roster_name = team_name
                     if roster_tag is None:
                         roster_tag = team_tag
-                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_is_approved, [])
+                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_approval_status, [])
                     rosters.append(curr_roster)
                     roster_dict[curr_roster.id] = curr_roster
             
@@ -1189,7 +1189,7 @@ class EditTeamCommand(Command[None]):
     language: str
     color: int
     logo: str | None
-    is_approved: bool
+    approval_status: Approval
     is_historical: bool
     game: str
     mode: str
@@ -1205,14 +1205,14 @@ class EditTeamCommand(Command[None]):
                 language = ?,
                 color = ?,
                 logo = ?,
-                is_approved = ?,
+                approval_status = ?,
                 is_historical = ?,
                 game = ?,
                 mode = ?,
                 is_recruiting = ?,
                 is_active = ?
                 WHERE id = ?""",
-                (self.name, self.tag, self.description, self.language, self.color, self.logo, self.is_approved, self.is_historical,
+                (self.name, self.tag, self.description, self.language, self.color, self.logo, self.approval_status, self.is_historical,
                  self.game, self.mode, self.is_recruiting, self.is_active)) as cursor:
                 updated_rows = cursor.rowcount
                 if updated_rows == 0:
@@ -1228,7 +1228,7 @@ class CreateRosterCommand(Command[None]):
     tag: str | None
     is_recruiting: bool
     is_active: bool
-    is_approved: bool
+    approval_status: Approval
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
@@ -1249,20 +1249,18 @@ class CreateRosterCommand(Command[None]):
                 if row is not None:
                     raise Problem('Only one roster per game/mode may use the same name', status=400)
             creation_date = int(datetime.utcnow().timestamp())
-            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.is_approved))
+            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             
 @dataclass
 class EditRosterCommand(Command[None]):
     roster_id: int
     team_id: int
-    game: str
-    mode: str
     name: str | None
     tag: str | None
     is_recruiting: bool
     is_active: bool
-    is_approved: bool
+    approval_status: Approval
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
@@ -1278,16 +1276,16 @@ class EditRosterCommand(Command[None]):
             if self.tag == team_tag:
                 self.tag = None
             # get the current roster's name and check if it exists
-            async with db.execute("SELECT name FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+            async with db.execute("SELECT name, game, mode FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('No roster found')
-                roster_name = row[0]
+                roster_name, game, mode = row
             if roster_name != self.name:
                 # check to make sure another roster doesn't have the name we're changing to
-                async with db.execute("SELECT name FROM team_rosters WHERE team_id = ? AND game = ? AND mode = ? AND name = ? AND roster_id != ?", (self.team_id, self.game, self.mode, self.name, )) as cursor:
+                async with db.execute("SELECT name FROM team_rosters WHERE team_id = ? AND game = ? AND mode = ? AND name = ? AND roster_id != ?", (self.team_id, game, mode, self.name, self.roster_id)) as cursor:
                     row = await cursor.fetchone()
                     if row is not None:
                         raise Problem('Only one roster per game/mode may use the same name', status=400)
-            await db.execute("UPDATE team_rosters SET team_id = ?, game = ?, mode = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, is_approved = ?",
-                             (self.team_id, self.game, self.mode, self.name, self.tag, self.is_recruiting, self.is_active, self.is_approved))
+            await db.execute("UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, approval_status = ?",
+                             (self.team_id, self.name, self.tag, self.is_recruiting, self.is_active, self.approval_status))

@@ -296,7 +296,7 @@ class Team(TableModel):
     language: str
     color: int
     logo: str | None
-    is_approved: bool
+    approval_status: str
     is_historical: bool
 
     @staticmethod
@@ -310,7 +310,7 @@ class Team(TableModel):
             language TEXT NOT NULL,
             color INTEGER NOT NULL,
             logo TEXT,
-            is_approved BOOLEAN NOT NULL,
+            approval_status TEXT NOT NULL,
             is_historical BOOLEAN NOT NULL
             )
             """
@@ -326,7 +326,7 @@ class TeamRoster(TableModel):
     creation_date: int
     is_recruiting: bool
     is_active: bool
-    is_approved: bool
+    approval_status: str
 
     @staticmethod
     def get_create_table_command():
@@ -340,7 +340,7 @@ class TeamRoster(TableModel):
             creation_date INTEGER NOT NULL,
             is_recruiting BOOLEAN NOT NULL,
             is_active BOOLEAN NOT NULL,
-            is_approved BOOLEAN NOT NULL
+            approval_status STRING NOT NULL
             )
             """
     

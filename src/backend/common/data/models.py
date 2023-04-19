@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal
 
 @dataclass
 class Problem(Exception):
@@ -350,6 +350,8 @@ class TournamentTemplateMinimal():
 class TemplateFilter():
     series_id: int | None = None
 
+Approval = Literal["approved", "pending", "denied"]
+
 @dataclass
 class CreateTeamRequestData():
     name: str
@@ -361,7 +363,7 @@ class CreateTeamRequestData():
     game: str
     mode: str
     is_recruiting: bool
-    is_approved: bool
+    approval_status: Approval
     is_historical: bool
     is_active: bool
 
@@ -427,9 +429,15 @@ class CreateRosterRequestData():
     tag: str | None
     is_recruiting: bool
     is_active: bool
-    is_approved: bool
+    approval_status: Approval
 
 @dataclass
-class EditRosterRequestData(CreateRosterRequestData):
+class EditRosterRequestData():
     roster_id: int
+    team_id: int
+    name: str | None
+    tag: str | None
+    is_recruiting: bool
+    is_active: bool
+    approval_status: Approval
 

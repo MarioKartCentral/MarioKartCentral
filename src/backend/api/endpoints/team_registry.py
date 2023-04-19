@@ -11,7 +11,7 @@ from common.data.models import (CreateTeamRequestData, CreateRosterRequestData, 
 @bind_request_body(CreateTeamRequestData)
 async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResponse:
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
-        body.logo, body.is_approved, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
+        body.logo, body.approval_status, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
     await handle(command)
     return JSONResponse({})
 
@@ -25,20 +25,20 @@ async def view_team(request: Request) -> JSONResponse:
 async def edit_team(request: Request, body: CreateTeamRequestData) -> JSONResponse:
     team_id = request.path_params['id']
     command = EditTeamCommand(team_id, body.name, body.tag, body.description, body.language, body.color,
-        body.logo, body.is_approved, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
+        body.logo, body.approval_status, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(CreateRosterRequestData)
 async def create_roster(request: Request, body: CreateRosterRequestData) -> JSONResponse:
-    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, body.is_active, body.is_approved)
+    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, body.is_active, body.approval_status)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(EditRosterRequestData)
 async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResponse:
-    command = EditRosterCommand(body.roster_id, body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting,
-                                body.is_active, body.is_approved)
+    command = EditRosterCommand(body.roster_id, body.team_id, body.name, body.tag, body.is_recruiting,
+                                body.is_active, body.approval_status)
     await handle(command)
     return JSONResponse({})
 
