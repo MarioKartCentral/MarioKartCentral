@@ -1289,3 +1289,17 @@ class EditRosterCommand(Command[None]):
                         raise Problem('Only one roster per game/mode may use the same name', status=400)
             await db.execute("UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, approval_status = ?",
                              (self.team_id, self.name, self.tag, self.is_recruiting, self.is_active, self.approval_status))
+
+@dataclass
+class InvitePlayerCommand(Command[None]):
+    player_id: int
+    roster_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND leave_date = ?", (self.roster_id, None)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem("Player is already on this roster")
+            creation_date = int(datetime.utcnow().timestamp())
+            await db.execute("INSERT INTO roster_invites(player_id, roster_id, date, is_accepted) VALUES (?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False))

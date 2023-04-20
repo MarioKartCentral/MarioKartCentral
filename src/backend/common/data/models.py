@@ -441,3 +441,8 @@ class EditRosterRequestData():
     is_active: bool
     approval_status: Approval
 
+@dataclass
+class InviteRosterPlayerRequestData():
+    player_id: int
+    roster_id: int
+    
