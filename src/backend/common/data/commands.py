@@ -121,6 +121,30 @@ class GetUserWithPermissionFromSessionCommand(Command[User | None]):
                 return None
 
             return User(int(row[0]), int(row[1]))
+        
+@dataclass
+class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
+    session_id: str
+    permission_name: str
+    team_id: int
+    
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""
+                SELECT u.id, u.player_id FROM roles r
+                JOIN user_team_roles ur ON ur.role_id = r.id
+                JOIN users u ON ur.user_id = u.id
+                JOIN sessions s ON s.user_id = u.id
+                JOIN role_permissions rp ON rp.role_id = r.id
+                JOIN permissions p ON rp.permission_id = p.id
+                WHERE s.session_id = ? AND p.name = ? AND ur.team_id = ?
+                LIMIT 1""", (self.session_id, self.permission_name, self.team_id)) as cursor:
+                row = await cursor.fetchone()
+            
+            if row is None:
+                return None
+            
+            return User(int(row[0]), int(row[1]))
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -1329,3 +1353,21 @@ class AcceptInviteCommand(Command[None]):
                     raise Problem("Player does not have any friend codes for this roster's game", status=400)
             # we do not move the player to the team's roster just yet, just mark it as accepted, a moderator must approve the transfer
             await db.execute("UPDATE roster_invites SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))
+
+@dataclass
+class DeclineInviteCommand(Command[None]):
+    invite_id: int
+    player_id: int
+    is_privileged: bool = False
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            # check if invite exists and to make sure we're the same player as the invite
+            async with db.execute("SELECT player_id FROM roster_invites WHERE id = ?", (self.invite_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("No invite found", status=404)
+                invite_player_id = row[0]
+                if self.player_id != invite_player_id and not self.is_privileged:
+                    raise Problem("Cannot decline invite for another player", status=400)
+            await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))

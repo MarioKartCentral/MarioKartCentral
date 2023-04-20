@@ -368,6 +368,10 @@ class CreateTeamRequestData():
     is_active: bool
 
 @dataclass
+class EditTeamRequestData(CreateTeamRequestData):
+    team_id: int
+
+@dataclass
 class PartialTeamMember():
     player_id: int
     roster_id: int
@@ -450,3 +454,7 @@ class InviteRosterPlayerRequestData():
 class AcceptRosterInviteRequestData():
     invite_id: int
     roster_leave_id: int | None
+
+@dataclass
+class DeclineRosterInviteRequestData():
+    invite_id: int
