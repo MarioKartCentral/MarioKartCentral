@@ -445,4 +445,8 @@ class EditRosterRequestData():
 class InviteRosterPlayerRequestData():
     player_id: int
     roster_id: int
-    
+
+@dataclass
+class AcceptRosterInviteRequestData():
+    invite_id: int
+    roster_leave_id: int | None

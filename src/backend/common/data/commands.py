@@ -1303,3 +1303,29 @@ class InvitePlayerCommand(Command[None]):
                     raise Problem("Player is already on this roster")
             creation_date = int(datetime.utcnow().timestamp())
             await db.execute("INSERT INTO roster_invites(player_id, roster_id, date, is_accepted) VALUES (?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False))
+
+@dataclass
+class AcceptInviteCommand(Command[None]):
+    invite_id: int
+    roster_leave_id: int | None
+    player_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            # check if invite exists and to make sure we're the same player as the invite
+            async with db.execute("SELECT r.game, i.player_id FROM roster_invites i JOIN team_rosters r ON i.roster_id = r.id WHERE i.id = ?", (self.invite_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("No invite found", status=404)
+                game, invite_player_id = row
+                if self.player_id != invite_player_id:
+                    raise Problem("Cannot accept invite for another player", status=400)
+            # make sure we have at least one FC for the game of the roster that we are accepting an invite for
+            async with db.execute("SELECT count(id) FROM friend_codes WHERE player_id = ? AND game = ?", (self.player_id, game)) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                fc_count = row[0]
+                if fc_count == 0:
+                    raise Problem("Player does not have any friend codes for this roster's game", status=400)
+            # we do not move the player to the team's roster just yet, just mark it as accepted, a moderator must approve the transfer
+            await db.execute("UPDATE roster_invites SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))

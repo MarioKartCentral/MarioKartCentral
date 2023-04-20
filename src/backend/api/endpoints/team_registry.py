@@ -5,8 +5,8 @@ from api.auth import require_permission, require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
-from common.data.commands import (CreateTeamCommand, EditRosterCommand, GetTeamInfoCommand, EditTeamCommand, CreateRosterCommand, InvitePlayerCommand)
-from common.data.models import (CreateTeamRequestData, CreateRosterRequestData, EditRosterRequestData, InviteRosterPlayerRequestData)
+from common.data.commands import (CreateTeamCommand, EditRosterCommand, GetTeamInfoCommand, EditTeamCommand, CreateRosterCommand, InvitePlayerCommand, AcceptInviteCommand)
+from common.data.models import (CreateTeamRequestData, CreateRosterRequestData, EditRosterRequestData, InviteRosterPlayerRequestData, AcceptRosterInviteRequestData)
 
 @bind_request_body(CreateTeamRequestData)
 async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResponse:
@@ -48,11 +48,18 @@ async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(AcceptRosterInviteRequestData)
+async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
+    command = AcceptInviteCommand(body.invite_id, body.roster_leave_id, request.state.user.player_id)
+    await handle(command)
+    return JSONResponse({})
+
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
     Route('/api/registry/teams/{id:int}', view_team),
     Route('/api/registry/teams/{id:int}/edit', edit_team, methods=['POST']),
     Route('/api/registry/teams/createRoster', create_roster, methods=['POST']),
     Route('/api/registry/teams/editRoster', edit_roster, methods=['POST']),
-    Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST'])
+    Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST']),
+    Route('/api/registry/teams/acceptInvite', accept_invite, methods=['POST'])
 ]
