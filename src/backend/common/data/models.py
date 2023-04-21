@@ -353,7 +353,7 @@ class TemplateFilter():
 Approval = Literal["approved", "pending", "denied"]
 
 @dataclass
-class CreateTeamRequestData():
+class RequestCreateTeamRequestData():
     name: str
     tag: str
     description: str
@@ -363,6 +363,9 @@ class CreateTeamRequestData():
     game: str
     mode: str
     is_recruiting: bool
+
+@dataclass
+class CreateTeamRequestData(RequestCreateTeamRequestData):
     approval_status: Approval
     is_historical: bool
     is_active: bool
@@ -370,6 +373,21 @@ class CreateTeamRequestData():
 @dataclass
 class EditTeamRequestData(CreateTeamRequestData):
     team_id: int
+
+@dataclass
+class ManagerEditTeamRequestData():
+    team_id: int
+    description: str
+    language: str
+    color: int
+    logo: str | None
+    is_recruiting: bool
+
+@dataclass
+class RequestEditTeamRequestData():
+    team_id: int
+    name: str | None
+    tag: str | None
 
 @dataclass
 class PartialTeamMember():
@@ -447,6 +465,7 @@ class EditRosterRequestData():
 
 @dataclass
 class InviteRosterPlayerRequestData():
+    team_id: int
     player_id: int
     roster_id: int
 
@@ -457,4 +476,12 @@ class AcceptRosterInviteRequestData():
 
 @dataclass
 class DeclineRosterInviteRequestData():
+    invite_id: int
+
+@dataclass
+class LeaveRosterRequestData():
+    roster_id: int
+
+@dataclass
+class ApproveTransferRequestData():
     invite_id: int

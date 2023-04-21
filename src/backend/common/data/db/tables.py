@@ -423,14 +423,29 @@ class RosterInvite(TableModel):
     @staticmethod
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS roster_invites (
-        id INTEGER PRIMARY KEY,
-        player_id INTEGER NOT NULL,
-        roster_id INTEGER NOT NULL,
-        date INTEGER NOT NULL,
-        roster_leave_id INTEGER,
-        is_accepted BOOLEAN NOT NULL
-        )"""
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL,
+            roster_id INTEGER NOT NULL,
+            date INTEGER NOT NULL,
+            roster_leave_id INTEGER,
+            is_accepted BOOLEAN NOT NULL
+            )"""
 
+@dataclass
+class TeamEditRequest(TableModel):
+    id: int
+    team_id: int
+    name: str | None
+    tag: str | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return ("""CREATE TABLE IF NOT EXISTS team_edit_requests (
+            id INTEGER PRIMARY KEY,
+            team_id INTEGER NOT NULL,
+            name INTEGER NOT NULL,
+            tag INTEGER NOT NULL
+            )""")
 
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 

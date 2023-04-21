@@ -621,6 +621,7 @@ class EditPlayerRegistrationCommand(Command[None]):
                     (self.tournament_id, self.player_id, False))
             await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, selected_fc_id = ? WHERE id = ?", (
                 self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, self.selected_fc_id, registration_id))
+            await db.commit()
 
 @dataclass
 class UnregisterPlayerCommand(Command[None]):
@@ -639,6 +640,7 @@ class UnregisterPlayerCommand(Command[None]):
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so players cannot be unregistered from this tournament", status=400)
             await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ?", (self.tournament_id, self.squad_id, self.tournament_id))
+            await db.commit()
 
 @dataclass
 class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
@@ -1130,6 +1132,7 @@ class CreateTeamCommand(Command[None]):
             await db.commit()
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            await db.commit()
 
 @dataclass
 class GetTeamInfoCommand(Command[Team]):
@@ -1244,6 +1247,42 @@ class EditTeamCommand(Command[None]):
                 await db.commit()
 
 @dataclass
+class ManagerEditTeamCommand(Command[None]):
+    team_id: int
+    description: str
+    language: str
+    color: int
+    logo: str | None
+    is_recruiting: bool
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""UPDATE teams SET
+                description = ?,
+                language = ?,
+                color = ?,
+                logo = ?,
+                is_recruiting = ?
+                WHERE id = ?""",
+                (self.description, self.language, self.color, self.logo, self.is_recruiting, self.team_id)) as cursor:
+                updated_rows = cursor.rowcount
+                if updated_rows == 0:
+                    raise Problem('No team found', status=404)
+                await db.commit()
+
+@dataclass
+class RequestEditTeamCommand(Command[None]):
+    team_id: int
+    name: str | None
+    tag: str | None
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        if self.name is None and self.tag is None:
+            raise Problem("Must request at least one of name/tag to be edited", status=400)
+        async with db_wrapper.connect() as db:
+            await db.execute("INSERT INTO team_edit_requests(team_id, name, tag) VALUES(?, ?, ?)", (self.team_id, self.name, self.tag))
+
+@dataclass
 class CreateRosterCommand(Command[None]):
     team_id: int
     game: str
@@ -1275,6 +1314,7 @@ class CreateRosterCommand(Command[None]):
             creation_date = int(datetime.utcnow().timestamp())
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            await db.commit()
             
 @dataclass
 class EditRosterCommand(Command[None]):
@@ -1313,20 +1353,57 @@ class EditRosterCommand(Command[None]):
                         raise Problem('Only one roster per game/mode may use the same name', status=400)
             await db.execute("UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, approval_status = ?",
                              (self.team_id, self.name, self.tag, self.is_recruiting, self.is_active, self.approval_status))
+            await db.commit()
 
 @dataclass
 class InvitePlayerCommand(Command[None]):
     player_id: int
     roster_id: int
+    team_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
+            async with db.execute("SELECT team_id FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Roster not found", status=404)
+                roster_team_id = row[0]
+                if int(roster_team_id) != self.team_id:
+                    raise Problem("Roster is not part of specified team", status=400)
             async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND leave_date = ?", (self.roster_id, None)) as cursor:
                 row = await cursor.fetchone()
                 if row:
-                    raise Problem("Player is already on this roster")
+                    raise Problem("Player is already on this roster", status=404)
+            async with db.execute("SELECT COUNT(id) FROM roster_invites WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                num_invites = row[0]
+                if num_invites > 0:
+                    raise Problem("Player has already been invited", status=400)
             creation_date = int(datetime.utcnow().timestamp())
             await db.execute("INSERT INTO roster_invites(player_id, roster_id, date, is_accepted) VALUES (?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False))
+            await db.commit()
+
+@dataclass
+class DeleteInviteCommand(Command[None]):
+    player_id: int
+    roster_id: int
+    team_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT team_id FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Roster not found", status=404)
+                roster_team_id = row[0]
+                if int(roster_team_id) != self.team_id:
+                    raise Problem("Roster is not part of specified team", status=400)
+            async with db.execute("DELETE FROM roster_invites WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
+                rowcount = cursor.rowcount
+                if rowcount == 0:
+                    raise Problem("Invite not found")
+            await db.commit()
 
 @dataclass
 class AcceptInviteCommand(Command[None]):
@@ -1353,6 +1430,7 @@ class AcceptInviteCommand(Command[None]):
                     raise Problem("Player does not have any friend codes for this roster's game", status=400)
             # we do not move the player to the team's roster just yet, just mark it as accepted, a moderator must approve the transfer
             await db.execute("UPDATE roster_invites SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))
+            await db.commit()
 
 @dataclass
 class DeclineInviteCommand(Command[None]):
@@ -1371,3 +1449,47 @@ class DeclineInviteCommand(Command[None]):
                 if self.player_id != invite_player_id and not self.is_privileged:
                     raise Problem("Cannot decline invite for another player", status=400)
             await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
+            await db.commit()
+
+@dataclass
+class LeaveRosterCommand(Command[None]):
+    player_id: int
+    roster_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date = ?", (self.player_id, self.roster_id, None)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Player is not currently on this roster", status=400)
+                team_member_id = row[0]
+            leave_date = int(datetime.utcnow().timestamp())
+            await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
+
+@dataclass
+class ApproveTransferCommand(Command[None]):
+    invite_id: int
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM roster_invites WHERE id = ?", (self.invite_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Invite not found", status=404)
+                player_id, roster_id, roster_leave_id, is_accepted = row
+            if not is_accepted:
+                raise Problem("Invite has not been accepted by the player yet", status=400)
+            if roster_leave_id:
+                # check this before we move the player to the new team
+                async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date = ?", (player_id, roster_id, None)) as cursor:
+                    row = await cursor.fetchone()
+                    if row is None:
+                        raise Problem("Player is not currently on this roster", status=400)
+                    team_member_id = row[0]
+            else:
+                team_member_id = None
+            curr_time = int(datetime.utcnow().timestamp())
+            await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
+            await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (roster_id, player_id, curr_time))
+            if team_member_id:
+                await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
