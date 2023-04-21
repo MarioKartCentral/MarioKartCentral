@@ -219,7 +219,8 @@ class Tournament(TableModel):
             is_viewable BOOLEAN NOT NULL,
             is_public BOOLEAN NOT NULL,
             show_on_profiles BOOLEAN NOT NULL,
-            require_single_fc BOOLEAN NOT NULL
+            require_single_fc BOOLEAN NOT NULL,
+            min_representatives INTEGER
             )"""
 
 @dataclass
@@ -277,13 +278,14 @@ class TournamentPlayer(TableModel):
             player_id INTEGER NOT NULL REFERENCES players(id),
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
             squad_id INTEGER REFERENCES tournament_squads(id),
-            is_squad_captain INTEGER,
+            is_squad_captain BOOLEAN,
             timestamp INTEGER NOT NULL,
-            is_checked_in INTEGER NOT NULL,
+            is_checked_in BOOLEAN NOT NULL,
             mii_name TEXT,
-            can_host INTEGER NOT NULL,
-            is_invite INTEGER NOT NULL,
-            selected_fc_id INTEGER
+            can_host BOOLEAN NOT NULL,
+            is_invite BOOLEAN NOT NULL,
+            selected_fc_id INTEGER,
+            is_representative BOOLEAN NOT NULL,
             )"""
 
 @dataclass

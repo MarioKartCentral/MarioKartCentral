@@ -15,6 +15,7 @@ MANAGE_TEAM_ROSTERS = "team_roster_manage"
 EDIT_TEAM_INFO = "team_info_edit"
 MANAGE_REGISTRATION_HISTORY = "registration_history_edit"
 MANAGE_TRANSFERS = "transfers_manage"
+REGISTER_TEAM_TOURNAMENT = "team_tournament_register"
 
 permissions_by_id = {
     0: READ_S3,

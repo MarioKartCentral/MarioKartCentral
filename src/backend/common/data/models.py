@@ -103,14 +103,20 @@ class CreateSquadRequestData:
     selected_fc_id: int | None
 
 @dataclass
-class ForceCreateSquadRequestData:
+class ForceCreateSquadRequestData(CreateSquadRequestData):
     player_id: int
+    roster_ids: List[int]
+    representative_ids: List[int]
+
+@dataclass
+class RegisterTeamRequestData:
     squad_color: str
-    squad_name: str | None
-    squad_tag: str | None
-    mii_name: str | None
-    can_host: bool
-    selected_fc_id: int | None
+    squad_name: str
+    squad_tag: str
+    captain_player: int
+    roster_ids: List[int]
+    representative_ids: List[int]
+    
 
 @dataclass
 class EditSquadRequestData:
@@ -125,6 +131,7 @@ class EditSquadRequestData:
 class InvitePlayerRequestData:
     squad_id: int
     player_id: int
+    is_representative: bool = False
 
 @dataclass
 class RegisterPlayerRequestData:
@@ -139,6 +146,7 @@ class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     is_squad_captain: bool
     is_invite: bool
     is_checked_in: bool
+    is_representative: bool
 
 @dataclass
 class EditPlayerRegistrationRequestData():
@@ -150,6 +158,7 @@ class EditPlayerRegistrationRequestData():
     can_host: bool
     mii_name: str | None
     selected_fc_id: int | None
+    is_representative: bool
 
 @dataclass
 class AcceptInviteRequestData():
@@ -231,6 +240,7 @@ class CreateTournamentRequestData():
     is_public: bool
     show_on_profiles: bool
     require_single_fc: bool
+    min_representatives: int | None
     # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
@@ -266,6 +276,7 @@ class EditTournamentRequestData():
     is_viewable: bool
     is_public: bool
     show_on_profiles: bool
+    min_representatives: int | None
     # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
