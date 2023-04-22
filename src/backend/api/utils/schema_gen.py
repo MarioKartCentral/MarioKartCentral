@@ -86,7 +86,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                         "name": param_name,
                         "in": "path",
                         "required": True,
-                        "schema": { "type": "str" }
+                        "schema": { "type": "string" }
                     })
 
             path_data["responses"] = { 

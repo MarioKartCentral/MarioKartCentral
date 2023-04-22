@@ -4,7 +4,7 @@ from api.auth import require_permission, require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
-from common.data.commands import (CreateSquadCommand, GetPlayerIdForUserCommand, RegisterPlayerCommand, EditSquadCommand, CheckSquadCaptainPermissionsCommand,
+from common.data.commands import (CreateSquadCommand, RegisterPlayerCommand, EditSquadCommand, CheckSquadCaptainPermissionsCommand,
     EditPlayerRegistrationCommand, UnregisterPlayerCommand, GetSquadDetailsCommand, CheckIfSquadTournament, GetSquadRegistrationsCommand, GetFFARegistrationsCommand)
 from common.data.models import (CreateSquadRequestData, ForceCreateSquadRequestData, EditSquadRequestData, InvitePlayerRequestData,
     RegisterPlayerRequestData, ForceRegisterPlayerRequestData, EditPlayerRegistrationRequestData, AcceptInviteRequestData,

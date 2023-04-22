@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Generic, TypeVar
@@ -913,11 +913,16 @@ class EditTournamentCommand(Command[None]):
         b = self.body
         
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.id)) as cursor:
+            async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=404)
                 is_squad = row[0]
+            if b.series_id:
+                async with db.execute("SELECT id FROM tournament_series WHERE id = ?", (b.series_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if not row:
+                        raise Problem("Series with provided ID cannot be found", status=404)
             # check for invalid body parameters
             if not is_squad and b.teams_allowed:
                 raise Problem('Individual tournaments cannot have teams linked', status=400)
@@ -955,7 +960,7 @@ class EditTournamentCommand(Command[None]):
                 is_viewable = ?,
                 is_public = ?,
                 show_on_profiles = ?,
-                min_representatives = ?,
+                min_representatives = ?
                 WHERE id = ?""",
                 (b.tournament_name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
                 b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
@@ -964,10 +969,22 @@ class EditTournamentCommand(Command[None]):
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
+            
+
+            s3_data = await s3_wrapper.get_object('tournaments', f'{self.id}.json')
+            if s3_data is None:
+                raise Problem("No tournament found", status=404)
+            
+            json_body = msgspec.json.decode(s3_data)
+            updated_values = asdict(self.body)
+            json_body.update(updated_values)
+
+            s3_message = bytes(msgspec.json.encode(json_body))
+            await s3_wrapper.put_object('tournaments', f'{self.id}.json', s3_message)
+
             await db.commit()
 
-        s3_message = bytes(msgspec.json.encode(self.body))
-        await s3_wrapper.put_object('tournaments', f'{self.id}.json', s3_message)
+        
     
 @dataclass
 class GetTournamentDataCommand(Command[CreateTournamentRequestData]):
