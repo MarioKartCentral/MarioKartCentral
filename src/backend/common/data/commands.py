@@ -95,7 +95,7 @@ class GetUserIdFromSessionCommand(Command[User | None]):
             async with db.execute("SELECT player_id FROM users WHERE id = ?", (user_id,)) as cursor:
                 row = await cursor.fetchone()
             assert row is not None
-            player_id = int(row[0])
+            player_id = row[0]
             
             return User(user_id, player_id)
 
@@ -120,7 +120,7 @@ class GetUserWithPermissionFromSessionCommand(Command[User | None]):
             if row is None:
                 return None
 
-            return User(int(row[0]), int(row[1]))
+            return User(int(row[0]), row[1])
         
 @dataclass
 class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
@@ -144,7 +144,7 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
             if row is None:
                 return None
             
-            return User(int(row[0]), int(row[1]))
+            return User(int(row[0]), row[1])
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -169,7 +169,7 @@ class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
             if row is None:
                 return None
             
-            return UserLoginData(int(row[0]), int(row[1]), self.email, str(row[2]))
+            return UserLoginData(int(row[0]), row[1], self.email, str(row[2]))
 
 @dataclass
 class GetUserDataFromIdCommand(Command[User | None]):
@@ -183,7 +183,7 @@ class GetUserDataFromIdCommand(Command[User | None]):
             if row is None:
                 return None
             
-            return User(int(row[0]), int(row[1]))
+            return User(int(row[0]), row[1])
             
 @dataclass
 class CreateSessionCommand(Command[None]):
@@ -238,13 +238,15 @@ class CreatePlayerCommand(Command[Player]):
         async with db_wrapper.connect() as db:
             command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned, discord_id) 
                 VALUES (?, ?, ?, ?, ?, ?)"""
-            player_id = await db.execute_insert(
+            player_row = await db.execute_insert(
                 command, 
                 (data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id))
             
             # TODO: Run queries to determine why it errored
-            if player_id is None:
+            if player_row is None:
                 raise Problem("Failed to create player")
+            
+            player_id = player_row[0]
 
             if self.user_id is not None:
                 async with db.execute("UPDATE users SET player_id = ? WHERE id = ?", (player_id, self.user_id)) as cursor:
@@ -253,7 +255,7 @@ class CreatePlayerCommand(Command[Player]):
                         raise Problem("Invalid User ID", status=404)
 
             await db.commit()
-            return Player(int(player_id[0]), data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id)
+            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id)
 
 @dataclass
 class UpdatePlayerCommand(Command[bool]):
@@ -527,10 +529,10 @@ class CreateSquadCommand(Command[None]):
                     JOIN user_team_roles ur ON ur.role_id = r.id
                     JOIN team_rosters tr ON tr.team_id = ur.team_id
                     JOIN users u ON ur.user_id = u.id
-                    JOIN players p ON u.player_id = p.id
+                    JOIN players pl ON u.player_id = pl.id
                     JOIN role_permissions rp ON rp.role_id = r.id
                     JOIN permissions p ON rp.permission_id = p.id
-                    WHERE p.id = ? AND p.name = ? AND tr.id IN ({','.join([str(i) for i in self.roster_ids])})""",
+                    WHERE pl.id = ? AND p.name = ? AND tr.id IN ({','.join([str(i) for i in self.roster_ids])})""",
                     (self.creator_player_id, permissions.REGISTER_TEAM_TOURNAMENT)) as cursor:
                     # get all of the roster IDs in our list that the player has permissions for
                     rows = await cursor.fetchall()
