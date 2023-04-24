@@ -52,8 +52,8 @@ async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONRespon
 
 # used when the captain of a squad invites a player to their squad.
 # use force_register_player in tournament staff contexts
-@require_logged_in
 @bind_request_body(InvitePlayerRequestData)
+@require_logged_in
 async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
@@ -64,8 +64,8 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
     return JSONResponse({})
 
 # endpoint used when a user registers themself for a tournament
-@require_logged_in
 @bind_request_body(RegisterPlayerRequestData)
+@require_logged_in
 async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -74,8 +74,8 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
     return JSONResponse({})
 
 # endpoint used when a tournament staff registers another player for a tournament (requires permissions)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 @bind_request_body(ForceRegisterPlayerRequestData)
+@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, body.is_squad_captain, body.is_checked_in, 
@@ -83,8 +83,8 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     await handle(command)
     return JSONResponse({})
 
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 @bind_request_body(EditPlayerRegistrationRequestData)
+@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_registration(request: Request, body: EditPlayerRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, body.player_id, body.mii_name, body.can_host,
@@ -110,10 +110,10 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, player_id, False)
     await handle(command)
     return JSONResponse({})
-    
-@require_logged_in
-@bind_request_body(InvitePlayerRequestData)
+
 # used when a squad captain wants to remove a member from their squad
+@bind_request_body(InvitePlayerRequestData)
+@require_logged_in
 async def remove_player_from_squad(request: Request, body: InvitePlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
@@ -124,8 +124,8 @@ async def remove_player_from_squad(request: Request, body: InvitePlayerRequestDa
     return JSONResponse({})
 
 # used when a player unregisters themself from the tournament
-@require_logged_in
 @bind_request_body(UnregisterPlayerRequestData)
+@require_logged_in
 async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -134,8 +134,8 @@ async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> 
     return JSONResponse({})
 
 # used when a staff member force removes a player from the tournament
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 @bind_request_body(StaffUnregisterPlayerRequestData)
+@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, True)

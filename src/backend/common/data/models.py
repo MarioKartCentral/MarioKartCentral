@@ -22,10 +22,14 @@ class Problem(Exception):
     status: int = 500
     data: Dict[str, Any] | None = None
 
+Game = Literal["mkw", "mk7", "mk8", "mk8dx"]
+GameMode = Literal["150cc", "200cc", "rt", "ct"]
+Approval = Literal["approved", "pending", "denied"]
+
 @dataclass
 class FriendCode:
     fc: str
-    game: str
+    game: Game
     player_id: int
     is_verified: int
     is_primary: int
@@ -86,7 +90,7 @@ class EditPlayerRequestData:
 class PlayerFilter:
     name: str | None = None
     friend_code: str | None = None
-    game: str | None = None
+    game: Game | None = None
     country: str | None = None
     is_hidden: bool | None = None
     is_shadow: bool | None = None
@@ -210,8 +214,8 @@ class TournamentSquadDetails():
 @dataclass
 class CreateTournamentRequestData():
     tournament_name: str
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     series_id: int | None
     is_squad: bool
     registrations_open: bool
@@ -287,8 +291,8 @@ class EditTournamentRequestData():
 class TournamentDataMinimal():
     id: int
     tournament_name: str
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     date_start: int
     date_end: int
 
@@ -304,8 +308,8 @@ class TournamentDataBasic(TournamentDataMinimal):
 class TournamentFilter():
     is_minimal: bool = True
     name: str | None = None
-    game: str | None = None
-    mode: str | None = None
+    game: Game | None = None
+    mode: GameMode | None = None
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
@@ -314,8 +318,8 @@ class TournamentFilter():
 class SeriesRequestData():
     series_name: str
     url: str | None
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     is_historical: bool
     is_public: bool
     description: str
@@ -329,8 +333,8 @@ class Series():
     id: int
     series_name: str
     url: str | None
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     is_historical: bool
     is_public: bool
     description: str
@@ -340,8 +344,8 @@ class Series():
 class SeriesFilter():
     is_historical: bool | None = None
     is_public: bool | None = None
-    game: str | None = None
-    mode: str | None = None
+    game: Game | None = None
+    mode: GameMode | None = None
 
 @dataclass
 class TournamentTemplateRequestData(CreateTournamentRequestData):
@@ -361,8 +365,6 @@ class TournamentTemplateMinimal():
 class TemplateFilter():
     series_id: int | None = None
 
-Approval = Literal["approved", "pending", "denied"]
-
 @dataclass
 class RequestCreateTeamRequestData():
     name: str
@@ -371,8 +373,8 @@ class RequestCreateTeamRequestData():
     language: str
     color: int
     logo: str | None
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     is_recruiting: bool
 
 @dataclass
@@ -429,8 +431,8 @@ class RosterPlayerInfo():
 class TeamRoster():
     id: int
     team_id: int
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     name: str
     tag: str
     creation_date: int
@@ -456,8 +458,8 @@ class Team():
 @dataclass
 class CreateRosterRequestData():
     team_id: int
-    game: str
-    mode: str
+    game: Game
+    mode: GameMode
     name: str | None
     tag: str | None
     is_recruiting: bool
