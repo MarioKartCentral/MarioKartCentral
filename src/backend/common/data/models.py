@@ -90,7 +90,7 @@ class EditPlayerRequestData:
 class PlayerFilter:
     name: str | None = None
     friend_code: str | None = None
-    game: Game | None = None
+    game: str | None = None
     country: str | None = None
     is_hidden: bool | None = None
     is_shadow: bool | None = None
@@ -308,8 +308,8 @@ class TournamentDataBasic(TournamentDataMinimal):
 class TournamentFilter():
     is_minimal: bool = True
     name: str | None = None
-    game: Game | None = None
-    mode: GameMode | None = None
+    game: str | None = None
+    mode: str | None = None
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
@@ -344,8 +344,8 @@ class Series():
 class SeriesFilter():
     is_historical: bool | None = None
     is_public: bool | None = None
-    game: Game | None = None
-    mode: GameMode | None = None
+    game: str | None = None
+    mode: str | None = None
 
 @dataclass
 class TournamentTemplateRequestData(CreateTournamentRequestData):

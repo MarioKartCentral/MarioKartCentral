@@ -446,17 +446,25 @@ class RegisterPlayerCommand(Command[None]):
                         raise Problem("Tournament requires a Mii Name", status=400)
                     if mii_name_required == 0 and self.mii_name:
                         raise Problem("Tournament should not have a Mii Name", status=400)
+                    
             # check if player exists if we are force-registering them
             if not self.is_privileged:
                 async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
                         raise Problem("Player not found", status=404)
+            
+            # check if squad exists and if we are using the squad's tag in our mii name
             if self.squad_id is not None:
-                async with db.execute("SELECT id FROM tournament_squads WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id)) as cursor:
+                async with db.execute("SELECT tag FROM tournament_squads WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
                         raise Problem("Squad not found", status=404)
+                    squad_tag = row[0]
+                    if squad_tag is not None and self.mii_name is not None:
+                        if squad_tag not in self.mii_name:
+                            raise Problem("Mii name must contain squad tag", status=400)
+                        
             # make sure the player is in a team roster that is linked to the current squad
             if bool(team_members_only):
                 async with db.execute("""SELECT m.id FROM team_members m
@@ -466,28 +474,35 @@ class RegisterPlayerCommand(Command[None]):
                     row = await cursor.fetchone()
                     if row is None:
                         raise Problem("Player must be registered for a team roster linked to this squad", status=400)
+                    
             # check if player has already registered for the tournament
             async with db.execute("SELECT squad_id from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", (self.player_id, self.tournament_id)) as cursor:
                 row = await cursor.fetchone()
                 existing_squad_id = None
                 if row:
                     existing_squad_id = row[0]
+                    # if row exists but existing_squad_id is None, it's a FFA and theyre already registered
                     if not existing_squad_id:
                         raise Problem("Player already registered for tournament", status=400)
             if existing_squad_id:
+                if existing_squad_id == self.squad_id:
+                    raise Problem("Player is already invited to/registered for this squad", status=400)
                 # make sure player's squad isn't withdrawn before giving error
-                async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id IS ?", (existing_squad_id)) as cursor:
+                async with db.execute("SELECT is_registered FROM tournament_squads WHERE id IS ?", (existing_squad_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     is_registered = row[0]
+                    print(is_registered)
                     if is_registered == 1 and (not self.is_invite): # should still be able to invite someone if they are registered for the tournament
                         raise Problem('Player is already registered for this tournament', status=400)
+                    
             # check if player's squad is at maximum number of players
             if self.squad_id is not None and max_squad_size is not None:
                 async with db.execute("SELECT id FROM tournament_players WHERE tournament_id = ? AND squad_id IS ?", (self.tournament_id, self.squad_id)) as cursor:
                     player_squad_size = cursor.rowcount
                     if player_squad_size >= max_squad_size:
                         raise Problem('Squad at maximum number of players', status=400)
+                    
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
                 self.is_invite, self.selected_fc_id, self.is_representative))
@@ -538,6 +553,9 @@ class CreateSquadCommand(Command[None]):
                     raise Problem('Must specify at least one team roster ID for this tournament', status=400)
                 if len(self.representative_ids) + 1 < min_representatives:
                     raise Problem(f'Must have at least {min_representatives} representatives for this tournament', status=400)
+                if self.squad_tag is not None and self.mii_name is not None:
+                    if self.squad_tag not in self.mii_name:
+                        raise Problem("Mii name must contain squad tag", status=400)
                 
             # make sure creating player has permission for all rosters they are registering
             if len(self.roster_ids) > 0 and not self.admin:
@@ -567,7 +585,7 @@ class CreateSquadCommand(Command[None]):
                     existing_squad_id = row[0]
             if existing_squad_id is not None:
                 # make sure player's squad isn't withdrawn before giving error
-                async with db.execute("SELECT is_registered FROM tournament_squads WHERE squad_id IS ?", (existing_squad_id)) as cursor:
+                async with db.execute("SELECT is_registered FROM tournament_squads WHERE id IS ?", (existing_squad_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     is_registered = row[0]
