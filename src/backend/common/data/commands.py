@@ -1443,6 +1443,7 @@ class RequestEditTeamCommand(Command[None]):
             raise Problem("Must request at least one of name/tag to be edited", status=400)
         async with db_wrapper.connect() as db:
             await db.execute("INSERT INTO team_edit_requests(team_id, name, tag) VALUES(?, ?, ?)", (self.team_id, self.name, self.tag))
+            await db.commit()
 
 @dataclass
 class CreateRosterCommand(Command[None]):
@@ -1502,7 +1503,7 @@ class EditRosterCommand(Command[None]):
             if self.tag == team_tag:
                 self.tag = None
             # get the current roster's name and check if it exists
-            async with db.execute("SELECT name, game, mode FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+            async with db.execute("SELECT name, game, mode FROM team_rosters WHERE id = ? AND team_id = ?", (self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('No roster found')
@@ -1564,7 +1565,7 @@ class DeleteInviteCommand(Command[None]):
             async with db.execute("DELETE FROM roster_invites WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount == 0:
-                    raise Problem("Invite not found")
+                    raise Problem("Invite not found", status=404)
             await db.commit()
 
 @dataclass
