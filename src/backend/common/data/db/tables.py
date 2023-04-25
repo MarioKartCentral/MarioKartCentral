@@ -426,10 +426,10 @@ class RosterInvite(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS roster_invites (
             id INTEGER PRIMARY KEY,
-            player_id INTEGER NOT NULL,
-            roster_id INTEGER NOT NULL,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
             date INTEGER NOT NULL,
-            roster_leave_id INTEGER,
+            roster_leave_id INTEGER REFERENCES team_rosters(id),
             is_accepted BOOLEAN NOT NULL
             )"""
 
@@ -444,12 +444,13 @@ class TeamEditRequest(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS team_edit_requests (
             id INTEGER PRIMARY KEY,
-            team_id INTEGER NOT NULL,
-            name INTEGER NOT NULL,
-            tag INTEGER NOT NULL
+            team_id INTEGER NOT NULL REFERENCES teams(id),
+            name TEXT,
+            tag TEXT
             )"""
 
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
-    Team, TeamRoster, TeamMember, TeamSquadRegistration, UserTeamRole, UserSeriesRole]
+    Team, TeamRoster, TeamMember, TeamSquadRegistration, UserTeamRole, UserSeriesRole,
+    RosterInvite, TeamEditRequest]

@@ -39,7 +39,7 @@ async def view_team(request: Request) -> JSONResponse:
 @require_permission(permissions.MANAGE_TEAMS)
 async def edit_team(request: Request, body: EditTeamRequestData) -> JSONResponse:
     command = EditTeamCommand(body.team_id, body.name, body.tag, body.description, body.language, body.color,
-        body.logo, body.approval_status, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
+        body.logo, body.approval_status, body.is_historical, True)
     await handle(command)
     return JSONResponse({})
 
@@ -47,7 +47,7 @@ async def edit_team(request: Request, body: EditTeamRequestData) -> JSONResponse
 @bind_request_body(ManagerEditTeamRequestData)
 @require_team_permission(permissions.EDIT_TEAM_INFO)
 async def manager_edit_team(request: Request, body: ManagerEditTeamRequestData) -> JSONResponse:
-    command = ManagerEditTeamCommand(body.team_id, body.description, body.language, body.color, body.logo, body.is_recruiting)
+    command = ManagerEditTeamCommand(body.team_id, body.description, body.language, body.color, body.logo)
     await handle(command)
     return JSONResponse({})
 

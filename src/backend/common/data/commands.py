@@ -1304,7 +1304,7 @@ class CreateTeamCommand(Command[None]):
                 team_id = cursor.lastrowid
             await db.commit()
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, None, None, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             await db.commit()
 
 @dataclass
@@ -1391,10 +1391,6 @@ class EditTeamCommand(Command[None]):
     logo: str | None
     approval_status: Approval
     is_historical: bool
-    game: str
-    mode: str
-    is_recruiting: bool
-    is_active: bool
     is_privileged: bool
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
@@ -1406,14 +1402,9 @@ class EditTeamCommand(Command[None]):
                 color = ?,
                 logo = ?,
                 approval_status = ?,
-                is_historical = ?,
-                game = ?,
-                mode = ?,
-                is_recruiting = ?,
-                is_active = ?
+                is_historical = ?
                 WHERE id = ?""",
-                (self.name, self.tag, self.description, self.language, self.color, self.logo, self.approval_status, self.is_historical,
-                 self.game, self.mode, self.is_recruiting, self.is_active)) as cursor:
+                (self.name, self.tag, self.description, self.language, self.color, self.logo, self.approval_status, self.is_historical, self.team_id)) as cursor:
                 updated_rows = cursor.rowcount
                 if updated_rows == 0:
                     raise Problem('No team found', status=404)
@@ -1426,7 +1417,6 @@ class ManagerEditTeamCommand(Command[None]):
     language: str
     color: int
     logo: str | None
-    is_recruiting: bool
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
@@ -1434,10 +1424,9 @@ class ManagerEditTeamCommand(Command[None]):
                 description = ?,
                 language = ?,
                 color = ?,
-                logo = ?,
-                is_recruiting = ?
+                logo = ?
                 WHERE id = ?""",
-                (self.description, self.language, self.color, self.logo, self.is_recruiting, self.team_id)) as cursor:
+                (self.description, self.language, self.color, self.logo, self.team_id)) as cursor:
                 updated_rows = cursor.rowcount
                 if updated_rows == 0:
                     raise Problem('No team found', status=404)

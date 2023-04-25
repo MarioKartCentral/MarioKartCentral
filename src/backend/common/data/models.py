@@ -384,8 +384,16 @@ class CreateTeamRequestData(RequestCreateTeamRequestData):
     is_active: bool
 
 @dataclass
-class EditTeamRequestData(CreateTeamRequestData):
+class EditTeamRequestData():
     team_id: int
+    name: str
+    tag: str
+    description: str
+    language: str
+    color: int
+    logo: str | None
+    approval_status: Approval
+    is_historical: bool
 
 @dataclass
 class ManagerEditTeamRequestData():
@@ -394,7 +402,6 @@ class ManagerEditTeamRequestData():
     language: str
     color: int
     logo: str | None
-    is_recruiting: bool
 
 @dataclass
 class RequestEditTeamRequestData():
