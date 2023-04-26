@@ -1,9 +1,8 @@
 from starlette.requests import Request
-from starlette.responses import Response
 from starlette.routing import Route
 from api.auth import require_permission, require_logged_in, require_team_permission
 from api.data import handle
-from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
+from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
 from common.data.commands import (CreateTeamCommand, EditRosterCommand, GetTeamInfoCommand, EditTeamCommand, CreateRosterCommand, InvitePlayerCommand, AcceptInviteCommand, DeclineInviteCommand,
                                   DeleteInviteCommand, ManagerEditTeamCommand, RequestEditTeamCommand, LeaveRosterCommand, ApproveTransferCommand)
@@ -104,21 +103,28 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
     await handle(command)
     return JSONResponse({})
 
-@require_logged_in
 @bind_request_body(LeaveRosterRequestData)
+@require_logged_in
 async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResponse:
     command = LeaveRosterCommand(request.state.user.player_id, body.roster_id)
     await handle(command)
     return JSONResponse({})
 
-@require_permission(permissions.MANAGE_TRANSFERS)
 @bind_request_body(ApproveTransferRequestData)
+@require_permission(permissions.MANAGE_TRANSFERS)
 async def approve_transfer(request: Request, body: ApproveTransferRequestData) -> JSONResponse:
     command = ApproveTransferCommand(body.invite_id)
     await handle(command)
     return JSONResponse({})
 
-#todo: endpoints for giving team roles and editing registration history
+#todo: endpoints for giving team roles and editing registration history,
+#       approve/deny team edit requests, create roster edit requests,
+#       approve/deny roster edit requests, force add player to roster,
+#       force remove player from roster.
+
+#additional:    need to automatically handle adding/removing players from squad rosters whenever
+#               their new team is linked to the roster. maybe players can just select which squads
+#               to join upon accepting the transfer or something like that.
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
