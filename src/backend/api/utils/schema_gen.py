@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from types import NoneType, UnionType
-from typing import Any, List, get_args, get_origin
+from typing import Any, List, Literal, Optional, Union, get_args, get_origin
 import msgspec
 from starlette.requests import Request
 from starlette.routing import BaseRoute, Route
@@ -12,6 +12,43 @@ from common.data.models import Problem
 PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 class SchemaGenerator(BaseSchemaGenerator):
+    @staticmethod
+    def type_to_openapi(typ: type, is_nullable=False) -> dict[str, Any]:
+        if typ == str:
+            type_str = "string"
+        elif typ == int:
+            type_str = "integer"
+        elif typ == bool:
+            type_str = "boolean"
+        elif typ == float:
+            type_str = "number"
+        elif get_origin(typ) is Literal:
+            enum = list(get_args(typ))
+            enum_type = type(enum[0])
+            if not(all(enum_type == type(enum_val) for enum_val in enum)):
+                raise Problem("Literal contains values of different types", f"Literal contains values of different types: {typ}")
+            if is_nullable:
+                enum += [None]
+            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable)
+            base_openapi["enum"] = enum
+            return base_openapi
+        elif get_origin(typ) is Optional:
+            base_type = get_args(typ)[0]
+            base_schema = SchemaGenerator.type_to_openapi(base_type, is_nullable=True)
+            return base_schema
+        elif get_origin(typ) is Union or get_origin(typ) is UnionType:
+            args = get_args(typ)
+            if NoneType in args:
+                is_nullable = True
+                args = [a for a in args if a != NoneType]
+
+            if len(args) == 1:
+                return SchemaGenerator.type_to_openapi(args[0], is_nullable)
+            raise Problem("Unable to handle union types with more than one non-None type", f"Type: {typ}")
+        else:
+            raise Problem("Failed to map request param to type", f"Unhandled type in schema generation: {typ}")
+        return { "type": type_str, "nullable": is_nullable }
+
     def get_schema(self, routes: List[BaseRoute]):
         schema: dict[Any, Any] = { 
             "openapi": "3.0.0", 
@@ -31,34 +68,11 @@ class SchemaGenerator(BaseSchemaGenerator):
                     path_data["requestBody"] = { "content": { "application/json": { "schema": { "$ref": f"#/components/schemas/{spec_types.body_type.__name__}" } } } }
                 if spec_types.query_type is not None:
                     if dataclasses.is_dataclass(spec_types.query_type):
-                        def serialize_simple_type(typ: type):
-                            if typ == str:
-                                type_str = "string"
-                            elif typ == int:
-                                type_str = "integer"
-                            elif typ == bool:
-                                type_str = "boolean"
-                            elif typ == float:
-                                type_str = "number"
-                            elif typ == NoneType:
-                                type_str = "null"
-                            else:
-                                raise Problem("Failed to map request param to type")
-                            return { "type": type_str }
-
                         params = []
                         for field in dataclasses.fields(spec_types.query_type):
-                            is_required = True
-                            if get_origin(field.type) == UnionType:
-                                types = []
-                                for union_type in get_args(field.type):
-                                    if union_type == None:
-                                        is_required = False
-                                    types.append(serialize_simple_type(union_type))
-                                param_schema = { "anyOf": types }
-                            else:
-                                param_schema = serialize_simple_type(field.type)
+                            param_schema = SchemaGenerator.type_to_openapi(field.type)
 
+                            is_required = True
                             if field.default is not dataclasses.MISSING:
                                 param_schema["default"] = field.default
                                 is_required = False
