@@ -453,6 +453,23 @@ class TeamEditRequest(TableModel):
             )"""
     
 @dataclass
+class RosterEditRequest(TableModel):
+    id: int
+    roster_id: int
+    name: str | None
+    tag: str | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS roster_edit_requests (
+        id INTEGER PRIMARY KEY,
+        roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
+        name TEXT,
+        tag TEXT
+        )
+        """
+    
+@dataclass
 class UserSettings(TableModel):
     user_id: int
     avatar: str | None

@@ -2,13 +2,16 @@ from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission, require_logged_in, require_team_permission
 from api.data import handle
+from datetime import datetime
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
 from common.data.commands import (CreateTeamCommand, EditRosterCommand, GetTeamInfoCommand, EditTeamCommand, CreateRosterCommand, InvitePlayerCommand, AcceptInviteCommand, DeclineInviteCommand,
-                                  DeleteInviteCommand, ManagerEditTeamCommand, RequestEditTeamCommand, LeaveRosterCommand, ApproveTransferCommand)
+                                  DeleteInviteCommand, ManagerEditTeamCommand, RequestEditTeamCommand, LeaveRosterCommand, ApproveTransferCommand, DenyTransferCommand, ApproveTeamEditCommand,
+                                  DenyTeamEditCommand, RequestEditRosterCommand, ApproveRosterEditCommand, DenyRosterEditCommand, ForceTransferPlayerCommand, EditTeamMemberCommand)
 from common.data.models import (CreateTeamRequestData, EditTeamRequestData, CreateRosterRequestData, EditRosterRequestData, InviteRosterPlayerRequestData, AcceptRosterInviteRequestData, 
                                 DeclineRosterInviteRequestData, RequestCreateTeamRequestData, ManagerEditTeamRequestData, RequestEditTeamRequestData, LeaveRosterRequestData,
-                                ApproveTransferRequestData)
+                                ApproveTransferRequestData, DenyTransferRequestData, ApproveTeamEditRequestData, DenyTeamEditRequestData, RequestEditRosterRequestData, ApproveRosterEditRequestData,
+                                DenyRosterEditRequestData, ForceTransferPlayerRequestData, EditTeamMemberInfoRequestData, KickPlayerRequestData)
 
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateTeamRequestData)
@@ -55,6 +58,20 @@ async def manager_edit_team(request: Request, body: ManagerEditTeamRequestData) 
 @require_team_permission(permissions.EDIT_TEAM_INFO)
 async def request_edit_team(request: Request, body: RequestEditTeamRequestData) -> JSONResponse:
     command = RequestEditTeamCommand(body.team_id, body.name, body.tag)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ApproveTeamEditRequestData)
+@require_permission(permissions.MANAGE_TEAMS)
+async def approve_team_edit_request(request: Request, body: ApproveTeamEditRequestData) -> JSONResponse:
+    command = ApproveTeamEditCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(DenyTeamEditRequestData)
+@require_permission(permissions.MANAGE_TEAMS)
+async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData) -> JSONResponse:
+    command = DenyTeamEditCommand(body.request_id)
     await handle(command)
     return JSONResponse({})
 
@@ -117,15 +134,57 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
     await handle(command)
     return JSONResponse({})
 
-#todo: endpoints for giving team roles and editing registration history,
-#       approve/deny team edit requests, create roster edit requests,
-#       approve/deny roster edit requests, force add player to roster,
-#       force remove player from roster.
+@bind_request_body(DenyTransferRequestData)
+@require_permission(permissions.MANAGE_TRANSFERS)
+async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSONResponse:
+    command = DenyTransferCommand(body.invite_id, body.send_back)
+    await handle(command)
+    return JSONResponse({})
 
-#additional:    need to automatically handle adding/removing players from squad rosters whenever
-#               their new team is linked to the roster. maybe players can just select which squads
-#               to join upon accepting the transfer or something like that.
-#               also, add/edit/remove FC endpoints
+@bind_request_body(RequestEditRosterRequestData)
+@require_team_permission(permissions.EDIT_TEAM_INFO)
+async def request_edit_roster(request: Request, body: RequestEditRosterRequestData) -> JSONResponse:
+    command = RequestEditRosterCommand(body.roster_id, body.team_id, body.name, body.tag)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ApproveRosterEditRequestData)
+@require_permission(permissions.MANAGE_TEAMS)
+async def approve_roster_edit_request(request: Request, body: ApproveRosterEditRequestData) -> JSONResponse:
+    command = ApproveRosterEditCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(DenyRosterEditRequestData)
+@require_permission(permissions.MANAGE_TEAMS)
+async def deny_roster_edit_request(request: Request, body: DenyRosterEditRequestData) -> JSONResponse:
+    command = DenyRosterEditCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ForceTransferPlayerRequestData)
+@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> JSONResponse:
+    command = ForceTransferPlayerCommand(body.player_id, body.roster_id, body.team_id, body.roster_leave_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditTeamMemberInfoRequestData)
+@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+async def edit_team_member_info(request: Request, body: EditTeamMemberInfoRequestData) -> JSONResponse:
+    command = EditTeamMemberCommand(body.id, body.roster_id, body.team_id, body.join_date, body.leave_date)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(KickPlayerRequestData)
+@require_team_permission(permissions.MANAGE_TEAM_ROSTERS)
+async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
+    timestamp = int(datetime.utcnow().timestamp())
+    command = EditTeamMemberCommand(body.id, body.roster_id, body.team_id, None, timestamp)
+    await handle(command)
+    return JSONResponse({})
+
+#todo: endpoints for giving team roles
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
@@ -133,6 +192,8 @@ routes: list[Route] = [
     Route('/api/registry/teams/forceEdit', edit_team, methods=['POST']),
     Route('/api/registry/teams/edit', manager_edit_team, methods=['POST']),
     Route('/api/registry/teams/requestChange', request_edit_team, methods=['POST']),
+    Route('/api/registry/teams/approveChange', approve_team_edit_request, methods=['POST']),
+    Route('/api/registry/teams/denyChange', deny_team_edit_request, methods=['POST']),
     Route('/api/registry/teams/createRoster', create_roster, methods=['POST']),
     Route('/api/registry/teams/editRoster', edit_roster, methods=['POST']),
     Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST']),
@@ -140,5 +201,11 @@ routes: list[Route] = [
     Route('/api/registry/teams/acceptInvite', accept_invite, methods=['POST']),
     Route('/api/registry/teams/declineInvite', decline_invite, methods=['POST']),
     Route('/api/registry/teams/leave', leave_team, methods=['POST']),
-    Route('/api/registry/teams/approveTransfer', approve_transfer, methods=['POST'])
+    Route('/api/registry/teams/approveTransfer', approve_transfer, methods=['POST']),
+    Route('/api/registry/teams/requestRosterChange', request_edit_roster, methods=['POST']),
+    Route('/api/registry/teams/approveRosterChange', approve_roster_edit_request, methods=['POST']),
+    Route('/api/registry/teams/denyRosterChange', deny_roster_edit_request, methods=['POST']),
+    Route('/api/registry/teams/forceTransferPlayer', force_transfer_player, methods=['POST']),
+    Route('/api/registry/teams/editTeamMemberInfo', edit_team_member_info, methods=['POST']),
+    Route('/api/registry/teams/kickPlayer', kick_player, methods=['POST'])
 ]

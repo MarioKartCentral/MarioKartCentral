@@ -406,8 +406,8 @@ class ManagerEditTeamRequestData():
 @dataclass
 class RequestEditTeamRequestData():
     team_id: int
-    name: str | None
-    tag: str | None
+    name: str
+    tag: str
 
 @dataclass
 class PartialTeamMember():
@@ -550,3 +550,69 @@ class CreateFriendCodeRequestData:
     fc: str
     game: Game
     is_primary: bool
+    description: str | None
+
+@dataclass
+class EditFriendCodeRequestData:
+    id: int
+    fc: str
+    game: Game
+    is_active: bool
+    description: str | None
+
+@dataclass
+class EditPrimaryFriendCodeRequestData:
+    id: int
+
+@dataclass
+class ModEditPrimaryFriendCodeRequestData(EditPrimaryFriendCodeRequestData):
+    player_id: int
+
+@dataclass
+class DenyTransferRequestData():
+    invite_id: int
+    send_back: bool
+
+@dataclass
+class ApproveTeamEditRequestData():
+    request_id: int
+
+@dataclass
+class DenyTeamEditRequestData():
+    request_id: int
+
+@dataclass
+class RequestEditRosterRequestData():
+    roster_id: int
+    team_id: int
+    name: str | None
+    tag: str | None
+
+@dataclass
+class ApproveRosterEditRequestData():
+    request_id: int
+
+@dataclass
+class DenyRosterEditRequestData():
+    request_id: int
+
+@dataclass
+class ForceTransferPlayerRequestData():
+    player_id: int
+    roster_id: int
+    team_id: int
+    roster_leave_id: int | None
+
+@dataclass
+class EditTeamMemberInfoRequestData():
+    id: int
+    roster_id: int
+    team_id: int
+    join_date: int | None
+    leave_date: int | None
+
+@dataclass
+class KickPlayerRequestData():
+    id: int
+    roster_id: int
+    team_id: int
