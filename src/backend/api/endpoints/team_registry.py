@@ -125,6 +125,7 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
 #additional:    need to automatically handle adding/removing players from squad rosters whenever
 #               their new team is linked to the roster. maybe players can just select which squads
 #               to join upon accepting the transfer or something like that.
+#               also, add/edit/remove FC endpoints
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),

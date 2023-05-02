@@ -32,6 +32,15 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(RegisterTeamRequestData)
+@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
+    tournament_id = request.path_params['id']
+    command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.captain_player, body.captain_player, tournament_id,
+                                 False, None, False, None, body.roster_ids, body.representative_ids, admin=True)
+    await handle(command)
+    return JSONResponse({})
+
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
 @require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
@@ -169,6 +178,7 @@ routes = [
     Route('/api/tournaments/{id:int}/editRegistration', edit_registration, methods=['POST']),
     Route('/api/tournaments/{id:int}/createSquad', create_my_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/registerTeam', register_my_team, methods=['POST']),
+    Route('/api/tournaments/{id:int}/forceRegisterTeam', force_register_team, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceCreateSquad', force_create_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/editSquad', edit_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/invitePlayer', invite_player, methods=['POST']),

@@ -22,7 +22,7 @@ class Problem(Exception):
     status: int = 500
     data: Dict[str, Any] | None = None
 
-Game = Literal["mkw", "mk7", "mk8", "mk8dx"]
+Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt"]
 GameMode = Literal["150cc", "200cc", "rt", "ct"]
 Approval = Literal["approved", "pending", "denied"]
 
@@ -544,3 +544,9 @@ class NotificationFilter:
 @dataclass
 class MarkAsReadRequestData:
     is_read: bool
+
+@dataclass
+class CreateFriendCodeRequestData:
+    fc: str
+    game: Game
+    is_primary: bool

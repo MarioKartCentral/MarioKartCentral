@@ -35,8 +35,9 @@ class FriendCode(TableModel):
     player_id: int
     game: str
     fc: str
-    is_verified: int
-    is_primary: int
+    is_verified: bool
+    is_primary: bool
+    is_active: bool
     description: str
 
     @staticmethod
@@ -48,6 +49,7 @@ class FriendCode(TableModel):
             fc TEXT NOT NULL,
             is_verified BOOLEAN NOT NULL,
             is_primary BOOLEAN NOT NULL,
+            is_active BOOLEAN NOT NULL,
             description TEXT
             )"""
 
@@ -270,6 +272,7 @@ class TournamentPlayer(TableModel):
     can_host: bool
     is_invite: bool
     selected_fc_id: int
+    is_representative: bool
 
     @staticmethod
     def get_create_table_command():
