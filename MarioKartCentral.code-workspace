@@ -16,8 +16,8 @@
     "extensions": {
         "recommendations": [
             "svelte.svelte-vscode",
+            "ms-python.python",
             "esbenp.prettier-vscode",
-            "eg2.vscode-npm-script",
             "dbaeumer.vscode-eslint",
             "ms-azuretools.vscode-docker"
         ]

@@ -4,7 +4,7 @@ from starlette.routing import Route
 from api.auth import require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
-from common.data.commands import GetUserSettingsCommand, EditUserSettingsCommand
+from common.data.commands import *
 from common.data.models import Problem, EditUserSettingsRequestData
 
 @require_logged_in

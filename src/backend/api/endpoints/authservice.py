@@ -8,7 +8,7 @@ from api.auth import require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import pw_hasher
-from common.data.commands import CreateSessionCommand, CreateUserCommand, DeleteSessionCommand, GetUserDataFromEmailCommand, CreateUserSettingsCommand
+from common.data.commands import *
 from common.data.models import Problem
 
 @dataclass

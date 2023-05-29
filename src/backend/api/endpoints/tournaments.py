@@ -4,8 +4,8 @@ from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
-from common.data.models import *
 from common.data.commands import *
+from common.data.models import *
 
 @bind_request_body(CreateTournamentRequestData)
 @require_permission(permissions.CREATE_TOURNAMENT)

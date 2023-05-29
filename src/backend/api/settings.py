@@ -4,7 +4,7 @@ from starlette.config import Config
 
 config = Config()
 
-DEBUG = config('DEBUG', cast=bool, default=False)
+DEBUG = config('DEBUG', cast=bool, default=True)
 RESET_DATABASE = config('RESET_DATABASE', cast=bool, default=False)
 AWS_ACCESS_KEY_ID = config("S3_ACCESS_KEY")
 AWS_SECRET_ACCESS_KEY = config("S3_SECRET_KEY", cast=Secret)

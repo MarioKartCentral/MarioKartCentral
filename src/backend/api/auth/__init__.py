@@ -3,7 +3,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from api.data import handle
 from api.utils.responses import ProblemResponse
-from common.data.commands import GetUserIdFromSessionCommand, GetUserWithPermissionFromSessionCommand, IsValidSessionCommand, GetUserWithTeamPermissionFromSessionCommand
+from common.data.commands import *
 from common.data.models import Problem
 
 

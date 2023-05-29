@@ -4,7 +4,7 @@ from starlette.routing import Route
 from api.auth import require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from common.data.commands import GetNotificationsCommand, MarkAllNotificationsAsReadCommand, MarkOneNotificationAsReadCommand, GetUnreadNotificationsCountCommand
+from common.data.commands import *
 from common.data.models import MarkAsReadRequestData, NotificationFilter
 
 @bind_request_query(NotificationFilter)
