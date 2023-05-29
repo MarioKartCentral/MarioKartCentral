@@ -5,13 +5,8 @@ from api.data import handle
 from datetime import datetime
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
-from common.data.commands import (CreateTeamCommand, EditRosterCommand, GetTeamInfoCommand, EditTeamCommand, CreateRosterCommand, InvitePlayerCommand, AcceptInviteCommand, DeclineInviteCommand,
-                                  DeleteInviteCommand, ManagerEditTeamCommand, RequestEditTeamCommand, LeaveRosterCommand, ApproveTransferCommand, DenyTransferCommand, ApproveTeamEditCommand,
-                                  DenyTeamEditCommand, RequestEditRosterCommand, ApproveRosterEditCommand, DenyRosterEditCommand, ForceTransferPlayerCommand, EditTeamMemberCommand)
-from common.data.models import (CreateTeamRequestData, EditTeamRequestData, CreateRosterRequestData, EditRosterRequestData, InviteRosterPlayerRequestData, AcceptRosterInviteRequestData, 
-                                DeclineRosterInviteRequestData, RequestCreateTeamRequestData, ManagerEditTeamRequestData, RequestEditTeamRequestData, LeaveRosterRequestData,
-                                ApproveTransferRequestData, DenyTransferRequestData, ApproveTeamEditRequestData, DenyTeamEditRequestData, RequestEditRosterRequestData, ApproveRosterEditRequestData,
-                                DenyRosterEditRequestData, ForceTransferPlayerRequestData, EditTeamMemberInfoRequestData, KickPlayerRequestData)
+from common.data.commands import *
+from common.data.models import *
 
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateTeamRequestData)

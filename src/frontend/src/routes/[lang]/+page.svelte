@@ -2,19 +2,20 @@
   import LL from '$i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  export let userEmail = "Loading...";
-  export let userRoles : string[] = [];
+  export let userId = "Loading...";
+  export let playerId = "";
   export let isLoggedIn = false;
 
   onMount(async () => {
     const res = await fetch(`/api/user/me`);
     if (res.status === 200) {
       const body = await res.json();
-      userEmail = body["email"]
-      userRoles = body["roles"]
+      userId = body["id"]
+      playerId = body["player_id"] || "User has not completed player registration"
       isLoggedIn = true;
     } else {
-      userEmail = "Not logged in"
+      userId = "Not logged in"
+      playerId = "N/A"
       isLoggedIn = false;
     }
   });
@@ -57,8 +58,8 @@
 <h1>{@html $LL.WELCOME()}</h1>
 <p>{@html $LL.SUMMARY()}</p>
 <p>Language: {$LL.LANGUAGE()}</p>
-<p>Email: {userEmail}</p>
-<p>Roles: {userRoles.join(", ")}</p>
+<p>User ID: {userId}</p>
+<p>Player ID: {playerId}</p>
 {#if isLoggedIn}
   <form method="post" on:submit|preventDefault={logout}>
     <button>Log out</button>

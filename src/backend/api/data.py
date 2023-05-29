@@ -1,3 +1,4 @@
+from typing import TypeVar
 from api import settings
 from common.auth import pw_hasher
 from common.data.commands import *
@@ -10,6 +11,7 @@ s3_wrapper_manager = S3WrapperManager(str(settings.AWS_SECRET_ACCESS_KEY), setti
 s3_wrapper : S3Wrapper = None # type: ignore
 redis_wrapper = RedisWrapper(settings.REDIS_URL)
 
+TCommandResponse = TypeVar('TCommandResponse')
 async def handle(command: Command[TCommandResponse]) -> TCommandResponse:
     return await command.handle(db_wrapper, s3_wrapper)
 
