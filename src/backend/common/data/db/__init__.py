@@ -21,7 +21,7 @@ class DBWrapper():
     db_path: str
 
     def reset_db(self):
-        open(self.db_path).close()
+        open(self.db_path, 'w').close()
 
     def connect(self, readonly=False):
         return DBWrapperConnection(aiosqlite.connect(self.db_path), readonly)

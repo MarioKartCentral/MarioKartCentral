@@ -18,5 +18,5 @@ async def grant_role(request: Request) -> JSONResponse:
 
 
 routes = [
-    Route('/api/user/grant_role', grant_role),
+    Route('/api/user/grant_role', grant_role, methods=['POST']),
 ]

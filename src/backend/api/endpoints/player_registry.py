@@ -5,8 +5,9 @@ from api.auth import require_permission, require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
-from common.data.commands import CreatePlayerCommand, GetPlayerDetailedCommand, ListPlayersCommand, UpdatePlayerCommand
-from common.data.models import CreatePlayerRequestData, EditPlayerRequestData, PlayerFilter, Problem
+from common.data.commands import CreatePlayerCommand, GetPlayerDetailedCommand, ListPlayersCommand, UpdatePlayerCommand, CreateFriendCodeCommand, EditFriendCodeCommand, SetPrimaryFCCommand
+from common.data.models import (CreatePlayerRequestData, EditPlayerRequestData, PlayerFilter, Problem, CreateFriendCodeRequestData, EditFriendCodeRequestData, 
+                                EditPrimaryFriendCodeRequestData, ModEditPrimaryFriendCodeRequestData)
 
 
 @bind_request_body(CreatePlayerRequestData)
@@ -40,9 +41,41 @@ async def list_players(_: Request, filter: PlayerFilter) -> Response:
     players = await handle(command)
     return JSONResponse(players)
 
+@bind_request_body(CreateFriendCodeRequestData)
+@require_logged_in
+async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSONResponse:
+    command = CreateFriendCodeCommand(request.state.user.player_id, body.fc, body.game, False, body.is_primary, True, body.description, False)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditFriendCodeRequestData)
+@require_logged_in
+async def edit_fc(request: Request, body: EditFriendCodeRequestData) -> JSONResponse:
+    command = EditFriendCodeCommand(body.id, body.fc, body.game, body.is_active, body.description)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditPrimaryFriendCodeRequestData)
+@require_logged_in
+async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestData) -> JSONResponse:
+    command = SetPrimaryFCCommand(body.id, request.state.user.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ModEditPrimaryFriendCodeRequestData)
+@require_logged_in
+async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> JSONResponse:
+    command = SetPrimaryFCCommand(body.id, body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
-    Route('/api/registry/players', list_players)
+    Route('/api/registry/players', list_players),
+    Route('/api/registry/addFriendCode', create_fc, methods=['POST']),
+    Route('/api/registry/forceEditFriendCode', edit_fc, methods=['POST']),
+    Route('/api/registry/setPrimaryFriendCode', set_primary_fc, methods=['POST']),
+    Route('/api/registry/forcePrimaryFriendCode', force_primary_fc, methods=['POST'])
 ]
