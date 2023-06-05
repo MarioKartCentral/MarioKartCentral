@@ -166,9 +166,11 @@ class GetTournamentListCommand(Command[List[TournamentDataMinimal]]):
             if is_minimal:
                 tournaments_query = f"SELECT id, name, game, mode, date_start, date_end FROM tournaments{where_clause}"
             else:
-                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, description, logo FROM tournaments{where_clause}"
+                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo FROM tournaments{where_clause}"
             
             tournaments = []
+            series_ids = []
+            series_info = {}
             async with db.execute(tournaments_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -176,9 +178,26 @@ class GetTournamentListCommand(Command[List[TournamentDataMinimal]]):
                         tournament_id, name, game, mode, date_start, date_end = row
                         tournaments.append(TournamentDataMinimal(tournament_id, name, game, mode, date_start, date_end))
                     else:
-                        tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, description, logo = row
-                        tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id,
-                            bool(is_squad), bool(registrations_open), description, logo))
+                        tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo = row
+                        tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, None, None, None,
+                            bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo))
+                        if series_id is not None:
+                            series_ids.append(series_id)
+            # get relevant info about tournament series for all tournaments part of one
+            if len(series_ids) > 0:
+                series_set = set(series_ids)
+                series_query = f"({','.join([str(s) for s in series_set])})"
+                async with db.execute(f"SELECT id, name, url, description FROM tournament_series WHERE id IN {series_query}") as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        series_id, name, url, description = row
+                        series_info[series_id] = {'name': name, 'url': url, 'description': description}
+                for tournament in tournaments:
+                    if tournament.series_id is None:
+                        continue
+                    tournament.series_name = series_info[tournament.series_id]['name']
+                    tournament.series_url = series_info[tournament.series_id]['url']
+                    tournament.series_description = series_info[tournament.series_id]['description']
             return tournaments
         
 @dataclass
