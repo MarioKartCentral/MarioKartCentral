@@ -126,14 +126,22 @@ class EditTournamentCommand(Command[None]):
         
     
 @dataclass
-class GetTournamentDataCommand(Command[CreateTournamentRequestData]):
+class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         body = await s3_wrapper.get_object('tournaments', f'{self.id}.json')
         if body is None:
             raise Problem('No tournament found', status=404)
-        tournament_data = msgspec.json.decode(body, type=CreateTournamentRequestData)
+        tournament_data = msgspec.json.decode(body, type=GetTournamentRequestData)
+        if tournament_data.series_id is not None:
+            async with db_wrapper.connect(readonly=True) as db:
+                async with db.execute("SELECT name, url, description FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    series_name, series_url, series_description = row
+                    tournament_data.series_name = series_name
+                    tournament_data.series_url = series_url
+                    tournament_data.series_description = series_description
         return tournament_data
 
 @dataclass

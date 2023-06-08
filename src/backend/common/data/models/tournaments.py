@@ -44,6 +44,12 @@ class CreateTournamentRequestData():
     location: str
 
 @dataclass
+class GetTournamentRequestData(CreateTournamentRequestData):
+    series_name: str | None = None
+    series_url: str | None = None
+    series_description: str | None = None
+
+@dataclass
 class EditTournamentRequestData():
     tournament_name: str
     series_id: int | None
