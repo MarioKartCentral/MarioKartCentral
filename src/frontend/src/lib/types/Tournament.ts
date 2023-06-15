@@ -3,16 +3,16 @@ export type Tournament = {
     tournament_name: string;
     game: string;
     mode: string;
-    start_date: Date;
-    end_date: Date;
+    date_start: number;
+    date_end: number;
     is_squad: boolean;
     registrations_open: boolean;
     description: string;
     logo: string | null;
     url: string | null;
-    registration_deadline: Date;
-    min_squad_size: number;
-    max_squad_size: number;
+    registration_deadline: number;
+    min_squad_size: number | null;
+    max_squad_size: number | null;
     ruleset: string;
     organizer: string | null;
     location: string | null;
@@ -20,4 +20,5 @@ export type Tournament = {
     series_name: string | null;
     series_url: string | null;
     series_description: string | null;
+    teams_allowed: boolean;
 }

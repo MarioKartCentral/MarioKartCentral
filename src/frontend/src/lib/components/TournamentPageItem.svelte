@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from '$app/stores';
+
     export let id: number;
     export let name: string;
     export let game: string;
@@ -20,7 +22,7 @@
 
 <div class="container">
     <div>{id}</div>
-    <div class="name"><h3>{name}</h3></div>
+    <div class="name"><h3><a href="/{$page.params.lang}/tournaments/details?id={id}">{name}</a></h3></div>
     <div>{game.toUpperCase()}</div>
     <div>{mode}</div>
     <div>{tournament_type}</div>
@@ -44,5 +46,9 @@
     }
     .name {
         display: inline-block;
+    }
+    img {
+        max-width: 400px;
+        max-height: 200px;
     }
 </style>

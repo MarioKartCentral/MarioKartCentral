@@ -1,12 +1,15 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import TournamentInfo from '$lib/components/TournamentInfo.svelte'
+    import MarkdownBox from '$lib/components/MarkdownBox.svelte'
     import type { Tournament } from '$lib/types/Tournament';
 
     let id = 0;
     let tournament_found = true;
 
-    let t: Tournament;
+    let tournament: Tournament;
+    $: tournament_name = (tournament ? `${tournament.tournament_name}` : "Tournaments")
 
     onMount(async () => {
         let param_id = $page.url.searchParams.get('id');
@@ -17,12 +20,16 @@
             return;
         }
         const body: Tournament = await res.json();
-        //console.log(body.tournament_name);
-        t = body;
+        tournament = body;
     });
 </script>
 
-<h1>{id}</h1>
-{#if t}
-{t.tournament_name}
+<svelte:head>
+    <title>{tournament_name} | Mario Kart Central</title>
+</svelte:head>
+
+{#if tournament}
+<TournamentInfo tournament={tournament}/>
+<MarkdownBox title="Tournament Details" content={tournament.description}/>
+<MarkdownBox title="Tournament Rules" content={tournament.ruleset}/>
 {/if}
