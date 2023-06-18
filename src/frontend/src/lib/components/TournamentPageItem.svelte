@@ -1,38 +1,29 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import type { TournamentListItem } from '$lib/types/tournament-list-item';
 
-    export let id: number;
-    export let name: string;
-    export let game: string;
-    export let mode: string;
-    export let date_start: Date;
-    export let date_end: Date;
-    export let series_id: number;
-    export let series_name: string | null;
-    export let series_url: string | null;
-    export let series_description: string | null;
-    export let is_squad: boolean;
-    export let teams_allowed: boolean;
-    export let description: string;
-    export let logo: string | null;
+    export let tournament: TournamentListItem;
 
-    $: tournament_type = (is_squad ? (teams_allowed ? "Team" : "Squad") : "Solo");
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    let date_start = new Date(tournament.date_start * 1000);
+    let date_end = new Date(tournament.date_end * 1000);
+
+    $: tournament_type = (tournament.is_squad ? (tournament.teams_allowed ? "Team" : "Squad") : "Solo");
+    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 </script>
 
 <div class="container">
-    <div>{id}</div>
-    <div class="name"><h3><a href="/{$page.params.lang}/tournaments/details?id={id}">{name}</a></h3></div>
-    <div>{game.toUpperCase()}</div>
-    <div>{mode}</div>
+    <div>{tournament.id}</div>
+    <div class="name"><h3><a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">{tournament.tournament_name}</a></h3></div>
+    <div>{tournament.game.toUpperCase()}</div>
+    <div>{tournament.mode}</div>
     <div>{tournament_type}</div>
     <div>{months[date_start.getMonth()]} {date_start.getDate()}-{months[date_end.getMonth()]} {date_end.getDate()}</div>
-    {#if logo != null}
-    <div><img src={logo} alt={name}/></div>
+    {#if tournament.logo != null}
+    <div><img src={tournament.logo} alt={tournament.tournament_name}/></div>
     {/if}
-    {#if series_id != null}
-    <div>Series {series_id} - {series_name}</div>
-    <div>{series_description}</div>
+    {#if tournament.series_id != null}
+    <div>Series {tournament.series_id} - {tournament.series_name}</div>
+    <div>{tournament.series_description}</div>
     {/if}
 </div>
 

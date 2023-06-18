@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import TournamentInfo from '$lib/components/TournamentInfo.svelte'
     import MarkdownBox from '$lib/components/MarkdownBox.svelte'
-    import type { Tournament } from '$lib/types/Tournament';
+    import type { Tournament } from '$lib/types/tournament';
 
     let id = 0;
     let tournament_found = true;
@@ -30,6 +30,16 @@
 
 {#if tournament}
 <TournamentInfo tournament={tournament}/>
-<MarkdownBox title="Tournament Details" content={tournament.description}/>
-<MarkdownBox title="Tournament Rules" content={tournament.ruleset}/>
+<div class="container">
+    <MarkdownBox title="Tournament Details" content={tournament.description}/>
+    <MarkdownBox title="Tournament Rules" content={tournament.ruleset}/>
+</div>
+
 {/if}
+
+<style>
+    .container {
+        width: 50%;
+        margin: 20px auto 20px auto;
+    }
+</style>

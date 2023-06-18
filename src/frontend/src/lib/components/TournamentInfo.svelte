@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Tournament } from "$lib/types/Tournament";
+    import type { Tournament } from "$lib/types/tournament";
     import { locale } from "$i18n/i18n-svelte";
 
     export let tournament: Tournament;
@@ -8,7 +8,6 @@
     let date_start = new Date(tournament.date_start * 1000);
     let date_end = new Date(tournament.date_end * 1000);
     let registration_deadline = new Date(tournament.registration_deadline * 1000);
-    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "short",
@@ -29,7 +28,7 @@
     <div class="wrapper">
         <div>
             <ul>
-                <li><b>When:</b> {date_start.toLocaleString($locale, options)} - {date_start.toLocaleString($locale, options)}
+                <li><b>When:</b> {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}
                 <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
                 <li><b>Game:</b> {tournament.game}</li>
                 <li><b>Mode:</b> {tournament.mode}</li>

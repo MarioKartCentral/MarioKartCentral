@@ -3,7 +3,7 @@
     export let content: string;
 </script>
 
-<div class="container">
+<div class="markdown-box">
     <div class="header">
         {title}
     </div>
@@ -13,8 +13,7 @@
 </div>
 
 <style>
-    .container {
-        width: 50%;
+    .markdown-box {
         margin: 20px auto 20px auto;
     }
 </style>
