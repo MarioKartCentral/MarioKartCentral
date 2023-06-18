@@ -3,6 +3,10 @@ import preprocess from 'svelte-preprocess';
 
 const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 
+function getEntriesForLocale(locale) {
+  return [`/${locale}`, `/${locale}/tournaments/details`];
+}
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   preprocess: preprocess(),
@@ -15,7 +19,8 @@ const config = {
     },
 
     prerender: {
-      entries: locales.map((l) => `/${l}`)
+      //entries: locales.map((l) => `/${l}`)
+      entries: locales.flatMap(getEntriesForLocale)
     },
   }
 };

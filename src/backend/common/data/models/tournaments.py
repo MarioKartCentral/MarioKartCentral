@@ -44,6 +44,12 @@ class CreateTournamentRequestData():
     location: str
 
 @dataclass
+class GetTournamentRequestData(CreateTournamentRequestData):
+    series_name: str | None = None
+    series_url: str | None = None
+    series_description: str | None = None
+
+@dataclass
 class EditTournamentRequestData():
     tournament_name: str
     series_id: int | None
@@ -91,14 +97,18 @@ class TournamentDataMinimal():
 @dataclass
 class TournamentDataBasic(TournamentDataMinimal):
     series_id: int | None
+    series_name: str | None
+    series_url: str | None
+    series_description: str | None
     is_squad: bool
     registrations_open: bool
+    teams_allowed: bool
     description: str
-    logo: str
+    logo: str | None
 
 @dataclass
 class TournamentFilter():
-    is_minimal: bool = True
+    is_minimal: bool = False
     name: str | None = None
     game: Game | None = None
     mode: GameMode | None = None
