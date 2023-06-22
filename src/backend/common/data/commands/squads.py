@@ -41,10 +41,16 @@ class CreateSquadCommand(Command[None]):
                     raise Problem('Tournament registrations are closed', status=400)
                 if bool(squad_tag_required) and self.squad_tag is None:
                     raise Problem('Tournament requires a tag for squads', status=400)
+                if not bool(squad_tag_required) and self.squad_tag is not None:
+                    raise Problem('Tournament does not accept squad tags, please set this value to null', status=400)
                 if bool(squad_name_required) and self.squad_name is None:
                     raise Problem('Tournament requires a name for squads', status=400)
+                if not bool(squad_name_required) and self.squad_name is not None:
+                    raise Problem('Tournament does not accept squad names, please set this value to null', status=400)
                 if bool(mii_name_required) and self.mii_name is None:
                     raise Problem('Tournament requires a Mii Name', status=400)
+                if not bool(mii_name_required) and self.mii_name is not None:
+                    raise Problem('Tournament does not accept Mii Names, please set this value to null', status=400)
                 if not bool(teams_allowed) and len(self.roster_ids) > 0:
                     raise Problem('Teams are not allowed for this tournament', status=400)
                 if bool(teams_only) and len(self.roster_ids) == 0:
