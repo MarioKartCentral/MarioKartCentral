@@ -39,8 +39,10 @@ class CreateTournamentCommand(Command[None]):
                 b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles, b.require_single_fc, b.min_representatives))
             tournament_id = cursor.lastrowid
             await db.commit()
-
-        s3_message = bytes(msgspec.json.encode(self.body))
+        # make sure tournament ID is at the top of the s3's body
+        s3_body = {'id': tournament_id}
+        s3_body.update(asdict(self.body))
+        s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object('tournaments', f'{tournament_id}.json', s3_message)
             
 @dataclass

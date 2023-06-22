@@ -186,6 +186,7 @@ class Tournament(TableModel):
     is_public: bool
     show_on_profiles: bool
     require_single_fc: bool
+    min_representatives: int | None
 
     @staticmethod
     def get_create_table_command():
