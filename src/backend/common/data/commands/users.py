@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, User, UserLoginData
 
 
@@ -30,7 +30,8 @@ class GetUserDataFromIdCommand(Command[User | None]):
                 return None
             
             return User(int(row[0]), row[1])
-            
+
+@save_to_command_log     
 @dataclass
 class CreateUserCommand(Command[User]):
     email: str

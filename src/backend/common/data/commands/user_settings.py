@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import EditUserSettingsRequestData, Problem, UserSettings
 
 
+@save_to_command_log
 @dataclass
 class CreateUserSettingsCommand(Command[None]):
     user_id: int
@@ -33,6 +34,7 @@ class GetUserSettingsCommand(Command[UserSettings | None]):
 
         return UserSettings(self.user_id, avatar, discord_tag, about_me, language, color_scheme, timezone)
     
+@save_to_command_log
 @dataclass
 class EditUserSettingsCommand(Command[bool]):
     user_id: int

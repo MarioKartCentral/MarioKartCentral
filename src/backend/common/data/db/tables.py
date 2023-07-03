@@ -523,8 +523,40 @@ class Notifications(TableModel):
             content_is_shared INTEGER NOT NULL,
             is_read INTEGER DEFAULT 0 NOT NULL)"""
     
+@dataclass
+class Record(TableModel):
+    id: int
+    player_id: int
+    version: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS records(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            version INTEGER DEFAULT 0 NOT NULL)"""
+
+@dataclass
+class CommandLog(TableModel):
+    id: int
+    type: str
+    data: str
+    timestamp: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS command_log(
+        id INTEGER PRIMARY KEY autoincrement,
+        type TEXT NOT NULL,
+        data TEXT NOT NULL,
+        timestamp INTEGER NOT NULL DEFAULT (cast(strftime('%s','now') as int)))"""
+    
+@dataclass
+class RecordLeaderboard(TableModel):
+    id: int
+
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     Team, TeamRoster, TeamMember, TeamSquadRegistration, UserTeamRole, UserSeriesRole,
-    RosterInvite, TeamEditRequest, UserSettings, NotificationContent, Notifications]
+    RosterInvite, TeamEditRequest, UserSettings, NotificationContent, Notifications, Record, CommandLog]

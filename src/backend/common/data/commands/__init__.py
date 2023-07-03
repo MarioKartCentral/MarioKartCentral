@@ -1,18 +1,7 @@
-from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
-
-from common.data.db import DBWrapper
-from common.data.s3 import S3Wrapper
-
-
-TCommandResponse = TypeVar('TCommandResponse', covariant=True)
-class Command(ABC, Generic[TCommandResponse]):
-    @abstractmethod
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> TCommandResponse:
-        pass
-
 # re-export all the commands
+from .common import *
 from .auth import *
+from .command_log import *
 from .db_admin import *
 from .friend_codes import *
 from .notifications import *

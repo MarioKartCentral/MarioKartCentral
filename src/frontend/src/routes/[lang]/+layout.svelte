@@ -3,7 +3,7 @@
   import { setLocale } from '$i18n/i18n-svelte';
   import NavBar from '$lib/components/NavBar.svelte';
   import type { LayoutData } from './$types';
-    import Footer from '$lib/components/Footer.svelte';
+  import Footer from '$lib/components/Footer.svelte';
 
   export let data : LayoutData;
   

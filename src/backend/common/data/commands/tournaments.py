@@ -3,10 +3,11 @@ from typing import List
 
 import msgspec
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 
 
+@save_to_command_log
 @dataclass
 class CreateTournamentCommand(Command[None]):
     body: CreateTournamentRequestData
@@ -43,6 +44,7 @@ class CreateTournamentCommand(Command[None]):
         s3_message = bytes(msgspec.json.encode(self.body))
         await s3_wrapper.put_object('tournaments', f'{tournament_id}.json', s3_message)
             
+@save_to_command_log
 @dataclass
 class EditTournamentCommand(Command[None]):
     body: EditTournamentRequestData

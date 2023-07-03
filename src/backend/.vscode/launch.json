@@ -9,6 +9,15 @@
       "pathMappings": [
         { "localRoot": "${workspaceFolder}", "remoteRoot": "." }
       ]
+    },
+    {
+      "name": "Python Attach (Worker)",
+      "type": "python",
+      "request": "attach",
+      "connect": { "host": "worker", "port": 5678 },
+      "pathMappings": [
+        { "localRoot": "${workspaceFolder}", "remoteRoot": "." }
+      ]
     }
   ]
 }

@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import List
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 
 
+@save_to_command_log
 @dataclass
 class CreatePlayerCommand(Command[Player]):
     user_id: int | None
@@ -40,6 +41,7 @@ class CreatePlayerCommand(Command[Player]):
             await db.commit()
             return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id)
 
+@save_to_command_log
 @dataclass
 class UpdatePlayerCommand(Command[bool]):
     data: EditPlayerRequestData
