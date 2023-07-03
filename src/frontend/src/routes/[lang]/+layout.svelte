@@ -20,7 +20,7 @@
 
   onMount(async() => {
     if(user_info.is_checked === false) {
-      const res = await fetch('/api/user/me');
+      const res = await fetch('/api/user/me/player');
       if(res.status != 200) {
         user.update((u) => {
           u.is_checked = true;
@@ -30,29 +30,18 @@
       }
       const body = await res.json();
       let me: UserInfo = {
-        user_id: body['id'],
+        id: body['id'],
         player_id: body['player_id'],
-        name: null,
-        country_code: null,
-        discord_id: null,
+        name: body['name'],
+        country_code: body['country_code'],
+        is_hidden: body['is_hidden'],
+        is_shadow: body['is_shadow'],
+        is_banned: body['is_banned'],
+        discord_id: body['discord_id'],
         is_checked: true
-      } 
-      if(me.player_id === null) {
-        user.set(me);
-        return;
-      }
-      const res2 = await fetch(`/api/registry/players/${me.player_id}`);
-      if(res2.status != 200) {
-        user.set(me);
-        return;
-      }
-      const body2 = await res2.json();
-      me.name = body2['name'];
-      me.country_code = body2['country_code'];
-      me.discord_id = body2['discord_id'];
+      };
       user.set(me);
     }
-    
   });
 
 </script>
