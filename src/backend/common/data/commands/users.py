@@ -46,7 +46,7 @@ class GetUserPlayerDataFromIdCommand(Command[UserPlayer | None]):
             user_id, player_id = row
 
             if player_id is None:
-                return UserPlayer(id, player_id, None, None, None, None, None, None)
+                return UserPlayer(user_id, player_id, None, None, None, None, None, None)
             
             async with db.execute("SELECT id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players WHERE id = ?", (player_id,)) as cursor:
                 row = await cursor.fetchone()

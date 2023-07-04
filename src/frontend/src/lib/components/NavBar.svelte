@@ -33,11 +33,17 @@
     <ul>
       <NavBarItem title="Notifications" href="#">🔔</NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
-      <NavBarItem title="Profile" href="#">👤
-        {#if user_info.name !== null}
+      {#if user_info.player_id !== null}
+        <NavBarItem title="Profile" href="#">👤
           {user_info.name}
-        {/if}  
-      </NavBarItem>
+        </NavBarItem>
+      {:else if user_info.id !== null}
+        <NavBarItem title="Player Signup" href="/{$page.params.lang}/player-signup">Player Signup</NavBarItem>
+      {:else}
+        <NavBarItem title="Login" href="/{$page.params.lang}/login">Login</NavBarItem>
+        <NavBarItem title="Register" href="/{$page.params.lang}/register">Register</NavBarItem>
+      {/if}
+      
     </ul>
   </div>
 </nav>
