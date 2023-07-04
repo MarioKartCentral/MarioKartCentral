@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Mario Kart Central | Tournaments</title>
+  <title>Tournaments | Mario Kart Central</title>
 </svelte:head>
 
 <slot/>
