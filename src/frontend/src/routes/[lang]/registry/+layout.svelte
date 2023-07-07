@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Mario Kart Central | Registry</title>
+  <title>Registry | Mario Kart Central</title>
 </svelte:head>
 
 <slot/>
