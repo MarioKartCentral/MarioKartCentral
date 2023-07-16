@@ -23,7 +23,7 @@ class CreatePlayerCommand(Command[Player]):
                 VALUES (?, ?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
                 command, 
-                (data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id))
+                (data.name, data.country_code, data.is_hidden, data.is_shadow, False, data.discord_id))
             
             # TODO: Run queries to determine why it errored
             if player_row is None:
@@ -38,7 +38,7 @@ class CreatePlayerCommand(Command[Player]):
                         raise Problem("Invalid User ID", status=404)
 
             await db.commit()
-            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id)
+            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, data.discord_id)
 
 @dataclass
 class UpdatePlayerCommand(Command[bool]):
@@ -48,9 +48,9 @@ class UpdatePlayerCommand(Command[bool]):
         data = self.data
         async with db_wrapper.connect() as db:
             update_query = """UPDATE players 
-            SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?, is_banned = ?, discord_id = ?
+            SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?, discord_id = ?
             WHERE id = ?"""
-            params = (data.name, data.country_code, data.is_hidden, data.is_shadow, data.is_banned, data.discord_id, data.player_id)
+            params = (data.name, data.country_code, data.is_hidden, data.is_shadow, data.discord_id, data.player_id)
 
             async with db.execute(update_query, params) as cursor:
                 if cursor.rowcount != 1:
@@ -74,7 +74,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                 return None
             
             name, country_code, is_hidden, is_shadow, is_banned, discord_id = player_row
-            
+
             fc_query = "SELECT game, fc, is_verified, is_primary FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
             friend_codes = [FriendCode(fc, game, self.id, bool(is_verified), bool(is_primary)) for game, fc, is_verified, is_primary in friend_code_rows]
@@ -85,7 +85,14 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             user = None if user_row is None else User(int(user_row[0]), self.id)
 
-            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, user)
+            ban_info = None
+            if is_banned:
+                ban_query = "SELECT player_id, staff_id, is_indefinite, expiration_date, reason from player_bans WHERE player_id = ?"
+                async with db.execute(ban_query, (self.id,)) as cursor:
+                    ban_row = await cursor.fetchone()
+                ban_info = None if ban_row is None else PlayerBan(*ban_row)
+
+            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, user, ban_info)
         
 @dataclass
 class ListPlayersCommand(Command[List[Player]]):
@@ -176,9 +183,12 @@ class BanPlayerCommand(Command[PlayerBan]):
             params = (self.player_id, self.staff_id, data.is_indefinite, data.expiration_date, data.reason)
             
             player_row = await db.execute_insert(command, params)
-
             if player_row is None:
-                raise Problem("Failed to ban player")
+                raise Problem("Failed to ban player", "Failed to insert into ban table")
+
+            async with db.execute("""UPDATE players SET is_banned = TRUE WHERE id = ?""", (self.player_id,)) as cursor:
+                if cursor.rowcount != 1:
+                    raise Problem("Failed to ban player", "Failed to update is_banned in player table")
             
             await db.commit()
             return PlayerBan(*params)
@@ -195,6 +205,9 @@ class UnbanPlayerCommand(Command[None]):
             if rowcount != 1:
                 raise Problem("Player not found", "Unable to find player in the ban table", status=404)
             
+            async with db.execute("""UPDATE players SET is_banned = FALSE WHERE id = ?""", (self.player_id,)) as cursor:
+                if cursor.rowcount != 1:
+                    raise Problem("Failed to unban player", "Failed to update is_banned in player table")
             await db.commit()
 
 @dataclass
