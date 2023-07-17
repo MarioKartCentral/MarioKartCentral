@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Literal
 
 from common.data.models.common import Game, CountryCode
-from common.data.models.friend_codes import FriendCode
+from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.users import User
 
     
@@ -37,6 +37,7 @@ class CreatePlayerRequestData:
     is_hidden: bool = False
     is_shadow: bool = False
     discord_id: str | None = None
+    friend_codes: List[CreateFriendCodeRequestData]
 
 @dataclass
 class EditPlayerRequestData:
