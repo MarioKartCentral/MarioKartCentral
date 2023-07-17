@@ -174,17 +174,18 @@ class BanPlayerCommand(Command[PlayerBan]):
         data = self.data
 
         async with db_wrapper.connect() as db:
-            if not await player_exists_in_table(db, 'players', self.player_id):
-                raise Problem("Player not found", status=404)
-            if await player_exists_in_table(db, 'player_bans', self.player_id):
-                raise Problem("Player is already banned", status=400)
-
             command = "INSERT INTO player_bans(player_id, staff_id, is_indefinite, expiration_date, reason) VALUES (?, ?, ?, ?, ?)"
             params = (self.player_id, self.staff_id, data.is_indefinite, data.expiration_date, data.reason)
             
-            player_row = await db.execute_insert(command, params)
-            if player_row is None:
-                raise Problem("Failed to ban player", "Failed to insert into ban table")
+            try:
+                player_row = await db.execute_insert(command, params)
+                if player_row is None:
+                    raise Problem("Failed to ban player", "Failed to insert into ban table")
+            except Exception as e:
+                if not await player_exists_in_table(db, 'players', self.player_id):
+                    raise Problem("Player not found", status=404)
+                if await player_exists_in_table(db, 'player_bans', self.player_id):
+                    raise Problem("Player is already banned", status=400)
 
             async with db.execute("""UPDATE players SET is_banned = TRUE WHERE id = ?""", (self.player_id,)) as cursor:
                 if cursor.rowcount != 1:
