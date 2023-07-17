@@ -186,6 +186,7 @@ class BanPlayerCommand(Command[PlayerBan]):
                     raise Problem("Player not found", status=404)
                 if await player_exists_in_table(db, 'player_bans', self.player_id):
                     raise Problem("Player is already banned", status=400)
+                raise Problem("Error", detail=str(e))
 
             async with db.execute("""UPDATE players SET is_banned = TRUE WHERE id = ?""", (self.player_id,)) as cursor:
                 if cursor.rowcount != 1:
