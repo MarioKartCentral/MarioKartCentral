@@ -41,6 +41,11 @@ class CreatePlayerCommand(Command[Player]):
             fc_set = set([friend_code.fc for friend_code in data.friend_codes])
             if len(fc_set) < len(data.friend_codes):
                 raise Problem("Cannot have duplicate FCs", status=400)
+            fc_limits = {"mk8dx": 1, "mkt": 1, "mkw": 4, "mk7": 1, "mk8": 1}
+            for game in fc_limits.keys():
+                game_fcs = [fc for fc in data.friend_codes if fc.game == game]
+                if len(game_fcs) > fc_limits[game]:
+                    raise Problem(f"Too many friend codes were provided for the game {game} (limit {fc_limits[game]})", status=400)
                     
             for friend_code in data.friend_codes:
                 match = re.match(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
