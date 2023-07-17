@@ -13,7 +13,7 @@ const ja: Translation = {
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
     DISCORD: 'Discord',
-  }
+  },
 };
 
 export default ja;

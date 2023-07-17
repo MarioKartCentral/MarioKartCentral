@@ -15,14 +15,14 @@ const config = {
     adapter: adapter(),
 
     alias: {
-      $i18n: 'src/i18n'
+      $i18n: 'src/i18n',
     },
 
     prerender: {
       //entries: locales.map((l) => `/${l}`)
-      entries: locales.flatMap(getEntriesForLocale)
+      entries: locales.flatMap(getEntriesForLocale),
     },
-  }
+  },
 };
 
 export default config;

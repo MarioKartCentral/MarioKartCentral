@@ -6,9 +6,7 @@
       <li><a href="https://www.twitch.tv/mariokartcentral" rel="external" title="Twitch">🗨️</a></li>
     </ul>
   </div>
-  <div class="footer-copyright">
-    &copy; 2018-2023 mariokartcentral.com Mario Kart&trade; and &copy; Nintendo.
-  </div>
+  <div class="footer-copyright">&copy; 2018-2023 mariokartcentral.com Mario Kart&trade; and &copy; Nintendo.</div>
 </div>
 
 <style>
