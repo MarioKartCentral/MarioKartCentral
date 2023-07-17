@@ -7,8 +7,8 @@ from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
 
-@bind_request_body(List[Placements])
-async def set_placements(request: Request, body: List[Placements]) -> JSONResponse:
+@bind_request_body(SetPlacements)
+async def set_placements(request: Request, body: SetPlacements) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = SetPlacementsCommand(tournament_id, body)
     await handle(command)
