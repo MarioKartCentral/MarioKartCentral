@@ -34,10 +34,11 @@ class PlayerDetailed(Player):
 class CreatePlayerRequestData:
     name: str
     country_code: CountryCode
+    friend_codes: List[CreateFriendCodeRequestData]
     is_hidden: bool = False
     is_shadow: bool = False
     discord_id: str | None = None
-    friend_codes: List[CreateFriendCodeRequestData]
+    
 
 @dataclass
 class EditPlayerRequestData:

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { user } from '$lib/stores/stores';
-    import type { UserInfo } from "$lib/types/user-info";
+    import type { UserInfo } from '$lib/types/user-info';
     import { goto } from '$app/navigation';
 
     let user_info: UserInfo;
