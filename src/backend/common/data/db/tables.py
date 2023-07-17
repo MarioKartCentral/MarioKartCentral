@@ -293,6 +293,42 @@ class TournamentPlayer(TableModel):
             )"""
     
 @dataclass
+class TournamentSoloPlacements(TableModel):
+    id: int
+    tournament_id: int
+    player_id: int
+    placement: int
+    placement_description: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS tournament_solo_placements(
+            id INTEGER PRIMARY KEY,
+            tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
+            player_id INTEGER NOT NULL REFERENCES tournament_squads(id),
+            placement INTEGER NOT NULL,
+            placement_description TEXT
+        )"""
+    
+@dataclass
+class TournamentSquadPlacements(TableModel):
+    id: int
+    tournament_id: int
+    squad_id: int
+    placement: int
+    placement_description: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS tournament_squad_placements(
+            id INTEGER PRIMARY KEY,
+            tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
+            squad_id INTEGER NOT NULL REFERENCES players(id),
+            placement INTEGER NOT NULL,
+            placement_description TEXT
+        )"""
+    
+@dataclass
 class Team(TableModel):
     id: int
     name: str
@@ -526,6 +562,7 @@ class Notifications(TableModel):
     
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
-    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
-    Team, TeamRoster, TeamMember, TeamSquadRegistration, UserTeamRole, UserSeriesRole,
-    RosterInvite, TeamEditRequest, UserSettings, NotificationContent, Notifications]
+    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer, 
+    TournamentSoloPlacements, TournamentSquadPlacements,Team, TeamRoster, TeamMember, 
+    TeamSquadRegistration, UserTeamRole, UserSeriesRole, RosterInvite, TeamEditRequest, 
+    UserSettings, NotificationContent, Notifications]

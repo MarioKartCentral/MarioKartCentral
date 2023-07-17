@@ -5,6 +5,7 @@ from .notifications import *
 from .players import *
 from .squads import *
 from .teams import *
+from .tournament_placements import *
 from .tournament_registrations import *
 from .tournament_series import *
 from .tournament_templates import *
