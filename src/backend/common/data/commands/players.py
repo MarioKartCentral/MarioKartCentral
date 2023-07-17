@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Literal
+import re
 
 from common.data.commands import Command
 from common.data.models import *
@@ -36,7 +37,30 @@ class CreatePlayerCommand(Command[Player]):
                     # handle case where user with the given ID doesn't exist
                     if cursor.rowcount != 1:
                         raise Problem("Invalid User ID", status=404)
-
+                    
+            fc_set = set([friend_code.fc for friend_code in data.friend_codes])
+            if len(fc_set) < len(data.friend_codes):
+                raise Problem("Cannot have duplicate FCs", status=400)
+            fc_limits = {"mk8dx": 1, "mkt": 1, "mkw": 4, "mk7": 1, "mk8": 1}
+            for game in fc_limits.keys():
+                game_fcs = [fc for fc in data.friend_codes if fc.game == game]
+                if len(game_fcs) > fc_limits[game]:
+                    raise Problem(f"Too many friend codes were provided for the game {game} (limit {fc_limits[game]})", status=400)
+                    
+            for friend_code in data.friend_codes:
+                match = re.match(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
+                if friend_code.game != "mk8" and not match:
+                    raise Problem(f"FC {friend_code.fc} for game {friend_code.game} is in incorrect format", status=400)
+                
+                # check if friend code is currently in use
+                async with db.execute("SELECT id FROM friend_codes WHERE fc = ? AND game = ? AND is_active = ?", (friend_code.fc, friend_code.game, True)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        raise Problem("Another player is currently using this friend code for this game", status=400)
+                    
+            friend_code_tuples = [(player_id, friend_code.game, friend_code.fc, False, friend_code.is_primary, True, friend_code.description) for friend_code in data.friend_codes]
+            await db.executemany("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    friend_code_tuples)
             await db.commit()
             return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, data.discord_id)
 
