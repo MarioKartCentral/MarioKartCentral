@@ -3,71 +3,20 @@
   import LL from '$i18n/i18n-svelte';
   import NavBarItem from './NavBarItem.svelte';
   import logo from '$lib/assets/logo.png';
-  import { user } from '$lib/stores/stores';
+  import { user, have_unread_notification } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import type { Notification } from '$lib/types/notification';
-  import { onMount } from 'svelte';
+  import Notification from './Notification.svelte';
+  let notify: Notification;
 
   let user_info: UserInfo;
-  let notifications: Notification[] = [];
-  $: have_unread = notifications.some((n) => !n.is_read);
+  let have_unread: boolean = false;
 
   user.subscribe((value) => {
     user_info = value;
   });
-
-  let is_notification_menu_activated = false;
-
-  onMount(async () => {
-    const res = await fetch('/api/notifications/list?is_read=0');
-    if (res.status !== 200) {
-      return;
-    }
-    const body = (await res.json()) as Notification[];
-    notifications = body;
-  });
-
-  function toggleNotificationMenu() {
-    is_notification_menu_activated = !is_notification_menu_activated;
-  }
-
-  async function makeNotificationAsRead(id: number) {
-    const res = await fetch(`/api/notifications/edit/read_status/${id}`, {
-      method: "POST",
-      body: JSON.stringify({ is_read: true })
-    });
-    if (res.status !== 200) {
-      return;
-    }
-    const body = await res.json();
-    if (body.count > 0) {
-      // change target notification.is_read to true
-      // TODO: ...or delete depending on requirements.
-      notifications = notifications.map(n => ({
-        ...n,
-        is_read: (n.id === id ? true : n.is_read),
-      }));
-    }
-  }
-
-  async function makeAllNotificationsAsRead() {
-    const res = await fetch(`/api/notifications/edit/read_status/all`, {
-      method: "POST",
-      body: JSON.stringify({ is_read: true })
-    });
-    if (res.status !== 200) {
-      return;
-    }
-    const body = await res.json();
-    if (body.update_count > 0) {
-      // change all notification.is_read to true
-      // TODO: ...or delete depending on requirements.
-      notifications = notifications.map(n => ({
-        ...n,
-        is_read: true,
-      }));
-    }
-  }
+  have_unread_notification.subscribe((value) => {
+    have_unread = value;
+  })
 </script>
 
 <nav>
@@ -95,11 +44,10 @@
   </div>
   <div class="nav-options">
     <ul>
-      <NavBarItem title="Notifications" clickable on:click={toggleNotificationMenu}>
-        🔔
-        {#if have_unread}
-          🔴
-        {/if}
+      <NavBarItem title="Notifications">
+        <button on:click|stopPropagation={notify.toggleNotificationMenu}>
+          🔔{#if have_unread}🔴{/if}
+        </button>
       </NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
       {#if user_info.player_id !== null}
@@ -115,31 +63,7 @@
       {/if}
     </ul>
   </div>
-  {#if is_notification_menu_activated}
-    <div class="nav-drop-down">
-      <div class="nav-drop-down-container">
-        <ul>
-          {#each notifications as { id, content, created_date, is_read, type }}
-            <li>
-              <div class="nav-drop-down-item">
-                <span>{id}: </span>
-                <span>{content}</span>
-                <span>{new Date(created_date * 1000).toLocaleString()}</span>
-                <span>type: {type}</span>
-                <button on:click={async () => await makeNotificationAsRead(id)}>☑</button>
-                <span>is_read: {is_read}</span>
-              </div>
-            </li>
-          {/each}
-          <li>
-            <div class="nav-drop-down-item">
-              <button on:click={makeAllNotificationsAsRead}>Mark All as Read</button>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  {/if}
+  <Notification bind:this={notify} />
 </nav>
 
 <style>
@@ -189,29 +113,5 @@
     list-style: none;
     padding: 0px 10px;
     gap: 10px;
-  }
-
-  .nav-drop-down {
-    position: fixed;
-    top: 40px;
-    right: 0;
-    width: 400px;
-    z-index: 100;
-  }
-
-  .nav-drop-down-container {
-    background-color: #5CE49A;
-    color: white;
-    box-shadow: 0 0 8px #141414;
-  }
-
-  .nav-drop-down-container ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .nav-drop-down-item {
-    border-bottom: 1px solid #f2f2f2;
-    padding: 10px;
   }
 </style>

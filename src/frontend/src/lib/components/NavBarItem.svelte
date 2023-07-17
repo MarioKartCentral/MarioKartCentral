@@ -3,7 +3,6 @@
   export let external: string | null = null;
   export let title: string | null = null;
   export let selected: boolean = false;
-  export let clickable: boolean = false;
 </script>
 
 <li>
@@ -11,10 +10,6 @@
     <a href={external} {title} rel="external">
       <slot />
     </a>
-  {:else if clickable}
-    <button on:click>
-      <slot />
-    </button>
   {:else}
     <a aria-current={selected ? 'page' : undefined} {href} {title}>
       <slot />
