@@ -116,7 +116,15 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     ban_row = await cursor.fetchone()
                 ban_info = None if ban_row is None else PlayerBan(*ban_row)
 
-            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, user, ban_info)
+            user_settings = None
+            if user:
+                async with db.execute("""SELECT avatar, discord_tag, about_me, language, 
+                    color_scheme, timezone FROM user_settings WHERE user_id = ?""", (user.id,)) as cursor:
+                    settings_row = await cursor.fetchone()
+                    if settings_row is not None:
+                        user_settings = UserSettings(user.id, *settings_row)
+
+            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, ban_info, user_settings)
         
 @dataclass
 class ListPlayersCommand(Command[List[Player]]):

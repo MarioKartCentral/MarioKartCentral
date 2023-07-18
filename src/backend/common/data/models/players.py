@@ -3,7 +3,7 @@ from typing import List, Literal
 
 from common.data.models.common import Game, CountryCode
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
-from common.data.models.users import User
+from common.data.models.user_settings import UserSettings
 
     
 @dataclass
@@ -27,8 +27,8 @@ class PlayerBan:
 @dataclass
 class PlayerDetailed(Player):
     friend_codes: List[FriendCode]
-    user: User | None
     ban_info: PlayerBan | None
+    user_settings: UserSettings | None
 
 @dataclass
 class CreatePlayerRequestData:
