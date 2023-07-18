@@ -33,9 +33,9 @@
     <ul>
       <NavBarItem title="Notifications" href="#">🔔</NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
-      {#if user_info.player_id !== null}
-        <NavBarItem title="Profile" href="#">👤
-          {user_info.name}
+      {#if user_info.player}
+        <NavBarItem title="Profile" href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">👤
+          {user_info.player.name}
         </NavBarItem>
       {:else if user_info.id !== null}
         <NavBarItem title="Player Signup" href="/{$page.params.lang}/player-signup">Player Signup</NavBarItem>
