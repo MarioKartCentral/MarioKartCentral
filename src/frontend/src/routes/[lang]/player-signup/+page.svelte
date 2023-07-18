@@ -21,7 +21,7 @@
             if(fc === "") {
                 continue;
             }
-            friend_codes.push({fc: fc, game: games[i], is_primary: true, description: null});
+            friend_codes.push({fc: fc, game: games[i], is_primary: true, description: null, is_verified: false});
         }
         
         const payload = { name: data.get('name'),

@@ -9,6 +9,7 @@ class FriendCode:
     player_id: int
     is_verified: int
     is_primary: int
+    description: str | None = None
 
 @dataclass
 class CreateFriendCodeRequestData:
