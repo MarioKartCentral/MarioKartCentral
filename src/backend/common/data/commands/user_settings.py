@@ -49,7 +49,6 @@ class EditUserSettingsCommand(Command[bool]):
                 variable_parameters.append(value)
 
         set_value(data.avatar, "avatar")
-        set_value(data.discord_tag, "discord_tag")
         set_value(data.about_me, "about_me")
         set_value(data.language, "language")
         set_value(data.color_scheme, "color_scheme")
