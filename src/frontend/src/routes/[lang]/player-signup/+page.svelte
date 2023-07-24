@@ -91,6 +91,6 @@
             <label for="discord_id">Discord ID</label>
             <input name="discord_id" type="discord_id">
         </div>
-        <button class="register-btn">Register</button>
+        <button class="register-btn" type="submit">Register</button>
     </form>
 {/if}
