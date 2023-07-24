@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { user } from '$lib/stores/stores';
     import type { PlayerInfo } from "$lib/types/player-info";
     import type { UserInfo } from "$lib/types/user-info";
@@ -21,7 +22,7 @@
     <div class="header">
         <div class="header_element"><h2>Player Profile</h2></div>
         {#if user_info.player_id == player.id}
-            <div class="header_element"><button>Edit Profile</button></div>
+            <div class="header_element"><a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a></div>
         {/if}
     </div>
     <div class="wrapper">
@@ -92,6 +93,6 @@
         margin: 10px;
         border: 5px white solid;
         border-radius: 50%;
-        object-fit: contain;
+        object-fit: cover;
     }
 </style>
