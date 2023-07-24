@@ -6,7 +6,6 @@ from typing import Literal
 class UserSettings:
     user_id: int
     avatar: str | None = None
-    discord_tag: str | None = None
     about_me: str | None = None
     language: str = 'en-us'
     color_scheme: str = 'light'
@@ -15,7 +14,6 @@ class UserSettings:
 @dataclass
 class EditUserSettingsRequestData:
     avatar: str | None = None
-    discord_tag: str | None = None
     about_me: str | None = None
     language: Literal['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'] | None = None
     color_scheme: Literal['light', 'dark'] | None = None

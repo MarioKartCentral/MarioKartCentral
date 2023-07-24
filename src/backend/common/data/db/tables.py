@@ -485,7 +485,6 @@ class UserSettings(TableModel):
         return """CREATE TABLE IF NOT EXISTS user_settings(
             user_id INTEGER PRIMARY KEY REFERENCES users(id),
             avatar TEXT,
-            discord_tag TEXT,
             about_me TEXT,
             language TEXT DEFAULT 'en-us' NOT NULL,
             color_scheme TEXT DEFAULT 'light' NOT NULL,
