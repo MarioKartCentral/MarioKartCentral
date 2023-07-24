@@ -118,7 +118,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 
             user_settings = None
             if user:
-                async with db.execute("""SELECT avatar, discord_tag, about_me, language, 
+                async with db.execute("""SELECT avatar, about_me, language, 
                     color_scheme, timezone FROM user_settings WHERE user_id = ?""", (user.id,)) as cursor:
                     settings_row = await cursor.fetchone()
                     if settings_row is not None:
