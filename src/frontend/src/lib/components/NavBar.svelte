@@ -1,17 +1,22 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
-  import NavBarItem from "./NavBarItem.svelte";
+  import NavBarItem from './NavBarItem.svelte';
   import logo from '$lib/assets/logo.png';
-  import { user } from '$lib/stores/stores';
-  import type { UserInfo } from "$lib/types/user-info";
+  import { user, have_unread_notification } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
+  import Notification from './Notification.svelte';
+  let notify: Notification;
 
   let user_info: UserInfo;
+  let have_unread: boolean = false;
 
   user.subscribe((value) => {
     user_info = value;
   });
-
+  have_unread_notification.subscribe((value) => {
+    have_unread = value;
+  })
 </script>
 
 <nav>
@@ -22,16 +27,28 @@
   </div>
   <div class="nav-main">
     <ul>
-      <NavBarItem selected={$page.data.activeNavItem==="TOURNAMENTS"} href="/{$page.params.lang}/tournaments">{@html $LL.NAVBAR.TOURNAMENTS()}</NavBarItem>
-      <NavBarItem selected={$page.data.activeNavItem==="TIME TRIALS"} href="/{$page.params.lang}/time-trials">{@html $LL.NAVBAR.TIME_TRIALS()}</NavBarItem>
-      <NavBarItem selected={$page.data.activeNavItem==="LOUNGE"} href="/{$page.params.lang}/lounge">{@html $LL.NAVBAR.LOUNGE()}</NavBarItem>
-      <NavBarItem selected={$page.data.activeNavItem==="REGISTRY"} href="/{$page.params.lang}/registry">{@html $LL.NAVBAR.REGISTRY()}</NavBarItem>
+      <NavBarItem selected={$page.data.activeNavItem === 'TOURNAMENTS'} href="/{$page.params.lang}/tournaments"
+        >{@html $LL.NAVBAR.TOURNAMENTS()}</NavBarItem
+      >
+      <NavBarItem selected={$page.data.activeNavItem === 'TIME TRIALS'} href="/{$page.params.lang}/time-trials"
+        >{@html $LL.NAVBAR.TIME_TRIALS()}</NavBarItem
+      >
+      <NavBarItem selected={$page.data.activeNavItem === 'LOUNGE'} href="/{$page.params.lang}/lounge"
+        >{@html $LL.NAVBAR.LOUNGE()}</NavBarItem
+      >
+      <NavBarItem selected={$page.data.activeNavItem === 'REGISTRY'} href="/{$page.params.lang}/registry"
+        >{@html $LL.NAVBAR.REGISTRY()}</NavBarItem
+      >
       <NavBarItem external="http://discord.gg/Pgd8xr6">{@html $LL.NAVBAR.DISCORD()}</NavBarItem>
     </ul>
   </div>
   <div class="nav-options">
     <ul>
-      <NavBarItem title="Notifications" href="#">🔔</NavBarItem>
+      <NavBarItem title="Notifications">
+        <button on:click|stopPropagation={notify.toggleNotificationMenu}>
+          🔔{#if have_unread}🔴{/if}
+        </button>
+      </NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
       {#if user_info.player}
         <NavBarItem title="Profile" href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">👤
@@ -43,9 +60,9 @@
         <NavBarItem title="Login" href="/{$page.params.lang}/login">Login</NavBarItem>
         <NavBarItem title="Register" href="/{$page.params.lang}/register">Register</NavBarItem>
       {/if}
-      
     </ul>
   </div>
+  <Notification bind:this={notify} />
 </nav>
 
 <style>
