@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { Team } from '$lib/types/team';
-    import TeamListItem from '$lib/components/TeamListItem.svelte';
+    import Table from '$lib/components/common/Table.svelte';
 
     let teams: Team[] = [];
 
@@ -19,7 +19,7 @@
 
 <div class="container">
     <h2>Teams</h2>
-    <table>
+    <Table>
         <col class="tag">
         <col class="name">
         <thead>
@@ -29,11 +29,18 @@
             </tr>
         </thead>
         <tbody>
-            {#each teams as team}
-                <TeamListItem team={team}/>
+            {#each teams as team, i}
+                <tr class="row-{i%2}">
+                    <td>
+                        {team.tag}
+                    </td>
+                    <td>
+                        {team.name}
+                    </td>
+                </tr>
             {/each}
         </tbody>
-    </table>
+    </Table>
     
 </div>
 
@@ -42,7 +49,7 @@
         width: 50%;
         margin: 20px auto 20px auto;
     }
-    table {
+    /* table {
         background-color: black;
         border-collapse: collapse;
         width: 100%;
@@ -53,7 +60,7 @@
     td {
         padding: 10px;
         text-align: center;
-    }
+    } */
     col.tag {
         width: 20%;
     }
