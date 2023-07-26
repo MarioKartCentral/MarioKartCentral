@@ -635,3 +635,58 @@ class EditTeamMemberCommand(Command[None]):
                     self.join_date = member_join_date
             await db.execute("UPDATE team_members SET join_date = ?, leave_date = ? WHERE id = ?", (self.join_date, self.leave_date, self.id))
             await db.commit()
+
+@dataclass
+class ListTeamsCommand(Command[List[Team]]):
+    filter: TeamFilter
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        filter = self.filter
+        async with db_wrapper.connect() as db:
+
+            where_clauses = []
+            variable_parameters = []
+
+            def append_equal_filter(filter_value, column_name):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            # check both the team and team_roster fields with the same name for a match
+            def append_team_roster_like_filter(filter_value, column_name):
+                if filter_value is not None:
+                    where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
+                    variable_parameters.extend([filter_value, filter_value])
+
+            append_team_roster_like_filter(filter.name, "name")
+            append_team_roster_like_filter(filter.tag, "tag")
+            append_equal_filter(filter.game, "r.game")
+            append_equal_filter(filter.mode, "r.mode")
+            append_equal_filter(filter.language, "t.language")
+            append_equal_filter(filter.is_historical, "t.is_historical")
+            append_equal_filter(filter.is_recruiting, "r.is_recruiting")
+            append_equal_filter("approved", "t.approval_status")
+            append_equal_filter("approved", "r.approval_status")
+            append_equal_filter(True, "r.is_active")
+
+            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            teams_query = f"""  SELECT t.id, t.name, t.tag, t.description, t.creation_date, t.language, t.color, t.logo,
+                                t.approval_status, t.is_historical, r.id, r.game, r.mode, r.name, r.tag, r.creation_date,
+                                r.is_recruiting, r.approval_status
+                                FROM teams t JOIN team_rosters r ON t.id = r.team_id
+                                {where_clause}
+                                """
+            teams = {}
+            async with db.execute(teams_query, variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, rid, game, mode, rname, rtag, rdate, is_recruiting, rapprove = row
+                    roster = TeamRoster(rid, tid, game, mode, rname if rname else tname, rtag if rtag else ttag, rdate, is_recruiting, rapprove, [])
+                    if tid in teams:
+                        team: Team = teams[tid]
+                        team.rosters.append(roster)
+                        continue
+                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, [roster])
+                    teams[tid] = team
+            team_list = list(teams.values())
+            return team_list
