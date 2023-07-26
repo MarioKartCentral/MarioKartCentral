@@ -23,7 +23,7 @@ def bind_request_query(type: Type[TBind]):
             query_as_json = msgspec.json.encode(dict(request.query_params))
 
             try:
-                body = msgspec.json.decode(query_as_json, type=type)
+                body = msgspec.json.decode(query_as_json, type=type, strict=False)
             except msgspec.ValidationError as e:
                 raise Problem("Invalid query string parameter", detail=str(e), status=400)
 
