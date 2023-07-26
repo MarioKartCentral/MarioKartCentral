@@ -16,44 +16,35 @@
     }
 </script>
 
-<div class="container">
-    <div class="centered">
-        {#if tournament.logo}
-            <img src={tournament.logo} alt={tournament.tournament_name}/>
-        {/if}
-        <h1>{tournament.tournament_name}</h1>
-        {tournament.game} | {tournament.mode} | {tournament_type}
-    </div>
-    <hr>
-    <div class="wrapper">
-        <div>
-            <ul>
-                <li><b>When:</b> {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}
-                <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
-                <li><b>Game:</b> {tournament.game}</li>
-                <li><b>Mode:</b> {tournament.mode}</li>
-                <li><b>Registration Format:</b> {tournament_type}</li>
-                {#if tournament.is_squad}
-                    {#if tournament.min_squad_size}
-                        <li><b>Minimum Squad Size:</b> {tournament.min_squad_size}</li>
-                    {/if}
-                    {#if tournament.max_squad_size}
-                        <li><b>Maximum Squad Size:</b> {tournament.max_squad_size}</li>
-                    {/if}
+<div class="centered">
+    {#if tournament.logo}
+        <img src={tournament.logo} alt={tournament.tournament_name}/>
+    {/if}
+    <h1>{tournament.tournament_name}</h1>
+    {tournament.game} | {tournament.mode} | {tournament_type}
+</div>
+<hr>
+<div class="wrapper">
+    <div>
+        <ul>
+            <li><b>When:</b> {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}
+            <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
+            <li><b>Game:</b> {tournament.game}</li>
+            <li><b>Mode:</b> {tournament.mode}</li>
+            <li><b>Registration Format:</b> {tournament_type}</li>
+            {#if tournament.is_squad}
+                {#if tournament.min_squad_size}
+                    <li><b>Minimum Squad Size:</b> {tournament.min_squad_size}</li>
                 {/if}
-                {#if tournament.series_name}
-                    <li><b>Series:</b> {tournament.series_name}</li>
+                {#if tournament.max_squad_size}
+                    <li><b>Maximum Squad Size:</b> {tournament.max_squad_size}</li>
                 {/if}
-            </ul>
-        </div>
-        <div class="centered">
-            {#if tournament.registrations_open}
-            <button type="button">Register Now!</button>
             {/if}
-        </div>
+            {#if tournament.series_name}
+                <li><b>Series:</b> {tournament.series_name}</li>
+            {/if}
+        </ul>
     </div>
-    
-    
 </div>
 
 <style>

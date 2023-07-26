@@ -21,4 +21,12 @@ export type Tournament = {
     series_url: string | null;
     series_description: string | null;
     teams_allowed: boolean;
+    teams_only: boolean;
+    team_members_only: boolean;
+    squad_tag_required: boolean;
+    squad_name_required: boolean;
+    mii_name_required: boolean;
+    host_status_required: boolean;
+    require_single_fc: boolean;
+    min_representatives: number | null;
 }

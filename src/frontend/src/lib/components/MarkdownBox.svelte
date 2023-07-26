@@ -5,7 +5,7 @@
 
 <div class="markdown-box">
     <div class="header">
-        {title}
+        <b>{title}</b>
     </div>
     <div class="content">
         {content}

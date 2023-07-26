@@ -45,6 +45,7 @@ class CreateTournamentRequestData():
 
 @dataclass
 class GetTournamentRequestData(CreateTournamentRequestData):
+    id: int
     series_name: str | None = None
     series_url: str | None = None
     series_description: str | None = None

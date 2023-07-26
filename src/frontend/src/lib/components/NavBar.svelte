@@ -3,6 +3,15 @@
   import LL from '$i18n/i18n-svelte';
   import NavBarItem from "./NavBarItem.svelte";
   import logo from '$lib/assets/logo.png';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from "$lib/types/user-info";
+
+  let user_info: UserInfo;
+
+  user.subscribe((value) => {
+    user_info = value;
+  });
+
 </script>
 
 <nav>
@@ -24,7 +33,17 @@
     <ul>
       <NavBarItem title="Notifications" href="#">🔔</NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
-      <NavBarItem title="Profile" href="#">👤</NavBarItem>
+      {#if user_info.player_id !== null}
+        <NavBarItem title="Profile" href="#">👤
+          {user_info.name}
+        </NavBarItem>
+      {:else if user_info.id !== null}
+        <NavBarItem title="Player Signup" href="/{$page.params.lang}/player-signup">Player Signup</NavBarItem>
+      {:else}
+        <NavBarItem title="Login" href="/{$page.params.lang}/login">Login</NavBarItem>
+        <NavBarItem title="Register" href="/{$page.params.lang}/register">Register</NavBarItem>
+      {/if}
+      
     </ul>
   </div>
 </nav>

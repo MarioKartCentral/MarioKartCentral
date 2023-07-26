@@ -26,6 +26,33 @@ async def edit_player(request: Request, body: EditPlayerRequestData) -> Response
     
     return JSONResponse({}, status_code=200)
 
+@bind_request_body(PlayerBanRequestData)
+@require_permission(permissions.BAN_PLAYER)
+async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
+    command = BanPlayerCommand(request.path_params['id'], request.state.user.id, body)
+    player_ban = await handle(command)
+    return JSONResponse(player_ban, status_code=200)
+
+@require_permission(permissions.BAN_PLAYER)
+async def unban_player(request: Request) -> Response:
+    command = UnbanPlayerCommand(request.path_params['id'])
+    await handle(command)
+    return JSONResponse({}, status_code=200)
+
+@bind_request_body(PlayerBanRequestData)
+@require_permission(permissions.BAN_PLAYER)
+async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Response:
+    command = EditPlayerBanCommand(request.path_params['id'], request.state.user.id, body)
+    player_ban = await handle(command)
+    return JSONResponse(player_ban, status_code=200)
+
+@bind_request_query(PlayerBanFilter)
+@require_permission(permissions.BAN_PLAYER)
+async def list_banned_players(request: Request, filter: PlayerBanFilter) -> Response:
+    command = ListBannedPlayersCommand(filter)
+    bans = await handle(command)
+    return JSONResponse(bans, status_code=200)
+
 async def view_player(request: Request) -> Response:
     command = GetPlayerDetailedCommand(request.path_params['id'])
     player_detailed = await handle(command)
@@ -72,6 +99,10 @@ routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
+    Route('/api/registry/players/{id:int}/ban', ban_player, methods=['POST']),
+    Route('/api/registry/players/{id:int}/editBan', edit_player_ban, methods=['POST']),
+    Route('/api/registry/players/{id:int}/unban', unban_player, methods=['POST']),
+    Route('/api/registry/players/bans', list_banned_players),
     Route('/api/registry/players', list_players),
     Route('/api/registry/addFriendCode', create_fc, methods=['POST']),
     Route('/api/registry/forceEditFriendCode', edit_fc, methods=['POST']),

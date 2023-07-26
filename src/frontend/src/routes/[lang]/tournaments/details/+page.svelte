@@ -1,8 +1,9 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import TournamentInfo from '$lib/components/TournamentInfo.svelte'
-    import MarkdownBox from '$lib/components/MarkdownBox.svelte'
+    import TournamentInfo from '$lib/components/TournamentInfo.svelte';
+    import MarkdownBox from '$lib/components/MarkdownBox.svelte';
+    import TournamentRegistrations from '$lib/components/TournamentRegistrations.svelte';
     import type { Tournament } from '$lib/types/tournament';
 
     let id = 0;
@@ -29,12 +30,12 @@
 </svelte:head>
 
 {#if tournament}
-<TournamentInfo tournament={tournament}/>
 <div class="container">
+    <TournamentInfo tournament={tournament}/>
     <MarkdownBox title="Tournament Details" content={tournament.description}/>
     <MarkdownBox title="Tournament Rules" content={tournament.ruleset}/>
+    <TournamentRegistrations tournament={tournament}/>
 </div>
-
 {/if}
 
 <style>
