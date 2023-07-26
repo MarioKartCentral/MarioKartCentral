@@ -21,7 +21,7 @@
             if(fc === "") {
                 continue;
             }
-            friend_codes.push({fc: fc, game: games[i], is_primary: true, description: null});
+            friend_codes.push({fc: fc, game: games[i], is_primary: true, description: null, is_verified: false});
         }
         
         const payload = { name: data.get('name'),
@@ -91,6 +91,6 @@
             <label for="discord_id">Discord ID</label>
             <input name="discord_id" type="discord_id">
         </div>
-        <button class="register-btn">Register</button>
+        <button class="register-btn" type="submit">Register</button>
     </form>
 {/if}

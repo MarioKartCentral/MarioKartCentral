@@ -99,9 +99,9 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             name, country_code, is_hidden, is_shadow, is_banned, discord_id = player_row
 
-            fc_query = "SELECT game, fc, is_verified, is_primary FROM friend_codes WHERE player_id = ?"
+            fc_query = "SELECT game, fc, is_verified, is_primary, description FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
-            friend_codes = [FriendCode(fc, game, self.id, bool(is_verified), bool(is_primary)) for game, fc, is_verified, is_primary in friend_code_rows]
+            friend_codes = [FriendCode(fc, game, self.id, bool(is_verified), bool(is_primary), description) for game, fc, is_verified, is_primary, description in friend_code_rows]
 
             user_query = "SELECT id FROM users WHERE player_id = ?"
             async with db.execute(user_query, (self.id,)) as cursor:
@@ -116,7 +116,15 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     ban_row = await cursor.fetchone()
                 ban_info = None if ban_row is None else PlayerBan(*ban_row)
 
-            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, user, ban_info)
+            user_settings = None
+            if user:
+                async with db.execute("""SELECT avatar, about_me, language, 
+                    color_scheme, timezone FROM user_settings WHERE user_id = ?""", (user.id,)) as cursor:
+                    settings_row = await cursor.fetchone()
+                    if settings_row is not None:
+                        user_settings = UserSettings(user.id, *settings_row)
+
+            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, ban_info, user_settings)
         
 @dataclass
 class ListPlayersCommand(Command[List[Player]]):

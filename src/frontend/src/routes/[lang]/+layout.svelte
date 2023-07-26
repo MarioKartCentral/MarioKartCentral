@@ -32,12 +32,7 @@
       let me: UserInfo = {
         id: body['id'],
         player_id: body['player_id'],
-        name: body['name'],
-        country_code: body['country_code'],
-        is_hidden: body['is_hidden'],
-        is_shadow: body['is_shadow'],
-        is_banned: body['is_banned'],
-        discord_id: body['discord_id'],
+        player: body['player'],
         is_checked: true
       };
       user.set(me);
