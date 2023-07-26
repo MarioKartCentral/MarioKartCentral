@@ -190,6 +190,7 @@ async def player_exists_in_table(db, table: Literal['players', 'player_bans'], p
         assert row is not None
         return True if row[0] else False
 
+@save_to_command_log
 @dataclass
 class BanPlayerCommand(Command[PlayerBan]):
     player_id: int
@@ -221,6 +222,7 @@ class BanPlayerCommand(Command[PlayerBan]):
             await db.commit()
             return PlayerBan(*params)
 
+@save_to_command_log
 @dataclass
 class UnbanPlayerCommand(Command[None]):
     player_id: int
@@ -238,6 +240,7 @@ class UnbanPlayerCommand(Command[None]):
                     raise Problem("Failed to unban player", "Failed to update is_banned in player table")
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class EditPlayerBanCommand(Command[PlayerBan]):
     player_id: int
