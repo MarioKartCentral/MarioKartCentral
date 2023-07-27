@@ -9,14 +9,14 @@
   let notify: Notification;
 
   let user_info: UserInfo;
-  let have_unread: boolean = false;
+  let have_unread = false;
 
   user.subscribe((value) => {
     user_info = value;
   });
   have_unread_notification.subscribe((value) => {
     have_unread = value;
-  })
+  });
 </script>
 
 <nav>
@@ -51,7 +51,8 @@
       </NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
       {#if user_info.player}
-        <NavBarItem title="Profile" href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">👤
+        <NavBarItem title="Profile" href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}"
+          >👤
           {user_info.player.name}
         </NavBarItem>
       {:else if user_info.id !== null}
@@ -68,13 +69,13 @@
 <style>
   nav {
     display: flex;
-    background-color: #5CE49A;
+    background-color: #5ce49a;
     color: white;
     height: 40px;
   }
 
   .nav-brand {
-    background-color: #31D682;
+    background-color: #31d682;
     display: flex;
     align-items: center;
     box-shadow: 2px 0 8px #141414;
@@ -100,7 +101,7 @@
   }
 
   .nav-options {
-    background-color: #31D682;
+    background-color: #31d682;
     display: flex;
     align-items: center;
     box-shadow: -2px 0 8px #141414;

@@ -11,7 +11,7 @@ const en_us: BaseTranslation & Translation = {
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
     DISCORD: 'Discord',
-  }
+  },
 };
 
 export default en_us;
