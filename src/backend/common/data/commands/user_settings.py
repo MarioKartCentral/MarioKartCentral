@@ -23,15 +23,15 @@ class GetUserSettingsCommand(Command[UserSettings | None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("""SELECT avatar, discord_tag, about_me, language, 
+            async with db.execute("""SELECT avatar, about_me, language, 
                 color_scheme, timezone FROM user_settings WHERE user_id = ?""", (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     return None
                 
-        avatar, discord_tag, about_me, language, color_scheme, timezone = row
+        avatar, about_me, language, color_scheme, timezone = row
 
-        return UserSettings(self.user_id, avatar, discord_tag, about_me, language, color_scheme, timezone)
+        return UserSettings(self.user_id, avatar, about_me, language, color_scheme, timezone)
     
 @dataclass
 class EditUserSettingsCommand(Command[bool]):
@@ -49,7 +49,6 @@ class EditUserSettingsCommand(Command[bool]):
                 variable_parameters.append(value)
 
         set_value(data.avatar, "avatar")
-        set_value(data.discord_tag, "discord_tag")
         set_value(data.about_me, "about_me")
         set_value(data.language, "language")
         set_value(data.color_scheme, "color_scheme")

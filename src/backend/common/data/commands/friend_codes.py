@@ -17,14 +17,18 @@ class CreateFriendCodeCommand(Command[None]):
     is_privileged: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
+        is_primary = self.is_primary
         # make sure FC is in 0000-0000-0000 format
         match = re.match(r"\d{4}-\d{4}-\d{4}", self.fc)
         if self.game != "mk8" and not match:
-            raise Problem("FC is in incorrect format", status=400)
+            raise Problem(f"FC {self.fc} for game {self.game} is in incorrect format", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT fc, is_primary FROM friend_codes WHERE player_id = ? AND game = ? AND is_active = ?",
                                   (self.player_id, self.game, True)) as cursor:
                 rows = await cursor.fetchall()
+                # if we have no fcs for this game before adding, is_primary should always be true
+                if len(rows) == 0:
+                    is_primary = True
                 for row in rows:
                     row_fc, row_primary = row
                     if bool(row_primary) and self.is_primary:
@@ -42,7 +46,7 @@ class CreateFriendCodeCommand(Command[None]):
                 if row:
                     raise Problem("Another player is currently using this friend code for this game", status=400)
             await db.execute("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                             (self.player_id, self.game, self.fc, self.is_verified, self.is_primary, self.is_active, self.description))
+                             (self.player_id, self.game, self.fc, self.is_verified, is_primary, self.is_active, self.description))
             await db.commit()
             
 @dataclass

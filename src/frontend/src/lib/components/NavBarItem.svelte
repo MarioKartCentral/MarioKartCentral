@@ -2,7 +2,7 @@
   export let href: string | null = null;
   export let external: string | null = null;
   export let title: string | null = null;
-  export let selected = false;
+  export let selected: boolean = false;
 </script>
 
 <li>

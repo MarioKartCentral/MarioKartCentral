@@ -3,14 +3,20 @@
   import LL from '$i18n/i18n-svelte';
   import NavBarItem from './NavBarItem.svelte';
   import logo from '$lib/assets/logo.png';
-  import { user } from '$lib/stores/stores';
+  import { user, have_unread_notification } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
+  import Notification from './Notification.svelte';
+  let notify: Notification;
 
   let user_info: UserInfo;
+  let have_unread: boolean = false;
 
   user.subscribe((value) => {
     user_info = value;
   });
+  have_unread_notification.subscribe((value) => {
+    have_unread = value;
+  })
 </script>
 
 <nav>
@@ -38,12 +44,15 @@
   </div>
   <div class="nav-options">
     <ul>
-      <NavBarItem title="Notifications" href="#">🔔</NavBarItem>
+      <NavBarItem title="Notifications">
+        <button on:click|stopPropagation={notify.toggleNotificationMenu}>
+          🔔{#if have_unread}🔴{/if}
+        </button>
+      </NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
-      {#if user_info.player_id !== null}
-        <NavBarItem title="Profile" href="#"
-          >👤
-          {user_info.name}
+      {#if user_info.player}
+        <NavBarItem title="Profile" href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">👤
+          {user_info.player.name}
         </NavBarItem>
       {:else if user_info.id !== null}
         <NavBarItem title="Player Signup" href="/{$page.params.lang}/player-signup">Player Signup</NavBarItem>
@@ -53,18 +62,19 @@
       {/if}
     </ul>
   </div>
+  <Notification bind:this={notify} />
 </nav>
 
 <style>
   nav {
     display: flex;
-    background-color: #5ce49a;
+    background-color: #5CE49A;
     color: white;
     height: 40px;
   }
 
   .nav-brand {
-    background-color: #31d682;
+    background-color: #31D682;
     display: flex;
     align-items: center;
     box-shadow: 2px 0 8px #141414;
@@ -90,7 +100,7 @@
   }
 
   .nav-options {
-    background-color: #31d682;
+    background-color: #31D682;
     display: flex;
     align-items: center;
     box-shadow: -2px 0 8px #141414;
