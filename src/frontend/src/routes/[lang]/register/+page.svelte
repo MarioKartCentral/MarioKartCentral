@@ -11,7 +11,7 @@
 
   async function register(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
-    const payload = { email: data.get('email')!.toString(), password: data.get('password')!.toString() };
+    const payload = { email: data.get('email')?.toString(), password: data.get('password')?.toString() };
 
     const isLogin = false;
     const endpoint = '/api/user/signup';
@@ -21,7 +21,6 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
 
     if (response.status < 300) {
       goto('/');

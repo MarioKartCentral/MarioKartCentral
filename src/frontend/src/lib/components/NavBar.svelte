@@ -9,7 +9,7 @@
   let notify: Notification;
 
   let user_info: UserInfo;
-  let have_unread: boolean = false;
+  let have_unread = false;
 
   user.subscribe((value) => {
     user_info = value;

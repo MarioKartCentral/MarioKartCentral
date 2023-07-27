@@ -38,11 +38,11 @@
   async function editProfile(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
     const payload = {
-      avatar: data.get('avatar_url')!.toString(),
-      about_me: data.get('about_me')!.toString(),
-      language: data.get('language')!.toString(),
-      color_scheme: data.get('theme')!.toString(),
-      timezone: data.get('timezone')!.toString(),
+      avatar: data.get('avatar_url')?.toString(),
+      about_me: data.get('about_me')?.toString(),
+      language: data.get('language')?.toString(),
+      color_scheme: data.get('theme')?.toString(),
+      timezone: data.get('timezone')?.toString(),
     };
     const endpoint = '/api/user/settings/edit';
     const response = await fetch(endpoint, {
@@ -63,10 +63,10 @@
   async function addFC(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
     const payload = {
-      fc: data.get('fc')!.toString(),
-      game: data.get('game')!.toString(),
+      fc: data.get('fc')?.toString(),
+      game: data.get('game')?.toString(),
       is_primary: data.get('is_primary') ? true : false,
-      description: data.get('description')!.toString(),
+      description: data.get('description')?.toString(),
     };
     const endpoint = '/api/registry/addFriendCode';
     const response = await fetch(endpoint, {
