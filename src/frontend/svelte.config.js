@@ -4,7 +4,13 @@ import preprocess from 'svelte-preprocess';
 const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 
 function getEntriesForLocale(locale) {
-  return [`/${locale}`, `/${locale}/tournaments/details`, `/${locale}/player-signup`, `/${locale}/registry/players/edit-profile`, `/${locale}/registry/players/profile`];
+  return [
+    `/${locale}`,
+    `/${locale}/tournaments/details`,
+    `/${locale}/player-signup`,
+    `/${locale}/registry/players/edit-profile`,
+    `/${locale}/registry/players/profile`,
+  ];
 }
 
 /** @type {import('@sveltejs/kit').Config} */
