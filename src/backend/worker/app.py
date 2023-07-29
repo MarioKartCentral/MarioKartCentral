@@ -1,42 +1,61 @@
-from typing import Any
-from common.gamedata import gamedata
 import asyncio
-from datetime import timedelta, datetime
+from datetime import datetime
+from worker.data import on_startup, on_shutdown
+from worker import settings
+from worker.jobs import Job, get_all_jobs
 
-async def example_job():
-    print(gamedata["games"]["mk8d"]["tracks"][1]["name"]["en"])
+class JobRunner:
+    def __init__(self, job: Job):
+        self._job = job
+        self._longer_than_delay = False
+        self._last_run = None
+        self._task = None
 
-# list of jobs and how frequently they should run
-jobs = [
-    ("Example Job", example_job, timedelta(seconds=30))
-]
+    def start(self):
+        async def run_with_error_handler():
+            try:
+                await self._job.run()
+            except Exception as ex:
+                print(f"Job '{self._job.name}' failed")
+                print(ex)
+                raise
+    
+        self._longer_than_delay = False
+        self._last_run = datetime.utcnow()
+        self._task = asyncio.create_task(run_with_error_handler())
+
+    def tick(self):
+        if self._last_run is None or self._task is None:
+            print(f"Job '{self._job.name}' started")
+            self.start()
+            return
+        
+        time_since_last_run = datetime.utcnow() - self._last_run
+        if time_since_last_run >= self._job.delay:
+            if self._task.done():
+                if self._longer_than_delay:
+                    print(f"Job '{self._job.name}' took {time_since_last_run}, when delay is {self._job.delay}")
+
+                self.start()
+            else:
+                if not self._longer_than_delay:
+                    print(f"Job '{self._job.name}' is still running after delay of {self._job.delay}")
+                    self._longer_than_delay = True
+
 
 async def main():
-    job_tasks: list[asyncio.Task[Any]] = []
-    job_last_run: list[datetime] = []
-    job_longer_than_delay: list[bool] = []
-    for i, (_, job_func, _) in enumerate(jobs):
-        job_last_run.append(datetime.utcnow())
-        job_tasks.append(asyncio.create_task(job_func()))
-        job_longer_than_delay.append(False)
-
+    await on_startup()
+    jobs = [JobRunner(job) for job in get_all_jobs()]
     while True:
-        for i, (job_name, job_func, job_delay) in enumerate(jobs):
-            time_since_last_run = datetime.utcnow() - job_last_run[i]
-            if time_since_last_run >= job_delay:
-                if job_tasks[i].done():
-                    if job_longer_than_delay[i]:
-                        print(f"Job '{job_name}' took {time_since_last_run}, when delay is {job_delay}")
-                        job_longer_than_delay[i] = False
-                    
-                    job_last_run[i] = datetime.utcnow()
-                    job_tasks[i] = asyncio.create_task(job_func())
-                else:
-                    if not job_longer_than_delay[i]:
-                        print(f"Job '{job_name}' is still running after delay of {job_delay}")
-                        job_longer_than_delay[i] = True
+        for job in jobs:
+            job.tick()
         await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
+    if settings.DEBUG:
+        import debugpy
+        debugpy.listen(("0.0.0.0", 5678))
+        debugpy.wait_for_client()  # blocks execution until client is attached
+
     asyncio.run(main())

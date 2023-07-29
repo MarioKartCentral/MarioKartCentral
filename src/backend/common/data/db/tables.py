@@ -524,6 +524,20 @@ class Notifications(TableModel):
             is_read INTEGER DEFAULT 0 NOT NULL)"""
 
 @dataclass
+class CommandLog(TableModel):
+    id: int
+    type: str
+    data: str
+    timestamp: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS command_log(
+        id INTEGER PRIMARY KEY autoincrement,
+        type TEXT NOT NULL,
+        data TEXT NOT NULL,
+        timestamp INTEGER NOT NULL DEFAULT (cast(strftime('%s','now') as int)))"""
+
 class PlayerBans(TableModel):
     player_id: int
     staff_id: int
@@ -545,5 +559,5 @@ all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     Team, TeamRoster, TeamMember, TeamSquadRegistration, UserTeamRole, UserSeriesRole,
-    RosterInvite, TeamEditRequest, UserSettings, NotificationContent, Notifications,
-    PlayerBans]
+    RosterInvite, TeamEditRequest, UserSettings, NotificationContent, Notifications, 
+    CommandLog, PlayerBans]

@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from typing import List, Literal
 import re
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 
 
+@save_to_command_log
 @dataclass
 class CreatePlayerCommand(Command[Player]):
     user_id: int | None
@@ -64,6 +65,7 @@ class CreatePlayerCommand(Command[Player]):
             await db.commit()
             return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, data.discord_id)
 
+@save_to_command_log
 @dataclass
 class UpdatePlayerCommand(Command[bool]):
     data: EditPlayerRequestData
@@ -196,6 +198,7 @@ async def player_exists_in_table(db, table: Literal['players', 'player_bans'], p
         assert row is not None
         return True if row[0] else False
 
+@save_to_command_log
 @dataclass
 class BanPlayerCommand(Command[PlayerBan]):
     player_id: int
@@ -227,6 +230,7 @@ class BanPlayerCommand(Command[PlayerBan]):
             await db.commit()
             return PlayerBan(*params)
 
+@save_to_command_log
 @dataclass
 class UnbanPlayerCommand(Command[None]):
     player_id: int
@@ -244,6 +248,7 @@ class UnbanPlayerCommand(Command[None]):
                     raise Problem("Failed to unban player", "Failed to update is_banned in player table")
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class EditPlayerBanCommand(Command[PlayerBan]):
     player_id: int

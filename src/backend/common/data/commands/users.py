@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, User, UserPlayer, UserLoginData
 
 
@@ -30,7 +30,7 @@ class GetUserDataFromIdCommand(Command[User | None]):
                 return None
             
             return User(int(row[0]), row[1])
-        
+
 @dataclass
 class GetUserPlayerDataFromIdCommand(Command[UserPlayer | None]):
     id: int
@@ -54,6 +54,7 @@ class GetUserPlayerDataFromIdCommand(Command[UserPlayer | None]):
 
             return UserPlayer(user_id, player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id)
             
+@save_to_command_log     
 @dataclass
 class CreateUserCommand(Command[User]):
     email: str
