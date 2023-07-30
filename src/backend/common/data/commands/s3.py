@@ -8,7 +8,7 @@ class InitializeS3BucketsCommand(Command[None]):
         bucket_names = await s3_wrapper.list_buckets()
 
         # all buckets we need for the API to run
-        api_buckets = ['tournaments', 'series', 'templates']
+        api_buckets = ['tournaments', 'series', 'templates', 'commandlog']
         for bucket in api_buckets:
             if bucket not in bucket_names:
                 await s3_wrapper.create_bucket(bucket)

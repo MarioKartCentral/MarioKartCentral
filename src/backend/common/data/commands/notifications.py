@@ -2,9 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import *
-
 
 @dataclass
 class GetNotificationsCommand(Command[List[Notification]]):
@@ -106,6 +105,7 @@ class GetUnreadNotificationsCountCommand(Command[int]):
                     raise Problem("Unable to fetch unread notifications count")
                 return int(row[0])
 
+@save_to_command_log
 @dataclass
 class DispatchNotificationsCommand(Command[int]):
     """

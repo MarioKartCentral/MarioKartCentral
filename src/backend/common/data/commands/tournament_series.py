@@ -3,10 +3,11 @@ from typing import Any, Dict, List
 
 import msgspec
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, Series, SeriesFilter, SeriesRequestData
 
 
+@save_to_command_log
 @dataclass
 class CreateSeriesCommand(Command[None]):
     body: SeriesRequestData
@@ -24,6 +25,7 @@ class CreateSeriesCommand(Command[None]):
         s3_message = bytes(msgspec.json.encode(self.body))
         await s3_wrapper.put_object('series', f'{series_id}.json', s3_message)
 
+@save_to_command_log
 @dataclass
 class EditSeriesCommand(Command[None]):
     body: SeriesRequestData

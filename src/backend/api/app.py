@@ -1,8 +1,8 @@
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from api import settings
-from api.data import init_db, init_s3, close_s3
-from api.endpoints import authservice, redisservice, roleservice, s3service, userservice, tournaments, tournament_registration, tournament_placements, player_registry, team_registry, user_settings, notifications
+from api.data import on_startup, on_shutdown
+from api.endpoints import authservice, roleservice, s3service, userservice, tournaments, tournament_registration, tournament_placements, player_registry, team_registry, user_settings, notifications
 from api.utils.middleware import ProblemHandlingMiddleware
 from api.utils.schema_gen import schema_route
 
@@ -13,7 +13,6 @@ if settings.DEBUG:
 
 routes = [
     *authservice.routes,
-    *redisservice.routes,
     *roleservice.routes,
     *s3service.routes,
     *userservice.routes,
@@ -31,4 +30,4 @@ middleware = [
     Middleware(ProblemHandlingMiddleware)
 ]
 
-app = Starlette(debug=True, routes=routes, on_startup=[init_db, init_s3], on_shutdown=[close_s3], middleware=middleware)
+app = Starlette(debug=True, routes=routes, on_startup=[on_startup], on_shutdown=[on_shutdown], middleware=middleware)

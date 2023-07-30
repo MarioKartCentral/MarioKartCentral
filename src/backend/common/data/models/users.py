@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from common.data.models.players import PlayerDetailed
 
 @dataclass
 class User:
@@ -10,12 +11,7 @@ class User:
 class UserPlayer:
     id: int
     player_id: int | None
-    name: str | None
-    country_code: str | None
-    is_hidden: bool | None
-    is_shadow: bool | None
-    is_banned: bool | None
-    discord_id: str | None
+    player: PlayerDetailed | None
 
 @dataclass
 class UserLoginData(User):

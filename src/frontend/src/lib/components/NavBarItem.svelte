@@ -1,8 +1,8 @@
 <script lang="ts">
-    export let href : string | null = null;
-    export let external : string | null = null;
-    export let title : string | null  = null;
-    export let selected : boolean = false;
+  export let href: string | null = null;
+  export let external: string | null = null;
+  export let title: string | null = null;
+  export let selected = false;
 </script>
 
 <li>
@@ -22,7 +22,7 @@
     display: flex;
     align-items: center;
   }
-  
+
   a {
     font-weight: bold;
     color: white;

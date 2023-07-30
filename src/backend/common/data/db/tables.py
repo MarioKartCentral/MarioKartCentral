@@ -521,7 +521,6 @@ class UserSettings(TableModel):
         return """CREATE TABLE IF NOT EXISTS user_settings(
             user_id INTEGER PRIMARY KEY REFERENCES users(id),
             avatar TEXT,
-            discord_tag TEXT,
             about_me TEXT,
             language TEXT DEFAULT 'en-us' NOT NULL,
             color_scheme TEXT DEFAULT 'light' NOT NULL,
@@ -559,10 +558,42 @@ class Notifications(TableModel):
             created_date INTEGER NOT NULL,
             content_is_shared INTEGER NOT NULL,
             is_read INTEGER DEFAULT 0 NOT NULL)"""
+
+@dataclass
+class CommandLog(TableModel):
+    id: int
+    type: str
+    data: str
+    timestamp: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS command_log(
+        id INTEGER PRIMARY KEY autoincrement,
+        type TEXT NOT NULL,
+        data TEXT NOT NULL,
+        timestamp INTEGER NOT NULL DEFAULT (cast(strftime('%s','now') as int)))"""
+
+class PlayerBans(TableModel):
+    player_id: int
+    staff_id: int
+    is_indefinite: bool
+    expiration_date: int
+    reason: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_bans(
+            player_id INTEGER PRIMARY KEY REFERENCES players(id),
+            staff_id INTEGER NOT NULL REFERENCES users(id),
+            is_indefinite BOOLEAN NOT NULL,
+            expiration_date INTEGER NOT NULL,
+            reason TEXT NOT NULL
+            ) WITHOUT ROWID"""
     
 all_tables : List[Type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
-    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer, 
-    TournamentSoloPlacements, TournamentSquadPlacements,Team, TeamRoster, TeamMember, 
+    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
+    TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, UserTeamRole, UserSeriesRole, RosterInvite, TeamEditRequest, 
-    UserSettings, NotificationContent, Notifications]
+    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]

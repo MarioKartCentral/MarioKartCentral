@@ -16,6 +16,7 @@ EDIT_TEAM_INFO = "team_info_edit"
 MANAGE_REGISTRATION_HISTORY = "registration_history_edit"
 MANAGE_TRANSFERS = "transfers_manage"
 REGISTER_TEAM_TOURNAMENT = "team_tournament_register"
+BAN_PLAYER = 'player_ban'
 
 permissions_by_id = {
     0: READ_S3,
@@ -33,7 +34,8 @@ permissions_by_id = {
     12: INVITE_TEAM_PLAYERS,
     13: MANAGE_TEAM_ROSTERS,
     14: MANAGE_REGISTRATION_HISTORY,
-    15: MANAGE_TRANSFERS
+    15: MANAGE_TRANSFERS,
+    16: BAN_PLAYER
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

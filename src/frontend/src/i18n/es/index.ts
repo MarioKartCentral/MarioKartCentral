@@ -13,7 +13,7 @@ const es: Translation = {
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
     DISCORD: 'Discord',
-  }
+  },
 };
 
 export default es;
