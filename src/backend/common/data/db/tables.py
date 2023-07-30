@@ -305,7 +305,7 @@ class TournamentSoloPlacements(TableModel):
         return """CREATE TABLE IF NOT EXISTS tournament_solo_placements(
             id INTEGER PRIMARY KEY,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            player_id INTEGER NOT NULL REFERENCES tournament_squads(id),
+            player_id INTEGER NOT NULL REFERENCES players(id),
             placement INTEGER NOT NULL,
             placement_description TEXT
         )"""
@@ -323,7 +323,7 @@ class TournamentSquadPlacements(TableModel):
         return """CREATE TABLE IF NOT EXISTS tournament_squad_placements(
             id INTEGER PRIMARY KEY,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            squad_id INTEGER NOT NULL REFERENCES players(id),
+            squad_id INTEGER NOT NULL REFERENCES tournament_squads(id),
             placement INTEGER NOT NULL,
             placement_description TEXT
         )"""
