@@ -1,3 +1,4 @@
+from types import TracebackType
 from typing import TypeVar
 from common.data.models import Problem
 from common.data.commands import Command, SaveToCommandLogCommand, needs_command_log
@@ -16,7 +17,7 @@ class CommandHandler:
         self._s3_wrapper = await self._s3_wrapper_manager.__aenter__() 
         return self
     
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None):
         if self._s3_wrapper is not None:
             await self._s3_wrapper_manager.__aexit__(exc_type, exc_val, exc_tb)
         self._s3_wrapper = None

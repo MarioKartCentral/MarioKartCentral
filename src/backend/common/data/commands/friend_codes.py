@@ -25,7 +25,7 @@ class CreateFriendCodeCommand(Command[None]):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT fc, is_primary FROM friend_codes WHERE player_id = ? AND game = ? AND is_active = ?",
                                   (self.player_id, self.game, True)) as cursor:
-                rows = await cursor.fetchall()
+                rows = list(await cursor.fetchall())
                 # if we have no fcs for this game before adding, is_primary should always be true
                 if len(rows) == 0:
                     is_primary = True
@@ -35,7 +35,7 @@ class CreateFriendCodeCommand(Command[None]):
                         raise Problem("Can only have 1 primary FC", status=400)
                     if row_fc == self.fc:
                         raise Problem("You are already using this FC", status=400)
-                fc_count = len(list(rows))
+                fc_count = len(rows)
                 fc_limits = {"mk8dx": 1, "mkt": 1, "mkw": 4, "mk7": 1, "mk8": 1}
                 if not self.is_privileged:
                     if fc_count >= fc_limits[self.game]:

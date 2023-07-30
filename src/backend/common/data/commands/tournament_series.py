@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List
+from typing import Any
 
 import msgspec
 
@@ -64,7 +64,7 @@ class EditSeriesCommand(Command[None]):
             await db.commit()
 
 @dataclass
-class GetSeriesDataCommand(Command[Dict[Any, Any]]):
+class GetSeriesDataCommand(Command[dict[Any, Any]]):
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -75,16 +75,16 @@ class GetSeriesDataCommand(Command[Dict[Any, Any]]):
         return series_data
 
 @dataclass
-class GetSeriesListCommand(Command[List[Series]]):
+class GetSeriesListCommand(Command[list[Series]]):
     filter: SeriesFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
-            where_clauses = []
-            variable_parameters = []
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
 
-            def append_equal_filter(filter_value, column_name):
+            def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
@@ -98,7 +98,7 @@ class GetSeriesListCommand(Command[List[Series]]):
 
             series_query = f"SELECT id, name, url, game, mode, is_historical, is_public, description, logo FROM tournament_series{where_clause}"
 
-            series = []
+            series: list[Series] = []
             async with db.execute(series_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:

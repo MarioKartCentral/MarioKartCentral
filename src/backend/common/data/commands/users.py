@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, UserPlayer, UserLoginData
+from common.data.models import Problem, User, UserLoginData
 
 
 @dataclass
@@ -30,29 +30,6 @@ class GetUserDataFromIdCommand(Command[User | None]):
                 return None
             
             return User(int(row[0]), row[1])
-
-@dataclass
-class GetUserPlayerDataFromIdCommand(Command[UserPlayer | None]):
-    id: int
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, player_id FROM users WHERE id = ?", (self.id,)) as cursor:
-                row = await cursor.fetchone()
-
-            if row is None:
-                return None
-            
-            user_id, player_id = row
-
-            if player_id is None:
-                return UserPlayer(user_id, player_id, None, None, None, None, None, None)
-            
-            async with db.execute("SELECT id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players WHERE id = ?", (player_id,)) as cursor:
-                row = await cursor.fetchone()
-                player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-
-            return UserPlayer(user_id, player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id)
             
 @save_to_command_log     
 @dataclass

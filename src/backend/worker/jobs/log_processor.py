@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import List
 from common.data.commands import GetCommandLogsCommand, ClearCommandLogUpToIdCommand, GetHistoricalCommandLogIndexCommand
 from worker.data import handle
 from worker.jobs import Job
@@ -48,7 +47,7 @@ class ClearCommandLogsJob(Job):
         if min_update_id is not None:
             await handle(ClearCommandLogUpToIdCommand(min_update_id))
 
-_jobs: List[Job] = []
+_jobs: list[Job] = []
 
 def get_jobs():
     if not _jobs:

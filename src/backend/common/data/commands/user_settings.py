@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 from common.data.commands import Command, save_to_command_log
 from common.data.models import EditUserSettingsRequestData, Problem, UserSettings
 
@@ -42,10 +43,10 @@ class EditUserSettingsCommand(Command[bool]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         data = self.data
-        set_clauses = []
-        variable_parameters = []
+        set_clauses: list[str] = []
+        variable_parameters: list[Any] = []
 
-        def set_value(value, column_name):
+        def set_value(value: Any, column_name: str):
             if value is not None:
                 set_clauses.append(f"{column_name} = ?")
                 variable_parameters.append(value)

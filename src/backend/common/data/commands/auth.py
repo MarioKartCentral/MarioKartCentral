@@ -150,7 +150,7 @@ class GrantRoleCommand(Command[None]):
 
                 await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (?, ?)", (self.target_user_id, role_id))
                 await db.commit()
-            except Exception as e:
+            except Exception:
                 async with db.execute("SELECT EXISTS(SELECT 1 FROM users where id = ?)", (self.target_user_id,)) as cursor:
                     row = await cursor.fetchone()
                     user_exists = row is not None

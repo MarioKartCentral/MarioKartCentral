@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Literal
+from typing import Any, Literal
 
 
 @dataclass
@@ -21,7 +21,7 @@ class Problem(Exception):
     title: str
     detail: str | None = None
     status: int = 500
-    data: Dict[str, Any] | None = None
+    data: dict[str, Any] | None = None
 
 Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt"]
 GameMode = Literal["150cc", "200cc", "rt", "ct"]

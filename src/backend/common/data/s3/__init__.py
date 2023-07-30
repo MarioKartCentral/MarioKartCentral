@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from types import TracebackType
 import aiobotocore.session
 from types_aiobotocore_s3 import S3Client
 
@@ -9,7 +10,7 @@ class S3Wrapper:
     async def create_bucket(self, bucket_name: str):
         await self.client.create_bucket(Bucket=bucket_name)
 
-    async def list_buckets(self):
+    async def list_buckets(self) -> list[str]:
         buckets = await self.client.list_buckets()
         return [b['Name'] for b in buckets['Buckets'] if 'Name' in b]
 
@@ -33,14 +34,14 @@ class S3WrapperManager:
 
     async def __aenter__(self) -> S3Wrapper:
         session = aiobotocore.session.get_session()
-        self.client = await session.create_client(
+        self.client = await session.create_client( # pyright: ignore[reportUnknownMemberType]
             's3',
             aws_secret_access_key=self.aws_secret_access_key,
             aws_access_key_id=self.aws_access_key_id,
             endpoint_url=self.aws_endpoint_url).__aenter__()
         return S3Wrapper(self.client)
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None):
         if self.client is not None:
             await self.client.__aexit__(exc_type, exc_val, exc_tb)
         self.client = None

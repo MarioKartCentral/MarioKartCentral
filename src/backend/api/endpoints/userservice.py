@@ -3,17 +3,22 @@ from starlette.routing import Route
 from api.auth import require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse
-from common.data.commands import GetUserDataFromIdCommand, GetUserPlayerDataFromIdCommand, GetPlayerDetailedCommand
+from common.data.commands import GetUserDataFromIdCommand, GetPlayerDetailedCommand
 from common.data.models import UserPlayer
+from common.data.models.common import Problem
 
 @require_logged_in
 async def current_user(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
+    if user is None:
+        raise Problem("User is not logged in", status=401)
     return JSONResponse(user)
 
 @require_logged_in
 async def current_user_and_player(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
+    if user is None:
+        raise Problem("User is not logged in", status=401)
     player = None
     if user.player_id:
         player = await handle(GetPlayerDetailedCommand(user.player_id))

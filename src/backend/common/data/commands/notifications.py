@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, List
+from typing import Any
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 
 @dataclass
-class GetNotificationsCommand(Command[List[Notification]]):
+class GetNotificationsCommand(Command[list[Notification]]):
     user_id: int
     data: NotificationFilter
 
@@ -121,7 +121,7 @@ class DispatchNotificationsCommand(Command[int]):
         A list of one or more user IDs to dispatch to.
     """
     content: str
-    user_ids: List[int]
+    user_ids: list[int]
     notification_type: int = 0
 
     async def handle(self, db_wrapper, s3_wrapper):

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Literal
+from typing import Literal
 
 from common.data.models.common import Game, CountryCode
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
@@ -26,7 +26,7 @@ class PlayerBan:
 
 @dataclass
 class PlayerDetailed(Player):
-    friend_codes: List[FriendCode]
+    friend_codes: list[FriendCode]
     ban_info: PlayerBan | None
     user_settings: UserSettings | None
 
@@ -34,7 +34,7 @@ class PlayerDetailed(Player):
 class CreatePlayerRequestData:
     name: str
     country_code: CountryCode
-    friend_codes: List[CreateFriendCodeRequestData]
+    friend_codes: list[CreateFriendCodeRequestData]
     is_hidden: bool = False
     is_shadow: bool = False
     discord_id: str | None = None
