@@ -3,6 +3,7 @@
   import { user } from '$lib/stores/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { UserInfo } from '$lib/types/user-info';
+  import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
 
   let user_info: UserInfo;
@@ -19,47 +20,46 @@
   }
 </script>
 
-<div class="container">
-  <div class="header">
-    <div class="header_element"><h2>Player Profile</h2></div>
-    {#if user_info.player_id == player.id}
-      <div class="header_element"><a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a></div>
-    {/if}
-  </div>
-  <div class="wrapper">
-    <div>
-      <img class="avatar" src={avatar_url} alt={player.name} />
+<Section header="Player Profile">
+    <div slot="header_content">
+      {#if user_info.player_id == player.id}
+        <a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a>
+      {/if}
     </div>
-
-    <div class="user_details">
-      <div class="name">
-        {player.name}
-      </div>
+    <div class="wrapper">
       <div>
-        <b>Country:</b>
-        {player.country_code}
+        <img class="avatar" src={avatar_url} alt={player.name} />
       </div>
-      {#if player.friend_codes.length > 0}
+  
+      <div class="user_details">
+        <div class="name">
+          {player.name}
+        </div>
         <div>
-          <b>Friend Codes:</b>
-          {#each player.friend_codes as fc}
-            <div class="fc">
-              {fc.fc} ({fc.game.toUpperCase()})
-            </div>
-          {/each}
+          <b>Country:</b>
+          {player.country_code}
+        </div>
+        {#if player.friend_codes.length > 0}
+          <div>
+            <b>Friend Codes:</b>
+            {#each player.friend_codes as fc}
+              <div class="fc">
+                {fc.fc} ({fc.game.toUpperCase()})
+              </div>
+            {/each}
+          </div>
+        {/if}
+      </div>
+      {#if player.user_settings && player.user_settings.about_me}
+        <div class="about_me">
+          {player.user_settings.about_me}
         </div>
       {/if}
     </div>
-    {#if player.user_settings && player.user_settings.about_me}
-      <div class="about_me">
-        {player.user_settings.about_me}
-      </div>
-    {/if}
-  </div>
-</div>
+</Section>
 
 <style>
-  div.container {
+  /* div.container {
     margin: 10px 0;
   }
   div.header {
@@ -69,7 +69,7 @@
   }
   div.header_element {
     margin: 5px;
-  }
+  } */
   div.wrapper {
     display: inline-grid;
     column-gap: 20px;

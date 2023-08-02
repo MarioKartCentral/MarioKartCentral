@@ -1,12 +1,13 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import type { TournamentPlayer, SquadPlayer } from '$lib/types/tournament-player';
+  import Table from '$lib/components/common/Table.svelte';
 
   export let tournament: Tournament;
   export let players: TournamentPlayer[] | SquadPlayer[];
 </script>
 
-<table>
+<Table>
   <col class="country" />
   <col class="name" />
   {#if tournament.mii_name_required}
@@ -31,7 +32,7 @@
   </thead>
   <tbody>
     {#each players as player, i}
-      <tr>
+      <tr class="row-{i % 2}">
         <td>{player.country_code}</td>
         <td>{player.name}</td>
         {#if tournament.mii_name_required}
@@ -48,18 +49,9 @@
       </tr>
     {/each}
   </tbody>
-</table>
+</Table>
 
 <style>
-  table {
-    width: 100%;
-    background-color: darkcyan;
-    border-collapse: collapse;
-  }
-  td {
-    text-align: center;
-    padding: 10px;
-  }
   col.country {
     width: 5%;
   }

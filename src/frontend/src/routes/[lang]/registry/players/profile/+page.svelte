@@ -28,17 +28,11 @@
 </svelte:head>
 
 {#if player}
-  <div class="container">
     {#if player.ban_info}
       <PlayerProfileBan ban_info={player.ban_info} />
     {/if}
     <PlayerProfile {player} />
-  </div>
 {/if}
 
 <style>
-  .container {
-    width: 50%;
-    margin: 20px auto 20px auto;
-  }
 </style>
