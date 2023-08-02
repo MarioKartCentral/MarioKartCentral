@@ -1,7 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { Team } from '$lib/types/team';
-    import Table from '$lib/components/common/Table.svelte';
+    import Section from '$lib/components/common/Section.svelte';
+    import TeamList from '$lib/components/teams/TeamList.svelte';
 
     let teams: Team[] = [];
 
@@ -17,55 +18,21 @@
     });
 </script>
 
-<div class="container">
+<!-- <div class="container">
     <h2>Teams</h2>
-    <Table>
-        <col class="tag">
-        <col class="name">
-        <thead>
-            <tr>
-                <th>Tag</th>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each teams as team, i}
-                <tr class="row-{i%2}">
-                    <td>
-                        {team.tag}
-                    </td>
-                    <td>
-                        {team.name}
-                    </td>
-                </tr>
-            {/each}
-        </tbody>
-    </Table>
-    
-</div>
+    <TeamList teams={teams}/>
+</div> -->
+<Section header="Team Listing">
+    <div slot="header_content">
+        hello
+    </div>
+    {teams.length} teams
+    <TeamList teams={teams}/>
+</Section>
 
 <style>
     div.container {
         width: 50%;
         margin: 20px auto 20px auto;
     }
-    /* table {
-        background-color: black;
-        border-collapse: collapse;
-        width: 100%;
-    }
-    thead {
-        background-color: green;
-    }
-    td {
-        padding: 10px;
-        text-align: center;
-    } */
-    col.tag {
-        width: 20%;
-    }
-    col.name {
-        width: 80%;
-    }
-    
 </style>

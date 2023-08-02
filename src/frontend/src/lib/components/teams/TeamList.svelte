@@ -1,0 +1,85 @@
+<script lang="ts">
+    import type { Team } from '$lib/types/team';
+    import Table from '$lib/components/common/Table.svelte';
+    import RosterList from '$lib/components/teams/RosterList.svelte';
+    import { locale } from "$i18n/i18n-svelte";
+
+    export let teams: Team[];
+
+    let show_rosters: {[id: number]: boolean} = {};
+
+    const options: Intl.DateTimeFormatOptions = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour12: true
+    }
+
+    function toggle_show_rosters(team_id: number) {
+        show_rosters[team_id] = !show_rosters[team_id];
+    }
+</script>
+
+<Table>
+    <col class="tag">
+    <col class="name">
+    <col class="rosters">
+    <col class="registration_date">
+    <thead>
+        <tr>
+            <th>Tag</th>
+            <th>Name</th>
+            <th>Rosters</th>
+            <th>Registered</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each teams as team, i}
+            <tr class="row-{i%2}">
+                <td>
+                    {team.tag}
+                </td>
+                <td>
+                    {team.name}
+                </td>
+                <td>
+                    {team.rosters.length} 
+                    <button class="show-hide" on:click={() => toggle_show_rosters(team.id)}>
+                        ({show_rosters[team.id] ? "hide" : "show"})
+                    </button>
+                </td>
+                <td>
+                    {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
+                </td>
+            </tr>
+            {#if show_rosters[team.id]}
+                <tr class="row-{i%2}">
+                    <td colspan=10>
+                        <RosterList team={team}/>
+                    </td>
+                </tr>
+            {/if}
+        {/each}
+    </tbody>
+</Table>
+
+<style>
+    col.tag {
+        width: 15%;
+    }
+    col.name {
+        width: 35%;
+    }
+    col.rosters {
+        width: 20%;
+    }
+    col.registration_date {
+        width: 30%;
+    }
+    button.show-hide {
+        background-color: transparent;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+</style>
