@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 from common.auth import permissions
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails
 
 
+@save_to_command_log
 @dataclass
 class CreateSquadCommand(Command[None]):
     squad_name: str | None
@@ -131,6 +132,7 @@ class CreateSquadCommand(Command[None]):
                 self.selected_fc_id, False))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class EditSquadCommand(Command[None]):
     tournament_id: int

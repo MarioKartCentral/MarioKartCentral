@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 
 
+@save_to_command_log
 @dataclass
 class CreateTeamCommand(Command[None]):
     name: str
@@ -113,6 +114,7 @@ class GetTeamInfoCommand(Command[Team]):
             team.rosters = rosters
             return team
 
+@save_to_command_log
 @dataclass
 class EditTeamCommand(Command[None]):
     team_id: int
@@ -143,6 +145,7 @@ class EditTeamCommand(Command[None]):
                     raise Problem('No team found', status=404)
                 await db.commit()
 
+@save_to_command_log
 @dataclass
 class ManagerEditTeamCommand(Command[None]):
     team_id: int
@@ -165,6 +168,7 @@ class ManagerEditTeamCommand(Command[None]):
                     raise Problem('No team found', status=404)
                 await db.commit()
 
+@save_to_command_log
 @dataclass
 class RequestEditTeamCommand(Command[None]):
     team_id: int
@@ -176,6 +180,7 @@ class RequestEditTeamCommand(Command[None]):
             await db.execute("INSERT INTO team_edit_requests(team_id, name, tag) VALUES(?, ?, ?)", (self.team_id, self.name, self.tag))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class CreateRosterCommand(Command[None]):
     team_id: int
@@ -209,7 +214,8 @@ class CreateRosterCommand(Command[None]):
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             await db.commit()
-            
+
+@save_to_command_log     
 @dataclass
 class EditRosterCommand(Command[None]):
     roster_id: int
@@ -249,6 +255,7 @@ class EditRosterCommand(Command[None]):
                              (self.team_id, self.name, self.tag, self.is_recruiting, self.is_active, self.approval_status))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class InvitePlayerCommand(Command[None]):
     player_id: int
@@ -278,6 +285,7 @@ class InvitePlayerCommand(Command[None]):
             await db.execute("INSERT INTO roster_invites(player_id, roster_id, date, is_accepted) VALUES (?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class DeleteInviteCommand(Command[None]):
     player_id: int
@@ -299,6 +307,7 @@ class DeleteInviteCommand(Command[None]):
                     raise Problem("Invite not found", status=404)
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class AcceptInviteCommand(Command[None]):
     invite_id: int
@@ -331,6 +340,7 @@ class AcceptInviteCommand(Command[None]):
             await db.execute("UPDATE roster_invites SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class DeclineInviteCommand(Command[None]):
     invite_id: int
@@ -350,6 +360,7 @@ class DeclineInviteCommand(Command[None]):
             await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class LeaveRosterCommand(Command[None]):
     player_id: int
@@ -365,6 +376,7 @@ class LeaveRosterCommand(Command[None]):
             leave_date = int(datetime.utcnow().timestamp())
             await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
 
+@save_to_command_log
 @dataclass
 class ApproveTransferCommand(Command[None]):
     invite_id: int
@@ -442,6 +454,7 @@ class ApproveTransferCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class DenyTransferCommand(Command[None]):
     invite_id: int
@@ -460,6 +473,7 @@ class DenyTransferCommand(Command[None]):
                 await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class ApproveTeamEditCommand(Command[None]):
     request_id: int
@@ -475,6 +489,7 @@ class ApproveTeamEditCommand(Command[None]):
             await db.execute("DELETE FROM team_edit_requests WHERE id = ?", (self.request_id,))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class DenyTeamEditCommand(Command[None]):
     request_id: int
@@ -487,6 +502,7 @@ class DenyTeamEditCommand(Command[None]):
                     raise Problem("Team edit request not found", status=404)
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class RequestEditRosterCommand(Command[None]):
     roster_id: int
@@ -509,6 +525,7 @@ class RequestEditRosterCommand(Command[None]):
             await db.execute("INSERT INTO roster_edit_requests(roster_id, name, tag) VALUES (?, ?, ?)", (self.roster_id, self.name, self.tag))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class ApproveRosterEditCommand(Command[None]):
     request_id: int
@@ -524,6 +541,7 @@ class ApproveRosterEditCommand(Command[None]):
             await db.execute("DELETE FROM roster_edit_requests WHERE id = ?", (self.request_id,))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class DenyRosterEditCommand(Command[None]):
     request_id: int
@@ -536,6 +554,7 @@ class DenyRosterEditCommand(Command[None]):
                     raise Problem("Roster edit request not found", status=404)
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class ForceTransferPlayerCommand(Command[None]):
     player_id: int
@@ -612,6 +631,7 @@ class ForceTransferPlayerCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class EditTeamMemberCommand(Command[None]):
     id: int

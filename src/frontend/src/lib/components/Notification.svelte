@@ -25,8 +25,8 @@
 
   async function makeNotificationAsRead(id: number) {
     const res = await fetch(`/api/notifications/edit/read_status/${id}`, {
-      method: "POST",
-      body: JSON.stringify({ is_read: true })
+      method: 'POST',
+      body: JSON.stringify({ is_read: true }),
     });
     if (res.status !== 200) {
       return;
@@ -35,17 +35,17 @@
     if (body.count > 0) {
       // change target notification.is_read to true
       // TODO: ...or delete depending on requirements.
-      notifications = notifications.map(n => ({
+      notifications = notifications.map((n) => ({
         ...n,
-        is_read: (n.id === id ? true : n.is_read),
+        is_read: n.id === id ? true : n.is_read,
       }));
     }
   }
 
   async function makeAllNotificationsAsRead() {
     const res = await fetch(`/api/notifications/edit/read_status/all`, {
-      method: "POST",
-      body: JSON.stringify({ is_read: true })
+      method: 'POST',
+      body: JSON.stringify({ is_read: true }),
     });
     if (res.status !== 200) {
       return;
@@ -54,7 +54,7 @@
     if (body.update_count > 0) {
       // change all notification.is_read to true
       // TODO: ...or delete depending on requirements.
-      notifications = notifications.map(n => ({
+      notifications = notifications.map((n) => ({
         ...n,
         is_read: true,
       }));

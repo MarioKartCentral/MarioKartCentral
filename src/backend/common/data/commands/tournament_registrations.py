@@ -2,10 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails
 
 
+@save_to_command_log
 @dataclass
 class RegisterPlayerCommand(Command[None]):
     player_id: int
@@ -102,6 +103,7 @@ class RegisterPlayerCommand(Command[None]):
             await db.commit()
 
 
+@save_to_command_log
 @dataclass
 class EditPlayerRegistrationCommand(Command[None]):
     tournament_id: int
@@ -149,6 +151,7 @@ class EditPlayerRegistrationCommand(Command[None]):
                 self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, self.selected_fc_id, self.is_representative, registration_id))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class UnregisterPlayerCommand(Command[None]):
     tournament_id: int

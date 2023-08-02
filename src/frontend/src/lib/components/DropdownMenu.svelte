@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   let dropdown_open = false;
   export function toggleDropdown() {
-    dropdown_open = !dropdown_open
+    dropdown_open = !dropdown_open;
   }
 
   const clickOutside = (event: MouseEvent) => {
@@ -11,12 +11,11 @@
   };
 
   onMount(() => {
-    window.addEventListener('click', (clickOutside));
+    window.addEventListener('click', clickOutside);
     return () => {
       window.removeEventListener('click', clickOutside);
     };
   });
-
 </script>
 
 {#if dropdown_open}
@@ -36,7 +35,7 @@
   }
 
   .dropdown-container {
-    background-color: #5CE49A;
+    background-color: #5ce49a;
     color: white;
     box-shadow: 0 0 8px #141414;
   }

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 import re
 
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 
-
+@save_to_command_log
 @dataclass
 class CreateFriendCodeCommand(Command[None]):
     player_id: int
@@ -48,7 +48,8 @@ class CreateFriendCodeCommand(Command[None]):
             await db.execute("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
                              (self.player_id, self.game, self.fc, self.is_verified, is_primary, self.is_active, self.description))
             await db.commit()
-            
+
+@save_to_command_log    
 @dataclass
 class EditFriendCodeCommand(Command[None]):
     id: int
@@ -70,6 +71,7 @@ class EditFriendCodeCommand(Command[None]):
             await db.execute("UPDATE friend_codes SET fc = ?, is_active = ?, description = ? WHERE id = ?", (self.fc, self.is_active, self.description, self.id))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class SetPrimaryFCCommand(Command[None]):
     id: int

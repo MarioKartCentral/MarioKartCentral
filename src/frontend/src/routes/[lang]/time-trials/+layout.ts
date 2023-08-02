@@ -1,7 +1,7 @@
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = () => {
-  return { 
-    activeNavItem: 'TIME TRIALS'
+  return {
+    activeNavItem: 'TIME TRIALS',
   };
 };

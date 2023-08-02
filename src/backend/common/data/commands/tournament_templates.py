@@ -1,10 +1,11 @@
 from typing import List
 from dataclasses import asdict, dataclass
 import msgspec
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, TemplateFilter, TournamentTemplate, TournamentTemplateMinimal, TournamentTemplateRequestData
 
 
+@save_to_command_log
 @dataclass
 class CreateTournamentTemplateCommand(Command[None]):
     body: TournamentTemplateRequestData
@@ -22,6 +23,7 @@ class CreateTournamentTemplateCommand(Command[None]):
         s3_message = bytes(msgspec.json.encode(self.body))
         await s3_wrapper.put_object('templates', f'{template_id}.json', s3_message)
 
+@save_to_command_log
 @dataclass
 class EditTournamentTemplateCommand(Command[None]):
     body: TournamentTemplateRequestData

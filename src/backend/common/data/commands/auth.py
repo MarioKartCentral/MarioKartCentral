@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 from common.auth import roles
-from common.data.commands import Command
+from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, User
 
 @dataclass 
@@ -109,6 +109,7 @@ class DeleteSessionCommand(Command[None]):
             await db.execute("DELETE FROM sessions WHERE session_id = ?", (self.session_id, ))
             await db.commit()
 
+@save_to_command_log
 @dataclass
 class GrantRoleCommand(Command[None]):
     granter_user_id: int
