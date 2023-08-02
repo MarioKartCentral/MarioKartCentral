@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import PlayerProfile from '$lib/components/PlayerProfile.svelte';
-  import PlayerProfileBan from '$lib/components/PlayerProfileBan.svelte';
+  import PlayerProfile from '$lib/components/registry/players/PlayerProfile.svelte';
+  import PlayerProfileBan from '$lib/components/registry/players/PlayerProfileBan.svelte';
 
   let id = 0;
   let player_found = true;

@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import type { Team } from '$lib/types/team';
     import Section from '$lib/components/common/Section.svelte';
-    import TeamList from '$lib/components/teams/TeamList.svelte';
+    import TeamList from '$lib/components/registry/teams/TeamList.svelte';
 
     let teams: Team[] = [];
 
@@ -18,10 +18,6 @@
     });
 </script>
 
-<!-- <div class="container">
-    <h2>Teams</h2>
-    <TeamList teams={teams}/>
-</div> -->
 <Section header="Team Listing">
     <div slot="header_content">
         hello

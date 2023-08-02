@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Team } from '$lib/types/team';
     import Table from '$lib/components/common/Table.svelte';
-    import RosterList from '$lib/components/teams/RosterList.svelte';
+    import RosterList from '$lib/components/registry/teams/RosterList.svelte';
     import { locale } from "$i18n/i18n-svelte";
 
     export let teams: Team[];

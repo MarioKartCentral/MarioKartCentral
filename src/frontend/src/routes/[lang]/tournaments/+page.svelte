@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import TournamentPageItem from '$lib/components/TournamentPageItem.svelte';
+  import TournamentPageItem from '$lib/components/tournaments/TournamentPageItem.svelte';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
 
   let tournaments: TournamentListItem[] = [];
