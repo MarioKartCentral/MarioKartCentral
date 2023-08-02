@@ -24,12 +24,12 @@
     .container {
         width: 50%;
         margin: 20px auto 20px auto;
-        background-color: rgba(127, 127, 127, 0.6);
+        background-color: rgba(255, 255, 255, 0.15);
     }
     .header {
         display: grid;
         grid-template-columns: 3fr 1fr;
-        background-color: green;
+        background-color: rgba(0, 128, 0, 0.6);
     }
     .centered {
         display: flex;
