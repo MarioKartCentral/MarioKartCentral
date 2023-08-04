@@ -35,7 +35,7 @@
         <TournamentPlayerList {tournament} players={tournament_players} />
       {/if}
     {:else}
-      No {tournament.is_squad ? "squad" : "player"}s. Be the first to register!
+      No {tournament.is_squad ? 'squad' : 'player'}s. Be the first to register!
     {/if}
   {/if}
 </div>

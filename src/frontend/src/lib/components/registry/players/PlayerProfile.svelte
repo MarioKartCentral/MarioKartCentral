@@ -21,41 +21,41 @@
 </script>
 
 <Section header="Player Profile">
-    <div slot="header_content">
-      {#if user_info.player_id == player.id}
-        <a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a>
-      {/if}
+  <div slot="header_content">
+    {#if user_info.player_id == player.id}
+      <a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a>
+    {/if}
+  </div>
+  <div class="wrapper">
+    <div>
+      <img class="avatar" src={avatar_url} alt={player.name} />
     </div>
-    <div class="wrapper">
+
+    <div class="user_details">
+      <div class="name">
+        {player.name}
+      </div>
       <div>
-        <img class="avatar" src={avatar_url} alt={player.name} />
+        <b>Country:</b>
+        {player.country_code}
       </div>
-  
-      <div class="user_details">
-        <div class="name">
-          {player.name}
-        </div>
+      {#if player.friend_codes.length > 0}
         <div>
-          <b>Country:</b>
-          {player.country_code}
-        </div>
-        {#if player.friend_codes.length > 0}
-          <div>
-            <b>Friend Codes:</b>
-            {#each player.friend_codes as fc}
-              <div class="fc">
-                {fc.fc} ({fc.game.toUpperCase()})
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-      {#if player.user_settings && player.user_settings.about_me}
-        <div class="about_me">
-          {player.user_settings.about_me}
+          <b>Friend Codes:</b>
+          {#each player.friend_codes as fc}
+            <div class="fc">
+              {fc.fc} ({fc.game.toUpperCase()})
+            </div>
+          {/each}
         </div>
       {/if}
     </div>
+    {#if player.user_settings && player.user_settings.about_me}
+      <div class="about_me">
+        {player.user_settings.about_me}
+      </div>
+    {/if}
+  </div>
 </Section>
 
 <style>

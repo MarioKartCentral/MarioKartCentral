@@ -2,4 +2,4 @@
   <title>Teams | Mario Kart Central</title>
 </svelte:head>
 
-<slot/>
+<slot />

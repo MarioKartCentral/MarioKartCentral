@@ -28,10 +28,10 @@
 </svelte:head>
 
 {#if player}
-    {#if player.ban_info}
-      <PlayerProfileBan ban_info={player.ban_info} />
-    {/if}
-    <PlayerProfile {player} />
+  {#if player.ban_info}
+    <PlayerProfileBan ban_info={player.ban_info} />
+  {/if}
+  <PlayerProfile {player} />
 {/if}
 
 <style>

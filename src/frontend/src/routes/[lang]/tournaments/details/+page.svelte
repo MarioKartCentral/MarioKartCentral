@@ -43,8 +43,6 @@
   <Section header="Tournament Registrations">
     <TournamentRegistrations {tournament} />
   </Section>
-    
-  
 {/if}
 
 <style>
