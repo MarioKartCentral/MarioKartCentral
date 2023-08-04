@@ -3,6 +3,7 @@
     import Table from '$lib/components/common/Table.svelte';
     import RosterList from '$lib/components/registry/teams/RosterList.svelte';
     import { locale } from "$i18n/i18n-svelte";
+    import { page } from '$app/stores';
 
     export let teams: Team[];
 
@@ -37,10 +38,10 @@
         {#each teams as team, i}
             <tr class="row-{i%2}">
                 <td>
-                    {team.tag}
+                    <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.tag}</a>
                 </td>
                 <td>
-                    {team.name}
+                    <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
                 </td>
                 <td>
                     {team.rosters.length} 

@@ -19,9 +19,6 @@
 </script>
 
 <Section header="Team Listing">
-    <div slot="header_content">
-        hello
-    </div>
     {teams.length} teams
     <TeamList teams={teams}/>
 </Section>
