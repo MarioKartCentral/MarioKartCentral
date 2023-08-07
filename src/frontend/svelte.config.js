@@ -10,6 +10,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/player-signup`,
     `/${locale}/registry/players/edit-profile`,
     `/${locale}/registry/players/profile`,
+    `/${locale}/registry/teams/profile`,
   ];
 }
 

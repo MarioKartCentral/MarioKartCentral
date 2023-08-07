@@ -5,21 +5,18 @@
 </script>
 
 <div class="container">
-  <div class="inner">
-    This player is <b>banned</b> and may not participate in MKCentral competitions.
-    <br />
-    <b>Reason: </b>
-    {ban_info.reason}
-  </div>
+  This player is <b>banned</b> and may not participate in MKCentral competitions.
+  <br />
+  <b>Reason: </b>
+  {ban_info.reason}
 </div>
 
 <style>
   div.container {
+    width: 50%;
+    margin: 20px auto 20px auto;
     background-color: darkred;
     color: #de858f;
-    margin: 10px 0;
-  }
-  div.inner {
-    margin: 5px;
+    padding: 5px;
   }
 </style>

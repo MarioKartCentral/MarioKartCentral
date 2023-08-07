@@ -194,3 +194,14 @@ class KickPlayerRequestData():
     id: int
     roster_id: int
     team_id: int
+
+@dataclass
+class TeamFilter():
+    name: str | None = None
+    tag: str | None = None
+    game: Game | None = None
+    mode: GameMode | None = None
+    language: str | None = None
+    is_recruiting: bool | None = None
+    is_historical: bool | None = None
+

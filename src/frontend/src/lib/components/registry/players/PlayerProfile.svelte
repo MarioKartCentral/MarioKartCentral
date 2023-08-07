@@ -3,6 +3,7 @@
   import { user } from '$lib/stores/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { UserInfo } from '$lib/types/user-info';
+  import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
 
   let user_info: UserInfo;
@@ -19,11 +20,10 @@
   }
 </script>
 
-<div class="container">
-  <div class="header">
-    <div class="header_element"><h2>Player Profile</h2></div>
+<Section header="Player Profile">
+  <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <div class="header_element"><a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a></div>
+      <a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a>
     {/if}
   </div>
   <div class="wrapper">
@@ -56,10 +56,10 @@
       </div>
     {/if}
   </div>
-</div>
+</Section>
 
 <style>
-  div.container {
+  /* div.container {
     margin: 10px 0;
   }
   div.header {
@@ -69,7 +69,7 @@
   }
   div.header_element {
     margin: 5px;
-  }
+  } */
   div.wrapper {
     display: inline-grid;
     column-gap: 20px;
