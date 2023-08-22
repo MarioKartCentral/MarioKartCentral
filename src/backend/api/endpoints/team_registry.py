@@ -3,7 +3,7 @@ from starlette.routing import Route
 from api.auth import require_permission, require_logged_in, require_team_permission
 from api.data import handle
 from datetime import datetime
-from api.utils.responses import JSONResponse, bind_request_body
+from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
@@ -179,6 +179,12 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
     await handle(command)
     return JSONResponse({})
 
+@bind_request_query(TeamFilter)
+async def list_teams(request: Request, body: TeamFilter) -> JSONResponse:
+    command = ListTeamsCommand(body)
+    teams = await handle(command)
+    return JSONResponse(teams)
+
 #todo: endpoints for giving team roles
 
 routes: list[Route] = [
@@ -202,5 +208,6 @@ routes: list[Route] = [
     Route('/api/registry/teams/denyRosterChange', deny_roster_edit_request, methods=['POST']),
     Route('/api/registry/teams/forceTransferPlayer', force_transfer_player, methods=['POST']),
     Route('/api/registry/teams/editTeamMemberInfo', edit_team_member_info, methods=['POST']),
-    Route('/api/registry/teams/kickPlayer', kick_player, methods=['POST'])
+    Route('/api/registry/teams/kickPlayer', kick_player, methods=['POST']),
+    Route('/api/registry/teams', list_teams)
 ]

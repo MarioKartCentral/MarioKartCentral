@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import TournamentPageItem from '$lib/components/TournamentPageItem.svelte';
+  import TournamentPageItem from '$lib/components/tournaments/TournamentPageItem.svelte';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
+  import Section from '$lib/components/common/Section.svelte';
 
   let tournaments: TournamentListItem[] = [];
 
@@ -17,7 +18,8 @@
   });
 </script>
 
-<h1>Tournaments</h1>
-{#each tournaments as tournament}
-  <TournamentPageItem {tournament} />
-{/each}
+<Section header="Tournaments">
+  {#each tournaments as tournament}
+    <TournamentPageItem {tournament} />
+  {/each}
+</Section>

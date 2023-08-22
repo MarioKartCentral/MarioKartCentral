@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import PlayerProfile from '$lib/components/PlayerProfile.svelte';
-  import PlayerProfileBan from '$lib/components/PlayerProfileBan.svelte';
+  import PlayerProfile from '$lib/components/registry/players/PlayerProfile.svelte';
+  import PlayerProfileBan from '$lib/components/registry/players/PlayerProfileBan.svelte';
 
   let id = 0;
   let player_found = true;
@@ -28,17 +28,11 @@
 </svelte:head>
 
 {#if player}
-  <div class="container">
-    {#if player.ban_info}
-      <PlayerProfileBan ban_info={player.ban_info} />
-    {/if}
-    <PlayerProfile {player} />
-  </div>
+  {#if player.ban_info}
+    <PlayerProfileBan ban_info={player.ban_info} />
+  {/if}
+  <PlayerProfile {player} />
 {/if}
 
 <style>
-  .container {
-    width: 50%;
-    margin: 20px auto 20px auto;
-  }
 </style>
