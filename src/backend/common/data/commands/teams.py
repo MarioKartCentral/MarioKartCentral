@@ -664,16 +664,16 @@ class ListTeamsCommand(Command[List[Team]]):
         filter = self.filter
         async with db_wrapper.connect() as db:
 
-            where_clauses = []
-            variable_parameters = []
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
 
-            def append_equal_filter(filter_value, column_name):
+            def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
 
             # check both the team and team_roster fields with the same name for a match
-            def append_team_roster_like_filter(filter_value, column_name):
+            def append_team_roster_like_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
                     variable_parameters.extend([filter_value, filter_value])
@@ -696,7 +696,7 @@ class ListTeamsCommand(Command[List[Team]]):
                                 FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
                                 """
-            teams = {}
+            teams: dict[int, Team] = {}
             async with db.execute(teams_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
