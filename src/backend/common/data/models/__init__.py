@@ -4,6 +4,7 @@ from .command_log import *
 from .friend_codes import *
 from .notifications import *
 from .players import *
+from .records import *
 from .squads import *
 from .teams import *
 from .tournament_placements import *

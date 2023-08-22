@@ -589,10 +589,23 @@ class PlayerBans(TableModel):
             expiration_date INTEGER NOT NULL,
             reason TEXT NOT NULL
             ) WITHOUT ROWID"""
+
+@dataclass
+class Record(TableModel):
+    id: int
+    player_id: int
+    version: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS records(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            version INTEGER DEFAULT 0 NOT NULL)"""
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, UserTeamRole, UserSeriesRole, RosterInvite, TeamEditRequest, 
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
+    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, Record]
