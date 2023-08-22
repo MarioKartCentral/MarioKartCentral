@@ -1,6 +1,6 @@
 import os
 
-def get_env_or_fail(env_name):
+def get_env_or_fail(env_name: str):
     val = os.getenv(env_name)
     if val is None:
         raise Exception(f"Environment Variable {env_name} is not set")

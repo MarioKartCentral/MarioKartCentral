@@ -1,5 +1,4 @@
 from dataclasses import asdict, dataclass
-from typing import List
 
 import msgspec
 
@@ -142,6 +141,8 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
             async with db_wrapper.connect(readonly=True) as db:
                 async with db.execute("SELECT name, url, description FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
                     row = await cursor.fetchone()
+                    if row is None:
+                        raise Problem("Tournament does not exist with given ID", status=404)
                     series_name, series_url, series_description = row
                     tournament_data.series_name = series_name
                     tournament_data.series_url = series_url
@@ -149,17 +150,17 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         return tournament_data
 
 @dataclass
-class GetTournamentListCommand(Command[List[TournamentDataMinimal]]):
+class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
     filter: TournamentFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
         is_minimal = filter.is_minimal
         async with db_wrapper.connect(readonly=True) as db:
-            where_clauses = []
-            variable_parameters = []
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
 
-            def append_equal_filter(filter_value, column_name):
+            def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
@@ -180,8 +181,8 @@ class GetTournamentListCommand(Command[List[TournamentDataMinimal]]):
             else:
                 tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo FROM tournaments{where_clause}"
             
-            tournaments = []
-            series_ids = []
+            tournaments: list[TournamentDataMinimal | TournamentDataBasic] = []
+            series_ids: list[int] = []
             series_info = {}
             async with db.execute(tournaments_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
@@ -205,7 +206,7 @@ class GetTournamentListCommand(Command[List[TournamentDataMinimal]]):
                         series_id, name, url, description = row
                         series_info[series_id] = {'name': name, 'url': url, 'description': description}
                 for tournament in tournaments:
-                    if tournament.series_id is None:
+                    if not isinstance(tournament, TournamentDataBasic) or tournament.series_id is None:
                         continue
                     tournament.series_name = series_info[tournament.series_id]['name']
                     tournament.series_url = series_info[tournament.series_id]['url']

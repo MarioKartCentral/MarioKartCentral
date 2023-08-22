@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Type
 
 class TableModel(ABC):
     @staticmethod
@@ -591,7 +590,7 @@ class PlayerBans(TableModel):
             reason TEXT NOT NULL
             ) WITHOUT ROWID"""
     
-all_tables : List[Type[TableModel]] = [
+all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 

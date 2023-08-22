@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any
 from dataclasses import asdict, dataclass
 import msgspec
 from common.data.commands import Command, save_to_command_log
@@ -67,16 +67,16 @@ class GetTournamentTemplateDataCommand(Command[TournamentTemplate]):
         return template_data
 
 @dataclass
-class GetTournamentTemplateListCommand(Command[List[TournamentTemplateMinimal]]):
+class GetTournamentTemplateListCommand(Command[list[TournamentTemplateMinimal]]):
     filter: TemplateFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
-            where_clauses = []
-            variable_parameters = []
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
 
-            def append_equal_filter(filter_value, column_name):
+            def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
@@ -87,7 +87,7 @@ class GetTournamentTemplateListCommand(Command[List[TournamentTemplateMinimal]])
 
             template_query = f"SELECT id, name, series_id FROM tournament_templates{where_clause}"
 
-            templates = []
+            templates: list[TournamentTemplateMinimal] = []
             async with db.execute(template_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:

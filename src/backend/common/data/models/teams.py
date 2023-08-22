@@ -1,8 +1,5 @@
 from dataclasses import dataclass
-from typing import List
-
-from common.data.models.common import Approval, Game, GameMode
-from common.data.models.friend_codes import FriendCode
+from common.data.models import Approval, Game, GameMode, FriendCode
 
 
 @dataclass
@@ -62,7 +59,7 @@ class PartialPlayer():
     country_code: str
     is_banned: bool
     discord_id: str
-    friend_codes: List[str]
+    friend_codes: list[FriendCode]
 
 @dataclass
 class RosterPlayerInfo():
@@ -72,7 +69,7 @@ class RosterPlayerInfo():
     is_banned: bool
     discord_id: str
     join_date: int
-    friend_codes: List[FriendCode]
+    friend_codes: list[FriendCode]
     
 @dataclass
 class TeamRoster():
@@ -85,7 +82,7 @@ class TeamRoster():
     creation_date: int
     is_recruiting: bool
     is_approved: bool
-    players: List[RosterPlayerInfo]
+    players: list[RosterPlayerInfo]
 
 @dataclass
 class Team():
@@ -99,7 +96,7 @@ class Team():
     logo: str | None
     is_approved: bool
     is_historical: bool
-    rosters: List[TeamRoster]
+    rosters: list[TeamRoster]
 
 
 @dataclass

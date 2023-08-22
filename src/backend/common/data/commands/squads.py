@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
+from typing import Any, Iterable
 from common.auth import permissions
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails
+from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails, TournamentPlayerDetails
 
 
 @save_to_command_log
@@ -19,8 +19,8 @@ class CreateSquadCommand(Command[None]):
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
-    roster_ids: List[int]
-    representative_ids: List[int]
+    roster_ids: list[int]
+    representative_ids: list[int]
     admin: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
@@ -116,7 +116,7 @@ class CreateSquadCommand(Command[None]):
                     """) as cursor:
                     rows = await cursor.fetchall()
                     valid_players = set([row[0] for row in rows])
-                queries_parameters = []
+                queries_parameters: list[Iterable[Any]] = []
                 for p in valid_players:
                     if p == self.captain_player_id:
                         continue
@@ -195,9 +195,9 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                                     WHERE t.squad_id IS ?""",
                                     (self.squad_id,)) as cursor:
                 player_rows = await cursor.fetchall()
-                players = []
-                player_dict = {} # creating a dictionary of players so we can add their FCs to them later
-                fc_id_list = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
+                players: list[TournamentPlayerDetails] = []
+                player_dict: dict[int, SquadPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
+                fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
                     player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, player_name, country, discord_id = row
                     curr_player = SquadPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host,
@@ -215,10 +215,10 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 if require_single_fc:
                     fc_where_clause = f" AND id IN ({','.join(map(str, fc_id_list))})" # convert all FC IDs to str and join with a comma
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"SELECT id, player_id, fc FROM friend_codes WHERE player_id IN ({','.join(map(str, player_dict.keys()))}){fc_where_clause}"
+            fc_query = f"SELECT player_id, fc FROM friend_codes WHERE player_id IN ({','.join(map(str, player_dict.keys()))}){fc_where_clause}"
             async with db.execute(fc_query) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, fc = row
+                    player_id, fc = row
                     player_dict[player_id].friend_codes.append(fc)
             return TournamentSquadDetails(squad_id, name, tag, color, timestamp, is_registered, players)

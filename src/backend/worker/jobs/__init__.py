@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from typing import List
 
 class Job(ABC):
     @property
@@ -18,7 +17,7 @@ class Job(ABC):
     async def run(self):
         pass
 
-_jobs: List[Job] = []
+_jobs: list[Job] = []
 
 def get_all_jobs():
     from worker.jobs import log_processor

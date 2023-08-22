@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from common.data.commands import Command
-from common.data.models import Problem, Placements, SetPlacements, GetPlacementsData
+from common.data.models import Problem, Placements, SetPlacements
 
 
 @dataclass

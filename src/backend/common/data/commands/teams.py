@@ -56,8 +56,8 @@ class GetTeamInfoCommand(Command[Team]):
                 team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [])
             
             # get all rosters for our team
-            rosters = []
-            roster_dict = {}
+            rosters: list[TeamRoster] = []
+            roster_dict: dict[int, TeamRoster] = {}
             async with db.execute("SELECT id, game, mode, name, tag, creation_date, is_recruiting, approval_status FROM team_rosters WHERE team_id = ?",
                 (self.team_id,)) as cursor:
                 rows = await cursor.fetchall()
@@ -71,7 +71,7 @@ class GetTeamInfoCommand(Command[Team]):
                     rosters.append(curr_roster)
                     roster_dict[curr_roster.id] = curr_roster
             
-            team_members = []
+            team_members: list[PartialTeamMember] = []
             # get all current team members who are in a roster that belongs to our team
             roster_id_query = ','.join(map(str, roster_dict.keys()))
             async with db.execute(f"""SELECT player_id, roster_id, join_date
@@ -84,7 +84,7 @@ class GetTeamInfoCommand(Command[Team]):
                     curr_team_member = PartialTeamMember(player_id, roster_id, join_date)
                     team_members.append(curr_team_member)
 
-            player_dict = {}
+            player_dict: dict[int, PartialPlayer] = {}
 
             if len(team_members) > 0:
                 # get info about all players who are in at least 1 roster on our team
@@ -412,7 +412,7 @@ class ApproveTransferCommand(Command[None]):
                                     AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
                                     (player_id, roster_leave_id, curr_time, True, True)) as cursor:
                     rows = await cursor.fetchall()
-                    squads = [row[0] for row in rows]
+                    squad_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
                 # (such as when transferring between two rosters of same team), we don't want to remove them
                 async with db.execute("""SELECT p.squad_id FROM tournament_players p
@@ -423,10 +423,10 @@ class ApproveTransferCommand(Command[None]):
                                     (player_id, roster_id, curr_time, True, True)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        if row[0] in squads:
-                            squads.remove(row[0])
+                        if row[0] in squad_ids:
+                            squad_ids.remove(row[0])
                 # finally remove the player from all the tournaments they shouldn't be in
-                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squads))})", (player_id,))
+                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (player_id,))
 
             # next we want to automatically add the transferred player to any team tournaments where that team is registered
             # and registrations are open
@@ -436,7 +436,7 @@ class ApproveTransferCommand(Command[None]):
                                     AND s.roster_id = ?""", (True, True, roster_id)) as cursor:
                 rows = await cursor.fetchall()
                 #squads = [(row[0], row[1]) for row in rows]
-                squads = {}
+                squads: dict[int, int] = {}
                 for row in rows:
                     squad, tournament = row
                     squads[tournament] = squad
@@ -589,7 +589,7 @@ class ForceTransferPlayerCommand(Command[None]):
                                     AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
                                     (self.player_id, self.roster_leave_id, curr_time, True, True)) as cursor:
                     rows = await cursor.fetchall()
-                    squads = [row[0] for row in rows]
+                    squad_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
                 # (such as when transferring between two rosters of same team), we don't want to remove them
                 async with db.execute("""SELECT p.squad_id FROM tournament_players p
@@ -600,10 +600,10 @@ class ForceTransferPlayerCommand(Command[None]):
                                     (self.player_id, self.roster_id, curr_time, True, True)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        if row[0] in squads:
-                            squads.remove(row[0])
+                        if row[0] in squad_ids:
+                            squad_ids.remove(row[0])
                 # finally remove the player from all the tournaments they shouldn't be in
-                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squads))})", (self.player_id,))
+                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (self.player_id,))
 
             # next we want to automatically add the transferred player to any team tournaments where that team is registered
             # and registrations are open
@@ -613,7 +613,7 @@ class ForceTransferPlayerCommand(Command[None]):
                                     AND s.roster_id = ?""", (True, True, self.roster_id)) as cursor:
                 rows = await cursor.fetchall()
                 #squads = [(row[0], row[1]) for row in rows]
-                squads = {}
+                squads: dict[int, int] = {}
                 for row in rows:
                     squad, tournament = row
                     squads[tournament] = squad
@@ -664,16 +664,16 @@ class ListTeamsCommand(Command[List[Team]]):
         filter = self.filter
         async with db_wrapper.connect() as db:
 
-            where_clauses = []
-            variable_parameters = []
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
 
-            def append_equal_filter(filter_value, column_name):
+            def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
 
             # check both the team and team_roster fields with the same name for a match
-            def append_team_roster_like_filter(filter_value, column_name):
+            def append_team_roster_like_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
                     variable_parameters.extend([filter_value, filter_value])
@@ -696,7 +696,7 @@ class ListTeamsCommand(Command[List[Team]]):
                                 FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
                                 """
-            teams = {}
+            teams: dict[int, Team] = {}
             async with db.execute(teams_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:

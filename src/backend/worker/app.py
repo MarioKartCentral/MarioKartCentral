@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from worker.data import on_startup, on_shutdown
+from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
 
