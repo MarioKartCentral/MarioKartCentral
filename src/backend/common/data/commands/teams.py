@@ -24,6 +24,13 @@ class CreateTeamCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            valid_game_modes = {"mk8dx": ["150cc", "200cc"],
+                                "mkw": ["rt", "ct"],
+                                "mkt": ["vsrace"]}
+            if self.game not in valid_game_modes:
+                raise Problem(f"Invalid game (valid games: {', '.join(valid_game_modes.keys())})", status=400)
+            if self.mode not in valid_game_modes[self.game]:
+                raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
             if not self.is_privileged:
                 async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
