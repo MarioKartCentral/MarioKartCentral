@@ -189,6 +189,7 @@ async def list_teams(request: Request, body: TeamFilter) -> JSONResponse:
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
+    Route('/api/registry/teams/request', request_create_team, methods=['POST']),
     Route('/api/registry/teams/{id:int}', view_team),
     Route('/api/registry/teams/forceEdit', edit_team, methods=['POST']),
     Route('/api/registry/teams/edit', manager_edit_team, methods=['POST']),
