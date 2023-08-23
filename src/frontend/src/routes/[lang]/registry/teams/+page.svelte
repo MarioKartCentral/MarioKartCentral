@@ -1,8 +1,18 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import type { Team } from '$lib/types/team';
   import Section from '$lib/components/common/Section.svelte';
   import TeamList from '$lib/components/registry/teams/TeamList.svelte';
+  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
+
+  let user_info: UserInfo;
+
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let teams: Team[] = [];
 
@@ -19,6 +29,11 @@
 </script>
 
 <Section header="Team Listing">
+  <div slot="header_content">
+    {#if user_info.player_id}
+      <LinkButton href="/{$page.params.lang}/registry/teams/create">Create Team</LinkButton>
+    {/if}
+  </div>
   {teams.length} teams
   <TeamList {teams} />
 </Section>

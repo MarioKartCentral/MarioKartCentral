@@ -45,9 +45,3 @@
   </Section>
 {/if}
 
-<style>
-  .container {
-    width: 50%;
-    margin: 20px auto 20px auto;
-  }
-</style>
