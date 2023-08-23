@@ -129,7 +129,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, ban_info, user_settings)
         
 @dataclass
-class ListPlayersCommand(Command[List[Player]]):
+class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
     filter: PlayerFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -170,8 +170,16 @@ class ListPlayersCommand(Command[List[Player]]):
 
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            players_query = f"SELECT id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players{where_clause}"
-
+            players_query = f"""
+            SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, 
+            mkw.fc, mk7.fc, mk8.fc, mk8dx.fc, mkt.fc
+                FROM players p 
+                LEFT JOIN friend_codes mkw ON p.id = mkw.player_id AND (mkw.game = "mkw" AND mkw.is_primary = TRUE)
+                LEFT JOIN friend_codes mk7 ON p.id = mk7.player_id AND (mk7.game = "mk7" AND mk7.is_primary = TRUE)
+                LEFT JOIN friend_codes mk8 ON p.id = mk8.player_id AND (mk8.game = "mk8" AND mk8.is_primary = TRUE)
+                LEFT JOIN friend_codes mk8dx ON p.id = mk8dx.player_id AND (mk8dx.game = "mk8dx" AND mk8dx.is_primary = TRUE)
+                LEFT JOIN friend_codes mkt ON p.id = mkt.player_id AND (mkt.game = "mkt" AND mkt.is_primary = TRUE)
+                {where_clause}"""            
             players = []
             async with db.execute(players_query, variable_parameters) as cursor:
                 while True:
@@ -180,9 +188,9 @@ class ListPlayersCommand(Command[List[Player]]):
                         break
 
                     for row in batch:
-                        id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-                        players.append(Player(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
-            
+                        id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, mkw, mk7, mk8, mk8dx, mkt = row
+                        players.append(PlayerAndFriendCodes(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, mkw, mk7, mk8, mk8dx, mkt))
+        
             return players
 
 

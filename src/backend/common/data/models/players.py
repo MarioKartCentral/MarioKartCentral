@@ -15,6 +15,14 @@ class Player:
     is_shadow: bool
     is_banned: bool
     discord_id: str | None
+    
+@dataclass
+class PlayerAndFriendCodes(Player):
+    mkw: str
+    mk7: str
+    mk8: str
+    mk8dx: str
+    mkt: str
 
 @dataclass
 class PlayerBan:
