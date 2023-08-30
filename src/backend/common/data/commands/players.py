@@ -170,17 +170,10 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
 
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            players_query = f"""
-            SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, 
-            mkw.fc, mk7.fc, mk8.fc, mk8dx.fc, mkt.fc
-                FROM players p 
-                LEFT JOIN friend_codes mkw ON p.id = mkw.player_id AND (mkw.game = "mkw" AND mkw.is_primary = TRUE)
-                LEFT JOIN friend_codes mk7 ON p.id = mk7.player_id AND (mk7.game = "mk7" AND mk7.is_primary = TRUE)
-                LEFT JOIN friend_codes mk8 ON p.id = mk8.player_id AND (mk8.game = "mk8" AND mk8.is_primary = TRUE)
-                LEFT JOIN friend_codes mk8dx ON p.id = mk8dx.player_id AND (mk8dx.game = "mk8dx" AND mk8dx.is_primary = TRUE)
-                LEFT JOIN friend_codes mkt ON p.id = mkt.player_id AND (mkt.game = "mkt" AND mkt.is_primary = TRUE)
-                {where_clause}"""            
-            players = []
+            players_query = f"SELECT id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players{where_clause}"
+            friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes fc JOIN players p ON fc.player_id = p.id WHERE fc.is_primary = TRUE"
+
+            players: List[Player] = []
             async with db.execute(players_query, variable_parameters) as cursor:
                 while True:
                     batch = await cursor.fetchmany(50)
@@ -188,11 +181,32 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
                         break
 
                     for row in batch:
-                        id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, mkw, mk7, mk8, mk8dx, mkt = row
-                        players.append(PlayerAndFriendCodes(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, mkw, mk7, mk8, mk8dx, mkt))
-        
-            return players
+                        id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
+                        players.append(Player(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+            
+            if filter.detailed is not None:
+                friend_codes: List[FriendCode] = []
+                async with db.execute(friend_codes_query, variable_parameters) as cursor:
+                    while True:
+                        batch = await cursor.fetchmany(50);
+                        if not batch:
+                            break
 
+                        for row in batch:
+                            fc, game, player_id, is_verified, is_primary, description = row
+                            friend_codes.append(FriendCode(fc, game, player_id, is_verified, is_primary, description))
+                
+                detailed_players: List[PlayerDetailed]= []
+                for player in players:
+                    player_friend_codes: List[FriendCode]= []
+                    for friend_code in friend_codes:
+                        if player.id == friend_code.player_id:
+                            player_friend_codes.append(friend_code)
+                    detailed_players.append(PlayerDetailed(player.id, player.name, player.country_code, player.is_hidden, player.is_shadow, player.is_banned, player.discord_id, player_friend_codes, None, None))
+
+                return detailed_players
+            
+            return players
 
 async def player_exists_in_table(db, table: Literal['players', 'player_bans'], player_id: int) -> bool:
     """ Check if a player is in either the players or player_bans db table """

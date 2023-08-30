@@ -7,13 +7,14 @@
   let players: PlayerInfo[] = [];
 
   onMount(async () => {
-    const res = await fetch('/api/registry/players');
+    const res = await fetch('/api/registry/players?detailed=true');
     if (res.status === 200) {
       const body = await res.json();
       for (let t of body) {
         players.push(t);
       }
       players = players;
+      console.log('players : ', players);
     }
   });
 </script>

@@ -67,6 +67,7 @@ class PlayerFilter:
     is_shadow: bool | None = None
     is_banned: bool | None = None
     discord_id: str | None = None
+    detailed: bool | None = None
 
 @dataclass
 class PlayerBanRequestData:

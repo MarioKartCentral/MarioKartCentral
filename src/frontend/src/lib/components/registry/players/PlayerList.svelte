@@ -33,11 +33,11 @@
         <td>
           <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
         </td>
-        <td>{#if player.mk8dx}{player.mk8dx}{:else}-{/if}</td>
-        <td>{#if player.mkw}{player.mkw}{:else}-{/if}</td>
-        <td>{#if player.mkt}{player.mkt}{:else}-{/if}</td>
-        <td>{#if player.mk7}{player.mk7}{:else}-{/if}</td>
-        <td>{#if player.mk8}{player.mk8}{:else}-{/if}</td>
+        <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mk8dx"}{friend_code.fc}{/if}{/each}</td>
+        <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mkw"}{friend_code.fc}{/if}{/each}</td>
+        <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mkt"}{friend_code.fc}{/if}{/each}</td>
+        <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mk7"}{friend_code.fc}{/if}{/each}</td>
+        <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mk8"}{friend_code.fc}{/if}{/each}</td>
       </tr>
     {/each}
   </tbody>
