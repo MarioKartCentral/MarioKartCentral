@@ -55,6 +55,8 @@
 </div>
 
 <style>
+  /* If the header and main elements are directly placed within the body, the fixed behavior will stop after scrolling one screen's height.
+     To prevent this, wrap them in a container. */
   .container {
     display: flex;
     flex-direction: column;

@@ -80,20 +80,21 @@
 </nav>
 
 <style>
-  /* mobile */
   nav {
-    background-color: #5ce49a;
-    color: white;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     padding: 0;
+    color: white;
+    background-color: #5ce49a;
   }
 
   .nav-top-wrap {
+    flex-basis: 40px;
     height: 40px;
-    display: flex;
-    flex: 1 1;
-    justify-content: space-between;
     align-items: center;
+    display: flex;
+    justify-content: space-between;
     background-color: #31d682;
   }
 
@@ -109,7 +110,7 @@
   }
 
   .nav-menu-icon {
-    margin: 0 20px;
+    margin-right: 20px;
     cursor: pointer;
   }
 
@@ -125,8 +126,8 @@
     display: flex;
     flex-direction: column;
     list-style: none;
-    margin: 10px 10px;
-    gap: 10px;
+    margin-left: 10px;
+    gap: 0px;
   }
 
   .nav-options {
@@ -137,27 +138,19 @@
     display: flex;
     flex-direction: column;
     list-style: none;
-    padding: 10px 0;
-    margin: 0px 10px;
-    gap: 10px;
+    margin-left: 10px;
+    gap: 0px;
   }
 
   /* desktop */
   @media (min-width: 1024px) {
     nav {
-      display: flex;
-      height: 40px;
+      flex-direction: row;
     }
 
     .nav-top-wrap {
       /* reset flex to default */
       flex: 0 1 auto;
-      height: 100%;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
     }
 
     .nav-menu-icon {
@@ -165,15 +158,14 @@
     }
 
     .nav-main {
-      width: max-content;
-      flex: 1;
+      flex-grow: 1;
       display: flex;
       align-items: center;
     }
 
     .nav-main ul {
-      flex-direction: row;
       margin-left: 20px;
+      flex-direction: row;
       gap: 30px;
     }
 
@@ -186,6 +178,8 @@
     .nav-options ul {
       flex-direction: row;
       gap: 10px;
+      margin-left: 20px;
+      margin-right: 20px;
     }
   }
 </style>

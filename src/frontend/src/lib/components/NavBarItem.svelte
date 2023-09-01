@@ -20,13 +20,15 @@
 <style>
   /* mobile */
   li {
-    padding: 10px;
+    display: flex;
   }
 
   a {
     font-weight: bold;
     color: white;
     text-decoration: none;
+    flex-grow: 1;
+    padding: 10px 0;
   }
 
   [aria-current] {
@@ -38,20 +40,10 @@
   /* desktop */
   @media (min-width: 1024px) {
     li {
-      display: flex;
-      align-items: center;
+      flex-direction: column;
     }
-
     a {
-      font-weight: bold;
-      color: white;
-      text-decoration: none;
-    }
-
-    [aria-current] {
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 8px;
+      padding: 0;
     }
   }
 </style>
