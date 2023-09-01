@@ -40,19 +40,31 @@
   });
 </script>
 
-<header>
-  <NavBar />
-</header>
+<div class="container">
+  <header>
+    <NavBar />
+  </header>
 
-<main>
-  <slot />
-</main>
+  <main>
+    <slot />
+  </main>
 
-<footer>
-  <Footer />
-</footer>
+  <footer>
+    <Footer />
+  </footer>
+</div>
 
 <style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 700;
+  }
   main {
     flex: 1 0;
     padding: 30px 50px;

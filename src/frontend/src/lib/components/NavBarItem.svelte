@@ -18,9 +18,9 @@
 </li>
 
 <style>
+  /* mobile */
   li {
-    display: flex;
-    align-items: center;
+    padding: 10px;
   }
 
   a {
@@ -33,5 +33,25 @@
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 8px;
+  }
+
+  /* desktop */
+  @media (min-width: 1024px) {
+    li {
+      display: flex;
+      align-items: center;
+    }
+
+    a {
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
+
+    [aria-current] {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 8px;
+    }
   }
 </style>
