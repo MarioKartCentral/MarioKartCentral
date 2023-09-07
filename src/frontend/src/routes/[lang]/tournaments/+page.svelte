@@ -1,8 +1,11 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, getContext } from 'svelte';
   import TournamentPageItem from '$lib/components/tournaments/TournamentPageItem.svelte';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
   import Section from '$lib/components/common/Section.svelte';
+  import { addPermission } from '$lib/util/util';
+
+  addPermission('tournament_create');
 
   let tournaments: TournamentListItem[] = [];
 

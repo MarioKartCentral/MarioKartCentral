@@ -6,7 +6,7 @@
   import Footer from '$lib/components/Footer.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { onMount } from 'svelte';
+  import { onMount, setContext } from 'svelte';
 
   export let data: LayoutData;
 
@@ -18,7 +18,14 @@
     user_info = value;
   });
 
+  let permissions: string[] = []; // permissions list passed up from current page
+  function addPermission(permission: string) { // function that updates list of all permissions
+    permissions.push(permission);
+  }
+  setContext('page-init', { addPermission });
+
   onMount(async () => {
+    console.log(permissions);
     if (user_info.is_checked === false) {
       const res = await fetch('/api/user/me/player');
       if (res.status != 200) {
