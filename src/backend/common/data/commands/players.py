@@ -165,12 +165,11 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
                     variable_parameters.append(filter.game)
 
                 fc_where_clause = ' AND '.join(fc_where_clauses)
+                fc_where_clauses.extend(where_clauses)
                 where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clause})")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            where_clauses.pop() # removes "id IN (SELECT player_id ..." item because useless in the friend_code_query"
-            where_clauses.extend(fc_where_clauses) # adds the rest of the filters
-            fc_where_clause = "" if not fc_where_clauses else f" WHERE is_primary = TRUE AND {'AND '.join(where_clauses)}"
+            fc_where_clause = "" if not fc_where_clauses else f" WHERE is_primary = TRUE AND {'AND '.join(fc_where_clauses)}"
             players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause}"
             friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes fc JOIN players p ON fc.player_id = p.id{fc_where_clause}"
 
