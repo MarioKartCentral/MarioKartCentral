@@ -136,6 +136,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses = []
+            fc_where_clauses = []
             variable_parameters = []
 
             def append_equal_filter(filter_value, column_name):
@@ -147,7 +148,6 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
                 where_clauses.append(f"name LIKE ?")
                 variable_parameters.append(f"%{filter.name}%")
 
-            append_equal_filter(filter.game, "game")
             append_equal_filter(filter.country, "country_code")
             append_equal_filter(filter.is_hidden, "is_hidden")
             append_equal_filter(filter.is_shadow, "is_shadow")
@@ -155,7 +155,6 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
             append_equal_filter(filter.discord_id, "discord_id")
 
             if filter.friend_code is not None or filter.game is not None:
-                fc_where_clauses = []
 
                 if filter.friend_code is not None:
                     fc_where_clauses.append("fc LIKE ?")
@@ -166,12 +165,14 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
                     variable_parameters.append(filter.game)
 
                 fc_where_clause = ' AND '.join(fc_where_clauses)
-                where_clauses.append(f"id IN (SELECT player_id from friend_codes WHERE {fc_where_clause})")
-
+                where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clause})")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            players_query = f"SELECT id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players{where_clause}"
-            friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes fc JOIN players p ON fc.player_id = p.id WHERE fc.is_primary = TRUE"
+            where_clauses.pop() # removes "id IN (SELECT player_id ..." item because useless in the friend_code_query"
+            where_clauses.extend(fc_where_clauses) # adds the rest of the filters
+            fc_where_clause = "" if not fc_where_clauses else f" WHERE is_primary = TRUE AND {'AND '.join(where_clauses)}"
+            players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause}"
+            friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes fc JOIN players p ON fc.player_id = p.id{fc_where_clause}"
 
             players: List[Player] = []
             async with db.execute(players_query, variable_parameters) as cursor:
