@@ -25,9 +25,9 @@
   setContext('page-init', { addPermission });
 
   onMount(async () => {
-    console.log(permissions);
     if (user_info.is_checked === false) {
-      const res = await fetch('/api/user/me/player');
+      let permissions_text = permissions.length > 0 ? `?permissions=${permissions.join(',')}` : ""
+      const res = await fetch(`/api/user/me/player${permissions_text}`);
       if (res.status != 200) {
         user.update((u) => {
           u.is_checked = true;
@@ -40,6 +40,7 @@
         id: body['id'],
         player_id: body['player_id'],
         player: body['player'],
+        permissions: body['permissions'],
         is_checked: true,
       };
       user.set(me);

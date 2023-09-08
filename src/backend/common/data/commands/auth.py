@@ -70,6 +70,23 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
                 return None
             
             return User(int(row[0]), row[1])
+        
+@dataclass
+class CheckPermissionsCommand(Command[list[str]]):
+    user_id: int
+    permissions: list[str]
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute(f"""
+                SELECT DISTINCT p.name
+                FROM user_roles ur
+                JOIN role_permissions rp ON ur.role_id = rp.role_id
+                JOIN permissions p ON rp.permission_id = p.id 
+                WHERE ur.user_id = ? AND p.name IN ({','.join([f"'{p}'" for p in self.permissions])})
+                """, (self.user_id,)) as cursor:
+                rows = await cursor.fetchall()
+                return [row[0] for row in rows]
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):

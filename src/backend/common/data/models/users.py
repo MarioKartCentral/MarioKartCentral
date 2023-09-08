@@ -12,8 +12,13 @@ class UserPlayer:
     id: int
     player_id: int | None
     player: PlayerDetailed | None
+    permissions: list[str]
 
 @dataclass
 class UserLoginData(User):
     email: str
     password_hash: str
+
+@dataclass
+class PermissionsCheck:
+    permissions: str | None = None
