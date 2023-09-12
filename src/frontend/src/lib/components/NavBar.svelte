@@ -11,6 +11,8 @@
   let user_info: UserInfo;
   let have_unread = false;
 
+  let opened = false;
+
   user.subscribe((value) => {
     user_info = value;
   });
@@ -20,12 +22,23 @@
 </script>
 
 <nav>
-  <div class="nav-brand">
-    <a href="/{$page.params.lang}" title="Home Page">
-      <img src={logo} width="120px" alt="MKCentral Logo" />
-    </a>
+  <div class="nav-top-wrap">
+    <div class="nav-brand">
+      <a href="/{$page.params.lang}" title="Home Page">
+        <img src={logo} width="120px" alt="MKCentral Logo" />
+      </a>
+    </div>
+    <button
+      class="nav-menu-icon"
+      on:click|stopPropagation={() => {
+        opened = !opened;
+        console.log(opened);
+      }}
+    >
+      MENU
+    </button>
   </div>
-  <div class="nav-main">
+  <div class="nav-main" class:nav-closed={!opened}>
     <ul>
       <NavBarItem selected={$page.data.activeNavItem === 'TOURNAMENTS'} href="/{$page.params.lang}/tournaments"
         >{@html $LL.NAVBAR.TOURNAMENTS()}</NavBarItem
@@ -42,7 +55,7 @@
       <NavBarItem external="http://discord.gg/Pgd8xr6">{@html $LL.NAVBAR.DISCORD()}</NavBarItem>
     </ul>
   </div>
-  <div class="nav-options">
+  <div class="nav-options" class:nav-closed={!opened}>
     <ul>
       <NavBarItem title="Notifications">
         <button on:click|stopPropagation={notify.toggleNotificationMenu}>
@@ -69,49 +82,104 @@
 <style>
   nav {
     display: flex;
-    background-color: #5ce49a;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
     color: white;
+    background-color: #5ce49a;
+  }
+
+  .nav-top-wrap {
+    flex-basis: 40px;
     height: 40px;
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    background-color: #31d682;
   }
 
   .nav-brand {
     background-color: #31d682;
-    display: flex;
     align-items: center;
-    box-shadow: 2px 0 8px #141414;
+    text-align: left;
+    width: 100%;
   }
 
   .nav-brand img {
     padding: 5px 10px;
   }
 
+  .nav-menu-icon {
+    margin-right: 20px;
+    cursor: pointer;
+  }
+
+  .nav-closed {
+    display: none;
+  }
+
   .nav-main {
-    width: max-content;
-    flex: 1;
-    display: flex;
-    align-items: center;
+    background-color: #5ce49a;
   }
 
   .nav-main ul {
     display: flex;
-    align-items: stretch;
-    padding: 0px 20px;
-    gap: 30px;
+    flex-direction: column;
     list-style: none;
+    margin-left: 10px;
+    gap: 0px;
   }
 
   .nav-options {
     background-color: #31d682;
-    display: flex;
-    align-items: center;
-    box-shadow: -2px 0 8px #141414;
   }
 
   .nav-options ul {
     display: flex;
-    align-items: stretch;
+    flex-direction: column;
     list-style: none;
-    padding: 0px 10px;
-    gap: 10px;
+    margin-left: 10px;
+    gap: 0px;
+  }
+
+  /* desktop */
+  @media (min-width: 1024px) {
+    nav {
+      flex-direction: row;
+    }
+
+    .nav-top-wrap {
+      /* reset flex to default */
+      flex: 0 1 auto;
+    }
+
+    .nav-menu-icon {
+      display: none;
+    }
+
+    .nav-main {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-main ul {
+      margin-left: 20px;
+      flex-direction: row;
+      gap: 30px;
+    }
+
+    .nav-options {
+      display: flex;
+      align-items: center;
+      box-shadow: -2px 0 8px #141414;
+    }
+
+    .nav-options ul {
+      flex-direction: row;
+      gap: 10px;
+      margin-left: 20px;
+      margin-right: 20px;
+    }
   }
 </style>
