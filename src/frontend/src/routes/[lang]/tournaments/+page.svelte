@@ -34,7 +34,6 @@
     {#if user_info.permissions.includes(permissions.create_tournament)}
     Create Tournament
     {/if}
-    
   </div>
   {#each tournaments as tournament}
     <TournamentPageItem {tournament} />

@@ -28,14 +28,16 @@
 
 <style>
   .dropdown {
-    position: fixed;
-    top: 40px;
-    right: 0;
-    z-index: 100;
+    position: relative;
+    
   }
 
   .dropdown-container {
     background-color: #5ce49a;
+    position: absolute;
+    width: max-content;
+    right: 0;
+    z-index: 100;
     color: white;
     box-shadow: 0 0 8px #141414;
   }
