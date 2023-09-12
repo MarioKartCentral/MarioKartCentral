@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from common.data.models import Approval, Game, GameMode, FriendCode
+from common.data.models.common import Approval, Game, GameMode
+from common.data.models.friend_codes import FriendCode
 
 
 @dataclass

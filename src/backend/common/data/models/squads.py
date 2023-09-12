@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.data.models import TournamentPlayerDetails
+from common.data.models.tournament_registrations import TournamentPlayerDetails
 
 
 @dataclass

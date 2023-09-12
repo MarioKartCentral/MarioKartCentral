@@ -11,9 +11,15 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0 # This is required or you might get an error from Dokku
-      - name: Push to dokku
+      - name: Push to dokku (API)
         uses: dokku/github-action@master
         with:
           git_remote_url: ${{ secrets.DOKKU_API_REPO }}
+          ssh_private_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          git_push_flags: --force
+      - name: Push to dokku (Worker)
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: ${{ secrets.DOKKU_WORKER_REPO }}
           ssh_private_key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           git_push_flags: --force
