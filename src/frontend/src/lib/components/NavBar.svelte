@@ -6,7 +6,11 @@
   import { user, have_unread_notification } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import Notification from './Notification.svelte';
+  import ModPanel from './ModPanel.svelte';
+  import { mod_panel_permissions } from '$lib/util/util';
+
   let notify: Notification;
+  let mod_panel: ModPanel;
 
   let user_info: UserInfo;
   let have_unread = false;
@@ -40,6 +44,15 @@
         >{@html $LL.NAVBAR.REGISTRY()}</NavBarItem
       >
       <NavBarItem external="http://discord.gg/Pgd8xr6">{@html $LL.NAVBAR.DISCORD()}</NavBarItem>
+      {#if user_info.permissions.some(p => mod_panel_permissions.includes(p))}
+        <NavBarItem title="Moderator">
+          <button on:click|stopPropagation={mod_panel.toggleModPanel}>
+            Moderator
+          </button>
+          <ModPanel bind:this={mod_panel}/>
+        </NavBarItem>
+        
+      {/if}
     </ul>
   </div>
   <div class="nav-options">
@@ -48,6 +61,7 @@
         <button on:click|stopPropagation={notify.toggleNotificationMenu}>
           🔔{#if have_unread}🔴{/if}
         </button>
+        <Notification bind:this={notify} />
       </NavBarItem>
       <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
       {#if user_info.player}
@@ -63,7 +77,7 @@
       {/if}
     </ul>
   </div>
-  <Notification bind:this={notify} />
+  
 </nav>
 
 <style>
