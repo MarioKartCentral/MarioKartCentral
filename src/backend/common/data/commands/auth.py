@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User
+from common.data.models import Problem, User, ModNotifications
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -86,7 +86,8 @@ class CheckPermissionsCommand(Command[list[str]]):
                 WHERE ur.user_id = ? AND p.name IN ({','.join([f"'{p}'" for p in self.permissions])})
                 """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
-                return [row[0] for row in rows]
+                valid_perms = [row[0] for row in rows]
+                return valid_perms
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -176,3 +177,16 @@ class GrantRoleCommand(Command[None]):
                     raise Problem("User not found", status=404)
                 else:
                     raise Problem("Unexpected error")
+                
+@dataclass
+class GetModNotificationsCommand(Command[ModNotifications]):
+    valid_perms: list
+
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
+        mod_notifications = ModNotifications()
+        async with db_wrapper.connect(readonly=True) as db:
+            if 'team_manage' in self.valid_perms:
+                async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
+                    row = await cursor.fetchone()
+                    mod_notifications.pending_teams = row[0]
+        return mod_notifications

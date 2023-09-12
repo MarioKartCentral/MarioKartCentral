@@ -41,8 +41,10 @@
         player_id: body['player_id'],
         player: body['player'],
         permissions: body['permissions'],
+        mod_notifications: body['mod_notifications'],
         is_checked: true,
       };
+      console.log(me);
       user.set(me);
     }
   });
