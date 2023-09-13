@@ -5,6 +5,7 @@ import msgspec
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, Series, SeriesFilter, SeriesRequestData
+import common.data.s3 as s3
 
 
 @save_to_command_log
@@ -23,7 +24,7 @@ class CreateSeriesCommand(Command[None]):
             await db.commit()
 
         s3_message = bytes(msgspec.json.encode(self.body))
-        await s3_wrapper.put_object('series', f'{series_id}.json', s3_message)
+        await s3_wrapper.put_object(s3.SERIES, f'{series_id}.json', s3_message)
 
 @save_to_command_log
 @dataclass
@@ -50,7 +51,7 @@ class EditSeriesCommand(Command[None]):
                 raise Problem('No series found', status=404)
             
 
-            s3_data = await s3_wrapper.get_object('series', f'{self.series_id}.json')
+            s3_data = await s3_wrapper.get_object(s3.SERIES, f'{self.series_id}.json')
             if s3_data is None:
                 raise Problem("No series found", status=404)
             
@@ -59,7 +60,7 @@ class EditSeriesCommand(Command[None]):
             json_body.update(updated_values)
 
             s3_message = bytes(msgspec.json.encode(json_body))
-            await s3_wrapper.put_object('series', f'{self.series_id}.json', s3_message)
+            await s3_wrapper.put_object(s3.SERIES, f'{self.series_id}.json', s3_message)
 
             await db.commit()
 
@@ -68,7 +69,7 @@ class GetSeriesDataCommand(Command[dict[Any, Any]]):
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        body = await s3_wrapper.get_object('series', f'{self.series_id}.json')
+        body = await s3_wrapper.get_object(s3.SERIES, f'{self.series_id}.json')
         if body is None:
             raise Problem('No series found', status=404)
         series_data = msgspec.json.decode(body)

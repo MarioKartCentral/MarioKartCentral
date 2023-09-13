@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from types import TracebackType
 import aiobotocore.session
 from types_aiobotocore_s3 import S3Client
+from .buckets import *
 
 @dataclass
 class S3Wrapper:
