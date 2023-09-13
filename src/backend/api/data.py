@@ -3,7 +3,6 @@ from api import settings
 from common.auth import pw_hasher
 from common.data.command_handler import CommandHandler
 from common.data.commands import *
-import os
 
 _command_handler = CommandHandler(settings.DB_PATH, str(settings.AWS_SECRET_ACCESS_KEY), settings.AWS_ACCESS_KEY_ID, settings.AWS_ENDPOINT_URL)
 
@@ -24,7 +23,7 @@ async def on_startup():
     await handle(SeedDatabaseCommand(settings.ADMIN_EMAIL, hashed_pw))
 
     # Initialize S3
-    if os.getenv("ENV") == "Development":    
+    if settings.ENV == "Development":    
         await handle(InitializeS3BucketsCommand())
 
 
