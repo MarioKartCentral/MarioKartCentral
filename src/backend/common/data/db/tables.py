@@ -628,5 +628,6 @@ all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
-    TeamSquadRegistration, UserTeamRole, UserSeriesRole, RosterInvite, TeamEditRequest, 
+    TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
+    UserSeriesRole, RosterInvite, TeamEditRequest, 
     UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
