@@ -22,7 +22,7 @@
 
 <style>
   .container {
-    width: 50%;
+    width: 65%;
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
   }
