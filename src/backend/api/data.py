@@ -22,8 +22,9 @@ async def on_startup():
     hashed_pw = pw_hasher.hash(str(settings.ADMIN_PASSWORD))
     await handle(SeedDatabaseCommand(settings.ADMIN_EMAIL, hashed_pw))
 
-    # Initialize S3    
-    await handle(InitializeS3BucketsCommand())
+    # Initialize S3
+    if settings.ENV == "Development":    
+        await handle(InitializeS3BucketsCommand())
 
 
 async def on_shutdown():
