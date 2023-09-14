@@ -4,6 +4,7 @@ import msgspec
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+import common.data.s3 as s3
 
 
 @save_to_command_log
@@ -43,7 +44,7 @@ class CreateTournamentCommand(Command[None]):
         s3_body = {'id': tournament_id}
         s3_body.update(asdict(self.body))
         s3_message = bytes(msgspec.json.encode(s3_body))
-        await s3_wrapper.put_object('tournaments', f'{tournament_id}.json', s3_message)
+        await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
             
 @save_to_command_log
 @dataclass
@@ -113,7 +114,7 @@ class EditTournamentCommand(Command[None]):
                 raise Problem('No tournament found', status=404)
             
 
-            s3_data = await s3_wrapper.get_object('tournaments', f'{self.id}.json')
+            s3_data = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
             if s3_data is None:
                 raise Problem("No tournament found", status=404)
             
@@ -122,7 +123,7 @@ class EditTournamentCommand(Command[None]):
             json_body.update(updated_values)
 
             s3_message = bytes(msgspec.json.encode(json_body))
-            await s3_wrapper.put_object('tournaments', f'{self.id}.json', s3_message)
+            await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
 
             await db.commit()
 
@@ -133,7 +134,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        body = await s3_wrapper.get_object('tournaments', f'{self.id}.json')
+        body = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
         if body is None:
             raise Problem('No tournament found', status=404)
         tournament_data = msgspec.json.decode(body, type=GetTournamentRequestData)

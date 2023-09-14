@@ -3,6 +3,11 @@ from types import TracebackType
 import aiobotocore.session
 from types_aiobotocore_s3 import S3Client
 
+TOURNAMENTS_BUCKET = "mkc-tournaments"
+TEMPLATES_BUCKET = "mkc-templates"
+SERIES_BUCKET = "mkc-series"
+COMMAND_LOG_BUCKET = "mkc-commandlog"
+
 @dataclass
 class S3Wrapper:
     client: S3Client
