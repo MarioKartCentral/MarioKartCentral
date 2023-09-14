@@ -154,6 +154,23 @@ class EditTeamCommand(Command[None]):
 
 @save_to_command_log
 @dataclass
+class ApproveDenyTeamCommand(Command[None]):
+    team_id: int
+    approval_status: Approval
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("UPDATE teams SET approval_status = ? WHERE id = ?", (self.approval_status, self.team_id)) as cursor:
+                updated_rows = cursor.rowcount
+                if updated_rows == 0:
+                    raise Problem("No team found", status=404)
+            await db.execute("UPDATE team_rosters SET approval_status = ? WHERE team_id = ? AND approval_status = 'pending'", (self.approval_status, self.team_id))
+            await db.commit()
+
+
+
+@save_to_command_log
+@dataclass
 class ManagerEditTeamCommand(Command[None]):
     team_id: int
     description: str
@@ -666,6 +683,7 @@ class EditTeamMemberCommand(Command[None]):
 @dataclass
 class ListTeamsCommand(Command[List[Team]]):
     filter: TeamFilter
+    approved: bool = True
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
@@ -677,6 +695,11 @@ class ListTeamsCommand(Command[List[Team]]):
             def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            def append_not_equal_filter(filter_value: Any, column_name: str):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} != ?")
                     variable_parameters.append(filter_value)
 
             # check both the team and team_roster fields with the same name for a match
@@ -692,8 +715,12 @@ class ListTeamsCommand(Command[List[Team]]):
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_historical, "t.is_historical")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
-            append_equal_filter("approved", "t.approval_status")
-            append_equal_filter("approved", "r.approval_status")
+            if self.approved:
+                append_equal_filter("approved", "t.approval_status")
+                append_equal_filter("approved", "r.approval_status")
+            else:
+                append_not_equal_filter("approved", "t.approval_status")
+                append_not_equal_filter("approved", "r.approval_status")
             append_equal_filter(True, "r.is_active")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
