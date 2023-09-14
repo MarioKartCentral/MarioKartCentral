@@ -450,8 +450,8 @@ class TeamRolePermission(TableModel):
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS team_role_permissions(
-            role_id INTEGER NOT NULL REFERENCES roles(id),
-            permission_id INTEGER NOT NULL REFERENCES permissions(id),
+            role_id INTEGER NOT NULL REFERENCES team_roles(id),
+            permission_id INTEGER NOT NULL REFERENCES team_permissions(id),
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
 
 @dataclass
@@ -464,7 +464,7 @@ class UserTeamRole(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS user_team_roles(
             user_id INTEGER NOT NULL REFERENCES users(id),
-            role_id INTEGER NOT NULL REFERENCES roles(id),
+            role_id INTEGER NOT NULL REFERENCES team_roles(id),
             team_id INTEGER NOT NULL REFERENCES teams(id),
             PRIMARY KEY (user_id, role_id, team_id)
             ) WITHOUT ROWID
