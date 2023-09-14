@@ -17,12 +17,10 @@
     });
 </script>
 
-<div class="a">
-    <DropdownMenu bind:this={dropdown}>
-        {#if user_info.permissions.includes(permissions.manage_teams)}
-            <div>
-                Approve Teams
-            </div>
-        {/if}
-    </DropdownMenu>
-</div>
+<DropdownMenu bind:this={dropdown}>
+    {#if user_info.permissions.includes(permissions.manage_teams)}
+        <div>
+            <a href="/{$page.params.lang}/moderator/approve_teams">Approve Teams</a>
+        </div>
+    {/if}
+</DropdownMenu>
