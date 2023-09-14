@@ -31,7 +31,7 @@
             color: Number(data.get('color')?.toString()),
             logo: getOptionalValue('logo'),
             language: data.get('language')?.toString(),
-            description: getOptionalValue('logo'),
+            description: getOptionalValue('description'),
             is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false
         };
         console.log(payload);
