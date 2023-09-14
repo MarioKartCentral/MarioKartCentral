@@ -60,8 +60,8 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
                 JOIN user_team_roles ur ON ur.role_id = r.id
                 JOIN users u ON ur.user_id = u.id
                 JOIN sessions s ON s.user_id = u.id
-                JOIN role_permissions rp ON rp.role_id = r.id
-                JOIN permissions p ON rp.permission_id = p.id
+                JOIN team_role_permissions rp ON rp.role_id = r.id
+                JOIN team_permissions p ON rp.permission_id = p.id
                 WHERE s.session_id = ? AND p.name = ? AND ur.team_id = ?
                 LIMIT 1""", (self.session_id, self.permission_name, self.team_id)) as cursor:
                 row = await cursor.fetchone()

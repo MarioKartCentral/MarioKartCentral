@@ -421,6 +421,40 @@ class TeamSquadRegistration(TableModel):
             """
 
 @dataclass
+class TeamRole(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_roles(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class TeamPermission(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_permissions(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class TeamRolePermission(TableModel):
+    role_id: int
+    permission_id: int
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_role_permissions(
+            role_id INTEGER NOT NULL REFERENCES roles(id),
+            permission_id INTEGER NOT NULL REFERENCES permissions(id),
+            PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
+@dataclass
 class UserTeamRole(TableModel):
     user_id: int
     role_id: int
