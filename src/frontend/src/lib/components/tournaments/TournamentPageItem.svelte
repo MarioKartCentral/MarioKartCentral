@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
-  import { user } from '$lib/stores/stores';
 
   export let tournament: TournamentListItem;
 

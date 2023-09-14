@@ -41,7 +41,7 @@
     <MarkdownBox content={tournament.ruleset} />
   </Section>
   <Section header="Tournament Registrations">
-    <TournamentRegistrations {tournament} />
+    <TournamentRegistrations tournament={tournament} />
   </Section>
 {/if}
 

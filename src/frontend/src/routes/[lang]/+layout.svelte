@@ -44,7 +44,6 @@
         mod_notifications: body['mod_notifications'],
         is_checked: true,
       };
-      console.log(me);
       user.set(me);
     }
   });
