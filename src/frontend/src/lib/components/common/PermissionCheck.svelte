@@ -10,8 +10,10 @@
     });
 </script>
 
-{#if user_info.permissions.includes(permission)}
-    <slot/>
-{:else}
-    You do not have permission to view this page.
+{#if user_info.is_checked}
+    {#if user_info.permissions.includes(permission)}
+        <slot/>
+    {:else}
+        You do not have permission to view this page.
+    {/if}
 {/if}
