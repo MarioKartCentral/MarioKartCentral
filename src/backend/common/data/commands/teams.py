@@ -21,6 +21,7 @@ class CreateTeamCommand(Command[None]):
     is_recruiting: bool
     is_active: bool
     is_privileged: bool
+    user_id: int | None = None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -43,9 +44,11 @@ class CreateTeamCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.approval_status,
                 self.is_historical)) as cursor:
                 team_id = cursor.lastrowid
-            await db.commit()
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, None, None, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            # give the team creator manager permissions if their id was specified
+            if self.user_id is not None:
+                await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES (?, 0, ?)", (self.user_id, team_id))
             await db.commit()
 
 @dataclass
@@ -60,7 +63,7 @@ class GetTeamInfoCommand(Command[Team]):
                 if row is None:
                     raise Problem('Team not found', status=404)
                 team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical = row
-                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [])
+                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [], [])
             
             # get all rosters for our team
             rosters: list[TeamRoster] = []
@@ -118,6 +121,12 @@ class GetTeamInfoCommand(Command[Team]):
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
 
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id FROM players p
+                JOIN users u ON u.player_id = p.id
+                JOIN user_team_roles ur ON ur.user_id = u.id
+                WHERE ur.team_id = ? AND ur.role_id = 0""", (self.team_id,)) as cursor:
+                rows = await cursor.fetchall()
+                team.managers = [Player(*row) for row in rows]
             team.rosters = rosters
             return team
 

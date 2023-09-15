@@ -2,6 +2,7 @@
   import type { Team } from '$lib/types/team';
   import logo from '$lib/assets/logo.png';
   import { locale } from '$i18n/i18n-svelte';
+  import { page } from '$app/stores';
 
   export let team: Team;
 
@@ -36,6 +37,14 @@
     <div>
       <b>Main Language:</b>
       {team.language}
+    </div>
+    <div>
+      <b>Managers:</b>
+      {#each team.managers as m, i}
+        <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
+          {i == team.managers.length-1 ? m.name : `${m.name}, `}
+        </a>
+      {/each}
     </div>
   </div>
   <div class="about_me">

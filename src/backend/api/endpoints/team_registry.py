@@ -18,10 +18,11 @@ async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResp
     return JSONResponse({})
 
 @bind_request_body(RequestCreateTeamRequestData)
+@require_logged_in
 async def request_create_team(request: Request, body: RequestCreateTeamRequestData) -> JSONResponse:
     approval_status = "pending"
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
-                                body.logo, approval_status, False, body.game, body.mode, body.is_recruiting, True, False)
+                                body.logo, approval_status, False, body.game, body.mode, body.is_recruiting, True, False, user_id=request.state.user.id)
     await handle(command)
     return JSONResponse({})
 

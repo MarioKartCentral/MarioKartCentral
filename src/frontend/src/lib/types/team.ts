@@ -1,4 +1,5 @@
 import type { TeamRoster } from './team-roster';
+import type { PlayerInfo } from './player-info';
 
 export type Team = {
   id: number;
@@ -12,4 +13,5 @@ export type Team = {
   is_approved: string;
   is_historical: boolean;
   rosters: TeamRoster[];
+  managers: PlayerInfo[];
 };
