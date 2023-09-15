@@ -42,7 +42,7 @@
       <b>Managers:</b>
       {#each team.managers as m, i}
         <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
-          {i == team.managers.length-1 ? m.name : `${m.name}, `}
+          {i == team.managers.length - 1 ? m.name : `${m.name}, `}
         </a>
       {/each}
     </div>

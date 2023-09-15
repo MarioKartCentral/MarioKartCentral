@@ -57,14 +57,11 @@
         >{@html $LL.NAVBAR.REGISTRY()}</NavBarItem
       >
       <NavBarItem external="http://discord.gg/Pgd8xr6">{@html $LL.NAVBAR.DISCORD()}</NavBarItem>
-      {#if user_info.permissions.some(p => mod_panel_permissions.includes(p))}
+      {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}
         <NavBarItem title="Moderator">
-          <button on:click|stopPropagation={mod_panel.toggleModPanel}>
-            Moderator
-          </button>
-          <ModPanel bind:this={mod_panel}/>
+          <button on:click|stopPropagation={mod_panel.toggleModPanel}> Moderator </button>
+          <ModPanel bind:this={mod_panel} />
         </NavBarItem>
-        
       {/if}
     </ul>
   </div>
@@ -90,7 +87,6 @@
       {/if}
     </ul>
   </div>
-  
 </nav>
 
 <style>

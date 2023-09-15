@@ -19,14 +19,15 @@
   });
 
   let permissions: string[] = []; // permissions list passed up from current page
-  function addPermission(permission: string) { // function that updates list of all permissions
+  function addPermission(permission: string) {
+    // function that updates list of all permissions
     permissions.push(permission);
   }
   setContext('page-init', { addPermission });
 
   onMount(async () => {
     if (user_info.is_checked === false) {
-      let permissions_text = permissions.length > 0 ? `?permissions=${permissions.join(',')}` : ""
+      let permissions_text = permissions.length > 0 ? `?permissions=${permissions.join(',')}` : '';
       const res = await fetch(`/api/user/me/player${permissions_text}`);
       if (res.status != 200) {
         user.update((u) => {
@@ -83,7 +84,7 @@
   :global(a) {
     color: white;
     text-decoration: none;
-    transition: color .2s ease-out;
+    transition: color 0.2s ease-out;
   }
   :global(a:hover) {
     color: rgb(0, 162, 255);

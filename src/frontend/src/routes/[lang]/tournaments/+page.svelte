@@ -15,7 +15,6 @@
   });
 
   let tournaments: TournamentListItem[] = [];
-  
 
   onMount(async () => {
     const res = await fetch('/api/tournaments/list');
@@ -32,7 +31,7 @@
 <Section header="Tournaments">
   <div slot="header_content">
     {#if user_info.permissions.includes(permissions.create_tournament)}
-    Create Tournament
+      Create Tournament
     {/if}
   </div>
   {#each tournaments as tournament}

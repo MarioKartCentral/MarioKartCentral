@@ -2,7 +2,7 @@ import type { PlayerInfo } from '$lib/types/player-info';
 
 type ModNotifications = {
   pending_teams: number;
-}
+};
 
 export type UserInfo = {
   id: number | null;

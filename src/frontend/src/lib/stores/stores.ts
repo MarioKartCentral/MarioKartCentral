@@ -7,7 +7,7 @@ export const user = writable<UserInfo>({
   player: null,
   permissions: [],
   mod_notifications: null,
-  is_checked: false
+  is_checked: false,
 });
 
 export const have_unread_notification = writable<boolean>(false);
