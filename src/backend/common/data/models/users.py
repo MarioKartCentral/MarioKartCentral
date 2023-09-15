@@ -9,7 +9,7 @@ class User:
 
 @dataclass
 class ModNotifications:
-    pending_teams: int | None = None
+    pending_teams: int = 0
 
 @dataclass
 class UserPlayer:

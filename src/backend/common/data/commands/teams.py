@@ -749,7 +749,7 @@ class ListTeamsCommand(Command[List[Team]]):
                         team: Team = teams[tid]
                         team.rosters.append(roster)
                         continue
-                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, [roster])
+                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, [roster], [])
                     teams[tid] = team
             team_list = list(teams.values())
             return team_list

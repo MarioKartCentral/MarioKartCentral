@@ -20,7 +20,7 @@
 <DropdownMenu bind:this={dropdown}>
     {#if user_info.permissions.includes(permissions.manage_teams)}
         <div>
-            <a href="/{$page.params.lang}/moderator/approve_teams">Approve Teams</a>
+            <a href="/{$page.params.lang}/moderator/approve_teams">Approve Teams {user_info.mod_notifications?.pending_teams ? `(${user_info.mod_notifications.pending_teams})`: ""}</a>
         </div>
     {/if}
 </DropdownMenu>
