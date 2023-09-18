@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from common.data.models.common import Game, GameMode
+from common.data.validators import validate_game_and_mode
 
 
 @dataclass
 class CreateTournamentRequestData():
     tournament_name: str
-    game: Game
-    mode: GameMode
+    game: str
+    mode: str
     series_id: int | None
     is_squad: bool
     registrations_open: bool
@@ -42,6 +42,9 @@ class CreateTournamentRequestData():
     use_series_ruleset: bool
     organizer: str
     location: str
+
+    def __post_init__(self):
+        validate_game_and_mode(self.game, self.mode)
 
 @dataclass
 class GetTournamentRequestData(CreateTournamentRequestData):
@@ -90,10 +93,13 @@ class EditTournamentRequestData():
 class TournamentDataMinimal():
     id: int
     tournament_name: str
-    game: Game
-    mode: GameMode
+    game: str
+    mode: str
     date_start: int
     date_end: int
+
+    def __post_init__(self):
+        validate_game_and_mode(self.game, self.mode)
 
 @dataclass
 class TournamentDataBasic(TournamentDataMinimal):
@@ -111,8 +117,12 @@ class TournamentDataBasic(TournamentDataMinimal):
 class TournamentFilter():
     is_minimal: bool = False
     name: str | None = None
-    game: Game | None = None
-    mode: GameMode | None = None
+    game: str | None = None
+    mode: str | None = None
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
+
+    def __post_init__(self):
+        if self.game is not None and self.mode is not None:
+            validate_game_and_mode(self.game, self.mode)

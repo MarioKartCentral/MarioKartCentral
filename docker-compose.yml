@@ -17,8 +17,10 @@ services:
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       PYTHONDONTWRITEBYTECODE : 1 # this is to prevent __pycache__ files during development
+      CONFIG_PATH : /usr/src/config
     volumes:
       - mkc-db:/var/lib/mkc-api/data
+      - ./config:/usr/src/config:ro
       - ./src/backend:/usr/src/app
   worker:
     build:
@@ -31,15 +33,20 @@ services:
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       PYTHONDONTWRITEBYTECODE : 1
       PYTHONUNBUFFERED : 1
+      CONFIG_PATH : /usr/src/config
     volumes:
       - mkc-db:/var/lib/mkc-api/data
+      - ./config:/usr/src/config:ro
       - ./src/backend:/usr/src/app
   frontend:
     build: ./src/frontend
+    environment:
+      CONFIG_PATH : /usr/src/config
     ports:
       - 8001:8001
     volumes:
       - ./src/frontend:/usr/src/app
+      - ./config:/usr/src/config:ro
   cf-worker:
     build: ./src/cf-worker
     ports:

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from common.data.models import Approval, Game, GameMode, FriendCode
+from common.data.models import Approval, FriendCode
+from common.data.validators import validate_game_and_mode
 
 
 @dataclass
@@ -10,9 +11,12 @@ class RequestCreateTeamRequestData():
     language: str
     color: int
     logo: str | None
-    game: Game
-    mode: GameMode
+    game: str
+    mode: str
     is_recruiting: bool
+
+    def __post_init__(self):
+        validate_game_and_mode(self.game, self.mode)
 
 @dataclass
 class CreateTeamRequestData(RequestCreateTeamRequestData):
@@ -75,14 +79,17 @@ class RosterPlayerInfo():
 class TeamRoster():
     id: int
     team_id: int
-    game: Game
-    mode: GameMode
+    game: str
+    mode: str
     name: str
     tag: str
     creation_date: int
     is_recruiting: bool
     is_approved: bool
     players: list[RosterPlayerInfo]
+
+    def __post_init__(self):
+        validate_game_and_mode(self.game, self.mode)
 
 @dataclass
 class Team():
@@ -102,13 +109,16 @@ class Team():
 @dataclass
 class CreateRosterRequestData():
     team_id: int
-    game: Game
-    mode: GameMode
+    game: str
+    mode: str
     name: str | None
     tag: str | None
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
+
+    def __post_init__(self):
+        validate_game_and_mode(self.game, self.mode)
 
 @dataclass
 class EditRosterRequestData():
@@ -196,9 +206,13 @@ class KickPlayerRequestData():
 class TeamFilter():
     name: str | None = None
     tag: str | None = None
-    game: Game | None = None
-    mode: GameMode | None = None
+    game: str | None = None
+    mode: str | None = None
     language: str | None = None
     is_recruiting: bool | None = None
     is_historical: bool | None = None
+
+    def __post_init__(self):
+        if self.game is not None and self.mode is not None:
+            validate_game_and_mode(self.game, self.mode)
 

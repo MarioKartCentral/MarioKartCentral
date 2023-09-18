@@ -9,7 +9,7 @@ from common.data.models import *
 class CreateFriendCodeCommand(Command[None]):
     player_id: int
     fc: str
-    game: Game
+    game: str
     is_verified: bool
     is_primary: bool
     is_active: bool
@@ -54,7 +54,7 @@ class CreateFriendCodeCommand(Command[None]):
 class EditFriendCodeCommand(Command[None]):
     id: int
     fc: str
-    game: Game
+    game: str
     is_active: bool
     description: str | None
 

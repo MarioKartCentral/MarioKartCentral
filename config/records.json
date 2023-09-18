@@ -1,0 +1,54 @@
+{
+    "games": {
+        "mkw": {
+            "types": {
+                "time_trial": {
+                    "attributes": {
+                        "course": { "required": true }
+                    }
+                }
+            }
+        },
+        "mk8": {
+            "types": {
+                "time_trial": {
+                    "attributes": {
+                        "course": { "required": true }
+                    }
+                }
+            }
+        },
+        "mk8dx": {
+            "types": {
+                "time_trial": {
+                    "attributes": {
+                        "course": { "required": true },
+                        "cc": { "required": true, "values": [150, 200] }
+                    }
+                }
+            }
+        }
+    },
+    "caches": [
+        {
+        },
+        {
+            "game": "*",
+            "type": "*",
+            "course": "*",
+            "cc": "*"
+        },
+        {
+            "game": "*",
+            "type": "*",
+            "course": "*",
+            "cc": "*",
+            "country": "*"
+        },
+        {
+            "game": "*",
+            "type": "*",
+            "player_id": "*"
+        }
+    ]
+}
