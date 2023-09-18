@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User
+from common.data.models import Problem, User, ModNotifications
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -60,8 +60,8 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
                 JOIN user_team_roles ur ON ur.role_id = r.id
                 JOIN users u ON ur.user_id = u.id
                 JOIN sessions s ON s.user_id = u.id
-                JOIN role_permissions rp ON rp.role_id = r.id
-                JOIN permissions p ON rp.permission_id = p.id
+                JOIN team_role_permissions rp ON rp.role_id = r.id
+                JOIN team_permissions p ON rp.permission_id = p.id
                 WHERE s.session_id = ? AND p.name = ? AND ur.team_id = ?
                 LIMIT 1""", (self.session_id, self.permission_name, self.team_id)) as cursor:
                 row = await cursor.fetchone()
@@ -70,6 +70,24 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
                 return None
             
             return User(int(row[0]), row[1])
+        
+@dataclass
+class CheckPermissionsCommand(Command[list[str]]):
+    user_id: int
+    permissions: list[str]
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute(f"""
+                SELECT DISTINCT p.name
+                FROM user_roles ur
+                JOIN role_permissions rp ON ur.role_id = rp.role_id
+                JOIN permissions p ON rp.permission_id = p.id 
+                WHERE ur.user_id = ? AND p.name IN ({','.join([f"'{p}'" for p in self.permissions])})
+                """, (self.user_id,)) as cursor:
+                rows = await cursor.fetchall()
+                valid_perms = [row[0] for row in rows]
+                return valid_perms
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -159,3 +177,16 @@ class GrantRoleCommand(Command[None]):
                     raise Problem("User not found", status=404)
                 else:
                     raise Problem("Unexpected error")
+                
+@dataclass
+class GetModNotificationsCommand(Command[ModNotifications]):
+    valid_perms: list
+
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
+        mod_notifications = ModNotifications()
+        async with db_wrapper.connect(readonly=True) as db:
+            if 'team_manage' in self.valid_perms:
+                async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
+                    row = await cursor.fetchone()
+                    mod_notifications.pending_teams = row[0]
+        return mod_notifications

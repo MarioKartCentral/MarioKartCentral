@@ -18,10 +18,11 @@ async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResp
     return JSONResponse({})
 
 @bind_request_body(RequestCreateTeamRequestData)
+@require_logged_in
 async def request_create_team(request: Request, body: RequestCreateTeamRequestData) -> JSONResponse:
     approval_status = "pending"
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
-                                body.logo, approval_status, False, body.game, body.mode, body.is_recruiting, True, False)
+                                body.logo, approval_status, False, body.game, body.mode, body.is_recruiting, True, False, user_id=request.state.user.id)
     await handle(command)
     return JSONResponse({})
 
@@ -37,6 +38,20 @@ async def view_team(request: Request) -> JSONResponse:
 async def edit_team(request: Request, body: EditTeamRequestData) -> JSONResponse:
     command = EditTeamCommand(body.team_id, body.name, body.tag, body.description, body.language, body.color,
         body.logo, body.approval_status, body.is_historical, True)
+    await handle(command)
+    return JSONResponse({})
+
+@require_permission(permissions.MANAGE_TEAMS)
+async def approve_team(request: Request) -> JSONResponse:
+    team_id = request.path_params['id']
+    command = ApproveDenyTeamCommand(team_id, 'approved')
+    await handle(command)
+    return JSONResponse({})
+
+@require_permission(permissions.MANAGE_TEAMS)
+async def deny_team(request: Request) -> JSONResponse:
+    team_id = request.path_params['id']
+    command = ApproveDenyTeamCommand(team_id, 'denied')
     await handle(command)
     return JSONResponse({})
 
@@ -185,13 +200,23 @@ async def list_teams(request: Request, body: TeamFilter) -> JSONResponse:
     teams = await handle(command)
     return JSONResponse(teams)
 
+@bind_request_query(TeamFilter)
+@require_permission(permissions.MANAGE_TEAMS)
+async def list_unapproved_teams(request: Request, body: TeamFilter) -> JSONResponse:
+    command = ListTeamsCommand(body, approved=False)
+    teams = await handle(command)
+    return JSONResponse(teams)
+
 #todo: endpoints for giving team roles
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
+    Route('/api/registry/teams/request', request_create_team, methods=['POST']),
     Route('/api/registry/teams/{id:int}', view_team),
     Route('/api/registry/teams/forceEdit', edit_team, methods=['POST']),
     Route('/api/registry/teams/edit', manager_edit_team, methods=['POST']),
+    Route('/api/registry/teams/{id:int}/approve', approve_team, methods=['POST']),
+    Route('/api/registry/teams/{id:int}/deny', deny_team, methods=['POST']),
     Route('/api/registry/teams/requestChange', request_edit_team, methods=['POST']),
     Route('/api/registry/teams/approveChange', approve_team_edit_request, methods=['POST']),
     Route('/api/registry/teams/denyChange', deny_team_edit_request, methods=['POST']),
@@ -209,5 +234,6 @@ routes: list[Route] = [
     Route('/api/registry/teams/forceTransferPlayer', force_transfer_player, methods=['POST']),
     Route('/api/registry/teams/editTeamMemberInfo', edit_team_member_info, methods=['POST']),
     Route('/api/registry/teams/kickPlayer', kick_player, methods=['POST']),
-    Route('/api/registry/teams', list_teams)
+    Route('/api/registry/teams', list_teams),
+    Route('/api/registry/teams/unapprovedTeams', list_unapproved_teams)
 ]

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
+from common.data.models.players import Player
 
 
 @dataclass
@@ -98,6 +99,7 @@ class Team():
     is_approved: bool
     is_historical: bool
     rosters: list[TeamRoster]
+    managers: list[Player]
 
 
 @dataclass

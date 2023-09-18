@@ -11,6 +11,8 @@ function getEntriesForLocale(locale) {
     `/${locale}/registry/players/edit-profile`,
     `/${locale}/registry/players/profile`,
     `/${locale}/registry/teams/profile`,
+    `/${locale}/registry/teams/create`,
+    `/${locale}/moderator/approve_teams`,
   ];
 }
 
