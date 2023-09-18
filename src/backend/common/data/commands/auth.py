@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, ModNotifications
+from common.data.models import Problem, User, ModNotifications, TeamPermissions
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -56,7 +56,7 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""
-                SELECT u.id, u.player_id FROM roles r
+                SELECT u.id, u.player_id FROM team_roles r
                 JOIN user_team_roles ur ON ur.role_id = r.id
                 JOIN users u ON ur.user_id = u.id
                 JOIN sessions s ON s.user_id = u.id
@@ -75,9 +75,12 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
 class CheckPermissionsCommand(Command[list[str]]):
     user_id: int
     permissions: list[str]
+    check_team_perms: bool
+    check_series_perms: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
+            valid_perms = []
             async with db.execute(f"""
                 SELECT DISTINCT p.name
                 FROM user_roles ur
@@ -87,7 +90,26 @@ class CheckPermissionsCommand(Command[list[str]]):
                 """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
                 valid_perms = [row[0] for row in rows]
-                return valid_perms
+            team_perms = []
+            # only check team permissions if we are on a page that needs them
+            if self.check_team_perms:
+                async with db.execute(f"""
+                    SELECT ur.team_id, p.name
+                    FROM user_team_roles ur
+                    JOIN team_role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN team_permissions p ON rp.permission_id = p.id
+                    WHERE ur.user_id = ?
+                    """, (self.user_id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    team_perm_dict = {}
+                    for row in rows:
+                        team_id, perm = row
+                        if team_id not in team_perm_dict:
+                            team_perm_dict[team_id] = []
+                        team_perm_dict[team_id].append(perm)
+                    team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
+            series_perms = []
+        return valid_perms, team_perms, series_perms
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):

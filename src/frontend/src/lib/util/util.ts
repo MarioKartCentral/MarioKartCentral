@@ -5,6 +5,16 @@ export function addPermission(permission: string) {
   ctx.addPermission(permission);
 }
 
+export function setTeamPerms() {
+  const ctx: any = getContext('page-init');
+  ctx.checkTeamPerms();
+}
+
+export function setSeriesPerms() {
+  const ctx: any = getContext('page-init');
+  ctx.checkSeriesPerms();
+}
+
 export const permissions = {
   create_tournament: 'tournament_create',
   edit_tournament: 'tournament_edit',

@@ -19,16 +19,34 @@
   });
 
   let permissions: string[] = []; // permissions list passed up from current page
+  let check_team_permissions: boolean = false;
+  let check_series_permissions: boolean = false;
   function addPermission(permission: string) {
     // function that updates list of all permissions
     permissions.push(permission);
   }
-  setContext('page-init', { addPermission });
+  function checkTeamPerms() {
+    check_team_permissions = true;
+  }
+  function checkSeriesPerms() {
+    check_series_permissions = true;
+  }
+  setContext('page-init', { addPermission, checkTeamPerms, checkSeriesPerms });
 
   onMount(async () => {
     if (user_info.is_checked === false) {
-      let permissions_text = permissions.length > 0 ? `?permissions=${permissions.join(',')}` : '';
-      const res = await fetch(`/api/user/me/player${permissions_text}`);
+      let query_params = [];
+      if(permissions.length > 0) {
+        query_params.push(`permissions=${permissions.join(',')}`);
+      }
+      if(check_team_permissions) {
+        query_params.push('check_team_perms=true');
+      }
+      if(check_series_permissions) {
+        query_params.push('check_series_perms=true');
+      }
+      let query_text = `?` + query_params.join('&');
+      const res = await fetch(`/api/user/me/player${query_text}`);
       if (res.status != 200) {
         user.update((u) => {
           u.is_checked = true;
@@ -42,6 +60,8 @@
         player_id: body['player_id'],
         player: body['player'],
         permissions: body['permissions'],
+        team_permissions: body['team_permissions'],
+        series_permissions: body['series_permissions'],
         mod_notifications: body['mod_notifications'],
         is_checked: true,
       };

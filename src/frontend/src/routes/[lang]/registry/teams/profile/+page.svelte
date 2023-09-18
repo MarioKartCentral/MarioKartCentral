@@ -5,10 +5,13 @@
   import Section from '$lib/components/common/Section.svelte';
   import TeamProfile from '$lib/components/registry/teams/TeamProfile.svelte';
   import TeamRoster from '$lib/components/registry/teams/TeamRoster.svelte';
+  import { setTeamPerms } from '$lib/util/util';
 
   let id = 0;
   let team: Team;
   $: team_name = team ? team.name : 'Registry';
+
+  setTeamPerms();
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');

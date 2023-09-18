@@ -6,6 +6,8 @@ export const user = writable<UserInfo>({
   player_id: null,
   player: null,
   permissions: [],
+  team_permissions: [],
+  series_permissions: [],
   mod_notifications: null,
   is_checked: false,
 });
