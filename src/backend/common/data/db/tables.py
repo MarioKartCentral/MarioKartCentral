@@ -537,7 +537,9 @@ class RosterEditRequest(TableModel):
         id INTEGER PRIMARY KEY,
         roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
         name TEXT,
-        tag TEXT
+        tag TEXT,
+        date INTEGER NOT NULL,
+        approval_status TEXT NOT NULL
         )
         """
     
@@ -631,5 +633,5 @@ all_tables : list[type[TableModel]] = [
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
-    UserSeriesRole, RosterInvite, TeamEditRequest, 
+    UserSeriesRole, RosterInvite, TeamEditRequest, RosterEditRequest,
     UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]

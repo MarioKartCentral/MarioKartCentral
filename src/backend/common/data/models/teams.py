@@ -60,6 +60,20 @@ class TeamEditRequest():
     approval_status: Approval
 
 @dataclass
+class RosterEditRequest():
+    id: int
+    roster_id: int
+    team_id: int
+    team_name: str
+    team_tag: str
+    old_name: str | None
+    old_tag: str | None
+    new_name: str | None
+    new_tag: str | None
+    date: int
+    approval_status: Approval
+
+@dataclass
 class PartialTeamMember():
     player_id: int
     roster_id: int
