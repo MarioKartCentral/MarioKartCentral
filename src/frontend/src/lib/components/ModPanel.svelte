@@ -26,5 +26,12 @@
           : ''}</a
       >
     </div>
+    <div>
+      <a href="/{$page.params.lang}/moderator/approve_team_edits"
+        >Team Name/Tag Changes {user_info.mod_notifications?.pending_team_edits
+          ? `(${user_info.mod_notifications.pending_team_edits})`
+          : ''}</a
+      >
+    </div>
   {/if}
 </DropdownMenu>

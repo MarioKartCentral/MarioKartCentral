@@ -10,6 +10,7 @@ class User:
 @dataclass
 class ModNotifications:
     pending_teams: int = 0
+    pending_team_edits: int = 0
 
 @dataclass
 class TeamPermissions:
