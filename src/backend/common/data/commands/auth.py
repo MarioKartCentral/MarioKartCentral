@@ -213,5 +213,8 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     mod_notifications.pending_teams = row[0]
                 async with db.execute("SELECT COUNT(id) FROM team_edit_requests WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
-                    mod_notifications.pending_team_edits = row[0]
+                    mod_notifications.pending_team_edits += row[0]
+                async with db.execute("SELECT COUNT(id) FROM roster_edit_requests WHERE approval_status='pending'") as cursor:
+                    row = await cursor.fetchone()
+                    mod_notifications.pending_team_edits += row[0]
         return mod_notifications
