@@ -27,7 +27,7 @@
   
     async function approveTeamRequest(request: TeamEditRequest) {
       const payload = {
-        id: request.id
+        request_id: request.id
       };
       const res = await fetch(`/api/registry/teams/approveChange`, {
         method: 'POST',
@@ -45,7 +45,7 @@
   
     async function denyTeamRequest(request: TeamEditRequest) {
       const payload = {
-        id: request.id
+        request_id: request.id
       };
       const res = await fetch(`/api/registry/teams/denyChange`, {
         method: 'POST',
