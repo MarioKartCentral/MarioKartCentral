@@ -519,7 +519,9 @@ class TeamEditRequest(TableModel):
             id INTEGER PRIMARY KEY,
             team_id INTEGER NOT NULL REFERENCES teams(id),
             name TEXT,
-            tag TEXT
+            tag TEXT,
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
             )"""
     
 @dataclass

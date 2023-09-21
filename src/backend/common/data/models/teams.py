@@ -49,6 +49,17 @@ class RequestEditTeamRequestData():
     tag: str
 
 @dataclass
+class TeamEditRequest():
+    id: int
+    team_id: int
+    old_name: str
+    old_tag: str
+    new_name: str
+    new_tag: str
+    date: int
+    approval_status: Approval
+
+@dataclass
 class PartialTeamMember():
     player_id: int
     roster_id: int

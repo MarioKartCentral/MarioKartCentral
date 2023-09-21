@@ -85,6 +85,12 @@ async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData
     await handle(command)
     return JSONResponse({})
 
+@require_permission(permissions.MANAGE_TEAMS)
+async def list_team_edit_requests(request: Request) -> JSONResponse:
+    command = ListTeamEditRequestsCommand("pending")
+    requests = await handle(command)
+    return JSONResponse(requests)
+
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateRosterRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -220,6 +226,7 @@ routes: list[Route] = [
     Route('/api/registry/teams/requestChange', request_edit_team, methods=['POST']),
     Route('/api/registry/teams/approveChange', approve_team_edit_request, methods=['POST']),
     Route('/api/registry/teams/denyChange', deny_team_edit_request, methods=['POST']),
+    Route('/api/registry/teams/changeRequests', list_team_edit_requests),
     Route('/api/registry/teams/createRoster', create_roster, methods=['POST']),
     Route('/api/registry/teams/editRoster', edit_roster, methods=['POST']),
     Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST']),

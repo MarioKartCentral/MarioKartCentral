@@ -210,7 +210,9 @@ class RequestEditTeamCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            await db.execute("INSERT INTO team_edit_requests(team_id, name, tag) VALUES(?, ?, ?)", (self.team_id, self.name, self.tag))
+            creation_date = int(datetime.utcnow().timestamp())
+            await db.execute("INSERT INTO team_edit_requests(team_id, name, tag, date, approval_status) VALUES(?, ?, ?, ?, ?)",
+                            (self.team_id, self.name, self.tag, creation_date, "pending"))
             await db.commit()
 
 @save_to_command_log
@@ -519,7 +521,7 @@ class ApproveTeamEditCommand(Command[None]):
                     raise Problem("Team edit request not found", status=404)
                 team_id, name, tag = row
             await db.execute("UPDATE teams SET name = ?, tag = ? WHERE id = ?", (name, tag, team_id))
-            await db.execute("DELETE FROM team_edit_requests WHERE id = ?", (self.request_id,))
+            await db.execute("UPDATE team_edit_requests SET approval_status = 'approved' WHERE id = ?", (self.request_id,))
             await db.commit()
 
 @save_to_command_log
@@ -529,11 +531,26 @@ class DenyTeamEditCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("DELETE FROM team_edit_requests WHERE id = ?", (self.request_id,)) as cursor:
+            async with db.execute("UPDATE team_edit_requests SET approval_status = 'denied' WHERE id = ?", (self.request_id,)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount == 0:
                     raise Problem("Team edit request not found", status=404)
             await db.commit()
+
+@dataclass
+class ListTeamEditRequestsCommand(Command[list[TeamEditRequest]]):
+    approval_status: Approval
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        requests = []
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT r.id, r.team_id, t.name, t.tag, r.name, r.tag, r.date, r.approval_status FROM team_edit_requests r
+                                  JOIN teams t ON r.team_id = t.id
+                                  WHERE r.approval_status = ?""", (self.approval_status,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    requests.append(TeamEditRequest(*row))
+        return requests
 
 @save_to_command_log
 @dataclass
