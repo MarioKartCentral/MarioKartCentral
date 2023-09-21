@@ -26,6 +26,29 @@
         team = body;
     });
 
+    async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        const data = new FormData(event.currentTarget);
+        const payload = {
+            team_id: id,
+            name: data.get('name')?.toString(),
+            tag: data.get('tag')?.toString(),
+        };
+        console.log(payload);
+        const endpoint = '/api/registry/teams/requestChange';
+        const response = await fetch(endpoint, {
+        method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            goto(`/${$page.params.lang}/registry/teams/profile?id=${id}`);
+            alert(`Your request to change your team's name/tag has been sent to MKCentral staff for approval.`);
+        } else {
+            alert(`Editing team failed: ${result['title']}`);
+        }
+  }
+
     async function editTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
         function getOptionalValue(name: string) {
@@ -60,6 +83,19 @@
 </svelte:head>
 
 {#if team}
+    <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_name_tag}>
+        <form method="post" on:submit|preventDefault={editNameTag}>
+            <Section header="Team Name/Tag">
+                <label for="name">Team Name</label>
+                <input name="name" type="text" value={team.name} required />
+                <br />
+                <label for="tag">Team Tag</label>
+                <input name="tag" type="text" value={team.tag} required />
+                <br/>
+                <button type="submit">Request Name/Tag Change</button>
+            </Section>
+        </form>
+    </TeamPermissionCheck>
     <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
         <form method="post" on:submit|preventDefault={editTeam}>
             <Section header="Customization">
