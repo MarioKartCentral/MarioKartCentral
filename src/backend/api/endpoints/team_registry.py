@@ -5,6 +5,7 @@ from api.data import handle
 from datetime import datetime
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
+from common.auth import team_permissions
 from common.data.commands import *
 from common.data.models import *
 
@@ -57,7 +58,7 @@ async def deny_team(request: Request) -> JSONResponse:
 
 # for editing non-essential team info such as description, color, etc
 @bind_request_body(ManagerEditTeamRequestData)
-@require_team_permission(permissions.EDIT_TEAM_INFO)
+@require_team_permission(team_permissions.EDIT_TEAM_INFO)
 async def manager_edit_team(request: Request, body: ManagerEditTeamRequestData) -> JSONResponse:
     command = ManagerEditTeamCommand(body.team_id, body.description, body.language, body.color, body.logo)
     await handle(command)
@@ -65,7 +66,7 @@ async def manager_edit_team(request: Request, body: ManagerEditTeamRequestData) 
 
 # for editing team name/tag, which requires moderator approval
 @bind_request_body(RequestEditTeamRequestData)
-@require_team_permission(permissions.EDIT_TEAM_INFO)
+@require_team_permission(team_permissions.EDIT_TEAM_INFO)
 async def request_edit_team(request: Request, body: RequestEditTeamRequestData) -> JSONResponse:
     command = RequestEditTeamCommand(body.team_id, body.name, body.tag)
     await handle(command)
@@ -109,14 +110,14 @@ async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResp
     return JSONResponse({})
 
 @bind_request_body(InviteRosterPlayerRequestData)
-@require_team_permission(permissions.INVITE_TEAM_PLAYERS)
+@require_team_permission(team_permissions.INVITE_PLAYERS)
 async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
     command = InvitePlayerCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(InviteRosterPlayerRequestData)
-@require_team_permission(permissions.INVITE_TEAM_PLAYERS)
+@require_team_permission(team_permissions.INVITE_PLAYERS)
 async def delete_invite(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
     command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
@@ -158,7 +159,7 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
     return JSONResponse({})
 
 @bind_request_body(RequestEditRosterRequestData)
-@require_team_permission(permissions.EDIT_TEAM_INFO)
+@require_team_permission(team_permissions.EDIT_TEAM_INFO)
 async def request_edit_roster(request: Request, body: RequestEditRosterRequestData) -> JSONResponse:
     command = RequestEditRosterCommand(body.roster_id, body.team_id, body.name, body.tag)
     await handle(command)
@@ -199,7 +200,7 @@ async def edit_team_member_info(request: Request, body: EditTeamMemberInfoReques
     return JSONResponse({})
 
 @bind_request_body(KickPlayerRequestData)
-@require_team_permission(permissions.MANAGE_TEAM_ROSTERS)
+@require_team_permission(team_permissions.MANAGE_ROSTERS)
 async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
     timestamp = int(datetime.utcnow().timestamp())
     command = EditTeamMemberCommand(body.id, body.roster_id, body.team_id, None, timestamp)
