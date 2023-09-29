@@ -254,3 +254,21 @@ class TeamInvite():
     roster_tag: str | None
     game: Game
     mode: GameMode
+
+@dataclass
+class LeaveRoster():
+    team_id: int
+    team_name: str
+    team_tag: str
+    team_color: int
+    roster_id: int
+    roster_name: str | None
+    roster_tag: str | None
+
+@dataclass
+class TeamInviteApproval(TeamInvite):
+    player_id: int
+    player_name: str
+    player_country_code: str
+    roster_leave_id: int | None
+    roster_leave: LeaveRoster | None

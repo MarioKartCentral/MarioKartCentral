@@ -530,6 +530,43 @@ class DenyTransferCommand(Command[None]):
                 await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
             await db.commit()
 
+@dataclass
+class ViewTransfersCommand(Command[list[TeamInviteApproval]]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        transfers: list[TeamInviteApproval] = []
+        roster_leave_ids = []
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT i.id, i.date, i.roster_leave_id, t.id, t.name, t.tag, t.color,
+                                    r.id, r.name, r.tag, r.game, r.mode, p.id, p.name, p.country_code
+                                    FROM roster_invites i
+                                    JOIN team_rosters r ON i.roster_id = r.id
+                                    JOIN teams t ON r.team_id = t.id
+                                    JOIN players p ON i.player_id = p.id
+                                    WHERE i.is_accepted = 1""") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (invite_id, date, roster_leave_id, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, 
+                    game, mode, player_id, player_name, player_country_code) = row
+                    transfers.append(TeamInviteApproval(invite_id, date, team_id, team_name, team_tag, team_color, roster_id, roster_name,
+                                                        roster_tag, game, mode, player_id, player_name, player_country_code, roster_leave_id, None))
+                    if roster_leave_id:
+                        roster_leave_ids.append(roster_leave_id)
+            leave_rosters = {}
+            # get all roster/team info of rosters being left by any player
+            async with db.execute(f"""SELECT t.id, t.name, t.tag, t.color, r.id, r.name, r.tag
+                                  FROM team_rosters r
+                                  JOIN teams t ON r.team_id = t.id
+                                  WHERE r.id IN ({','.join(roster_leave_ids)})""") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag = row
+                    leave_rosters[roster_id] = LeaveRoster(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag)
+            for transfer in transfers:
+                if transfer.roster_leave_id:
+                    transfer.roster_leave = leave_rosters[transfer.roster_leave_id]
+        return transfers
+
+
 @save_to_command_log
 @dataclass
 class ApproveTeamEditCommand(Command[None]):

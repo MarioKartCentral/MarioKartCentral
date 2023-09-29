@@ -158,6 +158,12 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
     await handle(command)
     return JSONResponse({})
 
+@require_permission(permissions.MANAGE_TRANSFERS)
+async def view_transfers(request: Request) -> JSONResponse:
+    command = ViewTransfersCommand()
+    transfers = await handle(command)
+    return JSONResponse(transfers)
+
 @bind_request_body(RequestEditRosterRequestData)
 @require_team_permission(team_permissions.EDIT_TEAM_INFO)
 async def request_edit_roster(request: Request, body: RequestEditRosterRequestData) -> JSONResponse:
@@ -242,6 +248,8 @@ routes: list[Route] = [
     Route('/api/registry/teams/declineInvite', decline_invite, methods=['POST']),
     Route('/api/registry/teams/leave', leave_team, methods=['POST']),
     Route('/api/registry/teams/approveTransfer', approve_transfer, methods=['POST']),
+    Route('/api/registry/teams/denyTransfer', deny_transfer, methods=['POST']),
+    Route('/api/registry/teams/transfers', view_transfers),
     Route('/api/registry/teams/requestRosterChange', request_edit_roster, methods=['POST']),
     Route('/api/registry/teams/approveRosterChange', approve_roster_edit_request, methods=['POST']),
     Route('/api/registry/teams/denyRosterChange', deny_roster_edit_request, methods=['POST']),
