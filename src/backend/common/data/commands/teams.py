@@ -381,10 +381,11 @@ class AcceptInviteCommand(Command[None]):
                 if self.player_id != invite_player_id:
                     raise Problem("Cannot accept invite for another player", status=400)
             # make sure that we are actually in the roster we're leaving
-            async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND player_id = ? AND leave_date IS ?", (self.roster_leave_id, self.player_id, None)) as cursor:
-                row = await cursor.fetchone()
-                if row is None:
-                    raise Problem("Player is not registered for the roster they are leaving", status=400)
+            if self.roster_leave_id:
+                async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND player_id = ? AND leave_date IS ?", (self.roster_leave_id, self.player_id, None)) as cursor:
+                    row = await cursor.fetchone()
+                    if row is None:
+                        raise Problem("Player is not registered for the roster they are leaving", status=400)
             # make sure we have at least one FC for the game of the roster that we are accepting an invite for
             async with db.execute("SELECT count(id) FROM friend_codes WHERE player_id = ? AND game = ?", (self.player_id, game)) as cursor:
                 row = await cursor.fetchone()

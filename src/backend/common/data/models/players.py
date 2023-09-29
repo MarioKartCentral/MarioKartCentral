@@ -32,8 +32,8 @@ class PlayerRoster:
     team_name: str
     team_tag: str
     team_color: int
-    roster_name: str
-    roster_tag: str
+    roster_name: str | None
+    roster_tag: str | None
     game: str
     mode: str
 
