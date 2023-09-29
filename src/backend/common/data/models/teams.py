@@ -97,6 +97,16 @@ class RosterPlayerInfo():
     discord_id: str
     join_date: int
     friend_codes: list[FriendCode]
+
+@dataclass
+class RosterInvitedPlayer():
+    player_id: int
+    name: str
+    country_code: str
+    is_banned: bool
+    discord_id: str
+    invite_date: int
+    friend_codes: list[FriendCode]
     
 @dataclass
 class TeamRoster():
@@ -110,6 +120,7 @@ class TeamRoster():
     is_recruiting: bool
     is_approved: bool
     players: list[RosterPlayerInfo]
+    invites: list[RosterInvitedPlayer]
 
 @dataclass
 class Team():

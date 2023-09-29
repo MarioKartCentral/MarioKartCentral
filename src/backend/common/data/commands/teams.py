@@ -77,7 +77,7 @@ class GetTeamInfoCommand(Command[Team]):
                         roster_name = team_name
                     if roster_tag is None:
                         roster_tag = team_tag
-                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_approval_status, [])
+                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, roster_approval_status, [], [])
                     rosters.append(curr_roster)
                     roster_dict[curr_roster.id] = curr_roster
             
@@ -94,11 +94,21 @@ class GetTeamInfoCommand(Command[Team]):
                     curr_team_member = PartialTeamMember(player_id, roster_id, join_date)
                     team_members.append(curr_team_member)
 
+            team_invites: list[PartialTeamMember] = []
+            # get all invited players to a roster on our team
+            async with db.execute(f"""SELECT player_id, roster_id, date
+                                  FROM roster_invites
+                                  WHERE roster_id IN ({roster_id_query})""") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    curr_invited_player = PartialTeamMember(*row)
+                    team_invites.append(curr_invited_player)
+
             player_dict: dict[int, PartialPlayer] = {}
 
-            if len(team_members) > 0:
-                # get info about all players who are in at least 1 roster on our team
-                member_id_query = ','.join(set([str(m.player_id) for m in team_members]))
+            if len(team_members) > 0 or len(team_invites) > 0:
+                # get info about all players who are in/invited to at least 1 roster on our team
+                member_id_query = ','.join(set([str(m.player_id) for m in team_members] + [str(m.player_id) for m in team_invites]))
                 async with db.execute(f"SELECT id, name, country_code, is_banned, discord_id FROM players WHERE id IN ({member_id_query})") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
@@ -120,6 +130,13 @@ class GetTeamInfoCommand(Command[Team]):
                 curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, member.join_date,
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
+
+            for invite in team_invites:
+                curr_roster = roster_dict[invite.roster_id]
+                p = player_dict[invite.player_id]
+                curr_player = RosterInvitedPlayer(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, invite.join_date,
+                    [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
+                curr_roster.invites.append(curr_player) 
 
             async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id FROM players p
                 JOIN users u ON u.player_id = p.id
@@ -306,6 +323,10 @@ class InvitePlayerCommand(Command[None]):
                 roster_team_id = row[0]
                 if int(roster_team_id) != self.team_id:
                     raise Problem("Roster is not part of specified team", status=400)
+            async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player not found", status=404)
             async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND leave_date IS ?", (self.roster_id, None)) as cursor:
                 row = await cursor.fetchone()
                 if row:
@@ -787,7 +808,7 @@ class ListTeamsCommand(Command[List[Team]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, rid, game, mode, rname, rtag, rdate, is_recruiting, rapprove = row
-                    roster = TeamRoster(rid, tid, game, mode, rname if rname else tname, rtag if rtag else ttag, rdate, is_recruiting, rapprove, [])
+                    roster = TeamRoster(rid, tid, game, mode, rname if rname else tname, rtag if rtag else ttag, rdate, is_recruiting, rapprove, [], [])
                     if tid in teams:
                         team: Team = teams[tid]
                         team.rosters.append(roster)
