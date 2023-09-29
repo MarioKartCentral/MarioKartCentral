@@ -15,9 +15,11 @@
       {/if}
     </div>
   {/if}
-  <div class="wrapper">
-    <slot />
-  </div>
+  {#if $$slots.default}
+    <div class="wrapper">
+      <slot />
+    </div>
+  {/if}
 </div>
 
 <style>

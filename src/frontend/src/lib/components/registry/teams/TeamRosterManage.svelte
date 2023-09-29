@@ -6,6 +6,7 @@
     import Section from '$lib/components/common/Section.svelte';
     import { locale } from '$i18n/i18n-svelte';
     import Dialog from "$lib/components/common/Dialog.svelte";
+    import LinkButton from '$lib/components/common/LinkButton.svelte';
   
     export let roster: TeamRoster;
     let kick_dialog: Dialog;
@@ -60,6 +61,14 @@
         }
     }
   </script>
+
+  <Section header="Team Page">
+    <div slot="header_content">
+        <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={roster.id}">
+            Back to Team
+        </LinkButton>
+    </div>
+  </Section>
   
   <Section header="{roster.game} {roster.name}">
     {roster.players.length} player{roster.players.length !== 1 ? 's' : ''}
