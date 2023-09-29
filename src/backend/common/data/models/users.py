@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
 from common.data.models.players import PlayerDetailed
+from common.data.models.teams import TeamInvite
+from common.data.models.tournaments import TournamentInvite
 
 @dataclass
 class User:
@@ -37,3 +39,9 @@ class PermissionsCheck:
     permissions: str | None = None
     check_team_perms: bool = False
     check_series_perms: bool = False
+
+@dataclass
+class PlayerInvites:
+    player_id: int
+    team_invites: list[TeamInvite]
+    tournament_invites: list[TournamentInvite]

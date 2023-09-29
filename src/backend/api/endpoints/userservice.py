@@ -3,7 +3,7 @@ from starlette.routing import Route
 from api.auth import require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_query
-from common.data.commands import GetUserDataFromIdCommand, GetPlayerDetailedCommand, CheckPermissionsCommand, GetModNotificationsCommand
+from common.data.commands import GetUserDataFromIdCommand, GetPlayerDetailedCommand, CheckPermissionsCommand, GetModNotificationsCommand, GetInvitesForPlayerCommand
 from common.data.models import UserPlayer, PermissionsCheck
 from common.data.models.common import Problem
 
@@ -33,7 +33,13 @@ async def current_user_and_player(request: Request, body: PermissionsCheck) -> J
         mod_notifications = await handle(GetModNotificationsCommand(valid_perms))
     return JSONResponse(UserPlayer(user.id, user.player_id, player, valid_perms, team_perms, series_perms, mod_notifications))
 
+@require_logged_in
+async def player_invites(request: Request) -> JSONResponse:
+    invites = await handle(GetInvitesForPlayerCommand(request.state.user.player_id))
+    return JSONResponse(invites)
+
 routes = [
     Route('/api/user/me', current_user),
-    Route('/api/user/me/player', current_user_and_player)
+    Route('/api/user/me/player', current_user_and_player),
+    Route('/api/user/me/invites', player_invites)
 ]

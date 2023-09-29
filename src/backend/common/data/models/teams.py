@@ -241,3 +241,14 @@ class TeamFilter():
     is_recruiting: bool | None = None
     is_historical: bool | None = None
 
+@dataclass
+class TeamInvite():
+    invite_id: int
+    team_id: int
+    team_name: str
+    team_tag: str
+    roster_id: int
+    roster_name: str | None
+    roster_tag: str | None
+    game: Game
+    mode: GameMode

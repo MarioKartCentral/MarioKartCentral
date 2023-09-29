@@ -116,3 +116,15 @@ class TournamentFilter():
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
+
+@dataclass
+class TournamentInvite():
+    invite_id: int
+    tournament_id: int
+    timestamp: int
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: int
+    tournament_name: str
+    tournament_game: Game
+    tournament_mode: GameMode
