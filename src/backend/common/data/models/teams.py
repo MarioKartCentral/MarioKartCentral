@@ -244,9 +244,11 @@ class TeamFilter():
 @dataclass
 class TeamInvite():
     invite_id: int
+    date: int
     team_id: int
     team_name: str
     team_tag: str
+    team_color: int
     roster_id: int
     roster_name: str | None
     roster_tag: str | None
