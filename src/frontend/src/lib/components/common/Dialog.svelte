@@ -68,6 +68,7 @@
         display: grid;
         background-color: rgba(0, 128, 0, 0.6);
         padding: 15px;
+        min-height: 50px;
     }
     .content {
         padding: 15px;
