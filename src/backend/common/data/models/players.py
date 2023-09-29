@@ -25,8 +25,22 @@ class PlayerBan:
     reason: str
 
 @dataclass
+class PlayerRoster:
+    roster_id: int
+    join_date: int
+    team_id: int
+    team_name: str
+    team_tag: str
+    team_color: int
+    roster_name: str
+    roster_tag: str
+    game: str
+    mode: str
+
+@dataclass
 class PlayerDetailed(Player):
     friend_codes: list[FriendCode]
+    rosters: list[PlayerRoster]
     ban_info: PlayerBan | None
     user_settings: UserSettings | None
 
@@ -74,3 +88,4 @@ class PlayerBanFilter:
     expires_before: str | None = None
     expires_after: str | None = None
     reason: str | None = None
+
