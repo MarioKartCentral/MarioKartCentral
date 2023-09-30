@@ -5,6 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
+  import LinkButton from '$lib/components/common/LinkButton.svelte';
 
   let user_info: UserInfo;
 
@@ -23,7 +24,8 @@
 <Section header="Player Profile">
   <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a>
+      <LinkButton href="/{$page.params.lang}/registry/invites">Invites</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</LinkButton>
     {/if}
   </div>
   <div class="wrapper">

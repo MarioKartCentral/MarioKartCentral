@@ -59,7 +59,7 @@
         top: 50%;
         left: 50%;
         width: 400px;
-        height: 200px;
+        min-height: 200px;
         margin-left: -200px;
         margin-top: -100px;
         background-color: rgba(255, 255, 255, 0.15);

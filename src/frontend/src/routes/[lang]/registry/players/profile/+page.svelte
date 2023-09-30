@@ -34,5 +34,3 @@
   <PlayerProfile {player} />
 {/if}
 
-<style>
-</style>
