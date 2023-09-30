@@ -1,12 +1,11 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import Dialog from "$lib/components/common/Dialog.svelte";
     import type { Team } from '$lib/types/team';
     import { setTeamPerms, team_permissions } from '$lib/util/util';
+    import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
     import TeamRosterManage from '$lib/components/registry/teams/TeamRosterManage.svelte';
 
-    let dialog: Dialog;
     let id = 0;
     let team: Team;
     $: team_name = team ? team.name : 'Registry';
@@ -29,14 +28,14 @@
   <title>{team_name} | Mario Kart Central</title>
 </svelte:head>
 
-<button on:click={() => dialog.open()}>Hey!</button>
-
-<Dialog bind:this={dialog} header="Test Dialog">
-    hi!!!!!!!!!!!!!!!!
-</Dialog>
-
 {#if team}
-    {#each team.rosters as roster}
-        <TeamRosterManage roster={roster}/>
-    {/each}
+    <TeamPermissionCheck team_id={id} permission={team_permissions.manage_rosters}>
+        {#each team.rosters as roster}
+            <TeamRosterManage roster={roster}/>
+        {/each}
+
+        <form>
+            
+        </form>
+    </TeamPermissionCheck>
 {/if}

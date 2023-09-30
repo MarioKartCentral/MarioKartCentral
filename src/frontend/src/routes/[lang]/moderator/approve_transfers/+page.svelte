@@ -4,8 +4,12 @@
     import Section from '$lib/components/common/Section.svelte';
     import Table from '$lib/components/common/Table.svelte';
     import { locale } from '$i18n/i18n-svelte';
+    import Dialog from '$lib/components/common/Dialog.svelte';
 
     let transfers: TeamInviteApproval[] = [];
+    let deny_dialog: Dialog;
+    let curr_transfer: TeamInviteApproval;
+    let send_back: boolean = false;
 
     onMount(async () => {
         const res = await fetch(`/api/registry/teams/transfers`);
@@ -37,6 +41,31 @@
         } else {
             alert(`Approving transfer failed: ${result['title']}`);
         }
+    }
+    async function denyTransfer(transfer: TeamInviteApproval) {
+        deny_dialog.close();
+        const payload = {
+            invite_id: transfer.invite_id,
+            send_back: Boolean(send_back)
+        };
+        console.log(payload);
+        const endpoint = "/api/registry/teams/denyTransfer";
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (res.status < 300) {
+            window.location.reload();
+        } else {
+            alert(`Approving transfer failed: ${result['title']}`);
+        }
+    }
+
+    function denyDialog(invite: TeamInviteApproval) {
+        curr_transfer = invite;
+        deny_dialog.open();
     }
 </script>
 
@@ -72,7 +101,7 @@
                     <td>{new Date(transfer.date * 1000).toLocaleString($locale, options)}</td>
                     <td>
                         <button class="check" on:click={() => approveTransfer(transfer)}>✓</button>
-                        <button class="x">X</button>
+                        <button class="x" on:click={() => denyDialog(transfer)}>X</button>
                     </td>
                 </tr>
                 
@@ -83,6 +112,16 @@
         No transfers.
     {/if}
 </Section>
+
+<Dialog bind:this={deny_dialog} header="Deny Transfer">
+    Send transfer back to the player?
+    <input type="checkbox" bind:value={send_back}/>
+    <br/><br/>
+    <div>
+        <button on:click={() => denyTransfer(curr_transfer)}>Deny</button>
+        <button on:click={deny_dialog.close}>Cancel</button>
+    </div>
+</Dialog>
 
 <style>
     button {

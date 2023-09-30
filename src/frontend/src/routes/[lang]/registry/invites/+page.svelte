@@ -56,6 +56,7 @@
     $: leaveable_rosters = curr_invite ? getLeaveableRosters(curr_invite) : [];
 
     async function acceptInvite(invite: TeamInvite) {
+        accept_dialog.close();
         const payload = {
             invite_id: invite.invite_id,
             roster_leave_id: leave_roster_id
@@ -67,10 +68,27 @@
         });
         const result = await res.json();
         if (res.status < 300) {
-            alert(`Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}`)
+            alert(`Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}`);
             window.location.reload();
         } else {
             alert(`Accepting invite failed: ${result['title']}`);
+        }
+    }
+    async function declineInvite(invite: TeamInvite) {
+        decline_dialog.close();
+        const payload = {
+            invite_id: invite.invite_id
+        }
+        const res = await fetch(`/api/registry/teams/declineInvite`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (res.status < 300) {
+            window.location.reload();
+        } else {
+            alert(`Declining invite failed: ${result['title']}`);
         }
     }
 </script>
@@ -143,7 +161,7 @@
     Are you sure you would like to decline the invite to {curr_invite?.team_name}?
     <br/><br/>
     <div>
-        <button>Decline</button>
+        <button on:click={() => declineInvite(curr_invite)}>Decline</button>
         <button on:click={decline_dialog.close}>Cancel</button>
     </div>
 </Dialog>

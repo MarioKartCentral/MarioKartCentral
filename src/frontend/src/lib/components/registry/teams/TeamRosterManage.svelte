@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
     import type { TeamRoster } from '$lib/types/team-roster';
     import Table from '$lib/components/common/Table.svelte';
     import Section from '$lib/components/common/Section.svelte';
