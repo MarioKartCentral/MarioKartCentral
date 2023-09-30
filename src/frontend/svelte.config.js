@@ -10,9 +10,14 @@ function getEntriesForLocale(locale) {
     `/${locale}/player-signup`,
     `/${locale}/registry/players/edit-profile`,
     `/${locale}/registry/players/profile`,
+    `/${locale}/registry/invites`,
     `/${locale}/registry/teams/profile`,
     `/${locale}/registry/teams/create`,
+    `/${locale}/registry/teams/edit`,
+    `/${locale}/registry/teams/manage_rosters`,
     `/${locale}/moderator/approve_teams`,
+    `/${locale}/moderator/approve_team_edits`,
+    `/${locale}/moderator/approve_transfers`,
   ];
 }
 

@@ -44,7 +44,7 @@
     <TeamProfile {team} />
   </Section>
   <Section header="Rosters">
-    {#each team.rosters.filter((r) => r.is_approved === "approved") as roster}
+    {#each team.rosters.filter((r) => r.is_approved === 'approved') as roster}
       <TeamRoster {roster} />
     {/each}
   </Section>

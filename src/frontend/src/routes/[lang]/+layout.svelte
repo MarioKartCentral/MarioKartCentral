@@ -19,8 +19,8 @@
   });
 
   let permissions: string[] = []; // permissions list passed up from current page
-  let check_team_permissions: boolean = false;
-  let check_series_permissions: boolean = false;
+  let check_team_permissions = false;
+  let check_series_permissions = false;
   function addPermission(permission: string) {
     // function that updates list of all permissions
     permissions.push(permission);
@@ -36,13 +36,13 @@
   onMount(async () => {
     if (user_info.is_checked === false) {
       let query_params = [];
-      if(permissions.length > 0) {
+      if (permissions.length > 0) {
         query_params.push(`permissions=${permissions.join(',')}`);
       }
-      if(check_team_permissions) {
+      if (check_team_permissions) {
         query_params.push('check_team_perms=true');
       }
-      if(check_series_permissions) {
+      if (check_series_permissions) {
         query_params.push('check_series_perms=true');
       }
       let query_text = `?` + query_params.join('&');

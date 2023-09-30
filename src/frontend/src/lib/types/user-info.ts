@@ -9,12 +9,12 @@ type ModNotifications = {
 type TeamPermissions = {
   team_id: number;
   permissions: string[];
-}
+};
 
 type SeriesPermissions = {
   series_id: number;
   permissions: string[];
-}
+};
 
 export type UserInfo = {
   id: number | null;

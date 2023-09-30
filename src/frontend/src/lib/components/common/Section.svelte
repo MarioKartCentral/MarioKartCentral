@@ -28,7 +28,7 @@
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
   }
-  @media(max-width:600px) {
+  @media (max-width: 600px) {
     .container {
       width: 100%;
     }

@@ -35,16 +35,16 @@ export const permissions = {
 };
 
 export const team_permissions = {
-  edit_team_name_tag: "team_name_tag_edit",
-  edit_team_info: "team_info_edit",
-  create_rosters: "roster_create",
-  manage_rosters: "roster_manage",
-  manage_roles: "role_manage",
-  invite_players: "player_invite",
-  kick_players: "player_kick",
-  register_tournament: "tournament_register",
-  manage_tournament_rosters: "tournament_rosters_manage"
-}
+  edit_team_name_tag: 'team_name_tag_edit',
+  edit_team_info: 'team_info_edit',
+  create_rosters: 'roster_create',
+  manage_rosters: 'roster_manage',
+  manage_roles: 'role_manage',
+  invite_players: 'player_invite',
+  kick_players: 'player_kick',
+  register_tournament: 'tournament_register',
+  manage_tournament_rosters: 'tournament_rosters_manage',
+};
 
 export const mod_panel_permissions = [
   permissions.edit_player,

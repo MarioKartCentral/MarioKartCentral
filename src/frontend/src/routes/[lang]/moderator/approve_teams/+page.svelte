@@ -7,7 +7,6 @@
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
 
   let teams: Team[] = [];
 
@@ -30,8 +29,13 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
-    alert('Successfully approved team');
-    goto(`/${$page.params.lang}/registry/teams`);
+    const result = await res.json();
+    if (res.status < 300) {
+      alert('Successfully approved team');
+      window.location.reload();
+    } else {
+      alert(`Approving team failed: ${result['title']}`);
+    }
   }
 
   async function denyTeam(team: Team) {
@@ -39,8 +43,13 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
-    alert('Successfully denied team');
-    goto(`/${$page.params.lang}/registry/teams`);
+    const result = await res.json();
+    if (res.status < 300) {
+      alert('Successfully denied team');
+      window.location.reload();
+    } else {
+      alert(`Denying team failed: ${result['title']}`);
+    }
   }
 </script>
 
