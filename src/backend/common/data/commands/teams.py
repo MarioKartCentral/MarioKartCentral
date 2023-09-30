@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
@@ -303,9 +303,25 @@ class EditRosterCommand(Command[None]):
                     row = await cursor.fetchone()
                     if row is not None:
                         raise Problem('Only one roster per game/mode may use the same name', status=400)
-            await db.execute("UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, approval_status = ?",
-                             (self.team_id, self.name, self.tag, self.is_recruiting, self.is_active, self.approval_status))
+            await db.execute("""UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, approval_status = ?
+                                WHERE id = ?""",
+                             (self.team_id, self.name, self.tag, self.is_recruiting, self.is_active, self.approval_status, self.roster_id))
             await db.commit()
+
+@save_to_command_log
+@dataclass
+class ManagerEditRosterCommand(Command[None]):
+    roster_id: int
+    team_id: int
+    is_recruiting: bool
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("UPDATE team_rosters SET is_recruiting = ? WHERE id = ? AND team_id = ?", (self.is_recruiting, self.roster_id, self.team_id)) as cursor:
+                rows = cursor.rowcount
+                if not rows:
+                    raise Problem("Roster not found", status=404)
+                await db.commit()
 
 @save_to_command_log
 @dataclass
@@ -551,6 +567,10 @@ class ViewTransfersCommand(Command[list[TeamInviteApproval]]):
                 for row in rows:
                     (invite_id, date, roster_leave_id, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, 
                     game, mode, player_id, player_name, player_country_code) = row
+                    if roster_name is None:
+                        roster_name = team_name
+                    if roster_tag is None:
+                        roster_tag = team_tag
                     transfers.append(TeamInviteApproval(invite_id, date, team_id, team_name, team_tag, team_color, roster_id, roster_name,
                                                         roster_tag, game, mode, player_id, player_name, player_country_code, roster_leave_id, None))
                     if roster_leave_id:
@@ -564,6 +584,10 @@ class ViewTransfersCommand(Command[list[TeamInviteApproval]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag = row
+                    if roster_name is None:
+                        roster_name = team_name
+                    if roster_tag is None:
+                        roster_tag = team_tag
                     leave_rosters[roster_id] = LeaveRoster(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag)
             for transfer in transfers:
                 if transfer.roster_leave_id:
@@ -627,6 +651,12 @@ class RequestEditRosterCommand(Command[None]):
         name = self.name
         tag = self.tag
         async with db_wrapper.connect() as db:
+            # check if this roster has made a request in the last 90 days
+            async with db.execute("SELECT date FROM roster_edit_requests WHERE roster_id = ? AND date > ? AND approval_status != 'denied' LIMIT 1",
+                                  (self.roster_id, (datetime.utcnow()-timedelta(minutes=90)).timestamp())) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem("Roster has requested name/tag change in the last 90 days", status=400)
             async with db.execute("SELECT t.name, t.tag, r.game, r.mode FROM team_rosters r JOIN teams t ON r.team_id = t.id WHERE r.id = ? AND r.team_id = ?", (self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -690,7 +720,17 @@ class ListRosterEditRequestsCommand(Command[list[RosterEditRequest]]):
                                   WHERE r.approval_status = ?""", (self.approval_status,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    requests.append(RosterEditRequest(*row))
+                    request_id, roster_id, team_id, team_name, team_tag, roster_name, roster_tag, request_name, request_tag, date, approval_status = row
+                    if roster_name is None:
+                        roster_name = team_name
+                    if roster_tag is None:
+                        roster_tag = team_tag
+                    if request_name is None:
+                        request_name = team_name
+                    if request_tag is None:
+                        request_tag = team_tag
+                    requests.append(RosterEditRequest(request_id, roster_id, team_id, team_name, team_tag, roster_name, roster_tag,
+                                                      request_name, request_tag, date, approval_status))
         return requests
 
 @save_to_command_log

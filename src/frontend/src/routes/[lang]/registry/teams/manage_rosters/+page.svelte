@@ -92,7 +92,7 @@
     </TeamPermissionCheck>
     <TeamPermissionCheck team_id={id} permission={team_permissions.create_rosters}>
         <Section header="New Roster">
-            <form on:submit|preventDefault={createRoster}>
+            <form method="post" on:submit|preventDefault={createRoster}>
                 <label for="game">Game</label>
                 <select name="game" bind:value={game} on:change={() => ([mode] = valid_modes[game])}>
                     {#each Object.keys(valid_games) as game}

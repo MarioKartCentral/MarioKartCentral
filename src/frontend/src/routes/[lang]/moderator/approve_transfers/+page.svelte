@@ -92,12 +92,12 @@
                     <td>{transfer.player_country_code} {transfer.player_name}</td>
                     <td>
                         {#if transfer.roster_leave}
-                            {transfer.roster_leave.roster_tag ? transfer.roster_leave.roster_tag : transfer.roster_leave.team_tag}
+                            {transfer.roster_leave.roster_tag}
                         {:else}
                             None
                         {/if}
                     </td>
-                    <td>{transfer.roster_tag ? transfer.roster_tag : transfer.team_tag}</td>
+                    <td>{transfer.roster_tag}</td>
                     <td>{new Date(transfer.date * 1000).toLocaleString($locale, options)}</td>
                     <td>
                         <button class="check" on:click={() => approveTransfer(transfer)}>✓</button>

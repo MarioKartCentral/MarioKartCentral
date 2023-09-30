@@ -116,6 +116,34 @@ async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResp
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(ManagerEditRosterRequestData)
+@require_team_permission(team_permissions.MANAGE_ROSTERS)
+async def manager_edit_roster(request: Request, body: ManagerEditRosterRequestData) -> JSONResponse:
+    command = ManagerEditRosterCommand(body.roster_id, body.team_id, body.is_recruiting)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(RequestEditRosterRequestData)
+@require_team_permission(team_permissions.MANAGE_ROSTERS)
+async def request_edit_roster(request: Request, body: RequestEditRosterRequestData) -> JSONResponse:
+    command = RequestEditRosterCommand(body.roster_id, body.team_id, body.name, body.tag)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditRosterChangeRequestData)
+@require_permission(permissions.MANAGE_TEAMS)
+async def approve_roster_edit_request(request: Request, body: EditRosterChangeRequestData) -> JSONResponse:
+    command = ApproveRosterEditCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditRosterChangeRequestData)
+@require_permission(permissions.MANAGE_TEAMS)
+async def deny_roster_edit_request(request: Request, body: EditRosterChangeRequestData) -> JSONResponse:
+    command = DenyRosterEditCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
 @bind_request_body(InviteRosterPlayerRequestData)
 @require_team_permission(team_permissions.INVITE_PLAYERS)
 async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
@@ -249,7 +277,11 @@ routes: list[Route] = [
     Route('/api/registry/teams/changeRequests', list_team_edit_requests),
     Route('/api/registry/teams/createRoster', create_roster, methods=['POST']),
     Route('/api/registry/teams/requestCreateRoster', request_create_roster, methods=['POST']),
-    Route('/api/registry/teams/editRoster', edit_roster, methods=['POST']),
+    Route('/api/registry/teams/forceEditRoster', edit_roster, methods=['POST']),
+    Route('/api/registry/teams/editRoster', manager_edit_roster, methods=['POST']),
+    Route('/api/registry/teams/requestRosterChange', request_edit_roster, methods=['POST']),
+    Route('/api/registry/teams/approveRosterChange', approve_roster_edit_request, methods=['POST']),
+    Route('/api/registry/teams/denyRosterChange', deny_roster_edit_request, methods=['POST']),
     Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST']),
     Route('/api/registry/teams/deleteInvite', delete_invite, methods=['POST']),
     Route('/api/registry/teams/acceptInvite', accept_invite, methods=['POST']),

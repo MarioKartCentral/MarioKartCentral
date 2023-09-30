@@ -6,10 +6,10 @@
     import { locale } from '$i18n/i18n-svelte';
     import Dialog from "$lib/components/common/Dialog.svelte";
     import type { RosterPlayer } from '$lib/types/roster-player';
-    import LinkButton from '$lib/components/common/LinkButton.svelte';
   
     export let roster: TeamRoster;
     let kick_dialog: Dialog;
+    let edit_dialog: Dialog;
     let curr_player: RosterPlayer;
     let invite_player_id: number = 0;
   
@@ -87,11 +87,65 @@
             alert(`Kicking player failed: ${result['title']}`);
         }
     }
+
+    async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        edit_dialog.close();
+        const data = new FormData(event.currentTarget);
+        const payload = {
+            roster_id: roster.id,
+            team_id: roster.team_id,
+            name: data.get('name')?.toString(),
+            tag: data.get('tag')?.toString(),
+        };
+        console.log(payload);
+        const endpoint = '/api/registry/teams/requestRosterChange';
+        const response = await fetch(endpoint, {
+        method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            window.location.reload();
+            alert(`Your request to change your roster's name/tag has been sent to MKCentral staff for approval.`);
+        } else {
+            alert(`Editing roster failed: ${result['title']}`);
+        }
+    }
+
+    async function editRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        edit_dialog.close();
+        const data = new FormData(event.currentTarget);
+        function getOptionalValue(name: string) {
+            return data.get(name) ? data.get(name)?.toString() : '';
+        }
+        const payload = {
+            roster_id: roster.id,
+            team_id: roster.team_id,
+            is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
+        };
+        const endpoint = '/api/registry/teams/editRoster';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            window.location.reload();
+            alert("Roster edited successfully");
+        } else {
+            alert(`Editing roster failed: ${result['title']}`);
+        }
+    }
   </script>
 
   
   
   <Section header="{roster.game} {roster.name}">
+    <div slot="header_content">
+        <button on:click={edit_dialog.open}>Edit Roster</button>
+    </div>
     {roster.players.length} player{roster.players.length !== 1 ? 's' : ''}
     {#if roster.players.length}
         <Table>
@@ -172,4 +226,26 @@
         <button on:click={() => kickPlayer(curr_player)}>Kick</button>
         <button on:click={kick_dialog.close}>Cancel</button>
     </div>
+</Dialog>
+
+<Dialog bind:this={edit_dialog} header="Edit Roster">
+    <form method="post" on:submit|preventDefault={editNameTag}>
+        <label for="name">Team Name</label>
+        <input name="name" type="text" value={roster.name} required />
+        <br />
+        <label for="tag">Team Tag</label>
+        <input name="tag" type="text" value={roster.tag} required />
+        <br/>
+        <button type="submit">Request Name/Tag Change</button>
+    </form>
+    <br/><br/>
+    <form method="post" on:submit|preventDefault={editRoster}>
+        <label for="recruiting">Recruitment Status</label>
+        <select name="recruiting">
+            <option value="true">Recruiting</option>
+            <option value="false">Not Recruiting</option>
+        </select>
+        <br/>
+        <button type="submit">Edit Roster</button>
+    </form>
 </Dialog>

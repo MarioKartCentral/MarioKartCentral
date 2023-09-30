@@ -280,3 +280,20 @@ class TeamInviteApproval(TeamInvite):
     player_country_code: str
     roster_leave_id: int | None
     roster_leave: LeaveRoster | None
+
+@dataclass
+class RequestRosterChangeRequestData():
+    roster_id: int
+    team_id: int
+    name: str | None
+    tag: str | None
+
+@dataclass
+class EditRosterChangeRequestData():
+    request_id: int
+
+@dataclass
+class ManagerEditRosterRequestData():
+    roster_id: int
+    team_id: int
+    is_recruiting: bool

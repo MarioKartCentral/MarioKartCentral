@@ -47,7 +47,7 @@
         } else {
             alert(`Editing team failed: ${result['title']}`);
         }
-  }
+    }
 
     async function editTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);

@@ -163,10 +163,10 @@
             <tbody>
                 {#each roster_requests as r, i}
                 <tr class="row-{i % 2}">
-                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_tag ? r.old_tag : r.team_tag}</a></td>
-                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_name ? r.old_name : r.team_name}</a></td>
-                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_tag ? r.new_tag : r.team_tag}</a></td>
-                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_name ? r.new_name : r.team_name}</a></td>
+                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_tag}</a></td>
+                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_name}</a></td>
+                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_tag}</a></td>
+                    <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_name}</a></td>
                     <td>{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
                     <td>
                       <button class="check" on:click={() => approveRosterRequest(r)}>✓</button>
