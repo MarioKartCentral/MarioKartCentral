@@ -208,7 +208,7 @@ async def force_transfer_player(request: Request, body: ForceTransferPlayerReque
 @bind_request_body(EditTeamMemberInfoRequestData)
 @require_permission(permissions.MANAGE_TEAM_ROSTERS)
 async def edit_team_member_info(request: Request, body: EditTeamMemberInfoRequestData) -> JSONResponse:
-    command = EditTeamMemberCommand(body.id, body.roster_id, body.team_id, body.join_date, body.leave_date)
+    command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, body.join_date, body.leave_date)
     await handle(command)
     return JSONResponse({})
 
@@ -216,7 +216,7 @@ async def edit_team_member_info(request: Request, body: EditTeamMemberInfoReques
 @require_team_permission(team_permissions.MANAGE_ROSTERS)
 async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
     timestamp = int(datetime.utcnow().timestamp())
-    command = EditTeamMemberCommand(body.id, body.roster_id, body.team_id, None, timestamp)
+    command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp)
     await handle(command)
     return JSONResponse({})
 

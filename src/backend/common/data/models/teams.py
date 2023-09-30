@@ -227,7 +227,7 @@ class ForceTransferPlayerRequestData():
 
 @dataclass
 class EditTeamMemberInfoRequestData():
-    id: int
+    player_id: int
     roster_id: int
     team_id: int
     join_date: int | None
@@ -235,7 +235,7 @@ class EditTeamMemberInfoRequestData():
 
 @dataclass
 class KickPlayerRequestData():
-    id: int
+    player_id: int
     roster_id: int
     team_id: int
 

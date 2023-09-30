@@ -1,7 +1,7 @@
 import type { FriendCode } from './friend-code';
 
 export type RosterPlayer = {
-  id: number;
+  player_id: number;
   name: string;
   country_code: string;
   is_banned: boolean;

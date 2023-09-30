@@ -62,7 +62,7 @@
         min-height: 200px;
         margin-left: -200px;
         margin-top: -100px;
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(64, 64, 64, 0.9);
     }
     .header {
         display: grid;

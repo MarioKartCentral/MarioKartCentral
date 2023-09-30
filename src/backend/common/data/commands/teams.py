@@ -778,7 +778,7 @@ class ForceTransferPlayerCommand(Command[None]):
 @save_to_command_log
 @dataclass
 class EditTeamMemberCommand(Command[None]):
-    id: int
+    player_id: int
     roster_id: int
     team_id: int
     join_date: int | None
@@ -786,18 +786,18 @@ class EditTeamMemberCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT join_date FROM team_members m
+            async with db.execute("""SELECT m.id, m.join_date FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
-                                    WHERE m.id = ? AND m.roster_id = ? AND t.team_id = ?
-                                    """, (self.id, self.roster_id, self.team_id)) as cursor:
+                                    WHERE m.player_id = ? AND m.roster_id = ? AND t.id = ?
+                                    """, (self.player_id, self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Team member not found", status=404)
-                member_join_date = row[0]
+                id, member_join_date = row
                 if not self.join_date:
                     self.join_date = member_join_date
-            await db.execute("UPDATE team_members SET join_date = ?, leave_date = ? WHERE id = ?", (self.join_date, self.leave_date, self.id))
+            await db.execute("UPDATE team_members SET join_date = ?, leave_date = ? WHERE id = ?", (self.join_date, self.leave_date, id))
             await db.commit()
 
 @dataclass
