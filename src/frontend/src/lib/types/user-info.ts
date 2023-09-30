@@ -3,6 +3,7 @@ import type { PlayerInfo } from '$lib/types/player-info';
 type ModNotifications = {
   pending_teams: number;
   pending_team_edits: number;
+  pending_transfers: number;
 };
 
 type TeamPermissions = {

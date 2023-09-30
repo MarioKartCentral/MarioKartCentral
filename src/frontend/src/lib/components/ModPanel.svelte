@@ -34,4 +34,13 @@
       >
     </div>
   {/if}
+  {#if user_info.permissions.includes(permissions.manage_transfers)}
+    <div>
+      <a href="/{$page.params.lang}/moderator/approve_transfers"
+        >Transfers {user_info.mod_notifications?.pending_transfers
+          ? `(${user_info.mod_notifications.pending_transfers})`
+          : ''}</a
+      >
+    </div>
+  {/if}
 </DropdownMenu>

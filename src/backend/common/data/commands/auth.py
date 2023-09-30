@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, User, ModNotifications, TeamPermissions
+from common.auth import permissions
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -207,7 +208,7 @@ class GetModNotificationsCommand(Command[ModNotifications]):
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         mod_notifications = ModNotifications()
         async with db_wrapper.connect(readonly=True) as db:
-            if 'team_manage' in self.valid_perms:
+            if permissions.MANAGE_TEAMS in self.valid_perms:
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     mod_notifications.pending_teams = row[0]
@@ -217,4 +218,8 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                 async with db.execute("SELECT COUNT(id) FROM roster_edit_requests WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     mod_notifications.pending_team_edits += row[0]
+            if permissions.MANAGE_TRANSFERS in self.valid_perms:
+                async with db.execute("SELECT COUNT(id) FROM roster_invites WHERE is_accepted = 1") as cursor:
+                    row = await cursor.fetchone()
+                    mod_notifications.pending_transfers = row[0]
         return mod_notifications
