@@ -347,7 +347,7 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
-            async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND leave_date IS ?", (self.roster_id, None)) as cursor:
+            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_id, None)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Player is already on this roster", status=400)
