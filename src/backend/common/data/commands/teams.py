@@ -316,17 +316,21 @@ class InvitePlayerCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT team_id FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+            async with db.execute("SELECT team_id, game FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Roster not found", status=404)
-                roster_team_id = row[0]
+                roster_team_id, game = row
                 if int(roster_team_id) != self.team_id:
                     raise Problem("Roster is not part of specified team", status=400)
             async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player not found", status=404)
+            async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player has no friend codes for this game", status=400)
             async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND leave_date IS ?", (self.roster_id, None)) as cursor:
                 row = await cursor.fetchone()
                 if row:
@@ -556,7 +560,7 @@ class ViewTransfersCommand(Command[list[TeamInviteApproval]]):
             async with db.execute(f"""SELECT t.id, t.name, t.tag, t.color, r.id, r.name, r.tag
                                   FROM team_rosters r
                                   JOIN teams t ON r.team_id = t.id
-                                  WHERE r.id IN ({','.join(roster_leave_ids)})""") as cursor:
+                                  WHERE r.id IN ({','.join([str (r) for r in roster_leave_ids])})""") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag = row
@@ -699,10 +703,15 @@ class ForceTransferPlayerCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id FROM team_rosters WHERE id = ? AND team_id = ?", (self.roster_id, self.team_id)) as cursor:
+            async with db.execute("SELECT id, game FROM team_rosters WHERE id = ? AND team_id = ?", (self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Roster not found", status=404)
+                game = row[1]
+            async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player has no friend codes for this game", status=400)
             if self.roster_leave_id:
                 # check this before we move the player to the new team
                 async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_leave_id, None)) as cursor:

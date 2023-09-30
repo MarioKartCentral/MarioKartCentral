@@ -118,7 +118,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                                     FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
-                                    WHERE m.player_id = ? AND m.leave_date = ?""", (self.id, None)) as cursor:
+                                    WHERE m.player_id = ? AND m.leave_date IS NULL""", (self.id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     rosters.append(PlayerRoster(*row))
