@@ -61,13 +61,7 @@
     }
   </script>
 
-  <Section header="Team Page">
-    <div slot="header_content">
-        <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={roster.id}">
-            Back to Team
-        </LinkButton>
-    </div>
-  </Section>
+  
   
   <Section header="{roster.game} {roster.name}">
     {roster.players.length} player{roster.players.length !== 1 ? 's' : ''}

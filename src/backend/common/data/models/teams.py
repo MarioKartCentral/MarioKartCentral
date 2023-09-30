@@ -137,6 +137,14 @@ class Team():
     rosters: list[TeamRoster]
     managers: list[Player]
 
+@dataclass
+class RequestCreateRosterRequestData():
+    team_id: int
+    game: Game
+    mode: GameMode
+    name: str | None
+    tag: str | None
+    is_recruiting: bool
 
 @dataclass
 class CreateRosterRequestData():

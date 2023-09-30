@@ -100,6 +100,13 @@ async def create_roster(request: Request, body: CreateRosterRequestData) -> JSON
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(RequestCreateRosterRequestData)
+@require_team_permission(team_permissions.CREATE_ROSTERS)
+async def request_create_roster(request: Request, body: RequestCreateRosterRequestData) -> JSONResponse:
+    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, True, "pending")
+    await handle(command)
+    return JSONResponse({})
+
 # for moderator use, allows for direct editing of name/tags
 @bind_request_body(EditRosterRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -241,6 +248,7 @@ routes: list[Route] = [
     Route('/api/registry/teams/denyChange', deny_team_edit_request, methods=['POST']),
     Route('/api/registry/teams/changeRequests', list_team_edit_requests),
     Route('/api/registry/teams/createRoster', create_roster, methods=['POST']),
+    Route('/api/registry/teams/requestCreateRoster', request_create_roster, methods=['POST']),
     Route('/api/registry/teams/editRoster', edit_roster, methods=['POST']),
     Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST']),
     Route('/api/registry/teams/deleteInvite', delete_invite, methods=['POST']),
