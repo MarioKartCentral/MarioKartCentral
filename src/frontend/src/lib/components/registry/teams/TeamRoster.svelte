@@ -2,6 +2,7 @@
   import type { TeamRoster } from '$lib/types/team-roster';
   import Table from '$lib/components/common/Table.svelte';
   import { locale } from '$i18n/i18n-svelte';
+  import { page } from '$app/stores';
 
   export let roster: TeamRoster;
 
@@ -35,7 +36,7 @@
         {#each roster.players as player}
           <tr>
             <td>{player.country_code}</td>
-            <td>{player.name}</td>
+            <td><a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">{player.name}</a></td>
             <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
             <td>{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
           </tr>
