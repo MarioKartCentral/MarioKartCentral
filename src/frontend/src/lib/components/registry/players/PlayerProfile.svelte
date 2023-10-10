@@ -57,7 +57,8 @@
           {#each player.rosters as r}
             <div class="roster">
               <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
-                {r.roster_name} ({r.game} {r.mode})
+                {r.roster_name} ({r.game}
+                {r.mode})
               </a>
             </div>
           {/each}

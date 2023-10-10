@@ -20,7 +20,7 @@
     }
 
     const res2 = await fetch(`/api/registry/teams/unapprovedRosters`);
-    if(res2.status === 200) {
+    if (res2.status === 200) {
       const body: TeamRoster[] = await res2.json();
       rosters = body;
     }
