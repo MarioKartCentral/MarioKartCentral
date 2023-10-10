@@ -51,6 +51,18 @@
           {/each}
         </div>
       {/if}
+      {#if player.rosters.length > 0}
+        <div>
+          <b>Teams:</b>
+          {#each player.rosters as r}
+            <div class="roster">
+              <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
+                {r.roster_name} ({r.game} {r.mode})
+              </a>
+            </div>
+          {/each}
+        </div>
+      {/if}
     </div>
     {#if player.user_settings && player.user_settings.about_me}
       <div class="about_me">
@@ -88,6 +100,9 @@
     grid-column-start: 3;
   }
   div.fc {
+    text-indent: 2em;
+  }
+  div.roster {
     text-indent: 2em;
   }
   img.avatar {

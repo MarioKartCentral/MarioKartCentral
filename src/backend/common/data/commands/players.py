@@ -121,7 +121,10 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                                     WHERE m.player_id = ? AND m.leave_date IS NULL""", (self.id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    rosters.append(PlayerRoster(*row))
+                    roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode = row
+                    roster_name = roster_name if roster_name else team_name
+                    roster_tag = roster_tag if roster_tag else team_tag
+                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode))
 
             ban_info = None
             if is_banned:
