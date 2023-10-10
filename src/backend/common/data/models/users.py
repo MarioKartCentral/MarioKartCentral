@@ -26,7 +26,7 @@ class UserPlayer:
     player_id: int | None
     player: PlayerDetailed | None
     permissions: list[str]
-    team_permissions: list[str]
+    team_permissions: list[TeamPermissions]
     series_permissions: list[str]
     mod_notifications: ModNotifications | None
 

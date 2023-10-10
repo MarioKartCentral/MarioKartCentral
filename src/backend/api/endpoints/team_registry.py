@@ -199,27 +199,6 @@ async def view_transfers(request: Request) -> JSONResponse:
     transfers = await handle(command)
     return JSONResponse(transfers)
 
-@bind_request_body(RequestEditRosterRequestData)
-@require_team_permission(team_permissions.EDIT_TEAM_INFO)
-async def request_edit_roster(request: Request, body: RequestEditRosterRequestData) -> JSONResponse:
-    command = RequestEditRosterCommand(body.roster_id, body.team_id, body.name, body.tag)
-    await handle(command)
-    return JSONResponse({})
-
-@bind_request_body(ApproveRosterEditRequestData)
-@require_permission(permissions.MANAGE_TEAMS)
-async def approve_roster_edit_request(request: Request, body: ApproveRosterEditRequestData) -> JSONResponse:
-    command = ApproveRosterEditCommand(body.request_id)
-    await handle(command)
-    return JSONResponse({})
-
-@bind_request_body(DenyRosterEditRequestData)
-@require_permission(permissions.MANAGE_TEAMS)
-async def deny_roster_edit_request(request: Request, body: DenyRosterEditRequestData) -> JSONResponse:
-    command = DenyRosterEditCommand(body.request_id)
-    await handle(command)
-    return JSONResponse({})
-
 @require_permission(permissions.MANAGE_TEAMS)
 async def list_roster_edit_requests(request: Request) -> JSONResponse:
     command = ListRosterEditRequestsCommand("pending")

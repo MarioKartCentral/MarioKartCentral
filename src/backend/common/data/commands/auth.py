@@ -73,7 +73,7 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
             return User(int(row[0]), row[1])
         
 @dataclass
-class CheckPermissionsCommand(Command[list[str]]):
+class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], list[str]]]):
     user_id: int
     permissions: list[str]
     check_team_perms: bool
@@ -81,7 +81,7 @@ class CheckPermissionsCommand(Command[list[str]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            valid_perms = []
+            valid_perms: list[str] = []
             async with db.execute(f"""
                 SELECT DISTINCT p.name
                 FROM user_roles ur
@@ -109,7 +109,7 @@ class CheckPermissionsCommand(Command[list[str]]):
                             team_perm_dict[team_id] = []
                         team_perm_dict[team_id].append(perm)
                     team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
-            series_perms = []
+            series_perms: list[str] = []
         return valid_perms, team_perms, series_perms
             
 @dataclass
@@ -203,23 +203,27 @@ class GrantRoleCommand(Command[None]):
                 
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
-    valid_perms: list
+    valid_perms: list[str]
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper, s3_wrapper):
         mod_notifications = ModNotifications()
         async with db_wrapper.connect(readonly=True) as db:
             if permissions.MANAGE_TEAMS in self.valid_perms:
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
+                    assert row is not None
                     mod_notifications.pending_teams = row[0]
                 async with db.execute("SELECT COUNT(id) FROM team_edit_requests WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
+                    assert row is not None
                     mod_notifications.pending_team_edits += row[0]
                 async with db.execute("SELECT COUNT(id) FROM roster_edit_requests WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
+                    assert row is not None
                     mod_notifications.pending_team_edits += row[0]
             if permissions.MANAGE_TRANSFERS in self.valid_perms:
                 async with db.execute("SELECT COUNT(id) FROM roster_invites WHERE is_accepted = 1") as cursor:
                     row = await cursor.fetchone()
+                    assert row is not None
                     mod_notifications.pending_transfers = row[0]
         return mod_notifications

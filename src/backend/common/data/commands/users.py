@@ -63,7 +63,7 @@ class GetPlayerIdForUserCommand(Command[int]):
                 return int(row[0])
             
 @dataclass
-class GetInvitesForPlayerCommand(Command[int]):
+class GetInvitesForPlayerCommand(Command[PlayerInvites]):
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
