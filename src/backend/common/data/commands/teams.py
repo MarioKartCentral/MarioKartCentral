@@ -680,6 +680,52 @@ class RequestEditRosterCommand(Command[None]):
 
 @save_to_command_log
 @dataclass
+class ApproveRosterCommand(Command[None]):
+    team_id: int
+    roster_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT r.approval_status, t.approval_status
+                                  FROM team_rosters r
+                                  JOIN teams t ON r.team_id = t.id
+                                  WHERE r.id = ? AND r.team_id = ?""", (self.roster_id, self.team_id)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Roster not found", status=404)
+                roster_approved, team_approved = row
+                if team_approved != "approved":
+                    raise Problem("Team must be approved to approve/deny its rosters")
+                if roster_approved == "approved":
+                    raise Problem("Roster is already approved")
+            await db.execute("UPDATE team_rosters SET approval_status = 'approved' WHERE id = ?", (self.roster_id,))
+            await db.commit()
+
+@save_to_command_log
+@dataclass
+class DenyRosterCommand(Command[None]):
+    team_id: int
+    roster_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT r.approval_status, t.approval_status
+                                  FROM team_rosters r
+                                  JOIN teams t ON r.team_id = t.id
+                                  WHERE r.id = ? AND r.team_id = ?""", (self.roster_id, self.team_id)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Roster not found", status=404)
+                roster_approved, team_approved = row
+                if team_approved != "approved":
+                    raise Problem("Team must be approved to approve/deny its rosters")
+                if roster_approved == "approved":
+                    raise Problem("Roster is already approved")
+            await db.execute("UPDATE team_rosters SET approval_status = 'denied' WHERE id = ?", (self.roster_id,))
+            await db.commit()
+
+@save_to_command_log
+@dataclass
 class ApproveRosterEditCommand(Command[None]):
     request_id: int
 
@@ -904,3 +950,51 @@ class ListTeamsCommand(Command[List[Team]]):
                     teams[tid] = team
             team_list = list(teams.values())
             return team_list
+        
+@dataclass
+class ListRostersCommand(Command[list[TeamRoster]]):
+    approved: bool = True
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
+
+            def append_equal_filter(filter_value: Any, column_name: str):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            def append_not_equal_filter(filter_value: Any, column_name: str):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} != ?")
+                    variable_parameters.append(filter_value)
+
+            if self.approved:
+                append_equal_filter("approved", "r.approval_status")
+            else:
+                # want unapproved rosters only for teams which havent been approved yet
+                append_not_equal_filter("approved", "r.approval_status")
+                append_equal_filter("approved", "t.approval_status")
+
+            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag,
+                                        r.creation_date, r.is_recruiting, r.approval_status,
+                                        t.name, t.tag
+                                        FROM team_rosters r
+                                        JOIN teams t ON r.team_id = t.id
+                                        {where_clause}
+                                        """
+            print(rosters_query)
+            rosters: list[TeamRoster] = []
+            async with db.execute(rosters_query, variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting,
+                     approval_status, team_name, team_tag) = row
+                    roster_name = roster_name if roster_name else team_name
+                    roster_tag = roster_tag if roster_tag else team_tag
+                    roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
+                                        creation_date, is_recruiting, approval_status, [], [])
+                    rosters.append(roster)
+            return rosters

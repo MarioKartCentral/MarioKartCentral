@@ -240,6 +240,28 @@ async def list_unapproved_teams(request: Request, body: TeamFilter) -> JSONRespo
     teams = await handle(command)
     return JSONResponse(teams)
 
+@require_permission(permissions.MANAGE_TEAMS)
+async def list_unapproved_rosters(request: Request) -> JSONResponse:
+    command = ListRostersCommand(approved=False)
+    rosters = await handle(command)
+    return JSONResponse(rosters)
+
+@require_permission(permissions.MANAGE_TEAMS)
+async def approve_roster(request: Request) -> JSONResponse:
+    team_id = request.path_params['id']
+    roster_id = request.path_params['rosterId']
+    command = ApproveRosterCommand(team_id, roster_id)
+    await handle(command)
+    return JSONResponse({})
+
+@require_permission(permissions.MANAGE_TEAMS)
+async def deny_roster(request: Request) -> JSONResponse:
+    team_id = request.path_params['id']
+    roster_id = request.path_params['rosterId']
+    command = DenyRosterCommand(team_id, roster_id)
+    await handle(command)
+    return JSONResponse({})
+
 #todo: endpoints for giving team roles
 
 routes: list[Route] = [
@@ -269,13 +291,13 @@ routes: list[Route] = [
     Route('/api/registry/teams/approveTransfer', approve_transfer, methods=['POST']),
     Route('/api/registry/teams/denyTransfer', deny_transfer, methods=['POST']),
     Route('/api/registry/teams/transfers', view_transfers),
-    Route('/api/registry/teams/requestRosterChange', request_edit_roster, methods=['POST']),
-    Route('/api/registry/teams/approveRosterChange', approve_roster_edit_request, methods=['POST']),
-    Route('/api/registry/teams/denyRosterChange', deny_roster_edit_request, methods=['POST']),
     Route('/api/registry/teams/rosterChangeRequests', list_roster_edit_requests),
     Route('/api/registry/teams/forceTransferPlayer', force_transfer_player, methods=['POST']),
     Route('/api/registry/teams/editTeamMemberInfo', edit_team_member_info, methods=['POST']),
     Route('/api/registry/teams/kickPlayer', kick_player, methods=['POST']),
     Route('/api/registry/teams', list_teams),
-    Route('/api/registry/teams/unapprovedTeams', list_unapproved_teams)
+    Route('/api/registry/teams/unapprovedTeams', list_unapproved_teams),
+    Route('/api/registry/teams/unapprovedRosters', list_unapproved_rosters),
+    Route('/api/registry/teams/{id:int}/approveRoster/{rosterId:int}', approve_roster, methods=['POST']),
+    Route('/api/registry/teams/{id:int}/denyRoster/{rosterId:int}', deny_roster, methods=['POST'])
 ]

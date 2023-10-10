@@ -212,7 +212,13 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
-                    mod_notifications.pending_teams = row[0]
+                    mod_notifications.pending_teams += row[0]
+                # pending roster requests where team is already approved
+                async with db.execute("""SELECT COUNT(r.id) FROM team_rosters r JOIN teams t ON r.team_id = t.id 
+                                      WHERE t.approval_status='approved' AND r.approval_status='pending'""") as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    mod_notifications.pending_teams += row[0]
                 async with db.execute("SELECT COUNT(id) FROM team_edit_requests WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     assert row is not None

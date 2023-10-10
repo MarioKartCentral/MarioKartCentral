@@ -118,7 +118,7 @@ class TeamRoster():
     tag: str
     creation_date: int
     is_recruiting: bool
-    is_approved: bool
+    is_approved: Approval
     players: list[RosterPlayerInfo]
     invites: list[RosterInvitedPlayer]
 
