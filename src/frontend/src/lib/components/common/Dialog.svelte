@@ -13,7 +13,7 @@
   }
 </script>
 
-<dialog bind:this={dialog} transition:fade={{ duration: 3000 }}>
+<dialog bind:this={dialog}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div class="outer" on:click={close}>
     <div class="container" on:click|stopPropagation>
