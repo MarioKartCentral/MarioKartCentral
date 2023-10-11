@@ -45,8 +45,7 @@
       roster_id: roster.id,
       player_id: player_id,
     };
-    console.log(payload);
-    const endpoint = '/api/registry/teams/deleteInvite';
+    const endpoint = '/api/registry/teams/forceDeleteInvite';
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -66,14 +65,12 @@
   }
 
   async function kickPlayer(player: RosterPlayer) {
-    console.log(player);
     const payload = {
       player_id: player.player_id,
       roster_id: roster.id,
       team_id: roster.team_id,
     };
-    console.log(payload);
-    const endpoint = '/api/registry/teams/kickPlayer';
+    const endpoint = '/api/registry/teams/forceKickPlayer';
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -87,31 +84,6 @@
     }
   }
 
-  async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-    edit_dialog.close();
-    const data = new FormData(event.currentTarget);
-    const payload = {
-      roster_id: roster.id,
-      team_id: roster.team_id,
-      name: data.get('name')?.toString(),
-      tag: data.get('tag')?.toString(),
-    };
-    console.log(payload);
-    const endpoint = '/api/registry/teams/requestRosterChange';
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json();
-    if (response.status < 300) {
-      window.location.reload();
-      alert(`Your request to change your roster's name/tag has been sent to MKCentral staff for approval.`);
-    } else {
-      alert(`Editing roster failed: ${result['title']}`);
-    }
-  }
-
   async function editRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     edit_dialog.close();
     const data = new FormData(event.currentTarget);
@@ -120,10 +92,14 @@
     }
     const payload = {
       roster_id: roster.id,
+      name: data.get('name')?.toString(),
+      tag: data.get('tag')?.toString(),
       team_id: roster.team_id,
       is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
+      is_active: getOptionalValue('is_active') === 'true' ? true : false,
+      approval_status: data.get('approval_status'),
     };
-    const endpoint = '/api/registry/teams/editRoster';
+    const endpoint = '/api/registry/teams/forceEditRoster';
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -226,21 +202,29 @@
 </Dialog>
 
 <Dialog bind:this={edit_dialog} header="Edit Roster">
-  <form method="post" on:submit|preventDefault={editNameTag}>
+  <form method="post" on:submit|preventDefault={editRoster}>
     <label for="name">Roster Name</label>
     <input name="name" type="text" value={roster.name} required />
     <br />
     <label for="tag">Roster Tag</label>
     <input name="tag" type="text" value={roster.tag} required />
-    <br />
-    <button type="submit">Request Name/Tag Change</button>
-  </form>
-  <br /><br />
-  <form method="post" on:submit|preventDefault={editRoster}>
     <label for="recruiting">Recruitment Status</label>
     <select name="recruiting">
       <option value="true">Recruiting</option>
       <option value="false">Not Recruiting</option>
+    </select>
+    <br/>
+    <label for="approval_status">Approval Status</label>
+    <select name="approval_status" value={roster.approval_status}>
+        <option value="approved">Approved</option>
+        <option value="denied">Denied</option>
+        <option value="pending">Pending</option>
+    </select>
+    <br/>
+    <label for="is_active">Active/Historical</label>
+    <select name="is_active" value={roster.is_active ? "true" : "false"}>
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
     </select>
     <br />
     <button type="submit">Edit Roster</button>

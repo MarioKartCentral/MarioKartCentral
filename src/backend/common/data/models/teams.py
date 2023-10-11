@@ -118,7 +118,8 @@ class TeamRoster():
     tag: str
     creation_date: int
     is_recruiting: bool
-    is_approved: Approval
+    is_active: bool
+    approval_status: Approval
     players: list[RosterPlayerInfo]
     invites: list[RosterInvitedPlayer]
 
@@ -132,7 +133,7 @@ class Team():
     language: str
     color: int
     logo: str | None
-    is_approved: bool
+    approval_status: Approval
     is_historical: bool
     rosters: list[TeamRoster]
     managers: list[Player]

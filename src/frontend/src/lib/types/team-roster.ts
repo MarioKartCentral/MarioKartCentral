@@ -10,7 +10,8 @@ export type TeamRoster = {
   tag: string;
   creation_date: number;
   is_recruiting: string;
-  is_approved: string;
+  is_active: boolean;
+  approval_status: string;
   players: RosterPlayer[];
   invites: RosterInvite[];
 };

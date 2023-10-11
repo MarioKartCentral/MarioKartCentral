@@ -104,7 +104,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each teams.filter((t) => t.is_approved === 'pending') as team, i}
+        {#each teams.filter((t) => t.approval_status === 'pending') as team, i}
           <tr class="row-{i % 2}">
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.tag}</a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
@@ -133,7 +133,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each rosters.filter((r) => r.is_approved === 'pending') as roster, i}
+        {#each rosters.filter((r) => r.approval_status === 'pending') as roster, i}
           <tr class="row-{i % 2}">
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.tag}</a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
@@ -160,7 +160,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each teams.filter((t) => t.is_approved === 'denied') as team, i}
+        {#each teams.filter((t) => t.approval_status === 'denied') as team, i}
           <tr class="row-{i % 2}">
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.tag}</a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
@@ -183,7 +183,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each rosters.filter((t) => t.is_approved === 'denied') as roster, i}
+        {#each rosters.filter((t) => t.approval_status === 'denied') as roster, i}
           <tr class="row-{i % 2}">
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.tag}</a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>

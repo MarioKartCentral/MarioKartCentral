@@ -10,7 +10,7 @@ export type Team = {
   language: string;
   color: number;
   logo: string;
-  is_approved: string;
+  approval_status: string;
   is_historical: boolean;
   rosters: TeamRoster[];
   managers: PlayerInfo[];

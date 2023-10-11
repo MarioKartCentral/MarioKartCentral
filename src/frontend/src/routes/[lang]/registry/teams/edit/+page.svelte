@@ -4,8 +4,8 @@
   import type { Team } from '$lib/types/team';
   import Section from '$lib/components/common/Section.svelte';
   import { setTeamPerms, team_permissions } from '$lib/util/util';
-  import { goto } from '$app/navigation';
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
+  import LinkButton from '$lib/components/common/LinkButton.svelte';
 
   let id = 0;
   let team: Team;
@@ -42,7 +42,7 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/${$page.params.lang}/registry/teams/profile?id=${id}`);
+      window.location.reload();
       alert(`Your request to change your team's name/tag has been sent to MKCentral staff for approval.`);
     } else {
       alert(`Editing team failed: ${result['title']}`);
@@ -70,7 +70,7 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/${$page.params.lang}/registry/teams/profile?id=${id}`);
+      window.location.reload();
       alert('Successfully edited team');
     } else {
       alert(`Editing team failed: ${result['title']}`);
@@ -83,6 +83,11 @@
 </svelte:head>
 
 {#if team}
+  <Section header="Team Page">
+    <div slot="header_content">
+      <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</LinkButton>
+    </div>
+  </Section>
   <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_name_tag}>
     <form method="post" on:submit|preventDefault={editNameTag}>
       <Section header="Team Name/Tag">

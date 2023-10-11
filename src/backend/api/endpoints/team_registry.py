@@ -158,6 +158,13 @@ async def delete_invite(request: Request, body: InviteRosterPlayerRequestData) -
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(InviteRosterPlayerRequestData)
+@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+async def mod_delete_invite(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
+    command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
+    await handle(command)
+    return JSONResponse({})
+
 @bind_request_body(AcceptRosterInviteRequestData)
 @require_logged_in
 async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
@@ -227,6 +234,14 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(KickPlayerRequestData)
+@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+async def mod_kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
+    timestamp = int(datetime.utcnow().timestamp())
+    command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp)
+    await handle(command)
+    return JSONResponse({})
+
 @bind_request_query(TeamFilter)
 async def list_teams(request: Request, body: TeamFilter) -> JSONResponse:
     command = ListTeamsCommand(body)
@@ -285,6 +300,7 @@ routes: list[Route] = [
     Route('/api/registry/teams/denyRosterChange', deny_roster_edit_request, methods=['POST']),
     Route('/api/registry/teams/invitePlayer', invite_player, methods=['POST']),
     Route('/api/registry/teams/deleteInvite', delete_invite, methods=['POST']),
+    Route('/api/registry/teams/forceDeleteInvite', mod_delete_invite, methods=['POST']),
     Route('/api/registry/teams/acceptInvite', accept_invite, methods=['POST']),
     Route('/api/registry/teams/declineInvite', decline_invite, methods=['POST']),
     Route('/api/registry/teams/leave', leave_team, methods=['POST']),
@@ -295,6 +311,7 @@ routes: list[Route] = [
     Route('/api/registry/teams/forceTransferPlayer', force_transfer_player, methods=['POST']),
     Route('/api/registry/teams/editTeamMemberInfo', edit_team_member_info, methods=['POST']),
     Route('/api/registry/teams/kickPlayer', kick_player, methods=['POST']),
+    Route('/api/registry/teams/forceKickPlayer', mod_kick_player, methods=['POST']),
     Route('/api/registry/teams', list_teams),
     Route('/api/registry/teams/unapprovedTeams', list_unapproved_teams),
     Route('/api/registry/teams/unapprovedRosters', list_unapproved_rosters),
