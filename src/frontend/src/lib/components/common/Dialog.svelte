@@ -43,7 +43,6 @@
     color: white;
     border: none;
     outline: 0;
-    animation: fade-in 500ms;
   }
   dialog::backdrop {
     background: rgba(0, 0, 0, 0.5);
@@ -81,13 +80,5 @@
     outline: none;
     border: none;
     cursor: pointer;
-  }
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
 </style>
