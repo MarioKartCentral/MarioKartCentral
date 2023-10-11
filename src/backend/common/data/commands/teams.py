@@ -231,6 +231,13 @@ class RequestEditTeamCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            async with db.execute("SELECT approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Team not found")
+                approval_status = row[0]
+                if approval_status != "approved":
+                    raise Problem("Cannot request to edit team if it is not approved")
             creation_date = int(datetime.utcnow().timestamp())
             await db.execute("INSERT INTO team_edit_requests(team_id, name, tag, date, approval_status) VALUES(?, ?, ?, ?, ?)",
                             (self.team_id, self.name, self.tag, creation_date, "pending"))
@@ -251,11 +258,13 @@ class CreateRosterCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # get team name and tag
-            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+            async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('No team found', status=404)
-                team_name, team_tag = row
+                team_name, team_tag, team_approval = row
+                if team_approval != 'approved':
+                    raise Problem('Cannot create roster if team is not approved')
             # set name and tag to None if they are equal to main team so that they change if the team does
             if self.name == team_name:
                 self.name = None
@@ -285,11 +294,13 @@ class EditRosterCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # get team name and tag
-            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+            async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('No team found', status=404)
-                team_name, team_tag = row
+                team_name, team_tag, team_approval = row
+                if team_approval != "approved" and self.approval_status == "approved":
+                    raise Problem("Team must be approved for roster to be approved")
             # set name and tag to None if they are equal to main team so that they change if the team does
             if self.name == team_name:
                 self.name = None
@@ -336,11 +347,13 @@ class InvitePlayerCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT team_id, game FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
+            async with db.execute("SELECT team_id, game, approval_status FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Roster not found", status=404)
-                roster_team_id, game = row
+                roster_team_id, game, approval_status = row
+                if approval_status != "approved":
+                    raise Problem("Cannot invite players to roster if it is not approved")
                 if int(roster_team_id) != self.team_id:
                     raise Problem("Roster is not part of specified team", status=400)
             async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
@@ -661,11 +674,13 @@ class RequestEditRosterCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Roster has requested name/tag change in the last 90 days", status=400)
-            async with db.execute("SELECT t.name, t.tag, r.game, r.mode FROM team_rosters r JOIN teams t ON r.team_id = t.id WHERE r.id = ? AND r.team_id = ?", (self.roster_id, self.team_id)) as cursor:
+            async with db.execute("SELECT t.name, t.tag, r.game, r.mode, r.approval_status FROM team_rosters r JOIN teams t ON r.team_id = t.id WHERE r.id = ? AND r.team_id = ?", (self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Roster not found", status=404)
-                team_name, team_tag, game, mode = row
+                team_name, team_tag, game, mode, approval_status = row
+                if approval_status != "approved":
+                    raise Problem("Cannot request to edit roster if it is not approved")
                 # sync name/tag with team if same as team
                 if name == team_name:
                     name = None

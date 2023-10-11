@@ -43,12 +43,14 @@
   </PermissionCheck>
   <Section header="Team Profile">
     <div slot="header_content">
-      <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
-        <LinkButton href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}">Manage Rosters</LinkButton>
-      </TeamPermissionCheck>
-      <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
-        <LinkButton href="/{$page.params.lang}/registry/teams/edit?id={id}">Edit Team</LinkButton>
-      </TeamPermissionCheck>
+      {#if team.approval_status === "approved" && !team.is_historical}
+        <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
+          <LinkButton href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}">Manage Rosters</LinkButton>
+        </TeamPermissionCheck>
+        <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
+          <LinkButton href="/{$page.params.lang}/registry/teams/edit?id={id}">Edit Team</LinkButton>
+        </TeamPermissionCheck>
+      {/if}
     </div>
     <TeamProfile {team} />
   </Section>

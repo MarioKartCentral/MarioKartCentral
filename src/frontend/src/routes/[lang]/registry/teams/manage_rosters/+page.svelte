@@ -83,7 +83,7 @@
     </div>
   </Section>
   <TeamPermissionCheck team_id={id} permission={team_permissions.manage_rosters}>
-    {#each team.rosters.filter((r) => r.approval_status === 'approved') as roster}
+    {#each team.rosters.filter((r) => r.approval_status !== 'denied') as roster}
       <TeamRosterManage {roster} />
     {/each}
   </TeamPermissionCheck>

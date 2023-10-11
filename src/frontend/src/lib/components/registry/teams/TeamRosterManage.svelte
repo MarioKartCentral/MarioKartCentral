@@ -141,7 +141,9 @@
 
 <Section header="{roster.game} {roster.name}">
   <div slot="header_content">
-    <button on:click={edit_dialog.open}>Edit Roster</button>
+    {#if roster.approval_status === "approved"}
+      <button on:click={edit_dialog.open}>Edit Roster</button>
+    {/if}
   </div>
   {roster.players.length} player{roster.players.length !== 1 ? 's' : ''}
   {#if roster.players.length}
@@ -176,45 +178,50 @@
     </Table>
   {/if}
   <br /><br />
-  <h3>Invitations</h3>
-  {#if roster.invites.length}
-    <Table>
-      <col class="country" />
-      <col class="name" />
-      <col class="fc" />
-      <col class="join_date" />
-      <col class="manage_player" />
-      <thead>
-        <tr>
-          <th />
-          <th>Name</th>
-          <th>Friend Code</th>
-          <th>Join Date</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {#each roster.invites as player}
+  {#if roster.approval_status === "approved"}
+    <h3>Invitations</h3>
+    {#if roster.invites.length}
+      <Table>
+        <col class="country" />
+        <col class="name" />
+        <col class="fc" />
+        <col class="join_date" />
+        <col class="manage_player" />
+        <thead>
           <tr>
-            <td>{player.country_code}</td>
-            <td>{player.name}</td>
-            <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
-            <td>{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
-            <td>
-              <button on:click={() => retractInvite(player.player_id)}>Retract Invite</button>
-            </td>
+            <th />
+            <th>Name</th>
+            <th>Friend Code</th>
+            <th>Join Date</th>
+            <th />
           </tr>
-        {/each}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {#each roster.invites as player}
+            <tr>
+              <td>{player.country_code}</td>
+              <td>{player.name}</td>
+              <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+              <td>{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
+              <td>
+                <button on:click={() => retractInvite(player.player_id)}>Retract Invite</button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+    {/if}
+    <br />
+    <b>Invite Player</b>
+    <br />
+    <input type="number" placeholder="Player ID" min="1" bind:value={invite_player_id} />
+    {#if invite_player_id}
+      <button on:click={() => invitePlayer(invite_player_id)}>Invite Player</button>
+    {/if}
+  {:else}
+      Roster is pending approval from MKCentral staff.
   {/if}
-  <br />
-  <b>Invite Player</b>
-  <br />
-  <input type="number" placeholder="Player ID" min="1" bind:value={invite_player_id} />
-  {#if invite_player_id}
-    <button on:click={() => invitePlayer(invite_player_id)}>Invite Player</button>
-  {/if}
+  
 </Section>
 
 <Dialog bind:this={kick_dialog} header="Kick Player">
