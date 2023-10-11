@@ -213,18 +213,18 @@
       <option value="true">Recruiting</option>
       <option value="false">Not Recruiting</option>
     </select>
-    <br/>
+    <br />
     <label for="approval_status">Approval Status</label>
     <select name="approval_status" value={roster.approval_status}>
-        <option value="approved">Approved</option>
-        <option value="denied">Denied</option>
-        <option value="pending">Pending</option>
+      <option value="approved">Approved</option>
+      <option value="denied">Denied</option>
+      <option value="pending">Pending</option>
     </select>
-    <br/>
+    <br />
     <label for="is_active">Active/Historical</label>
-    <select name="is_active" value={roster.is_active ? "true" : "false"}>
-        <option value="true">Active</option>
-        <option value="false">Inactive</option>
+    <select name="is_active" value={roster.is_active ? 'true' : 'false'}>
+      <option value="true">Active</option>
+      <option value="false">Inactive</option>
     </select>
     <br />
     <button type="submit">Edit Roster</button>

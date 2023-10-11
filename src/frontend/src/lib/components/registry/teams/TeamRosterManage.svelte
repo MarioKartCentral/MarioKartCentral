@@ -141,7 +141,7 @@
 
 <Section header="{roster.game} {roster.name}">
   <div slot="header_content">
-    {#if roster.approval_status === "approved"}
+    {#if roster.approval_status === 'approved'}
       <button on:click={edit_dialog.open}>Edit Roster</button>
     {/if}
   </div>
@@ -178,7 +178,7 @@
     </Table>
   {/if}
   <br /><br />
-  {#if roster.approval_status === "approved"}
+  {#if roster.approval_status === 'approved'}
     <h3>Invitations</h3>
     {#if roster.invites.length}
       <Table>
@@ -219,9 +219,8 @@
       <button on:click={() => invitePlayer(invite_player_id)}>Invite Player</button>
     {/if}
   {:else}
-      Roster is pending approval from MKCentral staff.
+    Roster is pending approval from MKCentral staff.
   {/if}
-  
 </Section>
 
 <Dialog bind:this={kick_dialog} header="Kick Player">

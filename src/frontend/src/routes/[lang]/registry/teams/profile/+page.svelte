@@ -43,7 +43,7 @@
   </PermissionCheck>
   <Section header="Team Profile">
     <div slot="header_content">
-      {#if team.approval_status === "approved" && !team.is_historical}
+      {#if team.approval_status === 'approved' && !team.is_historical}
         <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
           <LinkButton href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}">Manage Rosters</LinkButton>
         </TeamPermissionCheck>
