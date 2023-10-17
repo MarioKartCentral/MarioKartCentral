@@ -421,6 +421,40 @@ class TeamSquadRegistration(TableModel):
             """
 
 @dataclass
+class TeamRole(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_roles(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class TeamPermission(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_permissions(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class TeamRolePermission(TableModel):
+    role_id: int
+    permission_id: int
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS team_role_permissions(
+            role_id INTEGER NOT NULL REFERENCES team_roles(id),
+            permission_id INTEGER NOT NULL REFERENCES team_permissions(id),
+            PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
+@dataclass
 class UserTeamRole(TableModel):
     user_id: int
     role_id: int
@@ -430,7 +464,7 @@ class UserTeamRole(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS user_team_roles(
             user_id INTEGER NOT NULL REFERENCES users(id),
-            role_id INTEGER NOT NULL REFERENCES roles(id),
+            role_id INTEGER NOT NULL REFERENCES team_roles(id),
             team_id INTEGER NOT NULL REFERENCES teams(id),
             PRIMARY KEY (user_id, role_id, team_id)
             ) WITHOUT ROWID
@@ -607,5 +641,6 @@ all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
-    TeamSquadRegistration, UserTeamRole, UserSeriesRole, RosterInvite, TeamEditRequest, 
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, Record]
+    TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
+    UserSeriesRole, RosterInvite, TeamEditRequest, UserSettings, NotificationContent, 
+    Notifications, CommandLog, PlayerBans, Record]

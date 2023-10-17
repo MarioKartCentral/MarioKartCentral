@@ -3,6 +3,7 @@ from dataclasses import asdict, dataclass
 import msgspec
 from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, TemplateFilter, TournamentTemplate, TournamentTemplateMinimal, TournamentTemplateRequestData
+import common.data.s3 as s3
 
 
 @save_to_command_log
@@ -21,7 +22,7 @@ class CreateTournamentTemplateCommand(Command[None]):
             await db.commit()
 
         s3_message = bytes(msgspec.json.encode(self.body))
-        await s3_wrapper.put_object('templates', f'{template_id}.json', s3_message)
+        await s3_wrapper.put_object(s3.TEMPLATES_BUCKET, f'{template_id}.json', s3_message)
 
 @save_to_command_log
 @dataclass
@@ -42,7 +43,7 @@ class EditTournamentTemplateCommand(Command[None]):
                 raise Problem('No template found', status=404)
             
 
-            s3_data = await s3_wrapper.get_object('templates', f'{self.template_id}.json')
+            s3_data = await s3_wrapper.get_object(s3.TEMPLATES_BUCKET, f'{self.template_id}.json')
             if s3_data is None:
                 raise Problem("No template found", status=404)
             
@@ -51,7 +52,7 @@ class EditTournamentTemplateCommand(Command[None]):
             json_body.update(updated_values)
 
             s3_message = bytes(msgspec.json.encode(json_body))
-            await s3_wrapper.put_object('templates', f'{self.template_id}.json', s3_message)
+            await s3_wrapper.put_object(s3.TEMPLATES_BUCKET, f'{self.template_id}.json', s3_message)
             await db.commit()
 
 @dataclass
@@ -59,7 +60,7 @@ class GetTournamentTemplateDataCommand(Command[TournamentTemplate]):
     template_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        body = await s3_wrapper.get_object('templates', f'{self.template_id}.json')
+        body = await s3_wrapper.get_object(s3.TEMPLATES_BUCKET, f'{self.template_id}.json')
         if body is None:
             raise Problem('No template found', status=404)
         template_data = msgspec.json.decode(body, type=TournamentTemplate)

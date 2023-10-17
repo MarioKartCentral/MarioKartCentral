@@ -21,9 +21,17 @@ class CreateTeamCommand(Command[None]):
     is_recruiting: bool
     is_active: bool
     is_privileged: bool
+    user_id: int | None = None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            valid_game_modes = {"mk8dx": ["150cc", "200cc"],
+                                "mkw": ["rt", "ct"],
+                                "mkt": ["vsrace"]}
+            if self.game not in valid_game_modes:
+                raise Problem(f"Invalid game (valid games: {', '.join(valid_game_modes.keys())})", status=400)
+            if self.mode not in valid_game_modes[self.game]:
+                raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
             if not self.is_privileged:
                 async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
@@ -36,9 +44,11 @@ class CreateTeamCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.approval_status,
                 self.is_historical)) as cursor:
                 team_id = cursor.lastrowid
-            await db.commit()
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, None, None, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            # give the team creator manager permissions if their id was specified
+            if self.user_id is not None:
+                await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES (?, 0, ?)", (self.user_id, team_id))
             await db.commit()
 
 @dataclass
@@ -53,7 +63,7 @@ class GetTeamInfoCommand(Command[Team]):
                 if row is None:
                     raise Problem('Team not found', status=404)
                 team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical = row
-                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [])
+                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [], [])
             
             # get all rosters for our team
             rosters: list[TeamRoster] = []
@@ -111,6 +121,12 @@ class GetTeamInfoCommand(Command[Team]):
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
 
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id FROM players p
+                JOIN users u ON u.player_id = p.id
+                JOIN user_team_roles ur ON ur.user_id = u.id
+                WHERE ur.team_id = ? AND ur.role_id = 0""", (self.team_id,)) as cursor:
+                rows = await cursor.fetchall()
+                team.managers = [Player(*row) for row in rows]
             team.rosters = rosters
             return team
 
@@ -144,6 +160,23 @@ class EditTeamCommand(Command[None]):
                 if updated_rows == 0:
                     raise Problem('No team found', status=404)
                 await db.commit()
+
+@save_to_command_log
+@dataclass
+class ApproveDenyTeamCommand(Command[None]):
+    team_id: int
+    approval_status: Approval
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("UPDATE teams SET approval_status = ? WHERE id = ?", (self.approval_status, self.team_id)) as cursor:
+                updated_rows = cursor.rowcount
+                if updated_rows == 0:
+                    raise Problem("No team found", status=404)
+            await db.execute("UPDATE team_rosters SET approval_status = ? WHERE team_id = ? AND approval_status = 'pending'", (self.approval_status, self.team_id))
+            await db.commit()
+
+
 
 @save_to_command_log
 @dataclass
@@ -659,6 +692,7 @@ class EditTeamMemberCommand(Command[None]):
 @dataclass
 class ListTeamsCommand(Command[List[Team]]):
     filter: TeamFilter
+    approved: bool = True
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
@@ -670,6 +704,11 @@ class ListTeamsCommand(Command[List[Team]]):
             def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(filter_value)
+
+            def append_not_equal_filter(filter_value: Any, column_name: str):
+                if filter_value is not None:
+                    where_clauses.append(f"{column_name} != ?")
                     variable_parameters.append(filter_value)
 
             # check both the team and team_roster fields with the same name for a match
@@ -685,8 +724,12 @@ class ListTeamsCommand(Command[List[Team]]):
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_historical, "t.is_historical")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
-            append_equal_filter("approved", "t.approval_status")
-            append_equal_filter("approved", "r.approval_status")
+            if self.approved:
+                append_equal_filter("approved", "t.approval_status")
+                append_equal_filter("approved", "r.approval_status")
+            else:
+                append_not_equal_filter("approved", "t.approval_status")
+                append_not_equal_filter("approved", "r.approval_status")
             append_equal_filter(True, "r.is_active")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
@@ -706,7 +749,7 @@ class ListTeamsCommand(Command[List[Team]]):
                         team: Team = teams[tid]
                         team.rosters.append(roster)
                         continue
-                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, [roster])
+                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, [roster], [])
                     teams[tid] = team
             team_list = list(teams.values())
             return team_list

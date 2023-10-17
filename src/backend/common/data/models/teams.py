@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from common.data.models import Approval, FriendCode
+from common.data.models.common import Approval
+from common.data.models.friend_codes import FriendCode
+from common.data.models.players import Player
 from common.data.validators import validate_game_and_mode
 
 
@@ -104,6 +106,7 @@ class Team():
     is_approved: bool
     is_historical: bool
     rosters: list[TeamRoster]
+    managers: list[Player]
 
 
 @dataclass
