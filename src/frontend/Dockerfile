@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:18.15.0-buster-slim
+FROM node:18.18.2-bookworm-slim
 WORKDIR /usr/src/app
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install

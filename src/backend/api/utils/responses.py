@@ -1,13 +1,10 @@
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Concatenate, ParamSpec, TypeVar
+from typing import Any, Awaitable, Callable, Concatenate
 import msgspec
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse as StarletteJSONResponse
 
 from common.data.models import Problem
-
-TBind = TypeVar("TBind")
-P = ParamSpec('P')
 
 @dataclass
 class RouteSpecTypes:
@@ -15,8 +12,8 @@ class RouteSpecTypes:
     body_type: type | None = None
 
 
-def bind_request_query(type: type[TBind]): # pyright: ignore[reportInvalidTypeVarUse]
-    def decorator(handle_request: Callable[Concatenate[Request, TBind, P], Awaitable[Response]]):
+def bind_request_query[T](type: type[T]): # pyright: ignore[reportInvalidTypeVarUse]
+    def decorator[**P](handle_request: Callable[Concatenate[Request, T, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             all_params = dict(request.query_params.__dict__)
             all_params.update(request.path_params)
@@ -39,8 +36,8 @@ def bind_request_query(type: type[TBind]): # pyright: ignore[reportInvalidTypeVa
         return wrapper
     return decorator
 
-def bind_request_body(type: type[TBind]): # pyright: ignore[reportInvalidTypeVarUse]
-    def decorator(handle_request: Callable[Concatenate[Request, TBind, P], Awaitable[Response]]):
+def bind_request_body[T](type: type[T]): # pyright: ignore[reportInvalidTypeVarUse]
+    def decorator[**P](handle_request: Callable[Concatenate[Request, T, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs) -> Response:
             body_bytes = await request.body()
             try:

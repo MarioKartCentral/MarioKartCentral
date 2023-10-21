@@ -1,0 +1,13 @@
+{
+    "games": {
+        "mkw": {
+            "modes": ["rt", "ct"]
+        },
+        "mk8dx": {
+            "modes": ["150cc", "200cc"]
+        },
+        "mkt": {
+            "modes": ["vsrace"]
+        }
+    }
+}

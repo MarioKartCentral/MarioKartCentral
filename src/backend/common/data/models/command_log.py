@@ -1,14 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Generic, TypeVar
-
-_TCommand = TypeVar('_TCommand')
 
 @dataclass
-class CommandLog(Generic[_TCommand]):
+class CommandLog[T]:
     id: int
     type: str
-    command: _TCommand
+    command: T
     timestamp: int
 
 

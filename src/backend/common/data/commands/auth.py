@@ -180,13 +180,15 @@ class GrantRoleCommand(Command[None]):
                 
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
-    valid_perms: list
+    valid_perms: list[str]
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper, s3_wrapper) -> ModNotifications:
         mod_notifications = ModNotifications()
         async with db_wrapper.connect(readonly=True) as db:
             if 'team_manage' in self.valid_perms:
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
+                    if row is None:
+                        raise Problem("Failed to count pending teams")
                     mod_notifications.pending_teams = row[0]
         return mod_notifications

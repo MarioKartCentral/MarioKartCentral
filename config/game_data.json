@@ -1,0 +1,13 @@
+{
+    "games": {
+        "mkw": {
+            "courses": ["lc", "mmm", "mg"]
+        },
+        "mk8": {
+            "courses": ["mks", "wp", "ssc", "tr"]
+        },
+        "mk8dx": {
+            "courses": ["mks", "wp", "ssc", "tr"]
+        }
+    }
+}
