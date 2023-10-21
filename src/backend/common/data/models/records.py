@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Literal
 
 @dataclass
 class Record:
@@ -12,38 +11,55 @@ class Record:
     type: str
     time: str | None = None 
     time_ms: float | None = None 
-    cc: int | None = None
+    cc: str | None = None
     course: str | None = None
 
 @dataclass
-class RecordFilter:
-    game: str | None  = None
-    type: str | None = None
-    cc: str | None  = None
-    course: str | None = None
-    country: str | None = None
-    player_id: int | Literal["*"] | None = None
-
-@dataclass
-class RecordCacheEntryPlayer:
+class RecordPlayerData:
     id: int
     name: str
     country: str | None
 
 @dataclass
-class RecordCacheEntry:
+class RecordMetadata:
     id: int
     version: int
-    player: RecordCacheEntryPlayer | None
-    game: str | None
-    type: str | None
-    time: str | None = None 
-    time_ms: float | None = None 
-    cc: int | None = None
-    course: str | None = None
+    player_id: int
+    url: str
 
 @dataclass
-class RecordCache:
-    filter: RecordFilter # 
-    last_updated: str # ISO 8601 UTC timestamp
-    records: List[RecordCacheEntry]
+class PlayerRecordListMetadata:
+    player: RecordPlayerData
+    url: str | None # None if there are no records by this player
+    updated_records: list[Record]
+
+@dataclass
+class CategoryRecordListMetadata:
+    url: str | None # None if there are no records in this category
+    updated_players: list[RecordPlayerData]
+    updated_records: list[Record]
+
+@dataclass
+class RecordCacheUpdates:
+    """This class contains information about changes that need to be applied to a record cache"""
+    records: list[Record]
+    players: list[RecordPlayerData]
+
+@dataclass
+class RecordCategory:
+    game: str
+    type: str
+    cc: str = 'None'
+    course: str = 'None'
+
+@dataclass
+class CategoryRecordCache:
+    category: RecordCategory
+    players: list[RecordPlayerData]
+    records: list[Record]
+
+@dataclass
+class PlayerRecordCache:
+    player: RecordPlayerData
+    records: list[Record]
+

@@ -636,11 +636,51 @@ class Record(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
             version INTEGER DEFAULT 0 NOT NULL)"""
-    
+
+@dataclass
+class PlayerRecordCacheMetadata(TableModel):
+    file_name: str # file name for cache in S3
+    player_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_record_caches(
+            player_id INT PRIMARY KEY REFERENCES players(id),
+            file_name TEXT NOT NULL) WITHOUT ROWID"""
+
+@dataclass
+class CategoryRecordCacheMetadata(TableModel):
+    file_name: str # file name for cache in S3
+    game: str
+    type: str
+    cc: str = 'None'
+    course: str = 'None'
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS category_record_caches(
+            game TEXT NOT NULL,
+            type TEXT NOT NULL,
+            cc TEXT NOT NULL,
+            course TEXT NOT NULL,
+            file_name TEXT NOT NULL,
+            PRIMARY KEY (game, type, cc, course)
+            ) WITHOUT ROWID"""
+
+@dataclass
+class RecordCacheLatestUpdateId(TableModel):
+    id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS record_cache_latest_update_id(
+            id INTEGER PRIMARY KEY)"""
+
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     UserSeriesRole, RosterInvite, TeamEditRequest, UserSettings, NotificationContent, 
-    Notifications, CommandLog, PlayerBans, Record]
+    Notifications, CommandLog, PlayerBans, Record, PlayerRecordCacheMetadata, 
+    CategoryRecordCacheMetadata, RecordCacheLatestUpdateId]

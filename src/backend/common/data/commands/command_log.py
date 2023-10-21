@@ -25,6 +25,16 @@ class SaveToCommandLogCommand(Command[None]):
             await db.commit()
 
 @dataclass
+class GetLatestCommandLogIdCommand(Command[int]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT seq from sqlite_sequence where name = 'command_log'") as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Failed to get command log id")
+                return int(row[0])
+
+@dataclass
 class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
     after_id: int | None = None
 

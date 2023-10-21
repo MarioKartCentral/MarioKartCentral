@@ -6,4 +6,4 @@ class CountriesData:
     countries: list[str]
     regions: dict[str, list[str]]
 
-countries_data = load_config("countries.json", CountriesData)
+countries_config = load_config("countries.json", CountriesData)

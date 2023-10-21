@@ -9,4 +9,4 @@ class GameDataGame:
 class GameData:
     games: dict[str, GameDataGame]
 
-game_data = load_config("game_data.json", GameData)
+game_config = load_config("game_data.json", GameData)

@@ -1,12 +1,8 @@
 from dataclasses import dataclass
-from typing import Generic, TypeVar
 from common.config.common import load_config
-from common.data.models import RecordFilter
-
-T = TypeVar('T')
 
 @dataclass
-class RecordDataTypeAttribute(Generic[T]):
+class RecordDataTypeAttribute[T]:
     required: bool = False
     values: T | None = None
 
@@ -22,6 +18,5 @@ class RecordDataGame:
 @dataclass
 class RecordData:
     games: dict[str, RecordDataGame]
-    caches: list[RecordFilter]
 
-record_data = load_config("records.json", RecordData)
+record_config = load_config("records.json", RecordData)

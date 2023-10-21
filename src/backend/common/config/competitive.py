@@ -9,4 +9,4 @@ class CompetitiveDataGame:
 class CompetitiveData:
     games: dict[str, CompetitiveDataGame]
 
-competitive_data = load_config("competitive.json", CompetitiveData)
+competitive_config = load_config("competitive.json", CompetitiveData)

@@ -31,8 +31,6 @@
     },
     "caches": [
         {
-        },
-        {
             "game": "*",
             "type": "*",
             "course": "*",
@@ -46,8 +44,6 @@
             "country": "*"
         },
         {
-            "game": "*",
-            "type": "*",
             "player_id": "*"
         }
     ]
