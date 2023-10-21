@@ -2,7 +2,8 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, ModNotifications
+from common.data.models import Problem, User, ModNotifications, TeamPermissions
+from common.auth import permissions
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -56,7 +57,7 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""
-                SELECT u.id, u.player_id FROM roles r
+                SELECT u.id, u.player_id FROM team_roles r
                 JOIN user_team_roles ur ON ur.role_id = r.id
                 JOIN users u ON ur.user_id = u.id
                 JOIN sessions s ON s.user_id = u.id
@@ -72,12 +73,15 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
             return User(int(row[0]), row[1])
         
 @dataclass
-class CheckPermissionsCommand(Command[list[str]]):
+class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], list[str]]]):
     user_id: int
     permissions: list[str]
+    check_team_perms: bool
+    check_series_perms: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
+            valid_perms: list[str] = []
             async with db.execute(f"""
                 SELECT DISTINCT p.name
                 FROM user_roles ur
@@ -87,7 +91,26 @@ class CheckPermissionsCommand(Command[list[str]]):
                 """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
                 valid_perms = [row[0] for row in rows]
-                return valid_perms
+            team_perms = []
+            # only check team permissions if we are on a page that needs them
+            if self.check_team_perms:
+                async with db.execute(f"""
+                    SELECT ur.team_id, p.name
+                    FROM user_team_roles ur
+                    JOIN team_role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN team_permissions p ON rp.permission_id = p.id
+                    WHERE ur.user_id = ?
+                    """, (self.user_id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    team_perm_dict = {}
+                    for row in rows:
+                        team_id, perm = row
+                        if team_id not in team_perm_dict:
+                            team_perm_dict[team_id] = []
+                        team_perm_dict[team_id].append(perm)
+                    team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
+            series_perms: list[str] = []
+        return valid_perms, team_perms, series_perms
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -180,13 +203,33 @@ class GrantRoleCommand(Command[None]):
                 
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
-    valid_perms: list
+    valid_perms: list[str]
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper, s3_wrapper):
         mod_notifications = ModNotifications()
         async with db_wrapper.connect(readonly=True) as db:
-            if 'team_manage' in self.valid_perms:
+            if permissions.MANAGE_TEAMS in self.valid_perms:
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
-                    mod_notifications.pending_teams = row[0]
+                    assert row is not None
+                    mod_notifications.pending_teams += row[0]
+                # pending roster requests where team is already approved
+                async with db.execute("""SELECT COUNT(r.id) FROM team_rosters r JOIN teams t ON r.team_id = t.id 
+                                      WHERE t.approval_status='approved' AND r.approval_status='pending'""") as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    mod_notifications.pending_teams += row[0]
+                async with db.execute("SELECT COUNT(id) FROM team_edit_requests WHERE approval_status='pending'") as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    mod_notifications.pending_team_edits += row[0]
+                async with db.execute("SELECT COUNT(id) FROM roster_edit_requests WHERE approval_status='pending'") as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    mod_notifications.pending_team_edits += row[0]
+            if permissions.MANAGE_TRANSFERS in self.valid_perms:
+                async with db.execute("SELECT COUNT(id) FROM roster_invites WHERE is_accepted = 1") as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    mod_notifications.pending_transfers = row[0]
         return mod_notifications

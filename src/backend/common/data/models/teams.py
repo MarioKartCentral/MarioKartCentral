@@ -49,6 +49,31 @@ class RequestEditTeamRequestData():
     tag: str
 
 @dataclass
+class TeamEditRequest():
+    id: int
+    team_id: int
+    old_name: str
+    old_tag: str
+    new_name: str
+    new_tag: str
+    date: int
+    approval_status: Approval
+
+@dataclass
+class RosterEditRequest():
+    id: int
+    roster_id: int
+    team_id: int
+    team_name: str
+    team_tag: str
+    old_name: str | None
+    old_tag: str | None
+    new_name: str | None
+    new_tag: str | None
+    date: int
+    approval_status: Approval
+
+@dataclass
 class PartialTeamMember():
     player_id: int
     roster_id: int
@@ -72,6 +97,16 @@ class RosterPlayerInfo():
     discord_id: str
     join_date: int
     friend_codes: list[FriendCode]
+
+@dataclass
+class RosterInvitedPlayer():
+    player_id: int
+    name: str
+    country_code: str
+    is_banned: bool
+    discord_id: str
+    invite_date: int
+    friend_codes: list[FriendCode]
     
 @dataclass
 class TeamRoster():
@@ -83,8 +118,10 @@ class TeamRoster():
     tag: str
     creation_date: int
     is_recruiting: bool
-    is_approved: bool
+    is_active: bool
+    approval_status: Approval
     players: list[RosterPlayerInfo]
+    invites: list[RosterInvitedPlayer]
 
 @dataclass
 class Team():
@@ -96,11 +133,19 @@ class Team():
     language: str
     color: int
     logo: str | None
-    is_approved: bool
+    approval_status: Approval
     is_historical: bool
     rosters: list[TeamRoster]
     managers: list[Player]
 
+@dataclass
+class RequestCreateRosterRequestData():
+    team_id: int
+    game: Game
+    mode: GameMode
+    name: str | None
+    tag: str | None
+    is_recruiting: bool
 
 @dataclass
 class CreateRosterRequestData():
@@ -183,7 +228,7 @@ class ForceTransferPlayerRequestData():
 
 @dataclass
 class EditTeamMemberInfoRequestData():
-    id: int
+    player_id: int
     roster_id: int
     team_id: int
     join_date: int | None
@@ -191,7 +236,7 @@ class EditTeamMemberInfoRequestData():
 
 @dataclass
 class KickPlayerRequestData():
-    id: int
+    player_id: int
     roster_id: int
     team_id: int
 
@@ -205,3 +250,51 @@ class TeamFilter():
     is_recruiting: bool | None = None
     is_historical: bool | None = None
 
+@dataclass
+class TeamInvite():
+    invite_id: int
+    date: int
+    team_id: int
+    team_name: str
+    team_tag: str
+    team_color: int
+    roster_id: int
+    roster_name: str | None
+    roster_tag: str | None
+    game: Game
+    mode: GameMode
+
+@dataclass
+class LeaveRoster():
+    team_id: int
+    team_name: str
+    team_tag: str
+    team_color: int
+    roster_id: int
+    roster_name: str | None
+    roster_tag: str | None
+
+@dataclass
+class TeamInviteApproval(TeamInvite):
+    player_id: int
+    player_name: str
+    player_country_code: str
+    roster_leave_id: int | None
+    roster_leave: LeaveRoster | None
+
+@dataclass
+class RequestRosterChangeRequestData():
+    roster_id: int
+    team_id: int
+    name: str | None
+    tag: str | None
+
+@dataclass
+class EditRosterChangeRequestData():
+    request_id: int
+
+@dataclass
+class ManagerEditRosterRequestData():
+    roster_id: int
+    team_id: int
+    is_recruiting: bool

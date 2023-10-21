@@ -15,9 +15,11 @@
       {/if}
     </div>
   {/if}
-  <div class="wrapper">
-    <slot />
-  </div>
+  {#if $$slots.default}
+    <div class="wrapper">
+      <slot />
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -26,9 +28,14 @@
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
   }
+  @media (max-width: 600px) {
+    .container {
+      width: 100%;
+    }
+  }
   .header {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     background-color: rgba(0, 128, 0, 0.6);
   }
   .centered {

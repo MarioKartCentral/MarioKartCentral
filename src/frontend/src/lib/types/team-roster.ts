@@ -1,4 +1,5 @@
 import type { RosterPlayer } from './roster-player';
+import type { RosterInvite } from './roster-invite';
 
 export type TeamRoster = {
   id: number;
@@ -8,7 +9,9 @@ export type TeamRoster = {
   name: string;
   tag: string;
   creation_date: number;
-  is_recruiting: boolean;
-  is_approved: string;
+  is_recruiting: string;
+  is_active: boolean;
+  approval_status: string;
   players: RosterPlayer[];
+  invites: RosterInvite[];
 };

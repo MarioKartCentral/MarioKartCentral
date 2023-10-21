@@ -2,7 +2,6 @@
   import type { Tournament } from '$lib/types/tournament';
   import type { TournamentSquad } from '$lib/types/tournament-squad';
   import { locale } from '$i18n/i18n-svelte';
-  import { slide } from 'svelte/transition';
   import TournamentPlayerList from './TournamentPlayerList.svelte';
   import Table from '$lib/components/common/Table.svelte';
 

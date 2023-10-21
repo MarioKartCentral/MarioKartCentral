@@ -113,6 +113,19 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             user = None if user_row is None else User(int(user_row[0]), self.id)
 
+            rosters = []
+            async with db.execute("""SELECT m.roster_id, m.join_date, t.id, t.name, t.tag, t.color, r.name, r.tag, r.game, r.mode
+                                    FROM team_members m
+                                    JOIN team_rosters r ON m.roster_id = r.id
+                                    JOIN teams t ON r.team_id = t.id
+                                    WHERE m.player_id = ? AND m.leave_date IS NULL""", (self.id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode = row
+                    roster_name = roster_name if roster_name else team_name
+                    roster_tag = roster_tag if roster_tag else team_tag
+                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode))
+
             ban_info = None
             if is_banned:
                 ban_query = "SELECT player_id, staff_id, is_indefinite, expiration_date, reason from player_bans WHERE player_id = ?"
@@ -128,7 +141,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     if settings_row is not None:
                         user_settings = UserSettings(user.id, *settings_row)
 
-            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, ban_info, user_settings)
+            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, rosters, ban_info, user_settings)
         
 @dataclass
 class ListPlayersCommand(Command[list[Player]]):
