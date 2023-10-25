@@ -4,11 +4,13 @@
   import Section from '$lib/components/common/Section.svelte';
   import PlayerList from '$lib/components/registry/players/PlayerList.svelte';
   import PlayerFilter from '$lib/components/registry/players/PlayerFilter.svelte';
+    import { country_codes } from '$lib/stores/country_codes';
 
   let players: PlayerInfo[] = [];
   let filters = {
     game: null,
     name: null,
+    country: null,
     fc: null,
   };
 
@@ -21,6 +23,9 @@
     if (filters.name != null && filters.name != '') {
       url += '&name=' + filters.name;
     }
+    if(filters.country != null && filters.country != '') {
+      url += '&country=' + filters.country;
+    }
     const res = await fetch(url);
     if (res.status === 200) {
       const body = await res.json();
@@ -32,7 +37,7 @@
   }
 
   $: {
-    if (filters.game != null || filters.name != null) {
+    if (filters.game != null || filters.name != null || filters.country != null) {
       fetchData();
     }
   }
