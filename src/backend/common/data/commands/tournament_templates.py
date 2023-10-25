@@ -16,6 +16,11 @@ class CreateTournamentTemplateCommand(Command[None]):
 
         # we only need to put the template name and series ID into the database for querying, the rest can go into s3 since we won't be querying this
         async with db_wrapper.connect() as db:
+            if b.series_id:
+                async with db.execute("SELECT id FROM tournament_series WHERE id = ?", (b.series_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if not row:
+                        raise Problem("Series not found", status=404)
             cursor = await db.execute("INSERT INTO tournament_templates (name, series_id) VALUES (?, ?)",
             (b.template_name, b.series_id))
             template_id = cursor.lastrowid
