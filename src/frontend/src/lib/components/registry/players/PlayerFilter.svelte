@@ -1,7 +1,7 @@
 <script lang="ts">
   export let filters;
   const list = [
-    { value: null, label: 'Show All' },
+    { value: '', label: 'Show All' },
     { value: 'mk8dx', label: 'Show with MK8DX FC' },
     { value: 'mkw', label: 'Show with MKW FC' },
     { value: 'mkt', label: 'Show with MKT FC' },
@@ -12,9 +12,10 @@
 </script>
 
 <div>
-  <select bind:value={filters.game} on:click={() => console.log(filters)}>
+  <select bind:value={filters.game}>
     {#each list as { value, label }}
       <option value={value}>{label}</option>
     {/each}
   </select>
+  <input bind:value={filters.name} type='text'>
 </div>

@@ -15,8 +15,11 @@
   async function fetchData() {
     players = [];
     let url = '/api/registry/players?detailed=true';
-    if (filters.game != null) {
+    if (filters.game != null && filters.game != '') {
       url += '&game=' + filters.game;
+    }
+    if (filters.name != null && filters.name != '') {
+      url += '&name=' + filters.name;
     }
     const res = await fetch(url);
     if (res.status === 200) {
@@ -29,7 +32,7 @@
   }
 
   $: {
-    if (filters.game != null) {
+    if (filters.game != null || filters.name != null) {
       fetchData();
     }
   }

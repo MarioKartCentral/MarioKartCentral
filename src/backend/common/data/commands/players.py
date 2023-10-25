@@ -171,7 +171,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             fc_where_clause = "" if not fc_where_clauses else f" WHERE is_primary = TRUE AND {'AND '.join(fc_where_clauses)}"
             players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause}"
-            friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes fc JOIN players p ON fc.player_id = p.id{fc_where_clause}"
+            friend_codes_query = "SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes fc JOIN players p ON fc.player_id = p.id"
 
             players: List[Player] = []
             async with db.execute(players_query, variable_parameters) as cursor:
@@ -186,7 +186,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
             
             if filter.detailed is not None:
                 friend_codes: List[FriendCode] = []
-                async with db.execute(friend_codes_query, variable_parameters) as cursor:
+                async with db.execute(friend_codes_query) as cursor:
                     while True:
                         batch = await cursor.fetchmany(50);
                         if not batch:
