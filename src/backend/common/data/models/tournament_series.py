@@ -30,6 +30,7 @@ class Series():
 
 @dataclass
 class SeriesFilter():
+    name: str | None = None
     is_historical: bool | None = None
     is_public: bool | None = None
     game: Game | None = None

@@ -26,7 +26,9 @@ class CreateTournamentTemplateCommand(Command[None]):
             template_id = cursor.lastrowid
             await db.commit()
 
-        s3_message = bytes(msgspec.json.encode(self.body))
+        s3_body = {"id": template_id}
+        s3_body.update(asdict(self.body))
+        s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object(s3.TEMPLATES_BUCKET, f'{template_id}.json', s3_message)
 
 @save_to_command_log
