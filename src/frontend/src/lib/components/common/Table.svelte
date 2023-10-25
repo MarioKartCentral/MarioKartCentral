@@ -1,8 +1,10 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
+
+  export let show_padding: boolean = true;
 </script>
 
-<div class="container" transition:slide={{ duration: 400 }}>
+<div class={show_padding ? "container": ""} transition:slide={{ duration: 400 }}>
   <table>
     <slot />
   </table>
