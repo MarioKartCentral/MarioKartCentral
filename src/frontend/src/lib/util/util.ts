@@ -52,3 +52,17 @@ export const mod_panel_permissions = [
   permissions.manage_transfers,
   permissions.ban_player,
 ];
+
+export const valid_games: { [key: string]: string } = {
+  mk8dx: 'Mario Kart 8 Deluxe',
+  mkw: 'Mario Kart Wii',
+  mkt: 'Mario Kart Tour',
+};
+export const valid_modes: { [key: string]: string[] } = { mk8dx: ['150cc', '200cc'], mkw: ['rt', 'ct'], mkt: ['vsrace'] };
+export const mode_names: { [key: string]: string } = {
+  '150cc': '150cc',
+  '200cc': '200cc',
+  rt: 'Regular Tracks',
+  ct: 'Custom Tracks',
+  vsrace: 'VS Race',
+};
