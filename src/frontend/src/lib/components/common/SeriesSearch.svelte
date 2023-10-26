@@ -57,13 +57,15 @@
     {#if !option}
         <input placeholder="Search tournament series..." bind:value={query} on:input={handle_search}/>
         {#if show_results}
-            <Table show_padding={false}>
-                {#each results as result, i}
-                    <tr class="row-{i%2}" on:click={() => set_option(result)}>
-                        {result.series_name}
-                    </tr>
-                {/each}
-            </Table>
+            <div class="table">
+                <Table show_padding={false}>
+                    {#each results as result, i}
+                        <tr on:click={() => set_option(result)}>
+                            {result.series_name}
+                        </tr>
+                    {/each}
+                </Table>
+            </div>
         {/if}
     {:else}
         <div>
@@ -79,9 +81,17 @@
 <style>
     .container {
         width: 60%;
+        position: relative;
     }
     input {
         width: 100%;
+    }
+    div.table {
+        position: absolute;
+        width: 100%;
+        max-height: 80px;
+        overflow-y: scroll;
+        background-color: black;
     }
     tr {
         cursor:pointer;
