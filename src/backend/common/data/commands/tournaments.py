@@ -31,17 +31,17 @@ class CreateTournamentCommand(Command[None]):
                 """INSERT INTO tournaments(
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
                     logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
-                    squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verified_fc_required, is_viewable, is_public,
-                    show_on_profiles, require_single_fc, min_representatives
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
+                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.tournament_name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
                 b.series_stats_include, b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
-                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin,
-                b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles, b.require_single_fc, b.min_representatives))
+                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin, b.verification_required,
+                b.verified_fc_required, b.is_viewable, b.is_public, False, b.show_on_profiles, b.require_single_fc, b.min_representatives))
             tournament_id = cursor.lastrowid
             await db.commit()
         # make sure tournament ID is at the top of the s3's body
-        s3_body = {'id': tournament_id}
+        s3_body = {'id': tournament_id, 'is_deleted': False}
         s3_body.update(asdict(self.body))
         s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
@@ -99,16 +99,19 @@ class EditTournamentCommand(Command[None]):
                 host_status_required = ?,
                 checkins_open = ?,
                 min_players_checkin = ?,
+                verification_required = ?,
                 verified_fc_required = ?,
                 is_viewable = ?,
                 is_public = ?,
+                is_deleted = ?,
                 show_on_profiles = ?,
                 min_representatives = ?
                 WHERE id = ?""",
                 (b.tournament_name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
                 b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open,
-                b.min_players_checkin, b.verified_fc_required, b.is_viewable, b.is_public, b.show_on_profiles, b.min_representatives, self.id))
+                b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
+                b.min_representatives, self.id))
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
@@ -138,16 +141,18 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         if body is None:
             raise Problem('No tournament found', status=404)
         tournament_data = msgspec.json.decode(body, type=GetTournamentRequestData)
+        
         if tournament_data.series_id is not None:
             async with db_wrapper.connect(readonly=True) as db:
-                async with db.execute("SELECT name, url, description FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
+                async with db.execute("SELECT name, url, description, ruleset FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
                         raise Problem("Tournament does not exist with given ID", status=404)
-                    series_name, series_url, series_description = row
+                    series_name, series_url, series_description, series_ruleset = row
                     tournament_data.series_name = series_name
                     tournament_data.series_url = series_url
                     tournament_data.series_description = series_description
+                    tournament_data.series_ruleset = series_ruleset
         return tournament_data
 
 @dataclass

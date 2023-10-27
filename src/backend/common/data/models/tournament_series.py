@@ -26,6 +26,7 @@ class Series():
     is_historical: bool
     is_public: bool
     description: str
+    ruleset: str
     logo: str | None
 
 @dataclass

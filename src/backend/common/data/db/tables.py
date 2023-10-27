@@ -136,6 +136,7 @@ class TournamentSeries(TableModel):
     is_historical: bool
     is_public: bool
     description: str
+    ruleset: str
     logo: str | None
 
     @staticmethod
@@ -149,6 +150,7 @@ class TournamentSeries(TableModel):
             is_historical INTEGER NOT NULL,
             is_public INTEGER NOT NULL,
             description TEXT NOT NULL,
+            ruleset TEXT NOT NULL,
             logo TEXT)"""
 
 @dataclass
@@ -180,9 +182,11 @@ class Tournament(TableModel):
     host_status_required: bool
     checkins_open: bool
     min_players_checkin: int
+    verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
+    is_deleted: bool
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
@@ -217,9 +221,11 @@ class Tournament(TableModel):
             host_status_required BOOLEAN NOT NULL,
             checkins_open BOOLEAN NOT NULL,
             min_players_checkin INTEGER NOT NULL,
+            verification_required BOOLEAN NOT NULL,
             verified_fc_required BOOLEAN NOT NULL,
             is_viewable BOOLEAN NOT NULL,
             is_public BOOLEAN NOT NULL,
+            is_deleted BOOLEAN NOT NULL,
             show_on_profiles BOOLEAN NOT NULL,
             require_single_fc BOOLEAN NOT NULL,
             min_representatives INTEGER

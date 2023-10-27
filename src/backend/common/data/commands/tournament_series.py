@@ -18,8 +18,8 @@ class CreateSeriesCommand(Command[None]):
         # store minimal data about each series in the SQLite DB
         async with db_wrapper.connect() as db:
             cursor = await db.execute(
-                "INSERT INTO tournament_series(name, url, game, mode, is_historical, is_public, description, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                (b.series_name, b.url, b.game, b.mode, b.is_historical, b.is_public, b.description, b.logo))
+                "INSERT INTO tournament_series(name, url, game, mode, is_historical, is_public, description, ruleset, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (b.series_name, b.url, b.game, b.mode, b.is_historical, b.is_public, b.description, b.ruleset, b.logo))
             series_id = cursor.lastrowid
             await db.commit()
 
@@ -45,9 +45,10 @@ class EditSeriesCommand(Command[None]):
                 is_historical = ?,
                 is_public = ?,
                 description = ?,
+                ruleset = ?,
                 logo = ?
                 WHERE id = ?""",
-                (b.series_name, b.url, b.game, b.mode, b.is_historical, b.is_public, b.description, b.logo, self.series_id))
+                (b.series_name, b.url, b.game, b.mode, b.is_historical, b.is_public, b.description, b.ruleset, b.logo, self.series_id))
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No series found', status=404)
@@ -105,12 +106,12 @@ class GetSeriesListCommand(Command[list[Series]]):
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
 
-            series_query = f"SELECT id, name, url, game, mode, is_historical, is_public, description, logo FROM tournament_series{where_clause}"
+            series_query = f"SELECT id, name, url, game, mode, is_historical, is_public, description, ruleset, logo FROM tournament_series{where_clause}"
 
             series: list[Series] = []
             async with db.execute(series_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    series_id, series_name, url, game, mode, is_historical, is_public, description, logo = row
-                    series.append(Series(series_id, series_name, url, game, mode, bool(is_historical), bool(is_public), description, logo))
+                    series_id, series_name, url, game, mode, is_historical, is_public, description, ruleset, logo = row
+                    series.append(Series(series_id, series_name, url, game, mode, bool(is_historical), bool(is_public), description, ruleset, logo))
             return series

@@ -31,6 +31,7 @@ class CreateTournamentRequestData():
     host_status_required: bool
     checkins_open: bool
     min_players_checkin: int
+    verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
@@ -46,9 +47,12 @@ class CreateTournamentRequestData():
 @dataclass
 class GetTournamentRequestData(CreateTournamentRequestData):
     id: int
+    is_deleted: bool
     series_name: str | None = None
     series_url: str | None = None
     series_description: str | None = None
+    series_ruleset: str | None = None
+    
 
 @dataclass
 class EditTournamentRequestData():
@@ -75,9 +79,11 @@ class EditTournamentRequestData():
     host_status_required: bool
     checkins_open: bool
     min_players_checkin: int
+    verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
+    is_deleted: bool
     show_on_profiles: bool
     min_representatives: int | None
     # s3-only fields below
