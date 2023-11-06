@@ -27,6 +27,7 @@ export type TournamentTemplate = {
     host_status_required: boolean;
     checkins_open: boolean;
     min_players_checkin: number | null;
+    verification_required: boolean;
     verified_fc_required: boolean;
     is_viewable: boolean;
     is_public: boolean;

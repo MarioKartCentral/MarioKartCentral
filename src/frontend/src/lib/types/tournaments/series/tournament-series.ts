@@ -8,4 +8,7 @@ export type TournamentSeries = {
     is_public: boolean;
     description: string;
     logo: string | null;
+    ruleset: string;
+    organizer: string;
+    location: string;
 }

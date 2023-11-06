@@ -5,22 +5,28 @@
     import SeriesSearch from "$lib/components/common/SeriesSearch.svelte";
     import type { TournamentSeries } from "$lib/types/tournaments/series/tournament-series";
     import { valid_games, valid_modes, mode_names } from "$lib/util/util";
+    import MarkdownBox from "$lib/components/common/MarkdownBox.svelte";
 
     export let template_id: number | null = null;
     let template: TournamentTemplate | null = null;
 
-    let date_option = "true";
+    let date_option = true;
 
     let series: TournamentSeries | null = null;
 
+    // binded fields in the form to customize which options appear
     let game = 'mk8dx';
     let mode = '150cc';
-    let is_squad = "false";
-    let teams_allowed = "false";
-    let teams_only = "false";
-    let team_members_only = "false";
-    let checkins_open = "false";
+    let is_squad = false;
+    let teams_allowed = false;
+    let teams_only = false;
+    let checkins_open = false;
     let min_players_checkin: number | null = null;
+    let description = "";
+    let use_series_description = false;
+    let ruleset = "";
+    let use_series_ruleset = false;
+    let is_viewable = true;
 
     onMount(async() => {
         if(!template_id) {
@@ -32,12 +38,16 @@
             template = body;
             game = template.game;
             mode = template.mode;
-            is_squad = String(template.is_squad);
-            teams_allowed = String(template.teams_allowed);
-            teams_only = String(template.teams_only);
-            team_members_only = String(template.team_members_only);
-            checkins_open = String(template.checkins_open);
+            is_squad = template.is_squad;
+            teams_allowed = template.teams_allowed;
+            teams_only = template.teams_only;
+            checkins_open = template.checkins_open;
             min_players_checkin = template.min_players_checkin;
+            description = template.description;
+            use_series_description = template.use_series_description;
+            ruleset = template.ruleset;
+            use_series_ruleset = template.use_series_ruleset;
+            is_viewable = template.is_viewable;
         }
     });
 </script>
@@ -57,7 +67,11 @@
                 <label for="tournament_series">Tournament Series</label>
             </div>
             <div>
-                <SeriesSearch bind:option={series}/>
+                {#if template}
+                    <SeriesSearch bind:option={series} series_id={template.series_id}/>
+                {:else}
+                    <SeriesSearch bind:option={series}/>
+                {/if}
             </div>
         </div>
         <div class="option">
@@ -66,12 +80,12 @@
             </div>
             <div>
                 <select name="date_type" bind:value={date_option} required>
-                    <option value="true">Specify</option>
-                    <option value="false">TBD</option>
+                    <option value={true}>Specify</option>
+                    <option value={false}>TBD</option>
                 </select>
             </div>
         </div>
-        {#if date_option === "true"}
+        {#if date_option}
             <div class="option">
                 <div>
                     <label for="date_start">Start Date</label>
@@ -141,12 +155,12 @@
             </div>
             <div>
                 <select name="is_squad" bind:value={is_squad}>
-                    <option value="false">Solo</option>
-                    <option value="true">Squad/Team</option>
+                    <option value={false}>Solo</option>
+                    <option value={true}>Squad/Team</option>
                 </select>
             </div>
         </div>
-        {#if is_squad === "true"}
+        {#if is_squad}
             <div class="indented">
                 <div class="option">
                     <div>
@@ -169,9 +183,9 @@
                         <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
                     </div>
                     <div>
-                        <select name="squad_tag_required">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
+                        <select name="squad_tag_required" value={template ? template.squad_tag_required : false}>
+                            <option value={false}>No</option>
+                            <option value={true}>Yes</option>
                         </select>
                     </div>
                 </div>
@@ -180,46 +194,54 @@
                         <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
                     </div>
                     <div>
-                        <select name="squad_name_required">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
+                        <select name="squad_name_required" value={template ? template.squad_name_required : false}>
+                            <option value={false}>No</option>
+                            <option value={true}>Yes</option>
                         </select>
                     </div>
                 </div>
                 <div class="option">
                     <div>
-                        <label for="teams_allowed">Teams allowed?</label>
+                        <label for="teams_allowed">Teams allowed? (this cannot be changed)</label>
                     </div>
                     <div>
                         <select name="teams_allowed" bind:value={teams_allowed}>
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
+                            <option value={false}>No</option>
+                            <option value={true}>Yes</option>
                         </select>
                     </div>
                 </div>
-                {#if teams_allowed === "true"}
+                {#if teams_allowed}
                     <div class="indented">
                         <div class="option">
                             <div>
-                                <label for="teams_only">Teams only?</label>
+                                <label for="teams_only">Teams only? (this cannot be changed)</label>
                             </div>
                             <div>
                                 <select name="teams_only" bind:value={teams_only}>
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
+                                    <option value={false}>No</option>
+                                    <option value={true}>Yes</option>
                                 </select>
                             </div>
                         </div>
-                        {#if teams_only === "true"}
+                        {#if teams_only}
                             <div class="indented option">
                                 <div>
-                                    <label for="team_members_only">Team members only?</label>
+                                    <label for="team_members_only">Team members only? (this cannot be changed)</label>
                                 </div>
                                 <div>
-                                    <select name="team_members_only" bind:value={team_members_only}>
-                                        <option value="false">No</option>
-                                        <option value="true">Yes</option>
+                                    <select name="team_members_only" value={template ? template.team_members_only : false}>
+                                        <option value={false}>No</option>
+                                        <option value={true}>Yes</option>
                                     </select>
+                                </div>
+                            </div>
+                            <div class="indented option">
+                                <div>
+                                    <label for="min_representatives"># of representatives required</label>
+                                </div>
+                                <div>
+                                    <input class="number" type="number" name="min_representatives" value={template ? template.min_representatives : 0} min=0 max=3 required/>
                                 </div>
                             </div>
                         {/if}
@@ -227,26 +249,37 @@
                 {/if}
             </div>
         {/if}
-        {#if teams_allowed === "false"}
+        {#if !teams_allowed}
             <div class="option">
                 <div>
-                    <label for="host_status_required">Can/can't host required?</label>
+                    <label for="host_status_required">Can/can't host required? (this cannot be changed)</label>
                 </div>
                 <div>
-                    <select name="host_status_required">
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
+                    <select name="host_status_required" value={template ? template.host_status_required : false}>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
                     </select>
                 </div>
             </div>
             <div class="option">
                 <div>
-                    <label for="mii_name_required">In-Game/Mii Name required?</label>
+                    <label for="mii_name_required">In-Game/Mii Name required? (this cannot be changed)</label>
                 </div>
                 <div>
-                    <select name="mii_name_required">
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
+                    <select name="mii_name_required" value={template ? template.mii_name_required : false}>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="option">
+                <div>
+                    <label for="require_single_fc">Require participants to select one FC for the tournament? (this cannot be changed)</label>
+                </div>
+                <div>
+                    <select name="require_single_fc" value={template ? template.require_single_fc : false}>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
                     </select>
                 </div>
             </div>
@@ -256,18 +289,18 @@
                 </div>
                 <div>
                     <select name="checkins_open" bind:value={checkins_open}>
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
                     </select>
                 </div>
             </div>
-            {#if checkins_open === "true" && is_squad === "true"}
+            {#if checkins_open && is_squad}
                 <div class="option indented">
                     <div>
                         <label for="min_players_checkin">Minimum Check-ins per Squad</label>
                     </div>
                     <div>
-                        <input class="number" type="number" name="min_players_checkin" bind:value={min_players_checkin} min=1 max=99/>
+                        <input class="number" type="number" name="min_players_checkin" bind:value={min_players_checkin} min=1 max=99 required/>
                     </div>
                 </div>
             {/if}
@@ -277,12 +310,116 @@
                 <label for="verification_required">Verification required</label>
             </div>
             <div>
-                <select name="verification_required">
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
+                <select name="verification_required" value={template ? template.verification_required : false}>
+                    <option value={false}>No</option>
+                    <option value={true}>Yes</option>
                 </select>
             </div>
         </div>
+    </Section>
+    <Section header="Tournament Info">
+        {#if series}
+            <div class="option">
+                <div>
+                    <label for="use_series_description">Use series description?</label>
+                </div>
+                <div>
+                    <select name="use_series_description" bind:value={use_series_description}>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
+                    </select>
+                </div>
+            </div>
+        {/if}
+        <div class="option">
+            <div>
+                <label for="description">Tournament Description</label>
+            </div>
+            <div>
+                {#if series && use_series_description}
+                    <textarea name="description" value={series.description} disabled/>
+                {:else}
+                    <textarea name="description" bind:value={description}/>
+                {/if}
+            </div>
+            <div>Description Preview</div>
+            <div class="preview">
+                <MarkdownBox content={series && use_series_description ? series.description : description}/>
+            </div>
+        </div>
+        {#if series}
+            <div class="option">
+                <div>
+                    <label for="use_series_ruleset">Use series ruleset?</label>
+                </div>
+                <div>
+                    <select name="use_series_ruleset" bind:value={use_series_ruleset}>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
+                    </select>
+                </div>
+            </div>
+        {/if}
+        <div class="option">
+            <div>
+                <label for="ruleset">Tournament Ruleset</label>
+            </div>
+            <div>
+                {#if series && use_series_ruleset}
+                    <textarea name="ruleset" value={series.ruleset} disabled/>
+                {:else}
+                    <textarea name="ruleset" bind:value={ruleset}/>
+                {/if}
+            </div>
+            <div>Ruleset Preview</div>
+            <div class="preview">
+                <MarkdownBox content={series && use_series_ruleset ? series.ruleset : ruleset}/>
+            </div>
+        </div>
+    </Section>
+    <Section header="Tournament Status">
+        <div class="option">
+            <div>
+                <label for="is_viewable">
+                    Have tournament publicly accessible with link?
+                </label>
+            </div>
+            <div>
+                <select name="is_viewable" bind:value={is_viewable}>
+                    <option value={true}>Yes</option>
+                    <option value={false}>No</option>
+                </select>
+            </div>
+        </div>
+        {#if is_viewable}
+            <div class="option indented">
+                <div>
+                    <label for="is_public">
+                        Show on tournament listing?
+                    </label>
+                </div>
+                <div>
+                    <select name="is_public" value={template ? template.is_public : true}>
+                        <option value={true}>Show</option>
+                        <option value={false}>Hide</option>
+                    </select>
+                </div>
+            </div>
+        {/if}
+        <div class="option">
+            <div>
+                <label for="show_on_profiles">Show results on player profiles?</label>
+            </div>
+            <div>
+                <select name="show_on_profiles" value={template ? template.show_on_profiles : true}>
+                    <option value={true}>Show</option>
+                    <option value={false}>Hide</option>
+                </select>
+            </div>
+        </div>
+    </Section>
+    <Section header="Submit">
+        <button type="submit">Create Tournament</button>
     </Section>
 </form>
 
@@ -298,5 +435,11 @@
     }
     input.number {
         width: 5%;
+    }
+    textarea {
+        width: 50%;
+    }
+    div.preview {
+        border: 1px;
     }
 </style>
