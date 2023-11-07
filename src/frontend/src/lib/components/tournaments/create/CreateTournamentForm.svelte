@@ -85,11 +85,6 @@
         if(!data.checkins_open) {
             data.min_players_checkin = null;
         }
-        if(!data.series_id) {
-            data.use_series_description = false;
-            data.use_series_ruleset = false;
-            data.series_stats_include = false;
-        }
         data = data;
     }
 
@@ -123,9 +118,16 @@
             alert("Starting date must be after ending date");
             return;
         }
+        data.series_id = series ? series.id : null;
         data.date_start = date_start;
         data.date_end = date_end;
         data.registration_deadline = registration_deadline;
+        
+        if(!data.series_id) {
+            data.use_series_description = false;
+            data.use_series_ruleset = false;
+            data.series_stats_include = false;
+        }
         
         let payload = data;
         console.log(payload);
@@ -161,10 +163,7 @@
             </div>
             <div>
                 {#if template}
-                    <SeriesSearch bind:option={series} series_id={template.series_id} on:change={() => {
-                        data.series_id = series ? series.id : null;
-                        updateData();
-                        }}/>
+                    <SeriesSearch bind:option={series} series_id={template.series_id}/>
                 {:else}
                     <SeriesSearch bind:option={series}/>
                 {/if}
