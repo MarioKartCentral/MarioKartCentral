@@ -6,15 +6,16 @@
     import type { TournamentSeries } from "$lib/types/tournaments/series/tournament-series";
     import { valid_games, valid_modes, mode_names } from "$lib/util/util";
     import MarkdownBox from "$lib/components/common/MarkdownBox.svelte";
+    import { goto } from '$app/navigation';
+    import { page } from '$app/stores';
 
     export let template_id: number | null = null;
     let template: TournamentTemplate | null = null;
 
-    let date_option = true;
-
     let series: TournamentSeries | null = null;
 
     // binded fields in the form to customize which options appear
+    let organizer = 'MKCentral';
     let game = 'mk8dx';
     let mode = '150cc';
     let is_squad = false;
@@ -36,6 +37,7 @@
         if(res.status === 200) {
             const body: TournamentTemplate = await res.json();
             template = body;
+            organizer = template.organizer;
             game = template.game;
             mode = template.mode;
             is_squad = template.is_squad;
@@ -50,9 +52,91 @@
             is_viewable = template.is_viewable;
         }
     });
+
+    async function createTournament(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        const data = new FormData(event.currentTarget);
+        function getValue(name: string) {
+            return data.get(name) ? data.get(name)?.toString() : null;
+        }
+        function getNumValue(name: string) {
+            return data.get(name) ? Number(data.get(name)) : null;
+        }
+        function getDate(name: string) {
+            let date_form = data.get(name);
+            if(!date_form) {
+                return null;
+            }
+            let date = new Date(date_form.toString());
+            return date.getTime() / 1000; //return date in seconds
+        }
+
+        let date_start: number | null = getDate("date_start");
+        let date_end: number | null = getDate("date_end");
+        let registration_deadline: number | null = getDate("registration_deadline");
+        if(date_start && date_end && date_start > date_end) {
+            alert("Starting date must be after ending date");
+            return;
+        }
+        
+        const payload = {
+            tournament_name: getValue("tournament_name"),
+            series_id: series ? series.id : null,
+            date_start: date_start,
+            date_end: date_end,
+            logo: getValue('logo'),
+            url: null,
+            organizer: getValue('organizer'),
+            location: getValue('location'),
+            game: getValue('game'),
+            mode: getValue('mode'),
+            // quick hack to convert back to boolean
+            is_squad: getValue('is_squad') === 'true',
+            min_squad_size: getNumValue('min_squad_size'),
+            max_squad_size: getNumValue('max_squad_size'),
+            
+            squad_tag_required: getValue('squad_tag_required') === 'true',
+            squad_name_required: getValue('squad_name_required') === 'true',
+            teams_allowed: getValue('teams_allowed') === 'true',
+            teams_only: getValue('teams_only') === 'true',
+            team_members_only: getValue('team_members_only') === 'true',
+            min_representatives: getValue('min_representatives'),
+            host_status_required: getValue('host_status_required') === 'true',
+            mii_name_required: getValue('mii_name_required') === 'true',
+            require_single_fc: getValue('require_single_fc') === 'true',
+            checkins_open: getValue('checkins_open') === 'true',
+            min_players_checkin: getNumValue('min_players_checkin'),
+            verification_required: getValue('verification_required') === 'true',
+            use_series_description: getValue('use_series_description') === 'true',
+            description: getValue('description'),
+            use_series_ruleset: getValue('use_series_ruleset') === 'true',
+            ruleset: getValue('ruleset'),
+            registrations_open: getValue('registrations_open') === 'true',
+            registration_deadline: registration_deadline,
+            registration_cap: getNumValue('registration-cap'),
+            is_viewable: getValue('is_viewable') === 'true',
+            is_public: getValue('is_public') === 'true',
+            show_on_profiles: getValue('show_on_profiles') === 'true',
+            series_stats_include: getValue('series_stats_include') === 'true',
+            verified_fc_required: false,
+        };
+        console.log(payload);
+        const endpoint = '/api/tournaments/create';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            goto(`/${$page.params.lang}/tournaments`);
+            alert('Successfully created tournament..');
+        } else {
+            alert(`Creating tournament failed: ${result['title']}`);
+        }
+    }
 </script>
 
-<form method="POST">
+<form method="POST" on:submit|preventDefault={createTournament}>
     <Section header="New Tournament">
         <div class="option">
             <div>
@@ -76,33 +160,20 @@
         </div>
         <div class="option">
             <div>
-                <label for="date_type">Date</label>
+                <label for="date_start">Start Date</label>
             </div>
             <div>
-                <select name="date_type" bind:value={date_option} required>
-                    <option value={true}>Specify</option>
-                    <option value={false}>TBD</option>
-                </select>
+                <input name="date_start" type="datetime-local" required/>
             </div>
         </div>
-        {#if date_option}
-            <div class="option">
-                <div>
-                    <label for="date_start">Start Date</label>
-                </div>
-                <div>
-                    <input name="date_start" type="datetime-local" required/>
-                </div>
+        <div class="option">
+            <div>
+                <label for="date_end">End Date</label>
             </div>
-            <div class="option">
-                <div>
-                    <label for="date_end">End Date</label>
-                </div>
-                <div>
-                    <input name="date_end" type="datetime-local"/>
-                </div>
+            <div>
+                <input name="date_end" type="datetime-local" required/>
             </div>
-        {/if}
+        </div>
         <div class="option">
             <div>
                 <label for="logo">Logo</label>
@@ -118,13 +189,23 @@
                 <label for="organizer">Organized by</label>
             </div>
             <div>
-                <select name="organizer">
+                <select name="organizer" bind:value={organizer}>
                     <option value="MKCentral">MKCentral</option>
                     <option value="Affiliate">Affiliate</option>
                     <option value="LAN">LAN</option>
                 </select>
             </div>
         </div>
+        {#if organizer === 'LAN'}
+            <div class="option">
+                <div>
+                    <label for="location">Location</label>
+                </div>
+                <div>
+                    <input name="location" type="text" value={template ? template.location : ""}/>
+                </div>
+            </div>
+        {/if}
         <div class="option">
             <div>
                 <label for="game">Game</label>
@@ -377,6 +458,35 @@
             </div>
         </div>
     </Section>
+    <Section header="Tournament Registration">
+        <div class="option">
+            <div>
+                <label for="registrations_open">Registrations open?</label>
+            </div>
+            <div>
+                <select name="registrations_open" value={template ? template.registrations_open : true}>
+                    <option value={true}>Open</option>
+                    <option value={false}>Closed</option>
+                </select>
+            </div>
+        </div>
+        <div class="option">
+            <div>
+                <label for="registration_deadline">Registration Deadline (optional)</label>
+            </div>
+            <div>
+                <input name="registration_deadline" type="datetime-local"/>
+            </div>
+        </div>
+        <div class="option">
+            <div>
+                <label for="registration_cap">Registration Cap (optional)</label>
+            </div>
+            <div>
+                <input name="registration_cap" type="number" min=0/>
+            </div>
+        </div>
+    </Section>
     <Section header="Tournament Status">
         <div class="option">
             <div>
@@ -417,6 +527,20 @@
                 </select>
             </div>
         </div>
+        {#if series}
+            <div class="option">
+                <div>
+                    <label for="series_stats_include">Include tournament in series stats?</label>
+                </div>
+                <div>
+                    <select name="series_stats_include" value={template ? template.series_stats_include : true}>
+                        <option value={true}>Yes</option>
+                        <option value={false}>No</option>
+                    </select>
+                </div>
+            </div>
+        {/if}
+        
     </Section>
     <Section header="Submit">
         <button type="submit">Create Tournament</button>

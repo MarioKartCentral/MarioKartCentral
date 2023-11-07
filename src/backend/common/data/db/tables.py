@@ -181,7 +181,7 @@ class Tournament(TableModel):
     mii_name_required: bool
     host_status_required: bool
     checkins_open: bool
-    min_players_checkin: int
+    min_players_checkin: int | None
     verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
@@ -220,7 +220,7 @@ class Tournament(TableModel):
             mii_name_required BOOLEAN NOT NULL,
             host_status_required BOOLEAN NOT NULL,
             checkins_open BOOLEAN NOT NULL,
-            min_players_checkin INTEGER NOT NULL,
+            min_players_checkin INTEGER,
             verification_required BOOLEAN NOT NULL,
             verified_fc_required BOOLEAN NOT NULL,
             is_viewable BOOLEAN NOT NULL,
