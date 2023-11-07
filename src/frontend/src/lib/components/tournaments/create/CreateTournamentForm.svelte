@@ -330,7 +330,7 @@
                 {/if}
             </div>
         {/if}
-        {#if !teams_allowed}
+        {#if !is_squad || !teams_allowed}
             <div class="option">
                 <div>
                     <label for="host_status_required">Can/can't host required? (this cannot be changed)</label>
