@@ -15,7 +15,7 @@ class SeriesRequestData():
     logo: str | None
     ruleset: str
     organizer: str
-    location: str
+    location: str | None
     
 @dataclass
 class Series():

@@ -18,7 +18,7 @@ class CreateSeriesCommand(Command[None]):
         # store minimal data about each series in the SQLite DB
         async with db_wrapper.connect() as db:
             cursor = await db.execute(
-                "INSERT INTO tournament_series(name, url, display_order, game, mode, is_historical, is_public, description, ruleset, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO tournament_series(name, url, display_order, game, mode, is_historical, is_public, description, ruleset, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.description, b.ruleset, b.logo))
             series_id = cursor.lastrowid
             await db.commit()

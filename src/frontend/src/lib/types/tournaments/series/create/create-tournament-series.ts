@@ -1,5 +1,4 @@
-export type TournamentSeries = {
-    id: number;
+export type CreateTournamentSeries = {
     series_name: string;
     url: string | null;
     display_order: number;
@@ -11,5 +10,5 @@ export type TournamentSeries = {
     logo: string | null;
     ruleset: string;
     organizer: string;
-    location: string;
-}
+    location: string | null;
+};
