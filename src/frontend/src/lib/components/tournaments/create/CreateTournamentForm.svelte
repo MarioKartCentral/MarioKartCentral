@@ -4,11 +4,11 @@
     import Section from "$lib/components/common/Section.svelte";
     import SeriesSearch from "$lib/components/common/SeriesSearch.svelte";
     import type { TournamentSeries } from "$lib/types/tournaments/series/tournament-series";
-    import { valid_games, valid_modes, mode_names } from "$lib/util/util";
     import MarkdownBox from "$lib/components/common/MarkdownBox.svelte";
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import type { CreateTournament } from "$lib/types/tournaments/create/create-tournament";
+    import GameModeSelect from "$lib/components/common/GameModeSelect.svelte";
 
     export let template_id: number | null = null;
     let template: TournamentTemplate | null = null;
@@ -217,33 +217,7 @@
                 </div>
             </div>
         {/if}
-        <div class="option">
-            <div>
-                <label for="game">Game</label>
-            </div>
-            <div>
-                <select name="game" bind:value={data.game} on:change={() => {
-                    [data.mode] = valid_modes[data.game];
-                    updateData();
-                }}>
-                    {#each Object.keys(valid_games) as game}
-                        <option value={game}>{valid_games[game]}</option>
-                    {/each}
-                </select>
-            </div>
-        </div>
-        <div class="option">
-            <div>
-                <label for="mode">Mode</label>
-            </div>
-            <div>
-                <select name="mode" bind:value={data.mode}>
-                    {#each valid_modes[data.game] as mode}
-                        <option value={mode}>{mode_names[mode]}</option>
-                    {/each}
-                </select>
-            </div>
-        </div>
+        <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData}/>
         <div class="option">
             <div>
                 <label for="is_squad">Registration format (this cannot be changed)</label>
