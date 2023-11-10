@@ -145,6 +145,7 @@ class TournamentSeries(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             url TEXT UNIQUE,
+            display_order INTEGER NOT NULL,
             game TEXT NOT NULL,
             mode TEXT NOT NULL,
             is_historical INTEGER NOT NULL,

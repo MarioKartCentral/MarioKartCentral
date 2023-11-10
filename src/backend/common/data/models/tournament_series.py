@@ -6,6 +6,7 @@ from common.data.models.common import Game, GameMode
 class SeriesRequestData():
     series_name: str
     url: str | None
+    display_order: int
     game: Game
     mode: GameMode
     is_historical: bool
@@ -21,6 +22,7 @@ class Series():
     id: int
     series_name: str
     url: str | None
+    display_order: int
     game: Game
     mode: GameMode
     is_historical: bool
