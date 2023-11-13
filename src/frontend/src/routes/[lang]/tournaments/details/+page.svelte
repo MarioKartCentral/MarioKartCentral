@@ -8,7 +8,6 @@
   import type { Tournament } from '$lib/types/tournament';
 
   let id = 0;
-  let tournament_found = true;
 
   let tournament: Tournament;
   $: tournament_name = tournament ? `${tournament.tournament_name}` : 'Tournaments';
@@ -18,7 +17,6 @@
     id = Number(param_id);
     const res = await fetch(`/api/tournaments/${id}`);
     if (res.status !== 200) {
-      tournament_found = false;
       return;
     }
     const body: Tournament = await res.json();

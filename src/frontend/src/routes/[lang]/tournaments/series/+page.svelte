@@ -7,6 +7,7 @@
     import type { UserInfo } from "$lib/types/user-info";
     import LinkButton from "$lib/components/common/LinkButton.svelte";
     import { page } from "$app/stores";
+    import SeriesPageItem from "$lib/components/tournaments/series/SeriesPageItem.svelte";
 
     addPermission(permissions.create_series);
 
@@ -24,6 +25,7 @@
             for (let s of body) {
                 series.push(s);
             }
+            series.sort((a, b) => a.display_order - b.display_order);
             series = series;
         }
     });
@@ -36,3 +38,7 @@
         {/if}
     </div>
 </Section>
+
+{#each series as s}
+    <SeriesPageItem series={s}/>
+{/each}

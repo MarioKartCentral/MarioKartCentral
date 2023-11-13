@@ -24,6 +24,11 @@
 
 <Section header="Select Template">
     <Table>
+        {#if !series_id}
+            <tr class="row-1">
+                <a href="/{$page.params.lang}/tournaments/create">Start from scratch</a>
+            </tr>
+        {/if}
         {#each templates as template, i}
             <tr class="row-{i%2}">
                 <a href="/{$page.params.lang}/tournaments/create?template_id={template.id}">{template.template_name}</a>
