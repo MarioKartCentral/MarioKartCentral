@@ -31,6 +31,7 @@
 </script>
 
 <a href="/{$page.params.lang}/tournaments/series">Series</a>
+<a href="/{$page.params.lang}/tournaments/templates">Templates</a>
 
 <Section header="Tournaments">
   <div slot="header_content">
