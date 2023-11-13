@@ -23,5 +23,5 @@
       <option value={country_code}>{country_code}</option>
     {/each}
   </select>
-  <input bind:value={filters.name} type='text'>
+  <input bind:value={filters.name} type='text' placeholder="name">
 </div>

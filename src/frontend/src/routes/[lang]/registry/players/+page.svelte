@@ -4,7 +4,7 @@
   import Section from '$lib/components/common/Section.svelte';
   import PlayerList from '$lib/components/registry/players/PlayerList.svelte';
   import PlayerFilter from '$lib/components/registry/players/PlayerFilter.svelte';
-    import { country_codes } from '$lib/stores/country_codes';
+  import { country_codes } from '$lib/stores/country_codes';
 
   let players: PlayerInfo[] = [];
   let filters = {

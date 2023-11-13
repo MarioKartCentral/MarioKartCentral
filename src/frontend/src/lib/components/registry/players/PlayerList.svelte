@@ -3,8 +3,10 @@
   import Table from '$lib/components/common/Table.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
+	import Pagination from './../../Pagination.svelte';
 
   export let players: PlayerInfo[];
+  let values;
 </script>
 
 <Table>
@@ -27,7 +29,8 @@
     </tr>
   </thead>
   <tbody>
-    {#each players as player, i}
+    {#if values}
+    {#each values as player, i}
       <tr class="row-{i % 2}">
         <td>{player.country_code}</td>
         <td>
@@ -40,8 +43,11 @@
         <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mk8"}{friend_code.fc}{/if}{/each}</td>
       </tr>
     {/each}
+    {/if}
   </tbody>
 </Table>
+<Pagination rows={players} perPage={1} bind:trimmedRows={values} />
+
 
 <style>
   col.country_code {
