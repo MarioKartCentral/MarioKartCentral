@@ -478,6 +478,40 @@ class UserTeamRole(TableModel):
             """
 
 @dataclass
+class SeriesRole(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS series_roles(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class SeriesPermission(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS series_permissions(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class SeriesRolePermission(TableModel):
+    role_id: int
+    permission_id: int
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS series_role_permissions(
+            role_id INTEGER NOT NULL REFERENCES series_roles(id),
+            permission_id INTEGER NOT NULL REFERENCES series_permissions(id),
+            PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
+@dataclass
 class UserSeriesRole(TableModel):
     user_id: int
     role_id: int
@@ -487,7 +521,7 @@ class UserSeriesRole(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS user_series_roles (
             user_id INTEGER NOT NULL REFERENCES users(id),
-            role_id INTEGER NOT NULL REFERENCES roles(id),
+            role_id INTEGER NOT NULL REFERENCES series_roles(id),
             series_id INTEGER NOT NULL REFERENCES series(id),
             PRIMARY KEY (user_id, role_id, series_id)
             ) WITHOUT ROWID
@@ -640,5 +674,6 @@ all_tables : list[type[TableModel]] = [
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
+    SeriesRole, SeriesPermission, SeriesRolePermission,
     UserSeriesRole, RosterInvite, TeamEditRequest, RosterEditRequest,
     UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]

@@ -21,6 +21,11 @@ class TeamPermissions:
     permissions: list[str]
 
 @dataclass
+class SeriesPermissions:
+    series_id: int
+    permissions: list[str]
+
+@dataclass
 class UserPlayer:
     id: int
     player_id: int | None
