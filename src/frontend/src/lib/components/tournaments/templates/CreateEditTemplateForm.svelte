@@ -4,6 +4,13 @@
     import TournamentDetailsForm from "../TournamentDetailsForm.svelte";
     import { page } from "$app/stores";
     import { goto } from "$app/navigation";
+    import { onMount } from "svelte";
+    import type { TournamentTemplate } from "$lib/types/tournaments/create/tournament-template";
+
+    export let template_id: number | null = null;
+    export let is_edit: boolean = false;
+
+    let template: TournamentTemplate | null = null;
 
     let data: CreateTemplate = {
         template_name: "",
@@ -50,13 +57,19 @@
         data = data;
     }
 
-    async function createTemplate(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-        if(!data.series_id) {
-            data.use_series_description = false;
-            data.use_series_ruleset = false;
-            data.series_stats_include = false;
+    onMount(async() => {
+        if(!template_id) {
+            return;
         }
-        
+        const res = await fetch(`/api/tournaments/templates/${template_id}`);
+        if(res.status === 200) {
+            const body: TournamentTemplate = await res.json();
+            template = body;
+            data = Object.assign(data, template);
+        }
+    });
+
+    async function createTemplate(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         let payload = data;
         console.log(payload);
         const endpoint = '/api/tournaments/templates/create';
@@ -73,9 +86,27 @@
             alert(`Creating template failed: ${result['title']}`);
         }
     }
+
+    async function editTemplate(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        let payload = data;
+        console.log(payload);
+        const endpoint = `/api/tournaments/templates/${template_id}/edit`;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            goto(`/${$page.params.lang}/tournaments/templates`);
+            alert('Successfully edited template!');
+        } else {
+            alert(`Editing template failed: ${result['title']}`);
+        }
+    }
 </script>
 
-<form method="POST" on:submit|preventDefault={createTemplate}>
+<form method="POST" on:submit|preventDefault={is_edit ? editTemplate : createTemplate}>
     <Section header="Template Details">
         <div>
             <label for="template_name">Template Name</label>
@@ -86,6 +117,8 @@
     </Section>
     <TournamentDetailsForm data={data} update_function={updateData} is_template={true}/>
     <Section header="Submit">
-        <button type="submit">Create Template</button>
+        <button type="submit">
+            {is_edit ? "Edit Template" : "Create Template"}
+        </button>
     </Section>
 </form>

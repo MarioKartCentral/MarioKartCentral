@@ -12,6 +12,7 @@
 
     let templates: TournamentTemplateMinimal[] = [];
     addPermission(permissions.create_tournament_template);
+    addPermission(permissions.edit_tournament_template);
 
     onMount(async() => {
         const series_var = series_id ? `?series_id=${series_id}` : '';
@@ -38,8 +39,37 @@
     <Table>
         {#each templates as template, i}
             <tr class="row-{i%2}">
-                <a href="/{$page.params.lang}/tournaments/create?template_id={template.id}">{template.template_name}</a>
+                <td class="left">
+                    <a href="/{$page.params.lang}/tournaments/create?template_id={template.id}">{template.template_name}</a>
+                </td>
+                <td>
+                    <div class="settings">
+                        <PermissionCheck permission={permissions.edit_tournament_template}>
+                            <LinkButton href="/{$page.params.lang}/tournaments/templates/edit?template_id={template.id}">Edit</LinkButton>
+                        </PermissionCheck>
+                        <PermissionCheck permission={permissions.create_tournament_template}>
+                            <LinkButton href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}">Duplicate</LinkButton>
+                        </PermissionCheck>
+                        <div>Delete</div>
+                    </div>
+                </td>
             </tr>
         {/each}
     </Table>    
 </Section>
+
+<style>
+    td div {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    .left {
+        text-align: left;
+    }
+    .settings {
+        float: right;
+    }
+    .settings div {
+        padding: 0 5px;
+    }
+</style>
