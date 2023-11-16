@@ -45,7 +45,7 @@
                 <td>
                     <div class="settings">
                         <PermissionCheck permission={permissions.edit_tournament_template}>
-                            <LinkButton href="/{$page.params.lang}/tournaments/templates/edit?template_id={template.id}">Edit</LinkButton>
+                            <LinkButton href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">Edit</LinkButton>
                         </PermissionCheck>
                         <PermissionCheck permission={permissions.create_tournament_template}>
                             <LinkButton href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}">Duplicate</LinkButton>

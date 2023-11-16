@@ -1,9 +1,12 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import Section from "$lib/components/common/Section.svelte";
     import { page } from "$app/stores";
     import type { TournamentSeries } from "$lib/types/tournaments/series/tournament-series";
     import SeriesInfo from "$lib/components/tournaments/series/SeriesInfo.svelte";
+    import { permissions, addPermission, setSeriesPerms} from "$lib/util/util";
+
+    addPermission(permissions.edit_series);
+    setSeriesPerms();
 
     let id = 0;
     let series: TournamentSeries;

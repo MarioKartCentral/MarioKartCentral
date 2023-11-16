@@ -3,21 +3,28 @@
     import Section from "$lib/components/common/Section.svelte";
     import { page } from "$app/stores";
     import LinkButton from "$lib/components/common/LinkButton.svelte";
-
+    import { series_permissions } from "$lib/util/util";
+    import SeriesPermissionCheck from "$lib/components/common/SeriesPermissionCheck.svelte";
+    import MarkdownBox from "$lib/components/common/MarkdownBox.svelte";
+    
     export let series: TournamentSeries;
 </script>
 
 <Section header="Series Info">
     <div slot="header_content">
         <LinkButton href="/{$page.params.lang}/tournaments/series">Back to Series Listing</LinkButton>
+        <SeriesPermissionCheck series_id={series.id} permission={series_permissions.edit_series}>
+            <LinkButton href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">Edit Series</LinkButton>
+        </SeriesPermissionCheck>
     </div>
     <div class="container">
         {#if series.logo}
             <div class="img">
                 <img src={series.logo} alt={series.series_name}/>
             </div>
+            
         {/if}
-        {series.description}
+        <MarkdownBox content={series.description}/>
     </div>
 </Section>
 

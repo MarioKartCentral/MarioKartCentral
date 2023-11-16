@@ -6,7 +6,7 @@
     
     addPermission(permissions.edit_tournament_template);
 
-    let param_temp_id = $page.url.searchParams.get('template_id');
+    let param_temp_id = $page.url.searchParams.get('id');
     let template_id = param_temp_id ? Number(param_temp_id) : null;
 </script>
 

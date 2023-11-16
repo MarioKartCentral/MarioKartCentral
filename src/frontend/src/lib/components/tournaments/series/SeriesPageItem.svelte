@@ -2,6 +2,7 @@
     import type { TournamentSeries } from "$lib/types/tournaments/series/tournament-series";
     import Section from "$lib/components/common/Section.svelte";
     import { page } from "$app/stores";
+    import MarkdownBox from "$lib/components/common/MarkdownBox.svelte";
 
     export let series: TournamentSeries;
 </script>
@@ -24,7 +25,7 @@
             </div>
         </div>
         <div class="description">
-            {series.description}
+            <MarkdownBox content={series.description}/>
             <hr>
             <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
                 More Details

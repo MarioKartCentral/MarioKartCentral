@@ -5,6 +5,10 @@
     import MarkdownBox from "$lib/components/common/MarkdownBox.svelte";
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
+    import { onMount } from "svelte";
+
+    export let series_id: number | null = null;
+    export let is_edit: boolean = false;
 
     let data: CreateTournamentSeries = {
         series_name: "",
@@ -20,6 +24,17 @@
         ruleset: "",
         logo: null
     };
+
+    onMount(async() => {
+        if(!series_id) {
+            return;
+        }
+        const res = await fetch(`/api/tournaments/series/${series_id}`);
+        if(res.status === 200) {
+            const body: CreateTournamentSeries = await res.json();
+            data = Object.assign(data, body);
+        }
+    });
 
     function updateData() {
         data = data;
@@ -41,10 +56,27 @@
             alert(`Creating series failed: ${result['title']}`);
         }
     }
+    async function editSeries(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        let payload = data;
+        console.log(payload);
+        const endpoint = `/api/tournaments/series/${series_id}/edit`;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            goto(`/${$page.params.lang}/tournaments/series/details?id=${series_id}`);
+            alert('Successfully edited series!');
+        } else {
+            alert(`Editing series failed: ${result['title']}`);
+        }
+    }
 </script>
 
-<form method="POST" on:submit|preventDefault={createSeries}>
-    <Section header="New Tournament Series">
+<form method="POST" on:submit|preventDefault={is_edit ? editSeries : createSeries}>
+    <Section header={is_edit ? "Edit Tournament Series" : "Create Tournament Series"}>
         <div class="option">
             <div>
                 <label for="series_name">Series Name</label>
@@ -154,7 +186,7 @@
         </div>
     </Section>
     <Section header="Submit">
-        <button type="submit">Submit</button>
+        <button type="submit">{is_edit ? "Edit Series" : "Create Series"}</button>
     </Section>
 </form>
 

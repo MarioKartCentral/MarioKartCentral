@@ -46,6 +46,16 @@ export const team_permissions = {
   manage_tournament_rosters: 'tournament_rosters_manage',
 };
 
+export const series_permissions = {
+  create_tournament: "tournament_create",
+  edit_tournament: "tournament_edit",
+  create_tournament_template: "tournament_template_create",
+  edit_tournament_template: "tournament_template_edit",
+  manage_tournament_registrations: "tournament_registrations_manage",
+  manage_series_roles: "series_roles_manage",
+  edit_series: "series_edit"
+};
+
 export const mod_panel_permissions = [
   permissions.edit_player,
   permissions.manage_teams,
