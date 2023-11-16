@@ -17,6 +17,7 @@ class CreateTournamentRequestData():
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
+    use_series_logo: bool
     url: str | None
     registration_deadline: int | None
     registration_cap: int | None
@@ -65,6 +66,7 @@ class EditTournamentRequestData():
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
+    use_series_logo: bool
     url: str | None
     registration_deadline: int | None
     registration_cap: int | None
@@ -112,6 +114,7 @@ class TournamentDataBasic(TournamentDataMinimal):
     teams_allowed: bool
     description: str
     logo: str | None
+    use_series_logo: bool
 
 @dataclass
 class TournamentFilter():

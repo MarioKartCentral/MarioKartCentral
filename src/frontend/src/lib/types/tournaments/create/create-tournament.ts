@@ -4,6 +4,7 @@ export type CreateTournament = {
     date_start: number | null,
     date_end: number | null,
     logo: string | null,
+    use_series_logo: boolean;
     url: string | null,
     organizer: string,
     location: string | null,

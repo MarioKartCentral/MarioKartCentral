@@ -23,6 +23,8 @@ class CreateTournamentCommand(Command[None]):
             raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
         if b.teams_allowed and (b.mii_name_required or b.host_status_required or b.require_single_fc):
             raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+        if not b.series_id and b.use_series_logo:
+            raise Problem('Cannot use series logo if no series is selected', status=400)
 
         # store minimal data about each tournament in the SQLite DB
         async with db_wrapper.connect() as db:
@@ -30,12 +32,12 @@ class CreateTournamentCommand(Command[None]):
             cursor = await db.execute(
                 """INSERT INTO tournaments(
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
-                    logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
+                    logo, use_series_logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
                     squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
                     is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.tournament_name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
-                b.series_stats_include, b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
+                b.series_stats_include, b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin, b.verification_required,
                 b.verified_fc_required, b.is_viewable, b.is_public, False, b.show_on_profiles, b.require_single_fc, b.min_representatives))
             tournament_id = cursor.lastrowid
@@ -75,6 +77,8 @@ class EditTournamentCommand(Command[None]):
                 raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
             if b.teams_allowed and (b.mii_name_required or b.host_status_required):
                 raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+            if not b.series_id and b.use_series_logo:
+                raise Problem('Cannot use series logo if no series is selected', status=400)
             cursor = await db.execute("""UPDATE tournaments
                 SET name = ?,
                 series_id = ?,
@@ -85,6 +89,7 @@ class EditTournamentCommand(Command[None]):
                 use_series_description = ?,
                 series_stats_include = ?,
                 logo = ?,
+                use_series_logo = ?,
                 url = ?,
                 registration_deadline = ?,
                 registration_cap = ?,
@@ -108,7 +113,7 @@ class EditTournamentCommand(Command[None]):
                 min_representatives = ?
                 WHERE id = ?""",
                 (b.tournament_name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
-                b.logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
+                b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
                 b.min_representatives, self.id))
@@ -144,15 +149,16 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         
         if tournament_data.series_id is not None:
             async with db_wrapper.connect(readonly=True) as db:
-                async with db.execute("SELECT name, url, description, ruleset FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
+                async with db.execute("SELECT name, url, description, ruleset, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
                     row = await cursor.fetchone()
-                    if row is None:
-                        raise Problem("Tournament does not exist with given ID", status=404)
-                    series_name, series_url, series_description, series_ruleset = row
+                    assert row is not None
+                    series_name, series_url, series_description, series_ruleset, logo = row
                     tournament_data.series_name = series_name
                     tournament_data.series_url = series_url
                     tournament_data.series_description = series_description
                     tournament_data.series_ruleset = series_ruleset
+                    if tournament_data.use_series_logo:
+                        tournament_data.logo = logo
         return tournament_data
 
 @dataclass
@@ -185,7 +191,7 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
             if is_minimal:
                 tournaments_query = f"SELECT id, name, game, mode, date_start, date_end FROM tournaments{where_clause}"
             else:
-                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo FROM tournaments{where_clause}"
+                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments{where_clause}"
             
             tournaments: list[TournamentDataMinimal | TournamentDataBasic] = []
             series_ids: list[int] = []
@@ -197,23 +203,25 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
                         tournament_id, name, game, mode, date_start, date_end = row
                         tournaments.append(TournamentDataMinimal(tournament_id, name, game, mode, date_start, date_end))
                     else:
-                        tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo = row
+                        tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
                         tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, None, None, None,
-                            bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo))
+                            bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo)))
                         if series_id is not None:
                             series_ids.append(series_id)
             # get relevant info about tournament series for all tournaments part of one
             if len(series_ids) > 0:
                 series_set = set(series_ids)
                 series_query = f"({','.join([str(s) for s in series_set])})"
-                async with db.execute(f"SELECT id, name, url, description FROM tournament_series WHERE id IN {series_query}") as cursor:
+                async with db.execute(f"SELECT id, name, url, description, logo FROM tournament_series WHERE id IN {series_query}") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        series_id, name, url, description = row
-                        series_info[series_id] = {'name': name, 'url': url, 'description': description}
+                        series_id, name, url, description, logo = row
+                        series_info[series_id] = {'name': name, 'url': url, 'description': description, 'logo': logo}
                 for tournament in tournaments:
                     if not isinstance(tournament, TournamentDataBasic) or tournament.series_id is None:
                         continue
+                    if tournament.use_series_logo:
+                        tournament.logo = series_info[tournament.series_id]['logo']
                     tournament.series_name = series_info[tournament.series_id]['name']
                     tournament.series_url = series_info[tournament.series_id]['url']
                     tournament.series_description = series_info[tournament.series_id]['description']

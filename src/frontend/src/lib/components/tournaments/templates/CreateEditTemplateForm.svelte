@@ -19,6 +19,7 @@
         date_start: 0,
         date_end: 0,
         logo: null,
+        use_series_logo: false,
         url: null,
         organizer: "MKCentral",
         location: null,

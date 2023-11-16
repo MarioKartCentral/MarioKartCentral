@@ -208,6 +208,7 @@ class Tournament(TableModel):
             use_series_description BOOLEAN NOT NULL,
             series_stats_include BOOLEAN NOT NULL,
             logo TEXT,
+            use_series_logo BOOLEAN NOT NULL,
             url TEXT UNIQUE,
             registration_deadline INTEGER,
             registration_cap INTEGER,

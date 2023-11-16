@@ -52,6 +52,10 @@
             data.use_series_description = false;
             data.use_series_ruleset = false;
             data.series_stats_include = false;
+            data.use_series_logo = false;
+        }
+        if(data.use_series_logo) {
+            data.logo = null;
         }
         update_function();
     }
@@ -96,14 +100,30 @@
             </div>
         </div>
     {/if}
-    <div class="option">
-        <div>
-            <label for="logo">Logo</label>
+    {#if series}
+        <div class="option">
+            <div>
+                <label for="use_series_logo">Use series logo?</label>
+            </div>
+            <div>
+                <select name="use_series_logo" bind:value={data.use_series_logo} on:change={updateData}>
+                    <option value={false}>No</option>
+                    <option value={true}>Yes</option>
+                </select>
+            </div>
         </div>
-        <div>
-            <input name="logo" type="text"/>
+    {/if}
+    {#if !data.use_series_logo}
+        <div class="option">
+            <div>
+                <label for="logo">Logo</label>
+            </div>
+            <div>
+                <input name="logo" type="text"/>
+            </div>
         </div>
-    </div>
+    {/if}
+    
 </Section>
 <Section header="Tournament Format">
     <div class="option">
@@ -158,28 +178,30 @@
                     <input class="number" type="number" name="max_squad_size" min=1 max=99 bind:value={data.max_squad_size}/>
                 </div>
             </div>
-            <div class="option">
-                <div>
-                    <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
+            {#if !data.teams_only}
+                <div class="option">
+                    <div>
+                        <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
+                    </div>
+                    <div>
+                        <select name="squad_tag_required" bind:value={data.squad_tag_required}>
+                            <option value={false}>No</option>
+                            <option value={true}>Yes</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <select name="squad_tag_required" bind:value={data.squad_tag_required}>
-                        <option value={false}>No</option>
-                        <option value={true}>Yes</option>
-                    </select>
+                <div class="option">
+                    <div>
+                        <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
+                    </div>
+                    <div>
+                        <select name="squad_name_required" bind:value={data.squad_name_required}>
+                            <option value={false}>No</option>
+                            <option value={true}>Yes</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="option">
-                <div>
-                    <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
-                </div>
-                <div>
-                    <select name="squad_name_required" bind:value={data.squad_name_required}>
-                        <option value={false}>No</option>
-                        <option value={true}>Yes</option>
-                    </select>
-                </div>
-            </div>
+            {/if}
             <div class="option">
                 <div>
                     <label for="teams_allowed">Teams allowed? (this cannot be changed)</label>
@@ -227,6 +249,7 @@
                     {/if}
                 </div>
             {/if}
+            
         </div>
     {/if}
     {#if !data.is_squad || !data.teams_allowed}
