@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import CreateTournamentForm from '$lib/components/tournaments/create/CreateTournamentForm.svelte';
+  import CreateEditTournamentForm from '$lib/components/tournaments/CreateEditTournamentForm.svelte';
   import { permissions, addPermission, series_permissions } from '$lib/util/util';
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import { onMount } from 'svelte';
@@ -24,6 +24,6 @@
 
 {#if tournament}
   <PermissionCheck permission={permissions.edit_tournament}>
-    <CreateTournamentForm tournament_id={tournament.id} data={tournament} />
+    <CreateEditTournamentForm tournament_id={tournament.id} data={tournament} />
   </PermissionCheck>
 {/if}
