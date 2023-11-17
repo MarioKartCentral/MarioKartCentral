@@ -13,7 +13,9 @@
   $: tournament_type = tournament.is_squad ? (tournament.teams_allowed ? 'Team' : 'Squad') : 'Solo';
   let date_start = new Date(tournament.date_start * 1000);
   let date_end = new Date(tournament.date_end * 1000);
-  let registration_deadline = tournament.registration_deadline ? new Date(tournament.registration_deadline * 1000) : null;
+  let registration_deadline = tournament.registration_deadline
+    ? new Date(tournament.registration_deadline * 1000)
+    : null;
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
@@ -47,7 +49,10 @@
   <div class="wrapper">
     <div>
       <ul>
-        <li><b>When:</b> {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}</li>
+        <li>
+          <b>When:</b>
+          {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}
+        </li>
         {#if registration_deadline}
           <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
         {/if}
@@ -69,7 +74,6 @@
     </div>
   </div>
 </Section>
-
 
 <style>
   .centered {

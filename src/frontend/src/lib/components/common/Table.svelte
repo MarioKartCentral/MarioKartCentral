@@ -4,7 +4,7 @@
   export let show_padding: boolean = true;
 </script>
 
-<div class={show_padding ? "container": ""} transition:slide={{ duration: 400 }}>
+<div class={show_padding ? 'container' : ''} transition:slide={{ duration: 400 }}>
   <table>
     <slot />
   </table>

@@ -1,4 +1,4 @@
-import type { CreateTournament } from "./tournaments/create/create-tournament";
+import type { CreateTournament } from './tournaments/create/create-tournament';
 
 export type Tournament = {
   id: number;

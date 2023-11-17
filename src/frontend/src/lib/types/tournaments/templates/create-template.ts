@@ -1,5 +1,5 @@
-import type { CreateTournament } from "../create/create-tournament";
+import type { CreateTournament } from '../create/create-tournament';
 
 export type CreateTemplate = {
-    template_name: string;
+  template_name: string;
 } & CreateTournament;

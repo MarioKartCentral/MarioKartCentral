@@ -36,9 +36,7 @@
 <Section header="Tournaments">
   <div slot="header_content">
     {#if user_info.permissions.includes(permissions.create_tournament)}
-      <LinkButton href="/{$page.params.lang}/tournaments/create/select_template">
-        Create Tournament
-      </LinkButton>
+      <LinkButton href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</LinkButton>
     {/if}
   </div>
   {#each tournaments as tournament}

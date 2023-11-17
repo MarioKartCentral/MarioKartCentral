@@ -47,13 +47,13 @@ export const team_permissions = {
 };
 
 export const series_permissions = {
-  create_tournament: "tournament_create",
-  edit_tournament: "tournament_edit",
-  create_tournament_template: "tournament_template_create",
-  edit_tournament_template: "tournament_template_edit",
-  manage_tournament_registrations: "tournament_registrations_manage",
-  manage_series_roles: "series_roles_manage",
-  edit_series: "series_edit"
+  create_tournament: 'tournament_create',
+  edit_tournament: 'tournament_edit',
+  create_tournament_template: 'tournament_template_create',
+  edit_tournament_template: 'tournament_template_edit',
+  manage_tournament_registrations: 'tournament_registrations_manage',
+  manage_series_roles: 'series_roles_manage',
+  edit_series: 'series_edit',
 };
 
 export const mod_panel_permissions = [
@@ -68,7 +68,11 @@ export const valid_games: { [key: string]: string } = {
   mkw: 'Mario Kart Wii',
   mkt: 'Mario Kart Tour',
 };
-export const valid_modes: { [key: string]: string[] } = { mk8dx: ['150cc', '200cc'], mkw: ['rt', 'ct'], mkt: ['vsrace'] };
+export const valid_modes: { [key: string]: string[] } = {
+  mk8dx: ['150cc', '200cc'],
+  mkw: ['rt', 'ct'],
+  mkt: ['vsrace'],
+};
 export const mode_names: { [key: string]: string } = {
   '150cc': '150cc',
   '200cc': '200cc',

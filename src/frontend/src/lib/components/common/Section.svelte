@@ -8,11 +8,10 @@
     <div class="header">
       <div class="header_element">
         {#if href}
-          <h2><a href={href}>{header}</a></h2>
+          <h2><a {href}>{header}</a></h2>
         {:else}
           <h2>{header}</h2>
         {/if}
-        
       </div>
       {#if $$slots.header_content}
         <div class="header_element centered">
