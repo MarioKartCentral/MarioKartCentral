@@ -135,8 +135,6 @@ class EditTournamentCommand(Command[None]):
 
             await db.commit()
 
-        
-    
 @dataclass
 class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int

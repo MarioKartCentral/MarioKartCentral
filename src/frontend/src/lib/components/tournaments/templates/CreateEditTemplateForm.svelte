@@ -6,9 +6,13 @@
     import { goto } from "$app/navigation";
     import { onMount } from "svelte";
     import type { TournamentTemplate } from "$lib/types/tournaments/create/tournament-template";
+    import { series_permissions } from "$lib/util/util";
+    import SeriesPermissionCheck from "$lib/components/common/SeriesPermissionCheck.svelte";
 
     export let template_id: number | null = null;
     export let is_edit: boolean = false;
+    export let series_restrict: boolean = false;
+    export let series_id: number | null = null;
 
     let template: TournamentTemplate | null = null;
 
@@ -58,8 +62,12 @@
         data = data;
     }
 
+    let data_retrieved = false;
+
     onMount(async() => {
+        data.series_id = series_id;
         if(!template_id) {
+            data_retrieved = true;
             return;
         }
         const res = await fetch(`/api/tournaments/templates/${template_id}`);
@@ -68,6 +76,7 @@
             template = body;
             data = Object.assign(data, template);
         }
+        data_retrieved = true;
     });
 
     async function createTemplate(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -107,19 +116,24 @@
     }
 </script>
 
-<form method="POST" on:submit|preventDefault={is_edit ? editTemplate : createTemplate}>
-    <Section header="Template Details">
-        <div>
-            <label for="template_name">Template Name</label>
-        </div>
-        <div>
-            <input type="text" bind:value={data.template_name} required/>
-        </div>
-    </Section>
-    <TournamentDetailsForm data={data} update_function={updateData} is_template={true}/>
-    <Section header="Submit">
-        <button type="submit">
-            {is_edit ? "Edit Template" : "Create Template"}
-        </button>
-    </Section>
-</form>
+{#if data_retrieved}
+    <SeriesPermissionCheck series_id={data.series_id} permission={is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template}>
+        <form method="POST" on:submit|preventDefault={is_edit ? editTemplate : createTemplate}>
+            <Section header="Template Details">
+                <div>
+                    <label for="template_name">Template Name</label>
+                </div>
+                <div>
+                    <input type="text" bind:value={data.template_name} required/>
+                </div>
+            </Section>
+            <TournamentDetailsForm data={data} update_function={updateData} is_template={true} series_restrict={series_restrict}/>
+            <Section header="Submit">
+                <button type="submit">
+                    {is_edit ? "Edit Template" : "Create Template"}
+                </button>
+            </Section>
+        </form>
+    </SeriesPermissionCheck>
+{/if}
+

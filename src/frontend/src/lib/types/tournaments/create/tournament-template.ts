@@ -13,6 +13,7 @@ export type TournamentTemplate = {
     use_series_description: boolean;
     series_stats_include: boolean;
     logo: string | null;
+    use_series_logo: boolean;
     url: string | null;
     registration_deadline: number | null;
     registration_cap: number | null;

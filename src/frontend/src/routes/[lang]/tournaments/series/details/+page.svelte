@@ -6,6 +6,8 @@
     import { permissions, addPermission, setSeriesPerms} from "$lib/util/util";
 
     addPermission(permissions.edit_series);
+    addPermission(permissions.create_tournament);
+    addPermission(permissions.create_tournament_template);
     setSeriesPerms();
 
     let id = 0;

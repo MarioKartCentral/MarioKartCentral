@@ -2,9 +2,11 @@
     import type { TournamentSeries } from "$lib/types/tournaments/series/tournament-series";
     import { onMount } from "svelte";
     import Table from "./Table.svelte";
+    import { createEventDispatcher } from "svelte";
 
     export let option: TournamentSeries | null = null;
     export let series_id: number | null = null;
+    export let lock: boolean = false;
 
     let query: string = '';
     let results: TournamentSeries[] = [];
@@ -18,7 +20,10 @@
         timeout = setTimeout(get_results, 300);
     }
 
+    const dispatch = createEventDispatcher();
+
     onMount(async() => {
+        console.log(series_id);
         if(series_id) {
             const res = await fetch(`/api/tournaments/series/${series_id}`);
             const body: TournamentSeries = await res.json();
@@ -27,14 +32,9 @@
         else {
             await get_results();
         }
-        
     });
 
     async function get_results() {
-        // if(!query) {
-        //     results = [];
-        //     return;
-        // }
         const name_var = query ? `?name=${query}` : ``;
         const res = await fetch(`/api/tournaments/series/list${name_var}`);
         if(res.status === 200) {
@@ -50,6 +50,8 @@
 
     function set_option(series: TournamentSeries | null) {
         option = series;
+        series_id = option ? option.id : null;
+        dispatch('change'); // do this so we can run an on:change handler in parent component
     }
 </script>
 
@@ -70,7 +72,7 @@
     {:else}
         <div>
             {option.series_name}
-            {#if !series_id}
+            {#if !lock}
                 <button on:click={() => set_option(null)}>X</button>
             {/if}
         </div>

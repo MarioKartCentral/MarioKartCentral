@@ -10,12 +10,18 @@
     export let update_function: Function; // function used to update data in the parent component
     export let series_restrict: boolean = false; // if we want to lock us into a specific series
     export let is_template = false; // used to get rid of dates stuff for template creation/edit pages
+    export let is_edit = false; // only use when editing tournaments, not needed for templates
 
     let series: TournamentSeries | null;
 
-    $: {
-        data.series_id = series ? series.id : null;
-        updateData();
+    function getDateTimeLocal(n: number | null) {
+        if(!n) {
+            return;
+        }
+        let d = new Date(n * 1000);
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        let r = d.toISOString().slice(0, 16);
+        return r;
     }
 
     function updateData() {
@@ -75,11 +81,7 @@
             <label for="tournament_series">Tournament Series</label>
         </div>
         <div>
-            {#if series_restrict}
-                <SeriesSearch bind:option={series} series_id={data.series_id}/>
-            {:else}
-                <SeriesSearch bind:option={series}/>
-            {/if}
+            <SeriesSearch bind:option={series} bind:series_id={data.series_id} lock={series_restrict} on:change={updateData}/>
         </div>
     </div>
     {#if !is_template}
@@ -88,7 +90,7 @@
                 <label for="date_start">Start Date</label>
             </div>
             <div>
-                <input name="date_start" type="datetime-local" required/>
+                <input name="date_start" type="datetime-local" value={getDateTimeLocal(data.date_start)} required/>
             </div>
         </div>
         <div class="option">
@@ -96,7 +98,7 @@
                 <label for="date_end">End Date</label>
             </div>
             <div>
-                <input name="date_end" type="datetime-local" required/>
+                <input name="date_end" type="datetime-local" value={getDateTimeLocal(data.date_end)} required/>
             </div>
         </div>
     {/if}
@@ -154,7 +156,7 @@
             <label for="is_squad">Registration format (this cannot be changed)</label>
         </div>
         <div>
-            <select name="is_squad" bind:value={data.is_squad} on:change={updateData}>
+            <select name="is_squad" bind:value={data.is_squad} on:change={updateData} disabled={is_edit}>
                 <option value={false}>Solo</option>
                 <option value={true}>Squad/Team</option>
             </select>
@@ -184,7 +186,7 @@
                         <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
                     </div>
                     <div>
-                        <select name="squad_tag_required" bind:value={data.squad_tag_required}>
+                        <select name="squad_tag_required" bind:value={data.squad_tag_required} disabled={is_edit}>
                             <option value={false}>No</option>
                             <option value={true}>Yes</option>
                         </select>
@@ -195,7 +197,7 @@
                         <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
                     </div>
                     <div>
-                        <select name="squad_name_required" bind:value={data.squad_name_required}>
+                        <select name="squad_name_required" bind:value={data.squad_name_required} disabled={is_edit}>
                             <option value={false}>No</option>
                             <option value={true}>Yes</option>
                         </select>
@@ -207,7 +209,7 @@
                     <label for="teams_allowed">Teams allowed? (this cannot be changed)</label>
                 </div>
                 <div>
-                    <select name="teams_allowed" bind:value={data.teams_allowed} on:change={updateData}>
+                    <select name="teams_allowed" bind:value={data.teams_allowed} on:change={updateData} disabled={is_edit}>
                         <option value={false}>No</option>
                         <option value={true}>Yes</option>
                     </select>
@@ -220,7 +222,7 @@
                             <label for="teams_only">Teams only? (this cannot be changed)</label>
                         </div>
                         <div>
-                            <select name="teams_only" bind:value={data.teams_only} on:change={updateData}>
+                            <select name="teams_only" bind:value={data.teams_only} on:change={updateData} disabled={is_edit}>
                                 <option value={false}>No</option>
                                 <option value={true}>Yes</option>
                             </select>
@@ -232,7 +234,7 @@
                                 <label for="team_members_only">Team members only? (this cannot be changed)</label>
                             </div>
                             <div>
-                                <select name="team_members_only" bind:value={data.team_members_only}>
+                                <select name="team_members_only" bind:value={data.team_members_only} disabled={is_edit}>
                                     <option value={false}>No</option>
                                     <option value={true}>Yes</option>
                                 </select>
@@ -252,13 +254,13 @@
             
         </div>
     {/if}
-    {#if !data.is_squad || !data.teams_allowed}
+    {#if !data.teams_allowed}
         <div class="option">
             <div>
                 <label for="host_status_required">Can/can't host required? (this cannot be changed)</label>
             </div>
             <div>
-                <select name="host_status_required" bind:value={data.host_status_required}>
+                <select name="host_status_required" bind:value={data.host_status_required} disabled={is_edit}>
                     <option value={false}>No</option>
                     <option value={true}>Yes</option>
                 </select>
@@ -269,7 +271,7 @@
                 <label for="mii_name_required">In-Game/Mii Name required? (this cannot be changed)</label>
             </div>
             <div>
-                <select name="mii_name_required" bind:value={data.mii_name_required}>
+                <select name="mii_name_required" bind:value={data.mii_name_required} disabled={is_edit}>
                     <option value={false}>No</option>
                     <option value={true}>Yes</option>
                 </select>
@@ -280,7 +282,7 @@
                 <label for="require_single_fc">Require participants to select one FC for the tournament? (this cannot be changed)</label>
             </div>
             <div>
-                <select name="require_single_fc" bind:value={data.require_single_fc}>
+                <select name="require_single_fc" bind:value={data.require_single_fc} disabled={is_edit}>
                     <option value={false}>No</option>
                     <option value={true}>Yes</option>
                 </select>
@@ -398,7 +400,7 @@
                 <label for="registration_deadline">Registration Deadline (optional)</label>
             </div>
             <div>
-                <input name="registration_deadline" type="datetime-local"/>
+                <input name="registration_deadline" type="datetime-local" value={getDateTimeLocal(data.registration_deadline)}/>
             </div>
         </div>
     {/if}

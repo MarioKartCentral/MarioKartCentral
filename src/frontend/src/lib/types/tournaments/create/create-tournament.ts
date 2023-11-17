@@ -1,8 +1,8 @@
 export type CreateTournament = {
     tournament_name: string,
     series_id: number | null,
-    date_start: number | null,
-    date_end: number | null,
+    date_start: number,
+    date_end: number,
     logo: string | null,
     use_series_logo: boolean;
     url: string | null,

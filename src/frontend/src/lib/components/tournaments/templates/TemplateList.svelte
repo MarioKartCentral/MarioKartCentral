@@ -4,8 +4,9 @@
     import Section from "$lib/components/common/Section.svelte";
     import Table from "$lib/components/common/Table.svelte";
     import { page } from "$app/stores";
-    import { permissions, addPermission } from "$lib/util/util";
+    import { permissions, addPermission, series_permissions } from "$lib/util/util";
     import PermissionCheck from "$lib/components/common/PermissionCheck.svelte";
+    import SeriesPermissionCheck from "$lib/components/common/SeriesPermissionCheck.svelte";
     import LinkButton from "$lib/components/common/LinkButton.svelte";
 
     export let series_id: number | null = null;
@@ -29,9 +30,13 @@
 
 <Section header="Templates">
     <div slot="header_content">
-        <PermissionCheck permission={permissions.create_tournament_template}>
-            <LinkButton href="/{$page.params.lang}/tournaments/templates/create">Create Template</LinkButton>
-        </PermissionCheck>
+        <SeriesPermissionCheck series_id={series_id} permission={series_permissions.create_tournament_template}>
+            {#if series_id}
+                <LinkButton href="/{$page.params.lang}/tournaments/series/create_template?series_id={series_id}">Create Template</LinkButton>
+            {:else}
+                <LinkButton href="/{$page.params.lang}/tournaments/templates/create">Create Template</LinkButton>
+            {/if}
+        </SeriesPermissionCheck>
         {#if series_id}
             <LinkButton href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</LinkButton>
         {/if}
@@ -44,12 +49,16 @@
                 </td>
                 <td>
                     <div class="settings">
-                        <PermissionCheck permission={permissions.edit_tournament_template}>
+                        <SeriesPermissionCheck series_id={series_id} permission={series_permissions.edit_tournament_template}>
                             <LinkButton href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">Edit</LinkButton>
-                        </PermissionCheck>
-                        <PermissionCheck permission={permissions.create_tournament_template}>
-                            <LinkButton href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}">Duplicate</LinkButton>
-                        </PermissionCheck>
+                        </SeriesPermissionCheck>
+                        <SeriesPermissionCheck series_id={series_id} permission={series_permissions.create_tournament_template}>
+                            {#if series_id}
+                                <LinkButton href="/{$page.params.lang}/tournaments/series/create_template?series_id={series_id}&template_id={template.id}">Duplicate</LinkButton>
+                            {:else}
+                                <LinkButton href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}">Duplicate</LinkButton>
+                            {/if}
+                        </SeriesPermissionCheck>
                         <div>Delete</div>
                     </div>
                 </td>

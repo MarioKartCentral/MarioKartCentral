@@ -2,7 +2,7 @@
     import { user } from '$lib/stores/stores';
     import type { UserInfo } from '$lib/types/user-info';
 
-    export let series_id: number;
+    export let series_id: number | null;
     export let permission: string;
 
     let user_info: UserInfo;

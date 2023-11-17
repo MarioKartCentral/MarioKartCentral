@@ -16,6 +16,12 @@
         <SeriesPermissionCheck series_id={series.id} permission={series_permissions.edit_series}>
             <LinkButton href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">Edit Series</LinkButton>
         </SeriesPermissionCheck>
+        <SeriesPermissionCheck series_id={series.id} permission={series_permissions.create_tournament}>
+            <LinkButton href="/{$page.params.lang}/tournaments/series/create_tournament/select_template?id={series.id}">Create Tournament</LinkButton>
+        </SeriesPermissionCheck>
+        <SeriesPermissionCheck series_id={series.id} permission={series_permissions.create_tournament_template}>
+            <LinkButton href="/{$page.params.lang}/tournaments/series/templates?id={series.id}">Manage Templates</LinkButton>
+        </SeriesPermissionCheck>
     </div>
     <div class="container">
         {#if series.logo}

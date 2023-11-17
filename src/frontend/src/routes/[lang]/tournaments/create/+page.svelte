@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import CreateTournamentForm from "$lib/components/tournaments/create/CreateTournamentForm.svelte";
+    import CreateEditTournamentForm from "$lib/components/tournaments/CreateEditTournamentForm.svelte";
     import { permissions, addPermission } from "$lib/util/util";
     import PermissionCheck from "$lib/components/common/PermissionCheck.svelte";
     
@@ -11,5 +11,5 @@
 </script>
 
 <PermissionCheck permission={permissions.create_tournament}>
-    <CreateTournamentForm template_id={template_id}/>
+    <CreateEditTournamentForm template_id={template_id}/>
 </PermissionCheck>

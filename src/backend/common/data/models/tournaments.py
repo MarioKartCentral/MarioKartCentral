@@ -80,7 +80,7 @@ class EditTournamentRequestData():
     mii_name_required: bool
     host_status_required: bool
     checkins_open: bool
-    min_players_checkin: int
+    min_players_checkin: int | None
     verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
@@ -91,8 +91,8 @@ class EditTournamentRequestData():
     # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
-    organizer: str
-    location: str
+    organizer: str | None
+    location: str | None
 
 @dataclass
 class TournamentDataMinimal():
