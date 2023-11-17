@@ -40,7 +40,7 @@
   function updateData() {
     data = data;
   }
-  async function createSeries(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+  async function createSeries() {
     let payload = data;
     console.log(payload);
     const endpoint = '/api/tournaments/series/create';
@@ -57,7 +57,7 @@
       alert(`Creating series failed: ${result['title']}`);
     }
   }
-  async function editSeries(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+  async function editSeries() {
     let payload = data;
     console.log(payload);
     const endpoint = `/api/tournaments/series/${series_id}/edit`;

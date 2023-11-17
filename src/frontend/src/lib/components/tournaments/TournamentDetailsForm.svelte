@@ -7,7 +7,7 @@
   import MarkdownBox from '../common/MarkdownBox.svelte';
 
   export let data: CreateTournament;
-  export let update_function: Function; // function used to update data in the parent component
+  export let update_function: () => void; // function used to update data in the parent component
   export let series_restrict = false; // if we want to lock us into a specific series
   export let is_template = false; // used to get rid of dates stuff for template creation/edit pages
   export let is_edit = false; // only use when editing tournaments, not needed for templates

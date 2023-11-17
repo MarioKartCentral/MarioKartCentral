@@ -5,7 +5,6 @@
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
   import { permissions, addPermission, series_permissions } from '$lib/util/util';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
 
