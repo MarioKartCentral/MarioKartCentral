@@ -8,8 +8,6 @@
 
   addPermission(permissions.edit_tournament);
 
-  let tournament_id: Number;
-
   let tournament: Tournament;
 
   onMount(async () => {
