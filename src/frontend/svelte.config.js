@@ -8,7 +8,7 @@ function getEntriesForLocale(locale) {
     `/${locale}`,
     `/${locale}/tournaments/details`,
     `/${locale}/tournaments/create`,
-    `/${locale}/tournaments/select_template`,
+    `/${locale}/tournaments/create/select_template`,
     `/${locale}/tournaments/edit`,
     `/${locale}/tournaments/mod/edit`,
     `/${locale}/tournaments/mod/templates/edit`,
