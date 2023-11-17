@@ -9,7 +9,7 @@
 
   export let tournament_id: number | null = null;
   export let template_id: number | null = null;
-  export let series_restrict: boolean = false;
+  export let series_restrict = false;
   export let data: CreateTournament = {
     tournament_name: '',
     series_id: null,

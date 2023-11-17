@@ -9,7 +9,7 @@
   import LinkButton from '$lib/components/common/LinkButton.svelte';
 
   export let series_id: number | null = null;
-  export let is_edit: boolean = false;
+  export let is_edit = false;
 
   let data: CreateTournamentSeries = {
     series_name: '',

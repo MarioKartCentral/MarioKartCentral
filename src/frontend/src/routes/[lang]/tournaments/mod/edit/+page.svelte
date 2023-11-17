@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import CreateEditTournamentForm from '$lib/components/tournaments/CreateEditTournamentForm.svelte';
-  import { permissions, addPermission, series_permissions } from '$lib/util/util';
+  import { permissions, addPermission } from '$lib/util/util';
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import { onMount } from 'svelte';
   import type { Tournament } from '$lib/types/tournament';

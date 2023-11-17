@@ -6,9 +6,9 @@
 
   export let option: TournamentSeries | null = null;
   export let series_id: number | null = null;
-  export let lock: boolean = false;
+  export let lock = false;
 
-  let query: string = '';
+  let query = '';
   let results: TournamentSeries[] = [];
   let timeout: number;
   let show_results = false;

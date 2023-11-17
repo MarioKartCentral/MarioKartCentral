@@ -1,7 +1,7 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
 
-  export let show_padding: boolean = true;
+  export let show_padding = true;
 </script>
 
 <div class={show_padding ? 'container' : ''} transition:slide={{ duration: 400 }}>

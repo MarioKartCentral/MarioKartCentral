@@ -10,8 +10,8 @@
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
 
   export let template_id: number | null = null;
-  export let is_edit: boolean = false;
-  export let series_restrict: boolean = false;
+  export let is_edit = false;
+  export let series_restrict = false;
   export let series_id: number | null = null;
 
   let template: TournamentTemplate | null = null;
@@ -79,7 +79,7 @@
     data_retrieved = true;
   });
 
-  async function createTemplate(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+  async function createTemplate() {
     let payload = data;
     console.log(payload);
     const endpoint = '/api/tournaments/templates/create';
@@ -97,7 +97,7 @@
     }
   }
 
-  async function editTemplate(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+  async function editTemplate() {
     let payload = data;
     console.log(payload);
     const endpoint = `/api/tournaments/templates/${template_id}/edit`;
