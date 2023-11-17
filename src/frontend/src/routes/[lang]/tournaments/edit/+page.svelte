@@ -9,12 +9,11 @@
   setSeriesPerms();
   addPermission(permissions.edit_tournament);
 
-  let param_id = $page.url.searchParams.get('id');
-  let tournament_id = param_id ? Number(param_id) : null;
-
   let tournament: Tournament;
 
   onMount(async () => {
+    let param_id = $page.url.searchParams.get('id');
+    let tournament_id = param_id ? Number(param_id) : null;
     const res = await fetch(`/api/tournaments/${tournament_id}`);
     if (res.status === 200) {
       const body: Tournament = await res.json();
