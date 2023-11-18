@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, ModNotifications, TeamPermissions
+from common.data.models import Problem, User, ModNotifications, TeamPermissions, SeriesPermissions
 from common.auth import permissions
 
 @dataclass 
@@ -109,7 +109,23 @@ class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], li
                             team_perm_dict[team_id] = []
                         team_perm_dict[team_id].append(perm)
                     team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
-            series_perms: list[str] = []
+            series_perms = []
+            if self.check_series_perms:
+                async with db.execute(f"""
+                    SELECT ur.series_id, p.name
+                    FROM user_series_roles ur
+                    JOIN series_role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN team_permissions p ON rp.permission_id = p.id
+                    WHERE ur.user_id = ?
+                    """, (self.user_id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    series_perm_dict = {}
+                    for row in rows:
+                        series_id, perm = row
+                        if series_id not in series_perm_dict:
+                            series_perm_dict[series_id] = []
+                        series_perm_dict[series_id].append(perm)
+                    series_perms = [SeriesPermissions(series_id, perms) for series_id, perms in series_perm_dict.items()]
         return valid_perms, team_perms, series_perms
             
 @dataclass

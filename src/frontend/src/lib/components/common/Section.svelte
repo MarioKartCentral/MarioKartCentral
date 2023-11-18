@@ -1,12 +1,17 @@
 <script lang="ts">
   export let header: string | null = null;
+  export let href: string | null = null;
 </script>
 
 <div class="container">
   {#if header}
     <div class="header">
       <div class="header_element">
-        <h2>{header}</h2>
+        {#if href}
+          <h2><a {href}>{header}</a></h2>
+        {:else}
+          <h2>{header}</h2>
+        {/if}
       </div>
       {#if $$slots.header_content}
         <div class="header_element centered">

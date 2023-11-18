@@ -4,7 +4,6 @@
   import type { Team } from '$lib/types/team';
   import { setTeamPerms, team_permissions } from '$lib/util/util';
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
-  import TeamRosterManage from '$lib/components/registry/teams/TeamRosterManage.svelte';
   import ModTeamRosterManage from '$lib/components/registry/teams/ModTeamRosterManage.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';

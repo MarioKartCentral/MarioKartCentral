@@ -6,19 +6,21 @@
   import TournamentRegistrations from '$lib/components/tournaments/TournamentRegistrations.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import type { Tournament } from '$lib/types/tournament';
+  import { setSeriesPerms, addPermission, permissions } from '$lib/util/util';
 
   let id = 0;
-  let tournament_found = true;
 
   let tournament: Tournament;
   $: tournament_name = tournament ? `${tournament.tournament_name}` : 'Tournaments';
+
+  setSeriesPerms();
+  addPermission(permissions.edit_tournament);
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
     id = Number(param_id);
     const res = await fetch(`/api/tournaments/${id}`);
     if (res.status !== 200) {
-      tournament_found = false;
       return;
     }
     const body: Tournament = await res.json();
@@ -31,9 +33,7 @@
 </svelte:head>
 
 {#if tournament}
-  <Section header="Tournament Info">
-    <TournamentInfo {tournament} />
-  </Section>
+  <TournamentInfo {tournament} />
   <Section header="Tournament Details">
     <MarkdownBox content={tournament.description} />
   </Section>

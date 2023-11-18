@@ -6,6 +6,8 @@
   import { addPermission, permissions } from '$lib/util/util';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
+  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import { page } from '$app/stores';
 
   addPermission(permissions.create_tournament);
 
@@ -28,10 +30,13 @@
   });
 </script>
 
+<a href="/{$page.params.lang}/tournaments/series">Series</a>
+<a href="/{$page.params.lang}/tournaments/templates">Templates</a>
+
 <Section header="Tournaments">
   <div slot="header_content">
     {#if user_info.permissions.includes(permissions.create_tournament)}
-      Create Tournament
+      <LinkButton href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</LinkButton>
     {/if}
   </div>
   {#each tournaments as tournament}

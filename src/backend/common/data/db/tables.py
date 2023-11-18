@@ -136,6 +136,7 @@ class TournamentSeries(TableModel):
     is_historical: bool
     is_public: bool
     description: str
+    ruleset: str
     logo: str | None
 
     @staticmethod
@@ -144,11 +145,13 @@ class TournamentSeries(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             url TEXT UNIQUE,
+            display_order INTEGER NOT NULL,
             game TEXT NOT NULL,
             mode TEXT NOT NULL,
             is_historical INTEGER NOT NULL,
             is_public INTEGER NOT NULL,
             description TEXT NOT NULL,
+            ruleset TEXT NOT NULL,
             logo TEXT)"""
 
 @dataclass
@@ -179,10 +182,12 @@ class Tournament(TableModel):
     mii_name_required: bool
     host_status_required: bool
     checkins_open: bool
-    min_players_checkin: int
+    min_players_checkin: int | None
+    verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
+    is_deleted: bool
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
@@ -203,6 +208,7 @@ class Tournament(TableModel):
             use_series_description BOOLEAN NOT NULL,
             series_stats_include BOOLEAN NOT NULL,
             logo TEXT,
+            use_series_logo BOOLEAN NOT NULL,
             url TEXT UNIQUE,
             registration_deadline INTEGER,
             registration_cap INTEGER,
@@ -216,10 +222,12 @@ class Tournament(TableModel):
             mii_name_required BOOLEAN NOT NULL,
             host_status_required BOOLEAN NOT NULL,
             checkins_open BOOLEAN NOT NULL,
-            min_players_checkin INTEGER NOT NULL,
+            min_players_checkin INTEGER,
+            verification_required BOOLEAN NOT NULL,
             verified_fc_required BOOLEAN NOT NULL,
             is_viewable BOOLEAN NOT NULL,
             is_public BOOLEAN NOT NULL,
+            is_deleted BOOLEAN NOT NULL,
             show_on_profiles BOOLEAN NOT NULL,
             require_single_fc BOOLEAN NOT NULL,
             min_representatives INTEGER
@@ -471,6 +479,40 @@ class UserTeamRole(TableModel):
             """
 
 @dataclass
+class SeriesRole(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS series_roles(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class SeriesPermission(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS series_permissions(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class SeriesRolePermission(TableModel):
+    role_id: int
+    permission_id: int
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS series_role_permissions(
+            role_id INTEGER NOT NULL REFERENCES series_roles(id),
+            permission_id INTEGER NOT NULL REFERENCES series_permissions(id),
+            PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
+@dataclass
 class UserSeriesRole(TableModel):
     user_id: int
     role_id: int
@@ -480,7 +522,7 @@ class UserSeriesRole(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS user_series_roles (
             user_id INTEGER NOT NULL REFERENCES users(id),
-            role_id INTEGER NOT NULL REFERENCES roles(id),
+            role_id INTEGER NOT NULL REFERENCES series_roles(id),
             series_id INTEGER NOT NULL REFERENCES series(id),
             PRIMARY KEY (user_id, role_id, series_id)
             ) WITHOUT ROWID
@@ -633,5 +675,6 @@ all_tables : list[type[TableModel]] = [
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
+    SeriesRole, SeriesPermission, SeriesRolePermission,
     UserSeriesRole, RosterInvite, TeamEditRequest, RosterEditRequest,
     UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
