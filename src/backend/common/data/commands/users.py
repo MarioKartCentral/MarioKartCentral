@@ -67,8 +67,8 @@ class GetInvitesForPlayerCommand(Command[PlayerInvites]):
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        team_invites = []
-        tournament_invites = []
+        team_invites: list[TeamInvite] = []
+        tournament_invites: list[TournamentInvite] = []
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT i.id, i.date, t.id, t.name, t.tag, t.color, r.id, r.name, r.tag, r.game, r.mode
                                     FROM roster_invites i

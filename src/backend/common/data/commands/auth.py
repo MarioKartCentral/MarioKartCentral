@@ -73,7 +73,7 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
             return User(int(row[0]), row[1])
         
 @dataclass
-class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], list[str]]]):
+class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], list[SeriesPermissions]]]):
     user_id: int
     permissions: list[str]
     check_team_perms: bool
@@ -102,7 +102,7 @@ class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], li
                     WHERE ur.user_id = ?
                     """, (self.user_id,)) as cursor:
                     rows = await cursor.fetchall()
-                    team_perm_dict = {}
+                    team_perm_dict: dict[int, list[str]] = {}
                     for row in rows:
                         team_id, perm = row
                         if team_id not in team_perm_dict:
@@ -119,7 +119,7 @@ class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], li
                     WHERE ur.user_id = ?
                     """, (self.user_id,)) as cursor:
                     rows = await cursor.fetchall()
-                    series_perm_dict = {}
+                    series_perm_dict: dict[int, list[str]] = {}
                     for row in rows:
                         series_id, perm = row
                         if series_id not in series_perm_dict:

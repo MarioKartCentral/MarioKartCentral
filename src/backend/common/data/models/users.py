@@ -32,7 +32,7 @@ class UserPlayer:
     player: PlayerDetailed | None
     permissions: list[str]
     team_permissions: list[TeamPermissions]
-    series_permissions: list[str]
+    series_permissions: list[SeriesPermissions]
     mod_notifications: ModNotifications | None
 
 @dataclass

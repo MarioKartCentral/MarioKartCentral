@@ -113,7 +113,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             user = None if user_row is None else User(int(user_row[0]), self.id)
 
-            rosters = []
+            rosters: list[PlayerRoster] = []
             async with db.execute("""SELECT m.roster_id, m.join_date, t.id, t.name, t.tag, t.color, r.name, r.tag, r.game, r.mode
                                     FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
