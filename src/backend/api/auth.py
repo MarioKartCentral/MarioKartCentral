@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, Concatenate, ParamSpec
+from typing import Awaitable, Callable, Concatenate
 from starlette.requests import Request
 from starlette.responses import Response
 from api.data import handle
@@ -7,9 +7,7 @@ from common.data.commands import *
 from common.data.models import Problem
 
 
-P = ParamSpec('P')
-
-def require_logged_in(handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+def require_logged_in[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
         session_id = request.cookies.get("session", None)
         if session_id is None:
@@ -29,7 +27,7 @@ def require_logged_in(handle_request: Callable[Concatenate[Request, P], Awaitabl
     return wrapper
 
 def require_permission(permission_name: str):
-    def has_permission_decorator(handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             session_id = request.cookies.get("session", None)
             if session_id is None:
@@ -52,7 +50,7 @@ def require_permission(permission_name: str):
     return has_permission_decorator
 
 def require_team_permission(permission_name: str):
-    def has_permission_decorator(handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             session_id = request.cookies.get("session", None)
             if session_id is None:

@@ -571,7 +571,7 @@ class DenyTransferCommand(Command[None]):
 class ViewTransfersCommand(Command[list[TeamInviteApproval]]):
     async def handle(self, db_wrapper, s3_wrapper):
         transfers: list[TeamInviteApproval] = []
-        roster_leave_ids = []
+        roster_leave_ids: list[int] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT i.id, i.date, i.roster_leave_id, t.id, t.name, t.tag, t.color,
                                     r.id, r.name, r.tag, r.game, r.mode, p.id, p.name, p.country_code
@@ -646,7 +646,7 @@ class ListTeamEditRequestsCommand(Command[list[TeamEditRequest]]):
     approval_status: Approval
 
     async def handle(self, db_wrapper, s3_wrapper):
-        requests = []
+        requests: list[TeamEditRequest] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT r.id, r.team_id, t.name, t.tag, r.name, r.tag, r.date, r.approval_status FROM team_edit_requests r
                                   JOIN teams t ON r.team_id = t.id
@@ -777,7 +777,7 @@ class ListRosterEditRequestsCommand(Command[list[RosterEditRequest]]):
     approval_status: Approval
 
     async def handle(self, db_wrapper, s3_wrapper):
-        requests = []
+        requests: list[RosterEditRequest] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT r.id, r.roster_id, t.id, t.name, t.tag, tr.name, tr.tag, r.name, r.tag, r.date, r.approval_status FROM roster_edit_requests r
                                   JOIN team_rosters tr ON r.roster_id = tr.id
