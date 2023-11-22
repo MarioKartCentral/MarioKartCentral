@@ -68,6 +68,7 @@ class PlayerFilter:
     is_banned: bool | None = None
     discord_id: str | None = None
     detailed: bool | None = None
+    page: int | None = None
 
 @dataclass
 class PlayerBanRequestData:
