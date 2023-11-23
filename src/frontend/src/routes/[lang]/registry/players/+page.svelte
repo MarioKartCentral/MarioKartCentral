@@ -29,9 +29,11 @@
     const res = await fetch(url);
     if (res.status === 200) {
       const body = await res.json();
-      for (let t of body) {
+      const body_players = body[0];
+      for (let t of body_players) {
         players.push(t);
       }
+      console.log(body[1]);
       players = players;
     }
   }

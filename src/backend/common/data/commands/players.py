@@ -129,7 +129,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, ban_info, user_settings)
         
 @dataclass
-class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
+class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
     filter: PlayerFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -182,6 +182,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
             fc_where_clause = "" if not fc_where_clauses else f" WHERE is_primary = TRUE AND {'AND '.join(fc_where_clauses)}"
             players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause} LIMIT ? OFFSET ?"
             friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes INNER JOIN ({players_query}) p ON player_id = p.id"
+            count_query = f"SELECT COUNT (*) FROM ({players_query}) count_query"
 
             players: List[Player] = []
             async with db.execute(players_query, variable_parameters) as cursor:
@@ -194,11 +195,20 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
                         id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
                         players.append(Player(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
             
+            count: int = 0
+            async with db.execute(count_query, variable_parameters) as cursor:
+                while True:
+                    batch = await cursor.fetchone()
+                    if not batch:
+                        break
+                    for row in batch:
+                        count = row
+
             if filter.detailed is not None:
                 friend_codes: List[FriendCode] = []
                 async with db.execute(friend_codes_query, variable_parameters) as cursor:
                     while True:
-                        batch = await cursor.fetchmany(50);
+                        batch = await cursor.fetchmany(500);
                         if not batch:
                             break
 
@@ -214,9 +224,9 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes]]):
                             player_friend_codes.append(friend_code)
                     detailed_players.append(PlayerDetailed(player.id, player.name, player.country_code, player.is_hidden, player.is_shadow, player.is_banned, player.discord_id, player_friend_codes, None, None))
 
-                return detailed_players
+                return detailed_players, count
             
-            return players
+            return players, count
 
 async def player_exists_in_table(db, table: Literal['players', 'player_bans'], player_id: int) -> bool:
     """ Check if a player is in either the players or player_bans db table """
