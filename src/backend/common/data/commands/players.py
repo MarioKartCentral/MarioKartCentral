@@ -160,7 +160,6 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
             append_equal_filter(filter.is_banned, "is_banned")
             append_equal_filter(filter.discord_id, "discord_id")
 
-
             if filter.friend_code is not None or filter.game is not None:
 
                 if filter.friend_code is not None:
@@ -175,6 +174,9 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
                 fc_where_clauses.extend(where_clauses)
                 where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clause})")
 
+            variable_parameters_bis = []
+            for variable_parameter in variable_parameters:
+                variable_parameters_bis.append(variable_parameter)
             variable_parameters.append(limit)
             variable_parameters.append(offset)
 
@@ -182,7 +184,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
             fc_where_clause = "" if not fc_where_clauses else f" WHERE is_primary = TRUE AND {'AND '.join(fc_where_clauses)}"
             players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause} LIMIT ? OFFSET ?"
             friend_codes_query = f"SELECT fc, game, player_id, is_verified, is_primary, description FROM friend_codes INNER JOIN ({players_query}) p ON player_id = p.id"
-            count_query = f"SELECT COUNT (*) FROM ({players_query}) count_query"
+            count_query = f"SELECT COUNT (*) FROM (SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause}) count_query"
 
             players: List[Player] = []
             async with db.execute(players_query, variable_parameters) as cursor:
@@ -195,8 +197,10 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
                         id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
                         players.append(Player(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
             
+
+
             count: int = 0
-            async with db.execute(count_query, variable_parameters) as cursor:
+            async with db.execute(count_query, variable_parameters_bis) as cursor:
                 while True:
                     batch = await cursor.fetchone()
                     if not batch:
