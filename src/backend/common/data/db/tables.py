@@ -523,7 +523,7 @@ class UserSeriesRole(TableModel):
         return """CREATE TABLE IF NOT EXISTS user_series_roles (
             user_id INTEGER NOT NULL REFERENCES users(id),
             role_id INTEGER NOT NULL REFERENCES series_roles(id),
-            series_id INTEGER NOT NULL REFERENCES series(id),
+            series_id INTEGER NOT NULL REFERENCES tournament_series(id),
             PRIMARY KEY (user_id, role_id, series_id)
             ) WITHOUT ROWID
             """
@@ -653,6 +653,7 @@ class CommandLog(TableModel):
         data TEXT NOT NULL,
         timestamp INTEGER NOT NULL DEFAULT (cast(strftime('%s','now') as int)))"""
 
+@dataclass
 class PlayerBans(TableModel):
     player_id: int
     staff_id: int
@@ -670,6 +671,11 @@ class PlayerBans(TableModel):
             reason TEXT NOT NULL
             ) WITHOUT ROWID"""
     
+class FakeTable(TableModel):
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS fake_table(a TEXT UNIQUE, b TEXT)""" 
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -677,4 +683,4 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission,
     UserSeriesRole, RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
+    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, FakeTable]
