@@ -671,11 +671,6 @@ class PlayerBans(TableModel):
             reason TEXT NOT NULL
             ) WITHOUT ROWID"""
     
-class FakeTable(TableModel):
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS fake_table(a TEXT UNIQUE, b TEXT)""" 
-    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -683,4 +678,4 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission,
     UserSeriesRole, RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, FakeTable]
+    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
