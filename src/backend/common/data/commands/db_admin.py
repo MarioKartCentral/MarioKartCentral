@@ -53,6 +53,10 @@ class UpdateDbSchemaCommand(Command[None]):
                         print(f"Creating table {table}\n{sql}")
                         await db.execute(sql)
                 
+                for table in actual_tables:
+                    if table not in clean_tables:
+                        print(f"Table '{table}' has been removed. The table will be kept, but should be deleted manually later once the data has been preserved.")
+                
                 # update any tables that were modified
                 for table in modified_tables:
                     print(f"Detected schema change in table '{table}'")
