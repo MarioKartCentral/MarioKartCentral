@@ -142,8 +142,8 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
             offset:int = 0;
 
             if filter.page is not None:
-                limit = filter.page * 50
-                offset = (filter.page - 1) * 50
+                limit = filter.page * 1
+                offset = (filter.page - 1) * 1
 
             def append_equal_filter(filter_value, column_name):
                 if filter_value is not None:
@@ -196,8 +196,6 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
                     for row in batch:
                         id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
                         players.append(Player(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
-            
-
 
             count: int = 0
             async with db.execute(count_query, variable_parameters_bis) as cursor:

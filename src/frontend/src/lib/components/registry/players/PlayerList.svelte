@@ -6,7 +6,8 @@
 	import Pagination from './../../Pagination.svelte';
 
   export let players: PlayerInfo[];
-  let values;
+  export let currentPage: number;
+  export let totalPages: number;
 </script>
 
 <Table>
@@ -29,8 +30,7 @@
     </tr>
   </thead>
   <tbody>
-    {#if values}
-    {#each values as player, i}
+    {#each players as player, i}
       <tr class="row-{i % 2}">
         <td>{player.country_code}</td>
         <td>
@@ -43,11 +43,11 @@
         <td>{#each player.friend_codes as friend_code}{#if friend_code.game == "mk8"}{friend_code.fc}{/if}{/each}</td>
       </tr>
     {/each}
-    {/if}
   </tbody>
+  <button on:click={() => currentPage > 1 ? currentPage=currentPage-1 : currentPage=currentPage}>{"<"}</button>
+  {currentPage}/{totalPages}
+  <button on:click={() => currentPage < totalPages ? currentPage=currentPage+1 : currentPage=currentPage}>{">"}</button>
 </Table>
-<Pagination rows={players} perPage={1} bind:trimmedRows={values} />
-
 
 <style>
   col.country_code {
