@@ -523,7 +523,7 @@ class UserSeriesRole(TableModel):
         return """CREATE TABLE IF NOT EXISTS user_series_roles (
             user_id INTEGER NOT NULL REFERENCES users(id),
             role_id INTEGER NOT NULL REFERENCES series_roles(id),
-            series_id INTEGER NOT NULL REFERENCES series(id),
+            series_id INTEGER NOT NULL REFERENCES tournament_series(id),
             PRIMARY KEY (user_id, role_id, series_id)
             ) WITHOUT ROWID
             """
@@ -653,6 +653,7 @@ class CommandLog(TableModel):
         data TEXT NOT NULL,
         timestamp INTEGER NOT NULL DEFAULT (cast(strftime('%s','now') as int)))"""
 
+@dataclass
 class PlayerBans(TableModel):
     player_id: int
     staff_id: int

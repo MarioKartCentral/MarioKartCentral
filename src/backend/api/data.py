@@ -14,7 +14,7 @@ async def on_startup():
     # Initialize DB
     if settings.RESET_DATABASE:
         await handle(ResetDbCommand())
-    await handle(InitializeDbSchemaCommand())
+    await handle(UpdateDbSchemaCommand())
 
     # Seed DB
     hashed_pw = pw_hasher.hash(str(settings.ADMIN_PASSWORD))
