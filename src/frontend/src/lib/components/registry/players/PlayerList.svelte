@@ -1,9 +1,7 @@
 <script lang="ts">
   import type { PlayerInfo } from '$lib/types/player-info';
   import Table from '$lib/components/common/Table.svelte';
-  import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-	import Pagination from './../../Pagination.svelte';
 
   export let players: PlayerInfo[];
   export let currentPage: number;
