@@ -1,4 +1,5 @@
 export type FriendCode = {
+  id: number;
   fc: string;
   game: string;
   is_primary: boolean;

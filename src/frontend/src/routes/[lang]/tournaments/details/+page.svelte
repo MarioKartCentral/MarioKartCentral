@@ -7,6 +7,7 @@
   import Section from '$lib/components/common/Section.svelte';
   import type { Tournament } from '$lib/types/tournament';
   import { setSeriesPerms, addPermission, permissions } from '$lib/util/util';
+  import TournamentRegister from '$lib/components/tournaments/registration/TournamentRegister.svelte';
 
   let id = 0;
 
@@ -40,6 +41,7 @@
   <Section header="Tournament Rules">
     <MarkdownBox content={tournament.ruleset} />
   </Section>
+  <TournamentRegister tournament={tournament}/>
   <Section header="Tournament Registrations">
     <TournamentRegistrations {tournament} />
   </Section>

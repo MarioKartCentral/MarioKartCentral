@@ -31,11 +31,11 @@ class CreateSquadCommand(Command[None]):
             raise Problem('Duplicate roster IDs detected', status=400)
         async with db_wrapper.connect() as db:
             # check if tournament registrations are open and that our arguments are correct for the current tournament
-            async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_allowed, teams_only, min_representatives FROM tournaments WHERE ID = ?",
+            async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_allowed, teams_only, min_representatives, require_single_fc FROM tournaments WHERE ID = ?",
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
-                is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_allowed, teams_only, min_representatives = row
+                is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_allowed, teams_only, min_representatives, require_single_fc = row
                 if not bool(is_squad):
                     raise Problem('This is not a squad tournament', status=400)
                 if self.admin is False and not bool(registrations_open):
@@ -61,6 +61,13 @@ class CreateSquadCommand(Command[None]):
                 if self.squad_tag is not None and self.mii_name is not None:
                     if self.squad_tag not in self.mii_name:
                         raise Problem("Mii name must contain squad tag", status=400)
+                if require_single_fc and not self.selected_fc_id:
+                    raise Problem("Please select an FC to use for this tournament", status=400)
+
+                selected_fc_id = self.selected_fc_id
+                if not require_single_fc:
+                    selected_fc_id = None
+
                 
             # make sure creating player has permission for all rosters they are registering
             if len(self.roster_ids) > 0 and not self.admin:
@@ -129,7 +136,7 @@ class CreateSquadCommand(Command[None]):
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, squad_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite,
-                self.selected_fc_id, False))
+                selected_fc_id, False))
             await db.commit()
 
 @save_to_command_log

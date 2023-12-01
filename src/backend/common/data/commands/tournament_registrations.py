@@ -24,11 +24,11 @@ class RegisterPlayerCommand(Command[None]):
         timestamp = int(datetime.utcnow().timestamp())
         async with db_wrapper.connect() as db:
             # check if registrations are open and if mii name is required
-            async with db.execute("SELECT is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Tournament not found", status=404)
-                is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only = row
+                is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc = row
                 if bool(is_squad) and self.squad_id is None:
                     raise Problem("Players may not register alone for squad tournaments", status=400)
                 if not bool(is_squad) and self.squad_id is not None:
@@ -40,9 +40,15 @@ class RegisterPlayerCommand(Command[None]):
                         raise Problem("Tournament requires a Mii Name", status=400)
                     if mii_name_required == 0 and self.mii_name:
                         raise Problem("Tournament should not have a Mii Name", status=400)
+                if require_single_fc and not self.selected_fc_id:
+                    raise Problem("Please select an FC to use for this tournament", status=400)
+
+                selected_fc_id = self.selected_fc_id
+                if not require_single_fc:
+                    selected_fc_id = None
                     
             # check if player exists if we are force-registering them
-            if not self.is_privileged:
+            if self.is_privileged:
                 async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
@@ -98,7 +104,7 @@ class RegisterPlayerCommand(Command[None]):
                     
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
-                self.is_invite, self.selected_fc_id, self.is_representative))
+                self.is_invite, selected_fc_id, self.is_representative))
             await db.commit()
 
 

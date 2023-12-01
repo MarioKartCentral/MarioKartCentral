@@ -103,9 +103,9 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             name, country_code, is_hidden, is_shadow, is_banned, discord_id = player_row
 
-            fc_query = "SELECT game, fc, is_verified, is_primary, description FROM friend_codes WHERE player_id = ?"
+            fc_query = "SELECT id, game, fc, is_verified, is_primary, description FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
-            friend_codes = [FriendCode(fc, game, self.id, bool(is_verified), bool(is_primary), description) for game, fc, is_verified, is_primary, description in friend_code_rows]
+            friend_codes = [FriendCode(id, fc, game, self.id, bool(is_verified), bool(is_primary), description) for id, game, fc, is_verified, is_primary, description in friend_code_rows]
 
             user_query = "SELECT id FROM users WHERE player_id = ?"
             async with db.execute(user_query, (self.id,)) as cursor:

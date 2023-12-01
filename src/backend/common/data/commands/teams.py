@@ -117,11 +117,11 @@ class GetTeamInfoCommand(Command[Team]):
 
                 # get all friend codes for members of our team that are from a game that our team has a roster for
                 game_query = ','.join(set([f"'{r.game}'" for r in rosters]))
-                async with db.execute(f"SELECT player_id, game, fc, is_verified, is_primary FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
+                async with db.execute(f"SELECT id, player_id, game, fc, is_verified, is_primary FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        player_id, game, fc, is_verified, is_primary = row
-                        curr_fc = FriendCode(fc, game, player_id, bool(is_verified), bool(is_primary))
+                        id, player_id, game, fc, is_verified, is_primary = row
+                        curr_fc = FriendCode(id, fc, game, player_id, bool(is_verified), bool(is_primary))
                         player_dict[player_id].friend_codes.append(curr_fc)
 
             for member in team_members:
