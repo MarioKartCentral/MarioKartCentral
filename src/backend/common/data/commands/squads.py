@@ -56,7 +56,7 @@ class CreateSquadCommand(Command[None]):
                     raise Problem('Teams are not allowed for this tournament', status=400)
                 if bool(teams_only) and len(self.roster_ids) == 0:
                     raise Problem('Must specify at least one team roster ID for this tournament', status=400)
-                if len(self.representative_ids) + 1 < min_representatives:
+                if min_representatives and len(self.representative_ids) + 1 < min_representatives:
                     raise Problem(f'Must have at least {min_representatives} representatives for this tournament', status=400)
                 if self.squad_tag is not None and self.mii_name is not None:
                     if self.squad_tag not in self.mii_name:

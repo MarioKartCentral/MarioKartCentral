@@ -4,6 +4,7 @@
 
   export let game = 'mk8dx';
   export let mode = '150cc';
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
 </script>
@@ -20,6 +21,7 @@
         [mode] = valid_modes[game];
         dispatch('change');
       }}
+      disabled={disabled}
     >
       {#each Object.keys(valid_games) as game}
         <option value={game}>{valid_games[game]}</option>
@@ -32,7 +34,7 @@
     <label for="mode">Mode</label>
   </div>
   <div>
-    <select name="mode" bind:value={mode} on:change={() => dispatch('change')}>
+    <select name="mode" bind:value={mode} on:change={() => dispatch('change')} disabled={disabled}>
       {#each valid_modes[game] as mode}
         <option value={mode}>{mode_names[mode]}</option>
       {/each}

@@ -145,7 +145,7 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/${$page.params.lang}/tournaments`);
+      goto(`/${$page.params.lang}/tournaments/details?id=${tournament_id}`);
       alert('Successfully edited tournament!');
     } else {
       alert(`Editing tournament failed: ${result['title']}`);
