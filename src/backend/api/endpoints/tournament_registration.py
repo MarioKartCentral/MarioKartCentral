@@ -169,6 +169,22 @@ async def list_registrations(request: Request) -> JSONResponse:
     registrations = await handle(command)
     return JSONResponse(registrations)
 
+@require_logged_in
+async def my_registration(request: Request) -> JSONResponse:
+    tournament_id = request.path_params['id']
+    player_id = request.state.user.player_id
+    if not player_id:
+        return JSONResponse(None)
+    command = CheckIfSquadTournament(tournament_id)
+    is_squad = await handle(command)
+    
+    if is_squad:
+        command = GetPlayerSquadRegCommand(tournament_id, request.state.user.player_id)
+    else:
+        command = GetPlayerSoloRegCommand(tournament_id, request.state.user.player_id)
+    registrations = await handle(command)
+    return JSONResponse(registrations)
+
 routes = [
     Route('/api/tournaments/{id:int}/register', register_me, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceRegister', force_register_player, methods=['POST']),
@@ -185,5 +201,6 @@ routes = [
     Route('/api/tournaments/{id:int}/unregister', unregister_me, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceUnregister', staff_unregister, methods=['POST']),
     Route('/api/tournaments/{id:int}/squads/{squad_id:int}', view_squad),
-    Route('/api/tournaments/{id:int}/registrations', list_registrations)
+    Route('/api/tournaments/{id:int}/registrations', list_registrations),
+    Route('/api/tournaments/{id:int}/myRegistration', my_registration)
 ]
