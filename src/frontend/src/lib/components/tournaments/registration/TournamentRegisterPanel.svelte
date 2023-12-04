@@ -5,7 +5,7 @@
     import { user } from "$lib/stores/stores";
     import { page } from "$app/stores";
     import type { FriendCode } from "$lib/types/friend-code";
-    import SoloTournamentRegister from "./SoloTournamentRegister.svelte";
+    import SoloSquadTournamentRegister from "./SoloSquadTournamentRegister.svelte";
 
     export let tournament: Tournament;
 
@@ -31,7 +31,7 @@
             </div>
             
             {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-                <SoloTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+                <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
             {:else}
                 <div>Please add an FC for {tournament.game} to register for this tournament.</div>
             {/if}
