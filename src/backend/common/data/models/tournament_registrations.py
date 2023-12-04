@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class RegisterTeamRequestData:
     squad_color: str
@@ -40,6 +39,7 @@ class EditPlayerRegistrationRequestData():
 @dataclass
 class TournamentPlayerDetails():
     player_id: int
+    squad_id: int | None
     timestamp: int
     is_checked_in: bool
     mii_name: str | None

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails
+from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails
 
 
 @save_to_command_log
@@ -217,7 +217,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     player_id, squad_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, player_name, country, discord_id = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, is_invite)
+                    curr_player = SquadPlayerDetails(player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, is_invite)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []
@@ -266,7 +266,7 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
 
                 for row in rows:
                     player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
-                    curr_player = TournamentPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])
+                    curr_player = TournamentPlayerDetails(player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])
                     players.append(curr_player)
                     
                     player_dict[player_id] = curr_player
@@ -292,7 +292,7 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
                 return players
             
 @dataclass
-class GetPlayerSquadRegCommand(Command[list[TournamentSquadDetails]]):
+class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
     tournament_id: int
     player_id: int
     
@@ -329,7 +329,7 @@ class GetPlayerSquadRegCommand(Command[list[TournamentSquadDetails]]):
                     player_id, squad_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, player_name, country, discord_id = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, is_invite)
+                    curr_player = SquadPlayerDetails(player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, is_invite)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []
@@ -355,6 +355,8 @@ class GetPlayerSquadRegCommand(Command[list[TournamentSquadDetails]]):
                 for row in rows:
                     player_id, fc = row
                     player_fc_dict[player_id].append(fc)
+
+            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, list(squads.values()), None)
             # finally, set all players' friend codes.
             # we need to do this at the end because some players might have two registration entries
             # (ex. if a player is invited to two different squads), so we need to make sure both of their
@@ -362,10 +364,12 @@ class GetPlayerSquadRegCommand(Command[list[TournamentSquadDetails]]):
             for squad in squads.values():
                 for player in squad.players:
                     player.friend_codes = player_fc_dict[player_id]
-        return list(squads.values())
+                    if player.player_id == self.player_id and not player.is_invite:
+                        details.player = player
+        return details
     
 @dataclass
-class GetPlayerSoloRegCommand(Command[TournamentPlayerDetails | None]):
+class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
     tournament_id: int
     player_id: int
 
@@ -382,7 +386,7 @@ class GetPlayerSoloRegCommand(Command[TournamentPlayerDetails | None]):
                     return None
                 
                 player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
-                player = TournamentPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])
+                player = TournamentPlayerDetails(player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])
 
             # check if only single FCs are allowed or not and get the tournament's game
             async with db.execute("SELECT require_single_fc, game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
@@ -403,4 +407,5 @@ class GetPlayerSoloRegCommand(Command[TournamentPlayerDetails | None]):
                 for row in rows:
                     player_id, fc = row
                     player.friend_codes.append(fc)
-            return player
+            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], player)
+            return details

@@ -1,5 +1,6 @@
 export type TournamentPlayer = {
   player_id: number;
+  squad_id: number | null;
   timestamp: number;
   is_checked_in: boolean;
   mii_name: string | null;

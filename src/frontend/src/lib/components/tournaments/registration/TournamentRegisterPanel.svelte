@@ -6,8 +6,12 @@
     import { page } from "$app/stores";
     import type { FriendCode } from "$lib/types/friend-code";
     import SoloSquadTournamentRegister from "./SoloSquadTournamentRegister.svelte";
+    import { onMount } from "svelte";
+    import type { MyTournamentRegistration } from "$lib/types/tournaments/my-tournament-registration";
 
     export let tournament: Tournament;
+
+    let registration: MyTournamentRegistration;
 
     let user_info: UserInfo;
     user.subscribe((value) => {
@@ -19,6 +23,15 @@
     }
 
     let registration_deadline: Date | null = tournament.registration_deadline ? new Date(tournament.registration_deadline * 1000) : null;
+
+    onMount(async() => {
+        const res = await fetch(`/api/tournaments/${tournament.id}/myRegistration`);
+        if(res.status === 200) {
+            const body: MyTournamentRegistration = await res.json();
+            registration = body;
+            console.log(registration);
+        }
+    });
 </script>
 
 <Section header="Register">

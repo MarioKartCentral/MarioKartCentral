@@ -202,12 +202,12 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                                     WHERE t.squad_id IS ?""",
                                     (self.squad_id,)) as cursor:
                 player_rows = await cursor.fetchall()
-                players: list[TournamentPlayerDetails] = []
+                players: list[SquadPlayerDetails] = []
                 player_dict: dict[int, SquadPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
                 fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
                     player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, player_name, country, discord_id = row
-                    curr_player = SquadPlayerDetails(player_id, player_timestamp, is_checked_in, mii_name, can_host,
+                    curr_player = SquadPlayerDetails(player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
                         player_name, country, discord_id, [], is_squad_captain, is_invite)
                     players.append(curr_player)
 

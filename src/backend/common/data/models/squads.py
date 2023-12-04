@@ -74,4 +74,11 @@ class TournamentSquadDetails():
     color: int
     timestamp: int
     is_registered: int
-    players: list[TournamentPlayerDetails]
+    players: list[SquadPlayerDetails]
+
+@dataclass
+class MyTournamentRegistrationDetails():
+    player_id: int
+    tournament_id: int
+    squads: list[TournamentSquadDetails]
+    player: TournamentPlayerDetails | None
