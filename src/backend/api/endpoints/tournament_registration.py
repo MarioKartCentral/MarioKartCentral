@@ -98,8 +98,8 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     await handle(command)
     return JSONResponse({})
 
-@require_logged_in
 @bind_request_body(AcceptInviteRequestData)
+@require_logged_in
 async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -108,8 +108,8 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     await handle(command)
     return JSONResponse({})
 
-@require_logged_in
 @bind_request_body(DeclineInviteRequestData)
+@require_logged_in
 async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -118,9 +118,9 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
     return JSONResponse({})
 
 # used when a squad captain wants to remove a member from their squad
-@bind_request_body(InvitePlayerRequestData)
+@bind_request_body(KickSquadPlayerRequestData)
 @require_logged_in
-async def remove_player_from_squad(request: Request, body: InvitePlayerRequestData) -> JSONResponse:
+async def remove_player_from_squad(request: Request, body: KickSquadPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
     command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)

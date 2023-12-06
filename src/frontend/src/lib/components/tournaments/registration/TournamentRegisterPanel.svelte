@@ -8,6 +8,7 @@
     import SoloSquadTournamentRegister from "./SoloSquadTournamentRegister.svelte";
     import { onMount } from "svelte";
     import type { MyTournamentRegistration } from "$lib/types/tournaments/my-tournament-registration";
+    import MyRegistration from "./MyRegistration.svelte";
 
     export let tournament: Tournament;
 
@@ -22,7 +23,22 @@
         return fcs.filter((fc) => fc.game === game);
     }
 
-    let registration_deadline: Date | null = tournament.registration_deadline ? new Date(tournament.registration_deadline * 1000) : null;
+    function check_registrations_open() {
+        if(!tournament.registrations_open) {
+            return false;
+        }
+        let registration_deadline: Date | null = tournament.registration_deadline ? new Date(tournament.registration_deadline * 1000) : null;
+        if(!registration_deadline) {
+            return false;
+        }
+        let now = new Date().getTime();
+        if (registration_deadline.getTime() < now) {
+            return false;
+        }
+        return true;
+    }
+
+    
 
     onMount(async() => {
         const res = await fetch(`/api/tournaments/${tournament.id}/myRegistration`);
@@ -35,23 +51,26 @@
 </script>
 
 <Section header="Register">
-    {#if !tournament.registrations_open || (registration_deadline && registration_deadline.getTime() < new Date().getTime())}
-        Registration for this tournament is closed.
+    {#if registration && registration.player}
+        <MyRegistration {registration} {tournament}/>
     {:else}
-        {#if user_info.player}
-            <div>
-                Want to register for this tournament? Just fill out your registration details below!
-            </div>
-            
-            {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-                <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
-            {:else}
-                <div>Please add an FC for {tournament.game} to register for this tournament.</div>
-            {/if}
-            
+        {#if !check_registrations_open()}
+            Registration for this tournament is closed.
         {:else}
-            <div><a href="/{$page.params.lang}/player-signup">Please complete your player registration to register for this tournament.</a></div>
+            {#if user_info.player}
+                <div>
+                    Want to register for this tournament? Just fill out your registration details below!
+                </div>
+                
+                {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
+                    <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+                {:else}
+                    <div>Please add an FC for {tournament.game} to register for this tournament.</div>
+                {/if}
+                
+            {:else}
+                <div><a href="/{$page.params.lang}/player-signup">Please complete your player registration to register for this tournament.</a></div>
+            {/if}
         {/if}
     {/if}
-    
 </Section>

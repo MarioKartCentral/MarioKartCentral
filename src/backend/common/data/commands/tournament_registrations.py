@@ -40,7 +40,7 @@ class RegisterPlayerCommand(Command[None]):
                         raise Problem("Tournament requires a Mii Name", status=400)
                     if mii_name_required == 0 and self.mii_name:
                         raise Problem("Tournament should not have a Mii Name", status=400)
-                if require_single_fc and not self.selected_fc_id:
+                if require_single_fc and not self.selected_fc_id and not self.is_invite:
                     raise Problem("Please select an FC to use for this tournament", status=400)
 
                 selected_fc_id = self.selected_fc_id
@@ -383,7 +383,7 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                                     (self.tournament_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    return None
+                    return MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], None)
                 
                 player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
                 player = TournamentPlayerDetails(player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])

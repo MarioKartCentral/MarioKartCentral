@@ -33,13 +33,16 @@ class EditSquadRequestData:
     squad_color: str
     is_registered: bool
 
-# actually used for both inviting and kicking players from squads
 @dataclass
 class InvitePlayerRequestData:
     squad_id: int
     player_id: int
     is_representative: bool = False
 
+@dataclass
+class KickSquadPlayerRequestData:
+    squad_id: int
+    player_id: int
 
 @dataclass
 class AcceptInviteRequestData():

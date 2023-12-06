@@ -1,4 +1,4 @@
-import type { SquadPlayer } from '$lib/types/tournament-player';
+import type { TournamentPlayer } from '$lib/types/tournament-player';
 
 export type TournamentSquad = {
   id: number;
@@ -7,5 +7,5 @@ export type TournamentSquad = {
   color: number;
   timestamp: number;
   is_registered: boolean;
-  players: SquadPlayer[];
+  players: TournamentPlayer[];
 };

@@ -9,11 +9,6 @@ export type TournamentPlayer = {
   country_code: string | null;
   discord_id: string | null;
   friend_codes: string[];
-};
-
-type PlayerSquadInfo = {
   is_squad_captain: boolean;
   is_invite: boolean;
 };
-
-export type SquadPlayer = TournamentPlayer & PlayerSquadInfo;
