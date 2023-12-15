@@ -6,9 +6,9 @@
   import PlayerFilter from '$lib/components/registry/players/PlayerFilter.svelte';
 
   let players: PlayerInfo[] = [];
-  let totalPages: number = 0;
-  let currentPage: number = 1;
-  let oldPage: number = 1;
+  let totalPages = 0;
+  let currentPage = 1;
+  let oldPage = 1;
   let filters = {
     game: null,
     name: null,
