@@ -4,7 +4,9 @@
 </script>
 
 <Section header="MKCentral Registry">
-  <p>Players</p>
+  <p>
+    <a href="/{$page.params.lang}/registry/players">Players</a>
+  </p>
   <p>
     <a href="/{$page.params.lang}/registry/teams">Teams</a>
   </p>

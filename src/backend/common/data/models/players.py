@@ -15,6 +15,14 @@ class Player:
     is_shadow: bool
     is_banned: bool
     discord_id: str | None
+    
+@dataclass
+class PlayerAndFriendCodes(Player):
+    mkw: str
+    mk7: str
+    mk8: str
+    mk8dx: str
+    mkt: str
 
 @dataclass
 class PlayerBan:
@@ -73,6 +81,8 @@ class PlayerFilter:
     is_shadow: bool | None = None
     is_banned: bool | None = None
     discord_id: str | None = None
+    detailed: bool | None = None
+    page: int | None = None
 
 @dataclass
 class PlayerBanRequestData:
