@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Literal
+from typing import Any, Literal
 
 
 @dataclass
@@ -21,10 +21,10 @@ class Problem(Exception):
     title: str
     detail: str | None = None
     status: int = 500
-    data: Dict[str, Any] | None = None
+    data: dict[str, Any] | None = None
 
 Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt"]
-GameMode = Literal["150cc", "200cc", "rt", "ct"]
+GameMode = Literal["150cc", "200cc", "rt", "ct", "vsrace"]
 Approval = Literal["approved", "pending", "denied"]
 CountryCode = Literal["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS",
                       "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR", "IO", "BN",

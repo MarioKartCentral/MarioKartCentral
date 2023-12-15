@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Literal
+from typing import Literal
 
 from common.data.models.common import Game, CountryCode
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
@@ -33,8 +33,22 @@ class PlayerBan:
     reason: str
 
 @dataclass
+class PlayerRoster:
+    roster_id: int
+    join_date: int
+    team_id: int
+    team_name: str
+    team_tag: str
+    team_color: int
+    roster_name: str | None
+    roster_tag: str | None
+    game: str
+    mode: str
+
+@dataclass
 class PlayerDetailed(Player):
-    friend_codes: List[FriendCode]
+    friend_codes: list[FriendCode]
+    rosters: list[PlayerRoster]
     ban_info: PlayerBan | None
     user_settings: UserSettings | None
 
@@ -42,7 +56,7 @@ class PlayerDetailed(Player):
 class CreatePlayerRequestData:
     name: str
     country_code: CountryCode
-    friend_codes: List[CreateFriendCodeRequestData]
+    friend_codes: list[CreateFriendCodeRequestData]
     is_hidden: bool = False
     is_shadow: bool = False
     discord_id: str | None = None
@@ -84,3 +98,4 @@ class PlayerBanFilter:
     expires_before: str | None = None
     expires_after: str | None = None
     reason: str | None = None
+

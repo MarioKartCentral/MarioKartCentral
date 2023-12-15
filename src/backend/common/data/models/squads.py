@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from typing import List
-
 from common.data.models.tournament_registrations import TournamentPlayerDetails
 
 
@@ -24,8 +22,8 @@ class CreateSquadRequestData:
 @dataclass
 class ForceCreateSquadRequestData(CreateSquadRequestData):
     player_id: int
-    roster_ids: List[int]
-    representative_ids: List[int]
+    roster_ids: list[int]
+    representative_ids: list[int]
 
 @dataclass
 class EditSquadRequestData:
@@ -76,4 +74,4 @@ class TournamentSquadDetails():
     color: int
     timestamp: int
     is_registered: int
-    players: List[TournamentPlayerDetails]
+    players: list[TournamentPlayerDetails]

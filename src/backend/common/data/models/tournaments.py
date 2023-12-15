@@ -17,6 +17,7 @@ class CreateTournamentRequestData():
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
+    use_series_logo: bool
     url: str | None
     registration_deadline: int | None
     registration_cap: int | None
@@ -30,7 +31,8 @@ class CreateTournamentRequestData():
     mii_name_required: bool
     host_status_required: bool
     checkins_open: bool
-    min_players_checkin: int
+    min_players_checkin: int | None
+    verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
@@ -40,15 +42,18 @@ class CreateTournamentRequestData():
     # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
-    organizer: str
-    location: str
+    organizer: str | None
+    location: str | None
 
 @dataclass
 class GetTournamentRequestData(CreateTournamentRequestData):
     id: int
+    is_deleted: bool
     series_name: str | None = None
     series_url: str | None = None
     series_description: str | None = None
+    series_ruleset: str | None = None
+    
 
 @dataclass
 class EditTournamentRequestData():
@@ -61,6 +66,7 @@ class EditTournamentRequestData():
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
+    use_series_logo: bool
     url: str | None
     registration_deadline: int | None
     registration_cap: int | None
@@ -74,17 +80,19 @@ class EditTournamentRequestData():
     mii_name_required: bool
     host_status_required: bool
     checkins_open: bool
-    min_players_checkin: int
+    min_players_checkin: int | None
+    verification_required: bool
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
+    is_deleted: bool
     show_on_profiles: bool
     min_representatives: int | None
     # s3-only fields below
     ruleset: str
     use_series_ruleset: bool
-    organizer: str
-    location: str
+    organizer: str | None
+    location: str | None
 
 @dataclass
 class TournamentDataMinimal():
@@ -106,6 +114,7 @@ class TournamentDataBasic(TournamentDataMinimal):
     teams_allowed: bool
     description: str
     logo: str | None
+    use_series_logo: bool
 
 @dataclass
 class TournamentFilter():
@@ -116,3 +125,15 @@ class TournamentFilter():
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
+
+@dataclass
+class TournamentInvite():
+    invite_id: int
+    tournament_id: int
+    timestamp: int
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: int
+    tournament_name: str
+    tournament_game: Game
+    tournament_mode: GameMode

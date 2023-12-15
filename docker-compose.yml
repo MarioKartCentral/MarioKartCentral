@@ -16,6 +16,7 @@ services:
       API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
+      ENV : Development
       PYTHONDONTWRITEBYTECODE : 1 # this is to prevent __pycache__ files during development
     volumes:
       - mkc-db:/var/lib/mkc-api/data
@@ -29,6 +30,7 @@ services:
       S3_SECRET_KEY : ${MINIO_ROOT_PASSWORD:-mkcadmin123}
       S3_ENDPOINT: http://s3-emulator:9000/
       DB_PATH : /var/lib/mkc-api/data/mkc.db
+      ENV : Development
       PYTHONDONTWRITEBYTECODE : 1
       PYTHONUNBUFFERED : 1
     volumes:
@@ -70,6 +72,14 @@ services:
       - PERSIST_AUTHORIZATION=true
     ports:
       - 80:8080
+  sqlite-web:
+    image: 'coleifer/sqlite-web'
+    environment:
+      - SQLITE_DATABASE=/data/mkc.db
+    volumes:
+      - mkc-db:/data
+    ports:
+      - 7000:8080
       
 volumes:
   mkc-db:

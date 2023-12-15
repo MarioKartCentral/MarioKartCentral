@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
@@ -8,8 +7,8 @@ class RegisterTeamRequestData:
     squad_name: str
     squad_tag: str
     captain_player: int
-    roster_ids: List[int]
-    representative_ids: List[int]
+    roster_ids: list[int]
+    representative_ids: list[int]
 
 @dataclass
 class RegisterPlayerRequestData:
@@ -48,4 +47,4 @@ class TournamentPlayerDetails():
     name: str
     country_code: str | None
     discord_id: str | None
-    friend_codes: List[str]
+    friend_codes: list[str]

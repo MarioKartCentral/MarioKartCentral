@@ -1,6 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Literal
+from typing import Callable, Literal
 import re
+
+from aiosqlite import Connection
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
@@ -111,6 +113,19 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             user = None if user_row is None else User(int(user_row[0]), self.id)
 
+            rosters: list[PlayerRoster] = []
+            async with db.execute("""SELECT m.roster_id, m.join_date, t.id, t.name, t.tag, t.color, r.name, r.tag, r.game, r.mode
+                                    FROM team_members m
+                                    JOIN team_rosters r ON m.roster_id = r.id
+                                    JOIN teams t ON r.team_id = t.id
+                                    WHERE m.player_id = ? AND m.leave_date IS NULL""", (self.id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode = row
+                    roster_name = roster_name if roster_name else team_name
+                    roster_tag = roster_tag if roster_tag else team_tag
+                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode))
+
             ban_info = None
             if is_banned:
                 ban_query = "SELECT player_id, staff_id, is_indefinite, expiration_date, reason from player_bans WHERE player_id = ?"
@@ -126,7 +141,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     if settings_row is not None:
                         user_settings = UserSettings(user.id, *settings_row)
 
-            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, ban_info, user_settings)
+            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, rosters, ban_info, user_settings)
         
 @dataclass
 class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
@@ -145,7 +160,8 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
                 limit = filter.page * 1
                 offset = (filter.page - 1) * 1
 
-            def append_equal_filter(filter_value, column_name):
+
+            def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
@@ -187,6 +203,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
             count_query = f"SELECT COUNT (*) FROM (SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p{where_clause}) count_query"
 
             players: List[Player] = []
+
             async with db.execute(players_query, variable_parameters) as cursor:
                 while True:
                     batch = await cursor.fetchmany(50)
@@ -230,7 +247,7 @@ class ListPlayersCommand(Command[List[PlayerAndFriendCodes | int]]):
             
             return players, count
 
-async def player_exists_in_table(db, table: Literal['players', 'player_bans'], player_id: int) -> bool:
+async def player_exists_in_table(db: Connection, table: Literal['players', 'player_bans'], player_id: int) -> bool:
     """ Check if a player is in either the players or player_bans db table """
     if table == 'players':
         command = "SELECT EXISTS (SELECT 1 FROM players WHERE id = ?)"
@@ -314,17 +331,17 @@ class EditPlayerBanCommand(Command[PlayerBan]):
             return PlayerBan(self.player_id, self.staff_id, data.is_indefinite, data.expiration_date, data.reason)
 
 @dataclass
-class ListBannedPlayersCommand(Command[List[PlayerBan]]):
+class ListBannedPlayersCommand(Command[list[PlayerBan]]):
     filter: PlayerBanFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
 
         async with db_wrapper.connect(readonly=True) as db:
-            where_clauses = []
-            variable_parameters = []
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
 
-            def append_equal_filter(filter_value, clause_name, where_clause, var_param=None, cast_fn=None):
+            def append_equal_filter(filter_value: Any, clause_name: str, where_clause: str, var_param: str | None = None, cast_fn: Callable[[str], Any] | None = None):
                 if filter_value is not None:
                     where_clauses.append(where_clause)
                     if var_param:
@@ -347,7 +364,7 @@ class ListBannedPlayersCommand(Command[List[PlayerBan]]):
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
             query = f"""SELECT player_id, staff_id, is_indefinite, expiration_date, reason from player_bans {where_clause}"""
 
-            player_bans = []
+            player_bans: list[PlayerBan] = []
             async with db.execute(query, variable_parameters) as cursor:
                 while True:
                     batch = await cursor.fetchmany(50)

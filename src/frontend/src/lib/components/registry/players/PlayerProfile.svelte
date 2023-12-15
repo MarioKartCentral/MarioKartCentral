@@ -5,6 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
+  import LinkButton from '$lib/components/common/LinkButton.svelte';
 
   let user_info: UserInfo;
 
@@ -23,7 +24,8 @@
 <Section header="Player Profile">
   <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <a href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</a>
+      <LinkButton href="/{$page.params.lang}/registry/invites">Invites</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</LinkButton>
     {/if}
   </div>
   <div class="wrapper">
@@ -45,6 +47,19 @@
           {#each player.friend_codes as fc}
             <div class="fc">
               {fc.fc} ({fc.game.toUpperCase()})
+            </div>
+          {/each}
+        </div>
+      {/if}
+      {#if player.rosters.length > 0}
+        <div>
+          <b>Teams:</b>
+          {#each player.rosters as r}
+            <div class="roster">
+              <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
+                {r.roster_name} ({r.game}
+                {r.mode})
+              </a>
             </div>
           {/each}
         </div>
@@ -86,6 +101,9 @@
     grid-column-start: 3;
   }
   div.fc {
+    text-indent: 2em;
+  }
+  div.roster {
     text-indent: 2em;
   }
   img.avatar {

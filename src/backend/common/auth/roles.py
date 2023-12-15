@@ -17,7 +17,7 @@ default_permissions_by_default_role = {
     ADMINISTRATOR: [ permissions.READ_S3, permissions.WRITE_S3, permissions.WRITE_REDIS ],
 }
 
-default_role_permission_ids = []
+default_role_permission_ids: list[tuple[int, int]] = []
 for role, role_perms in default_permissions_by_default_role.items():
     for permission in role_perms:
         default_role_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission])]

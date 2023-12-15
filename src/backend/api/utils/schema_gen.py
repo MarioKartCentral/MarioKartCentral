@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from types import NoneType, UnionType
-from typing import Any, List, Literal, Optional, Union, get_args, get_origin
+from typing import Any, Literal, Optional, Union, get_args, get_origin
 import msgspec
 from starlette.requests import Request
 from starlette.routing import BaseRoute, Route
@@ -49,26 +49,26 @@ class SchemaGenerator(BaseSchemaGenerator):
             raise Problem("Failed to map request param to type", f"Unhandled type in schema generation: {typ}")
         return { "type": type_str, "nullable": is_nullable }
 
-    def get_schema(self, routes: List[BaseRoute]):
+    def get_schema(self, routes: list[BaseRoute]):
         schema: dict[Any, Any] = { 
             "openapi": "3.0.0", 
             "info": {"title": "Mario Kart Central API", "version": "1.0"},
         }
         schema.setdefault("paths", {})
 
-        all_types = []
+        all_types: list[type] = []
         endpoints = self.get_endpoints(routes)
         for endpoint in endpoints:
-            path_data = {}
+            path_data: dict[str, Any] = {}
 
             if hasattr(endpoint.func, 'spec_types'):
-                spec_types: RouteSpecTypes = endpoint.func.spec_types
+                spec_types: RouteSpecTypes = getattr(endpoint.func, 'spec_types')
                 if spec_types.body_type is not None:
                     all_types.append(spec_types.body_type)
                     path_data["requestBody"] = { "content": { "application/json": { "schema": { "$ref": f"#/components/schemas/{spec_types.body_type.__name__}" } } } }
                 if spec_types.query_type is not None:
                     if dataclasses.is_dataclass(spec_types.query_type):
-                        params = []
+                        params: list[dict[str, Any]] = []
                         for field in dataclasses.fields(spec_types.query_type):
                             param_schema = SchemaGenerator.type_to_openapi(field.type)
 

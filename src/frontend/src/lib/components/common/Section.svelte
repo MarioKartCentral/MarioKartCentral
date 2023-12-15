@@ -1,12 +1,17 @@
 <script lang="ts">
   export let header: string | null = null;
+  export let href: string | null = null;
 </script>
 
 <div class="container">
   {#if header}
     <div class="header">
       <div class="header_element">
-        <h2>{header}</h2>
+        {#if href}
+          <h2><a {href}>{header}</a></h2>
+        {:else}
+          <h2>{header}</h2>
+        {/if}
       </div>
       {#if $$slots.header_content}
         <div class="header_element centered">
@@ -15,20 +20,27 @@
       {/if}
     </div>
   {/if}
-  <div class="wrapper">
-    <slot />
-  </div>
+  {#if $$slots.default}
+    <div class="wrapper">
+      <slot />
+    </div>
+  {/if}
 </div>
 
 <style>
   .container {
-    width: 50%;
+    width: 65%;
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
   }
+  @media (max-width: 600px) {
+    .container {
+      width: 100%;
+    }
+  }
   .header {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     background-color: rgba(0, 128, 0, 0.6);
   }
   .centered {

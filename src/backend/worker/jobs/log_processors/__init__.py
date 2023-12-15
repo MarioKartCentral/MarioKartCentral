@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from typing import Any, List
+from typing import Any
 from common.data.commands import Command
 from common.data.models import CommandLog, HistoricalCommandLogIndexEntry
 
@@ -21,16 +21,16 @@ class LogProcessor(ABC):
         pass
 
     @abstractmethod
-    async def run_from_start(self, historical_log_index: List[HistoricalCommandLogIndexEntry]):
+    async def run_from_start(self, historical_log_index: list[HistoricalCommandLogIndexEntry]):
         pass
 
     @abstractmethod
-    async def process_logs(self, logs: List[CommandLog[Command[Any]]]):
+    async def process_logs(self, logs: list[CommandLog[Command[Any]]]):
         pass
 
-_log_processors: List[LogProcessor] = []
+_log_processors: list[LogProcessor] = []
 
-def get_log_processors() -> List[LogProcessor]:
+def get_log_processors() -> list[LogProcessor]:
     from worker.jobs.log_processors.historical_log_backup import HistoricalLogBackupLogProcessor
     global _log_processors
     if not _log_processors:
