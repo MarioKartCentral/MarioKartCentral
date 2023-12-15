@@ -18,11 +18,7 @@ class Player:
     
 @dataclass
 class PlayerAndFriendCodes(Player):
-    mkw: str
-    mk7: str
-    mk8: str
-    mk8dx: str
-    mkt: str
+    friend_codes: list[FriendCode]
 
 @dataclass
 class PlayerBan:
@@ -46,11 +42,16 @@ class PlayerRoster:
     mode: str
 
 @dataclass
-class PlayerDetailed(Player):
-    friend_codes: list[FriendCode]
+class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
     ban_info: PlayerBan | None
     user_settings: UserSettings | None
+
+@dataclass
+class PlayerList:
+    player_list: list[PlayerAndFriendCodes]
+    player_count: int
+    page_count: int
 
 @dataclass
 class CreatePlayerRequestData:
@@ -75,6 +76,7 @@ class EditPlayerRequestData:
 class PlayerFilter:
     name: str | None = None
     friend_code: str | None = None
+    name_or_fc: str | None = None
     game: Game | None = None
     country: CountryCode | None = None
     is_hidden: bool | None = None
