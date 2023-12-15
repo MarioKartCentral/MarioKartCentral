@@ -29,7 +29,7 @@
         }
         let registration_deadline: Date | null = tournament.registration_deadline ? new Date(tournament.registration_deadline * 1000) : null;
         if(!registration_deadline) {
-            return false;
+            return true;
         }
         let now = new Date().getTime();
         if (registration_deadline.getTime() < now) {
@@ -51,25 +51,26 @@
 </script>
 
 <Section header="Register">
-    {#if registration && registration.player}
+    {#if registration}
         <MyRegistration {registration} {tournament}/>
-    {:else}
-        {#if !check_registrations_open()}
-            Registration for this tournament is closed.
-        {:else}
-            {#if user_info.player}
-                <div>
-                    Want to register for this tournament? Just fill out your registration details below!
-                </div>
-                
-                {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-                    <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
-                {:else}
-                    <div>Please add an FC for {tournament.game} to register for this tournament.</div>
-                {/if}
-                
+        {#if !registration.player}
+            {#if !check_registrations_open()}
+                Registration for this tournament is closed.
             {:else}
-                <div><a href="/{$page.params.lang}/player-signup">Please complete your player registration to register for this tournament.</a></div>
+                {#if user_info.player}
+                    <div>
+                        Want to register for this tournament? Just fill out your registration details below!
+                    </div>
+                    
+                    {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
+                        <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+                    {:else}
+                        <div>Please add an FC for {tournament.game} to register for this tournament.</div>
+                    {/if}
+                    
+                {:else}
+                    <div><a href="/{$page.params.lang}/player-signup">Please complete your player registration to register for this tournament.</a></div>
+                {/if}
             {/if}
         {/if}
     {/if}

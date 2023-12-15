@@ -105,8 +105,8 @@
 </script>
 
 {#if tournament.is_squad}
-    <div>My squad</div>
     {#each getRegSquad() as squad}
+        <div>My squad</div>
         <div>{squad.players.filter((p) => !p.is_invite).length} players</div>
         <Table>
             <col class="country" />

@@ -31,7 +31,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each players as player, i}
+    {#each players.filter((p) => !p.is_invite) as player, i}
       <tr class="row-{i % 2}">
         <td>{player.country_code}</td>
         <td>{player.name}</td>
