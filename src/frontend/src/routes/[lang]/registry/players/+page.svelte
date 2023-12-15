@@ -7,8 +7,8 @@
 
   let players: PlayerInfo[] = [];
   let totalPages: number = 0;
-  let currentPage: number=1;
-  let oldPage: number=1;
+  let currentPage: number = 1;
+  let oldPage: number = 1;
   let filters = {
     game: null,
     name: null,
@@ -25,14 +25,14 @@
     if (filters.name != null && filters.name != '') {
       url += '&name=' + filters.name;
     }
-    if(filters.country != null && filters.country != '') {
+    if (filters.country != null && filters.country != '') {
       url += '&country=' + filters.country;
     }
     url += '&page=' + currentPage;
     const res = await fetch(url);
     if (res.status === 200) {
       const body = await res.json();
-      console.log(body)
+      console.log(body);
       const body_players = body[0];
       for (let t of body_players) {
         players.push(t);
@@ -56,4 +56,3 @@
   {players.length} players
   <PlayerList {players} {totalPages} bind:currentPage />
 </Section>
-
