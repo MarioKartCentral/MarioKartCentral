@@ -125,7 +125,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT registrations_open, mii_name_required FROM tournaments WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT registrations_open, mii_name_required FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('Tournament not found', status=404)
@@ -139,6 +139,7 @@ class EditPlayerRegistrationCommand(Command[None]):
                         raise Problem("Tournament requires a Mii Name", status=400)
                     if mii_name_required == 0 and self.mii_name:
                         raise Problem("Tournament should not have a Mii Name", status=400)
+                    
             #check if registration exists
             async with db.execute("SELECT id, is_invite, is_representative FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?",
                 (self.tournament_id, self.squad_id, self.player_id)) as cursor:
@@ -148,10 +149,32 @@ class EditPlayerRegistrationCommand(Command[None]):
                 registration_id, curr_is_invite, curr_is_rep = row
             if self.is_representative is None:
                 self.is_representative = curr_is_rep
+
+            # check if squad exists and if we are using the squad's tag in our mii name
+            if self.squad_id is not None:
+                async with db.execute("SELECT tag FROM tournament_squads WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id)) as cursor:
+                    row = await cursor.fetchone()
+                    if row is None:
+                        raise Problem("Squad not found", status=404)
+                    squad_tag = row[0]
+                    if squad_tag is not None and self.mii_name is not None:
+                        if squad_tag not in self.mii_name:
+                            raise Problem("Mii name must contain squad tag", status=400)
+
             # if a player accepts an invite while already registered for a different squad, their old registration must be removed
             if curr_is_invite and (not self.is_invite):
-                await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND is_invite = ?",
-                    (self.tournament_id, self.player_id, False))
+                old_squad_id = None
+                is_squad_captain = False
+                async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND is_invite = ?",
+                    (self.tournament_id, self.player_id, False)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        old_squad_id, is_squad_captain = row
+                if is_squad_captain:
+                    raise Problem("Please give captain to another player in your squad before leaving", status=400)
+                if old_squad_id:
+                    await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND squad_id = ?",
+                        (self.tournament_id, self.player_id, old_squad_id))
             await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, selected_fc_id = ?, is_representative = ? WHERE id = ?", (
                 self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, self.selected_fc_id, self.is_representative, registration_id))
             await db.commit()
@@ -342,8 +365,9 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 fc_where_clause = ""
                 if require_single_fc:
                     fc_where_clause = "AND f.id = t.selected_fc_id"
+
             # gathering all the valid FCs for each player in their squads
-            fc_query = f"""SELECT player_id, fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
+            fc_query = f"""SELECT f.player_id, f.fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
                             SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id {fc_where_clause}
                             AND EXISTS (
                                 SELECT p2.id FROM tournament_players p2
@@ -363,9 +387,10 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
             # registrations have all their friend codes attached.
             for squad in squads.values():
                 for player in squad.players:
-                    player.friend_codes = player_fc_dict[player_id]
+                    player.friend_codes = player_fc_dict[player.player_id]
                     if player.player_id == self.player_id and not player.is_invite:
                         details.player = player
+
         return details
     
 @dataclass

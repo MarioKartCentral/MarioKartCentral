@@ -3,15 +3,6 @@
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
   import { valid_games } from '$lib/util/util';
   export let filters: PlayerFilter;
-
-  const list = [
-    { value: '', label: 'Show All' },
-    { value: 'mk8dx', label: 'Show with MK8DX FC' },
-    { value: 'mkw', label: 'Show with MKW FC' },
-    { value: 'mkt', label: 'Show with MKT FC' },
-    { value: 'mk7', label: 'Show with 3DS FC' },
-    { value: 'mk8', label: 'Show with NNID' },
-  ];
 </script>
 
 <select bind:value={filters.game}>

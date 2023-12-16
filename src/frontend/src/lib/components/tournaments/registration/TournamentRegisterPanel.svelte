@@ -52,7 +52,9 @@
 
 <Section header="Register">
     {#if registration}
-        <MyRegistration {registration} {tournament}/>
+        {#if user_info.player}
+            <MyRegistration {registration} {tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+        {/if}
         {#if !registration.player}
             {#if !check_registrations_open()}
                 Registration for this tournament is closed.
