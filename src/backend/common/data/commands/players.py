@@ -51,7 +51,7 @@ class CreatePlayerCommand(Command[Player]):
                     raise Problem(f"Too many friend codes were provided for the game {game} (limit {fc_limits[game]})", status=400)
                     
             for friend_code in data.friend_codes:
-                match = re.match(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
+                match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
                 if friend_code.game != "mk8" and not match:
                     raise Problem(f"FC {friend_code.fc} for game {friend_code.game} is in incorrect format", status=400)
                 
