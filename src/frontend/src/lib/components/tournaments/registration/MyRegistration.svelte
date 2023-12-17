@@ -128,6 +128,7 @@
             {#if tournament.host_status_required}
               <col class="can-host" />
             {/if}
+            <col class="actions"/>
             <thead>
               <tr>
                 <th />
@@ -139,13 +140,14 @@
                 {#if tournament.host_status_required}
                   <th>Can Host</th>
                 {/if}
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {#each squad.players.filter((p) => !p.is_invite) as player, i}
                 <tr class="row-{i % 2}">
                   <td>{player.country_code}</td>
-                  <td>{player.name}</td>
+                  <td>{player.name} {player.is_squad_captain ? "(Captain)" : ""}</td>
                   {#if tournament.mii_name_required}
                     <td>{player.mii_name}</td>
                   {/if}
@@ -157,6 +159,14 @@
                   {#if tournament.host_status_required}
                     <td>{player.can_host ? 'Yes' : 'No'}</td>
                   {/if}
+                  <td>
+                    {#if registration.player?.player_id === player.player_id}
+                      <button>Unregister</button>
+                    {:else if registration.player?.is_squad_captain}
+                      <button>Kick</button>
+                      <button>Captain</button>
+                    {/if}
+                  </td>
                 </tr>
               {/each}
             </tbody>
@@ -223,10 +233,10 @@
       width: 5%;
     }
     col.name {
-      width: 30%;
+      width: 25%;
     }
     col.mii-name {
-      width: 30%;
+      width: 25%;
     }
     col.friend-codes {
       width: 25%;
@@ -236,6 +246,9 @@
     }
     col.cancel-invite {
       width: 25%;
+    }
+    col.actions {
+      width: 10%;
     }
   </style>
   
