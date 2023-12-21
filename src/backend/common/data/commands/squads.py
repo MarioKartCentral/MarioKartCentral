@@ -68,7 +68,6 @@ class CreateSquadCommand(Command[None]):
                 if not require_single_fc:
                     selected_fc_id = None
 
-                
             # make sure creating player has permission for all rosters they are registering
             if len(self.roster_ids) > 0 and not self.admin:
                 async with db.execute(f"""
@@ -180,6 +179,36 @@ class CheckSquadCaptainPermissionsCommand(Command[None]):
                     raise Problem("You are not registered for this squad", status=400)
                 if is_squad_captain == 0:
                     raise Problem("You are not captain of this squad", status=400)
+                
+@dataclass
+class ChangeSquadCaptainCommand(Command[None]):
+    tournament_id: int
+    squad_id: int
+    new_captain_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ? AND is_invite = ?",
+                                  (self.tournament_id, self.squad_id, self.new_captain_id, False)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Specified player is not in this squad", status=400)
+            await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND squad_id = ?",
+                             (False, self.tournament_id, self.squad_id))
+            await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
+                             (True, self.tournament_id, self.squad_id, self.new_captain_id))
+            await db.commit()
+
+@dataclass
+class UnregisterSquadCommand(Command[None]):
+    tournament_id: int
+    squad_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            await db.execute("DELETE FROM tournament_players WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
+            await db.execute("UPDATE tournament_squads SET is_registered = 0 WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
+            await db.commit()
 
 @dataclass
 class GetSquadDetailsCommand(Command[TournamentSquadDetails]):

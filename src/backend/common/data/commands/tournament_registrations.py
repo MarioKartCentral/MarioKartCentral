@@ -118,7 +118,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     can_host: bool
     is_invite: bool
     is_checked_in: bool
-    is_squad_captain: bool
+    is_squad_captain: bool | None
     selected_fc_id: int | None
     is_representative: bool | None
     is_privileged: bool
@@ -141,14 +141,18 @@ class EditPlayerRegistrationCommand(Command[None]):
                         raise Problem("Tournament should not have a Mii Name", status=400)
                     
             #check if registration exists
-            async with db.execute("SELECT id, is_invite, is_representative FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?",
+            async with db.execute("SELECT id, is_invite, is_representative, is_squad_captain FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?",
                 (self.tournament_id, self.squad_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Registration not found", status=404)
-                registration_id, curr_is_invite, curr_is_rep = row
+                registration_id, curr_is_invite, curr_is_rep, curr_squad_captain = row
+            is_representative = self.is_representative
             if self.is_representative is None:
-                self.is_representative = curr_is_rep
+                is_representative = curr_is_rep
+            is_squad_captain = self.is_squad_captain
+            if is_squad_captain is None:
+                is_squad_captain = curr_squad_captain
 
             # check if squad exists and if we are using the squad's tag in our mii name
             if self.squad_id is not None:
@@ -164,19 +168,30 @@ class EditPlayerRegistrationCommand(Command[None]):
             # if a player accepts an invite while already registered for a different squad, their old registration must be removed
             if curr_is_invite and (not self.is_invite):
                 old_squad_id = None
-                is_squad_captain = False
+                old_is_squad_captain = False
                 async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND is_invite = ?",
                     (self.tournament_id, self.player_id, False)) as cursor:
                     row = await cursor.fetchone()
                     if row:
-                        old_squad_id, is_squad_captain = row
-                if is_squad_captain:
-                    raise Problem("Please give captain to another player in your squad before leaving", status=400)
+                        old_squad_id, old_is_squad_captain = row
+                
                 if old_squad_id:
+                    # we should unregister a squad if it has no members remaining after this player is unregistered
+                    async with db.execute("SELECT count(*) FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 0", (self.tournament_id, old_squad_id)) as cursor:
+                        row = await cursor.fetchone()
+                        assert row is not None
+                        num_squad_players = row[0]
+                    # disallow players from leaving their squad as captain if there is more than 1 player
+                    if old_is_squad_captain and num_squad_players > 1:
+                        raise Problem("Please unregister your current squad or give captain to another player in your squad before leaving your current squad", status=400)
+                    if num_squad_players == 1:
+                        await db.execute("UPDATE tournament_squads SET is_registered = ? WHERE id = ?", (False, old_squad_id))
+                        # delete any invites as well
+                        await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 1", (self.tournament_id, old_squad_id))
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND squad_id = ?",
                         (self.tournament_id, self.player_id, old_squad_id))
             await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, selected_fc_id = ?, is_representative = ? WHERE id = ?", (
-                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, self.is_squad_captain, self.selected_fc_id, self.is_representative, registration_id))
+                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, registration_id))
             await db.commit()
 
 @save_to_command_log
@@ -196,31 +211,52 @@ class UnregisterPlayerCommand(Command[None]):
                 registrations_open = row[0]
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so players cannot be unregistered from this tournament", status=400)
+            async with db.execute("SELECT is_squad_captain FROM tournament_players WHERE tournament_id = ? AND squad_id iS ? AND player_id = ?",
+                                  (self.tournament_id, self.squad_id, self.player_id)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player is not registered for this tournament", status=400)
+                is_squad_captain = row[0]
+            if self.squad_id is not None:
+                # we should unregister a squad if it has no members remaining after this player is unregistered
+                async with db.execute("SELECT count(*) FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 0", (self.tournament_id, self.squad_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    num_squad_players = row[0]
+                # disallow players from leaving their squad as captain if there is more than 1 player
+                if is_squad_captain and num_squad_players > 1:
+                    raise Problem("Please unregister your current squad or give captain to another player in your squad before unregistering for this tournament", status=400)
+                if num_squad_players == 1:
+                    await db.execute("UPDATE tournament_squads SET is_registered = ? WHERE id = ?", (False, self.squad_id))
+                    # delete any invites as well
+                    await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 1", (self.tournament_id, self.squad_id))
             async with db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?", (self.tournament_id, self.squad_id, self.player_id)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount == 0:
                     raise Problem("Registration not found", status=404)
-            # we should unregister a squad if it has no members remaining after this player is unregistered
-            if self.squad_id is not None:
-                async with db.execute("SELECT count(id) FROM tournament_players WHERE tournament_id = ? AND squad_id IS ?", (self.tournament_id, self.squad_id)) as cursor:
-                    row = await cursor.fetchone()
-                    assert row is not None
-                    num_squad_players = row[0]
-                if num_squad_players == 0:
-                    await db.execute("UPDATE tournament_squads SET is_registered = ? WHERE id = ?", (False, self.squad_id))
             await db.commit()
 
 @dataclass
 class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
     tournament_id: int
+    registered_only: bool
     eligible_only: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            where_clause = ""
+            where_clauses = ["tournament_id = ?"]
+            variable_parameters = [self.tournament_id]
+            # get only squads which have not withdrawn from the tournament
+            if self.registered_only:
+                where_clauses.append("is_registered = 1")
+            # get only squads which have the minimum number of players
             if self.eligible_only:
-                where_clause = "AND is_registered = 1"
-            async with db.execute(f"SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads WHERE tournament_id = ? {where_clause}", (self.tournament_id,)) as cursor:
+                where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0)")
+            where_clause = " AND ".join(where_clauses)
+            async with db.execute(f"""SELECT s.id, s.name, s.tag, s.color, s.timestamp, s.is_registered 
+                                  FROM tournament_squads s
+                                  JOIN tournaments t ON s.tournament_id = t.id
+                                  WHERE {where_clause}""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 squads: dict[int, TournamentSquadDetails] = {}
                 for row in rows:
@@ -260,6 +296,8 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     player_id, fc = row
+                    if player_id not in player_fc_dict:
+                        continue
                     player_fc_dict[player_id].append(fc)
             # finally, set all players' friend codes.
             # we need to do this at the end because some players might have two registration entries

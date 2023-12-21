@@ -2,7 +2,7 @@ from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission, require_logged_in
 from api.data import handle
-from api.utils.responses import JSONResponse, bind_request_body
+from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
@@ -148,6 +148,28 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(MakeCaptainRequestData)
+@require_logged_in
+async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
+    tournament_id = request.path_params['id']
+    captain_player_id = request.state.user.player_id
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
+    await handle(command)
+    command = ChangeSquadCaptainCommand(tournament_id, body.squad_id, body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(UnregisterSquadRequestData)
+@require_logged_in
+async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
+    tournament_id = request.path_params['id']
+    captain_player_id = request.state.user.player_id
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
+    await handle(command)
+    command = UnregisterSquadCommand(tournament_id, body.squad_id)
+    await handle(command)
+    return JSONResponse({})
+
 async def view_squad(request: Request) -> JSONResponse:
     tournament_id = request.path_params['id']
     squad_id = request.path_params['squad_id']
@@ -155,15 +177,13 @@ async def view_squad(request: Request) -> JSONResponse:
     squad = await handle(command)
     return JSONResponse(squad)
 
-async def list_registrations(request: Request) -> JSONResponse:
+@bind_request_query(TournamentRegistrationFilter)
+async def list_registrations(request: Request, body: TournamentRegistrationFilter) -> JSONResponse:
     tournament_id = request.path_params['id']
-    eligible_only = False
-    if "eligibleOnly" in request.query_params:
-        eligible_only = True
     command = CheckIfSquadTournament(tournament_id)
     is_squad = await handle(command)
     if is_squad:
-        command = GetSquadRegistrationsCommand(tournament_id, eligible_only)
+        command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only)
     else:
         command = GetFFARegistrationsCommand(tournament_id)
     registrations = await handle(command)
@@ -200,6 +220,8 @@ routes = [
     Route('/api/tournaments/{id:int}/kickPlayer', remove_player_from_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/unregister', unregister_me, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceUnregister', staff_unregister, methods=['POST']),
+    Route('/api/tournaments/{id:int}/makeCaptain', change_squad_captain, methods=['POST']),
+    Route('/api/tournaments/{id:int}/unregisterSquad', unregister_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/squads/{squad_id:int}', view_squad),
     Route('/api/tournaments/{id:int}/registrations', list_registrations),
     Route('/api/tournaments/{id:int}/myRegistration', my_registration)

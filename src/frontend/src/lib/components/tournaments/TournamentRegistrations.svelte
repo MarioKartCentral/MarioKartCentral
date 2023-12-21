@@ -11,23 +11,43 @@
   let tournament_players: TournamentPlayer[];
   let registrations_loaded = false;
   let registration_count = 0;
+  let eligible_only = false;
 
   onMount(async () => {
-    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?`);
-    const body = await res.json();
-    if (tournament.is_squad) {
+    const res = await fetch(`/api/tournaments/${tournament.id}/registrations`);
+    if(res.status < 300) {
+      const body = await res.json();
+      if (tournament.is_squad) {
+        tournament_squads = body;
+        registration_count = tournament_squads.length;
+      } else {
+        tournament_players = body;
+        registration_count = tournament_players.length;
+      }
+      registrations_loaded = true;
+    }
+  });
+
+  async function filter_registrations() {
+    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}`);
+    if(res.status < 300) {
+      const body = await res.json();
       tournament_squads = body;
       registration_count = tournament_squads.length;
-    } else {
-      tournament_players = body;
-      registration_count = tournament_players.length;
     }
-    registrations_loaded = true;
-  });
+  }
 </script>
 
 <div>
   {#if registrations_loaded}
+    {#if tournament.is_squad}
+      <div>
+        <select bind:value={eligible_only} on:change={filter_registrations}>
+          <option value={false}>All Squads</option>
+          <option value={true}>Eligible Only</option>
+        </select>
+      </div>
+    {/if}
     {#if registration_count > 0}
       {#if tournament.is_squad}
         <TournamentSquadList {tournament} squads={tournament_squads} />

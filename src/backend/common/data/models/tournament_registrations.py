@@ -48,3 +48,8 @@ class TournamentPlayerDetails():
     country_code: str | None
     discord_id: str | None
     friend_codes: list[str]
+
+@dataclass
+class TournamentRegistrationFilter():
+    registered_only: bool = True
+    eligible_only: bool = False

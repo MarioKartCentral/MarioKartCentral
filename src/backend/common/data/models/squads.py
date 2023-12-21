@@ -85,3 +85,12 @@ class MyTournamentRegistrationDetails():
     tournament_id: int
     squads: list[TournamentSquadDetails]
     player: TournamentPlayerDetails | None
+
+@dataclass
+class MakeCaptainRequestData():
+    squad_id: int
+    player_id: int
+
+@dataclass
+class UnregisterSquadRequestData():
+    squad_id: int
