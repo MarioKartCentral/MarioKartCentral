@@ -64,6 +64,9 @@
       </select>
     </div>
     {#if registration_count > 0}
+      <div>
+        {registration_count} {tournament.is_squad ? "Squads" : "Players"}
+      </div>
       {#if tournament.is_squad}
         <TournamentSquadList {tournament} squads={tournament_squads} />
       {:else}
