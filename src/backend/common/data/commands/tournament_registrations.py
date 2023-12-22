@@ -241,6 +241,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
     tournament_id: int
     registered_only: bool
     eligible_only: bool
+    hosts_only: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
@@ -252,6 +253,8 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
             # get only squads which have the minimum number of players
             if self.eligible_only:
                 where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0)")
+            if self.hosts_only:
+                where_clauses.append("EXISTS (SELECT p.id FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.can_host = 1)")
             where_clause = " AND ".join(where_clauses)
             async with db.execute(f"""SELECT s.id, s.name, s.tag, s.color, s.timestamp, s.is_registered 
                                   FROM tournament_squads s

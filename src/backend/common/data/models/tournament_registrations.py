@@ -53,3 +53,4 @@ class TournamentPlayerDetails():
 class TournamentRegistrationFilter():
     registered_only: bool = True
     eligible_only: bool = False
+    hosts_only: bool = False

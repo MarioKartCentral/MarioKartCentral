@@ -11,7 +11,7 @@
   let tournament_players: TournamentPlayer[];
   let registrations_loaded = false;
   let registration_count = 0;
-  let eligible_only = false;
+  let setting = "any";
 
   onMount(async () => {
     const res = await fetch(`/api/tournaments/${tournament.id}/registrations`);
@@ -29,7 +29,15 @@
   });
 
   async function filter_registrations() {
-    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}`);
+    let eligible_only = false;
+    let hosts_only = false;
+    if(setting === "eligible" || setting === "hosts") {
+      eligible_only = true;
+    }
+    if(setting === "hosts") {
+      hosts_only = true
+    }
+    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}&hosts_only=${hosts_only}`);
     if(res.status < 300) {
       const body = await res.json();
       tournament_squads = body;
@@ -40,14 +48,15 @@
 
 <div>
   {#if registrations_loaded}
-    {#if tournament.is_squad}
-      <div>
-        <select bind:value={eligible_only} on:change={filter_registrations}>
-          <option value={false}>All Squads</option>
-          <option value={true}>Eligible Only</option>
-        </select>
-      </div>
-    {/if}
+    <div>
+      <select bind:value={setting} on:change={filter_registrations}>
+        <option value={"any"}>All {tournament.is_squad ? "Squads" : "Players"}</option>
+        {#if tournament.is_squad}
+          <option value={"eligible"}>Eligible Only</option>
+        {/if}
+        <option value={"hosts"}>Hosts Only</option>
+      </select>
+    </div>
     {#if registration_count > 0}
       {#if tournament.is_squad}
         <TournamentSquadList {tournament} squads={tournament_squads} />

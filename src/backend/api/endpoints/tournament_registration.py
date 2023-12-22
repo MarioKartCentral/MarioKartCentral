@@ -183,7 +183,7 @@ async def list_registrations(request: Request, body: TournamentRegistrationFilte
     command = CheckIfSquadTournament(tournament_id)
     is_squad = await handle(command)
     if is_squad:
-        command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only)
+        command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only, body.hosts_only)
     else:
         command = GetFFARegistrationsCommand(tournament_id)
     registrations = await handle(command)
