@@ -185,7 +185,7 @@ async def list_registrations(request: Request, body: TournamentRegistrationFilte
     if is_squad:
         command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only, body.hosts_only)
     else:
-        command = GetFFARegistrationsCommand(tournament_id)
+        command = GetFFARegistrationsCommand(tournament_id, body.hosts_only)
     registrations = await handle(command)
     return JSONResponse(registrations)
 

@@ -314,15 +314,21 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
 @dataclass
 class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
     tournament_id: int
+    hosts_only: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("""SELECT t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id,
+            where_clauses = ["t.tournament_id = ?"]
+            variable_parameters = [self.tournament_id]
+            if self.hosts_only:
+                where_clauses.append("t.can_host = 1")
+            where_clause = " AND ".join(where_clauses)
+            async with db.execute(f"""SELECT t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id,
                                     p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
-                                    WHERE t.tournament_id = ?""",
-                                    (self.tournament_id,)) as cursor:
+                                    WHERE {where_clause}""",
+                                    variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 players: list[TournamentPlayerDetails] = []
 
@@ -345,10 +351,10 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
                     fc_where_clause = "AND f.id = t.selected_fc_id"
             # gathering all the valid FCs for each player for this tournament
             fc_query = f"""SELECT player_id, fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id {fc_where_clause}
+                            SELECT t.id FROM tournament_players t WHERE {where_clause} AND t.player_id = f.player_id {fc_where_clause}
                         )
                         """
-            async with db.execute(fc_query, (game, self.tournament_id)) as cursor:
+            async with db.execute(fc_query, (game, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     player_id, fc = row

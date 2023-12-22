@@ -40,8 +40,14 @@
     const res = await fetch(`/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}&hosts_only=${hosts_only}`);
     if(res.status < 300) {
       const body = await res.json();
-      tournament_squads = body;
-      registration_count = tournament_squads.length;
+      console.log(body);
+      if (tournament.is_squad) {
+        tournament_squads = body;
+        registration_count = tournament_squads.length;
+      } else {
+        tournament_players = body;
+        registration_count = tournament_players.length;
+      }
     }
   }
 </script>
