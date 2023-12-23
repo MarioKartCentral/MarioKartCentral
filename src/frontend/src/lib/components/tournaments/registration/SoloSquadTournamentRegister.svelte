@@ -2,6 +2,7 @@
     import type { FriendCode } from "$lib/types/friend-code";
     import type { Tournament } from "$lib/types/tournament";
     import SoloTournamentFields from "./SoloTournamentFields.svelte";
+    import SquadTournamentFields from "./SquadTournamentFields.svelte";
 
     export let tournament: Tournament;
     export let friend_codes: FriendCode[];
@@ -40,7 +41,7 @@
         let mii_name = formData.get("mii_name");
         let can_host = formData.get("can_host");
         const payload = {
-            squad_color: squad_color,
+            squad_color: Number(squad_color),
             squad_name: squad_name,
             squad_tag: squad_tag,
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
@@ -65,24 +66,8 @@
 </script>
 
 <form method="POST" on:submit|preventDefault={tournament.is_squad ? registerSquad : registerSolo}>
-    {#if tournament.is_squad}
-        <div>
-            <label for="squad_color">Squad Color</label>
-            <input type="number" min=1 name="squad_color" required/>
-        </div>
-    {/if}
-    {#if tournament.squad_name_required}
-        <div>
-            <label for="squad_name">Squad Name</label>
-            <input name="squad_name" required/>
-        </div>
-    {/if}
-    {#if tournament.squad_tag_required}
-        <div>
-            <label for="squad_tag">Squad Tag</label>
-            <input name="squad_tag" maxlength={tournament.game === "mkt" ? 12 : 10} required/>
-        </div>
-    {/if}
+    <SquadTournamentFields {tournament}/>
     <SoloTournamentFields {tournament} {friend_codes}/>
+    
     <button type="submit">Register</button>
 </form>

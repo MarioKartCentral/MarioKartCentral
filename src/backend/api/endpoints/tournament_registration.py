@@ -48,11 +48,22 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     await handle(command)
     return JSONResponse({})
 
-# also used for unregistering a squad
 @bind_request_body(EditSquadRequestData)
+@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditMySquadRequestData)
+@require_logged_in
+async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONResponse:
+    tournament_id = request.path_params['id']
+    captain_player_id = request.state.user.player_id
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
+    await handle(command)
+    command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, True)
     await handle(command)
     return JSONResponse({})
 
@@ -95,6 +106,16 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     tournament_id = request.path_params['id']
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, body.player_id, body.mii_name, body.can_host,
         body.is_invite, body.is_checked_in, body.is_squad_captain, body.selected_fc_id, body.is_representative, True)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditMyRegistrationRequestData)
+@require_logged_in
+async def edit_my_registration(request: Request, body: EditMyRegistrationRequestData) -> JSONResponse:
+    tournament_id = request.path_params['id']
+    player_id = request.state.user.player_id
+    command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host, False, None, None, body.selected_fc_id,
+                                            None, False)
     await handle(command)
     return JSONResponse({})
 
@@ -209,11 +230,13 @@ routes = [
     Route('/api/tournaments/{id:int}/register', register_me, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceRegister', force_register_player, methods=['POST']),
     Route('/api/tournaments/{id:int}/editRegistration', edit_registration, methods=['POST']),
+    Route('/api/tournaments/{id:int}/editMyRegistration', edit_my_registration, methods=['POST']),
     Route('/api/tournaments/{id:int}/createSquad', create_my_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/registerTeam', register_my_team, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceRegisterTeam', force_register_team, methods=['POST']),
     Route('/api/tournaments/{id:int}/forceCreateSquad', force_create_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/editSquad', edit_squad, methods=['POST']),
+    Route('/api/tournaments/{id:int}/editMySquad', edit_my_squad, methods=['POST']),
     Route('/api/tournaments/{id:int}/invitePlayer', invite_player, methods=['POST']),
     Route('/api/tournaments/{id:int}/acceptInvite', accept_invite, methods=['POST']),
     Route('/api/tournaments/{id:int}/declineInvite', decline_invite, methods=['POST']),

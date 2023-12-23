@@ -7,12 +7,12 @@ class Squad:
     id: int
     name: str
     tag: str
-    color: str
+    color: int
     is_registered: bool
 
 @dataclass
 class CreateSquadRequestData:
-    squad_color: str
+    squad_color: int
     squad_name: str | None
     squad_tag: str | None
     mii_name: str | None
@@ -26,11 +26,14 @@ class ForceCreateSquadRequestData(CreateSquadRequestData):
     representative_ids: list[int]
 
 @dataclass
-class EditSquadRequestData:
+class EditMySquadRequestData:
     squad_id: int
     squad_name: str
     squad_tag: str
-    squad_color: str
+    squad_color: int
+
+@dataclass
+class EditSquadRequestData(EditMySquadRequestData):
     is_registered: bool
 
 @dataclass

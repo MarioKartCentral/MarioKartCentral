@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 @dataclass
 class RegisterTeamRequestData:
-    squad_color: str
+    squad_color: int
     squad_name: str
     squad_tag: str
     captain_player: int
@@ -25,15 +25,15 @@ class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     is_representative: bool
 
 @dataclass
-class EditPlayerRegistrationRequestData():
-    player_id: int
+class EditMyRegistrationRequestData(RegisterPlayerRequestData):
     squad_id: int | None
+
+@dataclass
+class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
+    player_id: int
     is_squad_captain: bool
     is_invite: bool
     is_checked_in: bool
-    can_host: bool
-    mii_name: str | None
-    selected_fc_id: int | None
     is_representative: bool
 
 @dataclass

@@ -117,7 +117,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     mii_name: str | None
     can_host: bool
     is_invite: bool
-    is_checked_in: bool
+    is_checked_in: bool | None
     is_squad_captain: bool | None
     selected_fc_id: int | None
     is_representative: bool | None
@@ -141,18 +141,23 @@ class EditPlayerRegistrationCommand(Command[None]):
                         raise Problem("Tournament should not have a Mii Name", status=400)
                     
             #check if registration exists
-            async with db.execute("SELECT id, is_invite, is_representative, is_squad_captain FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?",
+            async with db.execute("SELECT id, is_invite, is_representative, is_squad_captain, is_checked_in FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?",
                 (self.tournament_id, self.squad_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Registration not found", status=404)
-                registration_id, curr_is_invite, curr_is_rep, curr_squad_captain = row
+                registration_id, curr_is_invite, curr_is_rep, curr_squad_captain, curr_is_checked_in = row
+
+            # if we specify None on any of these fields, we don't want to change them
             is_representative = self.is_representative
             if self.is_representative is None:
                 is_representative = curr_is_rep
             is_squad_captain = self.is_squad_captain
             if is_squad_captain is None:
                 is_squad_captain = curr_squad_captain
+            is_checked_in = self.is_checked_in
+            if is_checked_in is None:
+                is_checked_in = curr_is_checked_in
 
             # check if squad exists and if we are using the squad's tag in our mii name
             if self.squad_id is not None:
@@ -191,7 +196,7 @@ class EditPlayerRegistrationCommand(Command[None]):
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND squad_id = ?",
                         (self.tournament_id, self.player_id, old_squad_id))
             await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, selected_fc_id = ?, is_representative = ? WHERE id = ?", (
-                self.mii_name, self.can_host, self.is_invite, self.is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, registration_id))
+                self.mii_name, self.can_host, self.is_invite, is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, registration_id))
             await db.commit()
 
 @save_to_command_log

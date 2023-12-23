@@ -11,7 +11,7 @@ from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetai
 class CreateSquadCommand(Command[None]):
     squad_name: str | None
     squad_tag: str | None
-    squad_color: str
+    squad_color: int
     creator_player_id: int # person who created the squad, may be different from the squad captain (ex. team tournaments where a team manager registers a squad they aren't in)
     captain_player_id: int # captain of the squad
     tournament_id: int
@@ -145,7 +145,7 @@ class EditSquadCommand(Command[None]):
     squad_id: int
     squad_name: str
     squad_tag: str
-    squad_color: str
+    squad_color: int
     is_registered: int
 
     async def handle(self, db_wrapper, s3_wrapper):
