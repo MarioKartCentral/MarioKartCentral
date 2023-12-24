@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Iterable
-from common.auth import permissions
+from common.auth import team_permissions
 from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails, TournamentPlayerDetails
 
@@ -71,15 +71,15 @@ class CreateSquadCommand(Command[None]):
             # make sure creating player has permission for all rosters they are registering
             if len(self.roster_ids) > 0 and not self.admin:
                 async with db.execute(f"""
-                    SELECT tr.id FROM roles r
+                    SELECT tr.id FROM team_roles r
                     JOIN user_team_roles ur ON ur.role_id = r.id
                     JOIN team_rosters tr ON tr.team_id = ur.team_id
                     JOIN users u ON ur.user_id = u.id
                     JOIN players pl ON u.player_id = pl.id
-                    JOIN role_permissions rp ON rp.role_id = r.id
-                    JOIN permissions p ON rp.permission_id = p.id
+                    JOIN team_role_permissions rp ON rp.role_id = r.id
+                    JOIN team_permissions p ON rp.permission_id = p.id
                     WHERE pl.id = ? AND p.name = ? AND tr.id IN ({','.join([str(i) for i in self.roster_ids])})""",
-                    (self.creator_player_id, permissions.REGISTER_TEAM_TOURNAMENT)) as cursor:
+                    (self.creator_player_id, team_permissions.REGISTER_TOURNAMENT)) as cursor:
                     # get all of the roster IDs in our list that the player has permissions for
                     rows = await cursor.fetchall()
                     roster_permissions = set([row[0] for row in rows])

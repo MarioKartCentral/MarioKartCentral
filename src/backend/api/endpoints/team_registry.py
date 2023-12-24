@@ -277,6 +277,14 @@ async def deny_roster(request: Request) -> JSONResponse:
     await handle(command)
     return JSONResponse({})
 
+@bind_request_query(RegisterableRostersRequestData)
+@require_logged_in
+async def list_registerable_rosters(request: Request, body: RegisterableRostersRequestData) -> JSONResponse:
+    user = request.state.user.id
+    command = GetRegisterableRostersCommand(user, body.game, body.mode)
+    rosters = await handle(command)
+    return JSONResponse(rosters)
+
 #todo: endpoints for giving team roles
 
 routes: list[Route] = [
@@ -316,5 +324,6 @@ routes: list[Route] = [
     Route('/api/registry/teams/unapprovedTeams', list_unapproved_teams),
     Route('/api/registry/teams/unapprovedRosters', list_unapproved_rosters),
     Route('/api/registry/teams/{id:int}/approveRoster/{rosterId:int}', approve_roster, methods=['POST']),
-    Route('/api/registry/teams/{id:int}/denyRoster/{rosterId:int}', deny_roster, methods=['POST'])
+    Route('/api/registry/teams/{id:int}/denyRoster/{rosterId:int}', deny_roster, methods=['POST']),
+    Route('/api/registry/teams/getRegisterable', list_registerable_rosters)
 ]
