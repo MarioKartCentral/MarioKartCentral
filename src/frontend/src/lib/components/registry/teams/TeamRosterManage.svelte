@@ -5,12 +5,14 @@
   import { locale } from '$i18n/i18n-svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import type { RosterPlayer } from '$lib/types/roster-player';
+    import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+    import type { PlayerInfo } from '$lib/types/player-info';
 
   export let roster: TeamRoster;
   let kick_dialog: Dialog;
   let edit_dialog: Dialog;
   let curr_player: RosterPlayer;
-  let invite_player_id = 0;
+  let invite_player: PlayerInfo | null;
 
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
@@ -214,9 +216,9 @@
     <br />
     <b>Invite Player</b>
     <br />
-    <input type="number" placeholder="Player ID" min="1" bind:value={invite_player_id} />
-    {#if invite_player_id}
-      <button on:click={() => invitePlayer(invite_player_id)}>Invite Player</button>
+    <PlayerSearch bind:player={invite_player} game={roster.game}/>
+    {#if invite_player}
+      <button on:click={() => invitePlayer(Number(invite_player?.id))}>Invite Player</button>
     {/if}
   {:else}
     Roster is pending approval from MKCentral staff.
