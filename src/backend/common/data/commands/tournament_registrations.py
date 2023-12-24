@@ -69,7 +69,7 @@ class RegisterPlayerCommand(Command[None]):
             if bool(team_members_only):
                 async with db.execute("""SELECT m.id FROM team_members m
                     JOIN team_squad_registrations r ON m.roster_id = r.roster_id
-                    WHERE m.player_id = ? AND m.leave_date = ? AND r.squad_id IS ?""",
+                    WHERE m.player_id = ? AND m.leave_date IS ? AND r.squad_id IS ?""",
                     (self.player_id, None, self.squad_id)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:

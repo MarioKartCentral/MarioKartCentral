@@ -301,5 +301,6 @@ class ManagerEditRosterRequestData():
 
 @dataclass
 class RegisterableRostersRequestData():
+    tournament_id: int
     game: Game
     mode: GameMode

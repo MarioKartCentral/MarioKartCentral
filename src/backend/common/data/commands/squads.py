@@ -56,6 +56,7 @@ class CreateSquadCommand(Command[None]):
                     raise Problem('Teams are not allowed for this tournament', status=400)
                 if bool(teams_only) and len(self.roster_ids) == 0:
                     raise Problem('Must specify at least one team roster ID for this tournament', status=400)
+                # add 1 to the number of representative ids because the captain counts as a rep
                 if min_representatives and len(self.representative_ids) + 1 < min_representatives:
                     raise Problem(f'Must have at least {min_representatives} representatives for this tournament', status=400)
                 if self.squad_tag is not None and self.mii_name is not None:
@@ -207,6 +208,7 @@ class UnregisterSquadCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             await db.execute("DELETE FROM tournament_players WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
+            await db.execute("DELETE FROM team_squad_registrations WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
             await db.execute("UPDATE tournament_squads SET is_registered = 0 WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
             await db.commit()
 

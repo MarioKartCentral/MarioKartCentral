@@ -281,7 +281,7 @@ async def deny_roster(request: Request) -> JSONResponse:
 @require_logged_in
 async def list_registerable_rosters(request: Request, body: RegisterableRostersRequestData) -> JSONResponse:
     user = request.state.user.id
-    command = GetRegisterableRostersCommand(user, body.game, body.mode)
+    command = GetRegisterableRostersCommand(user, body.tournament_id, body.game, body.mode)
     rosters = await handle(command)
     return JSONResponse(rosters)
 

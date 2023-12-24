@@ -9,6 +9,7 @@
     import { onMount } from "svelte";
     import type { MyTournamentRegistration } from "$lib/types/tournaments/my-tournament-registration";
     import MyRegistration from "./MyRegistration.svelte";
+    import TeamTournamentRegister from "./TeamTournamentRegister.svelte";
 
     export let tournament: Tournament;
 
@@ -54,6 +55,9 @@
     {#if registration}
         {#if user_info.player}
             <MyRegistration {registration} {tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+            {#if tournament.teams_allowed}
+                <TeamTournamentRegister {tournament} player={user_info.player}/>
+            {/if}
         {/if}
         {#if !registration.player}
             {#if !check_registrations_open()}
@@ -65,7 +69,9 @@
                     </div>
                     
                     {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-                        <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+                        {#if !tournament.teams_only}
+                            <SoloSquadTournamentRegister tournament={tournament} friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}/>
+                        {/if}
                     {:else}
                         <div>Please add an FC for {tournament.game} to register for this tournament.</div>
                     {/if}

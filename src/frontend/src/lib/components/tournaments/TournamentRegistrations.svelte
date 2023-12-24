@@ -60,7 +60,10 @@
         {#if tournament.is_squad}
           <option value={"eligible"}>Eligible Only</option>
         {/if}
-        <option value={"hosts"}>Hosts Only</option>
+        {#if tournament.host_status_required}
+          <option value={"hosts"}>Hosts Only</option>
+        {/if}
+        
       </select>
     </div>
     {#if registration_count > 0}

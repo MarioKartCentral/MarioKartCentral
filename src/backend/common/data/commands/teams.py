@@ -1025,8 +1025,10 @@ class ListRostersCommand(Command[list[TeamRoster]]):
 @dataclass
 class GetRegisterableRostersCommand(Command[None]):
     user_id: int
+    tournament_id: int
     game: Game
     mode: GameMode
+    
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -1039,8 +1041,13 @@ class GetRegisterableRostersCommand(Command[None]):
                     JOIN team_role_permissions rp ON rp.role_id = r.id
                     JOIN team_permissions p ON rp.permission_id = p.id
                     WHERE u.id = ? AND p.name = ? AND tr.game = ? AND tr.mode = ?
-                        AND tr.approval_status = ? AND tr.is_active = ?"""
-            variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True)
+                        AND tr.approval_status = ? AND tr.is_active = ?
+                        AND tr.id NOT IN (
+                            SELECT roster_id
+                            FROM team_squad_registrations
+                            WHERE tournament_id = ?
+                        )"""
+            variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id)
             rosters: list[TeamRoster] = []
             roster_dict = {}
             async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
