@@ -378,7 +378,8 @@
     <!-- If registrations are open and our squad is not full and we are the squad captain -->
     {#if (!tournament.max_squad_size || squad.players.length < tournament.max_squad_size)}
         <div>Invite players</div>
-        <PlayerSearch bind:player={invite_player} game={tournament.game}/>
+        <PlayerSearch bind:player={invite_player} game={tournament.game}
+        squad_id={tournament.team_members_only ? registration.player?.squad_id : null}/>
         {#if invite_player}
             <div>
                 <button on:click={() => invitePlayer(invite_player)}>Invite</button>

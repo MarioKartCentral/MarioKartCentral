@@ -6,6 +6,7 @@
 
     export let player: PlayerInfo | null = null;
     export let game: string | null = null;
+    export let squad_id: number | null = null;
 
     let query = '';
     let results: PlayerInfo[] = [];
@@ -24,7 +25,8 @@
     async function get_results() {
         const name_var = query ? `&name_or_fc=${query}` : ``;
         const game_var = game ? `&game=${game}`: ``;
-        const url = `/api/registry/players?detailed=true${name_var}${game_var}`;
+        const squad_var = squad_id ? `&squad_id=${squad_id}`: ``;
+        const url = `/api/registry/players?detailed=true${name_var}${game_var}${squad_var}`;
         console.log(url);
         const res = await fetch(url);
         if (res.status === 200) {

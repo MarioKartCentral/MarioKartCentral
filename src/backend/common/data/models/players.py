@@ -85,6 +85,7 @@ class PlayerFilter:
     discord_id: str | None = None
     detailed: bool | None = None
     page: int | None = None
+    squad_id: int | None = None
 
 @dataclass
 class PlayerBanRequestData:

@@ -174,6 +174,16 @@ class ListPlayersCommand(Command[PlayerList]):
             append_equal_filter(filter.is_banned, "is_banned")
             append_equal_filter(filter.discord_id, "discord_id")
 
+            # make sure that player is in a team roster which is linked to the passed-in squad ID
+            if filter.squad_id is not None:
+                where_clauses.append(f"""p.id IN (
+                                     SELECT m.player_id FROM team_members m
+                                     JOIN team_squad_registrations r ON r.roster_id = m.roster_id
+                                     WHERE r.squad_id IS ? AND m.leave_date IS ?
+                )""")
+                variable_parameters.append(filter.squad_id)
+                variable_parameters.append(None)
+
             if filter.friend_code or filter.name_or_fc or filter.game:
 
                 if filter.friend_code is not None:
@@ -207,6 +217,7 @@ class ListPlayersCommand(Command[PlayerList]):
             players: List[PlayerAndFriendCodes] = []
             friend_codes = {}
 
+            print(players_query)
             async with db.execute(players_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
