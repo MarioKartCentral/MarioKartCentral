@@ -5,8 +5,8 @@
   import { locale } from '$i18n/i18n-svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import type { RosterPlayer } from '$lib/types/roster-player';
-    import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
-    import type { PlayerInfo } from '$lib/types/player-info';
+  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import type { PlayerInfo } from '$lib/types/player-info';
 
   export let roster: TeamRoster;
   let kick_dialog: Dialog;
@@ -216,7 +216,7 @@
     <br />
     <b>Invite Player</b>
     <br />
-    <PlayerSearch bind:player={invite_player} game={roster.game}/>
+    <PlayerSearch bind:player={invite_player} game={roster.game} />
     {#if invite_player}
       <button on:click={() => invitePlayer(Number(invite_player?.id))}>Invite Player</button>
     {/if}

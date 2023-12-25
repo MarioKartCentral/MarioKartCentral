@@ -11,13 +11,13 @@
   let totalPages = 0;
   let currentPage = 1;
   let oldPage = 1;
-  let filters: PlayerFilter = { 
+  let filters: PlayerFilter = {
     game: null,
     name: null,
     country: null,
     fc: null,
-    name_or_fc: null
-  }
+    name_or_fc: null,
+  };
 
   async function fetchData() {
     players = [];
@@ -37,13 +37,13 @@
     if (res.status === 200) {
       const body = await res.json();
       console.log(body);
-      const body_players = body["player_list"];
+      const body_players = body['player_list'];
       for (let t of body_players) {
         players.push(t);
       }
       players = players;
-      totalPlayers = body["player_count"];
-      totalPages = body["page_count"];
+      totalPlayers = body['player_count'];
+      totalPages = body['page_count'];
     }
   }
 

@@ -17,7 +17,7 @@
     <option value={country_code}>{country_code}</option>
   {/each}
 </select>
-<input class="search" bind:value={filters.name_or_fc} type="text" placeholder="Search by Name or Friend Code..."/>
+<input class="search" bind:value={filters.name_or_fc} type="text" placeholder="Search by Name or Friend Code..." />
 
 <style>
   .search {

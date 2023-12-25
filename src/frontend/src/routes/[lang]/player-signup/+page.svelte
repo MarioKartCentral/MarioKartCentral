@@ -21,7 +21,7 @@
       if (fc === '') {
         continue;
       }
-      friend_codes.push({id: 0, fc: fc, game: games[i], is_primary: true, description: null, is_verified: false });
+      friend_codes.push({ id: 0, fc: fc, game: games[i], is_primary: true, description: null, is_verified: false });
     }
 
     const payload = {
@@ -58,7 +58,7 @@
   <form method="post" on:submit|preventDefault={register}>
     <div>
       <label for="name">Name</label>
-      <input name="name" type="name" minlength=2/>
+      <input name="name" type="name" minlength="2" />
     </div>
     <div>
       <label for="country_code">Country</label>
