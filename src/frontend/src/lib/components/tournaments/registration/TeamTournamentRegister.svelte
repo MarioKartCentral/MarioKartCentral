@@ -17,7 +17,7 @@
   let selected_rep: RosterPlayer | null = null;
   let representatives: RosterPlayer[] = [];
 
-  let squad_color: number = 1;
+  let squad_color = 1;
 
   $: unselected_rosters = rosters.filter((r) => !selected_rosters.includes(r));
   $: checkCaptain(selected_rosters);

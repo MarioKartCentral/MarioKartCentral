@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import type { TournamentSquad } from '$lib/types/tournament-squad';
-  import { locale } from '$i18n/i18n-svelte';
   import TournamentPlayerList from '$lib/components/tournaments/TournamentPlayerList.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
@@ -37,11 +36,6 @@
     curr_invite = squad;
     accept_dialog.open();
   }
-
-  const options: Intl.DateTimeFormatOptions = {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  };
 
   async function acceptInvite(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     if (!curr_invite) {

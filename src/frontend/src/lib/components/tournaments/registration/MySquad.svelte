@@ -327,11 +327,11 @@
         <td>
           {#if check_registrations_open()}
             {#if registration.player?.player_id === player.player_id}
-                <button on:click={edit_reg_dialog.open}>Edit</button>
-                <button on:click={unregister}>Unregister</button>
+              <button on:click={edit_reg_dialog.open}>Edit</button>
+              <button on:click={unregister}>Unregister</button>
             {:else if registration.player?.is_squad_captain}
-                <button on:click={() => kickPlayer(player.player_id)}>Kick</button>
-                <button on:click={() => makeCaptain(player.player_id)}>Captain</button>
+              <button on:click={() => kickPlayer(player.player_id)}>Kick</button>
+              <button on:click={() => makeCaptain(player.player_id)}>Captain</button>
             {/if}
           {/if}
         </td>
@@ -371,7 +371,7 @@
 
           <td>
             {#if check_registrations_open()}
-                <button on:click={() => cancelInvite(player.player_id)}>Cancel</button>
+              <button on:click={() => cancelInvite(player.player_id)}>Cancel</button>
             {/if}
           </td>
         </tr>

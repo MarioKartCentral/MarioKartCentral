@@ -2,7 +2,6 @@
   import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
   import type { Tournament } from '$lib/types/tournament';
   import Table from '$lib/components/common/Table.svelte';
-  import type { PlayerInfo } from '$lib/types/player-info';
   import TournamentInviteList from './TournamentInviteList.svelte';
   import type { FriendCode } from '$lib/types/friend-code';
   import MySquad from './MySquad.svelte';
@@ -13,7 +12,6 @@
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
 
-  let invite_player: PlayerInfo | null = null;
   let edit_reg_dialog: Dialog;
 
   function getRegSquad() {

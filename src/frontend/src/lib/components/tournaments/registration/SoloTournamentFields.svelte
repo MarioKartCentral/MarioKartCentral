@@ -6,7 +6,7 @@
   export let friend_codes: FriendCode[];
   export let selected_fc_id: number | null = null;
   export let mii_name: string | null = null;
-  export let can_host: boolean = false;
+  export let can_host = false;
 </script>
 
 {#if tournament.require_single_fc}
