@@ -423,7 +423,7 @@
     <br />
     <div>
       <button type="submit">Edit Squad</button>
-      <button type="button" on:click={edit_reg_dialog.close}>Cancel</button>
+      <button type="button" on:click={edit_squad_dialog.close}>Cancel</button>
     </div>
   </form>
 </Dialog>
