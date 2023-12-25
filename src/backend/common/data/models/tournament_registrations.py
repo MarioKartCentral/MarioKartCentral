@@ -25,7 +25,10 @@ class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     is_representative: bool
 
 @dataclass
-class EditMyRegistrationRequestData(RegisterPlayerRequestData):
+class EditMyRegistrationRequestData():
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
     squad_id: int | None
 
 @dataclass
