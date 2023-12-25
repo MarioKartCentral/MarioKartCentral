@@ -313,7 +313,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
             # registrations have all their friend codes attached.
             for squad in squads.values():
                 for player in squad.players:
-                    player.friend_codes = player_fc_dict[player_id]
+                    player.friend_codes = player_fc_dict[player.player_id]
         return list(squads.values())
     
 @dataclass
