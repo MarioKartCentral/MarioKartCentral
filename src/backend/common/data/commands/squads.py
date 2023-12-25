@@ -114,13 +114,14 @@ class CreateSquadCommand(Command[None]):
                 team_squad_rows = [(roster, squad_id, self.tournament_id) for roster in self.roster_ids]
                 await db.executemany("INSERT INTO team_squad_registrations(roster_id, squad_id, tournament_id) VALUES (?, ?, ?)", team_squad_rows)
                 # find all players not already registered for a different (registered) squad which we can register for the tournament
-                async with db.execute(f"""
+                players_query = f"""
                     SELECT m.player_id FROM team_members m
                     WHERE m.roster_id IN ({','.join([str(i) for i in self.roster_ids])})
                     AND m.player_id NOT IN (SELECT t.player_id FROM tournament_players t
-                        WHERE t.squad_id IN (SELECT s.id FROM tournament_squads s WHERE s.is_registered = 1)
+                        WHERE t.squad_id IN (SELECT s.id FROM tournament_squads s WHERE s.is_registered = 1 AND s.tournament_id = ?)
                     )
-                    """) as cursor:
+                    """
+                async with db.execute(players_query, (self.tournament_id,)) as cursor:
                     rows = await cursor.fetchall()
                     valid_players = set([row[0] for row in rows])
                 queries_parameters: list[Iterable[Any]] = []
