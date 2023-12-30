@@ -2,6 +2,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
+    import { country_codes } from '$lib/stores/country_codes';
 
   export let players: PlayerInfo[];
   export let currentPage: number;
@@ -18,7 +19,7 @@
   <col class="mk8" />
   <thead>
     <tr>
-      <th>Country Code</th>
+      <th>Country</th>
       <th>Name</th>
       <th>Switch FC</th>
       <th>MKW FC</th>
@@ -30,7 +31,7 @@
   <tbody>
     {#each players as player, i}
       <tr class="row-{i % 2}">
-        <td>{player.country_code}</td>
+        <td><img src={"/src/lib/assets/flags/" + player.country_code?.toUpperCase() +".png"} alt={player.country_code}/></td>
         <td>
           <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
         </td>

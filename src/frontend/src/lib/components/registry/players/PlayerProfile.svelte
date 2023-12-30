@@ -6,6 +6,7 @@
   import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
 
@@ -39,7 +40,8 @@
       </div>
       <div>
         <b>Country:</b>
-        {player.country_code}
+        <img src={"/src/lib/assets/flags/" + player.country_code?.toUpperCase() +".png"} alt={player.country_code}/>
+        {$LL.COUNTRY[player.country_code]()}
       </div>
       {#if player.friend_codes.length > 0}
         <div>

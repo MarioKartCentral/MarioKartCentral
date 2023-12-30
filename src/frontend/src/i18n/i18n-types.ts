@@ -52,6 +52,254 @@ type RootTranslation = {
 		 */
 		DISCORD: string
 	}
+	COUNTRY: {
+		AF: string,
+		AX: string,
+		AL: string,
+		DZ: string,
+		AS: string,
+		AD: string,
+		AO: string,
+		AI: string,
+		AQ: string,
+		AG: string,
+		AR: string,
+		AM: string,
+		AW: string,
+		AU: string,
+		AT: string,
+		AZ: string,
+		BS: string,
+		BH: string,
+		BD: string,
+		BB: string,
+		BY: string,
+		BE: string,
+		BZ: string,
+		BJ: string,
+		BM: string,
+		BT: string,
+		BO: string,
+		BA: string,
+		BW: string,
+		BV: string,
+		BR: string,
+		IO: string,
+		BN: string,
+		BG: string,
+		BF: string,
+		BI: string,
+		KH: string,
+		CM: string,
+		CA: string,
+		CV: string,
+		KY: string,
+		CF: string,
+		TD: string,
+		CL: string,
+		CN: string,
+		CX: string,
+		CC: string,
+		CO: string,
+		KM: string,
+		CG: string,
+		CD: string,
+		CK: string,
+		CR: string,
+		CI: string,
+		HR: string,
+		CU: string,
+		CY: string,
+		CZ: string,
+		DK: string,
+		DJ: string,
+		DM: string,
+		DO: string,
+		EC: string,
+		EG: string,
+		SV: string,
+		GQ: string,
+		ER: string,
+		EE: string,
+		ET: string,
+		FK: string,
+		FO: string,
+		FJ: string,
+		FI: string,
+		FR: string,
+		GF: string,
+		PF: string,
+		TF: string,
+		GA: string,
+		GM: string,
+		GE: string,
+		DE: string,
+		GH: string,
+		GI: string,
+		GR: string,
+		GL: string,
+		GD: string,
+		GP: string,
+		GU: string,
+		GT: string,
+		GG: string,
+		GN: string,
+		GW: string,
+		GY: string,
+		HT: string,
+		HM: string,
+		VA: string,
+		HN: string,
+		HK: string,
+		HU: string,
+		IS: string,
+		IN: string,
+		ID: string,
+		IR: string,
+		IQ: string,
+		IE: string,
+		IM: string,
+		IL: string,
+		IT: string,
+		JM: string,
+		JP: string,
+		JE: string,
+		JO: string,
+		KZ: string,
+		KE: string,
+		KI: string,
+		KR: string,
+		KP: string,
+		KW: string,
+		KG: string,
+		LA: string,
+		LV: string,
+		LB: string,
+		LS: string,
+		LR: string,
+		LY: string,
+		LI: string,
+		LT: string,
+		LU: string,
+		MO: string,
+		MK: string,
+		MG: string,
+		MW: string,
+		MY: string,
+		MV: string,
+		ML: string,
+		MT: string,
+		MH: string,
+		MQ: string,
+		MR: string,
+		MU: string,
+		YT: string,
+		MX: string,
+		FM: string,
+		MD: string,
+		MC: string,
+		MN: string,
+		ME: string,
+		MS: string,
+		MA: string,
+		MZ: string,
+		MM: string,
+		NA: string,
+		NR: string,
+		NP: string,
+		NL: string,
+		AN: string,
+		NC: string,
+		NZ: string,
+		NI: string,
+		NE: string,
+		NG: string,
+		NU: string,
+		NF: string,
+		MP: string,
+		NO: string,
+		OM: string,
+		PK: string,
+		PW: string,
+		PS: string,
+		PA: string,
+		PG: string,
+		PY: string,
+		PE: string,
+		PH: string,
+		PN: string,
+		PL: string,
+		PT: string,
+		PR: string,
+		QA: string,
+		RE: string,
+		RO: string,
+		RU: string,
+		RW: string,
+		BL: string,
+		SH: string,
+		KN: string,
+		LC: string,
+		MF: string,
+		PM: string,
+		VC: string,
+		WS: string,
+		SM: string,
+		ST: string,
+		SA: string,
+		SN: string,
+		RS: string,
+		SC: string,
+		SL: string,
+		SG: string,
+		SK: string,
+		SI: string,
+		SB: string,
+		SO: string,
+		ZA: string,
+		GS: string,
+		ES: string,
+		LK: string,
+		SD: string,
+		SR: string,
+		SJ: string,
+		SZ: string,
+		SE: string,
+		CH: string,
+		SY: string,
+		TW: string,
+		TJ: string,
+		TZ: string,
+		TH: string,
+		TL: string,
+		TG: string,
+		TK: string,
+		TO: string,
+		TT: string,
+		TN: string,
+		TR: string,
+		TM: string,
+		TC: string,
+		TV: string,
+		UG: string,
+		UA: string,
+		AE: string,
+		GB: string,
+		US: string,
+		UM: string,
+		UY: string,
+		UZ: string,
+		VU: string,
+		VE: string,
+		VN: string,
+		VG: string,
+		VI: string,
+		WF: string,
+		EH: string,
+		YE: string,
+		ZM: string,
+		ZW: string
+	  }
 }
 
 export type TranslationFunctions = {
@@ -89,6 +337,254 @@ export type TranslationFunctions = {
 		 */
 		DISCORD: () => LocalizedString
 	}
+	COUNTRY: {
+		AF: () => LocalizedString
+		AX: () => LocalizedString
+		AL: () => LocalizedString
+		DZ: () => LocalizedString
+		AS: () => LocalizedString
+		AD: () => LocalizedString
+		AO: () => LocalizedString
+		AI: () => LocalizedString
+		AQ: () => LocalizedString
+		AG: () => LocalizedString
+		AR: () => LocalizedString
+		AM: () => LocalizedString
+		AW: () => LocalizedString
+		AU: () => LocalizedString
+		AT: () => LocalizedString
+		AZ: () => LocalizedString
+		BS: () => LocalizedString
+		BH: () => LocalizedString
+		BD: () => LocalizedString
+		BB: () => LocalizedString
+		BY: () => LocalizedString
+		BE: () => LocalizedString
+		BZ: () => LocalizedString
+		BJ: () => LocalizedString
+		BM: () => LocalizedString
+		BT: () => LocalizedString
+		BO: () => LocalizedString
+		BA: () => LocalizedString
+		BW: () => LocalizedString
+		BV: () => LocalizedString
+		BR: () => LocalizedString
+		IO: () => LocalizedString
+		BN: () => LocalizedString
+		BG: () => LocalizedString
+		BF: () => LocalizedString
+		BI: () => LocalizedString
+		KH: () => LocalizedString
+		CM: () => LocalizedString
+		CA: () => LocalizedString
+		CV: () => LocalizedString
+		KY: () => LocalizedString
+		CF: () => LocalizedString
+		TD: () => LocalizedString
+		CL: () => LocalizedString
+		CN: () => LocalizedString
+		CX: () => LocalizedString
+		CC: () => LocalizedString
+		CO: () => LocalizedString
+		KM: () => LocalizedString
+		CG: () => LocalizedString
+		CD: () => LocalizedString
+		CK: () => LocalizedString
+		CR: () => LocalizedString
+		CI: () => LocalizedString
+		HR: () => LocalizedString
+		CU: () => LocalizedString
+		CY: () => LocalizedString
+		CZ: () => LocalizedString
+		DK: () => LocalizedString
+		DJ: () => LocalizedString
+		DM: () => LocalizedString
+		DO: () => LocalizedString
+		EC: () => LocalizedString
+		EG: () => LocalizedString
+		SV: () => LocalizedString
+		GQ: () => LocalizedString
+		ER: () => LocalizedString
+		EE: () => LocalizedString
+		ET: () => LocalizedString
+		FK: () => LocalizedString
+		FO: () => LocalizedString
+		FJ: () => LocalizedString
+		FI: () => LocalizedString
+		FR: () => LocalizedString
+		GF: () => LocalizedString
+		PF: () => LocalizedString
+		TF: () => LocalizedString
+		GA: () => LocalizedString
+		GM: () => LocalizedString
+		GE: () => LocalizedString
+		DE: () => LocalizedString
+		GH: () => LocalizedString
+		GI: () => LocalizedString
+		GR: () => LocalizedString
+		GL: () => LocalizedString
+		GD: () => LocalizedString
+		GP: () => LocalizedString
+		GU: () => LocalizedString
+		GT: () => LocalizedString
+		GG: () => LocalizedString
+		GN: () => LocalizedString
+		GW: () => LocalizedString
+		GY: () => LocalizedString
+		HT: () => LocalizedString
+		HM: () => LocalizedString
+		VA: () => LocalizedString
+		HN: () => LocalizedString
+		HK: () => LocalizedString
+		HU: () => LocalizedString
+		IS: () => LocalizedString
+		IN: () => LocalizedString
+		ID: () => LocalizedString
+		IR: () => LocalizedString
+		IQ: () => LocalizedString
+		IE: () => LocalizedString
+		IM: () => LocalizedString
+		IL: () => LocalizedString
+		IT: () => LocalizedString
+		JM: () => LocalizedString
+		JP: () => LocalizedString
+		JE: () => LocalizedString
+		JO: () => LocalizedString
+		KZ: () => LocalizedString
+		KE: () => LocalizedString
+		KI: () => LocalizedString
+		KR: () => LocalizedString
+		KP: () => LocalizedString
+		KW: () => LocalizedString
+		KG: () => LocalizedString
+		LA: () => LocalizedString
+		LV: () => LocalizedString
+		LB: () => LocalizedString
+		LS: () => LocalizedString
+		LR: () => LocalizedString
+		LY: () => LocalizedString
+		LI: () => LocalizedString
+		LT: () => LocalizedString
+		LU: () => LocalizedString
+		MO: () => LocalizedString
+		MK: () => LocalizedString
+		MG: () => LocalizedString
+		MW: () => LocalizedString
+		MY: () => LocalizedString
+		MV: () => LocalizedString
+		ML: () => LocalizedString
+		MT: () => LocalizedString
+		MH: () => LocalizedString
+		MQ: () => LocalizedString
+		MR: () => LocalizedString
+		MU: () => LocalizedString
+		YT: () => LocalizedString
+		MX: () => LocalizedString
+		FM: () => LocalizedString
+		MD: () => LocalizedString
+		MC: () => LocalizedString
+		MN: () => LocalizedString
+		ME: () => LocalizedString
+		MS: () => LocalizedString
+		MA: () => LocalizedString
+		MZ: () => LocalizedString
+		MM: () => LocalizedString
+		NA: () => LocalizedString
+		NR: () => LocalizedString
+		NP: () => LocalizedString
+		NL: () => LocalizedString
+		AN: () => LocalizedString
+		NC: () => LocalizedString
+		NZ: () => LocalizedString
+		NI: () => LocalizedString
+		NE: () => LocalizedString
+		NG: () => LocalizedString
+		NU: () => LocalizedString
+		NF: () => LocalizedString
+		MP: () => LocalizedString
+		NO: () => LocalizedString
+		OM: () => LocalizedString
+		PK: () => LocalizedString
+		PW: () => LocalizedString
+		PS: () => LocalizedString
+		PA: () => LocalizedString
+		PG: () => LocalizedString
+		PY: () => LocalizedString
+		PE: () => LocalizedString
+		PH: () => LocalizedString
+		PN: () => LocalizedString
+		PL: () => LocalizedString
+		PT: () => LocalizedString
+		PR: () => LocalizedString
+		QA: () => LocalizedString
+		RE: () => LocalizedString
+		RO: () => LocalizedString
+		RU: () => LocalizedString
+		RW: () => LocalizedString
+		BL: () => LocalizedString
+		SH: () => LocalizedString
+		KN: () => LocalizedString
+		LC: () => LocalizedString
+		MF: () => LocalizedString
+		PM: () => LocalizedString
+		VC: () => LocalizedString
+		WS: () => LocalizedString
+		SM: () => LocalizedString
+		ST: () => LocalizedString
+		SA: () => LocalizedString
+		SN: () => LocalizedString
+		RS: () => LocalizedString
+		SC: () => LocalizedString
+		SL: () => LocalizedString
+		SG: () => LocalizedString
+		SK: () => LocalizedString
+		SI: () => LocalizedString
+		SB: () => LocalizedString
+		SO: () => LocalizedString
+		ZA: () => LocalizedString
+		GS: () => LocalizedString
+		ES: () => LocalizedString
+		LK: () => LocalizedString
+		SD: () => LocalizedString
+		SR: () => LocalizedString
+		SJ: () => LocalizedString
+		SZ: () => LocalizedString
+		SE: () => LocalizedString
+		CH: () => LocalizedString
+		SY: () => LocalizedString
+		TW: () => LocalizedString
+		TJ: () => LocalizedString
+		TZ: () => LocalizedString
+		TH: () => LocalizedString
+		TL: () => LocalizedString
+		TG: () => LocalizedString
+		TK: () => LocalizedString
+		TO: () => LocalizedString
+		TT: () => LocalizedString
+		TN: () => LocalizedString
+		TR: () => LocalizedString
+		TM: () => LocalizedString
+		TC: () => LocalizedString
+		TV: () => LocalizedString
+		UG: () => LocalizedString
+		UA: () => LocalizedString
+		AE: () => LocalizedString
+		GB: () => LocalizedString
+		US: () => LocalizedString
+		UM: () => LocalizedString
+		UY: () => LocalizedString
+		UZ: () => LocalizedString
+		VU: () => LocalizedString
+		VE: () => LocalizedString
+		VN: () => LocalizedString
+		VG: () => LocalizedString
+		VI: () => LocalizedString
+		WF: () => LocalizedString
+		EH: () => LocalizedString
+		YE: () => LocalizedString
+		ZM: () => LocalizedString
+		ZW: () => LocalizedString
+	  }
 }
 
 export type Formatters = {}
