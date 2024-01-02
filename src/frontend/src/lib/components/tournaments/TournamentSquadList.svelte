@@ -81,7 +81,7 @@
           <td>{squad.name}</td>
         {/if}
         <td
-          >{squad.players.length}
+          >{squad.players.filter((p) => !p.is_invite).length}
           <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
             ({squad_data[squad.id].display_players ? 'hide' : 'show'})
           </button></td

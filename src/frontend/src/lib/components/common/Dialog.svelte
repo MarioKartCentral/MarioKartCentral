@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
-
   let dialog: HTMLDialogElement;
   export let header: string | null = null;
 

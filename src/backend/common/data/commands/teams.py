@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+from common.auth import team_permissions
 
 
 @save_to_command_log
@@ -117,11 +118,11 @@ class GetTeamInfoCommand(Command[Team]):
 
                 # get all friend codes for members of our team that are from a game that our team has a roster for
                 game_query = ','.join(set([f"'{r.game}'" for r in rosters]))
-                async with db.execute(f"SELECT player_id, game, fc, is_verified, is_primary FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
+                async with db.execute(f"SELECT id, player_id, game, fc, is_verified, is_primary FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        player_id, game, fc, is_verified, is_primary = row
-                        curr_fc = FriendCode(fc, game, player_id, bool(is_verified), bool(is_primary))
+                        id, player_id, game, fc, is_verified, is_primary = row
+                        curr_fc = FriendCode(id, fc, game, player_id, bool(is_verified), bool(is_primary))
                         player_dict[player_id].friend_codes.append(curr_fc)
 
             for member in team_members:
@@ -1019,4 +1020,62 @@ class ListRostersCommand(Command[list[TeamRoster]]):
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
                                         creation_date, is_recruiting, is_active, approval_status, [], [])
                     rosters.append(roster)
+            return rosters
+
+@dataclass
+class GetRegisterableRostersCommand(Command[None]):
+    user_id: int
+    tournament_id: int
+    game: Game
+    mode: GameMode
+    
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            rosters_query = f"""
+                    FROM team_roles r
+                    JOIN user_team_roles ur ON ur.role_id = r.id
+                    JOIN team_rosters tr ON tr.team_id = ur.team_id
+                    JOIN teams t ON tr.team_id = t.id
+                    JOIN users u ON ur.user_id = u.id
+                    JOIN team_role_permissions rp ON rp.role_id = r.id
+                    JOIN team_permissions p ON rp.permission_id = p.id
+                    WHERE u.id = ? AND p.name = ? AND tr.game = ? AND tr.mode = ?
+                        AND tr.approval_status = ? AND tr.is_active = ?
+                        AND tr.id NOT IN (
+                            SELECT roster_id
+                            FROM team_squad_registrations
+                            WHERE tournament_id = ?
+                        )"""
+            variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id)
+            rosters: list[TeamRoster] = []
+            roster_dict = {}
+            async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
+                                  tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag
+                                  {rosters_query}""",
+                    variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting, 
+                     is_active, approval_status, team_name, team_tag) = row
+                    roster_name = roster_name if roster_name else team_name
+                    roster_tag = roster_tag if roster_tag else team_tag
+                    roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
+                                        creation_date, is_recruiting, is_active, approval_status, [], [])
+                    roster_dict[roster.id] = roster.players
+                    rosters.append(roster)
+
+            # get players for our rosters
+            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, p.discord_id, m.roster_id
+                                FROM players p
+                                JOIN team_members m ON p.id = m.player_id
+                                WHERE m.roster_id IN (
+                                  SELECT tr.id
+                                  {rosters_query}
+                                )""", variable_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, name, country_code, is_banned, discord_id, roster_id = row
+                    player = PartialPlayer(player_id, name, country_code, is_banned, discord_id, [])
+                    roster_dict[roster_id].append(player)
             return rosters

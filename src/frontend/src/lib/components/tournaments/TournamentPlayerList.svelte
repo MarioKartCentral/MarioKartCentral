@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
-  import type { TournamentPlayer, SquadPlayer } from '$lib/types/tournament-player';
+  import type { TournamentPlayer } from '$lib/types/tournament-player';
   import Table from '$lib/components/common/Table.svelte';
 
   export let tournament: Tournament;
-  export let players: TournamentPlayer[] | SquadPlayer[];
+  export let players: TournamentPlayer[];
 </script>
 
 <Table>
@@ -31,7 +31,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each players as player, i}
+    {#each players.filter((p) => !p.is_invite) as player, i}
       <tr class="row-{i % 2}">
         <td>{player.country_code}</td>
         <td>{player.name}</td>

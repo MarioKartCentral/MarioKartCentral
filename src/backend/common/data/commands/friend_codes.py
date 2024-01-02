@@ -19,7 +19,7 @@ class CreateFriendCodeCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         is_primary = self.is_primary
         # make sure FC is in 0000-0000-0000 format
-        match = re.match(r"\d{4}-\d{4}-\d{4}", self.fc)
+        match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", self.fc)
         if self.game != "mk8" and not match:
             raise Problem(f"FC {self.fc} for game {self.game} is in incorrect format", status=400)
         async with db_wrapper.connect() as db:
@@ -60,7 +60,7 @@ class EditFriendCodeCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         # make sure FC is in 0000-0000-0000 format
-        match = re.match(r"\d{4}-\d{4}-\d{4}", self.fc)
+        match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", self.fc)
         if self.game != "mk8" and not match:
             raise Problem("FC is in incorrect format", status=400)
         async with db_wrapper.connect() as db:

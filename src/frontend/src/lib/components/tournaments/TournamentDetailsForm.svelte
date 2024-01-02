@@ -160,7 +160,7 @@
       </div>
     </div>
   {/if}
-  <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData} />
+  <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData} disabled={is_edit} />
   <div class="option">
     <div>
       <label for="is_squad">Registration format (this cannot be changed)</label>

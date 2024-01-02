@@ -4,6 +4,7 @@ from common.data.models.common import Game
 
 @dataclass
 class FriendCode:
+    id: int
     fc: str
     game: Game
     player_id: int

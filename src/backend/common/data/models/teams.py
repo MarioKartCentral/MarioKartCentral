@@ -298,3 +298,9 @@ class ManagerEditRosterRequestData():
     roster_id: int
     team_id: int
     is_recruiting: bool
+
+@dataclass
+class RegisterableRostersRequestData():
+    tournament_id: int
+    game: Game
+    mode: GameMode
