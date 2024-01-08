@@ -14,7 +14,7 @@ const ja: Translation = {
     REGISTRY: 'Registry',
     DISCORD: 'Discord',
   },
-  COUNTRY: {
+  COUNTRIES: {
     AF: 'アフガニスタン',
     AX: 'オーランド諸島',
     AL: 'アルバニア',

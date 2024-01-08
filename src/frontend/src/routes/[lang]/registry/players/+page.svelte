@@ -5,6 +5,7 @@
   import PlayerList from '$lib/components/registry/players/PlayerList.svelte';
   import PlayerFilterOptions from '$lib/components/registry/players/PlayerFilterOptions.svelte';
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
+  import LL from '$i18n/i18n-svelte';
 
   let players: PlayerInfo[] = [];
   let totalPlayers = 0;
@@ -56,11 +57,11 @@
   onMount(fetchData);
 </script>
 
-<Section header="Player Listing">
+<Section header={$LL.PLAYER_LIST.PLAYER_LISTING()}>
   <form on:submit|preventDefault={fetchData}>
     <PlayerFilterOptions bind:filters />
-    <button type="submit">Search</button>
+    <button type="submit">{$LL.PLAYER_LIST.SEARCH()}</button>
   </form>
-  {totalPlayers} players
+  {totalPlayers} {$LL.PLAYER_LIST.PLAYERS()}
   <PlayerList {players} {totalPages} bind:currentPage />
 </Section>

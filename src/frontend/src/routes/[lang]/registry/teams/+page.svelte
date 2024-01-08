@@ -7,6 +7,7 @@
   import LinkButton from '$lib/components/common/LinkButton.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
 
@@ -28,13 +29,13 @@
   });
 </script>
 
-<Section header="Team Listing">
+<Section header={$LL.TEAM_LIST.TEAM_LISTING()}>
   <div slot="header_content">
     {#if user_info.player_id}
-      <LinkButton href="/{$page.params.lang}/registry/teams/create">Create Team</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/teams/create">{$LL.TEAM_LIST.CREATE_TEAM()}</LinkButton>
     {/if}
   </div>
-  {teams.length} teams
+  {teams.length} {$LL.TEAM_LIST.TEAMS()}
   <TeamList {teams} />
 </Section>
 

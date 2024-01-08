@@ -1,9 +1,8 @@
 <script lang="ts">
+  import LL from '$i18n/i18n-svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
-    import { country_codes } from '$lib/stores/country_codes';
-
   export let players: PlayerInfo[];
   export let currentPage: number;
   export let totalPages: number;
@@ -19,8 +18,8 @@
   <col class="mk8" />
   <thead>
     <tr>
-      <th>Country</th>
-      <th>Name</th>
+      <th>{$LL.PLAYER_LIST.HEADER.COUNTRY()}</th>
+      <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
       <th>Switch FC</th>
       <th>MKW FC</th>
       <th>MKT FC</th>

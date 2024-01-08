@@ -4,6 +4,7 @@
   import RosterList from '$lib/components/registry/teams/RosterList.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
 
   export let teams: Team[];
 
@@ -28,10 +29,10 @@
   <col class="registration_date" />
   <thead>
     <tr>
-      <th>Tag</th>
-      <th>Name</th>
-      <th>Rosters</th>
-      <th>Registered</th>
+      <th>{$LL.TEAM_LIST.TAG()}</th>
+      <th>{$LL.TEAM_LIST.NAME()}</th>
+      <th>{$LL.TEAM_LIST.ROSTERS()}</th>
+      <th>{$LL.TEAM_LIST.REGISTERED()}</th>
     </tr>
   </thead>
   <tbody>

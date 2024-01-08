@@ -6,18 +6,18 @@
   export let filters: PlayerFilter;
 </script>
 <select bind:value={filters.game}>
-  <option value={null}>All Games</option>
+  <option value={null}>{$LL.PLAYER_LIST.FILTERS.ALL_GAMES()}</option>
   {#each Object.keys(valid_games) as game}
-    <option value={game}>{valid_games[game]} players</option>
+    <option value={game}>{valid_games[game]}</option>
   {/each}
 </select>
 <select bind:value={filters.country}>
-  <option value={null}>All Countries</option>
+  <option value={null}>{$LL.PLAYER_LIST.FILTERS.ALL_COUNTRIES()}</option>
   {#each country_codes as country_code}
-    <option value={country_code}>{$LL.COUNTRY[country_code]()}</option>
+    <option value={country_code}>{$LL.COUNTRIES[country_code]()}</option>
   {/each}
 </select>
-<input class="search" bind:value={filters.name_or_fc} type="text" placeholder="Search by Name or Friend Code..." />
+<input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} />
 
 <style>
   .search {

@@ -8,13 +8,58 @@ const fr: Translation = {
     "We are the home of <strong>Mario Kart Tournaments</strong>, where you'll find <strong>tournaments</strong> for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for <strong>Mario Kart 8 Deluxe, Tour, and more</strong>, with a variety of matches happening weekly!",
   LANGUAGE: 'français',
   NAVBAR: {
-    TOURNAMENTS: 'Tournaments',
-    TIME_TRIALS: 'Time Trials',
+    TOURNAMENTS: 'Compétitions',
+    TIME_TRIALS: 'Contre-la-montre',
     LOUNGE: 'Lounge',
-    REGISTRY: 'Registry',
+    REGISTRY: 'Registre',
     DISCORD: 'Discord',
   },
-  COUNTRY:
+  PLAYER_LIST: {
+    PLAYERS: 'Joueurs',
+    PLAYER_LISTING: 'Liste des joueurs',
+    SEARCH: 'Chercher', 
+    FILTERS: {
+      ALL_GAMES: 'Tous les jeux',
+      ALL_COUNTRIES: 'Tous les pays',
+      SEARCH_BY: 'Chercher par pseudo ou par code ami...',
+      SEARCH: 'Chercher',
+    },
+    HEADER: {
+      COUNTRY: 'Pays',
+      NAME: 'Pseudonyme',
+    }
+  },
+  TEAM_LIST: {
+    TAG: 'Tag',
+    TEAMS: 'Équipes',
+    NAME: 'Nom',
+    ROSTERS: 'Équipes',
+    REGISTERED: 'Inscrite',
+    CREATE_TEAM: 'Créer une équipe',
+    TEAM_LISTING: 'Liste des équipes',
+  },
+  PLAYER_PROFILE: {
+		PLAYER_PROFILE: 'Profil',
+		INVITES: 'Invitations',
+    EDIT_PROFILE: 'Éditer le profil',
+    FRIEND_CODES: 'Codes Amis',
+    ADD_FRIEND_CODE: 'Ajouter un Code Ami',
+    AVATAR_URL: 'Avatar URL',
+    ABOUT_ME: 'À Propos de moi',
+    LANGUAGE: 'Langue',
+    THEME: 'Thème',
+    TIMEZONE: 'Fuseau Horaire',
+    SAVE: 'Enregistrer',
+	},
+  LANGUAGES: {
+    EN_US: 'English (Etats-Unis)',
+    EN_GB: 'Anglais (Royaume-Uni)',
+    DE: 'Allemand',
+    ES: 'Espagnol',
+    FR: 'Français',
+    JA: 'Japonais',
+  },
+  COUNTRIES:
   {
     AF: 'Afghanistan',
     AX: 'Îles Åland',

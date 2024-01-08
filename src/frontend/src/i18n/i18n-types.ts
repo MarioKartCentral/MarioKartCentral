@@ -52,7 +52,52 @@ type RootTranslation = {
 		 */
 		DISCORD: string
 	}
-	COUNTRY: {
+	PLAYER_LIST: {
+		PLAYERS: string,
+		PLAYER_LISTING: string,
+		SEARCH: string,
+		FILTERS: {
+			ALL_GAMES: string,
+			ALL_COUNTRIES: string,
+			SEARCH_BY: string,
+			SEARCH: string,
+		},
+		HEADER: {
+			COUNTRY: string,
+			NAME: string,
+		}
+	},
+	TEAM_LIST: {
+		TAG: string,
+		TEAMS: string,
+		NAME: string,
+		ROSTERS: string,
+		REGISTERED: string,
+		CREATE_TEAM: string,
+		TEAM_LISTING: string,
+	},
+	PLAYER_PROFILE: {
+		PLAYER_PROFILE: string,
+		INVITES: string,
+		EDIT_PROFILE: string,
+		FRIEND_CODES: string,
+		ADD_FRIEND_CODE: string,
+		AVATAR_URL: string,
+		ABOUT_ME: string,
+		LANGUAGE: string,
+		THEME: string,
+		TIMEZONE: string,
+		SAVE: string,
+	},
+  LANGUAGES: {
+    EN_US: string,
+    EN_GB: string,
+    DE: string,
+    ES: string,
+    FR: string,
+    JA: string,
+  },
+	COUNTRIES: {
 		AF: string,
 		AX: string,
 		AL: string,
@@ -302,7 +347,7 @@ type RootTranslation = {
 		YE: string,
 		ZM: string,
 		ZW: string
-	  }
+	}
 }
 
 export type TranslationFunctions = {
@@ -340,7 +385,52 @@ export type TranslationFunctions = {
 		 */
 		DISCORD: () => LocalizedString
 	}
-	COUNTRY: {
+	PLAYER_LIST: {
+		PLAYERS: () => LocalizedString,
+		PLAYER_LISTING: () => LocalizedString,
+		SEARCH: () => LocalizedString,
+		FILTERS: {
+			ALL_GAMES: () => LocalizedString,
+			ALL_COUNTRIES: () => LocalizedString,
+			SEARCH_BY: () => LocalizedString,
+			SEARCH: () => LocalizedString,
+		},
+		HEADER: {
+			COUNTRY: () => LocalizedString,
+			NAME: () => LocalizedString,
+		}
+	},
+	TEAM_LIST: {
+		TAG: () => LocalizedString,
+		TEAMS: () => LocalizedString,
+		NAME: () => LocalizedString,
+		ROSTERS: () => LocalizedString,
+		REGISTERED: () => LocalizedString,
+		CREATE_TEAM: () => LocalizedString,
+		TEAM_LISTING: () => LocalizedString,
+	},
+	PLAYER_PROFILE: {
+		PLAYER_PROFILE: () => LocalizedString,
+		INVITES: () => LocalizedString,
+		EDIT_PROFILE: () => LocalizedString,
+		FRIEND_CODES: () => LocalizedString,
+		ADD_FRIEND_CODE: () => LocalizedString,
+		AVATAR_URL: () => LocalizedString,
+		ABOUT_ME: () => LocalizedString,
+		LANGUAGE: () => LocalizedString,
+		THEME: () => LocalizedString,
+		TIMEZONE: () => LocalizedString,
+		SAVE: () => LocalizedString,
+	},
+  LANGUAGES: {
+    EN_US: () => LocalizedString,
+    EN_GB: () => LocalizedString,
+    DE: () => LocalizedString,
+    ES: () => LocalizedString,
+    FR: () => LocalizedString,
+    JA: () => LocalizedString,
+  },
+	COUNTRIES: {
 		AF: () => LocalizedString
 		AX: () => LocalizedString
 		AL: () => LocalizedString
@@ -586,7 +676,7 @@ export type TranslationFunctions = {
 		YE: () => LocalizedString
 		ZM: () => LocalizedString
 		ZW: () => LocalizedString
-	  }
+	}
 }
 
 export type Formatters = {}

@@ -12,7 +12,52 @@ const en_us: BaseTranslation & Translation = {
     REGISTRY: 'Registry',
     DISCORD: 'Discord',
   },
-  COUNTRY: {
+  PLAYER_LIST: {
+    PLAYERS: 'Players',
+    PLAYER_LISTING: 'Player Listing',
+    SEARCH: 'Search', 
+    FILTERS: {
+      ALL_GAMES: 'All Games',
+      ALL_COUNTRIES: 'All Countries',
+      SEARCH_BY: 'Search by Name or Friend Code...',
+      SEARCH: 'Search',
+    },
+    HEADER: {
+      COUNTRY: 'Country',
+      NAME: 'Name',
+    }
+  },
+  TEAM_LIST: {
+    TAG: 'Tag',
+    TEAMS: 'Teams',
+    NAME: 'Name',
+    ROSTERS: 'Rosters',
+    REGISTERED: 'Registered',
+    CREATE_TEAM: 'Create a team',
+    TEAM_LISTING: 'Team Listing',
+  },
+  PLAYER_PROFILE: {
+		PLAYER_PROFILE: 'Player Profile',
+		INVITES: 'Invites',
+    EDIT_PROFILE: 'Edit Profile',
+    FRIEND_CODES: 'Friend_codes',
+    ADD_FRIEND_CODE: 'Add Friend Code',
+    AVATAR_URL: 'Avatar URL',
+    ABOUT_ME: 'About me',
+    LANGUAGE: 'Language',
+    THEME: 'Theme',
+    TIMEZONE: 'Timezone',
+    SAVE: 'Save',
+	},
+  LANGUAGES: {
+    EN_US: 'English (United States)',
+    EN_GB: 'English (Great Britain)',
+    DE: 'German',
+    ES: 'Spanish',
+    FR: 'French',
+    JA: 'Japanese',
+  },
+  COUNTRIES: {
     AF: 'Afghanistan',
     AX: 'Åland Islands',
     AL: 'Albania',
