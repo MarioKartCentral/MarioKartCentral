@@ -80,6 +80,7 @@ type RootTranslation = {
 		BM: string,
 		BT: string,
 		BO: string,
+		BQ: string,
 		BA: string,
 		BW: string,
 		BV: string,
@@ -101,6 +102,9 @@ type RootTranslation = {
 		CX: string,
 		CC: string,
 		CO: string,
+		CW: string,
+		SX: string,
+		SS: string,
 		KM: string,
 		CG: string,
 		CD: string,
@@ -208,7 +212,6 @@ type RootTranslation = {
 		NR: string,
 		NP: string,
 		NL: string,
-		AN: string,
 		NC: string,
 		NZ: string,
 		NI: string,
@@ -493,7 +496,6 @@ export type TranslationFunctions = {
 		NR: () => LocalizedString
 		NP: () => LocalizedString
 		NL: () => LocalizedString
-		AN: () => LocalizedString
 		NC: () => LocalizedString
 		NZ: () => LocalizedString
 		NI: () => LocalizedString

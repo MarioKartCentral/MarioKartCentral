@@ -263,7 +263,6 @@ const en_us: BaseTranslation & Translation = {
     ZM: 'Zambia',
     ZW: 'Zimbabwe'
   }
-}
 };
 
 export default en_us;
