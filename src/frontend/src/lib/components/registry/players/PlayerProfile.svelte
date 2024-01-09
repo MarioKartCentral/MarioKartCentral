@@ -40,8 +40,10 @@
       </div>
       <div>
         <b>Country:</b>
-        <img src={"/src/lib/assets/flags/" + player.country_code?.toUpperCase() +".png"} alt={player.country_code}/>
-        {$LL.COUNTRIES[player.country_code]()}
+        {#if player.country_code !== null}
+          <img src={'/src/lib/assets/flags/' + player.country_code?.toUpperCase() + '.png'} alt={player.country_code} />
+          {$LL.COUNTRIES[player.country_code]()}
+        {/if}
       </div>
       {#if player.friend_codes.length > 0}
         <div>

@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { have_unread_notification } from '$lib/stores/stores';
   import DropdownMenu from './DropdownMenu.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let dropdown: DropdownMenu;
   export function toggleNotificationMenu() {
@@ -70,15 +71,15 @@
           <span>{id}: </span>
           <span>{content}</span>
           <span>{new Date(created_date * 1000).toLocaleString()}</span>
-          <span>type: {type}</span>
+          <span>{$LL.NAVBAR.TYPE()}: {type}</span>
           <button on:click={async () => await makeNotificationAsRead(id)}>☑</button>
-          <span>is_read: {is_read}</span>
+          <span>{$LL.NAVBAR.IS_READ()}: {is_read}</span>
         </div>
       </li>
     {/each}
     <li>
       <div class="notification-item">
-        <button on:click={makeAllNotificationsAsRead}>Mark All as Read</button>
+        <button on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
       </div>
     </li>
   </ul>

@@ -2,17 +2,32 @@ import type { Translation } from '../i18n-types';
 
 const fr: Translation = {
   // TODO
-  WELCOME: 'Welcome to <strong>Mario Kart Central</strong>!',
+  WELCOME: 'Bienvenue <strong>Mario Kart Central</strong>!',
   // TODO
   SUMMARY:
-    "We are the home of <strong>Mario Kart Tournaments</strong>, where you'll find <strong>tournaments</strong> for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for <strong>Mario Kart 8 Deluxe, Tour, and more</strong>, with a variety of matches happening weekly!",
-  LANGUAGE: 'français',
+    "Nous somme le cœur des <strong>Compétitions Mario Kart</strong>, où vous trouverez des <strong>tournois</strong> pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur <strong>Mario Kart 8 Deluxe, Tour, et plus encore</strong>, avec une variété de matchs qui ont lieu chaque semaine!",
+  LANGUAGE: 'Français',
+  LOGOUT: 'Se Déconnecter',
+  EMAIL: 'Adresse e-mail',
+  PASSWORD: 'Mot de passe',
   NAVBAR: {
     TOURNAMENTS: 'Compétitions',
     TIME_TRIALS: 'Contre-la-montre',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registre',
     DISCORD: 'Discord',
+    TYPE: 'Type',
+    MARK_ALL_READ: 'Marquer tout comme lu',
+    IS_READ: 'Is Read',
+    LANGUAGE_PICKER: 'Séléction de la Langue',
+    LOGIN: 'Se Connecter',
+    REGISTER: "S'inscrire",
+    PLAYER_SIGNUP: 'Inscription de Joueur',
+    PROFILE: 'Profil',
+    MENU: 'Menu',
+    HOME_PAGE: "Page d'Acceuil",
+    NOTIFICATIONS: 'Notifications',
+    MODERATOR: 'Modérateur',
   },
   PLAYER_LIST: {
     PLAYERS: 'Joueurs',

@@ -30,6 +30,9 @@ type RootTranslation = {
 	 * A​m​e​r​i​c​a​n​ ​E​n​g​l​i​s​h
 	 */
 	LANGUAGE: string
+	LOGOUT: string,
+	EMAIL: string,
+	PASSWORD: string,
 	NAVBAR: {
 		/**
 		 * T​o​u​r​n​a​m​e​n​t​s
@@ -51,6 +54,18 @@ type RootTranslation = {
 		 * D​i​s​c​o​r​d
 		 */
 		DISCORD: string
+		MARK_ALL_READ: string,
+		LANGUAGE_PICKER: string,
+		IS_READ: string,
+		TYPE: string,
+		LOGIN: string,
+		REGISTER: string,
+		PLAYER_SIGNUP: string,
+		PROFILE: string,
+		MENU: string,
+		HOME_PAGE: string,
+		NOTIFICATIONS: string,
+		MODERATOR: string,
 	}
 	PLAYER_LIST: {
 		PLAYERS: string,
@@ -363,6 +378,9 @@ export type TranslationFunctions = {
 	 * American English
 	 */
 	LANGUAGE: () => LocalizedString
+	LOGOUT: () => LocalizedString
+	EMAIL: () => LocalizedString
+	PASSWORD: () => LocalizedString
 	NAVBAR: {
 		/**
 		 * Tournaments
@@ -384,51 +402,63 @@ export type TranslationFunctions = {
 		 * Discord
 		 */
 		DISCORD: () => LocalizedString
+		MARK_ALL_READ: () => LocalizedString
+		IS_READ: () => LocalizedString
+		LANGUAGE_PICKER: () => LocalizedString
+		TYPE: () => LocalizedString
+		LOGIN: () => LocalizedString
+		REGISTER: () => LocalizedString
+		PLAYER_SIGNUP: () => LocalizedString
+		PROFILE: () => LocalizedString
+		MENU: () => LocalizedString
+		HOME_PAGE: () => LocalizedString
+		NOTIFICATIONS: () => LocalizedString
+		MODERATOR: () => LocalizedString,
 	}
 	PLAYER_LIST: {
-		PLAYERS: () => LocalizedString,
-		PLAYER_LISTING: () => LocalizedString,
-		SEARCH: () => LocalizedString,
+		PLAYERS: () => LocalizedString
+		PLAYER_LISTING: () => LocalizedString
+		SEARCH: () => LocalizedString
 		FILTERS: {
-			ALL_GAMES: () => LocalizedString,
-			ALL_COUNTRIES: () => LocalizedString,
-			SEARCH_BY: () => LocalizedString,
-			SEARCH: () => LocalizedString,
+			ALL_GAMES: () => LocalizedString
+			ALL_COUNTRIES: () => LocalizedString
+			SEARCH_BY: () => LocalizedString
+			SEARCH: () => LocalizedString
 		},
 		HEADER: {
-			COUNTRY: () => LocalizedString,
-			NAME: () => LocalizedString,
+			COUNTRY: () => LocalizedString
+			NAME: () => LocalizedString
 		}
 	},
 	TEAM_LIST: {
-		TAG: () => LocalizedString,
-		TEAMS: () => LocalizedString,
-		NAME: () => LocalizedString,
-		ROSTERS: () => LocalizedString,
-		REGISTERED: () => LocalizedString,
-		CREATE_TEAM: () => LocalizedString,
-		TEAM_LISTING: () => LocalizedString,
+		TAG: () => LocalizedString
+		TEAMS: () => LocalizedString
+		NAME: () => LocalizedString
+		ROSTERS: () => LocalizedString
+		REGISTERED: () => LocalizedString
+		CREATE_TEAM: () => LocalizedString
+		TEAM_LISTING: () => LocalizedString
 	},
 	PLAYER_PROFILE: {
-		PLAYER_PROFILE: () => LocalizedString,
-		INVITES: () => LocalizedString,
-		EDIT_PROFILE: () => LocalizedString,
-		FRIEND_CODES: () => LocalizedString,
-		ADD_FRIEND_CODE: () => LocalizedString,
-		AVATAR_URL: () => LocalizedString,
-		ABOUT_ME: () => LocalizedString,
-		LANGUAGE: () => LocalizedString,
-		THEME: () => LocalizedString,
-		TIMEZONE: () => LocalizedString,
-		SAVE: () => LocalizedString,
+		PLAYER_PROFILE: () => LocalizedString
+		INVITES: () => LocalizedString
+		EDIT_PROFILE: () => LocalizedString
+		FRIEND_CODES: () => LocalizedString
+		ADD_FRIEND_CODE: () => LocalizedString
+		AVATAR_URL: () => LocalizedString
+		ABOUT_ME: () => LocalizedString
+		LANGUAGE: () => LocalizedString
+		THEME: () => LocalizedString
+		TIMEZONE: () => LocalizedString
+		SAVE: () => LocalizedString
 	},
   LANGUAGES: {
-    EN_US: () => LocalizedString,
-    EN_GB: () => LocalizedString,
-    DE: () => LocalizedString,
-    ES: () => LocalizedString,
-    FR: () => LocalizedString,
-    JA: () => LocalizedString,
+    EN_US: () => LocalizedString
+    EN_GB: () => LocalizedString
+    DE: () => LocalizedString
+    ES: () => LocalizedString
+    FR: () => LocalizedString
+    JA: () => LocalizedString
   },
 	COUNTRIES: {
 		AF: () => LocalizedString
@@ -458,6 +488,7 @@ export type TranslationFunctions = {
 		BM: () => LocalizedString
 		BT: () => LocalizedString
 		BO: () => LocalizedString
+		BQ: () => LocalizedString
 		BA: () => LocalizedString
 		BW: () => LocalizedString
 		BV: () => LocalizedString
@@ -479,6 +510,9 @@ export type TranslationFunctions = {
 		CX: () => LocalizedString
 		CC: () => LocalizedString
 		CO: () => LocalizedString
+		CW: () => LocalizedString
+		SX: () => LocalizedString
+		SS: () => LocalizedString
 		KM: () => LocalizedString
 		CG: () => LocalizedString
 		CD: () => LocalizedString
