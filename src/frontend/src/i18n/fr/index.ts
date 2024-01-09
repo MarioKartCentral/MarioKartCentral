@@ -10,6 +10,7 @@ const fr: Translation = {
   LOGOUT: 'Se Déconnecter',
   EMAIL: 'Adresse e-mail',
   PASSWORD: 'Mot de passe',
+  MKC_REGISTRY: 'Registre MKCentral',
   NAVBAR: {
     TOURNAMENTS: 'Compétitions',
     TIME_TRIALS: 'Contre-la-montre',
@@ -57,6 +58,10 @@ const fr: Translation = {
 		PLAYER_PROFILE: 'Profil',
 		INVITES: 'Invitations',
     EDIT_PROFILE: 'Éditer le profil',
+    DESCRIPTION: 'Description',
+    PRIMARY: 'Principal?',
+    SUBMIT: 'Envoyer',
+    FRIEND_CODE: 'Code ami',
     FRIEND_CODES: 'Codes Amis',
     ADD_FRIEND_CODE: 'Ajouter un Code Ami',
     AVATAR_URL: 'Avatar URL',

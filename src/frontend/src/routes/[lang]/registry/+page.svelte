@@ -4,7 +4,7 @@
   import LL from '$i18n/i18n-svelte';
 </script>
 
-<Section header="MKCentral Registry">
+<Section header={$LL.MKC_REGISTRY()}>
   <p>
     <a href="/{$page.params.lang}/registry/players">{$LL.PLAYER_LIST.PLAYERS()}</a>
   </p>

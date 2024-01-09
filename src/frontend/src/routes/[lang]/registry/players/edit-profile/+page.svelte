@@ -111,13 +111,13 @@
       {#if fc_form_visible[game]}
         <form method="post" on:submit|preventDefault={addFC}>
           <div>
-            <label for="fc">Friend Code</label>
+            <label for="fc">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</label>
             <input name="fc" placeholder={game !== 'mk8' ? '0000-0000-0000' : ''} />
-            <label for="is_primary">Primary?</label>
+            <label for="is_primary">{$LL.PLAYER_PROFILE.PRIMARY()}</label>
             <input name="is_primary" type="checkbox" />
-            <input name="description" placeholder="Description" />
+            <input name="description" placeholder={$LL.PLAYER_PROFILE.DESCRIPTION()} />
             <input type="hidden" name="game" value={game} />
-            <button type="submit">Submit</button>
+            <button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</button>
           </div>
         </form>
       {/if}

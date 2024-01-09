@@ -8,6 +8,7 @@ const en_us: BaseTranslation & Translation = {
   LOGOUT: 'Logout',
   EMAIL: 'Email',
   PASSWORD: 'Password',
+  MKC_REGISTRY: 'MKCentral Registry',
   NAVBAR: {
     TOURNAMENTS: 'Tournaments',
     TIME_TRIALS: 'Time Trials',
@@ -30,7 +31,7 @@ const en_us: BaseTranslation & Translation = {
   PLAYER_LIST: {
     PLAYERS: 'Players',
     PLAYER_LISTING: 'Player Listing',
-    SEARCH: 'Search', 
+    SEARCH: 'Search',
     FILTERS: {
       ALL_GAMES: 'All Games',
       ALL_COUNTRIES: 'All Countries',
@@ -52,10 +53,14 @@ const en_us: BaseTranslation & Translation = {
     TEAM_LISTING: 'Team Listing',
   },
   PLAYER_PROFILE: {
-		PLAYER_PROFILE: 'Player Profile',
-		INVITES: 'Invites',
+    PLAYER_PROFILE: 'Player Profile',
+    INVITES: 'Invites',
     EDIT_PROFILE: 'Edit Profile',
-    FRIEND_CODES: 'Friend_codes',
+    DESCRIPTION: 'Description',
+    PRIMARY: 'Primary?',
+    SUBMIT: 'Submit',
+    FRIEND_CODE: 'Friend Code',
+    FRIEND_CODES: 'Friend Codes',
     ADD_FRIEND_CODE: 'Add Friend Code',
     AVATAR_URL: 'Avatar URL',
     ABOUT_ME: 'About me',
@@ -63,7 +68,7 @@ const en_us: BaseTranslation & Translation = {
     THEME: 'Theme',
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
-	},
+  },
   LANGUAGES: {
     EN_US: 'English (United States)',
     EN_GB: 'English (Great Britain)',

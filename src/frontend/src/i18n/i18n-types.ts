@@ -33,6 +33,7 @@ type RootTranslation = {
 	LOGOUT: string,
 	EMAIL: string,
 	PASSWORD: string,
+	MKC_REGISTRY: string,
 	NAVBAR: {
 		/**
 		 * T​o​u​r​n​a​m​e​n​t​s
@@ -95,6 +96,10 @@ type RootTranslation = {
 		PLAYER_PROFILE: string,
 		INVITES: string,
 		EDIT_PROFILE: string,
+		SUBMIT: string,
+		PRIMARY: string,
+		DESCRIPTION: string,
+		FRIEND_CODE: string,
 		FRIEND_CODES: string,
 		ADD_FRIEND_CODE: string,
 		AVATAR_URL: string,
@@ -104,14 +109,14 @@ type RootTranslation = {
 		TIMEZONE: string,
 		SAVE: string,
 	},
-  LANGUAGES: {
-    EN_US: string,
-    EN_GB: string,
-    DE: string,
-    ES: string,
-    FR: string,
-    JA: string,
-  },
+	LANGUAGES: {
+		EN_US: string,
+		EN_GB: string,
+		DE: string,
+		ES: string,
+		FR: string,
+		JA: string,
+	},
 	COUNTRIES: {
 		AF: string,
 		AX: string,
@@ -381,6 +386,7 @@ export type TranslationFunctions = {
 	LOGOUT: () => LocalizedString
 	EMAIL: () => LocalizedString
 	PASSWORD: () => LocalizedString
+	MKC_REGISTRY: () => LocalizedString
 	NAVBAR: {
 		/**
 		 * Tournaments
@@ -443,6 +449,10 @@ export type TranslationFunctions = {
 		PLAYER_PROFILE: () => LocalizedString
 		INVITES: () => LocalizedString
 		EDIT_PROFILE: () => LocalizedString
+		PRIMARY: () => LocalizedString
+		SUBMIT: () => LocalizedString
+		DESCRIPTION: () => LocalizedString
+		FRIEND_CODE: () => LocalizedString
 		FRIEND_CODES: () => LocalizedString
 		ADD_FRIEND_CODE: () => LocalizedString
 		AVATAR_URL: () => LocalizedString
@@ -452,14 +462,14 @@ export type TranslationFunctions = {
 		TIMEZONE: () => LocalizedString
 		SAVE: () => LocalizedString
 	},
-  LANGUAGES: {
-    EN_US: () => LocalizedString
-    EN_GB: () => LocalizedString
-    DE: () => LocalizedString
-    ES: () => LocalizedString
-    FR: () => LocalizedString
-    JA: () => LocalizedString
-  },
+	LANGUAGES: {
+		EN_US: () => LocalizedString
+		EN_GB: () => LocalizedString
+		DE: () => LocalizedString
+		ES: () => LocalizedString
+		FR: () => LocalizedString
+		JA: () => LocalizedString
+	},
 	COUNTRIES: {
 		AF: () => LocalizedString
 		AX: () => LocalizedString
