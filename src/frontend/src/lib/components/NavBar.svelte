@@ -45,18 +45,18 @@
   <div class="nav-main" class:nav-closed={!opened}>
     <ul>
       <NavBarItem selected={$page.data.activeNavItem === 'TOURNAMENTS'} href="/{$page.params.lang}/tournaments"
-        >{@html $LL.NAVBAR.TOURNAMENTS()}</NavBarItem
+        >{$LL.NAVBAR.TOURNAMENTS()}</NavBarItem
       >
       <NavBarItem selected={$page.data.activeNavItem === 'TIME TRIALS'} href="/{$page.params.lang}/time-trials"
-        >{@html $LL.NAVBAR.TIME_TRIALS()}</NavBarItem
+        >{$LL.NAVBAR.TIME_TRIALS()}</NavBarItem
       >
       <NavBarItem selected={$page.data.activeNavItem === 'LOUNGE'} href="/{$page.params.lang}/lounge"
-        >{@html $LL.NAVBAR.LOUNGE()}</NavBarItem
+        >{$LL.NAVBAR.LOUNGE()}</NavBarItem
       >
       <NavBarItem selected={$page.data.activeNavItem === 'REGISTRY'} href="/{$page.params.lang}/registry"
-        >{@html $LL.NAVBAR.REGISTRY()}</NavBarItem
+        >{$LL.NAVBAR.REGISTRY()}</NavBarItem
       >
-      <NavBarItem external="http://discord.gg/Pgd8xr6">{@html $LL.NAVBAR.DISCORD()}</NavBarItem>
+      <NavBarItem external="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavBarItem>
       {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}
         <NavBarItem title="Moderator">
           <button on:click|stopPropagation={mod_panel.toggleModPanel}> Moderator </button>

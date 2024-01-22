@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getContext } from 'svelte';
 
 export function addPermission(permission: string) {

@@ -6,6 +6,7 @@
   import PlayerProfileBan from '$lib/components/registry/players/PlayerProfileBan.svelte';
 
   let id = 0;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let player_found = true;
   let player: PlayerInfo;
   $: player_name = player ? player.name : 'Registry';

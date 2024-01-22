@@ -54,7 +54,7 @@
           <col class="country" />
           <col class="name" />
           <col class="fc" />
-          {#each results as result, i}
+          {#each results as result}
             <tr on:click={() => set_option(result)}>
               <td>
                 {result.country_code}
