@@ -60,7 +60,7 @@
     {#if show_results}
       <div class="table">
         <Table show_padding={false}>
-          {#each results as result, i}
+          {#each results as result}
             <tr on:click={() => set_option(result)}>
               {result.series_name}
             </tr>

@@ -3,6 +3,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { goto } from '$app/navigation';
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let user_info: UserInfo;
 
   user.subscribe((value) => {
