@@ -13,6 +13,7 @@
 
 <dialog bind:this={dialog}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="outer" on:click={close}>
     <div class="container" on:click|stopPropagation>
       <div class="header">
