@@ -1,8 +1,4 @@
 {
-    "eslint.validate": [
-        "javascript",
-        "typescript",
-        "svelte"
-    ],
-    "eslint.lintTask.enable": true
+  "eslint.validate": ["javascript", "typescript", "svelte"],
+  "eslint.lintTask.enable": true
 }
