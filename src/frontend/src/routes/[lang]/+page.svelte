@@ -60,6 +60,7 @@
 <h1>{@html $LL.WELCOME()}</h1>
 <p>{@html $LL.SUMMARY()}</p>
 <p>{$LL.PLAYER_PROFILE.LANGUAGE()}: {$LL.LANGUAGE()}</p>
+
 <p>User ID: {userId}</p>
 <p>Player ID: {playerId}</p>
 {#if isLoggedIn}
