@@ -263,8 +263,8 @@ const ja: Translation = {
     EH: '西サハラ',
     YE: 'イエメン',
     ZM: 'ザンビア',
-    ZW: 'ジンバブエ'
-  }
+    ZW: 'ジンバブエ',
+  },
 };
 
 export default ja;

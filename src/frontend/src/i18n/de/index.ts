@@ -263,8 +263,8 @@ const de: Translation = {
     EH: 'Westsahara',
     YE: 'Jemen',
     ZM: 'Sambia',
-    ZW: 'Simbabwe'
-  }
+    ZW: 'Simbabwe',
+  },
 };
 
 export default de;

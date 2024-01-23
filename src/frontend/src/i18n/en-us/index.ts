@@ -41,7 +41,7 @@ const en_us: BaseTranslation & Translation = {
     HEADER: {
       COUNTRY: 'Country',
       NAME: 'Name',
-    }
+    },
   },
   TEAM_LIST: {
     TAG: 'Tag',
@@ -326,8 +326,8 @@ const en_us: BaseTranslation & Translation = {
     EH: 'Western Sahara',
     YE: 'Yemen',
     ZM: 'Zambia',
-    ZW: 'Zimbabwe'
-  }
+    ZW: 'Zimbabwe',
+  },
 };
 
 export default en_us;

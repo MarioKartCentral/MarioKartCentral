@@ -263,8 +263,8 @@ const es: Translation = {
     EH: 'República Árabe Saharaui Democrática',
     YE: 'Yemen',
     ZM: 'Zambia',
-    ZW: 'Zimbabue'
-  }
+    ZW: 'Zimbabue',
+  },
 };
 
 export default es;

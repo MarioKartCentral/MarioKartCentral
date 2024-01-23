@@ -5,7 +5,7 @@ const fr: Translation = {
   WELCOME: 'Bienvenue <strong>Mario Kart Central</strong>!',
   // TODO
   SUMMARY:
-    "Nous somme le cœur des <strong>Compétitions Mario Kart</strong>, où vous trouverez des <strong>tournois</strong> pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur <strong>Mario Kart 8 Deluxe, Tour, et plus encore</strong>, avec une variété de matchs qui ont lieu chaque semaine!",
+    'Nous somme le cœur des <strong>Compétitions Mario Kart</strong>, où vous trouverez des <strong>tournois</strong> pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur <strong>Mario Kart 8 Deluxe, Tour, et plus encore</strong>, avec une variété de matchs qui ont lieu chaque semaine!',
   LANGUAGE: 'Français',
   LOGOUT: 'Se Déconnecter',
   EMAIL: 'Adresse e-mail',
@@ -33,7 +33,7 @@ const fr: Translation = {
   PLAYER_LIST: {
     PLAYERS: 'Joueurs',
     PLAYER_LISTING: 'Liste des joueurs',
-    SEARCH: 'Chercher', 
+    SEARCH: 'Chercher',
     FILTERS: {
       ALL_GAMES: 'Tous les jeux',
       ALL_COUNTRIES: 'Tous les pays',
@@ -43,7 +43,7 @@ const fr: Translation = {
     HEADER: {
       COUNTRY: 'Pays',
       NAME: 'Pseudonyme',
-    }
+    },
   },
   TEAM_LIST: {
     TAG: 'Tag',
@@ -55,8 +55,8 @@ const fr: Translation = {
     TEAM_LISTING: 'Liste des équipes',
   },
   PLAYER_PROFILE: {
-		PLAYER_PROFILE: 'Profil',
-		INVITES: 'Invitations',
+    PLAYER_PROFILE: 'Profil',
+    INVITES: 'Invitations',
     EDIT_PROFILE: 'Éditer le profil',
     DESCRIPTION: 'Description',
     PRIMARY: 'Principal?',
@@ -70,7 +70,7 @@ const fr: Translation = {
     THEME: 'Thème',
     TIMEZONE: 'Fuseau Horaire',
     SAVE: 'Enregistrer',
-	},
+  },
   LANGUAGES: {
     EN_US: 'English (Etats-Unis)',
     EN_GB: 'Anglais (Royaume-Uni)',
@@ -79,8 +79,7 @@ const fr: Translation = {
     FR: 'Français',
     JA: 'Japonais',
   },
-  COUNTRIES:
-  {
+  COUNTRIES: {
     AF: 'Afghanistan',
     AX: 'Îles Åland',
     AL: 'Albanie',
@@ -329,9 +328,8 @@ const fr: Translation = {
     EH: 'République arabe sahraouie démocratique',
     YE: 'Yémen',
     ZM: 'Zambie',
-    ZW: 'Zimbabwe'
-  }
-}
+    ZW: 'Zimbabwe',
+  },
+};
 
 export default fr;
-
