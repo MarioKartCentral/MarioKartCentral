@@ -4,7 +4,7 @@
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
   import { valid_games } from '$lib/util/util';
   export let filters: PlayerFilter;
-  const countries: any[] = [];
+  const countries: unknown[] = [];
   for (let country_code of country_codes) {
     countries.push({
       value: country_code,

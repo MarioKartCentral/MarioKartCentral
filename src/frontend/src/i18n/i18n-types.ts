@@ -471,6 +471,7 @@ export type TranslationFunctions = {
 		JA: () => LocalizedString
 	},
 	COUNTRIES: {
+        keys(arg0: any): unknown;
 		AF: () => LocalizedString
 		AX: () => LocalizedString
 		AL: () => LocalizedString

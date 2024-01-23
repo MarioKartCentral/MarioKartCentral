@@ -57,8 +57,8 @@
   <title>Mario Kart Central</title>
 </svelte:head>
 
-<h1>{@html $LL.WELCOME()}</h1>
-<p>{@html $LL.SUMMARY()}</p>
+<h1>{$LL.WELCOME()}</h1>
+<p>{$LL.SUMMARY()}</p>
 <p>{$LL.PLAYER_PROFILE.LANGUAGE()}: {$LL.LANGUAGE()}</p>
 
 <p>User ID: {userId}</p>

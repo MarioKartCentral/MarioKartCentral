@@ -2,10 +2,10 @@ import type { Translation } from '../i18n-types';
 
 const fr: Translation = {
   // TODO
-  WELCOME: 'Bienvenue <strong>Mario Kart Central</strong>!',
+  WELCOME: 'Bienvenue Mario Kart Central!',
   // TODO
   SUMMARY:
-    'Nous somme le cœur des <strong>Compétitions Mario Kart</strong>, où vous trouverez des <strong>tournois</strong> pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur <strong>Mario Kart 8 Deluxe, Tour, et plus encore</strong>, avec une variété de matchs qui ont lieu chaque semaine!',
+    'Nous somme le cœur des Compétitions Mario Kart, où vous trouverez des tournois pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur Mario Kart 8 Deluxe, Tour, et plus encore, avec une variété de matchs qui ont lieu chaque semaine!',
   LANGUAGE: 'Français',
   LOGOUT: 'Se Déconnecter',
   EMAIL: 'Adresse e-mail',
