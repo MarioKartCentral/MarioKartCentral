@@ -3,6 +3,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
+  import Flag from '$lib/components/common/Flag.svelte';
   export let players: PlayerInfo[];
   export let currentPage: number;
   export let totalPages: number;
@@ -30,7 +31,7 @@
   <tbody>
     {#each players as player, i}
       <tr class="row-{i % 2}">
-        <td><img src={"/src/lib/assets/flags/" + player.country_code?.toUpperCase() +".png"} alt={player.country_code}/></td>
+        <td><Flag country_code={player.country_code}/></td>
         <td>
           <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
         </td>

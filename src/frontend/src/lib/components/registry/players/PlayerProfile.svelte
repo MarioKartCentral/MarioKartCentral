@@ -7,6 +7,7 @@
   import logo from '$lib/assets/logo.png';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Flag from '$lib/components/common/Flag.svelte';
 
   let user_info: UserInfo;
 
@@ -38,10 +39,10 @@
       <div class="name">
         {player.name}
       </div>
-      <div>
+      <div class="country">
         <b>Country:</b>
         {#if player.country_code !== null}
-          <img src={'/src/lib/assets/flags/' + player.country_code?.toUpperCase() + '.png'} alt={player.country_code} />
+          <Flag country_code={player.country_code} />
           {$LL.COUNTRIES[player.country_code]()}
         {/if}
       </div>
@@ -100,6 +101,11 @@
   }
   div.name {
     font-size: 1.5em;
+  }
+  div.country {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
   }
   div.about_me {
     grid-column-start: 3;
