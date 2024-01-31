@@ -59,24 +59,25 @@
 
 <h1>{$LL.WELCOME()}</h1>
 <p>{$LL.SUMMARY()}</p>
-<p>Language: {$LL.LANGUAGE()}</p>
+<p>{$LL.PLAYER_PROFILE.LANGUAGE()}: {$LL.LANGUAGE()}</p>
+
 <p>User ID: {userId}</p>
 <p>Player ID: {playerId}</p>
 {#if isLoggedIn}
   <form method="post" on:submit|preventDefault={logout}>
-    <button>Log out</button>
+    <button>{$LL.LOGOUT()}</button>
   </form>
 {:else}
   <form method="post" on:submit|preventDefault={loginOrSignup}>
     <div>
-      <label for="email">Email</label>
+      <label for="email">{$LL.EMAIL()}</label>
       <input name="email" type="email" />
     </div>
     <div>
-      <label for="password">Password</label>
+      <label for="password">{$LL.PASSWORD()}</label>
       <input name="password" type="password" />
     </div>
-    <button class="login-btn">Log in</button>
-    <button class="register-btn">Register</button>
+    <button class="login-btn">{$LL.NAVBAR.LOGIN()}</button>
+    <button class="register-btn">{$LL.NAVBAR.REGISTER()}</button>
   </form>
 {/if}

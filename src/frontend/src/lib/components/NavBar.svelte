@@ -28,7 +28,7 @@
 <nav>
   <div class="nav-top-wrap">
     <div class="nav-brand">
-      <a href="/{$page.params.lang}" title="Home Page">
+      <a href="/{$page.params.lang}" title={$LL.NAVBAR.HOME_PAGE()}>
         <img src={logo} width="120px" alt="MKCentral Logo" />
       </a>
     </div>
@@ -39,7 +39,7 @@
         console.log(opened);
       }}
     >
-      MENU
+      {$LL.NAVBAR.MENU()}
     </button>
   </div>
   <div class="nav-main" class:nav-closed={!opened}>
@@ -59,7 +59,7 @@
       <NavBarItem external="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavBarItem>
       {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}
         <NavBarItem title="Moderator">
-          <button on:click|stopPropagation={mod_panel.toggleModPanel}> Moderator </button>
+          <button on:click|stopPropagation={mod_panel.toggleModPanel}> {$LL.NAVBAR.MODERATOR()} </button>
           <ModPanel bind:this={mod_panel} />
         </NavBarItem>
       {/if}
@@ -67,23 +67,23 @@
   </div>
   <div class="nav-options" class:nav-closed={!opened}>
     <ul>
-      <NavBarItem title="Notifications">
+      <NavBarItem title={$LL.NAVBAR.NOTIFICATIONS()}>
         <button on:click|stopPropagation={notify.toggleNotificationMenu}>
           🔔{#if have_unread}🔴{/if}
         </button>
         <Notification bind:this={notify} />
       </NavBarItem>
-      <NavBarItem title="Language Picker" href="#">🌐</NavBarItem>
+      <NavBarItem title={$LL.NAVBAR.LANGUAGE_PICKER()} href="#">🌐</NavBarItem>
       {#if user_info.player}
-        <NavBarItem title="Profile" href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}"
+        <NavBarItem title={$LL.NAVBAR.PROFILE()} href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}"
           >👤
           {user_info.player.name}
         </NavBarItem>
       {:else if user_info.id !== null}
-        <NavBarItem title="Player Signup" href="/{$page.params.lang}/player-signup">Player Signup</NavBarItem>
+        <NavBarItem title={$LL.NAVBAR.PLAYER_SIGNUP()} href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</NavBarItem>
       {:else}
-        <NavBarItem title="Login" href="/{$page.params.lang}/login">Login</NavBarItem>
-        <NavBarItem title="Register" href="/{$page.params.lang}/register">Register</NavBarItem>
+        <NavBarItem title={$LL.NAVBAR.LOGIN()} href="/{$page.params.lang}/login">{$LL.NAVBAR.LOGIN()}</NavBarItem>
+        <NavBarItem title={$LL.NAVBAR.REGISTER()} href="/{$page.params.lang}/register">{$LL.NAVBAR.REGISTER()}</NavBarItem>
       {/if}
     </ul>
   </div>

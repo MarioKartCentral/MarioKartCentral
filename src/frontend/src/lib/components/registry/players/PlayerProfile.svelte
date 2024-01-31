@@ -6,6 +6,8 @@
   import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import LL from '$i18n/i18n-svelte';
+  import Flag from '$lib/components/common/Flag.svelte';
 
   let user_info: UserInfo;
 
@@ -37,9 +39,12 @@
       <div class="name">
         {player.name}
       </div>
-      <div>
+      <div class="country">
         <b>Country:</b>
-        {player.country_code}
+        {#if player.country_code !== null}
+          <Flag country_code={player.country_code} />
+          {$LL.COUNTRIES[player.country_code]()}
+        {/if}
       </div>
       {#if player.friend_codes.length > 0}
         <div>
@@ -96,6 +101,11 @@
   }
   div.name {
     font-size: 1.5em;
+  }
+  div.country {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
   }
   div.about_me {
     grid-column-start: 3;
