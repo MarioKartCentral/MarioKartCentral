@@ -73,7 +73,18 @@ export const valid_games: { [key: string]: string } = {
   smk: 'Super Mario Kart',
 };
 export const valid_modes: { [key: string]: string[] } = {
-  mk8dx: ['150cc', '200cc', 'mixed_battle', 'ballon_battle', 'shine_thief', 'bobomb_blast', 'coin_runners', 'renegade_roundup', 'match_race', 'mixed'],
+  mk8dx: [
+    '150cc',
+    '200cc',
+    'mixed_battle',
+    'ballon_battle',
+    'shine_thief',
+    'bobomb_blast',
+    'coin_runners',
+    'renegade_roundup',
+    'match_race',
+    'mixed',
+  ],
   mk8: ['150cc', '200cc'],
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],
