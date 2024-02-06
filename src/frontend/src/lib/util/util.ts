@@ -66,17 +66,31 @@ export const mod_panel_permissions = [
 
 export const valid_games: { [key: string]: string } = {
   mk8dx: 'Mario Kart 8 Deluxe',
+  mk8: 'Mario Kart 8',
   mkw: 'Mario Kart Wii',
   mkt: 'Mario Kart Tour',
+  mk7: 'Mario Kart 7',
+  smk: 'Super Mario Kart',
 };
 export const valid_modes: { [key: string]: string[] } = {
-  mk8dx: ['150cc', '200cc'],
+  mk8dx: ['150cc', '200cc', 'mixed_battle', 'ballon_battle', 'shine_thief', 'bobomb_blast', 'coin_runners', 'renegade_roundup', 'match_race', 'mixed'],
+  mk8: ['150cc', '200cc'],
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],
+  mk7: ['vsrace'],
+  smk: ['match_race'],
 };
 export const mode_names: { [key: string]: string } = {
   '150cc': '150cc',
   '200cc': '200cc',
+  mixed_battle: 'Battle (Mixed)',
+  ballon_battle: 'Ballon Battle',
+  shine_thief: 'Shine Thief',
+  bobomb_blast: 'Bob-omb Blast',
+  coin_runners: 'Coin Runners',
+  renegade_roundup: 'Renegade Roundup',
+  match_race: 'Match Race',
+  mixed: 'Mixed Format',
   rt: 'Regular Tracks',
   ct: 'Custom Tracks',
   vsrace: 'VS Race',

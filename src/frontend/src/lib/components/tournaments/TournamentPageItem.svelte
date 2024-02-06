@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
+  import Badges from './Badges.svelte';
 
   export let tournament: TournamentListItem;
 
@@ -12,13 +13,11 @@
 </script>
 
 <div class="container">
-  <div>{tournament.id}</div>
+  <!-- <div>{tournament.id}</div> -->
   <div class="name">
     <h3><a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">{tournament.tournament_name}</a></h3>
   </div>
-  <div>{tournament.game.toUpperCase()}</div>
-  <div>{tournament.mode}</div>
-  <div>{tournament_type}</div>
+  <Badges tournament={tournament} tournament_type={tournament_type}/>
   <div>{months[date_start.getMonth()]} {date_start.getDate()}-{months[date_end.getMonth()]} {date_end.getDate()}</div>
   {#if tournament.logo != null}
     <div><img src={tournament.logo} alt={tournament.tournament_name} /></div>
