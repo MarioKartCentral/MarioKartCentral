@@ -1,14 +1,10 @@
 <script lang="ts">
-  import type { TournamentListItem } from '$lib/types/tournament-list-item';
-
-  export let tournament: TournamentListItem;
-  export let tournament_type: string;
+  export let value:string;
+  export let type:string;
 </script>
 
 <div>
-  <span class={'game_' + tournament.game + '_badge'}>{tournament.game.toUpperCase()}</span>
-  <span class={'mode_' + tournament.mode + '_badge'}>{tournament.mode}</span>
-  <span class={tournament_type.toLowerCase() + '_badge'}>{tournament_type}</span>
+  <span class={type + "_" + value.toLowerCase() + '_badge'}>{value}</span>
 </div>
 
 <style>
@@ -183,7 +179,7 @@
     font-size: 78%;
   }
 
-  .team_badge {
+  .type_team_badge {
     display: inline-block;
     text-align: center;
     background-color: #006ea1;
@@ -198,7 +194,7 @@
     font-size: 78%;
   }
 
-  .solo_badge {
+  .type_solo_badge {
     display: inline-block;
     text-align: center;
     background-color: #a1006b;
@@ -213,7 +209,7 @@
     font-size: 78%;
   }
 
-  .squad_badge {
+  .type_squad_badge {
     display: inline-block;
     text-align: center;
     background-color: #006633;
