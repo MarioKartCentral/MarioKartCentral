@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Team } from '$lib/types/team';
   import Table from '$lib/components/common/Table.svelte';
+  import Badge from '$lib/components/Badge.svelte';
+  import Tag from '$lib/components/registry/teams/Tag.svelte';
 
   export let team: Team;
 </script>
@@ -24,19 +26,22 @@
     {#each team.rosters as roster, i}
       <tr class="row-{i % 2}">
         <td>
-          {roster.tag}
+          <Tag {team} />
         </td>
         <td>
           {roster.name}
         </td>
         <td>
-          {roster.is_recruiting ? 'Recruiting' : 'Not Recruiting'}
+          <Badge
+            classId={roster.is_recruiting ? 'recruiting' : 'not_recruiting'}
+            value={roster.is_recruiting ? 'Recruiting' : 'Not Recruiting'}
+          />
         </td>
         <td>
-          {roster.game}
+          <Badge classId={'game_' + roster.game} value={roster.game.toUpperCase()} />
         </td>
         <td>
-          {roster.mode}
+          <Badge classId={'mode_' + roster.mode} value={roster.mode} />
         </td>
       </tr>
     {/each}

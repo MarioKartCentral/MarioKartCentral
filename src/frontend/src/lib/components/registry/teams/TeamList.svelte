@@ -5,6 +5,7 @@
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
+  import Tag from '$lib/components/registry/teams/Tag.svelte';
 
   export let teams: Team[];
 
@@ -39,7 +40,7 @@
     {#each teams as team, i}
       <tr class="row-{i % 2}">
         <td>
-          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.tag}</a>
+          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> <Tag {team} /> </a>
         </td>
         <td>
           <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>

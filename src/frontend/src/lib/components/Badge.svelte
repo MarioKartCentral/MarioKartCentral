@@ -1,10 +1,10 @@
 <script lang="ts">
-  export let value:string;
-  export let type:string;
+  export let value: string;
+  export let classId: string;
 </script>
 
 <div>
-  <span class={type + "_" + value.toLowerCase() + '_badge'}>{value}</span>
+  <span class={classId.toLowerCase() + '_badge'}>{value}</span>
 </div>
 
 <style>
@@ -215,6 +215,36 @@
     background-color: #006633;
     color: white;
     border: 1px solid #005621;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: 2px;
+    width: 100px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans',
+      sans-serif;
+    font-size: 78%;
+  }
+
+  .recruiting_badge {
+    display: inline-block;
+    text-align: center;
+    background-color: #00997b;
+    color: white;
+    border: 1px solid #006b5c;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: 2px;
+    width: 100px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans',
+      sans-serif;
+    font-size: 78%;
+  }
+
+  .not_recruiting_badge {
+    display: inline-block;
+    text-align: center;
+    background-color: #7f7f80;
+    color: white;
+    border: 1px solid #4b4b4b;
     border-radius: 4px;
     padding: 2px 4px;
     margin: 2px;
