@@ -6,17 +6,28 @@
   import { setTeamPerms, team_permissions } from '$lib/util/util';
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import { colors } from '$lib/stores/colors';
+  import LL from '$i18n/i18n-svelte';
 
   let id = 0;
   let team: Team;
-  let colors: number[] = [];
 
-  for (let i: number = 0; i < 40; i++) {
-    colors.push(i);
-  }
+  $: colorsSorted = sortColors();
   $: team_name = team ? team.name : 'Registry';
 
   setTeamPerms();
+
+  function sortColors() {
+    const copyColors: { id: number; label: string; value: string }[] = [];
+    for (let i = 0; i < 10; i++) {
+      for (let j = i; j < colors.length; j = j + 10) {
+        console.log(j);
+        copyColors.push(colors[j]);
+      }
+    }
+    return copyColors;
+  }
 
   const languages = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 
@@ -110,11 +121,13 @@
     <form method="post" on:submit|preventDefault={editTeam}>
       <Section header="Customization">
         <label for="color">Team Color</label>
-        <select name="color" value={team.color}>
-          {#each colors as color}
-            <option value={color}>{color}</option>
-          {/each} 
+        <select name="color" bind:value={team.color}>
+          {#each colorsSorted as color}
+            {console.log(color.label)}
+            <option value={color.id}>{$LL.COLORS[color.label]()}</option>
+          {/each}
         </select>
+        <Tag {team} />
         <br />
         <label for="logo">Team Logo</label>
         <input name="logo" type="text" value={team.logo} />

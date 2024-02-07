@@ -19,21 +19,33 @@ export type Translations = RootTranslation
 
 type RootTranslation = {
 	/**
-	 * W​e​l​c​o​m​e​ ​t​o​ ​<​s​t​r​o​n​g​>​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​<​/​s​t​r​o​n​g​>​!
+	 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
 	 */
 	WELCOME: string
 	/**
-	 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​<​s​t​r​o​n​g​>​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​<​/​s​t​r​o​n​g​>​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​<​s​t​r​o​n​g​>​t​o​u​r​n​a​m​e​n​t​s​<​/​s​t​r​o​n​g​>​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​<​s​t​r​o​n​g​>​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​<​/​s​t​r​o​n​g​>​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
+	 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
 	 */
 	SUMMARY: string
 	/**
 	 * A​m​e​r​i​c​a​n​ ​E​n​g​l​i​s​h
 	 */
 	LANGUAGE: string
-	LOGOUT: string,
-	EMAIL: string,
-	PASSWORD: string,
-	MKC_REGISTRY: string,
+	/**
+	 * L​o​g​o​u​t
+	 */
+	LOGOUT: string
+	/**
+	 * E​m​a​i​l
+	 */
+	EMAIL: string
+	/**
+	 * P​a​s​s​w​o​r​d
+	 */
+	PASSWORD: string
+	/**
+	 * M​K​C​e​n​t​r​a​l​ ​R​e​g​i​s​t​r​y
+	 */
+	MKC_REGISTRY: string
 	NAVBAR: {
 		/**
 		 * T​o​u​r​n​a​m​e​n​t​s
@@ -55,337 +67,1405 @@ type RootTranslation = {
 		 * D​i​s​c​o​r​d
 		 */
 		DISCORD: string
-		MARK_ALL_READ: string,
-		LANGUAGE_PICKER: string,
-		IS_READ: string,
-		TYPE: string,
-		LOGIN: string,
-		REGISTER: string,
-		PLAYER_SIGNUP: string,
-		PROFILE: string,
-		MENU: string,
-		HOME_PAGE: string,
-		NOTIFICATIONS: string,
-		MODERATOR: string,
+		/**
+		 * T​y​p​e
+		 */
+		TYPE: string
+		/**
+		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
+		 */
+		MARK_ALL_READ: string
+		/**
+		 * I​s​ ​R​e​a​d
+		 */
+		IS_READ: string
+		/**
+		 * L​a​n​g​u​a​g​e​ ​P​i​c​k​e​r
+		 */
+		LANGUAGE_PICKER: string
+		/**
+		 * L​o​g​i​n
+		 */
+		LOGIN: string
+		/**
+		 * R​e​g​i​s​t​e​r
+		 */
+		REGISTER: string
+		/**
+		 * P​l​a​y​e​r​ ​S​i​g​n​u​p
+		 */
+		PLAYER_SIGNUP: string
+		/**
+		 * P​r​o​f​i​l​e
+		 */
+		PROFILE: string
+		/**
+		 * M​e​n​u
+		 */
+		MENU: string
+		/**
+		 * H​o​m​e​ ​P​a​g​e
+		 */
+		HOME_PAGE: string
+		/**
+		 * N​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		NOTIFICATIONS: string
+		/**
+		 * M​o​d​e​r​a​t​o​r
+		 */
+		MODERATOR: string
 	}
 	PLAYER_LIST: {
-		PLAYERS: string,
-		PLAYER_LISTING: string,
-		SEARCH: string,
+		/**
+		 * P​l​a​y​e​r​s
+		 */
+		PLAYERS: string
+		/**
+		 * P​l​a​y​e​r​ ​L​i​s​t​i​n​g
+		 */
+		PLAYER_LISTING: string
+		/**
+		 * S​e​a​r​c​h
+		 */
+		SEARCH: string
 		FILTERS: {
-			ALL_GAMES: string,
-			ALL_COUNTRIES: string,
-			SEARCH_BY: string,
-			SEARCH: string,
-		},
-		HEADER: {
-			COUNTRY: string,
-			NAME: string,
+			/**
+			 * A​l​l​ ​G​a​m​e​s
+			 */
+			ALL_GAMES: string
+			/**
+			 * A​l​l​ ​C​o​u​n​t​r​i​e​s
+			 */
+			ALL_COUNTRIES: string
+			/**
+			 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e​ ​o​r​ ​F​r​i​e​n​d​ ​C​o​d​e​.​.​.
+			 */
+			SEARCH_BY: string
+			/**
+			 * S​e​a​r​c​h
+			 */
+			SEARCH: string
 		}
-	},
+		HEADER: {
+			/**
+			 * C​o​u​n​t​r​y
+			 */
+			COUNTRY: string
+			/**
+			 * N​a​m​e
+			 */
+			NAME: string
+		}
+	}
 	TEAM_LIST: {
-		TAG: string,
-		TEAMS: string,
-		NAME: string,
-		ROSTERS: string,
-		REGISTERED: string,
-		CREATE_TEAM: string,
-		TEAM_LISTING: string,
-	},
+		/**
+		 * T​a​g
+		 */
+		TAG: string
+		/**
+		 * T​e​a​m​s
+		 */
+		TEAMS: string
+		/**
+		 * N​a​m​e
+		 */
+		NAME: string
+		/**
+		 * R​o​s​t​e​r​s
+		 */
+		ROSTERS: string
+		/**
+		 * R​e​g​i​s​t​e​r​e​d
+		 */
+		REGISTERED: string
+		/**
+		 * C​r​e​a​t​e​ ​a​ ​t​e​a​m
+		 */
+		CREATE_TEAM: string
+		/**
+		 * T​e​a​m​ ​L​i​s​t​i​n​g
+		 */
+		TEAM_LISTING: string
+	}
 	PLAYER_PROFILE: {
-		PLAYER_PROFILE: string,
-		INVITES: string,
-		EDIT_PROFILE: string,
-		SUBMIT: string,
-		PRIMARY: string,
-		DESCRIPTION: string,
-		FRIEND_CODE: string,
-		FRIEND_CODES: string,
-		ADD_FRIEND_CODE: string,
-		AVATAR_URL: string,
-		ABOUT_ME: string,
-		LANGUAGE: string,
-		THEME: string,
-		TIMEZONE: string,
-		SAVE: string,
-	},
+		/**
+		 * P​l​a​y​e​r​ ​P​r​o​f​i​l​e
+		 */
+		PLAYER_PROFILE: string
+		/**
+		 * I​n​v​i​t​e​s
+		 */
+		INVITES: string
+		/**
+		 * E​d​i​t​ ​P​r​o​f​i​l​e
+		 */
+		EDIT_PROFILE: string
+		/**
+		 * D​e​s​c​r​i​p​t​i​o​n
+		 */
+		DESCRIPTION: string
+		/**
+		 * P​r​i​m​a​r​y​?
+		 */
+		PRIMARY: string
+		/**
+		 * S​u​b​m​i​t
+		 */
+		SUBMIT: string
+		/**
+		 * F​r​i​e​n​d​ ​C​o​d​e
+		 */
+		FRIEND_CODE: string
+		/**
+		 * F​r​i​e​n​d​ ​C​o​d​e​s
+		 */
+		FRIEND_CODES: string
+		/**
+		 * A​d​d​ ​F​r​i​e​n​d​ ​C​o​d​e
+		 */
+		ADD_FRIEND_CODE: string
+		/**
+		 * A​v​a​t​a​r​ ​U​R​L
+		 */
+		AVATAR_URL: string
+		/**
+		 * A​b​o​u​t​ ​m​e
+		 */
+		ABOUT_ME: string
+		/**
+		 * L​a​n​g​u​a​g​e
+		 */
+		LANGUAGE: string
+		/**
+		 * T​h​e​m​e
+		 */
+		THEME: string
+		/**
+		 * T​i​m​e​z​o​n​e
+		 */
+		TIMEZONE: string
+		/**
+		 * S​a​v​e
+		 */
+		SAVE: string
+	}
 	LANGUAGES: {
-		EN_US: string,
-		EN_GB: string,
-		DE: string,
-		ES: string,
-		FR: string,
-		JA: string,
-	},
+		/**
+		 * E​n​g​l​i​s​h​ ​(​U​n​i​t​e​d​ ​S​t​a​t​e​s​)
+		 */
+		EN_US: string
+		/**
+		 * E​n​g​l​i​s​h​ ​(​G​r​e​a​t​ ​B​r​i​t​a​i​n​)
+		 */
+		EN_GB: string
+		/**
+		 * G​e​r​m​a​n
+		 */
+		DE: string
+		/**
+		 * S​p​a​n​i​s​h
+		 */
+		ES: string
+		/**
+		 * F​r​e​n​c​h
+		 */
+		FR: string
+		/**
+		 * J​a​p​a​n​e​s​e
+		 */
+		JA: string
+	}
+	COLORS: {
+		/**
+		 * R​e​d​ ​1
+		 */
+		RED_1: string
+		/**
+		 * R​e​d​ ​2
+		 */
+		RED_2: string
+		/**
+		 * R​e​d​ ​3
+		 */
+		RED_3: string
+		/**
+		 * R​e​d​ ​4
+		 */
+		RED_4: string
+		/**
+		 * O​r​a​n​g​e​ ​1
+		 */
+		ORANGE_1: string
+		/**
+		 * O​r​a​n​g​e​ ​2
+		 */
+		ORANGE_2: string
+		/**
+		 * O​r​a​n​g​e​ ​3
+		 */
+		ORANGE_3: string
+		/**
+		 * O​r​a​n​g​e​ ​4
+		 */
+		ORANGE_4: string
+		/**
+		 * Y​e​l​l​o​w​ ​1
+		 */
+		YELLOW_1: string
+		/**
+		 * Y​e​l​l​o​w​ ​2
+		 */
+		YELLOW_2: string
+		/**
+		 * Y​e​l​l​o​w​ ​3
+		 */
+		YELLOW_3: string
+		/**
+		 * Y​e​l​l​o​w​ ​4
+		 */
+		YELLOW_4: string
+		/**
+		 * G​r​e​e​n​ ​1
+		 */
+		GREEN_1: string
+		/**
+		 * G​r​e​e​n​ ​2
+		 */
+		GREEN_2: string
+		/**
+		 * G​r​e​e​n​ ​3
+		 */
+		GREEN_3: string
+		/**
+		 * G​r​e​e​n​ ​4
+		 */
+		GREEN_4: string
+		/**
+		 * A​q​u​a​ ​1
+		 */
+		AQUA_1: string
+		/**
+		 * A​q​u​a​ ​2
+		 */
+		AQUA_2: string
+		/**
+		 * A​q​u​a​ ​3
+		 */
+		AQUA_3: string
+		/**
+		 * A​q​u​a​ ​4
+		 */
+		AQUA_4: string
+		/**
+		 * B​l​u​e​ ​1
+		 */
+		BLUE_1: string
+		/**
+		 * B​l​u​e​ ​2
+		 */
+		BLUE_2: string
+		/**
+		 * B​l​u​e​ ​3
+		 */
+		BLUE_3: string
+		/**
+		 * B​l​u​e​ ​4
+		 */
+		BLUE_4: string
+		/**
+		 * I​n​d​i​g​o​ ​1
+		 */
+		INDIGO_1: string
+		/**
+		 * I​n​d​i​g​o​ ​2
+		 */
+		INDIGO_2: string
+		/**
+		 * I​n​d​i​g​o​ ​3
+		 */
+		INDIGO_3: string
+		/**
+		 * I​n​d​i​g​o​ ​4
+		 */
+		INDIGO_4: string
+		/**
+		 * P​u​r​p​l​e​ ​1
+		 */
+		PURPLE_1: string
+		/**
+		 * P​u​r​p​l​e​ ​2
+		 */
+		PURPLE_2: string
+		/**
+		 * P​u​r​p​l​e​ ​3
+		 */
+		PURPLE_3: string
+		/**
+		 * P​u​r​p​l​e​ ​4
+		 */
+		PURPLE_4: string
+		/**
+		 * P​i​n​k​ ​1
+		 */
+		PINK_1: string
+		/**
+		 * P​i​n​k​ ​2
+		 */
+		PINK_2: string
+		/**
+		 * P​i​n​k​ ​3
+		 */
+		PINK_3: string
+		/**
+		 * P​i​n​k​ ​4
+		 */
+		PINK_4: string
+		/**
+		 * G​r​e​y​ ​1
+		 */
+		GREY_1: string
+		/**
+		 * G​r​e​y​ ​2
+		 */
+		GREY_2: string
+		/**
+		 * G​r​e​y​ ​3
+		 */
+		GREY_3: string
+		/**
+		 * B​l​a​c​k
+		 */
+		BLACK: string
+	}
 	COUNTRIES: {
-		AF: string,
-		AX: string,
-		AL: string,
-		DZ: string,
-		AS: string,
-		AD: string,
-		AO: string,
-		AI: string,
-		AQ: string,
-		AG: string,
-		AR: string,
-		AM: string,
-		AW: string,
-		AU: string,
-		AT: string,
-		AZ: string,
-		BS: string,
-		BH: string,
-		BD: string,
-		BB: string,
-		BY: string,
-		BE: string,
-		BZ: string,
-		BJ: string,
-		BM: string,
-		BT: string,
-		BO: string,
-		BQ: string,
-		BA: string,
-		BW: string,
-		BV: string,
-		BR: string,
-		IO: string,
-		BN: string,
-		BG: string,
-		BF: string,
-		BI: string,
-		KH: string,
-		CM: string,
-		CA: string,
-		CV: string,
-		KY: string,
-		CF: string,
-		TD: string,
-		CL: string,
-		CN: string,
-		CX: string,
-		CC: string,
-		CO: string,
-		CW: string,
-		SX: string,
-		SS: string,
-		KM: string,
-		CG: string,
-		CD: string,
-		CK: string,
-		CR: string,
-		CI: string,
-		HR: string,
-		CU: string,
-		CY: string,
-		CZ: string,
-		DK: string,
-		DJ: string,
-		DM: string,
-		DO: string,
-		EC: string,
-		EG: string,
-		SV: string,
-		GQ: string,
-		ER: string,
-		EE: string,
-		ET: string,
-		FK: string,
-		FO: string,
-		FJ: string,
-		FI: string,
-		FR: string,
-		GF: string,
-		PF: string,
-		TF: string,
-		GA: string,
-		GM: string,
-		GE: string,
-		DE: string,
-		GH: string,
-		GI: string,
-		GR: string,
-		GL: string,
-		GD: string,
-		GP: string,
-		GU: string,
-		GT: string,
-		GG: string,
-		GN: string,
-		GW: string,
-		GY: string,
-		HT: string,
-		HM: string,
-		VA: string,
-		HN: string,
-		HK: string,
-		HU: string,
-		IS: string,
-		IN: string,
-		ID: string,
-		IR: string,
-		IQ: string,
-		IE: string,
-		IM: string,
-		IL: string,
-		IT: string,
-		JM: string,
-		JP: string,
-		JE: string,
-		JO: string,
-		KZ: string,
-		KE: string,
-		KI: string,
-		KR: string,
-		KP: string,
-		KW: string,
-		KG: string,
-		LA: string,
-		LV: string,
-		LB: string,
-		LS: string,
-		LR: string,
-		LY: string,
-		LI: string,
-		LT: string,
-		LU: string,
-		MO: string,
-		MK: string,
-		MG: string,
-		MW: string,
-		MY: string,
-		MV: string,
-		ML: string,
-		MT: string,
-		MH: string,
-		MQ: string,
-		MR: string,
-		MU: string,
-		YT: string,
-		MX: string,
-		FM: string,
-		MD: string,
-		MC: string,
-		MN: string,
-		ME: string,
-		MS: string,
-		MA: string,
-		MZ: string,
-		MM: string,
-		NA: string,
-		NR: string,
-		NP: string,
-		NL: string,
-		NC: string,
-		NZ: string,
-		NI: string,
-		NE: string,
-		NG: string,
-		NU: string,
-		NF: string,
-		MP: string,
-		NO: string,
-		OM: string,
-		PK: string,
-		PW: string,
-		PS: string,
-		PA: string,
-		PG: string,
-		PY: string,
-		PE: string,
-		PH: string,
-		PN: string,
-		PL: string,
-		PT: string,
-		PR: string,
-		QA: string,
-		RE: string,
-		RO: string,
-		RU: string,
-		RW: string,
-		BL: string,
-		SH: string,
-		KN: string,
-		LC: string,
-		MF: string,
-		PM: string,
-		VC: string,
-		WS: string,
-		SM: string,
-		ST: string,
-		SA: string,
-		SN: string,
-		RS: string,
-		SC: string,
-		SL: string,
-		SG: string,
-		SK: string,
-		SI: string,
-		SB: string,
-		SO: string,
-		ZA: string,
-		GS: string,
-		ES: string,
-		LK: string,
-		SD: string,
-		SR: string,
-		SJ: string,
-		SZ: string,
-		SE: string,
-		CH: string,
-		SY: string,
-		TW: string,
-		TJ: string,
-		TZ: string,
-		TH: string,
-		TL: string,
-		TG: string,
-		TK: string,
-		TO: string,
-		TT: string,
-		TN: string,
-		TR: string,
-		TM: string,
-		TC: string,
-		TV: string,
-		UG: string,
-		UA: string,
-		AE: string,
-		GB: string,
-		US: string,
-		UM: string,
-		UY: string,
-		UZ: string,
-		VU: string,
-		VE: string,
-		VN: string,
-		VG: string,
-		VI: string,
-		WF: string,
-		EH: string,
-		YE: string,
-		ZM: string,
+		/**
+		 * A​f​g​h​a​n​i​s​t​a​n
+		 */
+		AF: string
+		/**
+		 * Å​l​a​n​d​ ​I​s​l​a​n​d​s
+		 */
+		AX: string
+		/**
+		 * A​l​b​a​n​i​a
+		 */
+		AL: string
+		/**
+		 * A​l​g​e​r​i​a
+		 */
+		DZ: string
+		/**
+		 * A​m​e​r​i​c​a​n​ ​S​a​m​o​a
+		 */
+		AS: string
+		/**
+		 * A​n​d​o​r​r​a
+		 */
+		AD: string
+		/**
+		 * A​n​g​o​l​a
+		 */
+		AO: string
+		/**
+		 * A​n​g​u​i​l​l​a
+		 */
+		AI: string
+		/**
+		 * A​n​t​a​r​c​t​i​c​a
+		 */
+		AQ: string
+		/**
+		 * A​n​t​i​g​u​a​ ​a​n​d​ ​B​a​r​b​u​d​a
+		 */
+		AG: string
+		/**
+		 * A​r​g​e​n​t​i​n​a
+		 */
+		AR: string
+		/**
+		 * A​r​m​e​n​i​a
+		 */
+		AM: string
+		/**
+		 * A​r​u​b​a
+		 */
+		AW: string
+		/**
+		 * A​u​s​t​r​a​l​i​a
+		 */
+		AU: string
+		/**
+		 * A​u​s​t​r​i​a
+		 */
+		AT: string
+		/**
+		 * A​z​e​r​b​a​i​j​a​n
+		 */
+		AZ: string
+		/**
+		 * B​a​h​a​m​a​s
+		 */
+		BS: string
+		/**
+		 * B​a​h​r​a​i​n
+		 */
+		BH: string
+		/**
+		 * B​a​n​g​l​a​d​e​s​h
+		 */
+		BD: string
+		/**
+		 * B​a​r​b​a​d​o​s
+		 */
+		BB: string
+		/**
+		 * B​e​l​a​r​u​s
+		 */
+		BY: string
+		/**
+		 * B​e​l​g​i​u​m
+		 */
+		BE: string
+		/**
+		 * B​e​l​i​z​e
+		 */
+		BZ: string
+		/**
+		 * B​e​n​i​n
+		 */
+		BJ: string
+		/**
+		 * B​e​r​m​u​d​a
+		 */
+		BM: string
+		/**
+		 * B​h​u​t​a​n
+		 */
+		BT: string
+		/**
+		 * B​o​l​i​v​i​a​ ​(​P​l​u​r​i​n​a​t​i​o​n​a​l​ ​S​t​a​t​e​ ​o​f​)
+		 */
+		BO: string
+		/**
+		 * B​o​n​a​i​r​e​,​ ​S​i​n​t​ ​E​u​s​t​a​t​i​u​s​ ​a​n​d​ ​S​a​b​a
+		 */
+		BQ: string
+		/**
+		 * B​o​s​n​i​a​ ​a​n​d​ ​H​e​r​z​e​g​o​v​i​n​a
+		 */
+		BA: string
+		/**
+		 * B​o​t​s​w​a​n​a
+		 */
+		BW: string
+		/**
+		 * B​o​u​v​e​t​ ​I​s​l​a​n​d
+		 */
+		BV: string
+		/**
+		 * B​r​a​z​i​l
+		 */
+		BR: string
+		/**
+		 * B​r​i​t​i​s​h​ ​I​n​d​i​a​n​ ​O​c​e​a​n​ ​T​e​r​r​i​t​o​r​y
+		 */
+		IO: string
+		/**
+		 * B​r​u​n​e​i​ ​D​a​r​u​s​s​a​l​a​m
+		 */
+		BN: string
+		/**
+		 * B​u​l​g​a​r​i​a
+		 */
+		BG: string
+		/**
+		 * B​u​r​k​i​n​a​ ​F​a​s​o
+		 */
+		BF: string
+		/**
+		 * B​u​r​u​n​d​i
+		 */
+		BI: string
+		/**
+		 * C​a​m​b​o​d​i​a
+		 */
+		KH: string
+		/**
+		 * C​a​m​e​r​o​o​n
+		 */
+		CM: string
+		/**
+		 * C​a​n​a​d​a
+		 */
+		CA: string
+		/**
+		 * C​a​b​o​ ​V​e​r​d​e
+		 */
+		CV: string
+		/**
+		 * C​a​y​m​a​n​ ​I​s​l​a​n​d​s
+		 */
+		KY: string
+		/**
+		 * C​e​n​t​r​a​l​ ​A​f​r​i​c​a​n​ ​R​e​p​u​b​l​i​c
+		 */
+		CF: string
+		/**
+		 * C​h​a​d
+		 */
+		TD: string
+		/**
+		 * C​h​i​l​e
+		 */
+		CL: string
+		/**
+		 * C​h​i​n​a
+		 */
+		CN: string
+		/**
+		 * C​h​r​i​s​t​m​a​s​ ​I​s​l​a​n​d
+		 */
+		CX: string
+		/**
+		 * C​o​c​o​s​ ​(​K​e​e​l​i​n​g​)​ ​I​s​l​a​n​d​s
+		 */
+		CC: string
+		/**
+		 * C​o​l​o​m​b​i​a
+		 */
+		CO: string
+		/**
+		 * C​o​m​o​r​o​s
+		 */
+		KM: string
+		/**
+		 * C​o​n​g​o
+		 */
+		CG: string
+		/**
+		 * C​o​n​g​o​,​ ​D​e​m​o​c​r​a​t​i​c​ ​R​e​p​u​b​l​i​c​ ​o​f​ ​t​h​e
+		 */
+		CD: string
+		/**
+		 * C​o​o​k​ ​I​s​l​a​n​d​s
+		 */
+		CK: string
+		/**
+		 * C​o​s​t​a​ ​R​i​c​a
+		 */
+		CR: string
+		/**
+		 * C​ô​t​e​ ​d​'​I​v​o​i​r​e
+		 */
+		CI: string
+		/**
+		 * C​r​o​a​t​i​a
+		 */
+		HR: string
+		/**
+		 * C​u​b​a
+		 */
+		CU: string
+		/**
+		 * C​u​r​a​ç​a​o
+		 */
+		CW: string
+		/**
+		 * C​y​p​r​u​s
+		 */
+		CY: string
+		/**
+		 * C​z​e​c​h​i​a
+		 */
+		CZ: string
+		/**
+		 * D​e​n​m​a​r​k
+		 */
+		DK: string
+		/**
+		 * D​j​i​b​o​u​t​i
+		 */
+		DJ: string
+		/**
+		 * D​o​m​i​n​i​c​a
+		 */
+		DM: string
+		/**
+		 * D​o​m​i​n​i​c​a​n​ ​R​e​p​u​b​l​i​c
+		 */
+		DO: string
+		/**
+		 * E​c​u​a​d​o​r
+		 */
+		EC: string
+		/**
+		 * E​g​y​p​t
+		 */
+		EG: string
+		/**
+		 * E​l​ ​S​a​l​v​a​d​o​r
+		 */
+		SV: string
+		/**
+		 * E​q​u​a​t​o​r​i​a​l​ ​G​u​i​n​e​a
+		 */
+		GQ: string
+		/**
+		 * E​r​i​t​r​e​a
+		 */
+		ER: string
+		/**
+		 * E​s​t​o​n​i​a
+		 */
+		EE: string
+		/**
+		 * E​t​h​i​o​p​i​a
+		 */
+		ET: string
+		/**
+		 * F​a​l​k​l​a​n​d​ ​I​s​l​a​n​d​s​ ​(​M​a​l​v​i​n​a​s​)
+		 */
+		FK: string
+		/**
+		 * F​a​r​o​e​ ​I​s​l​a​n​d​s
+		 */
+		FO: string
+		/**
+		 * F​i​j​i
+		 */
+		FJ: string
+		/**
+		 * F​i​n​l​a​n​d
+		 */
+		FI: string
+		/**
+		 * F​r​a​n​c​e
+		 */
+		FR: string
+		/**
+		 * F​r​e​n​c​h​ ​G​u​i​a​n​a
+		 */
+		GF: string
+		/**
+		 * F​r​e​n​c​h​ ​P​o​l​y​n​e​s​i​a
+		 */
+		PF: string
+		/**
+		 * F​r​e​n​c​h​ ​S​o​u​t​h​e​r​n​ ​T​e​r​r​i​t​o​r​i​e​s
+		 */
+		TF: string
+		/**
+		 * G​a​b​o​n
+		 */
+		GA: string
+		/**
+		 * G​a​m​b​i​a
+		 */
+		GM: string
+		/**
+		 * G​e​o​r​g​i​a
+		 */
+		GE: string
+		/**
+		 * G​e​r​m​a​n​y
+		 */
+		DE: string
+		/**
+		 * G​h​a​n​a
+		 */
+		GH: string
+		/**
+		 * G​i​b​r​a​l​t​a​r
+		 */
+		GI: string
+		/**
+		 * G​r​e​e​c​e
+		 */
+		GR: string
+		/**
+		 * G​r​e​e​n​l​a​n​d
+		 */
+		GL: string
+		/**
+		 * G​r​e​n​a​d​a
+		 */
+		GD: string
+		/**
+		 * G​u​a​d​e​l​o​u​p​e
+		 */
+		GP: string
+		/**
+		 * G​u​a​m
+		 */
+		GU: string
+		/**
+		 * G​u​a​t​e​m​a​l​a
+		 */
+		GT: string
+		/**
+		 * G​u​e​r​n​s​e​y
+		 */
+		GG: string
+		/**
+		 * G​u​i​n​e​a
+		 */
+		GN: string
+		/**
+		 * G​u​i​n​e​a​-​B​i​s​s​a​u
+		 */
+		GW: string
+		/**
+		 * G​u​y​a​n​a
+		 */
+		GY: string
+		/**
+		 * H​a​i​t​i
+		 */
+		HT: string
+		/**
+		 * H​e​a​r​d​ ​I​s​l​a​n​d​ ​a​n​d​ ​M​c​D​o​n​a​l​d​ ​I​s​l​a​n​d​s
+		 */
+		HM: string
+		/**
+		 * H​o​l​y​ ​S​e​e
+		 */
+		VA: string
+		/**
+		 * H​o​n​d​u​r​a​s
+		 */
+		HN: string
+		/**
+		 * H​o​n​g​ ​K​o​n​g
+		 */
+		HK: string
+		/**
+		 * H​u​n​g​a​r​y
+		 */
+		HU: string
+		/**
+		 * I​c​e​l​a​n​d
+		 */
+		IS: string
+		/**
+		 * I​n​d​i​a
+		 */
+		IN: string
+		/**
+		 * I​n​d​o​n​e​s​i​a
+		 */
+		ID: string
+		/**
+		 * I​r​a​n​ ​(​I​s​l​a​m​i​c​ ​R​e​p​u​b​l​i​c​ ​o​f​)
+		 */
+		IR: string
+		/**
+		 * I​r​a​q
+		 */
+		IQ: string
+		/**
+		 * I​r​e​l​a​n​d
+		 */
+		IE: string
+		/**
+		 * I​s​l​e​ ​o​f​ ​M​a​n
+		 */
+		IM: string
+		/**
+		 * I​s​r​a​e​l
+		 */
+		IL: string
+		/**
+		 * I​t​a​l​y
+		 */
+		IT: string
+		/**
+		 * J​a​m​a​i​c​a
+		 */
+		JM: string
+		/**
+		 * J​a​p​a​n
+		 */
+		JP: string
+		/**
+		 * J​e​r​s​e​y
+		 */
+		JE: string
+		/**
+		 * J​o​r​d​a​n
+		 */
+		JO: string
+		/**
+		 * K​a​z​a​k​h​s​t​a​n
+		 */
+		KZ: string
+		/**
+		 * K​e​n​y​a
+		 */
+		KE: string
+		/**
+		 * K​i​r​i​b​a​t​i
+		 */
+		KI: string
+		/**
+		 * K​o​r​e​a​ ​(​D​e​m​o​c​r​a​t​i​c​ ​P​e​o​p​l​e​'​s​ ​R​e​p​u​b​l​i​c​ ​o​f​)
+		 */
+		KP: string
+		/**
+		 * K​o​r​e​a​,​ ​R​e​p​u​b​l​i​c​ ​o​f
+		 */
+		KR: string
+		/**
+		 * K​u​w​a​i​t
+		 */
+		KW: string
+		/**
+		 * K​y​r​g​y​z​s​t​a​n
+		 */
+		KG: string
+		/**
+		 * L​a​o​ ​P​e​o​p​l​e​'​s​ ​D​e​m​o​c​r​a​t​i​c​ ​R​e​p​u​b​l​i​c
+		 */
+		LA: string
+		/**
+		 * L​a​t​v​i​a
+		 */
+		LV: string
+		/**
+		 * L​e​b​a​n​o​n
+		 */
+		LB: string
+		/**
+		 * L​e​s​o​t​h​o
+		 */
+		LS: string
+		/**
+		 * L​i​b​e​r​i​a
+		 */
+		LR: string
+		/**
+		 * L​i​b​y​a
+		 */
+		LY: string
+		/**
+		 * L​i​e​c​h​t​e​n​s​t​e​i​n
+		 */
+		LI: string
+		/**
+		 * L​i​t​h​u​a​n​i​a
+		 */
+		LT: string
+		/**
+		 * L​u​x​e​m​b​o​u​r​g
+		 */
+		LU: string
+		/**
+		 * M​a​c​a​o
+		 */
+		MO: string
+		/**
+		 * N​o​r​t​h​ ​M​a​c​e​d​o​n​i​a
+		 */
+		MK: string
+		/**
+		 * M​a​d​a​g​a​s​c​a​r
+		 */
+		MG: string
+		/**
+		 * M​a​l​a​w​i
+		 */
+		MW: string
+		/**
+		 * M​a​l​a​y​s​i​a
+		 */
+		MY: string
+		/**
+		 * M​a​l​d​i​v​e​s
+		 */
+		MV: string
+		/**
+		 * M​a​l​i
+		 */
+		ML: string
+		/**
+		 * M​a​l​t​a
+		 */
+		MT: string
+		/**
+		 * M​a​r​s​h​a​l​l​ ​I​s​l​a​n​d​s
+		 */
+		MH: string
+		/**
+		 * M​a​r​t​i​n​i​q​u​e
+		 */
+		MQ: string
+		/**
+		 * M​a​u​r​i​t​a​n​i​a
+		 */
+		MR: string
+		/**
+		 * M​a​u​r​i​t​i​u​s
+		 */
+		MU: string
+		/**
+		 * M​a​y​o​t​t​e
+		 */
+		YT: string
+		/**
+		 * M​e​x​i​c​o
+		 */
+		MX: string
+		/**
+		 * M​i​c​r​o​n​e​s​i​a​ ​(​F​e​d​e​r​a​t​e​d​ ​S​t​a​t​e​s​ ​o​f​)
+		 */
+		FM: string
+		/**
+		 * M​o​r​o​c​c​o
+		 */
+		MA: string
+		/**
+		 * M​o​l​d​o​v​a​,​ ​R​e​p​u​b​l​i​c​ ​o​f
+		 */
+		MD: string
+		/**
+		 * M​o​n​a​c​o
+		 */
+		MC: string
+		/**
+		 * M​o​n​g​o​l​i​a
+		 */
+		MN: string
+		/**
+		 * M​o​n​t​e​n​e​g​r​o
+		 */
+		ME: string
+		/**
+		 * M​o​n​t​s​e​r​r​a​t
+		 */
+		MS: string
+		/**
+		 * M​o​z​a​m​b​i​q​u​e
+		 */
+		MZ: string
+		/**
+		 * M​y​a​n​m​a​r
+		 */
+		MM: string
+		/**
+		 * N​a​m​i​b​i​a
+		 */
+		NA: string
+		/**
+		 * N​a​u​r​u
+		 */
+		NR: string
+		/**
+		 * N​e​p​a​l
+		 */
+		NP: string
+		/**
+		 * N​e​t​h​e​r​l​a​n​d​s
+		 */
+		NL: string
+		/**
+		 * N​e​w​ ​C​a​l​e​d​o​n​i​a
+		 */
+		NC: string
+		/**
+		 * N​e​w​ ​Z​e​a​l​a​n​d
+		 */
+		NZ: string
+		/**
+		 * N​i​c​a​r​a​g​u​a
+		 */
+		NI: string
+		/**
+		 * N​i​g​e​r
+		 */
+		NE: string
+		/**
+		 * N​i​g​e​r​i​a
+		 */
+		NG: string
+		/**
+		 * N​i​u​e
+		 */
+		NU: string
+		/**
+		 * N​o​r​f​o​l​k​ ​I​s​l​a​n​d
+		 */
+		NF: string
+		/**
+		 * N​o​r​t​h​e​r​n​ ​M​a​r​i​a​n​a​ ​I​s​l​a​n​d​s
+		 */
+		MP: string
+		/**
+		 * N​o​r​w​a​y
+		 */
+		NO: string
+		/**
+		 * O​m​a​n
+		 */
+		OM: string
+		/**
+		 * P​a​k​i​s​t​a​n
+		 */
+		PK: string
+		/**
+		 * P​a​l​a​u
+		 */
+		PW: string
+		/**
+		 * P​a​l​e​s​t​i​n​e​,​ ​S​t​a​t​e​ ​o​f
+		 */
+		PS: string
+		/**
+		 * P​a​n​a​m​a
+		 */
+		PA: string
+		/**
+		 * P​a​p​u​a​ ​N​e​w​ ​G​u​i​n​e​a
+		 */
+		PG: string
+		/**
+		 * P​a​r​a​g​u​a​y
+		 */
+		PY: string
+		/**
+		 * P​e​r​u
+		 */
+		PE: string
+		/**
+		 * P​h​i​l​i​p​p​i​n​e​s
+		 */
+		PH: string
+		/**
+		 * P​i​t​c​a​i​r​n
+		 */
+		PN: string
+		/**
+		 * P​o​l​a​n​d
+		 */
+		PL: string
+		/**
+		 * P​o​r​t​u​g​a​l
+		 */
+		PT: string
+		/**
+		 * P​u​e​r​t​o​ ​R​i​c​o
+		 */
+		PR: string
+		/**
+		 * Q​a​t​a​r
+		 */
+		QA: string
+		/**
+		 * R​é​u​n​i​o​n
+		 */
+		RE: string
+		/**
+		 * R​o​m​a​n​i​a
+		 */
+		RO: string
+		/**
+		 * R​u​s​s​i​a​n​ ​F​e​d​e​r​a​t​i​o​n
+		 */
+		RU: string
+		/**
+		 * R​w​a​n​d​a
+		 */
+		RW: string
+		/**
+		 * S​a​i​n​t​ ​B​a​r​t​h​é​l​e​m​y
+		 */
+		BL: string
+		/**
+		 * S​a​i​n​t​ ​H​e​l​e​n​a​,​ ​A​s​c​e​n​s​i​o​n​ ​a​n​d​ ​T​r​i​s​t​a​n​ ​d​a​ ​C​u​n​h​a
+		 */
+		SH: string
+		/**
+		 * S​a​i​n​t​ ​K​i​t​t​s​ ​a​n​d​ ​N​e​v​i​s
+		 */
+		KN: string
+		/**
+		 * S​a​i​n​t​ ​L​u​c​i​a
+		 */
+		LC: string
+		/**
+		 * S​a​i​n​t​ ​M​a​r​t​i​n​ ​(​F​r​e​n​c​h​ ​p​a​r​t​)
+		 */
+		MF: string
+		/**
+		 * S​a​i​n​t​ ​P​i​e​r​r​e​ ​a​n​d​ ​M​i​q​u​e​l​o​n
+		 */
+		PM: string
+		/**
+		 * S​a​i​n​t​ ​V​i​n​c​e​n​t​ ​a​n​d​ ​t​h​e​ ​G​r​e​n​a​d​i​n​e​s
+		 */
+		VC: string
+		/**
+		 * S​a​m​o​a
+		 */
+		WS: string
+		/**
+		 * S​a​n​ ​M​a​r​i​n​o
+		 */
+		SM: string
+		/**
+		 * S​a​o​ ​T​o​m​e​ ​a​n​d​ ​P​r​i​n​c​i​p​e
+		 */
+		ST: string
+		/**
+		 * S​a​u​d​i​ ​A​r​a​b​i​a
+		 */
+		SA: string
+		/**
+		 * S​e​n​e​g​a​l
+		 */
+		SN: string
+		/**
+		 * S​e​r​b​i​a
+		 */
+		RS: string
+		/**
+		 * S​e​y​c​h​e​l​l​e​s
+		 */
+		SC: string
+		/**
+		 * S​i​e​r​r​a​ ​L​e​o​n​e
+		 */
+		SL: string
+		/**
+		 * S​i​n​g​a​p​o​r​e
+		 */
+		SG: string
+		/**
+		 * S​i​n​t​ ​M​a​a​r​t​e​n​ ​(​D​u​t​c​h​ ​p​a​r​t​)
+		 */
+		SX: string
+		/**
+		 * S​l​o​v​a​k​i​a
+		 */
+		SK: string
+		/**
+		 * S​l​o​v​e​n​i​a
+		 */
+		SI: string
+		/**
+		 * S​o​l​o​m​o​n​ ​I​s​l​a​n​d​s
+		 */
+		SB: string
+		/**
+		 * S​o​m​a​l​i​a
+		 */
+		SO: string
+		/**
+		 * S​o​u​t​h​ ​A​f​r​i​c​a
+		 */
+		ZA: string
+		/**
+		 * S​o​u​t​h​ ​G​e​o​r​g​i​a​ ​a​n​d​ ​t​h​e​ ​S​o​u​t​h​ ​S​a​n​d​w​i​c​h​ ​I​s​l​a​n​d​s
+		 */
+		GS: string
+		/**
+		 * S​o​u​t​h​ ​S​u​d​a​n
+		 */
+		SS: string
+		/**
+		 * S​p​a​i​n
+		 */
+		ES: string
+		/**
+		 * S​r​i​ ​L​a​n​k​a
+		 */
+		LK: string
+		/**
+		 * S​u​d​a​n
+		 */
+		SD: string
+		/**
+		 * S​u​r​i​n​a​m​e
+		 */
+		SR: string
+		/**
+		 * S​v​a​l​b​a​r​d​ ​a​n​d​ ​J​a​n​ ​M​a​y​e​n
+		 */
+		SJ: string
+		/**
+		 * E​s​w​a​t​i​n​i
+		 */
+		SZ: string
+		/**
+		 * S​w​e​d​e​n
+		 */
+		SE: string
+		/**
+		 * S​w​i​t​z​e​r​l​a​n​d
+		 */
+		CH: string
+		/**
+		 * S​y​r​i​a​n​ ​A​r​a​b​ ​R​e​p​u​b​l​i​c
+		 */
+		SY: string
+		/**
+		 * T​a​i​w​a​n​,​ ​P​r​o​v​i​n​c​e​ ​o​f​ ​C​h​i​n​a
+		 */
+		TW: string
+		/**
+		 * T​a​j​i​k​i​s​t​a​n
+		 */
+		TJ: string
+		/**
+		 * T​a​n​z​a​n​i​a​,​ ​U​n​i​t​e​d​ ​R​e​p​u​b​l​i​c​ ​o​f
+		 */
+		TZ: string
+		/**
+		 * T​h​a​i​l​a​n​d
+		 */
+		TH: string
+		/**
+		 * T​i​m​o​r​-​L​e​s​t​e
+		 */
+		TL: string
+		/**
+		 * T​o​g​o
+		 */
+		TG: string
+		/**
+		 * T​o​k​e​l​a​u
+		 */
+		TK: string
+		/**
+		 * T​o​n​g​a
+		 */
+		TO: string
+		/**
+		 * T​r​i​n​i​d​a​d​ ​a​n​d​ ​T​o​b​a​g​o
+		 */
+		TT: string
+		/**
+		 * T​u​n​i​s​i​a
+		 */
+		TN: string
+		/**
+		 * T​ü​r​k​i​y​e
+		 */
+		TR: string
+		/**
+		 * T​u​r​k​m​e​n​i​s​t​a​n
+		 */
+		TM: string
+		/**
+		 * T​u​r​k​s​ ​a​n​d​ ​C​a​i​c​o​s​ ​I​s​l​a​n​d​s
+		 */
+		TC: string
+		/**
+		 * T​u​v​a​l​u
+		 */
+		TV: string
+		/**
+		 * U​g​a​n​d​a
+		 */
+		UG: string
+		/**
+		 * U​k​r​a​i​n​e
+		 */
+		UA: string
+		/**
+		 * U​n​i​t​e​d​ ​A​r​a​b​ ​E​m​i​r​a​t​e​s
+		 */
+		AE: string
+		/**
+		 * U​n​i​t​e​d​ ​K​i​n​g​d​o​m​ ​o​f​ ​G​r​e​a​t​ ​B​r​i​t​a​i​n​ ​a​n​d​ ​N​o​r​t​h​e​r​n​ ​I​r​e​l​a​n​d
+		 */
+		GB: string
+		/**
+		 * U​n​i​t​e​d​ ​S​t​a​t​e​s​ ​o​f​ ​A​m​e​r​i​c​a
+		 */
+		US: string
+		/**
+		 * U​n​i​t​e​d​ ​S​t​a​t​e​s​ ​M​i​n​o​r​ ​O​u​t​l​y​i​n​g​ ​I​s​l​a​n​d​s
+		 */
+		UM: string
+		/**
+		 * U​r​u​g​u​a​y
+		 */
+		UY: string
+		/**
+		 * U​z​b​e​k​i​s​t​a​n
+		 */
+		UZ: string
+		/**
+		 * V​a​n​u​a​t​u
+		 */
+		VU: string
+		/**
+		 * V​e​n​e​z​u​e​l​a​ ​(​B​o​l​i​v​a​r​i​a​n​ ​R​e​p​u​b​l​i​c​ ​o​f​)
+		 */
+		VE: string
+		/**
+		 * V​i​e​t​ ​N​a​m
+		 */
+		VN: string
+		/**
+		 * V​i​r​g​i​n​ ​I​s​l​a​n​d​s​ ​(​B​r​i​t​i​s​h​)
+		 */
+		VG: string
+		/**
+		 * V​i​r​g​i​n​ ​I​s​l​a​n​d​s​ ​(​U​.​S​.​)
+		 */
+		VI: string
+		/**
+		 * W​a​l​l​i​s​ ​a​n​d​ ​F​u​t​u​n​a
+		 */
+		WF: string
+		/**
+		 * W​e​s​t​e​r​n​ ​S​a​h​a​r​a
+		 */
+		EH: string
+		/**
+		 * Y​e​m​e​n
+		 */
+		YE: string
+		/**
+		 * Z​a​m​b​i​a
+		 */
+		ZM: string
+		/**
+		 * Z​i​m​b​a​b​w​e
+		 */
 		ZW: string
 	}
 }
 
 export type TranslationFunctions = {
 	/**
-	 * Welcome to <strong>Mario Kart Central</strong>!
+	 * Welcome to Mario Kart Central!
 	 */
 	WELCOME: () => LocalizedString
 	/**
-	 * We are the home of <strong>Mario Kart Tournaments</strong>, where you'll find <strong>tournaments</strong> for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for <strong>Mario Kart 8 Deluxe, Tour, and more</strong>, with a variety of matches happening weekly!
+	 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
 	 */
 	SUMMARY: () => LocalizedString
 	/**
 	 * American English
 	 */
 	LANGUAGE: () => LocalizedString
+	/**
+	 * Logout
+	 */
 	LOGOUT: () => LocalizedString
+	/**
+	 * Email
+	 */
 	EMAIL: () => LocalizedString
+	/**
+	 * Password
+	 */
 	PASSWORD: () => LocalizedString
+	/**
+	 * MKCentral Registry
+	 */
 	MKC_REGISTRY: () => LocalizedString
 	NAVBAR: {
 		/**
@@ -408,318 +1488,1373 @@ export type TranslationFunctions = {
 		 * Discord
 		 */
 		DISCORD: () => LocalizedString
-		MARK_ALL_READ: () => LocalizedString
-		IS_READ: () => LocalizedString
-		LANGUAGE_PICKER: () => LocalizedString
+		/**
+		 * Type
+		 */
 		TYPE: () => LocalizedString
+		/**
+		 * Mark All as Read
+		 */
+		MARK_ALL_READ: () => LocalizedString
+		/**
+		 * Is Read
+		 */
+		IS_READ: () => LocalizedString
+		/**
+		 * Language Picker
+		 */
+		LANGUAGE_PICKER: () => LocalizedString
+		/**
+		 * Login
+		 */
 		LOGIN: () => LocalizedString
+		/**
+		 * Register
+		 */
 		REGISTER: () => LocalizedString
+		/**
+		 * Player Signup
+		 */
 		PLAYER_SIGNUP: () => LocalizedString
+		/**
+		 * Profile
+		 */
 		PROFILE: () => LocalizedString
+		/**
+		 * Menu
+		 */
 		MENU: () => LocalizedString
+		/**
+		 * Home Page
+		 */
 		HOME_PAGE: () => LocalizedString
+		/**
+		 * Notifications
+		 */
 		NOTIFICATIONS: () => LocalizedString
-		MODERATOR: () => LocalizedString,
+		/**
+		 * Moderator
+		 */
+		MODERATOR: () => LocalizedString
 	}
 	PLAYER_LIST: {
+		/**
+		 * Players
+		 */
 		PLAYERS: () => LocalizedString
+		/**
+		 * Player Listing
+		 */
 		PLAYER_LISTING: () => LocalizedString
+		/**
+		 * Search
+		 */
 		SEARCH: () => LocalizedString
 		FILTERS: {
+			/**
+			 * All Games
+			 */
 			ALL_GAMES: () => LocalizedString
+			/**
+			 * All Countries
+			 */
 			ALL_COUNTRIES: () => LocalizedString
+			/**
+			 * Search by Name or Friend Code...
+			 */
 			SEARCH_BY: () => LocalizedString
+			/**
+			 * Search
+			 */
 			SEARCH: () => LocalizedString
-		},
+		}
 		HEADER: {
+			/**
+			 * Country
+			 */
 			COUNTRY: () => LocalizedString
+			/**
+			 * Name
+			 */
 			NAME: () => LocalizedString
 		}
-	},
+	}
 	TEAM_LIST: {
+		/**
+		 * Tag
+		 */
 		TAG: () => LocalizedString
+		/**
+		 * Teams
+		 */
 		TEAMS: () => LocalizedString
+		/**
+		 * Name
+		 */
 		NAME: () => LocalizedString
+		/**
+		 * Rosters
+		 */
 		ROSTERS: () => LocalizedString
+		/**
+		 * Registered
+		 */
 		REGISTERED: () => LocalizedString
+		/**
+		 * Create a team
+		 */
 		CREATE_TEAM: () => LocalizedString
+		/**
+		 * Team Listing
+		 */
 		TEAM_LISTING: () => LocalizedString
-	},
+	}
 	PLAYER_PROFILE: {
+		/**
+		 * Player Profile
+		 */
 		PLAYER_PROFILE: () => LocalizedString
+		/**
+		 * Invites
+		 */
 		INVITES: () => LocalizedString
+		/**
+		 * Edit Profile
+		 */
 		EDIT_PROFILE: () => LocalizedString
-		PRIMARY: () => LocalizedString
-		SUBMIT: () => LocalizedString
+		/**
+		 * Description
+		 */
 		DESCRIPTION: () => LocalizedString
+		/**
+		 * Primary?
+		 */
+		PRIMARY: () => LocalizedString
+		/**
+		 * Submit
+		 */
+		SUBMIT: () => LocalizedString
+		/**
+		 * Friend Code
+		 */
 		FRIEND_CODE: () => LocalizedString
+		/**
+		 * Friend Codes
+		 */
 		FRIEND_CODES: () => LocalizedString
+		/**
+		 * Add Friend Code
+		 */
 		ADD_FRIEND_CODE: () => LocalizedString
+		/**
+		 * Avatar URL
+		 */
 		AVATAR_URL: () => LocalizedString
+		/**
+		 * About me
+		 */
 		ABOUT_ME: () => LocalizedString
+		/**
+		 * Language
+		 */
 		LANGUAGE: () => LocalizedString
+		/**
+		 * Theme
+		 */
 		THEME: () => LocalizedString
+		/**
+		 * Timezone
+		 */
 		TIMEZONE: () => LocalizedString
+		/**
+		 * Save
+		 */
 		SAVE: () => LocalizedString
-	},
+	}
 	LANGUAGES: {
+		/**
+		 * English (United States)
+		 */
 		EN_US: () => LocalizedString
+		/**
+		 * English (Great Britain)
+		 */
 		EN_GB: () => LocalizedString
+		/**
+		 * German
+		 */
 		DE: () => LocalizedString
+		/**
+		 * Spanish
+		 */
 		ES: () => LocalizedString
+		/**
+		 * French
+		 */
 		FR: () => LocalizedString
+		/**
+		 * Japanese
+		 */
 		JA: () => LocalizedString
-	},
+	}
+	COLORS: {
+		/**
+		 * Red 1
+		 */
+		RED_1: () => LocalizedString
+		/**
+		 * Red 2
+		 */
+		RED_2: () => LocalizedString
+		/**
+		 * Red 3
+		 */
+		RED_3: () => LocalizedString
+		/**
+		 * Red 4
+		 */
+		RED_4: () => LocalizedString
+		/**
+		 * Orange 1
+		 */
+		ORANGE_1: () => LocalizedString
+		/**
+		 * Orange 2
+		 */
+		ORANGE_2: () => LocalizedString
+		/**
+		 * Orange 3
+		 */
+		ORANGE_3: () => LocalizedString
+		/**
+		 * Orange 4
+		 */
+		ORANGE_4: () => LocalizedString
+		/**
+		 * Yellow 1
+		 */
+		YELLOW_1: () => LocalizedString
+		/**
+		 * Yellow 2
+		 */
+		YELLOW_2: () => LocalizedString
+		/**
+		 * Yellow 3
+		 */
+		YELLOW_3: () => LocalizedString
+		/**
+		 * Yellow 4
+		 */
+		YELLOW_4: () => LocalizedString
+		/**
+		 * Green 1
+		 */
+		GREEN_1: () => LocalizedString
+		/**
+		 * Green 2
+		 */
+		GREEN_2: () => LocalizedString
+		/**
+		 * Green 3
+		 */
+		GREEN_3: () => LocalizedString
+		/**
+		 * Green 4
+		 */
+		GREEN_4: () => LocalizedString
+		/**
+		 * Aqua 1
+		 */
+		AQUA_1: () => LocalizedString
+		/**
+		 * Aqua 2
+		 */
+		AQUA_2: () => LocalizedString
+		/**
+		 * Aqua 3
+		 */
+		AQUA_3: () => LocalizedString
+		/**
+		 * Aqua 4
+		 */
+		AQUA_4: () => LocalizedString
+		/**
+		 * Blue 1
+		 */
+		BLUE_1: () => LocalizedString
+		/**
+		 * Blue 2
+		 */
+		BLUE_2: () => LocalizedString
+		/**
+		 * Blue 3
+		 */
+		BLUE_3: () => LocalizedString
+		/**
+		 * Blue 4
+		 */
+		BLUE_4: () => LocalizedString
+		/**
+		 * Indigo 1
+		 */
+		INDIGO_1: () => LocalizedString
+		/**
+		 * Indigo 2
+		 */
+		INDIGO_2: () => LocalizedString
+		/**
+		 * Indigo 3
+		 */
+		INDIGO_3: () => LocalizedString
+		/**
+		 * Indigo 4
+		 */
+		INDIGO_4: () => LocalizedString
+		/**
+		 * Purple 1
+		 */
+		PURPLE_1: () => LocalizedString
+		/**
+		 * Purple 2
+		 */
+		PURPLE_2: () => LocalizedString
+		/**
+		 * Purple 3
+		 */
+		PURPLE_3: () => LocalizedString
+		/**
+		 * Purple 4
+		 */
+		PURPLE_4: () => LocalizedString
+		/**
+		 * Pink 1
+		 */
+		PINK_1: () => LocalizedString
+		/**
+		 * Pink 2
+		 */
+		PINK_2: () => LocalizedString
+		/**
+		 * Pink 3
+		 */
+		PINK_3: () => LocalizedString
+		/**
+		 * Pink 4
+		 */
+		PINK_4: () => LocalizedString
+		/**
+		 * Grey 1
+		 */
+		GREY_1: () => LocalizedString
+		/**
+		 * Grey 2
+		 */
+		GREY_2: () => LocalizedString
+		/**
+		 * Grey 3
+		 */
+		GREY_3: () => LocalizedString
+		/**
+		 * Black
+		 */
+		BLACK: () => LocalizedString
+	}
 	COUNTRIES: {
-        keys(arg0: any): unknown;
+		/**
+		 * Afghanistan
+		 */
 		AF: () => LocalizedString
+		/**
+		 * Åland Islands
+		 */
 		AX: () => LocalizedString
+		/**
+		 * Albania
+		 */
 		AL: () => LocalizedString
+		/**
+		 * Algeria
+		 */
 		DZ: () => LocalizedString
+		/**
+		 * American Samoa
+		 */
 		AS: () => LocalizedString
+		/**
+		 * Andorra
+		 */
 		AD: () => LocalizedString
+		/**
+		 * Angola
+		 */
 		AO: () => LocalizedString
+		/**
+		 * Anguilla
+		 */
 		AI: () => LocalizedString
+		/**
+		 * Antarctica
+		 */
 		AQ: () => LocalizedString
+		/**
+		 * Antigua and Barbuda
+		 */
 		AG: () => LocalizedString
+		/**
+		 * Argentina
+		 */
 		AR: () => LocalizedString
+		/**
+		 * Armenia
+		 */
 		AM: () => LocalizedString
+		/**
+		 * Aruba
+		 */
 		AW: () => LocalizedString
+		/**
+		 * Australia
+		 */
 		AU: () => LocalizedString
+		/**
+		 * Austria
+		 */
 		AT: () => LocalizedString
+		/**
+		 * Azerbaijan
+		 */
 		AZ: () => LocalizedString
+		/**
+		 * Bahamas
+		 */
 		BS: () => LocalizedString
+		/**
+		 * Bahrain
+		 */
 		BH: () => LocalizedString
+		/**
+		 * Bangladesh
+		 */
 		BD: () => LocalizedString
+		/**
+		 * Barbados
+		 */
 		BB: () => LocalizedString
+		/**
+		 * Belarus
+		 */
 		BY: () => LocalizedString
+		/**
+		 * Belgium
+		 */
 		BE: () => LocalizedString
+		/**
+		 * Belize
+		 */
 		BZ: () => LocalizedString
+		/**
+		 * Benin
+		 */
 		BJ: () => LocalizedString
+		/**
+		 * Bermuda
+		 */
 		BM: () => LocalizedString
+		/**
+		 * Bhutan
+		 */
 		BT: () => LocalizedString
+		/**
+		 * Bolivia (Plurinational State of)
+		 */
 		BO: () => LocalizedString
+		/**
+		 * Bonaire, Sint Eustatius and Saba
+		 */
 		BQ: () => LocalizedString
+		/**
+		 * Bosnia and Herzegovina
+		 */
 		BA: () => LocalizedString
+		/**
+		 * Botswana
+		 */
 		BW: () => LocalizedString
+		/**
+		 * Bouvet Island
+		 */
 		BV: () => LocalizedString
+		/**
+		 * Brazil
+		 */
 		BR: () => LocalizedString
+		/**
+		 * British Indian Ocean Territory
+		 */
 		IO: () => LocalizedString
+		/**
+		 * Brunei Darussalam
+		 */
 		BN: () => LocalizedString
+		/**
+		 * Bulgaria
+		 */
 		BG: () => LocalizedString
+		/**
+		 * Burkina Faso
+		 */
 		BF: () => LocalizedString
+		/**
+		 * Burundi
+		 */
 		BI: () => LocalizedString
+		/**
+		 * Cambodia
+		 */
 		KH: () => LocalizedString
+		/**
+		 * Cameroon
+		 */
 		CM: () => LocalizedString
+		/**
+		 * Canada
+		 */
 		CA: () => LocalizedString
+		/**
+		 * Cabo Verde
+		 */
 		CV: () => LocalizedString
+		/**
+		 * Cayman Islands
+		 */
 		KY: () => LocalizedString
+		/**
+		 * Central African Republic
+		 */
 		CF: () => LocalizedString
+		/**
+		 * Chad
+		 */
 		TD: () => LocalizedString
+		/**
+		 * Chile
+		 */
 		CL: () => LocalizedString
+		/**
+		 * China
+		 */
 		CN: () => LocalizedString
+		/**
+		 * Christmas Island
+		 */
 		CX: () => LocalizedString
+		/**
+		 * Cocos (Keeling) Islands
+		 */
 		CC: () => LocalizedString
+		/**
+		 * Colombia
+		 */
 		CO: () => LocalizedString
-		CW: () => LocalizedString
-		SX: () => LocalizedString
-		SS: () => LocalizedString
+		/**
+		 * Comoros
+		 */
 		KM: () => LocalizedString
+		/**
+		 * Congo
+		 */
 		CG: () => LocalizedString
+		/**
+		 * Congo, Democratic Republic of the
+		 */
 		CD: () => LocalizedString
+		/**
+		 * Cook Islands
+		 */
 		CK: () => LocalizedString
+		/**
+		 * Costa Rica
+		 */
 		CR: () => LocalizedString
+		/**
+		 * Côte d'Ivoire
+		 */
 		CI: () => LocalizedString
+		/**
+		 * Croatia
+		 */
 		HR: () => LocalizedString
+		/**
+		 * Cuba
+		 */
 		CU: () => LocalizedString
+		/**
+		 * Curaçao
+		 */
+		CW: () => LocalizedString
+		/**
+		 * Cyprus
+		 */
 		CY: () => LocalizedString
+		/**
+		 * Czechia
+		 */
 		CZ: () => LocalizedString
+		/**
+		 * Denmark
+		 */
 		DK: () => LocalizedString
+		/**
+		 * Djibouti
+		 */
 		DJ: () => LocalizedString
+		/**
+		 * Dominica
+		 */
 		DM: () => LocalizedString
+		/**
+		 * Dominican Republic
+		 */
 		DO: () => LocalizedString
+		/**
+		 * Ecuador
+		 */
 		EC: () => LocalizedString
+		/**
+		 * Egypt
+		 */
 		EG: () => LocalizedString
+		/**
+		 * El Salvador
+		 */
 		SV: () => LocalizedString
+		/**
+		 * Equatorial Guinea
+		 */
 		GQ: () => LocalizedString
+		/**
+		 * Eritrea
+		 */
 		ER: () => LocalizedString
+		/**
+		 * Estonia
+		 */
 		EE: () => LocalizedString
+		/**
+		 * Ethiopia
+		 */
 		ET: () => LocalizedString
+		/**
+		 * Falkland Islands (Malvinas)
+		 */
 		FK: () => LocalizedString
+		/**
+		 * Faroe Islands
+		 */
 		FO: () => LocalizedString
+		/**
+		 * Fiji
+		 */
 		FJ: () => LocalizedString
+		/**
+		 * Finland
+		 */
 		FI: () => LocalizedString
+		/**
+		 * France
+		 */
 		FR: () => LocalizedString
+		/**
+		 * French Guiana
+		 */
 		GF: () => LocalizedString
+		/**
+		 * French Polynesia
+		 */
 		PF: () => LocalizedString
+		/**
+		 * French Southern Territories
+		 */
 		TF: () => LocalizedString
+		/**
+		 * Gabon
+		 */
 		GA: () => LocalizedString
+		/**
+		 * Gambia
+		 */
 		GM: () => LocalizedString
+		/**
+		 * Georgia
+		 */
 		GE: () => LocalizedString
+		/**
+		 * Germany
+		 */
 		DE: () => LocalizedString
+		/**
+		 * Ghana
+		 */
 		GH: () => LocalizedString
+		/**
+		 * Gibraltar
+		 */
 		GI: () => LocalizedString
+		/**
+		 * Greece
+		 */
 		GR: () => LocalizedString
+		/**
+		 * Greenland
+		 */
 		GL: () => LocalizedString
+		/**
+		 * Grenada
+		 */
 		GD: () => LocalizedString
+		/**
+		 * Guadeloupe
+		 */
 		GP: () => LocalizedString
+		/**
+		 * Guam
+		 */
 		GU: () => LocalizedString
+		/**
+		 * Guatemala
+		 */
 		GT: () => LocalizedString
+		/**
+		 * Guernsey
+		 */
 		GG: () => LocalizedString
+		/**
+		 * Guinea
+		 */
 		GN: () => LocalizedString
+		/**
+		 * Guinea-Bissau
+		 */
 		GW: () => LocalizedString
+		/**
+		 * Guyana
+		 */
 		GY: () => LocalizedString
+		/**
+		 * Haiti
+		 */
 		HT: () => LocalizedString
+		/**
+		 * Heard Island and McDonald Islands
+		 */
 		HM: () => LocalizedString
+		/**
+		 * Holy See
+		 */
 		VA: () => LocalizedString
+		/**
+		 * Honduras
+		 */
 		HN: () => LocalizedString
+		/**
+		 * Hong Kong
+		 */
 		HK: () => LocalizedString
+		/**
+		 * Hungary
+		 */
 		HU: () => LocalizedString
+		/**
+		 * Iceland
+		 */
 		IS: () => LocalizedString
+		/**
+		 * India
+		 */
 		IN: () => LocalizedString
+		/**
+		 * Indonesia
+		 */
 		ID: () => LocalizedString
+		/**
+		 * Iran (Islamic Republic of)
+		 */
 		IR: () => LocalizedString
+		/**
+		 * Iraq
+		 */
 		IQ: () => LocalizedString
+		/**
+		 * Ireland
+		 */
 		IE: () => LocalizedString
+		/**
+		 * Isle of Man
+		 */
 		IM: () => LocalizedString
+		/**
+		 * Israel
+		 */
 		IL: () => LocalizedString
+		/**
+		 * Italy
+		 */
 		IT: () => LocalizedString
+		/**
+		 * Jamaica
+		 */
 		JM: () => LocalizedString
+		/**
+		 * Japan
+		 */
 		JP: () => LocalizedString
+		/**
+		 * Jersey
+		 */
 		JE: () => LocalizedString
+		/**
+		 * Jordan
+		 */
 		JO: () => LocalizedString
+		/**
+		 * Kazakhstan
+		 */
 		KZ: () => LocalizedString
+		/**
+		 * Kenya
+		 */
 		KE: () => LocalizedString
+		/**
+		 * Kiribati
+		 */
 		KI: () => LocalizedString
-		KR: () => LocalizedString
+		/**
+		 * Korea (Democratic People's Republic of)
+		 */
 		KP: () => LocalizedString
+		/**
+		 * Korea, Republic of
+		 */
+		KR: () => LocalizedString
+		/**
+		 * Kuwait
+		 */
 		KW: () => LocalizedString
+		/**
+		 * Kyrgyzstan
+		 */
 		KG: () => LocalizedString
+		/**
+		 * Lao People's Democratic Republic
+		 */
 		LA: () => LocalizedString
+		/**
+		 * Latvia
+		 */
 		LV: () => LocalizedString
+		/**
+		 * Lebanon
+		 */
 		LB: () => LocalizedString
+		/**
+		 * Lesotho
+		 */
 		LS: () => LocalizedString
+		/**
+		 * Liberia
+		 */
 		LR: () => LocalizedString
+		/**
+		 * Libya
+		 */
 		LY: () => LocalizedString
+		/**
+		 * Liechtenstein
+		 */
 		LI: () => LocalizedString
+		/**
+		 * Lithuania
+		 */
 		LT: () => LocalizedString
+		/**
+		 * Luxembourg
+		 */
 		LU: () => LocalizedString
+		/**
+		 * Macao
+		 */
 		MO: () => LocalizedString
+		/**
+		 * North Macedonia
+		 */
 		MK: () => LocalizedString
+		/**
+		 * Madagascar
+		 */
 		MG: () => LocalizedString
+		/**
+		 * Malawi
+		 */
 		MW: () => LocalizedString
+		/**
+		 * Malaysia
+		 */
 		MY: () => LocalizedString
+		/**
+		 * Maldives
+		 */
 		MV: () => LocalizedString
+		/**
+		 * Mali
+		 */
 		ML: () => LocalizedString
+		/**
+		 * Malta
+		 */
 		MT: () => LocalizedString
+		/**
+		 * Marshall Islands
+		 */
 		MH: () => LocalizedString
+		/**
+		 * Martinique
+		 */
 		MQ: () => LocalizedString
+		/**
+		 * Mauritania
+		 */
 		MR: () => LocalizedString
+		/**
+		 * Mauritius
+		 */
 		MU: () => LocalizedString
+		/**
+		 * Mayotte
+		 */
 		YT: () => LocalizedString
+		/**
+		 * Mexico
+		 */
 		MX: () => LocalizedString
+		/**
+		 * Micronesia (Federated States of)
+		 */
 		FM: () => LocalizedString
-		MD: () => LocalizedString
-		MC: () => LocalizedString
-		MN: () => LocalizedString
-		ME: () => LocalizedString
-		MS: () => LocalizedString
+		/**
+		 * Morocco
+		 */
 		MA: () => LocalizedString
+		/**
+		 * Moldova, Republic of
+		 */
+		MD: () => LocalizedString
+		/**
+		 * Monaco
+		 */
+		MC: () => LocalizedString
+		/**
+		 * Mongolia
+		 */
+		MN: () => LocalizedString
+		/**
+		 * Montenegro
+		 */
+		ME: () => LocalizedString
+		/**
+		 * Montserrat
+		 */
+		MS: () => LocalizedString
+		/**
+		 * Mozambique
+		 */
 		MZ: () => LocalizedString
+		/**
+		 * Myanmar
+		 */
 		MM: () => LocalizedString
+		/**
+		 * Namibia
+		 */
 		NA: () => LocalizedString
+		/**
+		 * Nauru
+		 */
 		NR: () => LocalizedString
+		/**
+		 * Nepal
+		 */
 		NP: () => LocalizedString
+		/**
+		 * Netherlands
+		 */
 		NL: () => LocalizedString
+		/**
+		 * New Caledonia
+		 */
 		NC: () => LocalizedString
+		/**
+		 * New Zealand
+		 */
 		NZ: () => LocalizedString
+		/**
+		 * Nicaragua
+		 */
 		NI: () => LocalizedString
+		/**
+		 * Niger
+		 */
 		NE: () => LocalizedString
+		/**
+		 * Nigeria
+		 */
 		NG: () => LocalizedString
+		/**
+		 * Niue
+		 */
 		NU: () => LocalizedString
+		/**
+		 * Norfolk Island
+		 */
 		NF: () => LocalizedString
+		/**
+		 * Northern Mariana Islands
+		 */
 		MP: () => LocalizedString
+		/**
+		 * Norway
+		 */
 		NO: () => LocalizedString
+		/**
+		 * Oman
+		 */
 		OM: () => LocalizedString
+		/**
+		 * Pakistan
+		 */
 		PK: () => LocalizedString
+		/**
+		 * Palau
+		 */
 		PW: () => LocalizedString
+		/**
+		 * Palestine, State of
+		 */
 		PS: () => LocalizedString
+		/**
+		 * Panama
+		 */
 		PA: () => LocalizedString
+		/**
+		 * Papua New Guinea
+		 */
 		PG: () => LocalizedString
+		/**
+		 * Paraguay
+		 */
 		PY: () => LocalizedString
+		/**
+		 * Peru
+		 */
 		PE: () => LocalizedString
+		/**
+		 * Philippines
+		 */
 		PH: () => LocalizedString
+		/**
+		 * Pitcairn
+		 */
 		PN: () => LocalizedString
+		/**
+		 * Poland
+		 */
 		PL: () => LocalizedString
+		/**
+		 * Portugal
+		 */
 		PT: () => LocalizedString
+		/**
+		 * Puerto Rico
+		 */
 		PR: () => LocalizedString
+		/**
+		 * Qatar
+		 */
 		QA: () => LocalizedString
+		/**
+		 * Réunion
+		 */
 		RE: () => LocalizedString
+		/**
+		 * Romania
+		 */
 		RO: () => LocalizedString
+		/**
+		 * Russian Federation
+		 */
 		RU: () => LocalizedString
+		/**
+		 * Rwanda
+		 */
 		RW: () => LocalizedString
+		/**
+		 * Saint Barthélemy
+		 */
 		BL: () => LocalizedString
+		/**
+		 * Saint Helena, Ascension and Tristan da Cunha
+		 */
 		SH: () => LocalizedString
+		/**
+		 * Saint Kitts and Nevis
+		 */
 		KN: () => LocalizedString
+		/**
+		 * Saint Lucia
+		 */
 		LC: () => LocalizedString
+		/**
+		 * Saint Martin (French part)
+		 */
 		MF: () => LocalizedString
+		/**
+		 * Saint Pierre and Miquelon
+		 */
 		PM: () => LocalizedString
+		/**
+		 * Saint Vincent and the Grenadines
+		 */
 		VC: () => LocalizedString
+		/**
+		 * Samoa
+		 */
 		WS: () => LocalizedString
+		/**
+		 * San Marino
+		 */
 		SM: () => LocalizedString
+		/**
+		 * Sao Tome and Principe
+		 */
 		ST: () => LocalizedString
+		/**
+		 * Saudi Arabia
+		 */
 		SA: () => LocalizedString
+		/**
+		 * Senegal
+		 */
 		SN: () => LocalizedString
+		/**
+		 * Serbia
+		 */
 		RS: () => LocalizedString
+		/**
+		 * Seychelles
+		 */
 		SC: () => LocalizedString
+		/**
+		 * Sierra Leone
+		 */
 		SL: () => LocalizedString
+		/**
+		 * Singapore
+		 */
 		SG: () => LocalizedString
+		/**
+		 * Sint Maarten (Dutch part)
+		 */
+		SX: () => LocalizedString
+		/**
+		 * Slovakia
+		 */
 		SK: () => LocalizedString
+		/**
+		 * Slovenia
+		 */
 		SI: () => LocalizedString
+		/**
+		 * Solomon Islands
+		 */
 		SB: () => LocalizedString
+		/**
+		 * Somalia
+		 */
 		SO: () => LocalizedString
+		/**
+		 * South Africa
+		 */
 		ZA: () => LocalizedString
+		/**
+		 * South Georgia and the South Sandwich Islands
+		 */
 		GS: () => LocalizedString
+		/**
+		 * South Sudan
+		 */
+		SS: () => LocalizedString
+		/**
+		 * Spain
+		 */
 		ES: () => LocalizedString
+		/**
+		 * Sri Lanka
+		 */
 		LK: () => LocalizedString
+		/**
+		 * Sudan
+		 */
 		SD: () => LocalizedString
+		/**
+		 * Suriname
+		 */
 		SR: () => LocalizedString
+		/**
+		 * Svalbard and Jan Mayen
+		 */
 		SJ: () => LocalizedString
+		/**
+		 * Eswatini
+		 */
 		SZ: () => LocalizedString
+		/**
+		 * Sweden
+		 */
 		SE: () => LocalizedString
+		/**
+		 * Switzerland
+		 */
 		CH: () => LocalizedString
+		/**
+		 * Syrian Arab Republic
+		 */
 		SY: () => LocalizedString
+		/**
+		 * Taiwan, Province of China
+		 */
 		TW: () => LocalizedString
+		/**
+		 * Tajikistan
+		 */
 		TJ: () => LocalizedString
+		/**
+		 * Tanzania, United Republic of
+		 */
 		TZ: () => LocalizedString
+		/**
+		 * Thailand
+		 */
 		TH: () => LocalizedString
+		/**
+		 * Timor-Leste
+		 */
 		TL: () => LocalizedString
+		/**
+		 * Togo
+		 */
 		TG: () => LocalizedString
+		/**
+		 * Tokelau
+		 */
 		TK: () => LocalizedString
+		/**
+		 * Tonga
+		 */
 		TO: () => LocalizedString
+		/**
+		 * Trinidad and Tobago
+		 */
 		TT: () => LocalizedString
+		/**
+		 * Tunisia
+		 */
 		TN: () => LocalizedString
+		/**
+		 * Türkiye
+		 */
 		TR: () => LocalizedString
+		/**
+		 * Turkmenistan
+		 */
 		TM: () => LocalizedString
+		/**
+		 * Turks and Caicos Islands
+		 */
 		TC: () => LocalizedString
+		/**
+		 * Tuvalu
+		 */
 		TV: () => LocalizedString
+		/**
+		 * Uganda
+		 */
 		UG: () => LocalizedString
+		/**
+		 * Ukraine
+		 */
 		UA: () => LocalizedString
+		/**
+		 * United Arab Emirates
+		 */
 		AE: () => LocalizedString
+		/**
+		 * United Kingdom of Great Britain and Northern Ireland
+		 */
 		GB: () => LocalizedString
+		/**
+		 * United States of America
+		 */
 		US: () => LocalizedString
+		/**
+		 * United States Minor Outlying Islands
+		 */
 		UM: () => LocalizedString
+		/**
+		 * Uruguay
+		 */
 		UY: () => LocalizedString
+		/**
+		 * Uzbekistan
+		 */
 		UZ: () => LocalizedString
+		/**
+		 * Vanuatu
+		 */
 		VU: () => LocalizedString
+		/**
+		 * Venezuela (Bolivarian Republic of)
+		 */
 		VE: () => LocalizedString
+		/**
+		 * Viet Nam
+		 */
 		VN: () => LocalizedString
+		/**
+		 * Virgin Islands (British)
+		 */
 		VG: () => LocalizedString
+		/**
+		 * Virgin Islands (U.S.)
+		 */
 		VI: () => LocalizedString
+		/**
+		 * Wallis and Futuna
+		 */
 		WF: () => LocalizedString
+		/**
+		 * Western Sahara
+		 */
 		EH: () => LocalizedString
+		/**
+		 * Yemen
+		 */
 		YE: () => LocalizedString
+		/**
+		 * Zambia
+		 */
 		ZM: () => LocalizedString
+		/**
+		 * Zimbabwe
+		 */
 		ZW: () => LocalizedString
 	}
 }
