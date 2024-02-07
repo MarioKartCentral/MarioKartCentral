@@ -9,6 +9,11 @@
 
   let id = 0;
   let team: Team;
+  let colors: number[] = [];
+
+  for (let i: number = 0; i < 40; i++) {
+    colors.push(i);
+  }
   $: team_name = team ? team.name : 'Registry';
 
   setTeamPerms();
@@ -106,7 +111,9 @@
       <Section header="Customization">
         <label for="color">Team Color</label>
         <select name="color" value={team.color}>
-          <option value={0}>0</option>
+          {#each colors as color}
+            <option value={color}>{color}</option>
+          {/each} 
         </select>
         <br />
         <label for="logo">Team Logo</label>

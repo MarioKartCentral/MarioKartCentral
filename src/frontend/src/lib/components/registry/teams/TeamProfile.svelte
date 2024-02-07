@@ -3,6 +3,7 @@
   import logo from '$lib/assets/logo.png';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
+  import Tag from '$lib/components/registry/teams/Tag.svelte';
 
   export let team: Team;
 
@@ -25,7 +26,7 @@
   </div>
   <div class="team_details">
     <div class="tag">
-      {team.tag}
+      <Tag {team} />
     </div>
     <div class="name">
       <b>{team.name}</b>
