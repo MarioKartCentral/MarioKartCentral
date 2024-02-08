@@ -74,6 +74,7 @@ const en_us: BaseTranslation & Translation = {
     ROSTERS: 'Rosters',
     PLAYER: 'player',
     PLAYERS: 'players',
+    JOIN_DATE: 'Join Date',
   },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Player Profile',

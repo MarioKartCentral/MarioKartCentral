@@ -76,6 +76,7 @@ const fr: Translation = {
     ROSTERS: 'Effectifs',
     PLAYER: 'joueur',
     PLAYERS: 'joueurs',
+    JOIN_DATE: 'Date d\'Arrivée',
   },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Profil',

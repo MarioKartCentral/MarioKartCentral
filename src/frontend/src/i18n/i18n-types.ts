@@ -267,6 +267,10 @@ type RootTranslation = {
 		 * p​l​a​y​e​r​s
 		 */
 		PLAYERS: string
+		/**
+		 * J​o​i​n​ ​D​a​t​e
+		 */
+		JOIN_DATE: string
 	}
 	PLAYER_PROFILE: {
 		/**
@@ -1768,6 +1772,10 @@ export type TranslationFunctions = {
 		 * players
 		 */
 		PLAYERS: () => LocalizedString
+		/**
+		 * Join Date
+		 */
+		JOIN_DATE: () => LocalizedString
 	}
 	PLAYER_PROFILE: {
 		/**
