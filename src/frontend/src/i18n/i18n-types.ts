@@ -230,6 +230,44 @@ type RootTranslation = {
 		 */
 		CUSTOMIZATION: string
 	}
+	TEAM_PROFILE: {
+		/**
+		 * T​e​a​m​ ​P​r​o​f​i​l​e
+		 */
+		TEAM_PROFILE: string
+		/**
+		 * M​a​n​a​g​e​ ​R​o​s​t​e​r​s
+		 */
+		MANAGE_ROSTERS: string
+		/**
+		 * E​d​i​t​ ​T​e​a​m
+		 */
+		EDIT_TEAM: string
+		/**
+		 * R​e​g​i​s​t​e​r​e​d
+		 */
+		REGISTERED: string
+		/**
+		 * M​a​i​n​ ​L​a​n​g​u​a​g​e
+		 */
+		MAIN_LANGUAGE: string
+		/**
+		 * M​a​n​a​g​e​r​s
+		 */
+		MANAGERS: string
+		/**
+		 * R​o​s​t​e​r​s
+		 */
+		ROSTERS: string
+		/**
+		 * p​l​a​y​e​r
+		 */
+		PLAYER: string
+		/**
+		 * p​l​a​y​e​r​s
+		 */
+		PLAYERS: string
+	}
 	PLAYER_PROFILE: {
 		/**
 		 * P​l​a​y​e​r​ ​P​r​o​f​i​l​e
@@ -1692,6 +1730,44 @@ export type TranslationFunctions = {
 		 * Customization
 		 */
 		CUSTOMIZATION: () => LocalizedString
+	}
+	TEAM_PROFILE: {
+		/**
+		 * Team Profile
+		 */
+		TEAM_PROFILE: () => LocalizedString
+		/**
+		 * Manage Rosters
+		 */
+		MANAGE_ROSTERS: () => LocalizedString
+		/**
+		 * Edit Team
+		 */
+		EDIT_TEAM: () => LocalizedString
+		/**
+		 * Registered
+		 */
+		REGISTERED: () => LocalizedString
+		/**
+		 * Main Language
+		 */
+		MAIN_LANGUAGE: () => LocalizedString
+		/**
+		 * Managers
+		 */
+		MANAGERS: () => LocalizedString
+		/**
+		 * Rosters
+		 */
+		ROSTERS: () => LocalizedString
+		/**
+		 * player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * players
+		 */
+		PLAYERS: () => LocalizedString
 	}
 	PLAYER_PROFILE: {
 		/**

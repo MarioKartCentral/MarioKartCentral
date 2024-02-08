@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { TeamRoster } from '$lib/types/team-roster';
   import Table from '$lib/components/common/Table.svelte';
-  import { locale } from '$i18n/i18n-svelte';
+  import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
 
   export let roster: TeamRoster;
@@ -17,7 +17,7 @@
 <div>
   <h3>{roster.name}</h3>
   <h4>{roster.game}</h4>
-  {roster.players.length} player{roster.players.length !== 1 ? 's' : ''}
+  {roster.players.length} {roster.players.length !== 1 ? $LL.TEAM_PROFILE.PLAYERS() : $LL.TEAM_PROFILE.PLAYER() }
   {#if roster.players.length}
     <Table>
       <col class="country" />

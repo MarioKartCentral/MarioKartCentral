@@ -64,6 +64,17 @@ const en_us: BaseTranslation & Translation = {
     MISC_INFO: 'Misc. Info',
     CUSTOMIZATION: 'Customization',
   },
+  TEAM_PROFILE: {
+    TEAM_PROFILE: 'Team Profile',
+    MANAGE_ROSTERS: 'Manage Rosters',
+    EDIT_TEAM:'Edit Team',
+    REGISTERED:'Registered',
+    MAIN_LANGUAGE: 'Main Language',
+    MANAGERS: 'Managers',
+    ROSTERS: 'Rosters',
+    PLAYER: 'player',
+    PLAYERS: 'players',
+  },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Player Profile',
     INVITES: 'Invites',

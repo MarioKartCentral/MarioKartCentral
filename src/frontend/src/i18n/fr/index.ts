@@ -66,6 +66,17 @@ const fr: Translation = {
     MISC_INFO: 'Informations Diverses',
     CUSTOMIZATION: 'Customisation',
   },
+  TEAM_PROFILE: {
+    TEAM_PROFILE: 'Profil de l\'Équipe',
+    MANAGE_ROSTERS: 'Gérer les Effectifs',
+    EDIT_TEAM: 'Gérer l\'Équipe',
+    REGISTERED: 'Date de création',
+    MAIN_LANGUAGE: 'Langue Principale',
+    MANAGERS: 'Managers',
+    ROSTERS: 'Effectifs',
+    PLAYER: 'joueur',
+    PLAYERS: 'joueurs',
+  },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Profil',
     INVITES: 'Invitations',

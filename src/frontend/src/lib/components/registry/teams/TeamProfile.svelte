@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Team } from '$lib/types/team';
   import logo from '$lib/assets/logo.png';
-  import { locale } from '$i18n/i18n-svelte';
+  import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import Tag from '$lib/components/registry/teams/Tag.svelte';
 
@@ -32,15 +32,15 @@
       <b>{team.name}</b>
     </div>
     <div>
-      <b>Registered</b>
+      <b>{$LL.TEAM_PROFILE.REGISTERED()}</b>
       {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
     </div>
     <div>
-      <b>Main Language:</b>
+      <b>{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</b>
       {team.language}
     </div>
     <div>
-      <b>Managers:</b>
+      <b>{$LL.TEAM_PROFILE.MANAGERS()}</b>
       {#each team.managers as m, i}
         <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
           {i == team.managers.length - 1 ? m.name : `${m.name}, `}
