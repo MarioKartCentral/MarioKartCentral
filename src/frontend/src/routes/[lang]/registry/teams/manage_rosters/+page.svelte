@@ -7,6 +7,7 @@
   import TeamRosterManage from '$lib/components/registry/teams/TeamRosterManage.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let id = 0;
   let team: Team;
@@ -77,7 +78,7 @@
 </svelte:head>
 
 {#if team}
-  <Section header="Team Page">
+  <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
     <div slot="header_content">
       <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</LinkButton>
     </div>
@@ -88,33 +89,33 @@
     {/each}
   </TeamPermissionCheck>
   <TeamPermissionCheck team_id={id} permission={team_permissions.create_rosters}>
-    <Section header="New Roster">
+    <Section header={$LL.TEAM_EDIT.NEW_ROSTER()}>
       <form method="post" on:submit|preventDefault={createRoster}>
-        <label for="game">Game</label>
+        <label for="game">{$LL.TEAM_LIST.GAME()}</label>
         <select name="game" bind:value={game} on:change={() => ([mode] = valid_modes[game])}>
           {#each Object.keys(valid_games) as game}
             <option value={game}>{valid_games[game]}</option>
           {/each}
         </select>
-        <label for="mode">Mode</label>
+        <label for="mode">{$LL.TEAM_LIST.MODE()}</label>
         <select name="mode" bind:value={mode}>
           {#each valid_modes[game] as mode}
             <option value={mode}>{mode_names[mode]}</option>
           {/each}
         </select>
         <br />
-        <label for="name">Roster Name</label>
+        <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
         <input name="name" type="text" required />
         <br />
-        <label for="tag">Roster Tag</label>
+        <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
         <input name="tag" type="text" required />
-        <label for="recruiting">Recruitment Status</label>
+        <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
         <select name="recruiting">
-          <option value="true">Recruiting</option>
-          <option value="false">Not Recruiting</option>
+          <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+          <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
         </select>
         <div>
-          <button type="submit">Submit</button>
+          <button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</button>
         </div>
       </form>
     </Section>

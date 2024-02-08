@@ -199,6 +199,14 @@ type RootTranslation = {
 		 * T​e​a​m​ ​L​i​s​t​i​n​g
 		 */
 		TEAM_LISTING: string
+		/**
+		 * s​h​o​w
+		 */
+		SHOW: string
+		/**
+		 * h​i​d​e
+		 */
+		HIDE: string
 	}
 	TEAM_CREATE: {
 		/**
@@ -251,6 +259,38 @@ type RootTranslation = {
 		 * C​u​s​t​o​m​i​z​a​t​i​o​n
 		 */
 		CUSTOMIZATION: string
+		/**
+		 * N​e​w​ ​R​o​s​t​e​r
+		 */
+		NEW_ROSTER: string
+		/**
+		 * I​n​v​i​t​a​t​i​o​n​s
+		 */
+		INVITATIONS: string
+		/**
+		 * I​n​v​i​t​e​ ​P​l​a​y​e​r
+		 */
+		INVITE_PLAYER: string
+		/**
+		 * R​e​t​r​a​c​t​ ​I​n​v​i​t​e
+		 */
+		RETRACT_INVITE: string
+		/**
+		 * S​e​a​r​c​h​ ​f​o​r​ ​p​l​a​y​e​r​s​.​.​.
+		 */
+		SEARCH_FOR_PLAYERS: string
+		/**
+		 * E​d​i​t​ ​R​o​s​t​e​r
+		 */
+		EDIT_ROSTER: string
+		/**
+		 * R​o​s​t​e​r​ ​N​a​m​e
+		 */
+		ROSTER_NAME: string
+		/**
+		 * R​o​s​t​e​r​ ​T​a​g
+		 */
+		ROSTER_TAG: string
 	}
 	TEAM_PROFILE: {
 		/**
@@ -1736,6 +1776,14 @@ export type TranslationFunctions = {
 		 * Team Listing
 		 */
 		TEAM_LISTING: () => LocalizedString
+		/**
+		 * show
+		 */
+		SHOW: () => LocalizedString
+		/**
+		 * hide
+		 */
+		HIDE: () => LocalizedString
 	}
 	TEAM_CREATE: {
 		/**
@@ -1788,6 +1836,38 @@ export type TranslationFunctions = {
 		 * Customization
 		 */
 		CUSTOMIZATION: () => LocalizedString
+		/**
+		 * New Roster
+		 */
+		NEW_ROSTER: () => LocalizedString
+		/**
+		 * Invitations
+		 */
+		INVITATIONS: () => LocalizedString
+		/**
+		 * Invite Player
+		 */
+		INVITE_PLAYER: () => LocalizedString
+		/**
+		 * Retract Invite
+		 */
+		RETRACT_INVITE: () => LocalizedString
+		/**
+		 * Search for players...
+		 */
+		SEARCH_FOR_PLAYERS: () => LocalizedString
+		/**
+		 * Edit Roster
+		 */
+		EDIT_ROSTER: () => LocalizedString
+		/**
+		 * Roster Name
+		 */
+		ROSTER_NAME: () => LocalizedString
+		/**
+		 * Roster Tag
+		 */
+		ROSTER_TAG: () => LocalizedString
 	}
 	TEAM_PROFILE: {
 		/**

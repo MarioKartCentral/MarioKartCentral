@@ -48,7 +48,7 @@
         <td>
           {team.rosters.length}
           <button class="show-hide" on:click={() => toggle_show_rosters(team.id)}>
-            ({show_rosters[team.id] ? 'hide' : 'show'})
+            ({show_rosters[team.id] ? $LL.TEAM_LIST.HIDE() : $LL.TEAM_LIST.SHOW()})
           </button>
         </td>
         <td>

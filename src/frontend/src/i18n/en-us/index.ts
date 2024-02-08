@@ -54,6 +54,8 @@ const en_us: BaseTranslation & Translation = {
     REGISTERED: 'Registered',
     CREATE_TEAM: 'Create a team',
     TEAM_LISTING: 'Team Listing',
+    SHOW: 'show',
+    HIDE: 'hide',
   },
   TEAM_CREATE: {
     GENERAL_INFO: 'General Info',
@@ -70,6 +72,14 @@ const en_us: BaseTranslation & Translation = {
     RECRUITMENT_STATUS: 'Recruitment Status',
     MISC_INFO: 'Misc. Info',
     CUSTOMIZATION: 'Customization',
+    NEW_ROSTER: 'New Roster',
+    INVITATIONS: 'Invitations',
+    INVITE_PLAYER: 'Invite Player',
+    RETRACT_INVITE: 'Retract Invite',
+    SEARCH_FOR_PLAYERS: 'Search for players...',
+    EDIT_ROSTER: 'Edit Roster',
+    ROSTER_NAME: 'Roster Name',
+    ROSTER_TAG: 'Roster Tag',
   },
   TEAM_PROFILE: {
     TEAM_PROFILE: 'Team Profile',
