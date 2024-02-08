@@ -52,6 +52,18 @@ const en_us: BaseTranslation & Translation = {
     CREATE_TEAM: 'Create a team',
     TEAM_LISTING: 'Team Listing',
   },
+  TEAM_EDIT: {
+    BACK_TO_TEAM: 'Back to Team',
+    TEAM_PAGE: 'Team Page',
+    TEAM_NAME: 'Team Name',
+    TEAM_TAG: 'Team Tag',
+    TEAM_COLOR: 'Team Color',
+    REQUEST_NAME_TAG_CHANGE: 'Request Name/Tag Change',
+    TEAM_LOGO: 'Team Logo',
+    TEAM_DESCRIPTION: 'Team Description',
+    MISC_INFO: 'Misc. Info',
+    CUSTOMIZATION: 'Customization',
+  },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Player Profile',
     INVITES: 'Invites',

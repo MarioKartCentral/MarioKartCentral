@@ -188,6 +188,48 @@ type RootTranslation = {
 		 */
 		TEAM_LISTING: string
 	}
+	TEAM_EDIT: {
+		/**
+		 * B​a​c​k​ ​t​o​ ​T​e​a​m
+		 */
+		BACK_TO_TEAM: string
+		/**
+		 * T​e​a​m​ ​P​a​g​e
+		 */
+		TEAM_PAGE: string
+		/**
+		 * T​e​a​m​ ​N​a​m​e
+		 */
+		TEAM_NAME: string
+		/**
+		 * T​e​a​m​ ​T​a​g
+		 */
+		TEAM_TAG: string
+		/**
+		 * T​e​a​m​ ​C​o​l​o​r
+		 */
+		TEAM_COLOR: string
+		/**
+		 * R​e​q​u​e​s​t​ ​N​a​m​e​/​T​a​g​ ​C​h​a​n​g​e
+		 */
+		REQUEST_NAME_TAG_CHANGE: string
+		/**
+		 * T​e​a​m​ ​L​o​g​o
+		 */
+		TEAM_LOGO: string
+		/**
+		 * T​e​a​m​ ​D​e​s​c​r​i​p​t​i​o​n
+		 */
+		TEAM_DESCRIPTION: string
+		/**
+		 * M​i​s​c​.​ ​I​n​f​o
+		 */
+		MISC_INFO: string
+		/**
+		 * C​u​s​t​o​m​i​z​a​t​i​o​n
+		 */
+		CUSTOMIZATION: string
+	}
 	PLAYER_PROFILE: {
 		/**
 		 * P​l​a​y​e​r​ ​P​r​o​f​i​l​e
@@ -1608,6 +1650,48 @@ export type TranslationFunctions = {
 		 * Team Listing
 		 */
 		TEAM_LISTING: () => LocalizedString
+	}
+	TEAM_EDIT: {
+		/**
+		 * Back to Team
+		 */
+		BACK_TO_TEAM: () => LocalizedString
+		/**
+		 * Team Page
+		 */
+		TEAM_PAGE: () => LocalizedString
+		/**
+		 * Team Name
+		 */
+		TEAM_NAME: () => LocalizedString
+		/**
+		 * Team Tag
+		 */
+		TEAM_TAG: () => LocalizedString
+		/**
+		 * Team Color
+		 */
+		TEAM_COLOR: () => LocalizedString
+		/**
+		 * Request Name/Tag Change
+		 */
+		REQUEST_NAME_TAG_CHANGE: () => LocalizedString
+		/**
+		 * Team Logo
+		 */
+		TEAM_LOGO: () => LocalizedString
+		/**
+		 * Team Description
+		 */
+		TEAM_DESCRIPTION: () => LocalizedString
+		/**
+		 * Misc. Info
+		 */
+		MISC_INFO: () => LocalizedString
+		/**
+		 * Customization
+		 */
+		CUSTOMIZATION: () => LocalizedString
 	}
 	PLAYER_PROFILE: {
 		/**

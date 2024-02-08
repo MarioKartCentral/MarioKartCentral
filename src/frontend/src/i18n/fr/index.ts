@@ -54,6 +54,18 @@ const fr: Translation = {
     CREATE_TEAM: 'Créer une équipe',
     TEAM_LISTING: 'Liste des équipes',
   },
+  TEAM_EDIT: {
+    BACK_TO_TEAM: 'Retour à l\'Équipe',
+    TEAM_PAGE: 'Page de l\'Équipe',
+    TEAM_NAME: 'Nom de l\'Équipe',
+    TEAM_TAG: 'Tag de l\'Équipe',
+    TEAM_COLOR: 'Couleur  de l\'Équipe',
+    REQUEST_NAME_TAG_CHANGE: 'Demander un changement de Nom/Tag',
+    TEAM_LOGO: 'Logo de l\'équipe',
+    TEAM_DESCRIPTION: 'Déscription de l\'Équipe',
+    MISC_INFO: 'Informations Diverses',
+    CUSTOMIZATION: 'Customisation',
+  },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Profil',
     INVITES: 'Invitations',
@@ -72,7 +84,7 @@ const fr: Translation = {
     SAVE: 'Enregistrer',
   },
   LANGUAGES: {
-    EN_US: 'English (Etats-Unis)',
+    EN_US: 'Anglais (États-Unis)',
     EN_GB: 'Anglais (Royaume-Uni)',
     DE: 'Allemand',
     ES: 'Espagnol',
