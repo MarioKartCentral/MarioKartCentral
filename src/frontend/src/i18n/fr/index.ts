@@ -49,10 +49,16 @@ const fr: Translation = {
     TAG: 'Tag',
     TEAMS: 'Équipes',
     NAME: 'Nom',
+    STATUS: 'Statut',
+    GAME: 'Jeu',
+    MODE: 'Mode',
     ROSTERS: 'Équipes',
     REGISTERED: 'Inscrite',
     CREATE_TEAM: 'Créer une équipe',
     TEAM_LISTING: 'Liste des équipes',
+  },
+  TEAM_CREATE: {
+    GENERAL_INFO: 'Informations Générales',
   },
   TEAM_EDIT: {
     BACK_TO_TEAM: 'Retour à l\'Équipe',
@@ -63,6 +69,7 @@ const fr: Translation = {
     REQUEST_NAME_TAG_CHANGE: 'Demander un changement de Nom/Tag',
     TEAM_LOGO: 'Logo de l\'équipe',
     TEAM_DESCRIPTION: 'Déscription de l\'Équipe',
+    RECRUITMENT_STATUS: 'Statut du Recrutement',
     MISC_INFO: 'Informations Diverses',
     CUSTOMIZATION: 'Customisation',
   },
@@ -77,6 +84,10 @@ const fr: Translation = {
     PLAYER: 'joueur',
     PLAYERS: 'joueurs',
     JOIN_DATE: 'Date d\'Arrivée',
+    RECRUITMENT_STATUS: {
+      RECRUITING: 'Recrute',
+      NOT_RECRUITING: 'Ne Recrute Pas',
+    },
   },
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Profil',

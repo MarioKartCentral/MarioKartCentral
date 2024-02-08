@@ -16,6 +16,16 @@ export function setSeriesPerms() {
   ctx.checkSeriesPerms();
 }
 
+export function sortColors(colors: { id: number; label: string; value: string; }[]) {
+  const copyColors: { id: number; label: string; value: string }[] = [];
+  for (let i = 0; i < 10; i++) {
+    for (let j = i; j < colors.length; j = j + 10) {
+      copyColors.push(colors[j]);
+    }
+  }
+  return copyColors;
+}
+
 export const permissions = {
   create_tournament: 'tournament_create',
   edit_tournament: 'tournament_edit',

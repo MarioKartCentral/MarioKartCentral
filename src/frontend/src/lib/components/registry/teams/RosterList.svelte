@@ -3,6 +3,7 @@
   import Table from '$lib/components/common/Table.svelte';
   import Badge from '$lib/components/Badge.svelte';
   import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let team: Team;
 </script>
@@ -15,11 +16,11 @@
   <col class="mode" />
   <thead>
     <tr>
-      <th>Tag</th>
-      <th>Name</th>
-      <th>Status</th>
-      <th>Game</th>
-      <th>Mode</th>
+      <th>{$LL.TEAM_LIST.TAG()}</th>
+      <th>{$LL.TEAM_LIST.NAME()}</th>
+      <th>{$LL.TEAM_LIST.STATUS()}</th>
+      <th>{$LL.TEAM_LIST.GAME()}</th>
+      <th>{$LL.TEAM_LIST.MODE()}</th>
     </tr>
   </thead>
   <tbody>

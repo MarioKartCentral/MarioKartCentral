@@ -172,6 +172,18 @@ type RootTranslation = {
 		 */
 		NAME: string
 		/**
+		 * S​t​a​t​u​s
+		 */
+		STATUS: string
+		/**
+		 * J​e​u
+		 */
+		GAME: string
+		/**
+		 * M​o​d​e
+		 */
+		MODE: string
+		/**
 		 * R​o​s​t​e​r​s
 		 */
 		ROSTERS: string
@@ -187,6 +199,12 @@ type RootTranslation = {
 		 * T​e​a​m​ ​L​i​s​t​i​n​g
 		 */
 		TEAM_LISTING: string
+	}
+	TEAM_CREATE: {
+		/**
+		 * G​e​n​e​r​a​l​ ​I​n​f​o
+		 */
+		GENERAL_INFO: string
 	}
 	TEAM_EDIT: {
 		/**
@@ -221,6 +239,10 @@ type RootTranslation = {
 		 * T​e​a​m​ ​D​e​s​c​r​i​p​t​i​o​n
 		 */
 		TEAM_DESCRIPTION: string
+		/**
+		 * R​e​c​r​u​i​t​m​e​n​t​ ​S​t​a​t​u​s
+		 */
+		RECRUITMENT_STATUS: string
 		/**
 		 * M​i​s​c​.​ ​I​n​f​o
 		 */
@@ -271,6 +293,16 @@ type RootTranslation = {
 		 * J​o​i​n​ ​D​a​t​e
 		 */
 		JOIN_DATE: string
+		RECRUITMENT_STATUS: {
+			/**
+			 * R​e​c​r​u​i​t​i​n​g
+			 */
+			RECRUITING: string
+			/**
+			 * N​o​t​ ​R​e​c​r​u​i​t​i​n​g
+			 */
+			NOT_RECRUITING: string
+		}
 	}
 	PLAYER_PROFILE: {
 		/**
@@ -1677,6 +1709,18 @@ export type TranslationFunctions = {
 		 */
 		NAME: () => LocalizedString
 		/**
+		 * Status
+		 */
+		STATUS: () => LocalizedString
+		/**
+		 * Jeu
+		 */
+		GAME: () => LocalizedString
+		/**
+		 * Mode
+		 */
+		MODE: () => LocalizedString
+		/**
 		 * Rosters
 		 */
 		ROSTERS: () => LocalizedString
@@ -1692,6 +1736,12 @@ export type TranslationFunctions = {
 		 * Team Listing
 		 */
 		TEAM_LISTING: () => LocalizedString
+	}
+	TEAM_CREATE: {
+		/**
+		 * General Info
+		 */
+		GENERAL_INFO: () => LocalizedString
 	}
 	TEAM_EDIT: {
 		/**
@@ -1726,6 +1776,10 @@ export type TranslationFunctions = {
 		 * Team Description
 		 */
 		TEAM_DESCRIPTION: () => LocalizedString
+		/**
+		 * Recruitment Status
+		 */
+		RECRUITMENT_STATUS: () => LocalizedString
 		/**
 		 * Misc. Info
 		 */
@@ -1776,6 +1830,16 @@ export type TranslationFunctions = {
 		 * Join Date
 		 */
 		JOIN_DATE: () => LocalizedString
+		RECRUITMENT_STATUS: {
+			/**
+			 * Recruiting
+			 */
+			RECRUITING: () => LocalizedString
+			/**
+			 * Not Recruiting
+			 */
+			NOT_RECRUITING: () => LocalizedString
+		}
 	}
 	PLAYER_PROFILE: {
 		/**

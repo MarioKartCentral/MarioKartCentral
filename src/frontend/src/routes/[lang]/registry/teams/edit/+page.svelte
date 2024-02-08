@@ -9,25 +9,15 @@
   import Tag from '$lib/components/registry/teams/Tag.svelte';
   import { colors } from '$lib/stores/colors';
   import LL from '$i18n/i18n-svelte';
+  import { sortColors } from '$lib/util/util';
 
   let id = 0;
   let team: Team;
 
-  $: colorsSorted = sortColors();
+  $: colorsSorted = sortColors(colors);
   $: team_name = team ? team.name : 'Registry';
 
   setTeamPerms();
-
-  function sortColors() {
-    const copyColors: { id: number; label: string; value: string }[] = [];
-    for (let i = 0; i < 10; i++) {
-      for (let j = i; j < colors.length; j = j + 10) {
-        console.log(j);
-        copyColors.push(colors[j]);
-      }
-    }
-    return copyColors;
-  }
 
   const languages = [
     { value: 'de', getLang: 'DE' },
