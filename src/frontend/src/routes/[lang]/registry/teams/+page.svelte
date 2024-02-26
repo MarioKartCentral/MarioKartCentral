@@ -35,7 +35,8 @@
       <LinkButton href="/{$page.params.lang}/registry/teams/create">{$LL.TEAM_LIST.CREATE_TEAM()}</LinkButton>
     {/if}
   </div>
-  {teams.length} {$LL.TEAM_LIST.TEAMS()}
+  {teams.length}
+  {$LL.TEAM_LIST.TEAMS()}
   <TeamList {teams} />
 </Section>
 

@@ -3,7 +3,7 @@
   import Table from '$lib/components/common/Table.svelte';
   import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-    import Flag from '$lib/components/common/Flag.svelte';
+  import Flag from '$lib/components/common/Flag.svelte';
 
   export let roster: TeamRoster;
 
@@ -37,7 +37,7 @@
       <tbody>
         {#each roster.players as player}
           <tr>
-            <td><Flag country_code={player.country_code}/></td>
+            <td><Flag country_code={player.country_code} /></td>
             <td><a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">{player.name}</a></td>
             <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
             <td>{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>

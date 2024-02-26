@@ -98,7 +98,9 @@
 {#if team}
   <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
     <div slot="header_content">
-      <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{$LL.TEAM_EDIT.BACK_TO_TEAM()}</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
+        >{$LL.TEAM_EDIT.BACK_TO_TEAM()}</LinkButton
+      >
     </div>
   </Section>
   <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_name_tag}>

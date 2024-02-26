@@ -149,7 +149,8 @@
       <button on:click={edit_dialog.open}>{$LL.TEAM_EDIT.EDIT_ROSTER()}</button>
     {/if}
   </div>
-  {roster.players.length} {roster.players.length !== 1 ? $LL.TEAM_PROFILE.PLAYERS() : $LL.TEAM_PROFILE.PLAYERS()}
+  {roster.players.length}
+  {roster.players.length !== 1 ? $LL.TEAM_PROFILE.PLAYERS() : $LL.TEAM_PROFILE.PLAYERS()}
   {#if roster.players.length}
     <Table>
       <col class="country" />
@@ -169,7 +170,7 @@
       <tbody>
         {#each roster.players as player}
           <tr>
-            <td><Flag country_code={player.country_code}/></td>
+            <td><Flag country_code={player.country_code} /></td>
             <td>{player.name}</td>
             <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
             <td>{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
@@ -203,7 +204,7 @@
         <tbody>
           {#each roster.invites as player}
             <tr>
-              <td><Flag country_code={player.country_code}/></td>
+              <td><Flag country_code={player.country_code} /></td>
               <td>{player.name}</td>
               <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
               <td>{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>

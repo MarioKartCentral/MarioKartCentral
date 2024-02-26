@@ -23,11 +23,13 @@
   }
 </script>
 
-<Section header="Player Profile">
+<Section header={$LL.PLAYER_PROFILE.PLAYER_PROFILE()}>
   <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <LinkButton href="/{$page.params.lang}/registry/invites">Invites</LinkButton>
-      <LinkButton href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/invites">{$LL.PLAYER_PROFILE.INVITES()}</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/players/edit-profile"
+        >{$LL.PLAYER_PROFILE.EDIT_PROFILE()}</LinkButton
+      >
     {/if}
   </div>
   <div class="wrapper">
@@ -40,7 +42,7 @@
         {player.name}
       </div>
       <div class="country">
-        <b>Country:</b>
+        <b>{$LL.PLAYER_LIST.HEADER.COUNTRY()}:</b>
         {#if player.country_code !== null}
           <Flag country_code={player.country_code} />
           {$LL.COUNTRIES[player.country_code]()}

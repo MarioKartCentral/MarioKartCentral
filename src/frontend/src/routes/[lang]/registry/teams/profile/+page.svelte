@@ -37,8 +37,12 @@
   <PermissionCheck permission={permissions.manage_teams}>
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
-        <LinkButton href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}">{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</LinkButton>
-        <LinkButton href="/{$page.params.lang}/registry/teams/mod/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</LinkButton>
+        <LinkButton href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
+          >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</LinkButton
+        >
+        <LinkButton href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
+          >{$LL.TEAM_PROFILE.EDIT_TEAM()}</LinkButton
+        >
       </div>
     </Section>
   </PermissionCheck>
@@ -46,10 +50,13 @@
     <div slot="header_content">
       {#if team.approval_status === 'approved' && !team.is_historical}
         <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
-          <LinkButton href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}">{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</LinkButton>
+          <LinkButton href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
+            >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</LinkButton
+          >
         </TeamPermissionCheck>
         <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
-          <LinkButton href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</LinkButton>
+          <LinkButton href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</LinkButton
+          >
         </TeamPermissionCheck>
       {/if}
     </div>
