@@ -50,7 +50,7 @@
       </div>
       {#if player.friend_codes.length > 0}
         <div>
-          <b>Friend Codes:</b>
+          <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
           {#each player.friend_codes as fc}
             <div class="fc">
               {fc.fc} ({fc.game.toUpperCase()})
@@ -60,7 +60,7 @@
       {/if}
       {#if player.rosters.length > 0}
         <div>
-          <b>Teams:</b>
+          <b>{$LL.TEAM_LIST.TEAMS()}:</b>
           {#each player.rosters as r}
             <div class="roster">
               <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
