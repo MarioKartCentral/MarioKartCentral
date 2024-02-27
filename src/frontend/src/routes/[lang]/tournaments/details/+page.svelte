@@ -8,6 +8,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import { setSeriesPerms, addPermission, permissions } from '$lib/util/util';
   import TournamentRegisterPanel from '$lib/components/tournaments/registration/TournamentRegisterPanel.svelte';
+  import { AccordionItem, Accordion } from 'flowbite-svelte';
 
   let id = 0;
 
@@ -36,10 +37,16 @@
 {#if tournament}
   <TournamentInfo {tournament} />
   <Section header="Tournament Details">
-    <MarkdownBox content={tournament.description} />
-  </Section>
-  <Section header="Tournament Rules">
-    <MarkdownBox content={tournament.ruleset} />
+    <Accordion multiple>
+      <AccordionItem open>
+        <span slot="header">Tournament Description</span>
+        <MarkdownBox content={tournament.description} />
+      </AccordionItem>
+      <AccordionItem open>
+        <span slot="header">Tournament Rules</span>
+        <MarkdownBox content={tournament.ruleset} />
+      </AccordionItem>
+    </Accordion>
   </Section>
   <TournamentRegisterPanel {tournament} />
   <Section header="Tournament Registrations">
