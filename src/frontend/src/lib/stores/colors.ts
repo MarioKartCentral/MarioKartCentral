@@ -1,4 +1,4 @@
-import type { Color } from "$lib/types/colors";
+import type { Color } from '$lib/types/colors';
 
 export const colors: Color[] = [
   {
