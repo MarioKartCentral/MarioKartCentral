@@ -3,7 +3,11 @@
   export let team: Team;
   import { colors } from '$lib/stores/colors';
 
-  $: color = colors[team.color - 1].value;
+  let color = '#808080';
+
+  $: if (team.color > 0 && team.color < 41) {
+    color = colors[team.color - 1].value;
+  }
 </script>
 
 <span class={'tag_badge'} style:background-color={color}>
