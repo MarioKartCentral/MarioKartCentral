@@ -105,7 +105,7 @@ export const mode_names: { [key: string]: string } = {
   '150cc': '150cc',
   '200cc': '200cc',
   mixed_battle: 'Battle (Mixed)',
-  ballon_battle: 'Ballon Battle',
+  balloon_battle: 'Balloon Battle',
   shine_thief: 'Shine Thief',
   bobomb_blast: 'Bob-omb Blast',
   coin_runners: 'Coin Runners',
