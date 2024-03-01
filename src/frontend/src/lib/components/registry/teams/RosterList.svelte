@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { Team } from '$lib/types/team';
   import Table from '$lib/components/common/Table.svelte';
-  import Badge from '$lib/components/Badge.svelte';
-  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import RecruitingBadge from '$lib/components/badges/RecruitingBadge.svelte'
+  import Tag from '$lib/components/registry/teams/Tag.svelte';  
   import LL from '$i18n/i18n-svelte';
 
   export let team: Team;
@@ -33,16 +35,13 @@
           {roster.name}
         </td>
         <td>
-          <Badge
-            classId={roster.is_recruiting ? 'recruiting' : 'not_recruiting'}
-            value={roster.is_recruiting ? 'Recruiting' : 'Not Recruiting'}
-          />
+          <RecruitingBadge recruiting={roster.is_recruiting == "1" ? "recruiting" : "not_recruiting"} />
         </td>
         <td>
-          <Badge classId={'game_' + roster.game} value={roster.game.toUpperCase()} />
+          <GameBadge game={roster.game} />
         </td>
         <td>
-          <Badge classId={'mode_' + roster.mode} value={roster.mode} />
+          <ModeBadge mode={roster.mode} />
         </td>
       </tr>
     {/each}
