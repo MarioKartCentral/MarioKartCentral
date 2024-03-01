@@ -87,7 +87,7 @@ export const valid_modes: { [key: string]: string[] } = {
     '150cc',
     '200cc',
     'mixed_battle',
-    'ballon_battle',
+    'balloon_battle',
     'shine_thief',
     'bobomb_blast',
     'coin_runners',
