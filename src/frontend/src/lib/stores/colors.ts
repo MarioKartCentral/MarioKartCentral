@@ -1,4 +1,6 @@
-export const colors: { id: number; label: string; value: string }[] = [
+import type { Color } from "$lib/types/colors";
+
+export const colors: Color[] = [
   {
     id: 1,
     label: 'RED_1',
