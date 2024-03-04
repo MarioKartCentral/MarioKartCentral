@@ -3,18 +3,15 @@
   import { page } from '$app/stores';
   import type { Team } from '$lib/types/team';
   import Section from '$lib/components/common/Section.svelte';
-  import { setTeamPerms, team_permissions } from '$lib/util/util';
+  import { setTeamPerms, team_permissions, colors } from '$lib/util/util';
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
   import Tag from '$lib/components/registry/teams/Tag.svelte';
-  import { colors } from '$lib/stores/colors';
   import LL from '$i18n/i18n-svelte';
-  import { sortColors } from '$lib/util/util';
 
   let id = 0;
   let team: Team;
 
-  $: colorsSorted = sortColors(colors);
   $: team_name = team ? team.name : 'Registry';
 
   setTeamPerms();
@@ -121,8 +118,8 @@
       <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
         <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
         <select name="color" bind:value={team.color}>
-          {#each colorsSorted as color}
-            <option value={color.id}>{$LL.COLORS[color.label]()}</option>
+          {#each colors as color, i}
+            <option value={i+1}>{$LL.COLORS[color.label]()}</option>
           {/each}
         </select>
         <Tag {team} />

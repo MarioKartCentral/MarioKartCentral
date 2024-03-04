@@ -1,14 +1,15 @@
 <script lang="ts">
   export let recruiting: string;
+  const recruitingStr = recruiting == '1' ? 'Recruiting' :  'Not Recruiting'
+  const recruitingId = recruiting == '1' ? 'recruiting' :  'not_recruiting'
 </script>
 
 <div>
-  <span class={recruiting + '_badge'}>{recruiting === 'recruiting' ? 'Recruiting' : 'Not Recruiting'}</span>
+  <span class={recruitingId + '_badge'}>{recruitingStr}</span>
 </div>
 
 <style>
-  .recruiting_badge,
-  .not_recruiting_badge {
+  span {
     display: inline-block;
     text-align: center;
     color: white;

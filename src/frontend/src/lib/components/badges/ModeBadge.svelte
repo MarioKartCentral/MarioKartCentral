@@ -7,17 +7,7 @@
 </div>
 
 <style>
-  .mode_vsrace_badge,
-  .mode_150cc_badge,
-  .mode_200cc_badge,
-  .mode_match_race_badge,
-  .mode_mixed_badge,
-  .mode_mixed_battle_badge,
-  .mode_balloon_ballon_badge,
-  .mode_shine_thief_badge,
-  .mode_bobomb_blast_badge,
-  .mode_coin_runners_badge,
-  .mode_renegade_roundup_badge {
+  span {
     display: inline-block;
     text-align: center;
     color: white;

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Team } from '$lib/types/team';
   export let team: Team;
-  import { colors } from '$lib/stores/colors';
+  import { colors } from '$lib/util/util';
 
   let color = '#808080';
 

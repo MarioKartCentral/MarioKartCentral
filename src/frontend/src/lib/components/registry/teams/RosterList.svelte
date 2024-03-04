@@ -35,7 +35,7 @@
           {roster.name}
         </td>
         <td>
-          <RecruitingBadge recruiting={roster.is_recruiting == "1" ? "recruiting" : "not_recruiting"} />
+          <RecruitingBadge recruiting={roster.is_recruiting} />
         </td>
         <td>
           <GameBadge game={roster.game} />

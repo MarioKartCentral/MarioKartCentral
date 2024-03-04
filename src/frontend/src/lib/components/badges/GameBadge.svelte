@@ -7,12 +7,7 @@
 </div>
 
 <style>
-  .game_mkt_badge,
-  .game_mk7_badge,
-  .game_mk8dx_badge,
-  .game_mk8u_badge,
-  .game_mkw_badge,
-  .game_smk_badge {
+  span {
     display: inline-block;
     text-align: center;
     color: white;

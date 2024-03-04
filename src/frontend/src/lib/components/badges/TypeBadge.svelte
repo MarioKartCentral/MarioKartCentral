@@ -7,9 +7,7 @@
 </div>
 
 <style>
-  .type_team_badge,
-  .type_solo_badge,
-  .type_solo_badge {
+  span {
     display: inline-block;
     text-align: center;
     color: white;
