@@ -3,8 +3,7 @@
   import { goto } from '$app/navigation';
   import Tag from '$lib/components/registry/teams/Tag.svelte';
   import LL from '$i18n/i18n-svelte';
-  import { sortColors } from '$lib/util/util';
-  import { colors } from '$lib/stores/colors';
+  import { colors } from '$lib/util/util';
 
   const valid_games: { [key: string]: string } = {
     mk8dx: 'Mario Kart 8 Deluxe',
@@ -30,8 +29,6 @@
   let game = 'mk8dx';
   let mode = '150cc';
   let color = { id: 1 };
-
-  $: colorsSorted = sortColors(colors);
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
@@ -90,8 +87,8 @@
   <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
     <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
     <select name="color" bind:value={color.id}>
-      {#each colorsSorted as color}
-        <option value={color.id}>{$LL.COLORS[color.label]()}</option>
+      {#each colors as color, i}
+        <option value={i+1}>{$LL.COLORS[color.label]()}</option>
       {/each}
     </select>
     <Tag team={{ color: color.id, tag: ' ' }} />
