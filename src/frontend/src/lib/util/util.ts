@@ -268,4 +268,4 @@ export const colors: Color[] = [
     label: 'BLACK',
     value: '#000000',
   },
-]
+];
