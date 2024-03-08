@@ -31,7 +31,7 @@
   <tbody>
     {#each players as player, i}
       <tr class="row-{i % 2}">
-        <td><Flag country_code={player.country_code}/></td>
+        <td><Flag country_code={player.country_code} /></td>
         <td>
           <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
         </td>

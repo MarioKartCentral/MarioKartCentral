@@ -7,7 +7,7 @@ class Problem(Exception):
     """
     A schema for describing an error, based on RFC-7807: https://www.rfc-editor.org/rfc/rfc7807
 
-    title: 
+    title:
         A short, human-readable explanation of the error.
         The title should have the same value for all instances of this error.
 
@@ -18,13 +18,29 @@ class Problem(Exception):
     data:
         An optional bag of additional data to go with the error
     """
+
     title: str
     detail: str | None = None
     status: int = 500
     data: dict[str, Any] | None = None
 
-Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt"]
-GameMode = Literal["150cc", "200cc", "rt", "ct", "vsrace"]
+
+Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt", "smk"]
+GameMode = Literal[
+    "150cc",
+    "200cc",
+    "rt",
+    "ct",
+    "vsrace",
+    "match_race",
+    "mixed_battle",
+    "balloon_battle",
+    "shine_thief",
+    "bobomb_blast",
+    "coin_runners",
+    "renegade_roundup",
+    "mixed",
+]
 Approval = Literal["approved", "pending", "denied"]
 CountryCode = Literal["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS",
                       "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR", "IO", "BN",

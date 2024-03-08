@@ -3,17 +3,27 @@
   import { page } from '$app/stores';
   import type { Team } from '$lib/types/team';
   import Section from '$lib/components/common/Section.svelte';
-  import { setTeamPerms, team_permissions } from '$lib/util/util';
+  import { setTeamPerms, team_permissions, colors } from '$lib/util/util';
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let id = 0;
   let team: Team;
+
   $: team_name = team ? team.name : 'Registry';
 
   setTeamPerms();
 
-  const languages = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
+  const languages = [
+    { value: 'de', getLang: 'DE' },
+    { value: 'en-gb', getLang: 'EN_GB' },
+    { value: 'en-us', getLang: 'EN_US' },
+    { value: 'fr', getLang: 'FR' },
+    { value: 'es', getLang: 'ES' },
+    { value: 'ja', getLang: 'JA' },
+  ];
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
@@ -83,50 +93,55 @@
 </svelte:head>
 
 {#if team}
-  <Section header="Team Page">
+  <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
     <div slot="header_content">
-      <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</LinkButton>
+      <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
+        >{$LL.TEAM_EDIT.BACK_TO_TEAM()}</LinkButton
+      >
     </div>
   </Section>
   <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_name_tag}>
     <form method="post" on:submit|preventDefault={editNameTag}>
       <Section header="Team Name/Tag">
-        <label for="name">Team Name</label>
+        <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
         <input name="name" type="text" value={team.name} required />
         <br />
-        <label for="tag">Team Tag</label>
+        <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
         <input name="tag" type="text" value={team.tag} required />
         <br />
-        <button type="submit">Request Name/Tag Change</button>
+        <button type="submit">{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</button>
       </Section>
     </form>
   </TeamPermissionCheck>
   <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
     <form method="post" on:submit|preventDefault={editTeam}>
-      <Section header="Customization">
-        <label for="color">Team Color</label>
-        <select name="color" value={team.color}>
-          <option value={0}>0</option>
+      <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
+        <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
+        <select name="color" bind:value={team.color}>
+          {#each colors as color, i}
+            <option value={i+1}>{$LL.COLORS[color.label]()}</option>
+          {/each}
         </select>
+        <Tag {team} />
         <br />
-        <label for="logo">Team Logo</label>
+        <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
         <input name="logo" type="text" value={team.logo} />
       </Section>
-      <Section header="Misc. Info">
-        <label for="language">Language</label>
+      <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
+        <label for="language">{$LL.PLAYER_PROFILE.LANGUAGE()}</label>
         <select name="language" value={team.language}>
           {#each languages as language}
-            <option value={language}>{language}</option>
+            <option value={language.value}>{$LL.LANGUAGES[language.getLang]()}</option>
           {/each}
         </select>
         <br />
-        <label for="description">Team Description</label>
+        <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
         <br />
         <textarea name="description" value={team.description} />
         <br />
       </Section>
-      <Section header="Submit">
-        <button type="submit">Submit</button>
+      <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
+        <button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</button>
       </Section>
     </form>
   </TeamPermissionCheck>

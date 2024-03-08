@@ -62,6 +62,7 @@
     <PlayerFilterOptions bind:filters />
     <button type="submit">{$LL.PLAYER_LIST.SEARCH()}</button>
   </form>
-  {totalPlayers} {$LL.PLAYER_LIST.PLAYERS()}
+  {totalPlayers}
+  {$LL.PLAYER_LIST.PLAYERS()}
   <PlayerList {players} {totalPages} bind:currentPage />
 </Section>

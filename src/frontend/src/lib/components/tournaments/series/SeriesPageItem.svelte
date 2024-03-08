@@ -3,6 +3,8 @@
   import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
 
   export let series: TournamentSeries;
 </script>
@@ -18,10 +20,10 @@
     {/if}
     <div class="flex">
       <div class="inner">
-        {series.game}
+        <GameBadge game={series.game} />
       </div>
       <div class="inner">
-        {series.mode}
+        <ModeBadge mode={series.mode} />
       </div>
     </div>
     <div class="description">
