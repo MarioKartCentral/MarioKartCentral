@@ -75,15 +75,21 @@
       </NavBarItem>
       <NavBarItem title={$LL.NAVBAR.LANGUAGE_PICKER()} href="#">🌐</NavBarItem>
       {#if user_info.player}
-        <NavBarItem title={$LL.NAVBAR.PROFILE()} href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}"
+        <NavBarItem
+          title={$LL.NAVBAR.PROFILE()}
+          href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}"
           >👤
           {user_info.player.name}
         </NavBarItem>
       {:else if user_info.id !== null}
-        <NavBarItem title={$LL.NAVBAR.PLAYER_SIGNUP()} href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</NavBarItem>
+        <NavBarItem title={$LL.NAVBAR.PLAYER_SIGNUP()} href="/{$page.params.lang}/player-signup"
+          >{$LL.NAVBAR.PLAYER_SIGNUP()}</NavBarItem
+        >
       {:else}
         <NavBarItem title={$LL.NAVBAR.LOGIN()} href="/{$page.params.lang}/login">{$LL.NAVBAR.LOGIN()}</NavBarItem>
-        <NavBarItem title={$LL.NAVBAR.REGISTER()} href="/{$page.params.lang}/register">{$LL.NAVBAR.REGISTER()}</NavBarItem>
+        <NavBarItem title={$LL.NAVBAR.REGISTER()} href="/{$page.params.lang}/register"
+          >{$LL.NAVBAR.REGISTER()}</NavBarItem
+        >
       {/if}
     </ul>
   </div>

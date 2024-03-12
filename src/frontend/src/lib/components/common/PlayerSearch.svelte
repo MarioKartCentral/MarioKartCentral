@@ -2,6 +2,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import { createEventDispatcher } from 'svelte';
   import Table from './Table.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let player: PlayerInfo | null = null;
   export let game: string | null = null;
@@ -47,7 +48,7 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
   {#if !player}
-    <input placeholder="Search for players..." bind:value={query} on:input={handle_search} />
+    <input placeholder={$LL.TEAM_EDIT.SEARCH_FOR_PLAYERS()} bind:value={query} on:input={handle_search} />
     {#if show_results}
       <div class="table">
         <Table show_padding={false}>

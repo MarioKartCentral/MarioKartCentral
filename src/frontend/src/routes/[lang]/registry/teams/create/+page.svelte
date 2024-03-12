@@ -1,6 +1,9 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import { goto } from '$app/navigation';
+  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import LL from '$i18n/i18n-svelte';
+  import { colors } from '$lib/util/util';
 
   const valid_games: { [key: string]: string } = {
     mk8dx: 'Mario Kart 8 Deluxe',
@@ -15,10 +18,17 @@
     ct: 'Custom Tracks',
     vsrace: 'VS Race',
   };
-  const languages = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
-
+  const languages = [
+    { value: 'de', getLang: 'DE' },
+    { value: 'en-gb', getLang: 'EN_GB' },
+    { value: 'en-us', getLang: 'EN_US' },
+    { value: 'fr', getLang: 'FR' },
+    { value: 'es', getLang: 'ES' },
+    { value: 'ja', getLang: 'JA' },
+  ];
   let game = 'mk8dx';
   let mode = '150cc';
+  let color = { id: 1 };
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
@@ -54,54 +64,57 @@
 </script>
 
 <form method="post" on:submit|preventDefault={createTeam}>
-  <Section header="General Info">
-    <label for="game">Game</label>
+  <Section header={$LL.TEAM_CREATE.GENERAL_INFO()}>
+    <label for="game">{$LL.TEAM_LIST.GAME()}</label>
     <select name="game" bind:value={game} on:change={() => ([mode] = valid_modes[game])}>
       {#each Object.keys(valid_games) as game}
         <option value={game}>{valid_games[game]}</option>
       {/each}
     </select>
-    <label for="mode">Mode</label>
+    <label for="mode">{$LL.TEAM_LIST.MODE()}</label>
     <select name="mode" bind:value={mode}>
       {#each valid_modes[game] as mode}
         <option value={mode}>{mode_names[mode]}</option>
       {/each}
     </select>
     <br />
-    <label for="name">Team Name</label>
+    <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
     <input name="name" type="text" required />
     <br />
-    <label for="tag">Team Tag</label>
+    <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
     <input name="tag" type="text" required />
   </Section>
-  <Section header="Customization">
-    <label for="color">Team Color</label>
-    <select name="color">
-      <option value={0}>0</option>
+  <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
+    <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
+    <select name="color" bind:value={color.id}>
+      {#each colors as color, i}
+        <option value={i+1}>{$LL.COLORS[color.label]()}</option>
+      {/each}
     </select>
+    <Tag team={{ color: color.id, tag: ' ' }} />
     <br />
-    <label for="logo">Team Logo</label>
+    <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
     <input name="logo" type="text" />
   </Section>
-  <Section header="Misc. Info">
-    <label for="language">Language</label>
+  <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
+    <label for="language">{$LL.LANGUAGE()}</label>
     <select name="language">
       {#each languages as language}
-        <option value={language}>{language}</option>
+        <option value={language.value}>{$LL.LANGUAGES[language.getLang]()}</option>
       {/each}
     </select>
     <br />
-    <label for="description">Team Description</label>
+    <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
     <br />
     <textarea name="description" />
     <br />
-    <label for="recruiting">Recruitment Status</label>
+    <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
     <select name="recruiting">
-      <option value="true">Recruiting</option>
-      <option value="false">Not Recruiting</option>
+      <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+      <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
     </select>
   </Section>
-  <Section header="Submit">
-    <button type="submit">Submit</button>
+  <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
+    <button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</button>
   </Section>
 </form>
