@@ -47,3 +47,9 @@ body {
   background-color: #141414;
   color: white;
 }
+input,
+textarea,
+select,
+input[type] {
+  background-color: black;
+}
