@@ -70,7 +70,7 @@
   });
 </script>
 
-<div class="container">
+<div class="page-container">
   <header>
     <NavBar />
   </header>
@@ -87,7 +87,7 @@
 <style>
   /* If the header and main elements are directly placed within the body, the fixed behavior will stop after scrolling one screen's height.
      To prevent this, wrap them in a container. */
-  .container {
+  .page-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
