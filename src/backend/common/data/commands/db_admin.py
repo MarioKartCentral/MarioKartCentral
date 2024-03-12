@@ -167,4 +167,5 @@ class SeedDatabaseCommand(Command[None]):
             
             await db.execute("INSERT INTO users(id, email, password_hash) VALUES (0, ?, ?)  ON CONFLICT DO NOTHING", (self.admin_email, self.hashed_pw))
             await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (0, 0) ON CONFLICT DO NOTHING")
+            await db.execute("INSERT INTO user_settings(user_id) VALUES (0) ON CONFLICT DO NOTHING")
             await db.commit()
