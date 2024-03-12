@@ -101,7 +101,7 @@
     flex: 1 0;
     padding: 30px 50px;
   }
-  :global(a) {
+  /* :global(a) {
     color: white;
     text-decoration: none;
     transition: color 0.2s ease-out;
@@ -109,5 +109,5 @@
   :global(a:hover) {
     color: rgb(0, 162, 255);
     text-decoration: none;
-  }
+  } */
 </style>

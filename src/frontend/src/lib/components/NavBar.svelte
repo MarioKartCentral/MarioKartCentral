@@ -8,6 +8,9 @@
   import Notification from './Notification.svelte';
   import ModPanel from './ModPanel.svelte';
   import { mod_panel_permissions } from '$lib/util/util';
+  import { Navbar, NavBrand, NavUl, NavLi, NavHamburger, Dropdown, DropdownItem, Avatar, Button } from 'flowbite-svelte';
+  import { ChevronDownOutline, ChevronDownSolid } from 'flowbite-svelte-icons';
+  
 
   let notify: Notification;
   let mod_panel: ModPanel;
@@ -17,15 +20,82 @@
 
   let opened = false;
 
+  let avatar_url = '';
+
   user.subscribe((value) => {
     user_info = value;
+    if (user_info.player?.user_settings && user_info.player?.user_settings.avatar) {
+      avatar_url = user_info.player.user_settings.avatar;
+    }
   });
   have_unread_notification.subscribe((value) => {
     have_unread = value;
   });
+
+  $: activeUrl = $page.url.pathname;
+
 </script>
 
-<nav>
+<Navbar class="bg-green-600">
+    <NavBrand href="/{$page.params.lang}">
+      <img src={logo} width="120px" alt="MKCentral Logo" />
+    </NavBrand>
+    <div class="flex items-center md:order-2">
+      {#if user_info.player}
+        <div class="flex items-center cursor-pointer">
+          <Avatar src={avatar_url}/>
+          <div class="username">
+            {user_info.player.name}
+          </div>
+        </div>
+        <Dropdown class="w-44 z-20 bg-green-600 text-white">
+          <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}" class="hover:text-black">{$LL.NAVBAR.PROFILE()}</DropdownItem>
+        </Dropdown>
+      {:else if user_info.id !== null}
+        <Button size="sm" href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</Button>
+      {:else}
+        <Button size="sm">
+          {$LL.NAVBAR.LOGIN()}/{$LL.NAVBAR.REGISTER()}
+          <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
+        </Button>
+        <Dropdown class="w-44 z-20 bg-green-600 text-white">
+          <DropdownItem href="/{$page.params.lang}/login" class="hover:text-black">{$LL.NAVBAR.LOGIN()}</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/register" class="hover:text-black">{$LL.NAVBAR.REGISTER()}</DropdownItem>
+        </Dropdown>
+      {/if}
+    </div>
+    <NavHamburger/>
+    <NavUl classUl="bg-green-600 border-none" {activeUrl} activeClass='text-white font-bold underline underline-offset-4' nonActiveClass='text-white font-bold'>
+      <NavLi class="cursor-pointer">
+        <a href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</a>
+        <ChevronDownOutline class="inline"/>
+      </NavLi>
+      <Dropdown class="w-44 z-20 bg-green-600 text-white">
+        <DropdownItem href="/{$page.params.lang}/tournaments" class="hover:text-black">Tournament Listing</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/tournaments/series" class="hover:text-black">Tournament Series</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/tournaments/templates" class="hover:text-black">Tournament Templates</DropdownItem>
+      </Dropdown>
+      <NavLi href="/{$page.params.lang}/time-trials">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
+      <NavLi href="/{$page.params.lang}/lounge">{$LL.NAVBAR.LOUNGE()}</NavLi>
+      <NavLi class="cursor-pointer">
+        {$LL.NAVBAR.REGISTRY()}
+        <ChevronDownOutline class="inline"/>
+      </NavLi>
+      <Dropdown class="w-44 z-20 bg-green-600 text-white">
+        <DropdownItem href="/{$page.params.lang}/registry/players" class="hover:text-black">Players</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/registry/teams" class="hover:text-black">Teams</DropdownItem>
+      </Dropdown>
+      <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
+      {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}
+        <NavLi class="cursor-pointer">
+          {$LL.NAVBAR.MODERATOR()}
+          <ChevronDownOutline class="inline"/>
+        </NavLi>
+        <ModPanel/>
+      {/if}
+    </NavUl>
+</Navbar>
+<!-- <nav>
   <div class="nav-top-wrap">
     <div class="nav-brand">
       <a href="/{$page.params.lang}" title={$LL.NAVBAR.HOME_PAGE()}>
@@ -93,9 +163,16 @@
       {/if}
     </ul>
   </div>
-</nav>
+</nav> -->
 
 <style>
+  .username {
+    color: white;
+    padding-left: 10px;
+  }
+  .nav {
+    color: white;
+  }
   nav {
     display: flex;
     flex-direction: column;
@@ -135,6 +212,7 @@
   }
 
   .nav-main {
+    color: #5ce49a;
     background-color: #5ce49a;
   }
 
