@@ -3,6 +3,8 @@
   import { onMount } from 'svelte';
   import { have_unread_notification } from '$lib/stores/stores';
   import DropdownMenu from './DropdownMenu.svelte';
+  import Dropdown from './common/Dropdown.svelte';
+  import DropdownItem from './common/DropdownItem.svelte';
   import LL from '$i18n/i18n-svelte';
 
   let dropdown: DropdownMenu;
@@ -12,7 +14,7 @@
 
   let notifications: Notification[] = [];
   $: {
-    have_unread_notification.set(notifications.some((n) => !n.is_read));
+    have_unread_notification.set(notifications.filter((n) => !n.is_read).length);
   }
 
   onMount(async () => {
@@ -63,7 +65,7 @@
   }
 </script>
 
-<DropdownMenu bind:this={dropdown}>
+<!-- <DropdownMenu bind:this={dropdown}>
   <ul>
     {#each notifications as { id, content, created_date, is_read, type }}
       <li>
@@ -83,7 +85,22 @@
       </div>
     </li>
   </ul>
-</DropdownMenu>
+</DropdownMenu> -->
+<Dropdown>
+  {#each notifications as { id, content, created_date, is_read, type }}
+    <DropdownItem>
+      <span>{id}: </span>
+      <span>{content}</span>
+      <span>{new Date(created_date * 1000).toLocaleString()}</span>
+      <span>{$LL.NAVBAR.TYPE()}: {type}</span>
+      <button on:click={async () => await makeNotificationAsRead(id)}>☑</button>
+      <span>{$LL.NAVBAR.IS_READ()}: {is_read}</span>
+    </DropdownItem>
+  {/each}
+  <DropdownItem>
+    <button on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
+  </DropdownItem>
+</Dropdown>
 
 <style>
   ul {

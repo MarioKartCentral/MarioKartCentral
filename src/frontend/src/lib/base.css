@@ -51,5 +51,5 @@ input,
 textarea,
 select,
 input[type] {
-  background-color: black;
+  color: black;
 }

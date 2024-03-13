@@ -8,15 +8,18 @@
   import Notification from './Notification.svelte';
   import ModPanel from './ModPanel.svelte';
   import { mod_panel_permissions } from '$lib/util/util';
-  import { Navbar, NavBrand, NavUl, NavLi, NavHamburger, Dropdown, DropdownItem, Avatar, Button } from 'flowbite-svelte';
-  import { ChevronDownOutline, ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { Navbar, NavBrand, NavUl, NavLi, NavHamburger, Avatar, Button } from 'flowbite-svelte';
+  import Dropdown from './common/Dropdown.svelte';
+  import DropdownItem from './common/DropdownItem.svelte';
+  import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline, GlobeSolid } from 'flowbite-svelte-icons';
+  import AlertCount from './common/AlertCount.svelte';
   
 
   let notify: Notification;
   let mod_panel: ModPanel;
 
   let user_info: UserInfo;
-  let have_unread = false;
+  let unread_count = 0;
 
   let opened = false;
 
@@ -29,10 +32,28 @@
     }
   });
   have_unread_notification.subscribe((value) => {
-    have_unread = value;
+    unread_count = value;
   });
 
   $: activeUrl = $page.url.pathname;
+
+  // underline a nav item if it's the section we're currently in
+  function checkSelectedNav(name: string) {
+    if($page.data.activeNavItem === name) {
+      return "text-white font-bold underline underline-offset-4";
+    }
+    return "";
+  }
+
+  async function logout() {
+      const response = await fetch('/api/user/logout', { method: 'POST' });
+
+      if (response.status < 300) {
+        window.location.reload();
+      } else {
+        alert('Logout failed');
+    }
+  }
 
 </script>
 
@@ -41,15 +62,29 @@
       <img src={logo} width="120px" alt="MKCentral Logo" />
     </NavBrand>
     <div class="flex items-center md:order-2">
+      <div class="nav-user-bar cursor-pointer relative">
+        {#if unread_count}
+          <BellSolid size="xl" class="text-yellow-400"/>
+          <AlertCount count={unread_count} placement="top-right"/>
+        {:else}
+          <BellOutline size="xl" class="text-gray-300"/>
+        {/if}
+        
+      </div>
+      <Notification bind:this={notify} />
+      <div class="nav-user-bar cursor-pointer">
+        <GlobeSolid size="xl" class="text-gray-300"/>
+      </div>
       {#if user_info.player}
-        <div class="flex items-center cursor-pointer">
+        <div class="flex items-center cursor-pointer nav-user-bar font-bold">
           <Avatar src={avatar_url}/>
           <div class="username">
             {user_info.player.name}
           </div>
         </div>
-        <Dropdown class="w-44 z-20 bg-green-600 text-white">
-          <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}" class="hover:text-black">{$LL.NAVBAR.PROFILE()}</DropdownItem>
+        <Dropdown>
+          <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">{$LL.NAVBAR.PROFILE()}</DropdownItem>
+          <DropdownItem on:click={logout}>{$LL.LOGOUT()}</DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
         <Button size="sm" href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</Button>
@@ -58,39 +93,35 @@
           {$LL.NAVBAR.LOGIN()}/{$LL.NAVBAR.REGISTER()}
           <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
         </Button>
-        <Dropdown class="w-44 z-20 bg-green-600 text-white">
-          <DropdownItem href="/{$page.params.lang}/login" class="hover:text-black">{$LL.NAVBAR.LOGIN()}</DropdownItem>
-          <DropdownItem href="/{$page.params.lang}/register" class="hover:text-black">{$LL.NAVBAR.REGISTER()}</DropdownItem>
+        <Dropdown>
+          <DropdownItem href="/{$page.params.lang}/login">{$LL.NAVBAR.LOGIN()}</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/register">{$LL.NAVBAR.REGISTER()}</DropdownItem>
         </Dropdown>
       {/if}
     </div>
     <NavHamburger/>
-    <NavUl classUl="bg-green-600 border-none" {activeUrl} activeClass='text-white font-bold underline underline-offset-4' nonActiveClass='text-white font-bold'>
-      <NavLi class="cursor-pointer">
+    <NavUl classUl="bg-green-600 border-none" {activeUrl} nonActiveClass='text-white font-bold'>
+      <NavLi class="cursor-pointer {checkSelectedNav('TOURNAMENTS')}">
         <a href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</a>
         <ChevronDownOutline class="inline"/>
       </NavLi>
-      <Dropdown class="w-44 z-20 bg-green-600 text-white">
-        <DropdownItem href="/{$page.params.lang}/tournaments" class="hover:text-black">Tournament Listing</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/tournaments/series" class="hover:text-black">Tournament Series</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/tournaments/templates" class="hover:text-black">Tournament Templates</DropdownItem>
+      <Dropdown>
+        <DropdownItem href="/{$page.params.lang}/tournaments">Tournament Listing</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/tournaments/series">Tournament Series</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/tournaments/templates">Tournament Templates</DropdownItem>
       </Dropdown>
-      <NavLi href="/{$page.params.lang}/time-trials">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
-      <NavLi href="/{$page.params.lang}/lounge">{$LL.NAVBAR.LOUNGE()}</NavLi>
-      <NavLi class="cursor-pointer">
+      <NavLi href="/{$page.params.lang}/time-trials" class={checkSelectedNav('TIME TRIALS')}>{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
+      <NavLi href="/{$page.params.lang}/lounge" class={checkSelectedNav('LOUNGE')}>{$LL.NAVBAR.LOUNGE()}</NavLi>
+      <NavLi class="cursor-pointer {checkSelectedNav('REGISTRY')}">
         {$LL.NAVBAR.REGISTRY()}
         <ChevronDownOutline class="inline"/>
       </NavLi>
-      <Dropdown class="w-44 z-20 bg-green-600 text-white">
-        <DropdownItem href="/{$page.params.lang}/registry/players" class="hover:text-black">Players</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/registry/teams" class="hover:text-black">Teams</DropdownItem>
+      <Dropdown>
+        <DropdownItem href="/{$page.params.lang}/registry/players">Players</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/registry/teams">Teams</DropdownItem>
       </Dropdown>
       <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
       {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}
-        <NavLi class="cursor-pointer">
-          {$LL.NAVBAR.MODERATOR()}
-          <ChevronDownOutline class="inline"/>
-        </NavLi>
         <ModPanel/>
       {/if}
     </NavUl>
@@ -169,6 +200,10 @@
   .username {
     color: white;
     padding-left: 10px;
+  }
+  .nav-user-bar {
+    margin-left: 10px;
+    margin-right: 10px;
   }
   .nav {
     color: white;
