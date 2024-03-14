@@ -4,6 +4,7 @@
   import { locale } from '$i18n/i18n-svelte';
   import TournamentPlayerList from './TournamentPlayerList.svelte';
   import Table from '$lib/components/common/Table.svelte';
+    import TagBadge from '../badges/TagBadge.svelte';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
@@ -49,8 +50,8 @@
     <col class="name" />
   {/if}
   <col class="players" />
-  <col class="eligible" />
-  <col class="date" />
+  <col class="eligible mobile-hide" />
+  <col class="date mobile-hide" />
   <thead>
     <tr>
       <th>ID</th>
@@ -66,8 +67,8 @@
           ({all_toggle_on ? 'hide all' : 'show all'})
         </button>
       </th>
-      <th>Eligible?</th>
-      <th>Registration Date</th>
+      <th class="mobile-hide">Eligible?</th>
+      <th class="mobile-hide">Registration Date</th>
     </tr>
   </thead>
   <tbody>
@@ -75,7 +76,9 @@
       <tr class="row-{i % 2}">
         <td>{squad.id}</td>
         {#if tournament.squad_tag_required}
-          <td>{squad.tag}</td>
+          <td>
+            <TagBadge tag={squad.tag} color={squad.color}/>
+          </td>
         {/if}
         {#if tournament.squad_name_required}
           <td>{squad.name}</td>
@@ -86,8 +89,8 @@
             ({squad_data[squad.id].display_players ? 'hide' : 'show'})
           </button></td
         >
-        <td>{is_squad_eligible(squad)}</td>
-        <td>{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
+        <td class="mobile-hide">{is_squad_eligible(squad)}</td>
+        <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
       </tr>
       {#if squad_data[squad.id].display_players}
         <tr class="row-{i % 2}">

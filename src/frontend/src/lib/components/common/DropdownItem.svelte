@@ -4,7 +4,7 @@
     export let href: string | undefined = undefined;
 </script>
 
-<DropdownItem {href} class="hover:bg-green-600" on:click>
+<DropdownItem {href} class="hover:bg-primary-700" on:click>
     <slot/>
 </DropdownItem>
 

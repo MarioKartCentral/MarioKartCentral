@@ -70,24 +70,22 @@
   });
 </script>
 
-<div class="page-container">
-  <header>
-    <NavBar />
-  </header>
-
+<header>
+  <NavBar />
+</header>
+<div class="container md:mx-auto">
   <main>
     <slot />
   </main>
-
-  <footer>
-    <Footer />
-  </footer>
 </div>
+<footer>
+  <Footer />
+</footer>
 
 <style>
   /* If the header and main elements are directly placed within the body, the fixed behavior will stop after scrolling one screen's height.
      To prevent this, wrap them in a container. */
-  .page-container {
+  .container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;

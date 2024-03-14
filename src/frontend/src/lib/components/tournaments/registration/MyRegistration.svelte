@@ -7,6 +7,11 @@
   import MySquad from './MySquad.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
+    import Flag from '$lib/components/common/Flag.svelte';
+    import Dropdown from '$lib/components/common/Dropdown.svelte';
+    import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+    import { ChevronDownSolid } from 'flowbite-svelte-icons';
+    import PlayerName from './PlayerName.svelte';
 
   export let registration: MyTournamentRegistration;
   export let tournament: Tournament;
@@ -122,9 +127,9 @@
       {#if tournament.mii_name_required}
         <col class="mii-name" />
       {/if}
-      <col class="friend-codes" />
+      <col class="friend-codes mobile-hide" />
       {#if tournament.host_status_required}
-        <col class="can-host" />
+        <col class="can-host mobile-hide" />
       {/if}
       <col class="actions" />
       <thead>
@@ -134,32 +139,45 @@
           {#if tournament.mii_name_required}
             <th>In-Game Name</th>
           {/if}
-          <th>Friend Codes</th>
+          <th class="mobile-hide">Friend Codes</th>
           {#if tournament.host_status_required}
-            <th>Can Host</th>
+            <th class="mobile-hide">Can Host</th>
           {/if}
           <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>{registration.player.country_code}</td>
-          <td>{registration.player.name}</td>
+        <tr class="me">
+          <td>
+            <Flag country_code={registration.player.country_code}/>
+          </td>
+          <td class="name">
+            <PlayerName player={registration.player}/>
+          </td>
           {#if tournament.mii_name_required}
             <td>{registration.player.mii_name}</td>
           {/if}
-          <td>
+          <td class="mobile-hide">
             {#if registration.player.friend_codes.length > 0}
               {registration.player.friend_codes[0]}
             {/if}
           </td>
           {#if tournament.host_status_required}
-            <td>{registration.player.can_host ? 'Yes' : 'No'}</td>
+            <td class="mobile-hide">{registration.player.can_host ? 'Yes' : 'No'}</td>
           {/if}
           <td>
             {#if check_registrations_open()}
-              <button on:click={edit_reg_dialog.open}>Edit</button>
-              <button on:click={unregister}>Unregister</button>
+              <ChevronDownSolid class="cursor-pointer"/>
+              <Dropdown>
+                <DropdownItem on:click={edit_reg_dialog.open}>
+                  Edit
+                </DropdownItem>
+                <DropdownItem on:click={unregister}>
+                  Unregister
+                </DropdownItem>
+              </Dropdown>
+              <!-- <button on:click={edit_reg_dialog.open}>Edit</button>
+              <button on:click={unregister}>Unregister</button> -->
             {/if}
           </td>
         </tr>
@@ -186,7 +204,7 @@
 
 <style>
   col.country {
-    width: 5%;
+    width: 10%;
   }
   col.name {
     width: 25%;
@@ -195,7 +213,7 @@
     width: 25%;
   }
   col.friend-codes {
-    width: 25%;
+    width: 20%;
   }
   col.can-host {
     width: 10%;

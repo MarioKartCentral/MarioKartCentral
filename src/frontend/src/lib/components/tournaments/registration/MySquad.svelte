@@ -9,6 +9,14 @@
   import SoloTournamentFields from './SoloTournamentFields.svelte';
   import type { FriendCode } from '$lib/types/friend-code';
   import SquadTournamentFields from './SquadTournamentFields.svelte';
+  import CaptainBadge from '$lib/components/badges/CaptainBadge.svelte';
+    import Flag from '$lib/components/common/Flag.svelte';
+    import { ChevronDownSolid } from 'flowbite-svelte-icons';
+    import Dropdown from '$lib/components/common/Dropdown.svelte';
+    import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+    import { Button } from 'flowbite-svelte';
+    import PlayerName from './PlayerName.svelte';
+    import TagBadge from '$lib/components/badges/TagBadge.svelte';
 
   export let tournament: Tournament;
   export let squad: TournamentSquad;
@@ -273,16 +281,16 @@
 </script>
 
 <div>My squad</div>
-<div>{registered_players.length} players</div>
 
 <div>
   {#if tournament.squad_tag_required}
-    {squad.tag}
+    <TagBadge tag={squad.tag} color={squad.color}/>
   {/if}
   {#if tournament.squad_name_required}
     {squad.name}
   {/if}
 </div>
+<div>{registered_players.length} players</div>
 <Table>
   <col class="country" />
   <col class="name" />
@@ -310,9 +318,13 @@
   </thead>
   <tbody>
     {#each registered_players as player, i}
-      <tr class="row-{i % 2}">
-        <td>{player.country_code}</td>
-        <td>{player.name} {player.is_squad_captain ? '(Captain)' : ''}</td>
+      <tr class="row-{i % 2} {registration.player?.player_id === player.player_id ? "me" : ""}">
+        <td>
+          <Flag country_code={player.country_code}/>
+        </td>
+        <td class="name">
+          <PlayerName {player}/>
+        </td>
         {#if tournament.mii_name_required}
           <td>{player.mii_name}</td>
         {/if}
@@ -326,13 +338,17 @@
         {/if}
         <td>
           {#if check_registrations_open()}
-            {#if registration.player?.player_id === player.player_id}
-              <button on:click={edit_reg_dialog.open}>Edit</button>
-              <button on:click={unregister}>Unregister</button>
-            {:else if registration.player?.is_squad_captain}
-              <button on:click={() => kickPlayer(player.player_id)}>Kick</button>
-              <button on:click={() => makeCaptain(player.player_id)}>Captain</button>
-            {/if}
+            <ChevronDownSolid class="cursor-pointer"/>
+            <Dropdown>
+              {#if registration.player?.player_id === player.player_id}
+              <DropdownItem on:click={edit_reg_dialog.open}>Edit</DropdownItem>
+              <DropdownItem on:click={unregister}>Unregister</DropdownItem>
+              {:else if registration.player?.is_squad_captain}
+                <DropdownItem on:click={() => kickPlayer(player.player_id)}>Kick</DropdownItem>
+                <DropdownItem on:click={() => makeCaptain(player.player_id)}>Make Captain</DropdownItem>
+              {/if}
+            </Dropdown>
+            
           {/if}
         </td>
       </tr>
@@ -360,8 +376,10 @@
     <tbody>
       {#each invited_players as player, i}
         <tr class="row-{i % 2}">
-          <td>{player.country_code}</td>
-          <td>{player.name}</td>
+          <td><Flag country_code={player.country_code}/></td>
+          <td>
+            <PlayerName {player}/>
+          </td>
 
           <td>
             {#if player.friend_codes.length > 0}
@@ -371,7 +389,7 @@
 
           <td>
             {#if check_registrations_open()}
-              <button on:click={() => cancelInvite(player.player_id)}>Cancel</button>
+              <Button size="xs" on:click={() => cancelInvite(player.player_id)}>Cancel</Button>
             {/if}
           </td>
         </tr>
@@ -397,8 +415,8 @@
   {/if}
   <br />
   <div>
-    <button on:click={edit_squad_dialog.open}>Edit Squad</button>
-    <button on:click={unregisterSquad}>Unregister Squad</button>
+    <Button on:click={edit_squad_dialog.open}>Edit Squad</Button>
+    <Button on:click={unregisterSquad}>Unregister Squad</Button>
   </div>
 {/if}
 
@@ -430,7 +448,7 @@
 
 <style>
   col.country {
-    width: 5%;
+    width: 10%;
   }
   col.name {
     width: 25%;
@@ -439,7 +457,7 @@
     width: 25%;
   }
   col.friend-codes {
-    width: 25%;
+    width: 20%;
   }
   col.can-host {
     width: 10%;

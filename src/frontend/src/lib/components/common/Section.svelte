@@ -5,7 +5,7 @@
 
 <div class="container">
   {#if header}
-    <div class="header">
+    <div class="header bg-primary-800">
       <div class="header_element">
         {#if href}
           <h2><a {href}>{header}</a></h2>
@@ -28,20 +28,18 @@
 </div>
 
 <style>
+  h2 {
+    font-size: 20px;
+  }
   .container {
-    width: 65%;
+    max-width: 1000px;
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
-  }
-  @media (max-width: 600px) {
-    .container {
-      width: 100%;
-    }
   }
   .header {
     display: flex;
     flex-wrap: wrap;
-    background-color: rgba(0, 128, 0, 0.6);
+    /* background-color: rgba(0, 128, 0, 0.6); */
   }
   .centered {
     display: flex;

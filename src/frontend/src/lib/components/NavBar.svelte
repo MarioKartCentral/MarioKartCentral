@@ -14,7 +14,6 @@
   import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline, GlobeSolid } from 'flowbite-svelte-icons';
   import AlertCount from './common/AlertCount.svelte';
   
-
   let notify: Notification;
   let mod_panel: ModPanel;
 
@@ -57,7 +56,7 @@
 
 </script>
 
-<Navbar class="bg-green-600">
+<Navbar fluid={true} class="bg-primary-800" >
     <NavBrand href="/{$page.params.lang}">
       <img src={logo} width="120px" alt="MKCentral Logo" />
     </NavBrand>
@@ -98,9 +97,10 @@
           <DropdownItem href="/{$page.params.lang}/register">{$LL.NAVBAR.REGISTER()}</DropdownItem>
         </Dropdown>
       {/if}
+      <NavHamburger/>
     </div>
-    <NavHamburger/>
-    <NavUl classUl="bg-green-600 border-none" {activeUrl} nonActiveClass='text-white font-bold'>
+    
+    <NavUl classUl="bg-primary-800 border-none" {activeUrl} nonActiveClass='text-white font-bold'>
       <NavLi class="cursor-pointer {checkSelectedNav('TOURNAMENTS')}">
         <a href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</a>
         <ChevronDownOutline class="inline"/>

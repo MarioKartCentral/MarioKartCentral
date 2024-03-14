@@ -31,9 +31,6 @@
   });
 </script>
 
-<a href="/{$page.params.lang}/tournaments/series">Series</a>
-<a href="/{$page.params.lang}/tournaments/templates">Templates</a>
-
 <Section header={$LL.NAVBAR.TOURNAMENTS()}>
   <div slot="header_content">
     {#if user_info.permissions.includes(permissions.create_tournament)}

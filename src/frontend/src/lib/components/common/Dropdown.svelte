@@ -1,7 +1,9 @@
 <script lang="ts">
     import { Dropdown } from "flowbite-svelte";
+
+    export let placement: "top"|"bottom"|"left"|"right"="bottom";
 </script>
 
-<Dropdown class="w-44 z-20 bg-gray-600 text-white">
+<Dropdown class="bg-gray-600 text-white" {placement}>
     <slot/>
 </Dropdown>

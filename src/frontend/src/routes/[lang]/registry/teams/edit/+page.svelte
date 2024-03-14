@@ -6,7 +6,7 @@
   import { setTeamPerms, team_permissions, colors } from '$lib/util/util';
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
   import LinkButton from '$lib/components/common/LinkButton.svelte';
-  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
 
   let id = 0;
@@ -119,10 +119,10 @@
         <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
         <select name="color" bind:value={team.color}>
           {#each colors as color, i}
-            <option value={i+1}>{$LL.COLORS[color.label]()}</option>
+            <option value={i}>{$LL.COLORS[color.label]()}</option>
           {/each}
         </select>
-        <Tag {team} />
+        <TagBadge tag={team.tag} color={team.color}/>
         <br />
         <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
         <input name="logo" type="text" value={team.logo} />

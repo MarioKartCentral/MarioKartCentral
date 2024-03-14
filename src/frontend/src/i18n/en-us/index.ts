@@ -48,7 +48,7 @@ const en_us: BaseTranslation & Translation = {
     TEAMS: 'Teams',
     NAME: 'Name',
     STATUS: 'Status',
-    GAME: 'Jeu',
+    GAME: 'Game',
     MODE: 'Mode',
     ROSTERS: 'Rosters',
     REGISTERED: 'Registered',

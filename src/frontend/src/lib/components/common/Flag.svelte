@@ -6,6 +6,6 @@
 
 <style>
   img.flag {
-    height: 36px;
+    max-height: 36px;
   }
 </style>

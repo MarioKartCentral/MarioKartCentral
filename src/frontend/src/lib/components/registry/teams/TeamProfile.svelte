@@ -3,7 +3,7 @@
   import logo from '$lib/assets/logo.png';
   import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
 
   export let team: Team;
 
@@ -26,7 +26,7 @@
   </div>
   <div class="team_details">
     <div class="tag">
-      <Tag {team} />
+      <TagBadge tag={team.tag} color={team.color}/>
     </div>
     <div class="name">
       <b>{team.name}</b>
