@@ -27,9 +27,17 @@
       unread_count = mod_notifs.pending_teams + mod_notifs.pending_team_edits + mod_notifs.pending_transfers;
     }
   });
+
+  // underline a nav item if it's the section we're currently in
+  function checkSelectedNav(name: string) {
+    if($page.data.activeNavItem === name) {
+      return "text-white font-bold underline underline-offset-4";
+    }
+    return "";
+  }
 </script>
 
-<NavLi class="cursor-pointer">
+<NavLi class="cursor-pointer {checkSelectedNav("MODERATOR")}">
   {$LL.NAVBAR.MODERATOR()}
   {#if unread_count}
     <AlertCount count={unread_count}/>
