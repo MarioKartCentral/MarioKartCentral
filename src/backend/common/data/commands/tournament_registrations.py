@@ -231,7 +231,7 @@ class UnregisterPlayerCommand(Command[None]):
                 # disallow players from leaving their squad as captain if there is more than 1 player
                 if is_squad_captain and num_squad_players > 1:
                     raise Problem("Please unregister your current squad or give captain to another player in your squad before unregistering for this tournament", status=400)
-                if num_squad_players == 1:
+                if is_squad_captain and num_squad_players == 1:
                     await db.execute("UPDATE tournament_squads SET is_registered = ? WHERE id = ?", (False, self.squad_id))
                     # delete any invites as well
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 1", (self.tournament_id, self.squad_id))
@@ -416,7 +416,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 require_single_fc, game = row
                 fc_where_clause = ""
                 if require_single_fc:
-                    fc_where_clause = "AND f.id = t.selected_fc_id"
+                    fc_where_clause = "AND (f.id = t.selected_fc_id OR t.is_invite = 1)"
 
             # gathering all the valid FCs for each player in their squads
             fc_query = f"""SELECT f.player_id, f.fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
@@ -426,10 +426,12 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                                 WHERE p2.squad_id = t.squad_id AND p2.player_id = ?
                             )
                         )"""
+            print(fc_query)
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     player_id, fc = row
+                    print(fc)
                     player_fc_dict[player_id].append(fc)
 
             details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, list(squads.values()), None)
