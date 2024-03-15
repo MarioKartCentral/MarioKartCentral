@@ -34,8 +34,6 @@
     unread_count = value;
   });
 
-  $: activeUrl = $page.url.pathname;
-
   // underline a nav item if it's the section we're currently in
   function checkSelectedNav(name: string) {
     if($page.data.activeNavItem === name) {
@@ -100,7 +98,7 @@
       <NavHamburger/>
     </div>
     
-    <NavUl classUl="bg-primary-800 border-none" {activeUrl} nonActiveClass='text-white font-bold'>
+    <NavUl classUl="bg-primary-800 border-none" nonActiveClass='text-white font-bold'>
       <NavLi class="cursor-pointer {checkSelectedNav('TOURNAMENTS')}">
         <a href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</a>
         <ChevronDownOutline class="inline"/>

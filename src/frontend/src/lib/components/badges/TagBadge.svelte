@@ -6,7 +6,7 @@
   export let tag: string | null;
   export let color: number;
 
-  let color_val = colors[color % colors.length].value;
+  $: color_val = colors[color % colors.length].value;
 
   // $: if (team.color > 0 && team.color < 41) {
   //   color = colors[team.color - 1].value;

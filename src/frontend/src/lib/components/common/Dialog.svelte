@@ -1,4 +1,6 @@
 <script lang="ts">
+  import CancelButton from "./CancelButton.svelte";
+
   let dialog: HTMLDialogElement;
   export let header: string | null = null;
 
@@ -23,7 +25,7 @@
           {/if}
         </div>
         <div class="exit">
-          <button on:click={close}>X</button>
+          <CancelButton on:click={close}/>
         </div>
       </div>
       <div class="content">
@@ -34,6 +36,10 @@
 </dialog>
 
 <style>
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
   dialog {
     position: fixed;
     width: 100%;

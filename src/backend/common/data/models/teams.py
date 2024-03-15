@@ -120,6 +120,7 @@ class TeamRoster():
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
+    color: int
     players: list[RosterPlayerInfo]
     invites: list[RosterInvitedPlayer]
 

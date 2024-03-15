@@ -12,6 +12,7 @@ export type TeamRoster = {
   is_recruiting: string;
   is_active: boolean;
   approval_status: string;
+  color: number;
   players: RosterPlayer[];
   invites: RosterInvite[];
 };

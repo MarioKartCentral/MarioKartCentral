@@ -3,6 +3,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
   import SquadTournamentFields from './SquadTournamentFields.svelte';
+  import { Button } from 'flowbite-svelte';
 
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
@@ -69,5 +70,5 @@
   <SquadTournamentFields {tournament} />
   <SoloTournamentFields {tournament} {friend_codes} />
 
-  <button type="submit">Register</button>
+  <Button type="submit">Register</Button>
 </form>

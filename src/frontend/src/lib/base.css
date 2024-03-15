@@ -52,4 +52,5 @@ textarea,
 select,
 input[type] {
   color: black;
+  padding: 5px;
 }

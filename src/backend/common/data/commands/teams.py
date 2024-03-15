@@ -78,7 +78,7 @@ class GetTeamInfoCommand(Command[Team]):
                         roster_name = team_name
                     if roster_tag is None:
                         roster_tag = team_tag
-                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, is_active, roster_approval_status, [], [])
+                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, is_active, roster_approval_status, color, [], [])
                     rosters.append(curr_roster)
                     roster_dict[curr_roster.id] = curr_roster
             
@@ -965,7 +965,7 @@ class ListTeamsCommand(Command[List[Team]]):
                 for row in rows:
                     (tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, rid,
                       game, mode, rname, rtag, rdate, is_recruiting, is_active, rapprove) = row
-                    roster = TeamRoster(rid, tid, game, mode, rname if rname else tname, rtag if rtag else ttag, rdate, is_recruiting, is_active, rapprove, [], [])
+                    roster = TeamRoster(rid, tid, game, mode, rname if rname else tname, rtag if rtag else ttag, rdate, is_recruiting, is_active, rapprove, color, [], [])
                     if tid in teams:
                         team: Team = teams[tid]
                         team.rosters.append(roster)
@@ -1004,7 +1004,7 @@ class ListRostersCommand(Command[list[TeamRoster]]):
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag,
                                         r.creation_date, r.is_recruiting, r.is_active, r.approval_status,
-                                        t.name, t.tag
+                                        t.name, t.tag, t.color
                                         FROM team_rosters r
                                         JOIN teams t ON r.team_id = t.id
                                         {where_clause}
@@ -1014,11 +1014,11 @@ class ListRostersCommand(Command[list[TeamRoster]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting,
-                     is_active, approval_status, team_name, team_tag) = row
+                     is_active, approval_status, team_name, team_tag, team_color) = row
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
-                                        creation_date, is_recruiting, is_active, approval_status, [], [])
+                                        creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
                     rosters.append(roster)
             return rosters
 
@@ -1051,17 +1051,17 @@ class GetRegisterableRostersCommand(Command[None]):
             rosters: list[TeamRoster] = []
             roster_dict = {}
             async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
-                                  tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag
+                                  tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag, t.color
                                   {rosters_query}""",
                     variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting, 
-                     is_active, approval_status, team_name, team_tag) = row
+                     is_active, approval_status, team_name, team_tag, team_color) = row
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
-                                        creation_date, is_recruiting, is_active, approval_status, [], [])
+                                        creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
                     roster_dict[roster.id] = roster.players
                     rosters.append(roster)
 
