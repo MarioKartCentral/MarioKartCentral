@@ -39,6 +39,7 @@
   .header {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     /* background-color: rgba(0, 128, 0, 0.6); */
   }
   .centered {

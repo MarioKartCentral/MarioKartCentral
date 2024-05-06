@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { Button } from "flowbite-svelte";
+
   export let href: string;
 </script>
 
-<a {href}><slot /></a>
+<!-- <a {href}><slot /></a> -->
+<Button size="sm" {href}><slot/></Button>
 
 <style>
   a {
