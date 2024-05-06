@@ -4,28 +4,31 @@
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
   export let players: PlayerInfo[];
   export let currentPage: number;
   export let totalPages: number;
 </script>
 
+<PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages}/>
+
 <Table>
   <col class="country_code" />
   <col class="name" />
-  <col class="mk8dx" />
-  <col class="mkw" />
-  <col class="mkt" />
-  <col class="mk7" />
-  <col class="mk8" />
+  <col class="mk8dx mobile-hide" />
+  <col class="mkw mobile-hide" />
+  <col class="mkt mobile-hide" />
+  <col class="mk7 mobile-hide" />
+  <col class="mk8 mobile-hide" />
   <thead>
     <tr>
-      <th>{$LL.PLAYER_LIST.HEADER.COUNTRY()}</th>
+      <th></th>
       <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-      <th>Switch FC</th>
-      <th>MKW FC</th>
-      <th>MKT FC</th>
-      <th>3DS FC</th>
-      <th>NNID</th>
+      <th class="mobile-hide">Switch FC</th>
+      <th class="mobile-hide">MKW FC</th>
+      <th class="mobile-hide">MKT FC</th>
+      <th class="mobile-hide">3DS FC</th>
+      <th class="mobile-hide">NNID</th>
     </tr>
   </thead>
   <tbody>
@@ -35,45 +38,47 @@
         <td>
           <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
         </td>
-        <td
-          >{#each player.friend_codes as friend_code}{#if friend_code.game == 'mk8dx'}{friend_code.fc}{/if}{/each}</td
+        <td class="mobile-hide"
+          >{#each player.friend_codes.filter((fc) => fc.game === "mk8dx") as friend_code}{friend_code.fc}{/each}</td
         >
-        <td
-          >{#each player.friend_codes as friend_code}{#if friend_code.game == 'mkw'}{friend_code.fc}{/if}{/each}</td
+        <td class="mobile-hide"
+          >{#each player.friend_codes.filter((fc) => fc.game === "mkw") as friend_code}{friend_code.fc}{/each}</td
         >
-        <td
-          >{#each player.friend_codes as friend_code}{#if friend_code.game == 'mkt'}{friend_code.fc}{/if}{/each}</td
+        <td class="mobile-hide"
+          >{#each player.friend_codes.filter((fc) => fc.game === "mkt") as friend_code}{friend_code.fc}{/each}</td
         >
-        <td
-          >{#each player.friend_codes as friend_code}{#if friend_code.game == 'mk7'}{friend_code.fc}{/if}{/each}</td
+        <td class="mobile-hide"
+          >{#each player.friend_codes.filter((fc) => fc.game === "mk7") as friend_code}{friend_code.fc}{/each}</td
         >
-        <td
-          >{#each player.friend_codes as friend_code}{#if friend_code.game == 'mk8'}{friend_code.fc}{/if}{/each}</td
+        <td class="mobile-hide"
+          >{#each player.friend_codes.filter((fc) => fc.game === "mk8") as friend_code}{friend_code.fc}{/each}</td
         >
       </tr>
     {/each}
   </tbody>
-  <button on:click={() => (currentPage > 1 ? (currentPage = currentPage - 1) : (currentPage = currentPage))}
-    >{'<'}</button
-  >
-  {currentPage}/{totalPages}
-  <button on:click={() => (currentPage < totalPages ? (currentPage = currentPage + 1) : (currentPage = currentPage))}
-    >{'>'}</button
-  >
+  
 </Table>
+
+<!-- <button on:click={() => (currentPage > 1 ? (currentPage = currentPage - 1) : (currentPage = currentPage))}
+  >{'<'}</button
+>
+{currentPage}/{totalPages}
+<button on:click={() => (currentPage < totalPages ? (currentPage = currentPage + 1) : (currentPage = currentPage))}
+  >{'>'}</button
+> -->
 
 <style>
   col.country_code {
     width: 10%;
   }
   col.name {
-    width: 20%;
+    width: 15%;
   }
   col.mk8dx,
   col.mkw,
   col.mkt,
   col.mk7,
   col.mk8 {
-    width: 10%;
+    width: 15%;
   }
 </style>

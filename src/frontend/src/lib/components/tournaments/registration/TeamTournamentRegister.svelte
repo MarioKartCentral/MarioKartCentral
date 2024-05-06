@@ -4,13 +4,12 @@
   import type { RosterPlayer } from '$lib/types/roster-player';
   import type { TeamRoster } from '$lib/types/team-roster';
   import type { Tournament } from '$lib/types/tournament';
-    import { Button } from 'flowbite-svelte';
-    import { CloseSolid } from 'flowbite-svelte-icons';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { onMount } from 'svelte';
   import { check_registrations_open } from '$lib/util/util';
     import TagBadge from '$lib/components/badges/TagBadge.svelte';
     import Flag from '$lib/components/common/Flag.svelte';
-    import CancelButton from '$lib/components/common/CancelButton.svelte';
+    import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
     import PrimaryBadge from '$lib/components/badges/PrimaryBadge.svelte';
 
   export let tournament: Tournament;

@@ -8,6 +8,9 @@
   import LinkButton from '$lib/components/common/LinkButton.svelte';
   import LL from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
+  import { Avatar } from 'flowbite-svelte';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+    import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
 
   let user_info: UserInfo;
 
@@ -33,39 +36,46 @@
     {/if}
   </div>
   <div class="wrapper">
-    <div>
-      <img class="avatar" src={avatar_url} alt={player.name} />
+    <div class="avatar">
+      <!-- <img class="avatar" src={avatar_url} alt={player.name} /> -->
+      <Avatar size="xl" src={avatar_url} border alt={player.name}/>
     </div>
 
     <div class="user_details">
       <div class="name">
+        {#if player.country_code}
+          <Flag country_code={player.country_code} />
+        {/if}
         {player.name}
       </div>
-      <div class="country">
+      <!-- <div class="country">
         <b>{$LL.PLAYER_LIST.HEADER.COUNTRY()}:</b>
         {#if player.country_code !== null}
           <Flag country_code={player.country_code} />
           {$LL.COUNTRIES[player.country_code]()}
         {/if}
-      </div>
+      </div> -->
       {#if player.friend_codes.length > 0}
-        <div>
+        <div class="item">
           <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
           {#each player.friend_codes as fc}
-            <div class="fc">
-              {fc.fc} ({fc.game.toUpperCase()})
+            <div>
+              <!-- {fc.fc} ({fc.game.toUpperCase()}) -->
+              <GameBadge game={fc.game}/>
+              {fc.fc}
             </div>
           {/each}
         </div>
       {/if}
       {#if player.rosters.length > 0}
-        <div>
+        <div class="item">
           <b>{$LL.TEAM_LIST.TEAMS()}:</b>
           {#each player.rosters as r}
-            <div class="roster">
+            <div>
+              <GameBadge game={r.game}/>
+              <ModeBadge mode={r.mode}/>
               <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
-                {r.roster_name} ({r.game}
-                {r.mode})
+                {r.roster_name}
               </a>
             </div>
           {/each}
@@ -93,13 +103,24 @@
     margin: 5px;
   } */
   div.wrapper {
-    display: inline-grid;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
   }
   div.user_details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     grid-column-start: 2;
+    @media(min-width:1024px) {
+      margin-right: auto;
+      justify-content: left;
+    }
+    
   }
   div.name {
     font-size: 1.5em;
@@ -125,5 +146,13 @@
     border: 5px white solid;
     border-radius: 50%;
     object-fit: cover;
+  }
+  div.avatar {
+    min-width: 150px;
+    margin-bottom: 20px;
+  }
+  div.item {
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 </style>

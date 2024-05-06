@@ -32,7 +32,7 @@
     font-size: 20px;
   }
   .container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
   }
@@ -51,6 +51,6 @@
     padding: 10px;
   }
   div.header_element {
-    margin: 5px;
+    margin: 5px 10px 5px 10px;
   }
 </style>

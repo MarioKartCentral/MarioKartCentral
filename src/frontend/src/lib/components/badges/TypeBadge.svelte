@@ -2,9 +2,10 @@
   import Badge from "./Badge.svelte";
 
   export let type: string;
+  export let size: "mid" | "wide" = "mid";
 </script>
 
-<Badge badgeClass={'type_' + type.toLowerCase() + '_badge wide'}>{type}</Badge>
+<Badge badgeClass={'type_' + type.toLowerCase() + '_badge ' + size}>{type}</Badge>
 
 <style>
 

@@ -3,7 +3,7 @@
     import type { Tournament } from "$lib/types/tournament";
     import type { MyTournamentRegistration } from "$lib/types/tournaments/my-tournament-registration";
     import SoloTournamentFields from "./SoloTournamentFields.svelte";
-    import { Button } from "flowbite-svelte";
+    import Button from "$lib/components/common/buttons/Button.svelte";
     import Dialog from "$lib/components/common/Dialog.svelte";
 
     export let tournament: Tournament;

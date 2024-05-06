@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CancelButton from "./CancelButton.svelte";
+  import CancelButton from "./buttons/CancelButton.svelte";
 
   let dialog: HTMLDialogElement;
   export let header: string | null = null;

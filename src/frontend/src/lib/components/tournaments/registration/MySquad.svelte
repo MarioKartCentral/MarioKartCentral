@@ -12,7 +12,7 @@
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import { Button } from 'flowbite-svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import PlayerName from './PlayerName.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import { check_registrations_open, unregister } from '$lib/util/util';

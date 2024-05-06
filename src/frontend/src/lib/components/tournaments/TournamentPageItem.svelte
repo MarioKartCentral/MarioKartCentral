@@ -18,9 +18,9 @@
   <div class="name">
     <h3><a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">{tournament.tournament_name}</a></h3>
   </div>
-  <GameBadge game={tournament.game} />
-  <ModeBadge mode={tournament.mode} />
-  <TypeBadge type={tournament_type} />
+  <GameBadge game={tournament.game} size="wide"/>
+  <ModeBadge mode={tournament.mode} size="wide"/>
+  <TypeBadge type={tournament_type} size="wide"/>
   <div>{months[date_start.getMonth()]} {date_start.getDate()}-{months[date_end.getMonth()]} {date_end.getDate()}</div>
   {#if tournament.logo != null}
     <div><img src={tournament.logo} alt={tournament.tournament_name} /></div>

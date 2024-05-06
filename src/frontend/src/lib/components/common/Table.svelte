@@ -44,15 +44,15 @@
     background-color: #374151;
   }
   /*  */
-  table :global(tbody>tr:hover) {
+  /* table :global(tbody>tr:hover) {
     background-color: rgba(255, 255, 255, 0.1);
-  }
+  } */
   /* Style for a table row containing the logged in user */
   table :global(tr.me) {
     background-color: theme('colors.primary.800'/ 30%) ;
   }
 
-  @media(max-width: 800px) {
+  @media(max-width: 1000px) {
     table :global(.mobile-hide) {
       display: none;
     }

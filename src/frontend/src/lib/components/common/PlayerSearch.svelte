@@ -5,7 +5,7 @@
   import LL from '$i18n/i18n-svelte';
   import Flag from './Flag.svelte';
   import { UserAddSolid } from 'flowbite-svelte-icons';
-  import CancelButton from './CancelButton.svelte';
+  import CancelButton from './buttons/CancelButton.svelte';
 
   export let player: PlayerInfo | null = null;
   export let game: string | null = null;

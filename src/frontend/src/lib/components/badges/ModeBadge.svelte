@@ -2,9 +2,10 @@
   import Badge from "./Badge.svelte";
 
   export let mode: string;
+  export let size: "mid" | "wide" = "mid";
 </script>
 
-<Badge badgeClass={'mode_' + mode.toLowerCase() + '_badge wide'}>{mode}</Badge>
+<Badge badgeClass={'mode_' + mode.toLowerCase() + '_badge ' + size}>{mode}</Badge>
 
 <style>
   :global(.mode_mixed_badge,

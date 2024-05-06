@@ -1,12 +1,15 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import { locale } from '$i18n/i18n-svelte';
-  import { series_permissions, permissions } from '$lib/util/util';
+  import { series_permissions, permissions, valid_games } from '$lib/util/util';
   import SeriesPermissionCheck from '../common/SeriesPermissionCheck.svelte';
   import PermissionCheck from '../common/PermissionCheck.svelte';
   import Section from '../common/Section.svelte';
   import LinkButton from '../common/LinkButton.svelte';
   import { page } from '$app/stores';
+  import GameBadge from '../badges/GameBadge.svelte';
+  import TypeBadge from '../badges/TypeBadge.svelte';
+  import ModeBadge from '../badges/ModeBadge.svelte';
 
   export let tournament: Tournament;
 
@@ -42,8 +45,15 @@
     {#if tournament.logo}
       <img src={tournament.logo} alt={tournament.tournament_name} />
     {/if}
-    <h1>{tournament.tournament_name}</h1>
-    {tournament.game} | {tournament.mode} | {tournament_type}
+    <div class="name">
+      {tournament.tournament_name}
+    </div>
+    <div class="badges">
+      <GameBadge game={tournament.game}/>
+      <ModeBadge mode={tournament.mode}/>
+      <TypeBadge type={tournament_type}/>
+    </div>
+    
   </div>
   <hr />
   <div class="wrapper">
@@ -56,7 +66,7 @@
         {#if registration_deadline}
           <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
         {/if}
-        <li><b>Game:</b> {tournament.game}</li>
+        <li><b>Game:</b> {valid_games[tournament.game]}</li>
         <li><b>Mode:</b> {tournament.mode}</li>
         <li><b>Registration Format:</b> {tournament_type}</li>
         {#if tournament.is_squad}
@@ -96,5 +106,17 @@
   }
   ul li {
     list-style-position: inside;
+  }
+  .name {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  .badges {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
   }
 </style>

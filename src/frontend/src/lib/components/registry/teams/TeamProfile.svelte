@@ -4,6 +4,7 @@
   import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import { Avatar } from 'flowbite-svelte';
 
   export let team: Team;
 
@@ -22,7 +23,8 @@
 
 <div class="wrapper">
   <div>
-    <img class="avatar" src={avatar_url} alt={team.name} />
+    <!-- <img class="avatar" src={avatar_url} alt={team.name} /> -->
+    <Avatar size="xl" src={avatar_url} border alt={team.name}/>
   </div>
   <div class="team_details">
     <div class="tag">
