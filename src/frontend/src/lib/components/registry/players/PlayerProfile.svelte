@@ -117,7 +117,7 @@
     justify-content: center;
     grid-column-start: 2;
     @media(min-width:800px) {
-      margin-right: auto;
+      /* margin-right: auto; */
       justify-content: left;
     }
     
@@ -131,7 +131,14 @@
     align-items: left;
   }
   div.about_me {
+    display: flex;
     grid-column-start: 3;
+    align-self: flex-start;
+    justify-content: center;
+    @media(min-width: 800px) {
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
   div.fc {
     text-indent: 2em;

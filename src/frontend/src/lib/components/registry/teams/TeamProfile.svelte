@@ -79,7 +79,6 @@
     justify-content: center;
     grid-column-start: 2;
     @media(min-width:800px) {
-      margin-right: auto;
       justify-content: left;
     }
   }
@@ -90,7 +89,15 @@
     font-size: 1.5em;
   }
   div.about_me {
+    display: flex;
+    align-self: flex-start;
     grid-column-start: 3;
+    justify-content: center;
+    @media(min-width: 800px) {
+      justify-content: left;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
   div.avatar { 
     min-width: 150px;
