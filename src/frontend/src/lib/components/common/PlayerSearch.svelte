@@ -53,34 +53,37 @@
   {#if !player}
     <input type="search" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} bind:value={query} on:input={handle_search} />
     {#if show_results}
-      <div class="table">
-        <Table show_padding={false}>
-          <col class="country" />
-          <col class="name" />
-          <col class="mobile-hide fc" />
-          <col class="select"/>
-          <tbody>
-            {#each results as result}
-              <tr on:click={() => set_option(result)}>
-                <td>
-                  <Flag country_code={result.country_code}/>
-                </td>
-                <td>
-                  {result.name}
-                </td>
-                <td class="mobile-hide">
-                  {#if result.friend_codes.length}
-                    {result.friend_codes[0].fc}
-                  {/if}
-                </td>
-                <td>
-                  <UserAddSolid size="lg"/>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-          
-        </Table>
+      <div class="table-outer">
+        <div class="table-inner">
+          <Table show_padding={false}>
+            <col class="country" />
+            <col class="name" />
+            <col class="mobile-hide fc" />
+            <col class="select"/>
+            <tbody>
+              {#each results as result}
+                <tr on:click={() => set_option(result)}>
+                  <td>
+                    <Flag country_code={result.country_code}/>
+                  </td>
+                  <td>
+                    {result.name}
+                  </td>
+                  <td class="mobile-hide">
+                    {#if result.friend_codes.length}
+                      {result.friend_codes[0].fc}
+                    {/if}
+                  </td>
+                  <td>
+                    <UserAddSolid size="lg"/>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+            
+          </Table>
+        </div>
+        
       </div>
     {/if}
   {:else}
@@ -100,12 +103,15 @@
   input {
     width: 100%;
   }
-  div.table {
+  div.table-outer {
     position: absolute;
     width: 100%;
-    max-height: 80px;
-    overflow-y: scroll;
     background-color: black;
+    z-index: 1;
+  }
+  div.table-inner {
+    max-height: 100px;
+    overflow-y: scroll;
   }
   tr {
     cursor: pointer;
