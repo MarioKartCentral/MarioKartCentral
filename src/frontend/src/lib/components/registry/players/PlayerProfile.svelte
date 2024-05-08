@@ -116,7 +116,7 @@
     flex-direction: column;
     justify-content: center;
     grid-column-start: 2;
-    @media(min-width:1024px) {
+    @media(min-width:800px) {
       margin-right: auto;
       justify-content: left;
     }

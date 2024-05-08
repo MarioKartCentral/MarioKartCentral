@@ -22,7 +22,7 @@
 </script>
 
 <div class="wrapper">
-  <div>
+  <div class="avatar">
     <!-- <img class="avatar" src={avatar_url} alt={team.name} /> -->
     <Avatar size="xl" src={avatar_url} border alt={team.name}/>
   </div>
@@ -57,7 +57,10 @@
 
 <style>
   div.wrapper {
-    display: inline-grid;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
@@ -71,7 +74,14 @@
     object-fit: cover;
   }
   div.team_details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     grid-column-start: 2;
+    @media(min-width:800px) {
+      margin-right: auto;
+      justify-content: left;
+    }
   }
   div.tag {
     font-size: 2em;
@@ -81,5 +91,9 @@
   }
   div.about_me {
     grid-column-start: 3;
+  }
+  div.avatar { 
+    min-width: 150px;
+    margin-bottom: 20px;
   }
 </style>
