@@ -29,7 +29,7 @@
     const name_var = query ? `&name_or_fc=${query}` : ``;
     const game_var = game ? `&game=${game}` : ``;
     const squad_var = squad_id ? `&squad_id=${squad_id}` : ``;
-    const url = `/api/registry/players?detailed=true${name_var}${game_var}${squad_var}`;
+    const url = `/api/registry/players?detailed=true&matching_fcs_only=true${name_var}${game_var}${squad_var}`;
     console.log(url);
     const res = await fetch(url);
     if (res.status === 200) {
@@ -117,15 +117,15 @@
     cursor: pointer;
   }
   col.country {
-    width: 20%;
+    width: 15%;
   }
   col.name {
     width: 30%;
   }
   col.fc {
-    width: 30%;
+    width: 40%;
   }
   col.select {
-    width: 20%;
+    width: 15%;
   }
 </style>
