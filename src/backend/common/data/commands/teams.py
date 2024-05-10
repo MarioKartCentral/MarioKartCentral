@@ -958,6 +958,7 @@ class ListTeamsCommand(Command[List[Team]]):
                                 r.is_recruiting, r.is_active, r.approval_status
                                 FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
+                                ORDER BY t.name
                                 """
             teams: dict[int, Team] = {}
             async with db.execute(teams_query, variable_parameters) as cursor:

@@ -208,7 +208,7 @@ class ListPlayersCommand(Command[PlayerList]):
                 where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clauses_str})")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p {player_where_clause} LIMIT ? OFFSET ?"
+            players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p {player_where_clause} ORDER BY name LIMIT ? OFFSET ? "
 
             fc_where_clause = ""
             fc_where_clauses = []
