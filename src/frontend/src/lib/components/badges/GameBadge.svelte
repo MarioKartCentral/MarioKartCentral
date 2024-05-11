@@ -2,10 +2,9 @@
   import Badge from "./Badge.svelte";
 
   export let game: string;
-  export let size: "mid" | "wide" = "mid";
 </script>
 
-<Badge badgeClass={'game_' + game + '_badge ' + size}>{game.toUpperCase()}</Badge>
+<Badge badgeClass={'game_' + game + '_badge wide'}>{game.toUpperCase()}</Badge>
 
 <style>
   :global(.game_mkt_badge) {

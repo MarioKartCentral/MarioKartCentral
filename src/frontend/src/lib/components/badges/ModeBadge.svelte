@@ -1,11 +1,11 @@
 <script lang="ts">
   import Badge from "./Badge.svelte";
+  import { mode_names } from "$lib/util/util";
 
   export let mode: string;
-  export let size: "mid" | "wide" = "mid";
 </script>
 
-<Badge badgeClass={'mode_' + mode.toLowerCase() + '_badge ' + size}>{mode}</Badge>
+<Badge badgeClass={'mode_' + mode.toLowerCase() + '_badge wide'}>{mode_names[mode]}</Badge>
 
 <style>
   :global(.mode_mixed_badge,
@@ -20,13 +20,15 @@
   }
 
   :global(.mode_vsrace_badge,
-  .mode_150cc_badge) {
+  .mode_150cc_badge,
+  .mode_rt_badge) {
     background-color: #008fd4;
     border: 1px solid #005ea8;
   }
 
   :global(
-    .mode_200cc_badge
+    .mode_200cc_badge,
+    .mode_ct_badge
   ) {
     background-color: #d4008b;
     border: 1px solid #990063;
