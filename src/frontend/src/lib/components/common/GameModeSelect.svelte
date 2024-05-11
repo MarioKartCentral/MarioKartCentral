@@ -5,45 +5,57 @@
   export let game = 'mk8dx';
   export let mode = '150cc';
   export let disabled = false;
+  export let flex = false;
 
   const dispatch = createEventDispatcher();
 </script>
 
-<div class="option">
-  <div>
-    <label for="game">Game</label>
+<div>
+  <div class="option {flex ? 'flex' : ''}">
+    <div>
+      <label for="game">Game</label>
+    </div>
+    <div>
+      <select
+        name="game"
+        bind:value={game}
+        on:change={() => {
+          [mode] = valid_modes[game];
+          dispatch('change');
+        }}
+        {disabled}
+      >
+        {#each Object.keys(valid_games) as game}
+          <option value={game}>{valid_games[game]}</option>
+        {/each}
+      </select>
+    </div>
   </div>
-  <div>
-    <select
-      name="game"
-      bind:value={game}
-      on:change={() => {
-        [mode] = valid_modes[game];
-        dispatch('change');
-      }}
-      {disabled}
-    >
-      {#each Object.keys(valid_games) as game}
-        <option value={game}>{valid_games[game]}</option>
-      {/each}
-    </select>
+  <div class="option {flex ? 'flex' : ''}">
+    <div>
+      <label for="mode">Mode</label>
+    </div>
+    <div>
+      <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled}>
+        {#each valid_modes[game] as mode}
+          <option value={mode}>{mode_names[mode]}</option>
+        {/each}
+      </select>
+    </div>
   </div>
 </div>
-<div class="option">
-  <div>
-    <label for="mode">Mode</label>
-  </div>
-  <div>
-    <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled}>
-      {#each valid_modes[game] as mode}
-        <option value={mode}>{mode_names[mode]}</option>
-      {/each}
-    </select>
-  </div>
-</div>
+
 
 <style>
   .option {
     margin-bottom: 10px;
+  }
+  .flex {
+    display: flex;
+    align-items: center;
+  }
+  select {
+    width: 200px;
+    margin-right: 10px;
   }
 </style>

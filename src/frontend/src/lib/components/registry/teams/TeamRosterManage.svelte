@@ -205,15 +205,15 @@
     <Table>
       <col class="country" />
       <col class="name" />
-      <col class="fc" />
-      <col class="join_date" />
+      <col class="fc mobile-hide" />
+      <col class="join_date mobile-hide" />
       <col class="manage_player" />
       <thead>
         <tr>
-          <th>{$LL.PLAYER_LIST.HEADER.COUNTRY()}</th>
+          <th></th>
           <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-          <th>{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
-          <th>{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
+          <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
+          <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
           <th />
         </tr>
       </thead>
@@ -222,8 +222,8 @@
           <tr>
             <td><Flag country_code={player.country_code} /></td>
             <td>{player.name}</td>
-            <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
-            <td>{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
+            <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+            <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
             <td>
               <Button on:click={() => kickDialog(player)}>Kick</Button>
             </td>
@@ -239,15 +239,15 @@
       <Table>
         <col class="country" />
         <col class="name" />
-        <col class="fc" />
-        <col class="join_date" />
+        <col class="fc mobile-hide" />
+        <col class="join_date mobile-hide" />
         <col class="manage_player" />
         <thead>
           <tr>
-            <th>{$LL.PLAYER_LIST.HEADER.COUNTRY()}</th>
+            <th></th>
             <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-            <th>{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
-            <th>{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
+            <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
+            <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
             <th />
           </tr>
         </thead>
@@ -256,8 +256,8 @@
             <tr>
               <td><Flag country_code={player.country_code} /></td>
               <td>{player.name}</td>
-              <td>{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
-              <td>{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
+              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+              <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
               <td>
                 <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAM_EDIT.RETRACT_INVITE()}</Button>
               </td>
@@ -337,3 +337,21 @@
     <Button type="submit">Edit Roster</Button>
   </form>
 </Dialog>
+
+<style>
+  col.country {
+    width: 10%;
+  }
+  col.name {
+    width: 30%;
+  }
+  col.fc {
+    width: 20%;
+  }
+  col.join_date {
+    width: 20%;
+  }
+  col.manage_player {
+    width: 20%;
+  }
+</style>
