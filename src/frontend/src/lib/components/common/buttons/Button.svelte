@@ -5,8 +5,9 @@
     export let circle = false;
     export let type: "submit" | "button" | "reset" | null | undefined = "button";
     export let size: "xs" | "sm" | "lg" | "xl" | "md" = "sm";
+    export let disabled = false;
 </script>
 
-<Button {size} pill={circle} class="{circle ? '!p-2' : ''}" {href} on:click {type}>
+<Button {size} pill={circle} class="{circle ? '!p-2' : ''}" {href} on:click {type} {disabled}>
     <slot/>
 </Button>

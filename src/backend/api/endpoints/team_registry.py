@@ -285,6 +285,19 @@ async def list_registerable_rosters(request: Request, body: RegisterableRostersR
     rosters = await handle(command)
     return JSONResponse(rosters)
 
+async def team_edit_history(request: Request) -> JSONResponse:
+    team_id = request.path_params['id']
+    command = ViewTeamEditHistoryCommand(team_id)
+    edits = await handle(command)
+    return JSONResponse(edits)
+
+async def roster_edit_history(request: Request) -> JSONResponse:
+    team_id = request.path_params['id']
+    roster_id = request.path_params['rosterId']
+    command = ViewRosterEditHistoryCommand(team_id, roster_id)
+    edits = await handle(command)
+    return JSONResponse(edits)
+
 #todo: endpoints for giving team roles
 
 routes: list[Route] = [
@@ -325,5 +338,7 @@ routes: list[Route] = [
     Route('/api/registry/teams/unapprovedRosters', list_unapproved_rosters),
     Route('/api/registry/teams/{id:int}/approveRoster/{rosterId:int}', approve_roster, methods=['POST']),
     Route('/api/registry/teams/{id:int}/denyRoster/{rosterId:int}', deny_roster, methods=['POST']),
-    Route('/api/registry/teams/getRegisterable', list_registerable_rosters)
+    Route('/api/registry/teams/getRegisterable', list_registerable_rosters),
+    Route('/api/registry/teams/{id:int}/editRequests', team_edit_history),
+    Route('/api/registry/teams/{id:int}/rosterEditRequests/{rosterId:int}', roster_edit_history)
 ]

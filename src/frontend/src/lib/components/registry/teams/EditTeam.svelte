@@ -7,11 +7,11 @@
     import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
     import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
     import LinkButton from '$lib/components/common/LinkButton.svelte';
-    import TagBadge from '$lib/components/badges/TagBadge.svelte';
     import LL from '$i18n/i18n-svelte';
     import ColorSelect from '$lib/components/common/ColorSelect.svelte';
     import Button from '$lib/components/common/buttons/Button.svelte';
     import LanguageSelect from '$lib/components/common/LanguageSelect.svelte';
+    import TeamNameTagRequest from './TeamNameTagRequest.svelte';
 
     export let is_mod = false;
   
@@ -131,17 +131,9 @@
     </Section>
     {#if !is_mod}
         <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_name_tag}>
-            <form method="post" on:submit|preventDefault={editNameTag}>
             <Section header="Team Name/Tag">
-                <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
-                <input name="name" type="text" value={team.name} required />
-                <br />
-                <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
-                <input name="tag" type="text" value={team.tag} required />
-                <br /><br/>
-                <Button type="submit">{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+              <TeamNameTagRequest {team}/>
             </Section>
-            </form>
         </TeamPermissionCheck>
         <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
             <form method="post" on:submit|preventDefault={editTeam}>

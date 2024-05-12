@@ -56,6 +56,7 @@ class TeamEditRequest():
     old_tag: str
     new_name: str
     new_tag: str
+    color: int
     date: int
     approval_status: Approval
 
@@ -70,6 +71,7 @@ class RosterEditRequest():
     old_tag: str | None
     new_name: str | None
     new_tag: str | None
+    color: int
     date: int
     approval_status: Approval
 

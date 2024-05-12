@@ -11,6 +11,7 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
+  import RosterNameTagRequest from './RosterNameTagRequest.svelte';
 
 
   export let roster: TeamRoster;
@@ -287,16 +288,8 @@
 </Dialog>
 
 <Dialog bind:this={edit_dialog} header={$LL.TEAM_EDIT.EDIT_ROSTER()}>
-  <form method="post" on:submit|preventDefault={editNameTag}>
-    <label for="name">{$LL.TEAM_EDIT.ROSTER_NAME()}</label>
-    <input name="name" type="text" value={roster.name} required />
-    <br />
-    <label for="tag">{$LL.TEAM_EDIT.ROSTER_TAG()}</label>
-    <input name="tag" type="text" value={roster.tag} required />
-    <br />
-    <Button type="submit">{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
-  </form>
-  <br /><br />
+  <RosterNameTagRequest {roster}/>
+  <br/>
   <form method="post" on:submit|preventDefault={editRoster}>
     <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
     <select name="recruiting">
