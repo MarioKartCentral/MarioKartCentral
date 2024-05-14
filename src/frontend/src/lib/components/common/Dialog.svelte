@@ -18,7 +18,7 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="outer" on:click={close}>
     <div class="container" on:click|stopPropagation>
-      <div class="header">
+      <div class="header bg-primary-800">
         <div>
           {#if header}
             <h3>{header}</h3>
@@ -69,7 +69,6 @@
   }
   .header {
     display: grid;
-    background-color: rgba(0, 128, 0, 0.6);
     padding: 15px;
     min-height: 50px;
   }

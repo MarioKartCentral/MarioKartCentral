@@ -5,8 +5,8 @@ from common.data.models.tournament_registrations import TournamentPlayerDetails
 @dataclass
 class Squad:
     id: int
-    name: str
-    tag: str
+    name: str | None
+    tag: str | None
     color: int
     is_registered: bool
 

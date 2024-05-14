@@ -18,6 +18,7 @@
     </span>
     
     <select name="selected_fc_id" value={selected_fc_id} required>
+      <option value={null} selected disabled>Select a Friend Code...</option>
       {#each friend_codes as fc}
         <option value={fc.id}>{fc.fc}</option>
       {/each}
