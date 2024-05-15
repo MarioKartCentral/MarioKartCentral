@@ -98,8 +98,8 @@ class GetTeamInfoCommand(Command[Team]):
             team_invites: list[PartialTeamMember] = []
             # get all invited players to a roster on our team
             async with db.execute(f"""SELECT player_id, roster_id, date
-                                  FROM roster_invites
-                                  WHERE roster_id IN ({roster_id_query})""") as cursor:
+                                  FROM team_transfers
+                                  WHERE roster_id IN ({roster_id_query}) AND approval_status = 'pending'""") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     curr_invited_player = PartialTeamMember(*row)
@@ -412,14 +412,14 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Player is already on this roster", status=400)
-            async with db.execute("SELECT COUNT(id) FROM roster_invites WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
+            async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 num_invites = row[0]
                 if num_invites > 0:
                     raise Problem("Player has already been invited", status=400)
             creation_date = int(datetime.utcnow().timestamp())
-            await db.execute("INSERT INTO roster_invites(player_id, roster_id, date, is_accepted) VALUES (?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False))
+            await db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False, "pending"))
             await db.commit()
 
 @save_to_command_log
@@ -438,7 +438,7 @@ class DeleteInviteCommand(Command[None]):
                 roster_team_id = row[0]
                 if int(roster_team_id) != self.team_id:
                     raise Problem("Roster is not part of specified team", status=400)
-            async with db.execute("DELETE FROM roster_invites WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
+            async with db.execute("DELETE FROM team_transfers WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount == 0:
                     raise Problem("Invite not found", status=404)
@@ -454,7 +454,7 @@ class AcceptInviteCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # check if invite exists and to make sure we're the same player as the invite
-            async with db.execute("SELECT r.game, i.player_id FROM roster_invites i JOIN team_rosters r ON i.roster_id = r.id WHERE i.id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT r.game, i.player_id FROM team_transfers i JOIN team_rosters r ON i.roster_id = r.id WHERE i.id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("No invite found", status=404)
@@ -475,7 +475,7 @@ class AcceptInviteCommand(Command[None]):
                 if fc_count == 0:
                     raise Problem("Player does not have any friend codes for this roster's game", status=400)
             # we do not move the player to the team's roster just yet, just mark it as accepted, a moderator must approve the transfer
-            await db.execute("UPDATE roster_invites SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))
+            await db.execute("UPDATE team_transfers SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))
             await db.commit()
 
 @save_to_command_log
@@ -488,14 +488,14 @@ class DeclineInviteCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # check if invite exists and to make sure we're the same player as the invite
-            async with db.execute("SELECT player_id FROM roster_invites WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT player_id FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("No invite found", status=404)
                 invite_player_id = row[0]
                 if self.player_id != invite_player_id and not self.is_privileged:
                     raise Problem("Cannot decline invite for another player", status=400)
-            await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
+            await db.execute("DELETE FROM team_transfers WHERE id = ?", (self.invite_id,))
             await db.commit()
 
 @save_to_command_log
@@ -513,6 +513,9 @@ class LeaveRosterCommand(Command[None]):
                 team_member_id = row[0]
             leave_date = int(datetime.utcnow().timestamp())
             await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
+            # players leaving a roster goes into the transfer history too
+            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
+                             VALUES (?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved"))
 
 @save_to_command_log
 @dataclass
@@ -521,7 +524,7 @@ class ApproveTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM roster_invites WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
@@ -538,7 +541,8 @@ class ApproveTransferCommand(Command[None]):
             else:
                 team_member_id = None
             curr_time = int(datetime.utcnow().timestamp())
-            await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
+            # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
+            await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (roster_id, player_id, curr_time))
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
@@ -600,60 +604,122 @@ class DenyTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM roster_invites WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
-            # we would want to send the invite back to the player if for example they didn't specify a team they're leaving, otherwise can just delete it
+            # we would want to send the invite back to the player if for example they didn't specify a team they're leaving, otherwise just set it to denied
             if self.send_back:
-                await db.execute("UPDATE roster_invites SET is_accepted = ? WHERE id = ?", (False, self.invite_id))
+                await db.execute("UPDATE team_transfers SET is_accepted = ? WHERE id = ?", (False, self.invite_id))
             else:
-                await db.execute("DELETE FROM roster_invites WHERE id = ?", (self.invite_id,))
+                await db.execute("UPDATE team_transfers SET approval_status = 'denied' WHERE id = ?", (self.invite_id,))
             await db.commit()
 
 @dataclass
-class ViewTransfersCommand(Command[list[TeamInviteApproval]]):
+class ViewTransfersCommand(Command[TransferList]):
+    filter: TransferFilter
+    approval_status: Approval = "pending"
+    
+
     async def handle(self, db_wrapper, s3_wrapper):
-        transfers: list[TeamInviteApproval] = []
-        roster_leave_ids: list[int] = []
+        transfers: list[TeamTransfer] = []
+
+        filter = self.filter
+
+        limit:int = 50
+        offset:int = 0
+
+        if filter.page is not None:
+            offset = (filter.page - 1) * limit
+
+        where_clauses = []
+        variable_parameters = []
+        if filter.game is not None:
+            where_clauses.append("(r1.game = ? OR r2.game = ?)")
+            variable_parameters.extend([filter.game, filter.game])
+        if filter.mode is not None:
+            where_clauses.append("(r1.mode = ? OR r2.mode = ?)")
+            variable_parameters.extend([filter.mode, filter.mode])
+        
+        where_clause_str = ""
+        if len(where_clauses) > 0:
+            where_clause_str = f"AND {' AND '.join(where_clauses)}"
+
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT i.id, i.date, i.roster_leave_id, t.id, t.name, t.tag, t.color,
-                                    r.id, r.name, r.tag, r.game, r.mode, p.id, p.name, p.country_code
-                                    FROM roster_invites i
-                                    JOIN team_rosters r ON i.roster_id = r.id
-                                    JOIN teams t ON r.team_id = t.id
+            # we need to do left outer joins with both the leave roster and the join roster,
+            # since it's possible one of them doesn't exist.
+            async with db.execute(f"""SELECT i.id, i.date, i.approval_status,
+                                    t1.id, t1.name, t1.tag, t1.color,
+                                    i.roster_id, r1.name, r1.tag, r1.game, r1.mode, 
+                                    t2.id, t2.name, t2.tag, t2.color,
+                                    i.roster_leave_id, r2.name, r2.tag, r2.game, r2.mode, 
+                                    p.id, p.name, p.country_code
+                                    FROM team_transfers i
+                                    LEFT OUTER JOIN team_rosters r1 ON i.roster_id = r1.id
+                                    LEFT OUTER JOIN teams t1 ON r1.team_id = t1.id
+                                    LEFT OUTER JOIN team_rosters r2 ON i.roster_leave_id = r2.id
+                                    LEFT OUTER JOIN teams t2 ON r2.team_id = t2.id
                                     JOIN players p ON i.player_id = p.id
-                                    WHERE i.is_accepted = 1""") as cursor:
+                                    WHERE i.is_accepted = 1 AND i.approval_status = ? {where_clause_str}
+                                    ORDER BY i.id DESC LIMIT ? OFFSET ?""",
+                                    (self.approval_status, *variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (invite_id, date, roster_leave_id, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, 
-                    game, mode, player_id, player_name, player_country_code) = row
-                    if roster_name is None:
-                        roster_name = team_name
-                    if roster_tag is None:
-                        roster_tag = team_tag
-                    transfers.append(TeamInviteApproval(invite_id, date, team_id, team_name, team_tag, team_color, roster_id, roster_name,
-                                                        roster_tag, game, mode, player_id, player_name, player_country_code, roster_leave_id, None))
-                    if roster_leave_id:
-                        roster_leave_ids.append(roster_leave_id)
-            leave_rosters = {}
-            # get all roster/team info of rosters being left by any player
-            async with db.execute(f"""SELECT t.id, t.name, t.tag, t.color, r.id, r.name, r.tag
-                                  FROM team_rosters r
-                                  JOIN teams t ON r.team_id = t.id
-                                  WHERE r.id IN ({','.join([str (r) for r in roster_leave_ids])})""") as cursor:
-                rows = await cursor.fetchall()
-                for row in rows:
-                    team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag = row
-                    if roster_name is None:
-                        roster_name = team_name
-                    if roster_tag is None:
-                        roster_tag = team_tag
-                    leave_rosters[roster_id] = LeaveRoster(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag)
-            for transfer in transfers:
-                if transfer.roster_leave_id:
-                    transfer.roster_leave = leave_rosters[transfer.roster_leave_id]
-        return transfers
+                    (invite_id, date, approval_status, 
+                     join_team_id, join_team_name, join_team_tag, join_team_color, 
+                     join_roster_id, join_roster_name, join_roster_tag, join_roster_game, join_roster_mode,
+                     leave_team_id, leave_team_name, leave_team_tag, leave_team_color, 
+                     leave_roster_id, leave_roster_name, leave_roster_tag, leave_roster_game, leave_roster_mode,
+                     player_id, player_name, player_country_code) = row
+                    
+                    if join_roster_id is not None:
+                        if join_roster_name is None:
+                            join_roster_name = join_team_name
+                        if join_roster_tag is None:
+                            join_roster_tag = join_team_tag
+
+                    if leave_roster_id is not None:
+                        if leave_roster_name is None:
+                            leave_roster_name = leave_team_name
+                        if leave_roster_tag is None:
+                            leave_roster_tag = leave_team_tag
+
+                    # in case the transfer is just a player leaving,
+                    # need to get the game/mode from the roster that was left
+                    game = join_roster_game
+                    mode = join_roster_mode
+                    if not game:
+                        game = leave_roster_game
+                    if not mode:
+                        mode = leave_roster_mode
+
+                    if leave_roster_id:
+                        leave_roster = TransferRoster(leave_team_id, leave_team_name, leave_team_tag, leave_team_color, leave_roster_id,
+                                                   leave_roster_name, leave_roster_tag)
+                    else:
+                        leave_roster = None
+
+                    if join_roster_id:
+                        join_roster = TransferRoster(join_team_id, join_team_name, join_team_tag, join_team_color, join_roster_id,
+                                                     join_roster_name, join_roster_tag)
+                    else:
+                        join_roster = None
+
+                    transfers.append(TeamTransfer(invite_id, date, game, mode, player_id, player_name, player_country_code, approval_status, leave_roster, join_roster))
+
+            async with db.execute(f"""SELECT COUNT(*)
+                                    FROM team_transfers i
+                                    LEFT OUTER JOIN team_rosters r1 ON i.roster_id = r1.id
+                                    LEFT OUTER JOIN teams t1 ON r1.team_id = t1.id
+                                    LEFT OUTER JOIN team_rosters r2 ON i.roster_leave_id = r2.id
+                                    LEFT OUTER JOIN teams t2 ON r2.team_id = t2.id
+                                    JOIN players p ON i.player_id = p.id
+                                    WHERE i.is_accepted = 1 AND i.approval_status = ? {where_clause_str}""",
+                                    (self.approval_status, *variable_parameters)) as cursor:
+                row = await cursor.fetchone()
+                transfer_count = row[0]
+                page_count = int(transfer_count / limit) + (1 if transfer_count % limit else 0)
+        return TransferList(transfers, transfer_count, page_count)
 
 
 @save_to_command_log
@@ -874,6 +940,8 @@ class ForceTransferPlayerCommand(Command[None]):
                 team_member_id = None
             curr_time = int(datetime.utcnow().timestamp())
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (self.roster_id, self.player_id, curr_time))
+            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
+                             VALUES(?, ?, ?, ?, ?, ?)""", (self.player_id, self.roster_id, curr_time, self.roster_leave_id, True, "approved"))
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
@@ -937,7 +1005,7 @@ class EditTeamMemberCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT m.id, m.join_date FROM team_members m
+            async with db.execute("""SELECT m.id, m.join_date, m.leave_date FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
                                     WHERE m.player_id = ? AND m.roster_id = ? AND t.id = ?
@@ -945,9 +1013,13 @@ class EditTeamMemberCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Team member not found", status=404)
-                id, member_join_date = row
+                id, member_join_date, member_leave_date = row
                 if not self.join_date:
                     self.join_date = member_join_date
+                # if we're kicking the member add log of it in team transfers
+                if member_leave_date is None and self.leave_date is not None:
+                    await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
+                                     VALUES(?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved"))
             await db.execute("UPDATE team_members SET join_date = ?, leave_date = ? WHERE id = ?", (self.join_date, self.leave_date, id))
             await db.commit()
 

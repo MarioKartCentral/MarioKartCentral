@@ -117,6 +117,7 @@
       <Dropdown>
         <DropdownItem href="/{$page.params.lang}/registry/players">Players</DropdownItem>
         <DropdownItem href="/{$page.params.lang}/registry/teams">Teams</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">Recent Transactions</DropdownItem>
       </Dropdown>
       <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
       {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}

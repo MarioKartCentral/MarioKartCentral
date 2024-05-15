@@ -244,7 +244,7 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     assert row is not None
                     mod_notifications.pending_team_edits += row[0]
             if permissions.MANAGE_TRANSFERS in self.valid_perms:
-                async with db.execute("SELECT COUNT(id) FROM roster_invites WHERE is_accepted = 1") as cursor:
+                async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE is_accepted = 1 AND approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     mod_notifications.pending_transfers = row[0]

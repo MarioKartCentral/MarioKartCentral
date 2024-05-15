@@ -27,7 +27,7 @@
     border: 1px solid #902a2a;
   }
 
-  :global(.game_mk8u_badge) {
+  :global(.game_mk8_badge) {
     background-color: #5555ab;
     border: 1px solid #282887;
   }

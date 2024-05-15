@@ -268,7 +268,7 @@ class TeamInvite():
     mode: GameMode
 
 @dataclass
-class LeaveRoster():
+class TransferRoster():
     team_id: int
     team_name: str
     team_tag: str
@@ -278,12 +278,29 @@ class LeaveRoster():
     roster_tag: str | None
 
 @dataclass
-class TeamInviteApproval(TeamInvite):
+class TeamTransfer():
+    invite_id: int
+    date: int
+    game: Game
+    mode: GameMode
     player_id: int
     player_name: str
     player_country_code: str
-    roster_leave_id: int | None
-    roster_leave: LeaveRoster | None
+    approval_status: Approval
+    roster_leave: TransferRoster | None
+    roster_join: TransferRoster | None
+
+@dataclass
+class TransferFilter():
+    game: Game | None = None
+    mode: GameMode | None = None
+    page: int | None = None
+
+@dataclass
+class TransferList():
+    transfers: list[TeamTransfer]
+    transfer_count: int
+    page_count: int
 
 @dataclass
 class RequestRosterChangeRequestData():

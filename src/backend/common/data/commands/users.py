@@ -71,7 +71,7 @@ class GetInvitesForPlayerCommand(Command[PlayerInvites]):
         tournament_invites: list[TournamentInvite] = []
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT i.id, i.date, t.id, t.name, t.tag, t.color, r.id, r.name, r.tag, r.game, r.mode
-                                    FROM roster_invites i
+                                    FROM team_transfers i
                                     JOIN team_rosters r ON i.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
                                     WHERE i.player_id = ? AND i.is_accepted = 0""", (self.player_id,)) as cursor:

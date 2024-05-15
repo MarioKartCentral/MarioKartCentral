@@ -536,16 +536,18 @@ class RosterInvite(TableModel):
     date: int
     roster_leave_id: int
     is_accepted: int
+    approval_status: str
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS roster_invites (
+        return """CREATE TABLE IF NOT EXISTS team_transfers (
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
-            roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
+            roster_id INTEGER REFERENCES team_rosters(id),
             date INTEGER NOT NULL,
             roster_leave_id INTEGER REFERENCES team_rosters(id),
-            is_accepted BOOLEAN NOT NULL
+            is_accepted BOOLEAN NOT NULL,
+            approval_status TEXT NOT NULL 
             )"""
 
 @dataclass

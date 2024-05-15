@@ -7,6 +7,9 @@
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
   import LL from '$i18n/i18n-svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
+  import GameSelect from '$lib/components/common/GameSelect.svelte';
+  import CountrySelect from '$lib/components/common/CountrySelect.svelte';
 
   let players: PlayerInfo[] = [];
   let totalPlayers = 0;
@@ -60,10 +63,23 @@
 
 <Section header={$LL.PLAYER_LIST.PLAYER_LISTING()}>
   <form on:submit|preventDefault={fetchData}>
-    <PlayerFilterOptions bind:filters />
-    <Button type="submit">{$LL.PLAYER_LIST.SEARCH()}</Button>
+    <div class="flex">
+      <GameSelect all_option hide_labels bind:game={filters.game}/>
+      <CountrySelect bind:value={filters.country} is_filter={true}/>
+      <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} />
+      <Button type="submit">{$LL.PLAYER_LIST.SEARCH()}</Button>
+    </div>
   </form>
   {totalPlayers}
   {$LL.PLAYER_LIST.PLAYERS()}
-  <PlayerList {players} {totalPages} bind:currentPage />
+  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+  <PlayerList {players}/>
 </Section>
+
+<style>
+  .flex {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+</style>

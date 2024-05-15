@@ -200,9 +200,23 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
     await handle(command)
     return JSONResponse({})
 
+@bind_request_query(TransferFilter)
+async def view_approved_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
+    command = ViewTransfersCommand(filter, "approved")
+    transfers = await handle(command)
+    return JSONResponse(transfers)
+
+@bind_request_query(TransferFilter)
 @require_permission(permissions.MANAGE_TRANSFERS)
-async def view_transfers(request: Request) -> JSONResponse:
-    command = ViewTransfersCommand()
+async def view_pending_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
+    command = ViewTransfersCommand(filter, "pending")
+    transfers = await handle(command)
+    return JSONResponse(transfers)
+
+@bind_request_query(TransferFilter)
+@require_permission(permissions.MANAGE_TRANSFERS)
+async def view_denied_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
+    command = ViewTransfersCommand(filter, "denied")
     transfers = await handle(command)
     return JSONResponse(transfers)
 
@@ -327,7 +341,9 @@ routes: list[Route] = [
     Route('/api/registry/teams/leave', leave_team, methods=['POST']),
     Route('/api/registry/teams/approveTransfer', approve_transfer, methods=['POST']),
     Route('/api/registry/teams/denyTransfer', deny_transfer, methods=['POST']),
-    Route('/api/registry/teams/transfers', view_transfers),
+    Route('/api/registry/teams/transfers/approved', view_approved_transfers),
+    Route('/api/registry/teams/transfers/pending', view_pending_transfers),
+    Route('/api/registry/teams/transfers/denied', view_denied_transfers),
     Route('/api/registry/teams/rosterChangeRequests', list_roster_edit_requests),
     Route('/api/registry/teams/forceTransferPlayer', force_transfer_player, methods=['POST']),
     Route('/api/registry/teams/editTeamMemberInfo', edit_team_member_info, methods=['POST']),

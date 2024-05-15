@@ -95,7 +95,7 @@
     <TeamPermissionCheck team_id={id} permission={team_permissions.create_rosters}>
       <Section header={$LL.TEAM_EDIT.NEW_ROSTER()}>
         <form method="post" on:submit|preventDefault={createRoster}>
-            <GameModeSelect game={game} mode={mode} flex={true}/>
+            <GameModeSelect flex required/>
             <div class="option">
               <div>
                 <label for="name">{$LL.TEAM_EDIT.ROSTER_NAME()}</label>

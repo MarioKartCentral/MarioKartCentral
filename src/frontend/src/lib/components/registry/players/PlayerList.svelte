@@ -4,13 +4,8 @@
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
-  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
   export let players: PlayerInfo[];
-  export let currentPage: number;
-  export let totalPages: number;
 </script>
-
-<PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages}/>
 
 <Table>
   <col class="country_code" />
@@ -58,14 +53,6 @@
   </tbody>
   
 </Table>
-
-<!-- <button on:click={() => (currentPage > 1 ? (currentPage = currentPage - 1) : (currentPage = currentPage))}
-  >{'<'}</button
->
-{currentPage}/{totalPages}
-<button on:click={() => (currentPage < totalPages ? (currentPage = currentPage + 1) : (currentPage = currentPage))}
-  >{'>'}</button
-> -->
 
 <style>
   col.country_code {

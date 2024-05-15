@@ -34,6 +34,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/registry/teams/manage_rosters`,
     `/${locale}/registry/teams/mod/edit`,
     `/${locale}/registry/teams/mod/manage_rosters`,
+    `/${locale}/registry/teams/transfers`,
     `/${locale}/moderator/approve_teams`,
     `/${locale}/moderator/approve_team_edits`,
     `/${locale}/moderator/approve_transfers`,
