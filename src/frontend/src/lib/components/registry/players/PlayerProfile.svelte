@@ -48,19 +48,11 @@
         {/if}
         {player.name}
       </div>
-      <!-- <div class="country">
-        <b>{$LL.PLAYER_LIST.HEADER.COUNTRY()}:</b>
-        {#if player.country_code !== null}
-          <Flag country_code={player.country_code} />
-          {$LL.COUNTRIES[player.country_code]()}
-        {/if}
-      </div> -->
       {#if player.friend_codes.length > 0}
         <div class="item">
           <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
           {#each player.friend_codes as fc}
             <div>
-              <!-- {fc.fc} ({fc.game.toUpperCase()}) -->
               <GameBadge game={fc.game}/>
               {fc.fc}
             </div>
@@ -82,26 +74,17 @@
         </div>
       {/if}
     </div>
-    {#if player.user_settings && player.user_settings.about_me}
-      <div class="about_me">
+    
+    <div class="about_me">
+      {#if player.user_settings && player.user_settings.about_me}
         {player.user_settings.about_me}
-      </div>
-    {/if}
+      {/if}
+    </div>
+    
   </div>
 </Section>
 
 <style>
-  /* div.container {
-    margin: 10px 0;
-  }
-  div.header {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    background-color: green;
-  }
-  div.header_element {
-    margin: 5px;
-  } */
   div.wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -124,11 +107,6 @@
   div.name {
     font-size: 1.5em;
   }
-  div.country {
-    display: flex;
-    flex-direction: row;
-    align-items: left;
-  }
   div.about_me {
     display: flex;
     grid-column-start: 3;
@@ -139,23 +117,10 @@
       margin-right: auto;
     }
   }
-  div.fc {
-    text-indent: 2em;
-  }
-  div.roster {
-    text-indent: 2em;
-  }
-  img.avatar {
-    width: 150px;
-    height: 150px;
-    margin: 10px;
-    border: 5px white solid;
-    border-radius: 50%;
-    object-fit: cover;
-  }
   div.avatar {
     min-width: 150px;
     margin-bottom: 20px;
+    margin-left: 20px;
   }
   div.item {
     margin-top: 10px;
