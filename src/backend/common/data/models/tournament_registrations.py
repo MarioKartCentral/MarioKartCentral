@@ -41,6 +41,7 @@ class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
 
 @dataclass
 class TournamentPlayerDetails():
+    id: int
     player_id: int
     squad_id: int | None
     timestamp: int

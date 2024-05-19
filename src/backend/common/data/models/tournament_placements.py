@@ -1,16 +1,29 @@
 from dataclasses import dataclass
 from typing import List
+from common.data.models import TournamentPlayerDetails, TournamentSquadDetails
 
 @dataclass
-class Placements():
-    squad_id: int
-    placement: int
+class TournamentPlacement():
+    registration_id: int
+    placement: int | None
     placement_description: str | None
 
 @dataclass
-class SetPlacements():
-    placements: List[Placements]
+class TournamentPlacementDetailed(TournamentPlacement):
+    player: TournamentPlayerDetails | None
+    squad: TournamentSquadDetails | None
 
 @dataclass
-class GetPlacementsData():
-    placements: List[Placements]
+class TournamentPlacementList():
+    tournament_id: int
+    is_squad: bool
+    placements: list[TournamentPlacementDetailed]
+    unplaced: list[TournamentPlacementDetailed]
+
+# @dataclass
+# class SetPlacements():
+#     placements: List[TournamentPlacement]
+
+# @dataclass
+# class GetPlacementsData():
+#     placements: List[TournamentPlacement]

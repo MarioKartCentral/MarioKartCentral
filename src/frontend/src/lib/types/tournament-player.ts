@@ -1,4 +1,5 @@
 export type TournamentPlayer = {
+  id: number;
   player_id: number;
   squad_id: number | null;
   timestamp: number;

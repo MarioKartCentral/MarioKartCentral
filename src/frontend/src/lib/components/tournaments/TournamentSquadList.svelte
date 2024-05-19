@@ -21,7 +21,7 @@
     if (tournament.min_squad_size === null) {
       return 'Yes';
     }
-    return squad.players.length >= tournament.min_squad_size ? 'Yes' : 'No';
+    return squad.players.filter(p => !p.is_invite).length >= tournament.min_squad_size ? 'Yes' : 'No';
   }
 
   function toggle_show_players(squad_id: number) {

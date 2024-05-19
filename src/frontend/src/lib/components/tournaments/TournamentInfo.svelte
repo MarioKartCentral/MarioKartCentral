@@ -39,6 +39,7 @@
   <div slot="header_content">
     <SeriesPermissionCheck series_id={tournament.series_id} permission={series_permissions.edit_tournament}>
       <LinkButton href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">Edit Tournament</LinkButton>
+      <LinkButton href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">Edit Placements</LinkButton>
     </SeriesPermissionCheck>
   </div>
   <div class="centered">
