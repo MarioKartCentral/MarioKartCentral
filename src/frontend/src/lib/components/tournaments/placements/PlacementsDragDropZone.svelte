@@ -2,7 +2,7 @@
     import type { TournamentPlacement, TournamentPlacementSimple } from "$lib/types/tournament-placement";
     import type { PlacementOrganizer } from "$lib/types/placement-organizer";
     import {dndzone} from "svelte-dnd-action";
-    import SoloPlacementItem from "./SoloPlacementItem.svelte";
+    import PlacementItem from "./PlacementItem.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
 
     export let tournament_id: number;
@@ -31,6 +31,7 @@
 
     async function savePlacements() {
         let new_placements: TournamentPlacementSimple[] = [];
+        // convert our placement list into the format used by the API
         for(let p of placement_list) {
             if(p.placement) {
                 new_placements.push({registration_id: p.id, placement: p.placement, placement_description: p.description});
@@ -51,6 +52,7 @@
     }
 
     function updatePlacements() {
+        // if this section is used for placements, update any ties as needed
         if(is_placements) {
             let curr_placement = 1;
             for(let i = 0; i < placement_list.length; i++) {
@@ -64,6 +66,7 @@
                 }
             }
         }
+        // otherwise if this is an unplaced section, set placement/description to null
         else {
             for(let i = 0; i < placement_list.length; i++) {
                 let p = placement_list[i];
@@ -84,7 +87,7 @@
 
 <section class="zone" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
     {#each placement_list as p(p.id)}
-        <SoloPlacementItem placement={p} {is_squad} on:change={updatePlacements}/>
+        <PlacementItem placement={p} {is_squad} on:change={updatePlacements}/>
     {/each}
     
 </section>
