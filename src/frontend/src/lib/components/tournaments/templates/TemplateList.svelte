@@ -6,7 +6,7 @@
   import { page } from '$app/stores';
   import { permissions, addPermission, series_permissions } from '$lib/util/util';
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let series_id: number | null = null;
 
@@ -31,15 +31,15 @@
   <div slot="header_content">
     <SeriesPermissionCheck {series_id} permission={series_permissions.create_tournament_template}>
       {#if series_id}
-        <LinkButton href="/{$page.params.lang}/tournaments/series/create_template?series_id={series_id}"
-          >Create Template</LinkButton
+        <Button href="/{$page.params.lang}/tournaments/series/create_template?series_id={series_id}"
+          >Create Template</Button
         >
       {:else}
-        <LinkButton href="/{$page.params.lang}/tournaments/templates/create">Create Template</LinkButton>
+        <Button href="/{$page.params.lang}/tournaments/templates/create">Create Template</Button>
       {/if}
     </SeriesPermissionCheck>
     {#if series_id}
-      <LinkButton href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
     {/if}
   </div>
   <Table>
@@ -51,18 +51,18 @@
         <td>
           <div class="settings">
             <SeriesPermissionCheck {series_id} permission={series_permissions.edit_tournament_template}>
-              <LinkButton href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">Edit</LinkButton>
+              <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">Edit</Button>
             </SeriesPermissionCheck>
             <SeriesPermissionCheck {series_id} permission={series_permissions.create_tournament_template}>
               {#if series_id}
-                <LinkButton
+                <Button
                   href="/{$page.params
                     .lang}/tournaments/series/create_template?series_id={series_id}&template_id={template.id}"
-                  >Duplicate</LinkButton
+                  >Duplicate</Button
                 >
               {:else}
-                <LinkButton href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}"
-                  >Duplicate</LinkButton
+                <Button href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}"
+                  >Duplicate</Button
                 >
               {/if}
             </SeriesPermissionCheck>

@@ -2,7 +2,7 @@
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
   import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { series_permissions } from '$lib/util/util';
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
@@ -12,17 +12,17 @@
 
 <Section header="Series Info">
   <div slot="header_content">
-    <LinkButton href="/{$page.params.lang}/tournaments/series">Back to Series Listing</LinkButton>
+    <Button href="/{$page.params.lang}/tournaments/series">Back to Series Listing</Button>
     <SeriesPermissionCheck series_id={series.id} permission={series_permissions.edit_series}>
-      <LinkButton href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">Edit Series</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">Edit Series</Button>
     </SeriesPermissionCheck>
     <SeriesPermissionCheck series_id={series.id} permission={series_permissions.create_tournament}>
-      <LinkButton href="/{$page.params.lang}/tournaments/series/create_tournament/select_template?id={series.id}"
-        >Create Tournament</LinkButton
+      <Button href="/{$page.params.lang}/tournaments/series/create_tournament/select_template?id={series.id}"
+        >Create Tournament</Button
       >
     </SeriesPermissionCheck>
     <SeriesPermissionCheck series_id={series.id} permission={series_permissions.create_tournament_template}>
-      <LinkButton href="/{$page.params.lang}/tournaments/series/templates?id={series.id}">Manage Templates</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/series/templates?id={series.id}">Manage Templates</Button>
     </SeriesPermissionCheck>
   </div>
   <div class="container">

@@ -23,7 +23,6 @@
 
 <div class="wrapper">
   <div class="avatar">
-    <!-- <img class="avatar" src={avatar_url} alt={team.name} /> -->
     <Avatar size="xl" src={avatar_url} border alt={team.name}/>
   </div>
   <div class="team_details">
@@ -64,14 +63,6 @@
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
-  }
-  img.avatar {
-    width: 150px;
-    height: 150px;
-    margin: 10px;
-    border: 5px white solid;
-    border-radius: 50%;
-    object-fit: cover;
   }
   div.team_details {
     display: flex;

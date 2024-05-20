@@ -11,8 +11,8 @@
   import { goto } from '$app/navigation';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import ArrowRight from '$lib/components/common/ArrowRight.svelte';
-    import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
-    import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
+  import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
 
   let team_requests: TeamEditRequest[] = [];
   let roster_requests: RosterEditRequest[] = [];
@@ -49,7 +49,6 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      //alert('Successfully approved team profile change');
       window.location.reload();
     } else {
       alert(`Team edit failed: ${result['title']}`);
@@ -69,9 +68,7 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      //alert('Successfully denied team profile change');
       window.location.reload();
-      //goto(`/${$page.params.lang}/registry/teams`);
     } else {
       alert(`Failed: ${result['title']}`);
     }
@@ -176,39 +173,6 @@
         {/each}
       </tbody>
     </Table>
-      <!-- <Table>
-        <col class="old_tag" />
-        <col class="old_name" />
-        <col class="new_tag" />
-        <col class="new_name" />
-        <col class="date" />
-        <col class="approve" />
-        <thead>
-          <tr>
-            <th>Old Tag</th>
-            <th>Old Name</th>
-            <th>New Tag</th>
-            <th>New Name</th>
-            <th>Date</th>
-            <th>Approve?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each team_requests as r, i}
-            <tr class="row-{i % 2}">
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_tag}</a></td>
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_name}</a></td>
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_tag}</a></td>
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_name}</a></td>
-              <td>{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
-              <td>
-                <button class="check" on:click={() => approveTeamRequest(r)}>✓</button>
-                <button class="x" on:click={() => denyTeamRequest(r)}>X</button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table> -->
     {:else}
       No pending team edit requests.
     {/if}
@@ -264,39 +228,6 @@
           {/each}
         </tbody>
       </Table>
-      <!-- <Table>
-        <col class="old_tag" />
-        <col class="old_name" />
-        <col class="new_tag" />
-        <col class="new_name" />
-        <col class="date" />
-        <col class="approve" />
-        <thead>
-          <tr>
-            <th>Old Tag</th>
-            <th>Old Name</th>
-            <th>New Tag</th>
-            <th>New Name</th>
-            <th>Date</th>
-            <th>Approve?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each roster_requests as r, i}
-            <tr class="row-{i % 2}">
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_tag}</a></td>
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_name}</a></td>
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_tag}</a></td>
-              <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_name}</a></td>
-              <td>{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
-              <td>
-                <button class="check" on:click={() => approveRosterRequest(r)}>✓</button>
-                <button class="x" on:click={() => denyRosterRequest(r)}>X</button>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table> -->
     {:else}
       No pending roster edit requests.
     {/if}
@@ -305,15 +236,6 @@
 </PermissionCheck>
 
 <style>
-  button {
-    min-width: 50px;
-  }
-  .check {
-    background-color: green;
-  }
-  .x {
-    background-color: red;
-  }
   .flex {
     display: flex;
     flex-direction: row;

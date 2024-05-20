@@ -6,7 +6,6 @@
     import { setTeamPerms, team_permissions, permissions } from '$lib/util/util';
     import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
     import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
-    import LinkButton from '$lib/components/common/LinkButton.svelte';
     import LL from '$i18n/i18n-svelte';
     import ColorSelect from '$lib/components/common/ColorSelect.svelte';
     import Button from '$lib/components/common/buttons/Button.svelte';
@@ -32,29 +31,6 @@
       const body: Team = await res.json();
       team = body;
     });
-  
-    async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-      const data = new FormData(event.currentTarget);
-      const payload = {
-        team_id: id,
-        name: data.get('name')?.toString(),
-        tag: data.get('tag')?.toString(),
-      };
-      console.log(payload);
-      const endpoint = '/api/registry/teams/requestChange';
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const result = await response.json();
-      if (response.status < 300) {
-        window.location.reload();
-        alert(`Your request to change your team's name/tag has been sent to MKCentral staff for approval.`);
-      } else {
-        alert(`Editing team failed: ${result['title']}`);
-      }
-    }
   
     async function editTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
       const data = new FormData(event.currentTarget);
@@ -85,36 +61,36 @@
     }
 
     async function forceEditTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-    const data = new FormData(event.currentTarget);
-    function getOptionalValue(name: string) {
-      return data.get(name) ? data.get(name)?.toString() : '';
+      const data = new FormData(event.currentTarget);
+      function getOptionalValue(name: string) {
+        return data.get(name) ? data.get(name)?.toString() : '';
+      }
+      const payload = {
+        team_id: id,
+        name: data.get('name')?.toString(),
+        tag: data.get('tag')?.toString(),
+        color: Number(data.get('color')?.toString()),
+        logo: getOptionalValue('logo'),
+        language: data.get('language')?.toString(),
+        description: getOptionalValue('description'),
+        approval_status: data.get('approval_status'),
+        is_historical: getOptionalValue('is_historical') === 'true' ? true : false,
+      };
+      console.log(payload);
+      const endpoint = '/api/registry/teams/forceEdit';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (response.status < 300) {
+        window.location.reload();
+        alert('Successfully edited team');
+      } else {
+        alert(`Editing team failed: ${result['title']}`);
+      }
     }
-    const payload = {
-      team_id: id,
-      name: data.get('name')?.toString(),
-      tag: data.get('tag')?.toString(),
-      color: Number(data.get('color')?.toString()),
-      logo: getOptionalValue('logo'),
-      language: data.get('language')?.toString(),
-      description: getOptionalValue('description'),
-      approval_status: data.get('approval_status'),
-      is_historical: getOptionalValue('is_historical') === 'true' ? true : false,
-    };
-    console.log(payload);
-    const endpoint = '/api/registry/teams/forceEdit';
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json();
-    if (response.status < 300) {
-      window.location.reload();
-      alert('Successfully edited team');
-    } else {
-      alert(`Editing team failed: ${result['title']}`);
-    }
-  }
   </script>
   
   <svelte:head>
@@ -124,8 +100,8 @@
   {#if team}
     <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
       <div slot="header_content">
-        <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
-          >{$LL.TEAM_EDIT.BACK_TO_TEAM()}</LinkButton
+        <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
+          >{$LL.TEAM_EDIT.BACK_TO_TEAM()}</Button
         >
       </div>
     </Section>

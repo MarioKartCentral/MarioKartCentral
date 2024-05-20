@@ -3,7 +3,6 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import Section from '$lib/components/common/Section.svelte';
   import PlayerList from '$lib/components/registry/players/PlayerList.svelte';
-  import PlayerFilterOptions from '$lib/components/registry/players/PlayerFilterOptions.svelte';
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
   import LL from '$i18n/i18n-svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';

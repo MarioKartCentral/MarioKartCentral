@@ -6,7 +6,6 @@
     import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
     import TeamRosterManage from '$lib/components/registry/teams/TeamRosterManage.svelte';
     import Section from '$lib/components/common/Section.svelte';
-    import LinkButton from '$lib/components/common/LinkButton.svelte';
     import LL from '$i18n/i18n-svelte';
     import Button from '$lib/components/common/buttons/Button.svelte';
     import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
@@ -29,23 +28,6 @@
       const body: Team = await res.json();
       team = body;
     });
-  
-    const valid_games: { [key: string]: string } = {
-      mk8dx: 'Mario Kart 8 Deluxe',
-      mkw: 'Mario Kart Wii',
-      mkt: 'Mario Kart Tour',
-    };
-    const valid_modes: { [key: string]: string[] } = { mk8dx: ['150cc', '200cc'], mkw: ['rt', 'ct'], mkt: ['vsrace'] };
-    const mode_names: { [key: string]: string } = {
-      '150cc': '150cc',
-      '200cc': '200cc',
-      rt: 'Regular Tracks',
-      ct: 'Custom Tracks',
-      vsrace: 'VS Race',
-    };
-  
-    let game = 'mk8dx';
-    let mode = '150cc';
   
     async function createRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
       const data = new FormData(event.currentTarget);
@@ -84,7 +66,7 @@
   {#if team}
     <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
       <div slot="header_content">
-        <LinkButton href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</LinkButton>
+        <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</Button>
       </div>
     </Section>
     <TeamPermissionCheck team_id={id} permission={team_permissions.manage_rosters}>

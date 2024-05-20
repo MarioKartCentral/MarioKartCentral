@@ -3,7 +3,7 @@
     import { ArrowLeftOutline, ArrowRightOutline } from "flowbite-svelte-icons";
     export let currentPage: number;
     export let totalPages: number;
-    export let refresh_function: Function;
+    export let refresh_function: () => void;
 
     function decreasePage() {
         if(currentPage > 1) {

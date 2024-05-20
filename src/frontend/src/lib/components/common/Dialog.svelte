@@ -79,10 +79,4 @@
     position: absolute;
     right: 5%;
   }
-  button {
-    background-color: transparent;
-    outline: none;
-    border: none;
-    cursor: pointer;
-  }
 </style>

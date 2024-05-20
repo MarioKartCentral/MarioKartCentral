@@ -65,27 +65,6 @@
   }
 </script>
 
-<!-- <DropdownMenu bind:this={dropdown}>
-  <ul>
-    {#each notifications as { id, content, created_date, is_read, type }}
-      <li>
-        <div class="notification-item">
-          <span>{id}: </span>
-          <span>{content}</span>
-          <span>{new Date(created_date * 1000).toLocaleString()}</span>
-          <span>{$LL.NAVBAR.TYPE()}: {type}</span>
-          <button on:click={async () => await makeNotificationAsRead(id)}>☑</button>
-          <span>{$LL.NAVBAR.IS_READ()}: {is_read}</span>
-        </div>
-      </li>
-    {/each}
-    <li>
-      <div class="notification-item">
-        <button on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
-      </div>
-    </li>
-  </ul>
-</DropdownMenu> -->
 <Dropdown>
   {#each notifications as { id, content, created_date, is_read, type }}
     <DropdownItem>
@@ -101,15 +80,3 @@
     <button on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
   </DropdownItem>
 </Dropdown>
-
-<style>
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .notification-item {
-    border-bottom: 1px solid #f2f2f2;
-    padding: 10px;
-  }
-</style>

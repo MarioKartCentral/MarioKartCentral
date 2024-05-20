@@ -5,7 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import { Avatar } from 'flowbite-svelte';
@@ -29,15 +29,14 @@
 <Section header={$LL.PLAYER_PROFILE.PLAYER_PROFILE()}>
   <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <LinkButton href="/{$page.params.lang}/registry/invites">{$LL.PLAYER_PROFILE.INVITES()}</LinkButton>
-      <LinkButton href="/{$page.params.lang}/registry/players/edit-profile"
-        >{$LL.PLAYER_PROFILE.EDIT_PROFILE()}</LinkButton
+      <Button href="/{$page.params.lang}/registry/invites">{$LL.PLAYER_PROFILE.INVITES()}</Button>
+      <Button href="/{$page.params.lang}/registry/players/edit-profile"
+        >{$LL.PLAYER_PROFILE.EDIT_PROFILE()}</Button
       >
     {/if}
   </div>
   <div class="wrapper">
     <div class="avatar">
-      <!-- <img class="avatar" src={avatar_url} alt={player.name} /> -->
       <Avatar size="xl" src={avatar_url} border alt={player.name}/>
     </div>
 

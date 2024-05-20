@@ -37,7 +37,11 @@ export function check_registrations_open(tournament: Tournament) {
   return true;
 }
 
-export async function unregister(registration: MyTournamentRegistration, tournament:Tournament, squad: TournamentSquad | null = null) {
+export async function unregister(
+  registration: MyTournamentRegistration,
+  tournament: Tournament,
+  squad: TournamentSquad | null = null,
+) {
   if (!registration.player) {
     return;
   }

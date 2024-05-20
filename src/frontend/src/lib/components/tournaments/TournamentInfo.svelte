@@ -5,7 +5,7 @@
   import SeriesPermissionCheck from '../common/SeriesPermissionCheck.svelte';
   import PermissionCheck from '../common/PermissionCheck.svelte';
   import Section from '../common/Section.svelte';
-  import LinkButton from '../common/LinkButton.svelte';
+  import Button from '../common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import GameBadge from '../badges/GameBadge.svelte';
   import TypeBadge from '../badges/TypeBadge.svelte';
@@ -30,7 +30,7 @@
 <PermissionCheck permission={permissions.edit_tournament}>
   <Section header="Moderator">
     <div slot="header_content">
-      <LinkButton href="/{$page.params.lang}/tournaments/mod/edit?id={tournament.id}">Edit Tournament</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/mod/edit?id={tournament.id}">Edit Tournament</Button>
     </div>
   </Section>
 </PermissionCheck>
@@ -38,8 +38,8 @@
 <Section header="Tournament Info">
   <div slot="header_content">
     <SeriesPermissionCheck series_id={tournament.series_id} permission={series_permissions.edit_tournament}>
-      <LinkButton href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">Edit Tournament</LinkButton>
-      <LinkButton href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">Edit Placements</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">Edit Tournament</Button>
+      <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">Edit Placements</Button>
     </SeriesPermissionCheck>
   </div>
   <div class="centered">

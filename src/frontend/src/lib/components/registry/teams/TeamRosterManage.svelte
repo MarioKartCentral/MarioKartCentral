@@ -111,31 +111,6 @@
     }
   }
 
-  async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-    edit_dialog.close();
-    const data = new FormData(event.currentTarget);
-    const payload = {
-      roster_id: roster.id,
-      team_id: roster.team_id,
-      name: data.get('name')?.toString(),
-      tag: data.get('tag')?.toString(),
-    };
-    console.log(payload);
-    const endpoint = '/api/registry/teams/requestRosterChange';
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json();
-    if (response.status < 300) {
-      window.location.reload();
-      alert(`Your request to change your roster's name/tag has been sent to MKCentral staff for approval.`);
-    } else {
-      alert(`Editing roster failed: ${result['title']}`);
-    }
-  }
-
   async function editRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     edit_dialog.close();
     const data = new FormData(event.currentTarget);

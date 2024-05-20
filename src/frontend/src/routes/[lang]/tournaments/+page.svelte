@@ -6,7 +6,7 @@
   import { addPermission, permissions } from '$lib/util/util';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
 
@@ -34,7 +34,7 @@
 <Section header={$LL.NAVBAR.TOURNAMENTS()}>
   <div slot="header_content">
     {#if user_info.permissions.includes(permissions.create_tournament)}
-      <LinkButton href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</Button>
     {/if}
   </div>
   {#each tournaments as tournament}

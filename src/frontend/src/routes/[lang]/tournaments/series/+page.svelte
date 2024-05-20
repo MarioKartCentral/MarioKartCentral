@@ -5,7 +5,7 @@
   import { onMount } from 'svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import SeriesPageItem from '$lib/components/tournaments/series/SeriesPageItem.svelte';
 
@@ -34,7 +34,7 @@
 <Section header="Tournament Series">
   <div slot="header_content">
     {#if user_info.permissions.includes(permissions.create_series)}
-      <LinkButton href="/{$page.params.lang}/tournaments/series/create">Create Series</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/series/create">Create Series</Button>
     {/if}
   </div>
 </Section>

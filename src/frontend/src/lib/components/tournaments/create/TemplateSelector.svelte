@@ -4,7 +4,7 @@
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let series_id: number | null = null;
 
@@ -26,7 +26,7 @@
 <Section header="Select Template">
   <div slot="header_content">
     {#if series_id}
-      <LinkButton href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</LinkButton>
+      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
     {/if}
   </div>
   <Table>

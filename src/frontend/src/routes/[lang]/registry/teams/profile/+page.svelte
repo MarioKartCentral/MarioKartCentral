@@ -6,7 +6,7 @@
   import TeamProfile from '$lib/components/registry/teams/TeamProfile.svelte';
   import TeamRoster from '$lib/components/registry/teams/TeamRoster.svelte';
   import { setTeamPerms, team_permissions, permissions } from '$lib/util/util';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from "$lib/components/common/buttons/Button.svelte";
   import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -37,11 +37,11 @@
   <PermissionCheck permission={permissions.manage_teams}>
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
-        <LinkButton href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
-          >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</LinkButton
+        <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
+          >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
         >
-        <LinkButton href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
-          >{$LL.TEAM_PROFILE.EDIT_TEAM()}</LinkButton
+        <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
+          >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
         >
       </div>
     </Section>
@@ -50,12 +50,12 @@
     <div slot="header_content">
       {#if team.approval_status === 'approved' && !team.is_historical}
         <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
-          <LinkButton href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
-            >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</LinkButton
+          <Button href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
+            >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
           >
         </TeamPermissionCheck>
         <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
-          <LinkButton href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</LinkButton
+          <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
         </TeamPermissionCheck>
       {/if}

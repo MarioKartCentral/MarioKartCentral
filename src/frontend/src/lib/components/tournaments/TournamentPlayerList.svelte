@@ -2,11 +2,10 @@
   import type { Tournament } from '$lib/types/tournament';
   import type { TournamentPlayer } from '$lib/types/tournament-player';
   import Table from '$lib/components/common/Table.svelte';
-    import Flag from '../common/Flag.svelte';
-    import CaptainBadge from '../badges/CaptainBadge.svelte';
-    import type { UserInfo } from '$lib/types/user-info';
-    import { user } from '$lib/stores/stores';
-    import PlayerName from './registration/PlayerName.svelte';
+  import Flag from '../common/Flag.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import PlayerName from './registration/PlayerName.svelte';
 
   export let tournament: Tournament;
   export let players: TournamentPlayer[];
