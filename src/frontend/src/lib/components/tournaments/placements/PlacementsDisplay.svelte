@@ -10,6 +10,7 @@
     let placements: TournamentPlacementList;
     let placement_list: PlacementOrganizer[] = [];
     let show_all = false;
+    let num_display = 12;
 
     onMount(async() => {
         const res = await fetch(`/api/tournaments/${tournament.id}/placements`);
@@ -29,11 +30,13 @@
 {#if placement_list.length}
     <Section header="Tournament Placements">
         <div slot="header_content">
-            <button on:click={() => show_all = !show_all}>
-                ({show_all ? "Hide" : "Show"} all)
-            </button>
+            {#if placement_list.length > num_display}
+                <button on:click={() => show_all = !show_all}>
+                    ({show_all ? "Hide" : "Show"} all)
+                </button>
+            {/if}
         </div>
-        {#each show_all ? placement_list : placement_list.slice(0, 12) as placement}
+        {#each show_all ? placement_list : placement_list.slice(0, num_display) as placement}
             <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false}/>
         {/each}
     </Section>
