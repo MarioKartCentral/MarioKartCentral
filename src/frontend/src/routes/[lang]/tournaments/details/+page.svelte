@@ -8,7 +8,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import { setSeriesPerms, addPermission, permissions } from '$lib/util/util';
   import TournamentRegisterPanel from '$lib/components/tournaments/registration/TournamentRegisterPanel.svelte';
-  //import { AccordionItem } from 'flowbite-svelte';
+  import PlacementsDisplay from '$lib/components/tournaments/placements/PlacementsDisplay.svelte';
   import Accordion from '$lib/components/common/Accordion.svelte';
   import AccordionItem from '$lib/components/common/AccordionItem.svelte';
 
@@ -50,6 +50,7 @@
       </AccordionItem>
     </Accordion>
   </Section>
+  <PlacementsDisplay {tournament}/>
   <TournamentRegisterPanel {tournament} />
   <Section header="Tournament Registrations">
     <TournamentRegistrations {tournament} />

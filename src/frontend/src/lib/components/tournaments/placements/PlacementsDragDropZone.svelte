@@ -87,7 +87,7 @@
 
 <section class="zone" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
     {#each placement_list as p(p.id)}
-        <PlacementItem placement={p} {is_squad} on:change={updatePlacements}/>
+        <PlacementItem placement={p} {is_squad} is_edit={true} on:change={updatePlacements}/>
     {/each}
     
 </section>

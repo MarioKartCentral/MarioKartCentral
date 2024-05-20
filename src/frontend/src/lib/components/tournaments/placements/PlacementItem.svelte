@@ -2,9 +2,11 @@
     import Flag from "$lib/components/common/Flag.svelte";
     import type { PlacementOrganizer } from "$lib/types/placement-organizer";
     import SquadPlacementDisplay from "./SquadPlacementDisplay.svelte";
+    import { page } from "$app/stores";
 
     export let placement: PlacementOrganizer;
     export let is_squad: boolean;
+    export let is_edit: boolean;
 
     let bg_class = "other";
     $: {
@@ -38,15 +40,17 @@
     </div>
     <div class="info">
         {#if !is_squad && placement.player}
-            <Flag country_code={placement.player.country_code} size="small"/>
-            {placement.player.name}
+            <a href="/{$page.params.lang}/registry/players/profile?id={placement.player.player_id}">
+                <Flag country_code={placement.player.country_code} size="small"/>
+                {placement.player.name}
+            </a>
         {:else if is_squad && placement.squad}
             <SquadPlacementDisplay squad={placement.squad}/>
         {/if}
     </div>
     
     <div class="tie">
-        {#if placement.placement}
+        {#if placement.placement && is_edit}
             <div>
                 Tie?
                 <input type="checkbox" bind:checked={placement.tie} on:change/>
@@ -55,7 +59,11 @@
     </div>
     <div class="description">
         {#if placement.placement}
-            <input class="title" bind:value={placement.description} placeholder="Title"/>
+            {#if is_edit}
+                <input class="title" bind:value={placement.description} placeholder="Title"/>
+            {:else if placement.description}
+                {placement.description}
+            {/if}
         {/if}
     </div>
 </div>
@@ -70,6 +78,7 @@
         border-left: 1px solid black;
         border-right: 1px solid black;
         padding: 5px;
+        font-size: 80%;
     }
     div.gold {
         background-color: rgba(250, 209, 5, 0.6);
@@ -87,17 +96,11 @@
         width: 100px;
         display: block;
         text-align: center;
-        font-size: 1.5em;
-    }
-    .rank-text {
-        font-size: 0.75em;
-        width: 50%;
-        margin: auto;
+        font-size: 1.75em;
     }
     .info {
         min-width: 200px;
         max-width: 400px;
-        font-size: 80%;
     }
     .tie {
         width: 100px;

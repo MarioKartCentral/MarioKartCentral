@@ -5,6 +5,7 @@
     import PlacementsDragDropZone from "$lib/components/tournaments/placements/PlacementsDragDropZone.svelte";
 
     import type { TournamentPlacementList } from "$lib/types/tournament-placement";
+    import Button from "$lib/components/common/buttons/Button.svelte";
 
     let id = 0;
     let placements: TournamentPlacementList;
@@ -22,6 +23,11 @@
 </script>
 
 {#if is_loaded}
+    <Section header="Back to Tournament">
+        <div slot="header_content">
+            <Button href="/{$page.params.lang}/tournaments/details?id={placements.tournament_id}">Back</Button>
+        </div>
+    </Section>
     <Section header="Edit Placements">
         <PlacementsDragDropZone tournament_id={placements.tournament_id} is_squad={placements.is_squad} placements={placements.placements}/>
     </Section>

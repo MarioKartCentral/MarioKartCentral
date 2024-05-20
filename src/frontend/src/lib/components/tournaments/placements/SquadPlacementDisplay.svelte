@@ -2,6 +2,7 @@
     import TagBadge from "$lib/components/badges/TagBadge.svelte";
     import Flag from "$lib/components/common/Flag.svelte";
     import type { TournamentSquad } from "$lib/types/tournament-squad";
+    import { page } from "$app/stores";
 
     export let squad: TournamentSquad;
 </script>
@@ -21,8 +22,10 @@
             <div class="flex players">
                 {#each squad.players as p}
                     <div class="name">
-                        <Flag country_code={p.country_code} size="small"/>
-                        {p.name}
+                        <a href="/{$page.params.lang}/registry/players/profile?id={p.player_id}">
+                            <Flag country_code={p.country_code} size="small"/>
+                            {p.name}
+                        </a>
                     </div>
                 {/each}
             </div>

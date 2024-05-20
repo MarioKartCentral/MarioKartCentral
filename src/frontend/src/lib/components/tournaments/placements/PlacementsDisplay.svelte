@@ -1,0 +1,40 @@
+<script lang="ts">
+    import Section from "$lib/components/common/Section.svelte";
+    import type { PlacementOrganizer } from "$lib/types/placement-organizer";
+    import type { Tournament } from "$lib/types/tournament";
+    import type { TournamentPlacementList } from "$lib/types/tournament-placement";
+    import { onMount } from "svelte";
+    import PlacementItem from "./PlacementItem.svelte";
+
+    export let tournament: Tournament;
+    let placements: TournamentPlacementList;
+    let placement_list: PlacementOrganizer[] = [];
+    let show_all = false;
+
+    onMount(async() => {
+        const res = await fetch(`/api/tournaments/${tournament.id}/placements`);
+        let placements_body: TournamentPlacementList = await res.json();
+        placements = placements_body;
+        for(let placement of placements.placements) {
+            placement_list.push({id: placement.registration_id, placement: placement.placement,
+                description: placement.placement_description, tie: false, player: placement.player,
+                squad: placement.squad
+            })
+        }
+        placement_list.sort((a, b) => Number(a.placement) - Number(b.placement));
+        placement_list = placement_list;
+    });
+</script>
+
+{#if placement_list.length}
+    <Section header="Tournament Placements">
+        <div slot="header_content">
+            <button on:click={() => show_all = !show_all}>
+                ({show_all ? "Hide" : "Show"} all)
+            </button>
+        </div>
+        {#each show_all ? placement_list : placement_list.slice(0, 12) as placement}
+            <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false}/>
+        {/each}
+    </Section>
+{/if}
