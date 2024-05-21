@@ -29,6 +29,9 @@
         </div>
     </Section>
     <Section header="Edit Placements">
+        <div slot="header_content">
+            <Button href="/{$page.params.lang}/tournaments/edit_placements/raw?id={placements.tournament_id}">Switch to raw input</Button>
+        </div>
         <PlacementsDragDropZone tournament_id={placements.tournament_id} is_squad={placements.is_squad} placements={placements.placements}/>
     </Section>
     <Section header="Unplaced Teams">
