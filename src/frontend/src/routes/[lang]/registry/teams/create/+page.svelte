@@ -4,6 +4,7 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
   import { colors } from '$lib/util/util';
+    import Button from '$lib/components/common/buttons/Button.svelte';
 
   const valid_games: { [key: string]: string } = {
     mk8dx: 'Mario Kart 8 Deluxe',
@@ -116,6 +117,6 @@
     </select>
   </Section>
   <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
-    <button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</button>
+    <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
   </Section>
 </form>
