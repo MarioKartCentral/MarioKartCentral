@@ -7,9 +7,19 @@ from common.data.models import *
 
 @bind_request_body(list[TournamentPlacement])
 async def set_placements(request: Request, body: list[TournamentPlacement]) -> JSONResponse:
-    tournament_id = request.path_params['id']
-    command = SetPlacementsCommand(tournament_id, body)
-    await handle(command)
+    tournament_id = int(request.path_params['id'])
+    command = CheckIfSquadTournament(tournament_id)
+    is_squad = await handle(command)
+    if is_squad:
+        reg_command = GetSquadRegistrationsCommand(tournament_id, True, True, False)
+        registrations = await handle(reg_command)
+    else:
+        reg_command = GetFFARegistrationsCommand(tournament_id, False)
+        registrations = await handle(reg_command)
+
+    placements_command = SetPlacementsCommand(tournament_id, is_squad, body, registrations)
+    await handle(placements_command)
+
     return JSONResponse({})
 
 

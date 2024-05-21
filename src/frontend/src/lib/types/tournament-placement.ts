@@ -5,6 +5,8 @@ export type TournamentPlacementSimple = {
   registration_id: number;
   placement: number | null;
   placement_description: string | null;
+  placement_lower_bound: number | null;
+  is_disqualified: boolean;
 };
 
 export type TournamentPlacement = TournamentPlacementSimple & {

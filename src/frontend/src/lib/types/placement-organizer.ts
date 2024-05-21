@@ -6,6 +6,9 @@ export type PlacementOrganizer = {
   placement: number | null;
   description: string | null;
   tie: boolean;
+  bounded: boolean;
+  placement_lower_bound: number | null;
+  is_disqualified: boolean;
   player: TournamentPlayer | null;
   squad: TournamentSquad | null;
 };

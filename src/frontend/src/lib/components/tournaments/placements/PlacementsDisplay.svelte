@@ -5,6 +5,7 @@
     import type { TournamentPlacementList } from "$lib/types/tournament-placement";
     import { onMount } from "svelte";
     import PlacementItem from "./PlacementItem.svelte";
+    import { sort_placement_list } from "$lib/util/util";
 
     export let tournament: Tournament;
     let placements: TournamentPlacementList;
@@ -18,11 +19,13 @@
         placements = placements_body;
         for(let placement of placements.placements) {
             placement_list.push({id: placement.registration_id, placement: placement.placement,
-                description: placement.placement_description, tie: false, player: placement.player,
-                squad: placement.squad
+                description: placement.placement_description, tie: false,
+                bounded: placement.placement_lower_bound ? true : false,
+                placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
+                player: placement.player, squad: placement.squad
             })
         }
-        placement_list.sort((a, b) => Number(a.placement) - Number(b.placement));
+        placement_list.sort((a, b) => sort_placement_list(a, b));
         placement_list = placement_list;
     });
 </script>
