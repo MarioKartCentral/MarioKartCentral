@@ -10,7 +10,7 @@ class SetPlacementsCommand(Command[None]):
     tournament_id: int
     is_squad: bool
     body: list[TournamentPlacement]
-    registrations: list[TournamentPlayerDetails | TournamentSquadDetails]
+    registrations: list[TournamentPlayerDetails] | list[TournamentSquadDetails]
     
 
     async def handle(self, db_wrapper, s3_wrapper):

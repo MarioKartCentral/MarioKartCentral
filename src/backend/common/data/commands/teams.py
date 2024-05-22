@@ -253,7 +253,7 @@ class RequestEditTeamCommand(Command[None]):
             await db.commit()
 
 @dataclass
-class ViewTeamEditHistoryCommand(Command[None]):
+class ViewTeamEditHistoryCommand(Command[list[TeamEditRequest]]):
     team_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -269,7 +269,7 @@ class ViewTeamEditHistoryCommand(Command[None]):
         return edits
 
 @dataclass
-class ViewRosterEditHistoryCommand(Command[None]):
+class ViewRosterEditHistoryCommand(Command[list[RosterEditRequest]]):
     team_id: int
     roster_id: int
 
@@ -717,6 +717,7 @@ class ViewTransfersCommand(Command[TransferList]):
                                     WHERE i.is_accepted = 1 AND i.approval_status = ? {where_clause_str}""",
                                     (self.approval_status, *variable_parameters)) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 transfer_count = row[0]
                 page_count = int(transfer_count / limit) + (1 if transfer_count % limit else 0)
         return TransferList(transfers, transfer_count, page_count)
@@ -1141,7 +1142,7 @@ class ListRostersCommand(Command[list[TeamRoster]]):
             return rosters
 
 @dataclass
-class GetRegisterableRostersCommand(Command[None]):
+class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
     user_id: int
     tournament_id: int
     game: Game
