@@ -70,19 +70,17 @@
   });
 </script>
 
-<div class="container">
-  <header>
-    <NavBar />
-  </header>
-
+<header>
+  <NavBar />
+</header>
+<div class="container md:mx-auto">
   <main>
     <slot />
   </main>
-
-  <footer>
-    <Footer />
-  </footer>
 </div>
+<footer>
+  <Footer />
+</footer>
 
 <style>
   /* If the header and main elements are directly placed within the body, the fixed behavior will stop after scrolling one screen's height.
@@ -99,9 +97,16 @@
   }
   main {
     flex: 1 0;
-    padding: 30px 50px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+    @media(max-width: 800px) {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
   }
-  :global(a) {
+  /* :global(a) {
     color: white;
     text-decoration: none;
     transition: color 0.2s ease-out;
@@ -109,5 +114,5 @@
   :global(a:hover) {
     color: rgb(0, 162, 255);
     text-decoration: none;
-  }
+  } */
 </style>

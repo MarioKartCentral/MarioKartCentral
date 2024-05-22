@@ -150,9 +150,12 @@ class ListPlayersCommand(Command[PlayerList]):
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
+
             where_clauses = []
             fc_where_clauses = []
+
             variable_parameters = []
+            
             limit:int = 50
             offset:int = 0
 
@@ -200,19 +203,35 @@ class ListPlayersCommand(Command[PlayerList]):
                     fc_where_clauses.append("game = ?")
                     variable_parameters.append(filter.game)
 
-                fc_where_clause = ' AND '.join(fc_where_clauses)
-                fc_where_clauses.extend(where_clauses)
-                where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clause})")
+                fc_where_clauses_str = ' AND '.join(fc_where_clauses)
+                #fc_where_clauses.extend(where_clauses)
+                where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clauses_str})")
 
-            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p {player_where_clause} ORDER BY name LIMIT ? OFFSET ? "
 
-            players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p {where_clause} LIMIT ? OFFSET ?"
-
+            fc_where_clause = ""
+            fc_where_clauses = []
+            fc_variable_parameters = []
+            # for player search, we want to return only the FCs with matching game and/or fc that we typed in
+            if filter.detailed and filter.matching_fcs_only:
+                if filter.game is not None:
+                    fc_where_clauses.append("game = ?")
+                    fc_variable_parameters.append(filter.game)
+                if filter.friend_code:
+                    fc_where_clauses.append("fc LIKE ?")
+                    fc_variable_parameters.append(f"%{filter.friend_code}%")
+                if filter.name_or_fc:
+                    match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", filter.name_or_fc)
+                    if match:
+                        fc_where_clauses.append("fc LIKE ?")
+                        fc_variable_parameters.append(f"%{filter.name_or_fc}%")
+                fc_where_clause = "" if not len(fc_where_clauses) else f"AND {' AND '.join(fc_where_clauses)}"
             friend_codes_query = f"""SELECT id, fc, game, player_id, is_verified, is_primary, description FROM friend_codes f WHERE player_id IN (
-                SELECT p.id FROM players p {where_clause} LIMIT ? OFFSET ?
+                SELECT p.id FROM players p {player_where_clause} {fc_where_clause} LIMIT ? OFFSET ?
             )"""
 
-            count_query = f"SELECT COUNT (*) FROM (SELECT p.id FROM players p {where_clause})"
+            count_query = f"SELECT COUNT (*) FROM (SELECT p.id FROM players p {player_where_clause})"
 
             players: List[PlayerAndFriendCodes] = []
             friend_codes = {}
@@ -234,7 +253,7 @@ class ListPlayersCommand(Command[PlayerList]):
                 page_count = int(player_count / limit) + (1 if player_count % limit else 0)
 
             if filter.detailed is not None:
-                async with db.execute(friend_codes_query, (*variable_parameters, limit, offset)) as cursor:
+                async with db.execute(friend_codes_query, (*(variable_parameters + fc_variable_parameters), limit, offset)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         id, fc, game, player_id, is_verified, is_primary, description = row

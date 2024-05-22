@@ -8,6 +8,9 @@
   import type { Tournament } from '$lib/types/tournament';
   import { setSeriesPerms, addPermission, permissions } from '$lib/util/util';
   import TournamentRegisterPanel from '$lib/components/tournaments/registration/TournamentRegisterPanel.svelte';
+  import PlacementsDisplay from '$lib/components/tournaments/placements/PlacementsDisplay.svelte';
+  import Accordion from '$lib/components/common/Accordion.svelte';
+  import AccordionItem from '$lib/components/common/AccordionItem.svelte';
 
   let id = 0;
 
@@ -36,11 +39,18 @@
 {#if tournament}
   <TournamentInfo {tournament} />
   <Section header="Tournament Details">
-    <MarkdownBox content={tournament.description} />
+    <Accordion>
+      <AccordionItem open>
+        <span slot="header">Tournament Description</span>
+        <MarkdownBox content={tournament.description} />
+      </AccordionItem>
+      <AccordionItem open>
+        <span slot="header">Tournament Rules</span>
+        <MarkdownBox content={tournament.ruleset} />
+      </AccordionItem>
+    </Accordion>
   </Section>
-  <Section header="Tournament Rules">
-    <MarkdownBox content={tournament.ruleset} />
-  </Section>
+  <PlacementsDisplay {tournament}/>
   <TournamentRegisterPanel {tournament} />
   <Section header="Tournament Registrations">
     <TournamentRegistrations {tournament} />

@@ -6,6 +6,7 @@
   import { page } from '$app/stores';
   import type { CreateTournament } from '$lib/types/tournaments/create/create-tournament';
   import TournamentDetailsForm from './TournamentDetailsForm.svelte';
+  import Button from '../common/buttons/Button.svelte';
 
   export let tournament_id: number | null = null;
   export let template_id: number | null = null;
@@ -158,7 +159,7 @@
     <Section header={is_edit ? 'Edit Tournament' : 'Create Tournament'} />
     <TournamentDetailsForm {data} update_function={updateData} {is_edit} {series_restrict} />
     <Section header="Submit">
-      <button type="submit">{is_edit ? 'Edit Tournament' : 'Create Tournament'}</button>
+      <Button type="submit">{is_edit ? 'Edit Tournament' : 'Create Tournament'}</Button>
     </Section>
   </form>
 {/if}

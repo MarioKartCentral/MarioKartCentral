@@ -1,4 +1,6 @@
 <script lang="ts">
+  import CancelButton from "./buttons/CancelButton.svelte";
+
   let dialog: HTMLDialogElement;
   export let header: string | null = null;
 
@@ -16,14 +18,14 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="outer" on:click={close}>
     <div class="container" on:click|stopPropagation>
-      <div class="header">
+      <div class="header bg-primary-800">
         <div>
           {#if header}
             <h3>{header}</h3>
           {/if}
         </div>
         <div class="exit">
-          <button on:click={close}>X</button>
+          <CancelButton on:click={close}/>
         </div>
       </div>
       <div class="content">
@@ -34,6 +36,10 @@
 </dialog>
 
 <style>
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
   dialog {
     position: fixed;
     width: 100%;
@@ -63,7 +69,6 @@
   }
   .header {
     display: grid;
-    background-color: rgba(0, 128, 0, 0.6);
     padding: 15px;
     min-height: 50px;
   }
@@ -73,11 +78,5 @@
   .exit {
     position: absolute;
     right: 5%;
-  }
-  button {
-    background-color: transparent;
-    outline: none;
-    border: none;
-    cursor: pointer;
   }
 </style>

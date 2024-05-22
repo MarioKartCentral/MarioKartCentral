@@ -86,6 +86,7 @@ class PlayerFilter:
     detailed: bool | None = None
     page: int | None = None
     squad_id: int | None = None
+    matching_fcs_only: bool = False
 
 @dataclass
 class PlayerBanRequestData:

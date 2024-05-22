@@ -6,6 +6,10 @@
   import Dialog from '$lib/components/common/Dialog.svelte';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
   import type { FriendCode } from '$lib/types/friend-code';
+    import Button from '$lib/components/common/buttons/Button.svelte';
+    import TagBadge from '$lib/components/badges/TagBadge.svelte';
+    import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
+    import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
@@ -116,7 +120,7 @@
           ({all_toggle_on ? 'hide all' : 'show all'})
         </button>
       </th>
-      <th>Accept/Decline</th>
+      <th>Accept?</th>
     </tr>
   </thead>
   <tbody>
@@ -124,7 +128,9 @@
       <tr class="row-{i % 2}">
         <td>{squad.id}</td>
         {#if tournament.squad_tag_required}
-          <td>{squad.tag}</td>
+          <td>
+            <TagBadge tag={squad.tag} color={squad.color}/>
+          </td>
         {/if}
         {#if tournament.squad_name_required}
           <td>{squad.name}</td>
@@ -136,8 +142,9 @@
           </button></td
         >
         <td>
-          <button on:click={() => inviteDialog(squad)}>Accept</button>
-          <button on:click={() => declineInvite(squad)}>Decline</button>
+          <ConfirmButton on:click={() => inviteDialog(squad)}/>
+          <CancelButton on:click={() => declineInvite(squad)}/>
+
         </td>
       </tr>
       {#if squad_data[squad.id].display_players}
@@ -164,8 +171,8 @@
     {/if}
     <br />
     <div>
-      <button type="submit">Accept</button>
-      <button type="button" on:click={accept_dialog.close}>Cancel</button>
+      <Button type="submit">Accept</Button>
+      <Button type="button" on:click={accept_dialog.close}>Cancel</Button>
     </div>
   </form>
 </Dialog>

@@ -12,4 +12,4 @@ export const user = writable<UserInfo>({
   is_checked: false,
 });
 
-export const have_unread_notification = writable<boolean>(false);
+export const have_unread_notification = writable<number>(0);

@@ -176,7 +176,7 @@ type RootTranslation = {
 		 */
 		STATUS: string
 		/**
-		 * J​e​u
+		 * G​a​m​e
 		 */
 		GAME: string
 		/**
@@ -1753,7 +1753,7 @@ export type TranslationFunctions = {
 		 */
 		STATUS: () => LocalizedString
 		/**
-		 * Jeu
+		 * Game
 		 */
 		GAME: () => LocalizedString
 		/**

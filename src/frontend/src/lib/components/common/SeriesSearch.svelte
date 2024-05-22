@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import Table from './Table.svelte';
   import { createEventDispatcher } from 'svelte';
+  import CancelButton from './buttons/CancelButton.svelte';
 
   export let option: TournamentSeries | null = null;
   export let series_id: number | null = null;
@@ -72,7 +73,7 @@
     <div>
       {option.series_name}
       {#if !lock}
-        <button on:click={() => set_option(null)}>X</button>
+        <CancelButton on:click={() => set_option(null)}/>
       {/if}
     </div>
   {/if}
@@ -92,6 +93,7 @@
     max-height: 80px;
     overflow-y: scroll;
     background-color: black;
+    font-size: 1.5em;
   }
   tr {
     cursor: pointer;

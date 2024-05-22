@@ -306,15 +306,19 @@ class TournamentSoloPlacements(TableModel):
     player_id: int
     placement: int
     placement_description: str
+    placement_lower_bound: int | None
+    is_disqualified: bool
 
     @staticmethod
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS tournament_solo_placements(
             id INTEGER PRIMARY KEY,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            player_id INTEGER NOT NULL REFERENCES players(id),
-            placement INTEGER NOT NULL,
-            placement_description TEXT
+            player_id INTEGER NOT NULL REFERENCES tournament_players(id),
+            placement INTEGER,
+            placement_description TEXT,
+            placement_lower_bound INTEGER,
+            is_disqualified BOOLEAN NOT NULL
         )"""
     
 @dataclass
@@ -324,6 +328,8 @@ class TournamentSquadPlacements(TableModel):
     squad_id: int
     placement: int
     placement_description: str
+    placement_lower_bound: int | None
+    is_disqualified: bool
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -331,8 +337,10 @@ class TournamentSquadPlacements(TableModel):
             id INTEGER PRIMARY KEY,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
             squad_id INTEGER NOT NULL REFERENCES tournament_squads(id),
-            placement INTEGER NOT NULL,
-            placement_description TEXT
+            placement INTEGER,
+            placement_description TEXT,
+            placement_lower_bound INTEGER,
+            is_disqualified BOOLEAN NOT NULL
         )"""
     
 @dataclass
@@ -536,16 +544,18 @@ class RosterInvite(TableModel):
     date: int
     roster_leave_id: int
     is_accepted: int
+    approval_status: str
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS roster_invites (
+        return """CREATE TABLE IF NOT EXISTS team_transfers (
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
-            roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
+            roster_id INTEGER REFERENCES team_rosters(id),
             date INTEGER NOT NULL,
             roster_leave_id INTEGER REFERENCES team_rosters(id),
-            is_accepted BOOLEAN NOT NULL
+            is_accepted BOOLEAN NOT NULL,
+            approval_status TEXT NOT NULL 
             )"""
 
 @dataclass

@@ -8,9 +8,19 @@
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
+  import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
 
   let teams: Team[] = [];
   let rosters: TeamRoster[] = [];
+
+  $: pending_teams = teams.filter((t) => t.approval_status === 'pending');
+  $: denied_teams = teams.filter((t) => t.approval_status === 'denied');
+  $: pending_rosters = rosters.filter((r) => r.approval_status === 'pending');
+  $: denied_rosters = rosters.filter((r) => r.approval_status === 'denied');
 
   onMount(async () => {
     const res = await fetch(`/api/registry/teams/unapprovedTeams`);
@@ -32,6 +42,10 @@
   };
 
   async function approveTeam(team: Team) {
+    let conf = window.confirm("Are you sure you would like to approve this team?");
+    if(!conf) {
+      return;
+    }
     const res = await fetch(`/api/registry/teams/${team.id}/approve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,6 +60,10 @@
   }
 
   async function denyTeam(team: Team) {
+    let conf = window.confirm("Are you sure you would like to deny this team?");
+    if(!conf) {
+      return;
+    }
     const res = await fetch(`/api/registry/teams/${team.id}/deny`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -60,6 +78,10 @@
   }
 
   async function approveRoster(roster: TeamRoster) {
+    let conf = window.confirm("Are you sure you would like to approve this roster?");
+    if(!conf) {
+      return;
+    }
     const res = await fetch(`/api/registry/teams/${roster.team_id}/approveRoster/${roster.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,6 +96,10 @@
   }
 
   async function denyRoster(roster: TeamRoster) {
+    let conf = window.confirm("Are you sure you would like to deny this roster?");
+    if(!conf) {
+      return;
+    }
     const res = await fetch(`/api/registry/teams/${roster.team_id}/denyRoster/${roster.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -90,119 +116,177 @@
 
 <PermissionCheck permission={permissions.manage_teams}>
   <Section header="Pending Teams">
+    {#if pending_teams.length}
     <Table>
       <col class="tag" />
       <col class="name" />
-      <col class="date" />
+      <col class="game-mode"/>
+      <col class="date mobile-hide" />
       <col class="approve" />
       <thead>
         <tr>
           <th>Tag</th>
           <th>Name</th>
-          <th>Date</th>
+          <th>Game/Mode</th>
+          <th class="mobile-hide">Date</th>
           <th>Approve?</th>
         </tr>
       </thead>
       <tbody>
-        {#each teams.filter((t) => t.approval_status === 'pending') as team, i}
+        {#each pending_teams as team, i}
           <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.tag}</a></td>
+            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+              <TagBadge tag={team.tag} color={team.color}/>
+            </a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
-            <td>{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
             <td>
-              <button class="check" on:click={() => approveTeam(team)}>✓</button>
-              <button class="x" on:click={() => denyTeam(team)}>X</button>
+              <GameBadge game={team.rosters[0].game}/>
+              <ModeBadge mode={team.rosters[0].mode}/>
+            </td>
+            <td class="mobile-hide">{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
+            <td>
+              <ConfirmButton on:click={() => approveTeam(team)}/>
+              <CancelButton on:click={() => denyTeam(team)}/>
             </td>
           </tr>
         {/each}
       </tbody>
     </Table>
+    {:else}
+      No pending teams.
+    {/if}
+    
   </Section>
   <Section header="Pending Rosters">
+    {#if pending_rosters.length}
     <Table>
       <col class="tag" />
       <col class="name" />
-      <col class="date" />
+      <col class="game-mode"/>
+      <col class="date mobile-hide" />
       <col class="approve" />
       <thead>
         <tr>
           <th>Tag</th>
           <th>Name</th>
-          <th>Date</th>
+          <th>Game/Mode</th>
+          <th class="mobile-hide">Date</th>
           <th>Approve?</th>
         </tr>
       </thead>
       <tbody>
-        {#each rosters.filter((r) => r.approval_status === 'pending') as roster, i}
+        {#each pending_rosters as roster, i}
           <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.tag}</a></td>
+            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
+              <TagBadge tag={roster.tag} color={roster.color}/>
+            </a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
-            <td>{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
             <td>
-              <button class="check" on:click={() => approveRoster(roster)}>✓</button>
-              <button class="x" on:click={() => denyRoster(roster)}>X</button>
+              <GameBadge game={roster.game}/>
+              <ModeBadge mode={roster.mode}/>
+            </td>
+            <td class="mobile-hide">{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
+            <td>
+              <ConfirmButton on:click={() => approveRoster(roster)}/>
+              <CancelButton on:click={() => denyRoster(roster)}/>
             </td>
           </tr>
         {/each}
       </tbody>
     </Table>
+    {:else}
+    No pending rosters.
+    {/if}
+    
   </Section>
   <Section header="Denied Teams">
+    {#if denied_teams.length}
     <Table>
       <col class="tag" />
       <col class="name" />
-      <col class="date" />
+      <col class="game-mode"/>
+      <col class="date mobile-hide" />
       <thead>
         <tr>
           <th>Tag</th>
           <th>Name</th>
-          <th>Date</th>
+          <th>Game/Mode</th>
+          <th class="mobile-hide">Date</th>
         </tr>
       </thead>
       <tbody>
-        {#each teams.filter((t) => t.approval_status === 'denied') as team, i}
+        {#each denied_teams as team, i}
           <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.tag}</a></td>
+            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+              <TagBadge tag={team.tag} color={team.color}/>
+            </a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
-            <td>{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
+            <td>
+              <GameBadge game={team.rosters[0].game}/>
+              <ModeBadge mode={team.rosters[0].mode}/>
+            </td>
+            <td class="mobile-hide">{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
           </tr>
         {/each}
       </tbody>
     </Table>
+    {:else}
+    No denied teams.
+    {/if}
+    
   </Section>
   <Section header="Denied Rosters">
+    {#if denied_rosters.length}
     <Table>
       <col class="tag" />
       <col class="name" />
-      <col class="date" />
+      <col class="game-mode"/>
+      <col class="date mobile-hide" />
       <thead>
         <tr>
           <th>Tag</th>
           <th>Name</th>
-          <th>Date</th>
+          <th>Game/Mode</th>
+          <th class="mobile-hide">Date</th>
         </tr>
       </thead>
       <tbody>
-        {#each rosters.filter((t) => t.approval_status === 'denied') as roster, i}
+        {#each denied_rosters as roster, i}
           <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.tag}</a></td>
+            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
+              <TagBadge tag={roster.tag} color={roster.color}/>
+            </a></td>
             <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
-            <td>{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
+            <td>
+              <GameBadge game={roster.game}/>
+              <ModeBadge mode={roster.mode}/>
+            </td>
+            <td class="mobile-hide">{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
           </tr>
         {/each}
       </tbody>
     </Table>
+    {:else}
+    No denied rosters.
+    {/if}
+    
   </Section>
 </PermissionCheck>
 
 <style>
-  button {
-    min-width: 50px;
+  col.tag {
+    width: 10%;
   }
-  .check {
-    background-color: green;
+  col.name {
+    width: 25%;
   }
-  .x {
-    background-color: red;
+  col.game-mode {
+    width: 25%;
+  }
+  col.date {
+    width: 15%;
+  }
+  col.approve {
+    width: 25%;
   }
 </style>

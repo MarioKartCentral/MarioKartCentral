@@ -1,9 +1,16 @@
 <script lang="ts">
+    import ColorSelect from '$lib/components/common/ColorSelect.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { RosterPlayer } from '$lib/types/roster-player';
   import type { TeamRoster } from '$lib/types/team-roster';
   import type { Tournament } from '$lib/types/tournament';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { onMount } from 'svelte';
+  import { check_registrations_open } from '$lib/util/util';
+    import TagBadge from '$lib/components/badges/TagBadge.svelte';
+    import Flag from '$lib/components/common/Flag.svelte';
+    import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+    import PrimaryBadge from '$lib/components/badges/PrimaryBadge.svelte';
 
   export let tournament: Tournament;
   export let player: PlayerInfo;
@@ -116,9 +123,13 @@
       alert(`Registration failed: ${result['title']}`);
     }
   }
+
 </script>
 
-{#if rosters.length}
+{#if check_registrations_open(tournament) && rosters.length}
+<div class="container">
+
+
   <div>
     <b>Register Team</b>
   </div>
@@ -132,30 +143,32 @@
       {/each}
     </select>
   {/if}
-
   {#if selected_rosters.length}
     <div>
       <b>Selected Rosters:</b>
     </div>
     {#each selected_rosters as roster, i}
       <div>
+        <TagBadge tag={roster.tag} color={roster.color}/>
         {roster.name}
         {#if i === 0}
-          (Primary)
+          <PrimaryBadge/>
+          <!-- (Primary) -->
         {/if}
-        <button on:click={() => removeRoster(roster)}>X</button>
+        <CancelButton on:click={() => removeRoster(roster)}/>
       </div>
     {/each}
     <div>
       <div>Squad Color</div>
-      <input type="number" min="1" bind:value={squad_color} />
+      <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
     </div>
     {#if captain_player}
       <div><b>Captain:</b></div>
       <div>
-        {captain_player.name}
+          <Flag country_code={captain_player.country_code}/>
+          {captain_player.name}
         {#if captain_player.player_id !== player.id}
-          <button on:click={() => (captain_player = null)}> X </button>
+          <CancelButton on:click={() => (captain_player = null)}/>
         {/if}
       </div>
       {#if representatives.length}
@@ -164,8 +177,9 @@
         </div>
         {#each representatives as player}
           <div>
+            <Flag country_code={captain_player.country_code}/>
             {player.name}
-            <button on:click={() => removeRep(player)}> X </button>
+            <CancelButton on:click={() => removeRep(player)}/>
           </div>
         {/each}
       {/if}
@@ -181,7 +195,7 @@
           {/each}
         </select>
       {:else}
-        <button on:click={register}>Register</button>
+        <Button on:click={register}>Register</Button>
       {/if}
     {:else}
       <div>Select captain</div>
@@ -194,4 +208,11 @@
       </div>
     {/if}
   {/if}
+</div>
 {/if}
+
+<style>
+  .container {
+    margin: 20px 0;
+  }
+</style>

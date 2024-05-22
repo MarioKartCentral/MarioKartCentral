@@ -1,9 +1,10 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import { goto } from '$app/navigation';
-  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
   import { colors } from '$lib/util/util';
+    import Button from '$lib/components/common/buttons/Button.svelte';
 
   const valid_games: { [key: string]: string } = {
     mk8dx: 'Mario Kart 8 Deluxe',
@@ -29,6 +30,7 @@
   let game = 'mk8dx';
   let mode = '150cc';
   let color = { id: 1 };
+  let tag = "";
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
@@ -82,23 +84,23 @@
     <input name="name" type="text" required />
     <br />
     <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
-    <input name="tag" type="text" required />
+    <input name="tag" type="text" bind:value={tag} required maxlength=5/>
   </Section>
   <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
     <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
     <select name="color" bind:value={color.id}>
       {#each colors as color, i}
-        <option value={i+1}>{$LL.COLORS[color.label]()}</option>
+        <option value={i}>{$LL.COLORS[color.label]()}</option>
       {/each}
     </select>
-    <Tag team={{ color: color.id, tag: ' ' }} />
+    <TagBadge tag={tag} color={color.id}/>
     <br />
     <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
     <input name="logo" type="text" />
   </Section>
   <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
-    <label for="language">{$LL.LANGUAGE()}</label>
-    <select name="language">
+    <label for="language">{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</label>
+    <select name="language" value="en-us">
       {#each languages as language}
         <option value={language.value}>{$LL.LANGUAGES[language.getLang]()}</option>
       {/each}
@@ -115,6 +117,6 @@
     </select>
   </Section>
   <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
-    <button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</button>
+    <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
   </Section>
 </form>

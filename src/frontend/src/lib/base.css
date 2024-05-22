@@ -47,3 +47,10 @@ body {
   background-color: #141414;
   color: white;
 }
+input,
+textarea,
+select,
+input[type] {
+  color: black;
+  padding: 5px;
+}

@@ -10,6 +10,7 @@
   import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
   import MyRegistration from './MyRegistration.svelte';
   import TeamTournamentRegister from './TeamTournamentRegister.svelte';
+  import { check_registrations_open } from '$lib/util/util';
 
   export let tournament: Tournament;
 
@@ -24,22 +25,6 @@
     return fcs.filter((fc) => fc.game === game);
   }
 
-  function check_registrations_open() {
-    if (!tournament.registrations_open) {
-      return false;
-    }
-    let registration_deadline: Date | null = tournament.registration_deadline
-      ? new Date(tournament.registration_deadline * 1000)
-      : null;
-    if (!registration_deadline) {
-      return true;
-    }
-    let now = new Date().getTime();
-    if (registration_deadline.getTime() < now) {
-      return false;
-    }
-    return true;
-  }
 
   onMount(async () => {
     const res = await fetch(`/api/tournaments/${tournament.id}/myRegistration`);
@@ -64,7 +49,7 @@
       {/if}
     {/if}
     {#if !registration.player}
-      {#if !check_registrations_open()}
+      {#if !check_registrations_open(tournament)}
         Registration for this tournament is closed.
       {:else if user_info.player}
         <div>Want to register for this tournament? Just fill out your registration details below!</div>

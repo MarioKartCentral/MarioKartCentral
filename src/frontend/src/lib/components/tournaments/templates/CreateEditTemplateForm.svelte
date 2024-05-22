@@ -8,6 +8,7 @@
   import type { TournamentTemplate } from '$lib/types/tournaments/create/tournament-template';
   import { series_permissions } from '$lib/util/util';
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let template_id: number | null = null;
   export let is_edit = false;
@@ -132,9 +133,9 @@
       </Section>
       <TournamentDetailsForm {data} update_function={updateData} is_template={true} {series_restrict} />
       <Section header="Submit">
-        <button type="submit">
+        <Button type="submit">
           {is_edit ? 'Edit Template' : 'Create Template'}
-        </button>
+        </Button>
       </Section>
     </form>
   </SeriesPermissionCheck>

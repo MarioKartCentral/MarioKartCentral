@@ -4,7 +4,7 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import RecruitingBadge from '$lib/components/badges/RecruitingBadge.svelte'
-  import Tag from '$lib/components/registry/teams/Tag.svelte';  
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';  
   import LL from '$i18n/i18n-svelte';
 
   export let team: Team;
@@ -29,7 +29,7 @@
     {#each team.rosters as roster, i}
       <tr class="row-{i % 2}">
         <td>
-          <Tag {team} />
+          <TagBadge tag={team.tag} color={team.color} />
         </td>
         <td>
           {roster.name}

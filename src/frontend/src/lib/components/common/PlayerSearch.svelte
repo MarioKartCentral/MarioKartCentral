@@ -3,6 +3,9 @@
   import { createEventDispatcher } from 'svelte';
   import Table from './Table.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Flag from './Flag.svelte';
+  import { UserAddSolid } from 'flowbite-svelte-icons';
+  import CancelButton from './buttons/CancelButton.svelte';
 
   export let player: PlayerInfo | null = null;
   export let game: string | null = null;
@@ -26,7 +29,7 @@
     const name_var = query ? `&name_or_fc=${query}` : ``;
     const game_var = game ? `&game=${game}` : ``;
     const squad_var = squad_id ? `&squad_id=${squad_id}` : ``;
-    const url = `/api/registry/players?detailed=true${name_var}${game_var}${squad_var}`;
+    const url = `/api/registry/players?detailed=true&matching_fcs_only=true${name_var}${game_var}${squad_var}`;
     console.log(url);
     const res = await fetch(url);
     if (res.status === 200) {
@@ -48,64 +51,81 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
   {#if !player}
-    <input placeholder={$LL.TEAM_EDIT.SEARCH_FOR_PLAYERS()} bind:value={query} on:input={handle_search} />
+    <input type="search" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} bind:value={query} on:input={handle_search} />
     {#if show_results}
-      <div class="table">
-        <Table show_padding={false}>
-          <col class="country" />
-          <col class="name" />
-          <col class="fc" />
-          {#each results as result}
-            <tr on:click={() => set_option(result)}>
-              <td>
-                {result.country_code}
-              </td>
-              <td>
-                {result.name}
-              </td>
-              <td>
-                {#if result.friend_codes.length}
-                  {result.friend_codes[0].fc}
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        </Table>
+      <div class="table-outer">
+        <div class="table-inner">
+          <Table show_padding={false}>
+            <col class="country" />
+            <col class="name" />
+            <col class="mobile-hide fc" />
+            <col class="select"/>
+            <tbody>
+              {#each results as result}
+                <tr on:click={() => set_option(result)}>
+                  <td>
+                    <Flag country_code={result.country_code}/>
+                  </td>
+                  <td>
+                    {result.name}
+                  </td>
+                  <td class="mobile-hide">
+                    {#if result.friend_codes.length}
+                      {result.friend_codes[0].fc}
+                    {/if}
+                  </td>
+                  <td>
+                    <UserAddSolid size="lg"/>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+            
+          </Table>
+        </div>
+        
       </div>
     {/if}
   {:else}
     <div>
+      <Flag country_code={player.country_code}/>
       {player.name}
-      <button on:click={() => set_option(null)}>X</button>
+      <CancelButton on:click={() => set_option(null)}/>
     </div>
   {/if}
 </div>
 
 <style>
   .container {
-    width: 40%;
+    max-width: 400px;
     position: relative;
   }
   input {
     width: 100%;
   }
-  div.table {
+  div.table-outer {
     position: absolute;
     width: 100%;
-    max-height: 80px;
-    overflow-y: scroll;
     background-color: black;
+    z-index: 1;
+  }
+  div.table-inner {
+    max-height: 100px;
+    overflow-y: scroll;
   }
   tr {
     cursor: pointer;
   }
   col.country {
-    width: 10%;
+    width: 15%;
   }
   col.name {
-    width: 50%;
+    width: 30%;
   }
   col.fc {
     width: 40%;
+  }
+  col.select {
+    width: 15%;
   }
 </style>

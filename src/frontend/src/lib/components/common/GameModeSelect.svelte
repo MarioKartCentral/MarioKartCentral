@@ -1,49 +1,71 @@
 <script lang="ts">
-  import { valid_games, valid_modes, mode_names } from '$lib/util/util';
+  import { valid_modes, mode_names } from '$lib/util/util';
   import { createEventDispatcher } from 'svelte';
+  import GameSelect from './GameSelect.svelte';
 
-  export let game = 'mk8dx';
-  export let mode = '150cc';
+  export let game: string | null = null;
+  export let mode: string | null = null;
   export let disabled = false;
+  export let flex = false;
+  export let required = false;
+  export let all_option = false;
+  export let hide_labels = false;
+  export let inline = false;
 
   const dispatch = createEventDispatcher();
 </script>
 
-<div class="option">
-  <div>
-    <label for="game">Game</label>
-  </div>
-  <div>
-    <select
-      name="game"
-      bind:value={game}
-      on:change={() => {
+<div class={inline ? "flex gap" : ""}>
+  <div class="option">
+    <GameSelect bind:game={game} on:change={() => {
+      if(game) {
         [mode] = valid_modes[game];
-        dispatch('change');
-      }}
-      {disabled}
-    >
-      {#each Object.keys(valid_games) as game}
-        <option value={game}>{valid_games[game]}</option>
-      {/each}
-    </select>
+      }
+      else {
+        mode = null;
+      }
+      dispatch('change');
+    }} {disabled} {flex} {required} {all_option} {hide_labels}/>
+  </div>
+  
+  <div class="option {flex ? 'flex' : ''}">
+    {#if !hide_labels}
+      <div>
+        <label for="mode">Mode</label>
+      </div>
+    {/if}
+    <div>
+      <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled} {required}>
+        {#if all_option}
+          <option value={null} selected>All Modes</option>
+        {:else}
+          <option value={null} disabled selected>Select a mode...</option>
+        {/if}
+        {#if game}
+          {#each valid_modes[game] as mode}
+            <option value={mode}>{mode_names[mode]}</option>
+          {/each}
+        {/if}
+        
+      </select>
+    </div>
   </div>
 </div>
-<div class="option">
-  <div>
-    <label for="mode">Mode</label>
-  </div>
-  <div>
-    <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled}>
-      {#each valid_modes[game] as mode}
-        <option value={mode}>{mode_names[mode]}</option>
-      {/each}
-    </select>
-  </div>
-</div>
+
 
 <style>
   .option {
     margin-bottom: 10px;
+  }
+  .flex {
+    display: flex;
+    align-items: center;
+  }
+  select {
+    width: 200px;
+    margin-right: 10px;
+  }
+  .gap {
+    gap: 5px;
   }
 </style>

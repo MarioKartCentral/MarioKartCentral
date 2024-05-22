@@ -6,7 +6,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import LinkButton from '$lib/components/common/LinkButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let series_id: number | null = null;
   export let is_edit = false;
@@ -80,7 +80,7 @@
   <Section header={is_edit ? 'Edit Tournament Series' : 'Create Tournament Series'}>
     <div slot="header_content">
       {#if series_id}
-        <LinkButton href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</LinkButton>
+        <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
       {/if}
     </div>
     <div class="option">
@@ -192,7 +192,7 @@
     </div>
   </Section>
   <Section header="Submit">
-    <button type="submit">{is_edit ? 'Edit Series' : 'Create Series'}</button>
+    <Button type="submit">{is_edit ? 'Edit Series' : 'Create Series'}</Button>
   </Section>
 </form>
 

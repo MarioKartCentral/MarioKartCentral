@@ -3,7 +3,8 @@
   import logo from '$lib/assets/logo.png';
   import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-  import Tag from '$lib/components/registry/teams/Tag.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import { Avatar } from 'flowbite-svelte';
 
   export let team: Team;
 
@@ -21,12 +22,12 @@
 </script>
 
 <div class="wrapper">
-  <div>
-    <img class="avatar" src={avatar_url} alt={team.name} />
+  <div class="avatar">
+    <Avatar size="xl" src={avatar_url} border alt={team.name}/>
   </div>
   <div class="team_details">
     <div class="tag">
-      <Tag {team} />
+      <TagBadge tag={team.tag} color={team.color}/>
     </div>
     <div class="name">
       <b>{team.name}</b>
@@ -55,21 +56,22 @@
 
 <style>
   div.wrapper {
-    display: inline-grid;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
   }
-  img.avatar {
-    width: 150px;
-    height: 150px;
-    margin: 10px;
-    border: 5px white solid;
-    border-radius: 50%;
-    object-fit: cover;
-  }
   div.team_details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     grid-column-start: 2;
+    @media(min-width:800px) {
+      justify-content: left;
+    }
   }
   div.tag {
     font-size: 2em;
@@ -78,6 +80,18 @@
     font-size: 1.5em;
   }
   div.about_me {
+    display: flex;
+    align-self: flex-start;
     grid-column-start: 3;
+    justify-content: center;
+    @media(min-width: 800px) {
+      justify-content: left;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+  div.avatar { 
+    min-width: 150px;
+    margin-bottom: 20px;
   }
 </style>

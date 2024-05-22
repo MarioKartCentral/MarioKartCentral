@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getContext } from 'svelte';
 import type { Color } from '$lib/types/colors';
+import type { Tournament } from '$lib/types/tournament';
+import type { TournamentSquad } from '$lib/types/tournament-squad';
+import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
+import type { PlacementOrganizer } from '$lib/types/placement-organizer';
 
 export function addPermission(permission: string) {
   const ctx: any = getContext('page-init');
@@ -15,6 +19,70 @@ export function setTeamPerms() {
 export function setSeriesPerms() {
   const ctx: any = getContext('page-init');
   ctx.checkSeriesPerms();
+}
+
+export function check_registrations_open(tournament: Tournament) {
+  if (!tournament.registrations_open) {
+    return false;
+  }
+  const registration_deadline: Date | null = tournament.registration_deadline
+    ? new Date(tournament.registration_deadline * 1000)
+    : null;
+  if (!registration_deadline) {
+    return true;
+  }
+  const now = new Date().getTime();
+  if (registration_deadline.getTime() < now) {
+    return false;
+  }
+  return true;
+}
+
+export async function unregister(
+  registration: MyTournamentRegistration,
+  tournament: Tournament,
+  squad: TournamentSquad | null = null,
+) {
+  if (!registration.player) {
+    return;
+  }
+  if (registration.player.is_squad_captain && squad && squad.players.length > 1) {
+    alert('Please unregister this squad or set another player as captain before unregistering for this tournament');
+    return;
+  }
+  const conf = window.confirm('Are you sure you would like to unregister for this tournament?');
+  if (!conf) {
+    return;
+  }
+  const payload = {
+    squad_id: registration.player.squad_id,
+  };
+  console.log(payload);
+  const endpoint = `/api/tournaments/${tournament.id}/unregister`;
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const result = await response.json();
+  if (response.status < 300) {
+    window.location.reload();
+  } else {
+    alert(`Failed to unregister: ${result['title']}`);
+  }
+}
+
+export function sort_placement_list(a: PlacementOrganizer, b: PlacementOrganizer) {
+  if (a.placement === b.placement) {
+    return 0;
+  }
+  if (a.is_disqualified || a.placement === null) {
+    return 1;
+  }
+  if (b.is_disqualified || b.placement === null) {
+    return -1;
+  }
+  return a.placement < b.placement ? -1 : 1;
 }
 
 export const permissions = {
