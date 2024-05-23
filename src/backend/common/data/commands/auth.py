@@ -87,7 +87,7 @@ class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], li
                 FROM user_roles ur
                 JOIN role_permissions rp ON ur.role_id = rp.role_id
                 JOIN permissions p ON rp.permission_id = p.id 
-                WHERE ur.user_id = ? AND p.name IN ({','.join([f"?" for p in self.permissions])})
+                WHERE ur.user_id = ? AND p.name IN ({','.join([f"?" for _ in self.permissions])})
                 """, (self.user_id, *self.permissions)) as cursor:
                 rows = await cursor.fetchall()
                 valid_perms = [row[0] for row in rows]

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *

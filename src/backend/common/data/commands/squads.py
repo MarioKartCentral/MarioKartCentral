@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Iterable
 from common.auth import team_permissions
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails, TournamentPlayerDetails
+from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails
 
 
 @save_to_command_log
@@ -24,7 +24,7 @@ class CreateSquadCommand(Command[None]):
     admin: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
-        timestamp = int(datetime.utcnow().timestamp())
+        timestamp = int(datetime.now(timezone.utc).timestamp())
         is_registered = True
         is_invite = False
         if len(set(self.roster_ids)) < len(self.roster_ids):
@@ -226,7 +226,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 if not squad_row:
                     raise Problem("Squad not found", status=404)
                 squad_id, name, tag, color, timestamp, is_registered = squad_row
-            async with db.execute("""SELECT t.player_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
+            async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id,
                                     p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
@@ -238,8 +238,8 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 player_dict: dict[int, SquadPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
                 fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
-                    player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, player_name, country, discord_id = row
-                    curr_player = SquadPlayerDetails(player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
+                    reg_id, player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, player_name, country, discord_id = row
+                    curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
                         player_name, country, discord_id, [], is_squad_captain, is_invite)
                     players.append(curr_player)
 

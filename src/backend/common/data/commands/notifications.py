@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from common.data.commands import Command, save_to_command_log
@@ -134,7 +134,7 @@ class DispatchNotificationsCommand(Command[int]):
             await db.commit()
 
             user_ids = self.user_ids
-            created_date = int(datetime.utcnow().timestamp())
+            created_date = int(datetime.now(timezone.utc).timestamp())
             content_is_shared = int(len(user_ids) > 1)
             row_args = [(user_id, self.notification_type, content_id, created_date, content_is_shared) for user_id in user_ids]
 

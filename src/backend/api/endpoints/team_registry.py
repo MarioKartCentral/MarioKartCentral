@@ -243,7 +243,7 @@ async def edit_team_member_info(request: Request, body: EditTeamMemberInfoReques
 @bind_request_body(KickPlayerRequestData)
 @require_team_permission(team_permissions.MANAGE_ROSTERS)
 async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
-    timestamp = int(datetime.utcnow().timestamp())
+    timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp)
     await handle(command)
     return JSONResponse({})
@@ -251,7 +251,7 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
 @bind_request_body(KickPlayerRequestData)
 @require_permission(permissions.MANAGE_TEAM_ROSTERS)
 async def mod_kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
-    timestamp = int(datetime.utcnow().timestamp())
+    timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp)
     await handle(command)
     return JSONResponse({})

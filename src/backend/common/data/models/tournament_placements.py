@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 from common.data.models import TournamentPlayerDetails, TournamentSquadDetails
 
 @dataclass

@@ -13,7 +13,7 @@ PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 class SchemaGenerator(BaseSchemaGenerator):
     @staticmethod
-    def type_to_openapi(typ: type, is_nullable=False) -> dict[str, Any]:
+    def type_to_openapi(typ: type[Any], is_nullable=False) -> dict[str, Any]:
         if typ == str:
             type_str = "string"
         elif typ == int:
@@ -56,7 +56,7 @@ class SchemaGenerator(BaseSchemaGenerator):
         }
         schema.setdefault("paths", {})
 
-        all_types: list[type] = []
+        all_types: list[type[Any]] = []
         endpoints = self.get_endpoints(routes)
         for endpoint in endpoints:
             path_data: dict[str, Any] = {}

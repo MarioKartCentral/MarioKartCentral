@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from typing import List
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
@@ -40,7 +41,7 @@ class CreateTeamCommand(Command[None]):
                     assert row is not None
                     if row[0] > 0:
                         raise Problem('An existing team already has this name or tag', status=400)
-            creation_date = int(datetime.utcnow().timestamp())
+            creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.approval_status,
                 self.is_historical)) as cursor:
@@ -243,11 +244,11 @@ class RequestEditTeamCommand(Command[None]):
                     raise Problem("Cannot request to edit team if it is not approved", status=400)
             # check if this team has made a request in the last 90 days
             async with db.execute("SELECT date FROM team_edit_requests WHERE team_id = ? AND date > ? AND approval_status != 'denied' LIMIT 1",
-                                  (self.team_id, (datetime.utcnow()-timedelta(minutes=90)).timestamp())) as cursor:
+                                  (self.team_id, (datetime.now(timezone.utc)-timedelta(minutes=90)).timestamp())) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Roster has requested name/tag change in the last 90 days", status=400)
-            creation_date = int(datetime.utcnow().timestamp())
+            creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO team_edit_requests(team_id, name, tag, date, approval_status) VALUES(?, ?, ?, ?, ?)",
                             (self.team_id, self.name, self.tag, creation_date, "pending"))
             await db.commit()
@@ -319,7 +320,7 @@ class CreateRosterCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row is not None:
                     raise Problem('Only one roster per game/mode may use the same name', status=400)
-            creation_date = int(datetime.utcnow().timestamp())
+            creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             await db.commit()
@@ -418,7 +419,7 @@ class InvitePlayerCommand(Command[None]):
                 num_invites = row[0]
                 if num_invites > 0:
                     raise Problem("Player has already been invited", status=400)
-            creation_date = int(datetime.utcnow().timestamp())
+            creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False, "pending"))
             await db.commit()
 
@@ -511,7 +512,7 @@ class LeaveRosterCommand(Command[None]):
                 if row is None:
                     raise Problem("Player is not currently on this roster", status=400)
                 team_member_id = row[0]
-            leave_date = int(datetime.utcnow().timestamp())
+            leave_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
             # players leaving a roster goes into the transfer history too
             await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
@@ -540,7 +541,7 @@ class ApproveTransferCommand(Command[None]):
                     team_member_id = row[0]
             else:
                 team_member_id = None
-            curr_time = int(datetime.utcnow().timestamp())
+            curr_time = int(datetime.now(timezone.utc).timestamp())
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
             await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (roster_id, player_id, curr_time))
@@ -632,8 +633,8 @@ class ViewTransfersCommand(Command[TransferList]):
         if filter.page is not None:
             offset = (filter.page - 1) * limit
 
-        where_clauses = []
-        variable_parameters = []
+        where_clauses: list[str] = []
+        variable_parameters: list[Any] = []
         if filter.game is not None:
             where_clauses.append("(r1.game = ? OR r2.game = ?)")
             variable_parameters.extend([filter.game, filter.game])
@@ -781,7 +782,7 @@ class RequestEditRosterCommand(Command[None]):
         async with db_wrapper.connect() as db:
             # check if this roster has made a request in the last 90 days
             async with db.execute("SELECT date FROM roster_edit_requests WHERE roster_id = ? AND date > ? AND approval_status != 'denied' LIMIT 1",
-                                  (self.roster_id, (datetime.utcnow()-timedelta(minutes=90)).timestamp())) as cursor:
+                                  (self.roster_id, (datetime.now(timezone.utc)-timedelta(minutes=90)).timestamp())) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Roster has requested name/tag change in the last 90 days", status=400)
@@ -805,7 +806,7 @@ class RequestEditRosterCommand(Command[None]):
                     row = await cursor.fetchone()
                     if row:
                         raise Problem("Another roster for this game and mode has the same name as the specified name", status=400)
-            creation_date = int(datetime.utcnow().timestamp())
+            creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO roster_edit_requests(roster_id, name, tag, date, approval_status) VALUES (?, ?, ?, ?, ?)", 
                              (self.roster_id, name, tag, creation_date, "pending"))
             await db.commit()
@@ -939,7 +940,7 @@ class ForceTransferPlayerCommand(Command[None]):
                     team_member_id = row[0]
             else:
                 team_member_id = None
-            curr_time = int(datetime.utcnow().timestamp())
+            curr_time = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (self.roster_id, self.player_id, curr_time))
             await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
                              VALUES(?, ?, ?, ?, ?, ?)""", (self.player_id, self.roster_id, curr_time, self.roster_leave_id, True, "approved"))
@@ -1168,7 +1169,6 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         )"""
             variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id)
             rosters: list[TeamRoster] = []
-            roster_dict = {}
             async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
                                   tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag, t.color
                                   {rosters_query}""",
@@ -1181,7 +1181,6 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     roster_tag = roster_tag if roster_tag else team_tag
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
                                         creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
-                    roster_dict[roster.id] = roster.players
                     rosters.append(roster)
 
             # get players for our rosters
@@ -1196,5 +1195,4 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                 for row in rows:
                     player_id, name, country_code, is_banned, discord_id, roster_id = row
                     player = PartialPlayer(player_id, name, country_code, is_banned, discord_id, [])
-                    roster_dict[roster_id].append(player)
             return rosters

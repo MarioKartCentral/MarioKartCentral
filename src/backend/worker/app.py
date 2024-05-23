@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
@@ -21,7 +21,7 @@ class JobRunner:
                 raise
     
         self._longer_than_delay = False
-        self._last_run = datetime.utcnow()
+        self._last_run = datetime.now(timezone.utc)
         self._task = asyncio.create_task(run_with_error_handler())
 
     def tick(self):
@@ -30,7 +30,7 @@ class JobRunner:
             self.start()
             return
         
-        time_since_last_run = datetime.utcnow() - self._last_run
+        time_since_last_run = datetime.now(timezone.utc) - self._last_run
         if time_since_last_run >= self._job.delay:
             if self._task.done():
                 if self._longer_than_delay:

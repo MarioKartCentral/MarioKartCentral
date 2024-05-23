@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Literal
+from typing import Callable, List, Literal
 import re
 
 from aiosqlite import Connection
@@ -151,10 +151,10 @@ class ListPlayersCommand(Command[PlayerList]):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
 
-            where_clauses = []
-            fc_where_clauses = []
+            where_clauses: list[str] = []
+            fc_where_clauses: list[str] = []
 
-            variable_parameters = []
+            variable_parameters: list[Any] = []
             
             limit:int = 50
             offset:int = 0
@@ -212,7 +212,7 @@ class ListPlayersCommand(Command[PlayerList]):
 
             fc_where_clause = ""
             fc_where_clauses = []
-            fc_variable_parameters = []
+            fc_variable_parameters: list[Any] = []
             # for player search, we want to return only the FCs with matching game and/or fc that we typed in
             if filter.detailed and filter.matching_fcs_only:
                 if filter.game is not None:
@@ -234,7 +234,7 @@ class ListPlayersCommand(Command[PlayerList]):
             count_query = f"SELECT COUNT (*) FROM (SELECT p.id FROM players p {player_where_clause})"
 
             players: List[PlayerAndFriendCodes] = []
-            friend_codes = {}
+            friend_codes: dict[int, list[FriendCode]] = {}
 
             print(players_query)
             async with db.execute(players_query, (*variable_parameters, limit, offset)) as cursor:
@@ -249,8 +249,10 @@ class ListPlayersCommand(Command[PlayerList]):
             player_count: int = 0
             async with db.execute(count_query, variable_parameters) as cursor:
                 row = await cursor.fetchone()
+                assert row is not None
                 player_count = row[0]
-                page_count = int(player_count / limit) + (1 if player_count % limit else 0)
+
+            page_count = int(player_count / limit) + (1 if player_count % limit else 0)
 
             if filter.detailed is not None:
                 async with db.execute(friend_codes_query, (*(variable_parameters + fc_variable_parameters), limit, offset)) as cursor:
