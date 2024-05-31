@@ -1169,6 +1169,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         )"""
             variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id)
             rosters: list[TeamRoster] = []
+            roster_dict = {}
             async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
                                   tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag, t.color
                                   {rosters_query}""",
@@ -1181,10 +1182,11 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     roster_tag = roster_tag if roster_tag else team_tag
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
                                         creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
+                    roster_dict[roster.id] = roster.players
                     rosters.append(roster)
 
             # get players for our rosters
-            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, p.discord_id, m.roster_id
+            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, p.discord_id, m.roster_id, m.join_date
                                 FROM players p
                                 JOIN team_members m ON p.id = m.player_id
                                 WHERE m.roster_id IN (
@@ -1193,6 +1195,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                 )""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_banned, discord_id, roster_id = row
-                    player = PartialPlayer(player_id, name, country_code, is_banned, discord_id, [])
+                    player_id, name, country_code, is_banned, discord_id, roster_id, join_date = row
+                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, discord_id, join_date, [])
+                    roster_dict[roster_id].append(player)
             return rosters
