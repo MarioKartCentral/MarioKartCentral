@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from common.data.models.common import Game, GameMode
+from common.data.models import Game, GameMode, TournamentSoloPlacements
 
 @dataclass
 class TournamentDBFields():
@@ -122,14 +122,10 @@ class TournamentDataBasic(TournamentDataMinimal):
     teams_allowed: bool
     logo: str | None
     use_series_logo: bool
-    is_viewable: bool
-    is_public: bool
 
 @dataclass
-class TournamentList:
-    tournaments: list[TournamentDataBasic]
-    tournament_count: int
-    page_count: int
+class TournamentWithPlacements(TournamentDataBasic):
+    placements: list[TournamentSoloPlacements]
 
 @dataclass
 class TournamentWithPlacements(TournamentDataBasic):

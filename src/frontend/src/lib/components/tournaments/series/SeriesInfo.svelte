@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
+  import type { TournamentListItem } from '$lib/types/tournament-list-item';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import TypeBadge from '$lib/components/badges/TypeBadge.svelte';
