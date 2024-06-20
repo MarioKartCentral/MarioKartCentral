@@ -26,7 +26,7 @@
     <div><img src={tournament.logo} alt={tournament.tournament_name} /></div>
   {/if}
   {#if tournament.series_id != null}
-    <div>Series {tournament.series_id} - {tournament.series_name}</div>
+    <div><a href="/{$page.params.lang}/tournaments/series/details?id={tournament.id}">Series {tournament.series_id} - {tournament.series_name}</a></div>
     <div>{tournament.series_description}</div>
   {/if}
 </div>

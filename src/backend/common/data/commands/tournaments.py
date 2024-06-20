@@ -237,3 +237,34 @@ class CheckIfSquadTournament(Command[bool]):
                     raise Problem("Tournament not found", status=404)
                 is_squad = row[0]
                 return bool(is_squad)
+            
+@dataclass
+class GetTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
+    series_id: int
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            series_id = self.series_id
+            tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments WHERE series_id = ?"
+            placements_query = f"""
+                SELECT s.id, s.tournament_id, p.id AS player_id, p.name AS player_name, placement, placement_description, is_disqualified
+                FROM tournament_solo_placements s
+                JOIN tournament_players tp ON s.player_id = tp.id
+                JOIN players p ON tp.player_id = p.id
+                WHERE placement <= 3 AND s.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ?)  
+            """
+            tournaments: list[TournamentWithPlacements] = []
+            placements: dict[int, list[TournamentSoloPlacements]] = {}
+            async with db.execute(tournaments_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
+                    tournament = TournamentWithPlacements(id, name, game, mode, date_start, date_end, series_id,  None, None, None, bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, use_series_logo, [])
+                    tournaments.append(tournament)
+                    placements[tournament.id] = tournament.placements
+            async with db.execute(placements_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows: 
+                    id, tournament_id, player_id, player_name, placement , placement_description, is_disqualified = row
+                    placement = TournamentSoloPlacements(id, tournament_id, player_id, player_name , placement, placement_description, None, is_disqualified)
+                    placements[tournament_id].append(placement)
+            return tournaments
