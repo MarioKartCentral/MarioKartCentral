@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Badge from "./Badge.svelte";
+  import Badge from './Badge.svelte';
 
   export let game: string;
 </script>
