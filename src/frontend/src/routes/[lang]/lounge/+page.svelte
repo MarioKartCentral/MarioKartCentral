@@ -1,32 +1,28 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
-  // import Logo150 from '$lib/assets/logo_lounge150.png';
-  import Logo150Animated from '$lib/assets/logo_lounge150.gif';
-  import Logo200 from '$lib/assets/logo_lounge200.png';
-  // import Logo200Animated from '$lib/assets/logo_lounge200.gif';
-  import LogoMKW from '$lib/assets/logo_loungemkw.png';
-  import LogoMKTC from '$lib/assets/logo_loungemktc.png';
+  import Logo200 from '$lib/assets/logo_200lounge.png';
+  import Logo150 from '$lib/assets/logo_150lounge.png';
+  import LogoMKW from '$lib/assets/logo_mkwlounge.png';
+  import LogoMKTC from '$lib/assets/logo_mktclounge.png';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import { ArrowRightOutline, DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
+  import { ArrowRightOutline, EnvelopeOutline } from 'flowbite-svelte-icons';
 </script>
 
 <main class="container">
   <h1>Lounge</h1>
   <h2>Mario Kart 8 Deluxe</h2>
-  <GameBadge game="mk8dx" />
+  <GameBadge game="mk8" />
   <Section header={'MK8DX 150cc Lounge'}>
     <div class="flex flex-row">
-      <!-- <img class="w-32 h-32" src={Logo150} alt="150cc Lounge" /> -->
-      <img class="w-32 h-32" src={Logo150Animated} alt="150cc Lounge" />
+      <img class="w-32 h-32" src={Logo150} alt="150cc Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="https://mk8dx-lounge.com/"><LinkSolid class="mr-2" />Website</Button>
+          <Button size="lg" href="https://mk8dx-lounge.com/">Website<ArrowRightOutline class="ml-2" /></Button>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
-          >
+          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">Discord Invite</Button>
         </div>
       </div>
     </div>
@@ -35,15 +31,12 @@
   <Section header={'MK8DX 200cc Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
-      <!-- <img class="w-32 h-32" src={Logo200Animated} alt="150cc Lounge" /> -->
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="https://200-lounge.com/"><LinkSolid class="mr-2" />Website</Button>
+          <Button size="lg" href="https://200-lounge.com/">Website<ArrowRightOutline class="ml-2" /></Button>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/dfdRkFu">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
-          >
+          <Button size="lg" color="blue" href="https://discord.gg/dfdRkFu">Discord Invite</Button>
         </div>
       </div>
     </div>
@@ -56,9 +49,7 @@
       <img class="w-32 h-32" src={LogoMKTC} alt="MKTC Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/vYr3bQQHFY">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
-          >
+          <Button size="lg" color="blue" href="https://discord.gg/vYr3bQQHFY">Discord Invite</Button>
         </div>
       </div>
     </div>
@@ -71,12 +62,7 @@
       <img class="w-32 h-32" src={LogoMKW} alt="MKW Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="https://mkwlounge.gg"><LinkSolid class="mr-2" />Website</Button>
-        </div>
-        <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
-          >
+          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">Discord Invite</Button>
         </div>
       </div>
     </div>
