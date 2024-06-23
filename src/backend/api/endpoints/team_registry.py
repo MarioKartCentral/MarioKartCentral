@@ -159,7 +159,7 @@ async def delete_invite(request: Request, body: InviteRosterPlayerRequestData) -
     return JSONResponse({})
 
 @bind_request_body(InviteRosterPlayerRequestData)
-@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+@require_permission(permissions.MANAGE_TEAMS)
 async def mod_delete_invite(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
     command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
@@ -227,14 +227,14 @@ async def list_roster_edit_requests(request: Request) -> JSONResponse:
     return JSONResponse(requests)
 
 @bind_request_body(ForceTransferPlayerRequestData)
-@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+@require_permission(permissions.MANAGE_TEAMS)
 async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> JSONResponse:
     command = ForceTransferPlayerCommand(body.player_id, body.roster_id, body.team_id, body.roster_leave_id)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(EditTeamMemberInfoRequestData)
-@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+@require_permission(permissions.MANAGE_TEAMS)
 async def edit_team_member_info(request: Request, body: EditTeamMemberInfoRequestData) -> JSONResponse:
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, body.join_date, body.leave_date)
     await handle(command)
@@ -249,7 +249,7 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
     return JSONResponse({})
 
 @bind_request_body(KickPlayerRequestData)
-@require_permission(permissions.MANAGE_TEAM_ROSTERS)
+@require_permission(permissions.MANAGE_TEAMS)
 async def mod_kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
     timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp)

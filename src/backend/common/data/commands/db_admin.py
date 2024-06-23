@@ -142,6 +142,10 @@ class SeedDatabaseCommand(Command[None]):
                 roles.default_role_permission_ids)
             
             await db.executemany(
+                "INSERT INTO role_permissions(role_id, permission_id, is_denied) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+                roles.default_role_denied_permission_ids)
+            
+            await db.executemany(
                 "INSERT INTO team_roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
                 team_roles.default_roles_by_id.items())
             

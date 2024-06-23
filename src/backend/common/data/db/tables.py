@@ -118,12 +118,14 @@ class UserRole(TableModel):
 class RolePermission(TableModel):
     role_id: int
     permission_id: int
+    denied: bool
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS role_permissions(
             role_id INTEGER NOT NULL REFERENCES roles(id),
             permission_id INTEGER NOT NULL REFERENCES permissions(id),
+            is_denied BOOLEAN DEFAULT 0 NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
 
 @dataclass

@@ -3,7 +3,7 @@ from starlette.routing import Route
 from api.auth import require_permission, require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from common.auth import permissions
+from common.auth import permissions, series_permissions, tournament_permissions
 from common.data.commands import *
 from common.data.models import *
 
@@ -30,7 +30,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     return JSONResponse({})
 
 @bind_request_body(RegisterTeamRequestData)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.captain_player, body.captain_player, tournament_id,
@@ -40,7 +40,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, body.player_id, tournament_id, 
@@ -49,7 +49,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     return JSONResponse({})
 
 @bind_request_body(EditSquadRequestData)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered)
@@ -92,7 +92,7 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
 
 # endpoint used when a tournament staff registers another player for a tournament (requires permissions)
 @bind_request_body(ForceRegisterPlayerRequestData)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, body.is_squad_captain, body.is_checked_in, 
@@ -101,7 +101,7 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     return JSONResponse({})
 
 @bind_request_body(EditPlayerRegistrationRequestData)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_registration(request: Request, body: EditPlayerRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, body.player_id, body.mii_name, body.can_host,
@@ -162,7 +162,7 @@ async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> 
 
 # used when a staff member force removes a player from the tournament
 @bind_request_body(StaffUnregisterPlayerRequestData)
-@require_permission(permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, True)
