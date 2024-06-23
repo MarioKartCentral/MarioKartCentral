@@ -1,283 +1,85 @@
-<h1>Lounge</h1>
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-  aliqua. Neque gravida in fermentum et sollicitudin ac orci phasellus. Est placerat in egestas erat imperdiet sed
-  euismod nisi. Felis imperdiet proin fermentum leo vel orci porta non pulvinar. Tincidunt vitae semper quis lectus
-  nulla at. Phasellus vestibulum lorem sed risus ultricies tristique. Mauris cursus mattis molestie a iaculis at erat
-  pellentesque. Sit amet nulla facilisi morbi tempus iaculis urna. Accumsan in nisl nisi scelerisque eu. Vehicula ipsum
-  a arcu cursus vitae congue mauris rhoncus. Lacus viverra vitae congue eu consequat ac felis donec et. Morbi leo urna
-  molestie at elementum eu facilisis sed. Donec ac odio tempor orci dapibus ultrices in iaculis. Ac odio tempor orci
-  dapibus ultrices in iaculis. Aliquam sem et tortor consequat. Nulla facilisi morbi tempus iaculis urna id volutpat.
-  Mauris cursus mattis molestie a iaculis at erat pellentesque adipiscing.
-</p>
-<p>
-  Volutpat sed cras ornare arcu dui vivamus arcu felis bibendum. Et pharetra pharetra massa massa ultricies mi. Blandit
-  cursus risus at ultrices mi tempus imperdiet nulla. Sed id semper risus in. Tellus cras adipiscing enim eu turpis
-  egestas pretium aenean. Tortor aliquam nulla facilisi cras fermentum odio. Eget mauris pharetra et ultrices neque
-  ornare aenean euismod. Diam in arcu cursus euismod quis viverra nibh. Mauris pharetra et ultrices neque ornare aenean
-  euismod. Eget sit amet tellus cras adipiscing. Tellus rutrum tellus pellentesque eu tincidunt. Porta lorem mollis
-  aliquam ut porttitor leo a diam sollicitudin. Commodo viverra maecenas accumsan lacus vel facilisis volutpat est.
-  Ultricies integer quis auctor elit sed vulputate mi. Cursus in hac habitasse platea dictumst quisque.
-</p>
-<p>
-  Sem et tortor consequat id porta nibh venenatis cras. Sed blandit libero volutpat sed cras ornare. Pellentesque elit
-  ullamcorper dignissim cras tincidunt. Blandit libero volutpat sed cras. Vulputate dignissim suspendisse in est ante in
-  nibh mauris. Imperdiet massa tincidunt nunc pulvinar. Leo in vitae turpis massa sed elementum tempus egestas sed. Nisl
-  purus in mollis nunc sed id semper. Aenean et tortor at risus viverra adipiscing. Arcu dictum varius duis at
-  consectetur lorem donec massa. Ultricies integer quis auctor elit sed vulputate mi sit. Varius duis at consectetur
-  lorem. Aliquet risus feugiat in ante metus dictum. Ut eu sem integer vitae justo eget magna fermentum iaculis.
-  Maecenas ultricies mi eget mauris pharetra. Id interdum velit laoreet id donec ultrices tincidunt arcu non. In ornare
-  quam viverra orci sagittis eu volutpat. Tempor orci eu lobortis elementum. Leo integer malesuada nunc vel risus
-  commodo.
-</p>
-<p>
-  Bibendum neque egestas congue quisque egestas diam. Fermentum iaculis eu non diam phasellus vestibulum lorem. Mi eget
-  mauris pharetra et ultrices. Mattis vulputate enim nulla aliquet porttitor lacus luctus. Vitae congue eu consequat ac
-  felis donec et odio. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Vitae tempus quam pellentesque
-  nec nam aliquam sem et. Auctor eu augue ut lectus arcu. Sodales neque sodales ut etiam. Sapien eget mi proin sed
-  libero enim. Accumsan in nisl nisi scelerisque eu.
-</p>
-<p>
-  Eu facilisis sed odio morbi quis. Interdum consectetur libero id faucibus nisl tincidunt eget. Sit amet commodo nulla
-  facilisi nullam vehicula ipsum. Tristique senectus et netus et. Massa eget egestas purus viverra accumsan in nisl. In
-  nulla posuere sollicitudin aliquam. Posuere morbi leo urna molestie at. Mi in nulla posuere sollicitudin aliquam
-  ultrices sagittis orci. Nunc sed id semper risus in hendrerit gravida. Sagittis orci a scelerisque purus. Ipsum dolor
-  sit amet consectetur adipiscing elit. Arcu risus quis varius quam quisque id diam. Dui faucibus in ornare quam viverra
-  orci sagittis eu volutpat. Justo donec enim diam vulputate ut pharetra. Scelerisque fermentum dui faucibus in. In
-  ornare quam viverra orci sagittis eu volutpat. Viverra vitae congue eu consequat ac felis donec et odio.
-</p>
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-  aliqua. Neque gravida in fermentum et sollicitudin ac orci phasellus. Est placerat in egestas erat imperdiet sed
-  euismod nisi. Felis imperdiet proin fermentum leo vel orci porta non pulvinar. Tincidunt vitae semper quis lectus
-  nulla at. Phasellus vestibulum lorem sed risus ultricies tristique. Mauris cursus mattis molestie a iaculis at erat
-  pellentesque. Sit amet nulla facilisi morbi tempus iaculis urna. Accumsan in nisl nisi scelerisque eu. Vehicula ipsum
-  a arcu cursus vitae congue mauris rhoncus. Lacus viverra vitae congue eu consequat ac felis donec et. Morbi leo urna
-  molestie at elementum eu facilisis sed. Donec ac odio tempor orci dapibus ultrices in iaculis. Ac odio tempor orci
-  dapibus ultrices in iaculis. Aliquam sem et tortor consequat. Nulla facilisi morbi tempus iaculis urna id volutpat.
-  Mauris cursus mattis molestie a iaculis at erat pellentesque adipiscing.
-</p>
-<p>
-  Volutpat sed cras ornare arcu dui vivamus arcu felis bibendum. Et pharetra pharetra massa massa ultricies mi. Blandit
-  cursus risus at ultrices mi tempus imperdiet nulla. Sed id semper risus in. Tellus cras adipiscing enim eu turpis
-  egestas pretium aenean. Tortor aliquam nulla facilisi cras fermentum odio. Eget mauris pharetra et ultrices neque
-  ornare aenean euismod. Diam in arcu cursus euismod quis viverra nibh. Mauris pharetra et ultrices neque ornare aenean
-  euismod. Eget sit amet tellus cras adipiscing. Tellus rutrum tellus pellentesque eu tincidunt. Porta lorem mollis
-  aliquam ut porttitor leo a diam sollicitudin. Commodo viverra maecenas accumsan lacus vel facilisis volutpat est.
-  Ultricies integer quis auctor elit sed vulputate mi. Cursus in hac habitasse platea dictumst quisque.
-</p>
-<p>
-  Sem et tortor consequat id porta nibh venenatis cras. Sed blandit libero volutpat sed cras ornare. Pellentesque elit
-  ullamcorper dignissim cras tincidunt. Blandit libero volutpat sed cras. Vulputate dignissim suspendisse in est ante in
-  nibh mauris. Imperdiet massa tincidunt nunc pulvinar. Leo in vitae turpis massa sed elementum tempus egestas sed. Nisl
-  purus in mollis nunc sed id semper. Aenean et tortor at risus viverra adipiscing. Arcu dictum varius duis at
-  consectetur lorem donec massa. Ultricies integer quis auctor elit sed vulputate mi sit. Varius duis at consectetur
-  lorem. Aliquet risus feugiat in ante metus dictum. Ut eu sem integer vitae justo eget magna fermentum iaculis.
-  Maecenas ultricies mi eget mauris pharetra. Id interdum velit laoreet id donec ultrices tincidunt arcu non. In ornare
-  quam viverra orci sagittis eu volutpat. Tempor orci eu lobortis elementum. Leo integer malesuada nunc vel risus
-  commodo.
-</p>
-<p>
-  Bibendum neque egestas congue quisque egestas diam. Fermentum iaculis eu non diam phasellus vestibulum lorem. Mi eget
-  mauris pharetra et ultrices. Mattis vulputate enim nulla aliquet porttitor lacus luctus. Vitae congue eu consequat ac
-  felis donec et odio. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Vitae tempus quam pellentesque
-  nec nam aliquam sem et. Auctor eu augue ut lectus arcu. Sodales neque sodales ut etiam. Sapien eget mi proin sed
-  libero enim. Accumsan in nisl nisi scelerisque eu.
-</p>
-<p>
-  Eu facilisis sed odio morbi quis. Interdum consectetur libero id faucibus nisl tincidunt eget. Sit amet commodo nulla
-  facilisi nullam vehicula ipsum. Tristique senectus et netus et. Massa eget egestas purus viverra accumsan in nisl. In
-  nulla posuere sollicitudin aliquam. Posuere morbi leo urna molestie at. Mi in nulla posuere sollicitudin aliquam
-  ultrices sagittis orci. Nunc sed id semper risus in hendrerit gravida. Sagittis orci a scelerisque purus. Ipsum dolor
-  sit amet consectetur adipiscing elit. Arcu risus quis varius quam quisque id diam. Dui faucibus in ornare quam viverra
-  orci sagittis eu volutpat. Justo donec enim diam vulputate ut pharetra. Scelerisque fermentum dui faucibus in. In
-  ornare quam viverra orci sagittis eu volutpat. Viverra vitae congue eu consequat ac felis donec et odio.
-</p>
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-  aliqua. Neque gravida in fermentum et sollicitudin ac orci phasellus. Est placerat in egestas erat imperdiet sed
-  euismod nisi. Felis imperdiet proin fermentum leo vel orci porta non pulvinar. Tincidunt vitae semper quis lectus
-  nulla at. Phasellus vestibulum lorem sed risus ultricies tristique. Mauris cursus mattis molestie a iaculis at erat
-  pellentesque. Sit amet nulla facilisi morbi tempus iaculis urna. Accumsan in nisl nisi scelerisque eu. Vehicula ipsum
-  a arcu cursus vitae congue mauris rhoncus. Lacus viverra vitae congue eu consequat ac felis donec et. Morbi leo urna
-  molestie at elementum eu facilisis sed. Donec ac odio tempor orci dapibus ultrices in iaculis. Ac odio tempor orci
-  dapibus ultrices in iaculis. Aliquam sem et tortor consequat. Nulla facilisi morbi tempus iaculis urna id volutpat.
-  Mauris cursus mattis molestie a iaculis at erat pellentesque adipiscing.
-</p>
-<p>
-  Volutpat sed cras ornare arcu dui vivamus arcu felis bibendum. Et pharetra pharetra massa massa ultricies mi. Blandit
-  cursus risus at ultrices mi tempus imperdiet nulla. Sed id semper risus in. Tellus cras adipiscing enim eu turpis
-  egestas pretium aenean. Tortor aliquam nulla facilisi cras fermentum odio. Eget mauris pharetra et ultrices neque
-  ornare aenean euismod. Diam in arcu cursus euismod quis viverra nibh. Mauris pharetra et ultrices neque ornare aenean
-  euismod. Eget sit amet tellus cras adipiscing. Tellus rutrum tellus pellentesque eu tincidunt. Porta lorem mollis
-  aliquam ut porttitor leo a diam sollicitudin. Commodo viverra maecenas accumsan lacus vel facilisis volutpat est.
-  Ultricies integer quis auctor elit sed vulputate mi. Cursus in hac habitasse platea dictumst quisque.
-</p>
-<p>
-  Sem et tortor consequat id porta nibh venenatis cras. Sed blandit libero volutpat sed cras ornare. Pellentesque elit
-  ullamcorper dignissim cras tincidunt. Blandit libero volutpat sed cras. Vulputate dignissim suspendisse in est ante in
-  nibh mauris. Imperdiet massa tincidunt nunc pulvinar. Leo in vitae turpis massa sed elementum tempus egestas sed. Nisl
-  purus in mollis nunc sed id semper. Aenean et tortor at risus viverra adipiscing. Arcu dictum varius duis at
-  consectetur lorem donec massa. Ultricies integer quis auctor elit sed vulputate mi sit. Varius duis at consectetur
-  lorem. Aliquet risus feugiat in ante metus dictum. Ut eu sem integer vitae justo eget magna fermentum iaculis.
-  Maecenas ultricies mi eget mauris pharetra. Id interdum velit laoreet id donec ultrices tincidunt arcu non. In ornare
-  quam viverra orci sagittis eu volutpat. Tempor orci eu lobortis elementum. Leo integer malesuada nunc vel risus
-  commodo.
-</p>
-<p>
-  Bibendum neque egestas congue quisque egestas diam. Fermentum iaculis eu non diam phasellus vestibulum lorem. Mi eget
-  mauris pharetra et ultrices. Mattis vulputate enim nulla aliquet porttitor lacus luctus. Vitae congue eu consequat ac
-  felis donec et odio. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Vitae tempus quam pellentesque
-  nec nam aliquam sem et. Auctor eu augue ut lectus arcu. Sodales neque sodales ut etiam. Sapien eget mi proin sed
-  libero enim. Accumsan in nisl nisi scelerisque eu.
-</p>
-<p>
-  Eu facilisis sed odio morbi quis. Interdum consectetur libero id faucibus nisl tincidunt eget. Sit amet commodo nulla
-  facilisi nullam vehicula ipsum. Tristique senectus et netus et. Massa eget egestas purus viverra accumsan in nisl. In
-  nulla posuere sollicitudin aliquam. Posuere morbi leo urna molestie at. Mi in nulla posuere sollicitudin aliquam
-  ultrices sagittis orci. Nunc sed id semper risus in hendrerit gravida. Sagittis orci a scelerisque purus. Ipsum dolor
-  sit amet consectetur adipiscing elit. Arcu risus quis varius quam quisque id diam. Dui faucibus in ornare quam viverra
-  orci sagittis eu volutpat. Justo donec enim diam vulputate ut pharetra. Scelerisque fermentum dui faucibus in. In
-  ornare quam viverra orci sagittis eu volutpat. Viverra vitae congue eu consequat ac felis donec et odio.
-</p>
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-  aliqua. Neque gravida in fermentum et sollicitudin ac orci phasellus. Est placerat in egestas erat imperdiet sed
-  euismod nisi. Felis imperdiet proin fermentum leo vel orci porta non pulvinar. Tincidunt vitae semper quis lectus
-  nulla at. Phasellus vestibulum lorem sed risus ultricies tristique. Mauris cursus mattis molestie a iaculis at erat
-  pellentesque. Sit amet nulla facilisi morbi tempus iaculis urna. Accumsan in nisl nisi scelerisque eu. Vehicula ipsum
-  a arcu cursus vitae congue mauris rhoncus. Lacus viverra vitae congue eu consequat ac felis donec et. Morbi leo urna
-  molestie at elementum eu facilisis sed. Donec ac odio tempor orci dapibus ultrices in iaculis. Ac odio tempor orci
-  dapibus ultrices in iaculis. Aliquam sem et tortor consequat. Nulla facilisi morbi tempus iaculis urna id volutpat.
-  Mauris cursus mattis molestie a iaculis at erat pellentesque adipiscing.
-</p>
-<p>
-  Volutpat sed cras ornare arcu dui vivamus arcu felis bibendum. Et pharetra pharetra massa massa ultricies mi. Blandit
-  cursus risus at ultrices mi tempus imperdiet nulla. Sed id semper risus in. Tellus cras adipiscing enim eu turpis
-  egestas pretium aenean. Tortor aliquam nulla facilisi cras fermentum odio. Eget mauris pharetra et ultrices neque
-  ornare aenean euismod. Diam in arcu cursus euismod quis viverra nibh. Mauris pharetra et ultrices neque ornare aenean
-  euismod. Eget sit amet tellus cras adipiscing. Tellus rutrum tellus pellentesque eu tincidunt. Porta lorem mollis
-  aliquam ut porttitor leo a diam sollicitudin. Commodo viverra maecenas accumsan lacus vel facilisis volutpat est.
-  Ultricies integer quis auctor elit sed vulputate mi. Cursus in hac habitasse platea dictumst quisque.
-</p>
-<p>
-  Sem et tortor consequat id porta nibh venenatis cras. Sed blandit libero volutpat sed cras ornare. Pellentesque elit
-  ullamcorper dignissim cras tincidunt. Blandit libero volutpat sed cras. Vulputate dignissim suspendisse in est ante in
-  nibh mauris. Imperdiet massa tincidunt nunc pulvinar. Leo in vitae turpis massa sed elementum tempus egestas sed. Nisl
-  purus in mollis nunc sed id semper. Aenean et tortor at risus viverra adipiscing. Arcu dictum varius duis at
-  consectetur lorem donec massa. Ultricies integer quis auctor elit sed vulputate mi sit. Varius duis at consectetur
-  lorem. Aliquet risus feugiat in ante metus dictum. Ut eu sem integer vitae justo eget magna fermentum iaculis.
-  Maecenas ultricies mi eget mauris pharetra. Id interdum velit laoreet id donec ultrices tincidunt arcu non. In ornare
-  quam viverra orci sagittis eu volutpat. Tempor orci eu lobortis elementum. Leo integer malesuada nunc vel risus
-  commodo.
-</p>
-<p>
-  Bibendum neque egestas congue quisque egestas diam. Fermentum iaculis eu non diam phasellus vestibulum lorem. Mi eget
-  mauris pharetra et ultrices. Mattis vulputate enim nulla aliquet porttitor lacus luctus. Vitae congue eu consequat ac
-  felis donec et odio. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Vitae tempus quam pellentesque
-  nec nam aliquam sem et. Auctor eu augue ut lectus arcu. Sodales neque sodales ut etiam. Sapien eget mi proin sed
-  libero enim. Accumsan in nisl nisi scelerisque eu.
-</p>
-<p>
-  Eu facilisis sed odio morbi quis. Interdum consectetur libero id faucibus nisl tincidunt eget. Sit amet commodo nulla
-  facilisi nullam vehicula ipsum. Tristique senectus et netus et. Massa eget egestas purus viverra accumsan in nisl. In
-  nulla posuere sollicitudin aliquam. Posuere morbi leo urna molestie at. Mi in nulla posuere sollicitudin aliquam
-  ultrices sagittis orci. Nunc sed id semper risus in hendrerit gravida. Sagittis orci a scelerisque purus. Ipsum dolor
-  sit amet consectetur adipiscing elit. Arcu risus quis varius quam quisque id diam. Dui faucibus in ornare quam viverra
-  orci sagittis eu volutpat. Justo donec enim diam vulputate ut pharetra. Scelerisque fermentum dui faucibus in. In
-  ornare quam viverra orci sagittis eu volutpat. Viverra vitae congue eu consequat ac felis donec et odio.
-</p>
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-  aliqua. Neque gravida in fermentum et sollicitudin ac orci phasellus. Est placerat in egestas erat imperdiet sed
-  euismod nisi. Felis imperdiet proin fermentum leo vel orci porta non pulvinar. Tincidunt vitae semper quis lectus
-  nulla at. Phasellus vestibulum lorem sed risus ultricies tristique. Mauris cursus mattis molestie a iaculis at erat
-  pellentesque. Sit amet nulla facilisi morbi tempus iaculis urna. Accumsan in nisl nisi scelerisque eu. Vehicula ipsum
-  a arcu cursus vitae congue mauris rhoncus. Lacus viverra vitae congue eu consequat ac felis donec et. Morbi leo urna
-  molestie at elementum eu facilisis sed. Donec ac odio tempor orci dapibus ultrices in iaculis. Ac odio tempor orci
-  dapibus ultrices in iaculis. Aliquam sem et tortor consequat. Nulla facilisi morbi tempus iaculis urna id volutpat.
-  Mauris cursus mattis molestie a iaculis at erat pellentesque adipiscing.
-</p>
-<p>
-  Volutpat sed cras ornare arcu dui vivamus arcu felis bibendum. Et pharetra pharetra massa massa ultricies mi. Blandit
-  cursus risus at ultrices mi tempus imperdiet nulla. Sed id semper risus in. Tellus cras adipiscing enim eu turpis
-  egestas pretium aenean. Tortor aliquam nulla facilisi cras fermentum odio. Eget mauris pharetra et ultrices neque
-  ornare aenean euismod. Diam in arcu cursus euismod quis viverra nibh. Mauris pharetra et ultrices neque ornare aenean
-  euismod. Eget sit amet tellus cras adipiscing. Tellus rutrum tellus pellentesque eu tincidunt. Porta lorem mollis
-  aliquam ut porttitor leo a diam sollicitudin. Commodo viverra maecenas accumsan lacus vel facilisis volutpat est.
-  Ultricies integer quis auctor elit sed vulputate mi. Cursus in hac habitasse platea dictumst quisque.
-</p>
-<p>
-  Sem et tortor consequat id porta nibh venenatis cras. Sed blandit libero volutpat sed cras ornare. Pellentesque elit
-  ullamcorper dignissim cras tincidunt. Blandit libero volutpat sed cras. Vulputate dignissim suspendisse in est ante in
-  nibh mauris. Imperdiet massa tincidunt nunc pulvinar. Leo in vitae turpis massa sed elementum tempus egestas sed. Nisl
-  purus in mollis nunc sed id semper. Aenean et tortor at risus viverra adipiscing. Arcu dictum varius duis at
-  consectetur lorem donec massa. Ultricies integer quis auctor elit sed vulputate mi sit. Varius duis at consectetur
-  lorem. Aliquet risus feugiat in ante metus dictum. Ut eu sem integer vitae justo eget magna fermentum iaculis.
-  Maecenas ultricies mi eget mauris pharetra. Id interdum velit laoreet id donec ultrices tincidunt arcu non. In ornare
-  quam viverra orci sagittis eu volutpat. Tempor orci eu lobortis elementum. Leo integer malesuada nunc vel risus
-  commodo.
-</p>
-<p>
-  Bibendum neque egestas congue quisque egestas diam. Fermentum iaculis eu non diam phasellus vestibulum lorem. Mi eget
-  mauris pharetra et ultrices. Mattis vulputate enim nulla aliquet porttitor lacus luctus. Vitae congue eu consequat ac
-  felis donec et odio. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Vitae tempus quam pellentesque
-  nec nam aliquam sem et. Auctor eu augue ut lectus arcu. Sodales neque sodales ut etiam. Sapien eget mi proin sed
-  libero enim. Accumsan in nisl nisi scelerisque eu.
-</p>
-<p>
-  Eu facilisis sed odio morbi quis. Interdum consectetur libero id faucibus nisl tincidunt eget. Sit amet commodo nulla
-  facilisi nullam vehicula ipsum. Tristique senectus et netus et. Massa eget egestas purus viverra accumsan in nisl. In
-  nulla posuere sollicitudin aliquam. Posuere morbi leo urna molestie at. Mi in nulla posuere sollicitudin aliquam
-  ultrices sagittis orci. Nunc sed id semper risus in hendrerit gravida. Sagittis orci a scelerisque purus. Ipsum dolor
-  sit amet consectetur adipiscing elit. Arcu risus quis varius quam quisque id diam. Dui faucibus in ornare quam viverra
-  orci sagittis eu volutpat. Justo donec enim diam vulputate ut pharetra. Scelerisque fermentum dui faucibus in. In
-  ornare quam viverra orci sagittis eu volutpat. Viverra vitae congue eu consequat ac felis donec et odio.
-</p>
-<p>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-  aliqua. Neque gravida in fermentum et sollicitudin ac orci phasellus. Est placerat in egestas erat imperdiet sed
-  euismod nisi. Felis imperdiet proin fermentum leo vel orci porta non pulvinar. Tincidunt vitae semper quis lectus
-  nulla at. Phasellus vestibulum lorem sed risus ultricies tristique. Mauris cursus mattis molestie a iaculis at erat
-  pellentesque. Sit amet nulla facilisi morbi tempus iaculis urna. Accumsan in nisl nisi scelerisque eu. Vehicula ipsum
-  a arcu cursus vitae congue mauris rhoncus. Lacus viverra vitae congue eu consequat ac felis donec et. Morbi leo urna
-  molestie at elementum eu facilisis sed. Donec ac odio tempor orci dapibus ultrices in iaculis. Ac odio tempor orci
-  dapibus ultrices in iaculis. Aliquam sem et tortor consequat. Nulla facilisi morbi tempus iaculis urna id volutpat.
-  Mauris cursus mattis molestie a iaculis at erat pellentesque adipiscing.
-</p>
-<p>
-  Volutpat sed cras ornare arcu dui vivamus arcu felis bibendum. Et pharetra pharetra massa massa ultricies mi. Blandit
-  cursus risus at ultrices mi tempus imperdiet nulla. Sed id semper risus in. Tellus cras adipiscing enim eu turpis
-  egestas pretium aenean. Tortor aliquam nulla facilisi cras fermentum odio. Eget mauris pharetra et ultrices neque
-  ornare aenean euismod. Diam in arcu cursus euismod quis viverra nibh. Mauris pharetra et ultrices neque ornare aenean
-  euismod. Eget sit amet tellus cras adipiscing. Tellus rutrum tellus pellentesque eu tincidunt. Porta lorem mollis
-  aliquam ut porttitor leo a diam sollicitudin. Commodo viverra maecenas accumsan lacus vel facilisis volutpat est.
-  Ultricies integer quis auctor elit sed vulputate mi. Cursus in hac habitasse platea dictumst quisque.
-</p>
-<p>
-  Sem et tortor consequat id porta nibh venenatis cras. Sed blandit libero volutpat sed cras ornare. Pellentesque elit
-  ullamcorper dignissim cras tincidunt. Blandit libero volutpat sed cras. Vulputate dignissim suspendisse in est ante in
-  nibh mauris. Imperdiet massa tincidunt nunc pulvinar. Leo in vitae turpis massa sed elementum tempus egestas sed. Nisl
-  purus in mollis nunc sed id semper. Aenean et tortor at risus viverra adipiscing. Arcu dictum varius duis at
-  consectetur lorem donec massa. Ultricies integer quis auctor elit sed vulputate mi sit. Varius duis at consectetur
-  lorem. Aliquet risus feugiat in ante metus dictum. Ut eu sem integer vitae justo eget magna fermentum iaculis.
-  Maecenas ultricies mi eget mauris pharetra. Id interdum velit laoreet id donec ultrices tincidunt arcu non. In ornare
-  quam viverra orci sagittis eu volutpat. Tempor orci eu lobortis elementum. Leo integer malesuada nunc vel risus
-  commodo.
-</p>
-<p>
-  Bibendum neque egestas congue quisque egestas diam. Fermentum iaculis eu non diam phasellus vestibulum lorem. Mi eget
-  mauris pharetra et ultrices. Mattis vulputate enim nulla aliquet porttitor lacus luctus. Vitae congue eu consequat ac
-  felis donec et odio. Mauris pharetra et ultrices neque ornare aenean euismod elementum. Vitae tempus quam pellentesque
-  nec nam aliquam sem et. Auctor eu augue ut lectus arcu. Sodales neque sodales ut etiam. Sapien eget mi proin sed
-  libero enim. Accumsan in nisl nisi scelerisque eu.
-</p>
-<p>
-  Eu facilisis sed odio morbi quis. Interdum consectetur libero id faucibus nisl tincidunt eget. Sit amet commodo nulla
-  facilisi nullam vehicula ipsum. Tristique senectus et netus et. Massa eget egestas purus viverra accumsan in nisl. In
-  nulla posuere sollicitudin aliquam. Posuere morbi leo urna molestie at. Mi in nulla posuere sollicitudin aliquam
-  ultrices sagittis orci. Nunc sed id semper risus in hendrerit gravida. Sagittis orci a scelerisque purus. Ipsum dolor
-  sit amet consectetur adipiscing elit. Arcu risus quis varius quam quisque id diam. Dui faucibus in ornare quam viverra
-  orci sagittis eu volutpat. Justo donec enim diam vulputate ut pharetra. Scelerisque fermentum dui faucibus in. In
-  ornare quam viverra orci sagittis eu volutpat. Viverra vitae congue eu consequat ac felis donec et odio.
-</p>
+<script lang="ts">
+  import Section from '$lib/components/common/Section.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import Logo200 from '$lib/assets/logo_200lounge.png';
+  import Logo150 from '$lib/assets/logo_150lounge.png';
+  import LogoMKW from '$lib/assets/logo_mkwlounge.png';
+  import LogoMKTC from '$lib/assets/logo_mktclounge.png';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import { ArrowRightOutline, EnvelopeOutline } from 'flowbite-svelte-icons';
+</script>
+
+<main class="container">
+  <h1>Lounge</h1>
+  <h2>Mario Kart 8 Deluxe</h2>
+  <GameBadge game="mk8" />
+  <Section header={'MK8DX 150cc Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={Logo150} alt="150cc Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <Button size="lg" href="https://mk8dx-lounge.com/">Website<ArrowRightOutline class="ml-2" /></Button>
+        </div>
+        <div class="mb-2 mx-2">
+          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">Discord Invite</Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Section header={'MK8DX 200cc Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <Button size="lg" href="https://200-lounge.com/">Website<ArrowRightOutline class="ml-2" /></Button>
+        </div>
+        <div class="mb-2 mx-2">
+          <Button size="lg" color="blue" href="https://discord.gg/dfdRkFu">Discord Invite</Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <h2>Mario Kart Tour</h2>
+  <GameBadge game="mkt" />
+  <Section header={'MKTC Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={LogoMKTC} alt="MKTC Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <Button size="lg" color="blue" href="https://discord.gg/vYr3bQQHFY">Discord Invite</Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <h2>Mario Kart Wii</h2>
+  <GameBadge game="mkw" />
+  <Section header={'MKW Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={LogoMKW} alt="MKW Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">Discord Invite</Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+</main>
+
+<style>
+  main.container {
+    max-width: 1200px;
+    margin: 20px auto 20px auto;
+  }
+  h1 {
+    font-size: 4rem;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+  }
+</style>
