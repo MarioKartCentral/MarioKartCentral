@@ -1,13 +1,14 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
-  import Logo200 from '$lib/assets/logo_200lounge.png';
-  import Logo150 from '$lib/assets/logo_150lounge.png';
-  import LogoMKW from '$lib/assets/logo_mkwlounge.png';
-  import LogoMKTC from '$lib/assets/logo_mktclounge.png';
-  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  // import Logo150 from '$lib/assets/logo_lounge150.png';
+  import Logo150Animated from '$lib/assets/logo_lounge150.gif';
+  import Logo200 from '$lib/assets/logo_lounge200.png';
+  // import Logo200Animated from '$lib/assets/logo_lounge200.gif';
+  import LogoMKW from '$lib/assets/logo_loungemkw.png';
+  import LogoMKTC from '$lib/assets/logo_loungemktc.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import { ArrowRightOutline, EnvelopeOutline } from 'flowbite-svelte-icons';
+  import { ArrowRightOutline } from 'flowbite-svelte-icons';
 </script>
 
 <main class="container">
@@ -16,7 +17,8 @@
   <GameBadge game="mk8" />
   <Section header={'MK8DX 150cc Lounge'}>
     <div class="flex flex-row">
-      <img class="w-32 h-32" src={Logo150} alt="150cc Lounge" />
+      <!-- <img class="w-32 h-32" src={Logo150} alt="150cc Lounge" /> -->
+      <img class="w-32 h-32" src={Logo150Animated} alt="150cc Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
           <Button size="lg" href="https://mk8dx-lounge.com/">Website<ArrowRightOutline class="ml-2" /></Button>
@@ -31,6 +33,7 @@
   <Section header={'MK8DX 200cc Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
+      <!-- <img class="w-32 h-32" src={Logo200Animated} alt="150cc Lounge" /> -->
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
           <Button size="lg" href="https://200-lounge.com/">Website<ArrowRightOutline class="ml-2" /></Button>
