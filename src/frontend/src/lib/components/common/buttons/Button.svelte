@@ -23,9 +23,3 @@
 <Button pill={circle} class={circle ? '!p-2' : ''} on:click {size} {href} {type} {disabled} {color}>
   <slot />
 </Button>
-
-<style>
-  .button {
-    background-color: theme('colors.primary.500');
-  }
-</style>
