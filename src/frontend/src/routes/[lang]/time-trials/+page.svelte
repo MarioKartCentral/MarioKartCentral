@@ -26,16 +26,24 @@
 </div>
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-  <Button style="flex: 1 1 calc(33.333% - 10px); paddinwg: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
-    <img src={MK8DX} alt="Mario Kart 8 Deluxe" style="max-width: 100%;">
-  </Button>
-  <Button style="flex: 1 1 calc(33.333% - 10px); padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
-    <img src={MK8} alt="Mario Kart 8" style="max-width: 100%;">
-  </Button>
-  <Button style="flex: 1 1 calc(33.333% - 10px); padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
-    <img src={MK7} alt="Mario Kart 7" style="max-width: 100%;">
-  </Button>
-  <Button style="flex: 1 1 calc(33.333% - 10px); padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
-    <img src={MKW} alt="Mario Kart Wii" style="max-width: 100%;">
-  </Button>
+  <a href="/time-trials/mk8dx" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
+    <Button style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
+      <img src={MK8DX} alt="Mario Kart 8 Deluxe" style="max-width: 100%;">
+      </Button>
+  </a>
+  <a href="/time-trials/mk8" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
+    <Button style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
+      <img src={MK8} alt="Mario Kart 8" style="max-width: 100%;">
+      </Button>
+  </a>
+  <a href="/time-trials/mk7" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
+    <Button style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
+      <img src={MK7} alt="Mario Kart 7" style="max-width: 100%;">
+      </Button>
+  </a>
+  <a href="/time-trials/mkw" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
+    <Button style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;">
+      <img src={MKW} alt="Mario Kart Wii" style="max-width: 100%;">
+    </Button>
+  </a>
 </div>
