@@ -8,7 +8,7 @@
   import LogoMKW from '$lib/assets/logo_loungemkw.png';
   import LogoMKTC from '$lib/assets/logo_loungemktc.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import { ArrowRightOutline } from 'flowbite-svelte-icons';
+  import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
 </script>
 
 <main class="container">
