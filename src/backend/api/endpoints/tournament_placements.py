@@ -37,12 +37,30 @@ async def get_placements(request: Request) -> JSONResponse:
         players = await handle(reg_command)
         placements_command = GetSoloPlacementsCommand(tournament_id, players)
         placements = await handle(placements_command)
-    
     return JSONResponse(placements)
 
+async def get_series_placements(request: Request) -> JSONResponse:
+    series_id = int(request.path_params['id'])
+    filter = TournamentFilter()
+    filter.series_id = series_id
+    list_command = GetTournamentListCommand(filter)
+    tournaments = await handle(list_command)
+    if len(tournaments) > 0:
+        tournament_id = tournaments[0].id   
+        command = CheckIfSquadTournament(tournament_id)
+        is_squad = await handle(command)
+        if is_squad:
+            reg_command = GetSquadTournamentListWithTop3(series_id)
+            tournamentsWithPlacements = await handle(reg_command)
+        else:
+            reg_command = GetSoloTournamentListWithTop3(series_id)
+            tournamentsWithPlacements = await handle(reg_command)
+        return JSONResponse(tournamentsWithPlacements)
+    return JSONResponse({})
 
 
 routes = [
     Route('/api/tournaments/{id:int}/placements/set', set_placements, methods=["POST"]),
-    Route('/api/tournaments/{id:int}/placements', get_placements)
+    Route('/api/tournaments/{id:int}/placements', get_placements),
+    Route('/api/tournaments/series/{id:int}/placements', get_series_placements)
 ]

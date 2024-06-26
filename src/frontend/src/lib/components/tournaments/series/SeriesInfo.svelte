@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
-  import type { TournamentListItem } from '$lib/types/tournament-list-item';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import TypeBadge from '$lib/components/badges/TypeBadge.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
   import Button from '$lib/components/common/buttons/Button.svelte';
@@ -39,7 +41,7 @@
   }
 </script>
 
-<Section header="Series Info">
+<Section header={series.series_name}>
   <div slot="header_content">
     <Button href="/{$page.params.lang}/tournaments/series">Back to Series Listing</Button>
     <SeriesPermissionCheck series_id={series.id} permission={series_permissions.edit_series}>
@@ -60,7 +62,17 @@
         <img src={series.logo} alt={series.series_name} />
       </div>
     {/if}
-    <div>Name : {series.series_name}</div>
+    <div class="sub_container">
+      <div class="seriesInfoBadge">
+        <GameBadge game={series.game} />
+      </div>
+      <div class="seriesInfoBadge">
+        <ModeBadge mode={series.mode} />
+      </div>
+      <div class="seriesInfoBadge">
+        <TypeBadge type={'Solo'} />
+      </div>
+    </div>
     <MarkdownBox content={series.description} />
     {#each tournaments as tournament}
       <div>{tournament.tournament_name}</div>
@@ -73,6 +85,7 @@
 
 <style>
   .container {
+    text-align:center;
     display: grid;
     background-color: rgba(24, 82, 28, 0.8);
     padding-top: 10px;
@@ -82,5 +95,12 @@
   img {
     max-width: 400px;
     max-height: 200px;
+  }
+  .sub_container {
+    margin: auto;
+    display: flex;
+  }
+  .seriesInfoBadge {
+    margin-right: 3px;
   }
 </style>

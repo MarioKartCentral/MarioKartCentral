@@ -88,12 +88,6 @@ async def template_list(request: Request, filter: TemplateFilter) -> JSONRespons
     templates = await handle(command)
     return JSONResponse(templates)
 
-async def series_placements(request: Request) -> JSONResponse:
-    tournament_id = request.path_params['id']
-    command = GetTournamentListWithTop3(tournament_id)
-    series = await handle(command)
-    return JSONResponse(series)
-
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{id:int}/edit', edit_tournament, methods=["POST"]),
@@ -107,5 +101,4 @@ routes = [
     Route('/api/tournaments/templates/{id:int}/edit', edit_template, methods=['POST']),
     Route('/api/tournaments/templates/{id:int}', template_info),
     Route('/api/tournaments/templates/list', template_list),
-    Route('/api/tournaments/series/{id:int}/placements', series_placements)
 ]
