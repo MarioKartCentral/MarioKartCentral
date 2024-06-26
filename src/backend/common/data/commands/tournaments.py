@@ -147,7 +147,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         
         if tournament_data.series_id is not None:
             async with db_wrapper.connect(readonly=True) as db:
-                async with db.execute("SELECT name, url, description, ruleset, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
+                async with db.execute("SELECT name, url, description, ruleset, logo FROM tournament_series WHERE id_tournament = ?", (tournament_data.series_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     series_name, series_url, series_description, series_ruleset, logo = row
@@ -239,7 +239,48 @@ class CheckIfSquadTournament(Command[bool]):
                 return bool(is_squad)
             
 @dataclass
-class GetTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
+class CheckIfSeriesHasTournament(Command[bool]):
+    series_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT id FROM tournaments WHERE id_series = ? LIMIT 1", (self.series_id,)) as cursor:
+                row = await cursor.fetchone()
+                has_tournament: bool = row is not None
+                return has_tournament
+            
+@dataclass
+class GetSquadTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
+    series_id: int
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            series_id = self.series_id
+            tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments WHERE series_id = ?"
+            placements_query = f"""
+                SELECT tsp.id, ts.tournament_id, ts.id AS squad_id, ts.name AS squad_name, placement, placement_description, is_disqualified
+                FROM tournament_squad_placements tsp
+                JOIN tournament_squads ts ON ts.id = tsp.squad_id
+                WHERE placement <= 3 AND ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+            """
+            tournaments: list[TournamentWithPlacements] = []
+            placements: dict[int, list[TournamentSoloPlacements]] = {}
+            async with db.execute(tournaments_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
+                    tournament = TournamentWithPlacements(id, name, game, mode, date_start, date_end, series_id,  None, None, None, bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, use_series_logo, [])
+                    tournaments.append(tournament)
+                    placements[tournament.id] = tournament.placements
+            async with db.execute(placements_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows: 
+                    id, tournament_id, player_id, player_name, placement , placement_description, is_disqualified = row
+                    placement = TournamentSoloPlacements(id, tournament_id, player_id, player_name , placement, placement_description, None, is_disqualified)
+                    placements[tournament_id].append(placement)
+            return tournaments
+        
+@dataclass
+class GetSoloTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
     series_id: int
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
@@ -250,7 +291,7 @@ class GetTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
                 FROM tournament_solo_placements s
                 JOIN tournament_players tp ON s.player_id = tp.id
                 JOIN players p ON tp.player_id = p.id
-                WHERE placement <= 3 AND s.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ?)  
+                WHERE placement <= 3 AND s.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)  
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentSoloPlacements]] = {}
