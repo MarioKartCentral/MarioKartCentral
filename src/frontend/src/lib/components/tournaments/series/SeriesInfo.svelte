@@ -25,6 +25,7 @@
 
   onMount(async () => {
     const res = await fetch(`/api/tournaments/series/${series.id}/placements`);
+    const res = await fetch(`/api/tournaments/series/${series.id}/placements`);
     if (res.status === 200) {
       const body = await res.json();
       const tab = [];
