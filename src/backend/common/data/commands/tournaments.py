@@ -263,7 +263,7 @@ class GetSquadTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
                 WHERE placement <= 3 AND ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
             """
             tournaments: list[TournamentWithPlacements] = []
-            placements: dict[int, list[TournamentSoloPlacements]] = {}
+            placements: dict[int, list[TournamentPlacementDetailed]] = {}
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -274,8 +274,9 @@ class GetSquadTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
             async with db.execute(placements_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows: 
-                    id, tournament_id, player_id, player_name, placement , placement_description, is_disqualified = row
-                    placement = TournamentSoloPlacements(id, tournament_id, player_id, player_name , placement, placement_description, None, is_disqualified)
+                    id, tournament_id, squad_id, squad_name, placement , placement_description, is_disqualified = row
+                    squad =  TournamentSquadDetails(squad_id, squad_name, None, 1, 1, 1, [])
+                    placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, None, squad)
                     placements[tournament_id].append(placement)
             return tournaments
         
@@ -294,7 +295,7 @@ class GetSoloTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
                 WHERE placement <= 3 AND s.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)  
             """
             tournaments: list[TournamentWithPlacements] = []
-            placements: dict[int, list[TournamentSoloPlacements]] = {}
+            placements: dict[int, list[TournamentPlacementDetailed]] = {}
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -306,6 +307,7 @@ class GetSoloTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
                 rows = await cursor.fetchall()
                 for row in rows: 
                     id, tournament_id, player_id, player_name, placement , placement_description, is_disqualified = row
-                    placement = TournamentSoloPlacements(id, tournament_id, player_id, player_name , placement, placement_description, None, is_disqualified)
+                    player =  TournamentPlayerDetails(id, player_id, None, 1, True, None, True, player_name, None, None, [])
+                    placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, player, None)
                     placements[tournament_id].append(placement)
             return tournaments

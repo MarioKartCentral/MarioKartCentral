@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from common.data.models import Game, GameMode, TournamentSoloPlacements
+from common.data.models import Game, GameMode, TournamentPlacementDetailed
 
 @dataclass
 class CreateTournamentRequestData():
@@ -117,7 +117,7 @@ class TournamentDataBasic(TournamentDataMinimal):
 
 @dataclass
 class TournamentWithPlacements(TournamentDataBasic):
-    placements: list[TournamentSoloPlacements]
+    placements: list[TournamentPlacementDetailed]
 
 @dataclass
 class TournamentFilter():
