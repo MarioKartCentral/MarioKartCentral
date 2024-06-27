@@ -10,13 +10,12 @@
   import { series_permissions } from '$lib/util/util';
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
+  import SeriesInfoList from './SeriesInfoList.svelte';
 
   export let series: TournamentSeries;
   export let tournaments = [];
   onMount(async () => {
-    // needs a request which returns a list of tournaments with top3 teams
-    // '/api/tournaments/{id:int}/placements'
-    const res = await fetch(`/api/tournaments/series/1/placements`);
+    const res = await fetch(`/api/tournaments/series/${series.id}/placements`);
     if (res.status === 200) {
       const body = await res.json();
       const tab = [];
@@ -26,19 +25,6 @@
       tournaments = tab;
     }
   });
-
-  function getMedail(placement: number) {
-    if (placement === 1) {
-      return '👑';
-    }
-    if (placement === 2) {
-      return '🥈';
-    }
-    if (placement === 3) {
-      return '🥉';
-    }
-    return '🐢';
-  }
 </script>
 
 <Section header={series.series_name}>
@@ -70,22 +56,17 @@
         <ModeBadge mode={series.mode} />
       </div>
       <div class="seriesInfoBadge">
-        <TypeBadge type={'Solo'} />
+        <TypeBadge type={'Squad'} />
       </div>
     </div>
     <MarkdownBox content={series.description} />
-    {#each tournaments as tournament}
-      <div>{tournament.tournament_name}</div>
-      {#each tournament.placements as placement}
-        <div>{getMedail(placement.placement) + ' ' + placement.player_name}</div>
-      {/each}
-    {/each}
+    <SeriesInfoList {tournaments} />
   </div>
 </Section>
 
 <style>
   .container {
-    text-align:center;
+    text-align: center;
     display: grid;
     background-color: rgba(24, 82, 28, 0.8);
     padding-top: 10px;
@@ -93,6 +74,9 @@
     margin: 10px auto 10px auto;
   }
   img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
     max-width: 400px;
     max-height: 200px;
   }
