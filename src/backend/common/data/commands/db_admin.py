@@ -2,7 +2,7 @@ import aiosqlite
 import re
 from typing import Iterable
 from dataclasses import dataclass
-from common.auth import permissions, roles, team_permissions, team_roles, series_permissions, series_roles
+from common.auth import permissions, roles, team_permissions, team_roles, series_permissions, series_roles, tournament_permissions, tournament_roles
 from common.data.commands import Command
 from common.data.db.tables import all_tables
 from common.data.models import Problem
@@ -130,44 +130,52 @@ class SeedDatabaseCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             await db.executemany(
-                "INSERT INTO roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
-                roles.default_roles_by_id.items())
+                "INSERT INTO roles(id, name, position) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+                roles.default_roles)
             
             await db.executemany(
                 "INSERT INTO permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
                 permissions.permissions_by_id.items())
             
             await db.executemany(
-                "INSERT INTO role_permissions(role_id, permission_id) VALUES (?, ?) ON CONFLICT DO NOTHING",
-                roles.default_role_permission_ids)
-            
-            await db.executemany(
                 "INSERT INTO role_permissions(role_id, permission_id, is_denied) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
-                roles.default_role_denied_permission_ids)
-            
+                roles.default_role_permission_ids)
+
             await db.executemany(
-                "INSERT INTO team_roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
-                team_roles.default_roles_by_id.items())
+                "INSERT INTO team_roles(id, name, position) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+                team_roles.default_roles)
             
             await db.executemany(
                 "INSERT INTO team_permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
                 team_permissions.permissions_by_id.items())
             
             await db.executemany(
-                "INSERT INTO team_role_permissions(role_id, permission_id) VALUES (?, ?) ON CONFLICT DO NOTHING",
+                "INSERT INTO team_role_permissions(role_id, permission_id, is_denied) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
                 team_roles.default_role_permission_ids)
             
             await db.executemany(
-                "INSERT INTO series_roles(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
-                series_roles.default_roles_by_id.items())
+                "INSERT INTO series_roles(id, name, position) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+                series_roles.default_roles)
             
             await db.executemany(
                 "INSERT INTO series_permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
                 series_permissions.permissions_by_id.items())
             
             await db.executemany(
-                "INSERT INTO series_role_permissions(role_id, permission_id) VALUES (?, ?) ON CONFLICT DO NOTHING",
+                "INSERT INTO series_role_permissions(role_id, permission_id, is_denied) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
                 series_roles.default_role_permission_ids)
+            
+            await db.executemany(
+                "INSERT INTO tournament_roles(id, name, position) VALUES (?, ?, ?) ON CONFLICT DO NOTHING",
+                tournament_roles.default_roles)
+
+            await db.executemany(
+                "INSERT INTO tournament_permissions(id, name) VALUES (?, ?) ON CONFLICT DO NOTHING",
+                tournament_permissions.permissions_by_id.items())
+
+            await db.executemany(
+                "INSERT INTO tournament_role_permissions(role_id, permission_id, is_denied) VALUES(?, ?, ?) ON CONFLICT DO NOTHING",
+                tournament_roles.default_role_permission_ids)
             
             await db.execute("INSERT INTO users(id, email, password_hash) VALUES (0, ?, ?)  ON CONFLICT DO NOTHING", (self.admin_email, self.hashed_pw))
             await db.execute("INSERT INTO user_roles(user_id, role_id) VALUES (0, 0) ON CONFLICT DO NOTHING")

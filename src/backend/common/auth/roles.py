@@ -1,5 +1,4 @@
 from common.auth import permissions, team_permissions, series_permissions, tournament_permissions
-from common.data.models import RolePermission, Role 
 
 SUPER_ADMINISTRATOR = "Super Administrator"
 ADMINISTRATOR = "Administrator"
@@ -8,16 +7,17 @@ SUPPORT_STAFF = "Support Staff"
 SITE_SUPPORTER = "Site Supporter"
 BANNED = "Banned"
 
-default_roles_by_id = {
-    0: SUPER_ADMINISTRATOR,
-    1: ADMINISTRATOR,
-    2: SITE_MODERATOR,
-    3: SUPPORT_STAFF,
-    4: SITE_SUPPORTER,
-    5: BANNED
-}
+# (roleid, name, role hierarchy pos)
+default_roles = [
+    (0, SUPER_ADMINISTRATOR, 0),
+    (1, ADMINISTRATOR, 1),
+    (2, SITE_MODERATOR, 2),
+    (3, SUPPORT_STAFF, 3),
+    (4, SITE_SUPPORTER, 4),
+    (5, BANNED, 99)
+]
 
-id_by_default_role = { v: k for k, v in default_roles_by_id.items() }
+id_by_default_role = { name: roleid for roleid, name, pos in default_roles}
 
 default_permissions_by_default_role = {
     SUPER_ADMINISTRATOR: [
@@ -127,12 +127,12 @@ default_denied_permissions_by_default_role = {
     ]
 }
 
-default_role_permission_ids: list[tuple[int, int]] = []
+# roleid, permissionid, is_denied
+default_role_permission_ids: list[tuple[int, int, bool]] = []
 for role, role_perms in default_permissions_by_default_role.items():
     for permission in role_perms:
-        default_role_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission])]
+        default_role_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission], False)]
 
-default_role_denied_permission_ids: list[tuple[int, int, bool]] = []
 for role, role_perms in default_denied_permissions_by_default_role.items():
     for permission in role_perms:
-        default_role_denied_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission], True)]
+        default_role_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission], True)]
