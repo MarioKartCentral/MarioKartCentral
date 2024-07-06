@@ -1,9 +1,9 @@
-
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, User, ModNotifications, TeamPermissions, SeriesPermissions
 from common.auth import permissions
+from datetime import datetime, timezone
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -24,6 +24,41 @@ class GetUserIdFromSessionCommand(Command[User | None]):
             player_id = row[0]
             
             return User(user_id, player_id)
+
+@dataclass
+class CheckUserHasPermissionCommand(Command[bool]):
+    user_id: int
+    permission_name: str
+    check_denied_only: bool = False
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        timestamp = int(datetime.now(timezone.utc).timestamp())
+        async with db_wrapper.connect() as db:
+            async with db.execute("""
+                SELECT DISTINCT rp.is_denied
+                FROM roles r
+                JOIN user_roles ur ON ur.role_id = r.id
+                JOIN role_permissions rp ON rp.role_id = r.id
+                JOIN permissions p on rp.permission_id = p.id
+                WHERE ur.user_id = ? AND p.name = ?
+                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
+                """, (self.user_id, self.permission_name, timestamp)) as cursor:
+                rows = await cursor.fetchall()
+            if len(rows) == 0:
+                # if check_denied_only is True, we only care about the absence of a denied permission,
+                # so an empty result set satisfies that
+                if self.check_denied_only:
+                    return True
+                else:
+                    return False
+            # if we find an instance of the permission which isnt denied, we have the permission no matter what,
+            # so just return True once we find one. otherwise, the permission must have been denied, so we return
+            # False after iterating
+            for row in rows:
+                is_denied = row[0]
+                if not is_denied:
+                    return True
+            return False
 
 @dataclass
 class GetUserWithPermissionFromSessionCommand(Command[User | None]):
