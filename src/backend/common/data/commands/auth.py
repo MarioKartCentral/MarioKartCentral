@@ -65,6 +65,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
 @dataclass
 class CheckUserHasTeamPermissionCommand(Command[bool]):
     user_id: int
+    team_id: int
     permission_name: str
     check_denied_only: bool = False
 
@@ -96,9 +97,9 @@ class CheckUserHasTeamPermissionCommand(Command[bool]):
                 JOIN user_team_roles ur ON ur.role_id = r.id
                 JOIN team_role_permissions rp ON rp.role_id = r.id
                 JOIN team_permissions p on rp.permission_id = p.id
-                WHERE ur.user_id = ? AND p.name = ?
+                WHERE ur.user_id = ? AND ur.team_id = ? AND p.name = ?
                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, self.permission_name, timestamp)) as cursor:
+                """, (self.user_id, self.team_id, self.permission_name, timestamp)) as cursor:
                 rows = await cursor.fetchall()
 
             if check_perms(rows):

@@ -69,7 +69,7 @@ def require_team_permission(permission_name: str, check_denied_only: bool = Fals
             if team_id is None:
                 raise Problem("No team ID specified", status=400)
             
-            user_has_permission = await handle(CheckUserHasTeamPermissionCommand(user.id, permission_name, check_denied_only))
+            user_has_permission = await handle(CheckUserHasTeamPermissionCommand(user.id, team_id, permission_name, check_denied_only))
 
             if user_has_permission:
                 request.state.session_id = session_id
