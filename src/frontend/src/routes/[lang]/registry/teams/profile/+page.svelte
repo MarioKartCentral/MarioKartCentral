@@ -49,7 +49,7 @@
   <Section header={$LL.TEAM_PROFILE.TEAM_PROFILE()}>
     <div slot="header_content">
       {#if team.approval_status === 'approved' && !team.is_historical}
-        <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
+        <TeamPermissionCheck team_id={id} permission={team_permissions.manage_rosters}>
           <Button href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
             >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
           >

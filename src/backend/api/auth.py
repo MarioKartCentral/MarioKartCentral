@@ -50,31 +50,32 @@ def require_permission(permission_name: str, check_denied_only: bool = False):
         return wrapper
     return has_permission_decorator
 
-def require_team_permission(permission_name: str):
+def require_team_permission(permission_name: str, check_denied_only: bool = False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             session_id = request.cookies.get("session", None)
             if session_id is None:
                 raise Problem("Not logged in", status=401)
+            
+            user = await handle(GetUserIdFromSessionCommand(session_id))
+            if user is None:
+                resp = ProblemResponse(Problem("Not logged in", status=401))
+                resp.delete_cookie("session")
+                return resp
+            
             body = await request.json()
             team_id = body.get("team_id", None)
 
             if team_id is None:
                 raise Problem("No team ID specified", status=400)
             
-            user = await handle(GetUserWithTeamPermissionFromSessionCommand(session_id, permission_name, team_id))
+            user_has_permission = await handle(CheckUserHasTeamPermissionCommand(user.id, permission_name, check_denied_only))
 
-            if user is not None:
+            if user_has_permission:
                 request.state.session_id = session_id
                 request.state.user = user
                 return await handle_request(request, *args, **kwargs)
-            
-            if await handle(IsValidSessionCommand(session_id)):
-                raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
             else:
-                resp = ProblemResponse(Problem("Not logged in", status=401))
-                resp.delete_cookie("session")
-                return resp
-
+                raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
         return wrapper
     return has_permission_decorator
