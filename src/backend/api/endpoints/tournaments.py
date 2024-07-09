@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission
+from api.auth import require_permission, require_tournament_permission, require_series_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import series_permissions, tournament_permissions
@@ -8,14 +8,14 @@ from common.data.commands import *
 from common.data.models import *
 
 @bind_request_body(CreateTournamentRequestData)
-@require_permission(series_permissions.CREATE_TOURNAMENT)
+@require_series_permission(series_permissions.CREATE_TOURNAMENT)
 async def create_tournament(request: Request, body: CreateTournamentRequestData) -> JSONResponse:
     command = CreateTournamentCommand(body)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(EditTournamentRequestData)
-@require_permission(tournament_permissions.EDIT_TOURNAMENT)
+@require_tournament_permission(tournament_permissions.EDIT_TOURNAMENT)
 async def edit_tournament(request: Request, body: EditTournamentRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditTournamentCommand(body, tournament_id)
@@ -41,8 +41,8 @@ async def create_series(request: Request, body: SeriesRequestData) -> JSONRespon
     await handle(command)
     return JSONResponse({})
 
-@bind_request_body(SeriesRequestData)
-@require_permission(series_permissions.EDIT_SERIES)
+@bind_request_body(EditSeriesRequestData)
+@require_series_permission(series_permissions.EDIT_SERIES)
 async def edit_series(request: Request, body: SeriesRequestData) -> JSONResponse:
     series_id = request.path_params['id']
     command = EditSeriesCommand(body, series_id)
@@ -62,14 +62,14 @@ async def series_list(request: Request, filter: SeriesFilter) -> JSONResponse:
     return JSONResponse(series)
 
 @bind_request_body(TournamentTemplateRequestData)
-@require_permission(series_permissions.CREATE_TOURNAMENT_TEMPLATE)
+@require_series_permission(series_permissions.CREATE_TOURNAMENT_TEMPLATE)
 async def create_template(request: Request, body: TournamentTemplateRequestData) -> JSONResponse:
     command = CreateTournamentTemplateCommand(body)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(TournamentTemplateRequestData)
-@require_permission(series_permissions.EDIT_TOURNAMENT_TEMPLATE)
+@require_series_permission(series_permissions.EDIT_TOURNAMENT_TEMPLATE)
 async def edit_template(request: Request, body: TournamentTemplateRequestData) -> JSONResponse:
     template_id = request.path_params['id']
     command = EditTournamentTemplateCommand(body, template_id)

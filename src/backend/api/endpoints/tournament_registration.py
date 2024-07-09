@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission, require_logged_in
+from api.auth import require_permission, require_logged_in, require_tournament_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions, series_permissions, tournament_permissions
@@ -9,7 +9,8 @@ from common.data.models import *
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+#@require_logged_in
 async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -20,7 +21,7 @@ async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSO
 
 # endpoint used when a non-moderator user registers a team for a tournament
 @bind_request_body(RegisterTeamRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def register_my_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -30,7 +31,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     return JSONResponse({})
 
 @bind_request_body(RegisterTeamRequestData)
-@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.captain_player, body.captain_player, tournament_id,
@@ -40,7 +41,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
-@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, body.player_id, tournament_id, 
@@ -49,7 +50,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     return JSONResponse({})
 
 @bind_request_body(EditSquadRequestData)
-@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered)
@@ -57,7 +58,7 @@ async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONRespon
     return JSONResponse({})
 
 @bind_request_body(EditMySquadRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
@@ -70,7 +71,7 @@ async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONR
 # used when the captain of a squad invites a player to their squad.
 # use force_register_player in tournament staff contexts
 @bind_request_body(InvitePlayerRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
@@ -82,7 +83,7 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
 
 # endpoint used when a user registers themself for a tournament
 @bind_request_body(RegisterPlayerRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -92,7 +93,7 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
 
 # endpoint used when a tournament staff registers another player for a tournament (requires permissions)
 @bind_request_body(ForceRegisterPlayerRequestData)
-@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, body.is_squad_captain, body.is_checked_in, 
@@ -101,7 +102,7 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     return JSONResponse({})
 
 @bind_request_body(EditPlayerRegistrationRequestData)
-@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_registration(request: Request, body: EditPlayerRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, body.player_id, body.mii_name, body.can_host,
@@ -110,7 +111,7 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     return JSONResponse({})
 
 @bind_request_body(EditMyRegistrationRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def edit_my_registration(request: Request, body: EditMyRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -120,7 +121,7 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
     return JSONResponse({})
 
 @bind_request_body(AcceptInviteRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     player_id = request.state.user.player_id
@@ -140,7 +141,7 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
 
 # used when a squad captain wants to remove a member from their squad
 @bind_request_body(KickSquadPlayerRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def remove_player_from_squad(request: Request, body: KickSquadPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
@@ -162,7 +163,7 @@ async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> 
 
 # used when a staff member force removes a player from the tournament
 @bind_request_body(StaffUnregisterPlayerRequestData)
-@require_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, True)
@@ -170,7 +171,7 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
     return JSONResponse({})
 
 @bind_request_body(MakeCaptainRequestData)
-@require_logged_in
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
     tournament_id = request.path_params['id']
     captain_player_id = request.state.user.player_id
