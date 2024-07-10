@@ -174,3 +174,8 @@ class PlayerClaim:
 class MergePlayersRequestData:
     from_player_id: int
     to_player_id: int
+@dataclass
+class PlayerMin:
+    id: int
+    name: str
+

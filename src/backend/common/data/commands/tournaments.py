@@ -250,20 +250,28 @@ class CheckIfSeriesHasTournament(Command[bool]):
                 return has_tournament
             
 @dataclass
-class GetSquadTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
+class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements]]):
     series_id: int
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             series_id = self.series_id
             tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments WHERE series_id = ?"
-            placements_query = f"""
+            placements_query = f"""  
                 SELECT tsp.id, ts.tournament_id, ts.id AS squad_id, ts.name AS squad_name, placement, placement_description, is_disqualified
                 FROM tournament_squad_placements tsp
                 JOIN tournament_squads ts ON ts.id = tsp.squad_id
-                WHERE placement <= 3 AND ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                WHERE ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+            """
+            squads_query= f"""
+                SELECT tp.id, player_id, tp.tournament_id, tp.squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, p.name, tsp.placement
+                FROM tournament_players tp 
+                JOIN players p ON p.id = tp.player_id 
+                JOIN tournament_squad_placements tsp ON tp.squad_id = tsp.squad_id
+                WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ?)
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
+            players: list[TournamentPlayerDetails] = []
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -278,10 +286,17 @@ class GetSquadTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
                     squad =  TournamentSquadDetails(squad_id, squad_name, None, 1, 1, 1, [])
                     placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, None, squad)
                     placements[tournament_id].append(placement)
+            async with db.execute(squads_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id,player_id,tournament_id,squad_id,is_squad_captain,timestamp,is_checked_in,mii_name,can_host,is_invite,selected_fc_id, name, placement = row
+                    player = TournamentPlayerDetails(id, player_id, squad_id, timestamp, is_checked_in, mii_name, can_host, name, None, None, [])
+                    players.append(player)
+                    placements[tournament_id][placement-1].squad.players.append(player)
             return tournaments
         
 @dataclass
-class GetSoloTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
+class GetSoloTournamentListWithPlacements(Command[list[TournamentWithPlacements]]):
     series_id: int
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
@@ -292,7 +307,7 @@ class GetSoloTournamentListWithTop3(Command[list[TournamentWithPlacements]]):
                 FROM tournament_solo_placements s
                 JOIN tournament_players tp ON s.player_id = tp.id
                 JOIN players p ON tp.player_id = p.id
-                WHERE placement <= 3 AND s.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)  
+                WHERE s.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)  
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
