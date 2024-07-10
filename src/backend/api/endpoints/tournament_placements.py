@@ -50,10 +50,10 @@ async def get_series_placements(request: Request) -> JSONResponse:
         command = CheckIfSquadTournament(tournament_id)
         is_squad = await handle(command)
         if is_squad:
-            reg_command = GetSquadTournamentListWithTop3(series_id)
+            reg_command = GetSquadTournamentListWithPlacements(series_id)
             tournamentsWithPlacements = await handle(reg_command)
         else:
-            reg_command = GetSoloTournamentListWithTop3(series_id)
+            reg_command = GetSoloTournamentListWithPlacements(series_id)
             tournamentsWithPlacements = await handle(reg_command)
         return JSONResponse(tournamentsWithPlacements)
     return JSONResponse({})

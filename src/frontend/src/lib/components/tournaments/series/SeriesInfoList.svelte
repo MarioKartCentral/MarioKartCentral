@@ -79,12 +79,29 @@
       {#each tournaments as tournament}
         <tr>
           <td>
-            {tournament.tournament_name}
-            <!-- <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a> -->
+            <a href="/{$page.params.lang}/tournaments?id={tournament.id}">{tournament.tournament_name}</a>
           </td>
+          <td class="right">
+            {new Date(tournament.date_start * 1000).toLocaleDateString('fr-FR', options)} - {new Date(
+              tournament.date_end * 1000,
+            ).toLocaleDateString('fr-FR', options)}
+          </td>
+        </tr>
+        <tr>
           <td>
+            <GameBadge game={tournament.game} />
+            <ModeBadge mode={tournament.mode} />
+            <TypeBadge type={tournament.is_squad ? 'Squad' : 'Solo'} />
+          </td>
+          <td class="right">
             {#each tournament.placements as placement}
-              {'   ' + getMedail(placement.placement) + ' ' + placement.player.name}
+              <span style="color:{getColor(placement.placement)}">
+                <a
+                  href={`/${$page.params.lang}/registry/player?id=${placement.player.id}`}
+                >
+                  {'   ' + getMedail(placement.placement) + ' ' + placement.player.name}
+                </a>
+              </span>
             {/each}
           </td>
         </tr>

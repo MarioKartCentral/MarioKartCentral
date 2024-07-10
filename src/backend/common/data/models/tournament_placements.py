@@ -15,6 +15,10 @@ class TournamentPlacementDetailed(TournamentPlacement):
     squad: TournamentSquadDetails | None
 
 @dataclass
+class TournamentPlacementMin():
+    
+
+@dataclass
 class TournamentPlacementList():
     tournament_id: int
     is_squad: bool
@@ -30,4 +34,4 @@ class TournamentSoloPlacements:
     placement: int
     placement_description: str
     placement_lower_bound: int | None
-    is_disqualified: bool
+    is_disqualified: bool:

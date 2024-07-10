@@ -11,6 +11,7 @@
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import SeriesInfoList from './SeriesInfoList.svelte';
+  import SeriesStats from './SeriesStats.svelte';
 
   export let series: TournamentSeries;
   export let tournaments = [];
@@ -60,8 +61,13 @@
       </div>
     </div>
     <MarkdownBox content={series.description} />
-    <SeriesInfoList {tournaments} />
   </div>
+</Section>
+<Section header="Tournament History">
+  <SeriesInfoList {tournaments} />
+</Section>
+<Section header="Stats">
+  <SeriesStats {tournaments} />
 </Section>
 
 <style>
