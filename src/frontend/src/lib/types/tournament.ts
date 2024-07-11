@@ -1,4 +1,5 @@
 import type { CreateTournament } from './tournaments/create/create-tournament';
+import type { TournamentPlacementList } from './tournament-placement';
 
 export type Tournament = {
   id: number;
@@ -7,3 +8,7 @@ export type Tournament = {
   series_description: string | null;
   series_ruleset: string | null;
 } & CreateTournament;
+
+export type TournamentWithPlacements = Tournament & {
+  placements: TournamentPlacementList;
+};

@@ -1,28 +1,28 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import LL from '$i18n/i18n-svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import Table from '$lib/components/common/Table.svelte';
-  import { page } from '$app/stores';
-  import type { Tournament } from '$lib/types/tournament';
-  export let tournaments: Tournament[];
-  let teams = [];
-
-  function addTeams(tournaments) {
-    for (let tournament of tournaments) {
-      for (let team of placements) {
-        
-      }
-    }
-  }
-
-  onMount(() => {
-    if (tournaments) {
-      teams = addTeams(tournaments);
-      console.log(teams);
-    }
-  });
+  export let teams;
 </script>
 
-<div>{teams.length}</div>
+<Table>
+  <col class="placement" />
+  <col class="team_tag" />
+  <col class="team_name" />
+  <col class="gold" />
+  <col class="silver" />
+  <thead><tr><th></th><th></th><th></th><th>👑</th><th>🥈</th><th>🥉</th></tr></thead>
+  <col class="bronze" />
+  {#each teams as team}
+    <tr>
+      <td>{team.podiumsPlacement}</td>
+      <td><TagBadge tag={team.squad.tag} color={1} /></td>
+      <td>{team.squad.name}</td>
+      <td>{team.gold}</td>
+      <td>{team.silver}</td>
+      <td>{team.bronze}</td>
+    </tr>
+  {/each}
+</Table>
 
 <style></style>

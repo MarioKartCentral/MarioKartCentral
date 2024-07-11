@@ -12,9 +12,12 @@
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import SeriesInfoList from './SeriesInfoList.svelte';
   import SeriesStats from './SeriesStats.svelte';
+  import { makePodiumRankings } from '$lib/util/stats';
 
   export let series: TournamentSeries;
   export let tournaments = [];
+  export let teams = [];
+
   onMount(async () => {
     const res = await fetch(`/api/tournaments/series/${series.id}/placements`);
     if (res.status === 200) {
@@ -24,6 +27,7 @@
         tab.push(t);
       }
       tournaments = tab;
+      teams = makePodiumRankings(tournaments)
     }
   });
 </script>
@@ -67,7 +71,7 @@
   <SeriesInfoList {tournaments} />
 </Section>
 <Section header="Stats">
-  <SeriesStats {tournaments} />
+  <SeriesStats {teams} />
 </Section>
 
 <style>
