@@ -262,16 +262,8 @@ class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements
                 JOIN tournament_squads ts ON ts.id = tsp.squad_id
                 WHERE ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
             """
-            squads_query= f"""
-                SELECT tp.id, player_id, tp.tournament_id, tp.squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, p.name, tsp.placement
-                FROM tournament_players tp 
-                JOIN players p ON p.id = tp.player_id 
-                JOIN tournament_squad_placements tsp ON tp.squad_id = tsp.squad_id
-                WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ?)
-            """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
-            players: list[TournamentPlayerDetails] = []
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -286,13 +278,6 @@ class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements
                     squad =  TournamentSquadDetails(squad_id, squad_name, None, 1, 1, 1, [])
                     placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, None, squad)
                     placements[tournament_id].append(placement)
-            async with db.execute(squads_query, (series_id,)) as cursor:
-                rows = await cursor.fetchall()
-                for row in rows:
-                    id,player_id,tournament_id,squad_id,is_squad_captain,timestamp,is_checked_in,mii_name,can_host,is_invite,selected_fc_id, name, placement = row
-                    player = TournamentPlayerDetails(id, player_id, squad_id, timestamp, is_checked_in, mii_name, can_host, name, None, None, [])
-                    players.append(player)
-                    placements[tournament_id][placement-1].squad.players.append(player)
             return tournaments
         
 @dataclass
