@@ -21,10 +21,6 @@
     let param_id = $page.url.searchParams.get('id');
     id = Number(param_id);
   });
-
-  $: {
-    console.log(check_series_permission(user_info, series_permissions.create_tournament, id));
-  }
 </script>
 
 {#if id}
