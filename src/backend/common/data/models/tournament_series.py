@@ -19,7 +19,7 @@ class SeriesRequestData():
 
 @dataclass
 class EditSeriesRequestData(SeriesRequestData):
-    id: int
+    series_id: int
     
 @dataclass
 class Series():

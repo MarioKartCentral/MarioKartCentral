@@ -1,7 +1,6 @@
 <script lang="ts">
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { permissions } from '$lib/util/util';
   import { page } from '$app/stores';
   import Dropdown from './common/Dropdown.svelte';
   import DropdownItem from './common/DropdownItem.svelte';
@@ -9,6 +8,7 @@
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
   import AlertCount from './common/AlertCount.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;
   let unread_count = 0;
@@ -39,7 +39,7 @@
   
 </NavLi>
 <Dropdown>
-  {#if user_info.permissions.includes(permissions.manage_teams)}
+  {#if check_permission(user_info, permissions.manage_teams)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">
       Approve Teams 
       {#if user_info.mod_notifications?.pending_teams}
@@ -54,7 +54,7 @@
       {/if}
     </DropdownItem>
   {/if}
-  {#if user_info.permissions.includes(permissions.manage_transfers)}
+  {#if check_permission(user_info, permissions.manage_transfers)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_transfers">
       Transfers
       {#if user_info.mod_notifications?.pending_transfers}

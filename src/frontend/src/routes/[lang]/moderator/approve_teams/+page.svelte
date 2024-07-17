@@ -4,8 +4,7 @@
   import Table from '$lib/components/common/Table.svelte';
   import type { Team } from '$lib/types/team';
   import type { TeamRoster } from '$lib/types/team-roster';
-  import { permissions } from '$lib/util/util';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
@@ -13,6 +12,8 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   let teams: Team[] = [];
   let rosters: TeamRoster[] = [];
@@ -21,6 +22,11 @@
   $: denied_teams = teams.filter((t) => t.approval_status === 'denied');
   $: pending_rosters = rosters.filter((r) => r.approval_status === 'pending');
   $: denied_rosters = rosters.filter((r) => r.approval_status === 'denied');
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     const res = await fetch(`/api/registry/teams/unapprovedTeams`);
@@ -114,7 +120,7 @@
   }
 </script>
 
-<PermissionCheck permission={permissions.manage_teams}>
+{#if check_permission(user_info, permissions.manage_teams)}
   <Section header="Pending Teams">
     {#if pending_teams.length}
     <Table>
@@ -271,7 +277,7 @@
     {/if}
     
   </Section>
-</PermissionCheck>
+{/if}
 
 <style>
   col.tag {

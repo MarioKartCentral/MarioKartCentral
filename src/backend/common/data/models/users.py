@@ -16,14 +16,24 @@ class ModNotifications:
     pending_transfers: int = 0
 
 @dataclass
+class Permission:
+    name: str
+    is_denied: bool
+
+@dataclass
 class TeamPermissions:
     team_id: int
-    permissions: list[str]
+    permissions: list[Permission]
 
 @dataclass
 class SeriesPermissions:
     series_id: int
-    permissions: list[str]
+    permissions: list[Permission]
+
+@dataclass
+class TournamentPermissions:
+    tournament_id: int
+    permissions: list[Permission]
 
 @dataclass
 class UserPlayer:
@@ -33,6 +43,7 @@ class UserPlayer:
     permissions: list[str]
     team_permissions: list[TeamPermissions]
     series_permissions: list[SeriesPermissions]
+    tournament_permissions: list[TournamentPermissions]
     mod_notifications: ModNotifications | None
 
 @dataclass

@@ -1,17 +1,23 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import { locale } from '$i18n/i18n-svelte';
-  import { series_permissions, permissions, valid_games } from '$lib/util/util';
-  import SeriesPermissionCheck from '../common/SeriesPermissionCheck.svelte';
-  import PermissionCheck from '../common/PermissionCheck.svelte';
+  import { valid_games } from '$lib/util/util';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import Section from '../common/Section.svelte';
   import Button from '../common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import GameBadge from '../badges/GameBadge.svelte';
   import TypeBadge from '../badges/TypeBadge.svelte';
   import ModeBadge from '../badges/ModeBadge.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   export let tournament: Tournament;
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   $: tournament_type = tournament.is_squad ? (tournament.teams_allowed ? 'Team' : 'Squad') : 'Solo';
   let date_start = new Date(tournament.date_start * 1000);
@@ -27,20 +33,12 @@
   };
 </script>
 
-<PermissionCheck permission={permissions.edit_tournament}>
-  <Section header="Moderator">
-    <div slot="header_content">
-      <Button href="/{$page.params.lang}/tournaments/mod/edit?id={tournament.id}">Edit Tournament</Button>
-    </div>
-  </Section>
-</PermissionCheck>
-
 <Section header="Tournament Info">
   <div slot="header_content">
-    <SeriesPermissionCheck series_id={tournament.series_id} permission={series_permissions.edit_tournament}>
+    {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
       <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">Edit Tournament</Button>
       <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">Edit Placements</Button>
-    </SeriesPermissionCheck>
+    {/if}
   </div>
   <div class="centered">
     {#if tournament.logo}

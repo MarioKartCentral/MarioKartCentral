@@ -6,7 +6,7 @@
   import Footer from '$lib/components/Footer.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { onMount, setContext } from 'svelte';
+  import { onMount } from 'svelte';
 
   export let data: LayoutData;
 
@@ -18,35 +18,9 @@
     user_info = value;
   });
 
-  let permissions: string[] = []; // permissions list passed up from current page
-  let check_team_permissions = false;
-  let check_series_permissions = false;
-  function addPermission(permission: string) {
-    // function that updates list of all permissions
-    permissions.push(permission);
-  }
-  function checkTeamPerms() {
-    check_team_permissions = true;
-  }
-  function checkSeriesPerms() {
-    check_series_permissions = true;
-  }
-  setContext('page-init', { addPermission, checkTeamPerms, checkSeriesPerms });
-
   onMount(async () => {
     if (user_info.is_checked === false) {
-      let query_params = [];
-      if (permissions.length > 0) {
-        query_params.push(`permissions=${permissions.join(',')}`);
-      }
-      if (check_team_permissions) {
-        query_params.push('check_team_perms=true');
-      }
-      if (check_series_permissions) {
-        query_params.push('check_series_perms=true');
-      }
-      let query_text = `?` + query_params.join('&');
-      const res = await fetch(`/api/user/me/player${query_text}`);
+      const res = await fetch(`/api/user/me/player`);
       if (res.status != 200) {
         user.update((u) => {
           u.is_checked = true;
@@ -62,6 +36,7 @@
         permissions: body['permissions'],
         team_permissions: body['team_permissions'],
         series_permissions: body['series_permissions'],
+        tournament_permissions: body['tournament_permissions'],
         mod_notifications: body['mod_notifications'],
         is_checked: true,
       };
@@ -106,13 +81,4 @@
       padding-right: 20px;
     }
   }
-  /* :global(a) {
-    color: white;
-    text-decoration: none;
-    transition: color 0.2s ease-out;
-  }
-  :global(a:hover) {
-    color: rgb(0, 162, 255);
-    text-decoration: none;
-  } */
 </style>

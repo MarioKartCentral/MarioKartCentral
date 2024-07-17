@@ -6,7 +6,6 @@
   import TournamentRegistrations from '$lib/components/tournaments/TournamentRegistrations.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import type { Tournament } from '$lib/types/tournament';
-  import { setSeriesPerms, addPermission, permissions } from '$lib/util/util';
   import TournamentRegisterPanel from '$lib/components/tournaments/registration/TournamentRegisterPanel.svelte';
   import PlacementsDisplay from '$lib/components/tournaments/placements/PlacementsDisplay.svelte';
   import Accordion from '$lib/components/common/Accordion.svelte';
@@ -16,9 +15,6 @@
 
   let tournament: Tournament;
   $: tournament_name = tournament ? `${tournament.tournament_name}` : 'Tournaments';
-
-  setSeriesPerms();
-  addPermission(permissions.edit_tournament);
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');

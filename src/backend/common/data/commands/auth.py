@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, ModNotifications, TeamPermissions, SeriesPermissions
+from common.data.models import Problem, User, ModNotifications, Permission, TeamPermissions, SeriesPermissions, TournamentPermissions
 from common.auth import permissions
 from datetime import datetime, timezone
 from typing import Iterable
@@ -114,6 +114,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                 if check_perms(rows):
                     return True
             
+            #finally, check user roles
             async with db.execute("""
                 SELECT DISTINCT rp.is_denied
                 FROM roles r
@@ -126,199 +127,6 @@ class CheckUserHasPermissionCommand(Command[bool]):
                 rows = await cursor.fetchall()
 
             return check_perms(rows)
-        
-# @dataclass
-# class CheckUserHasTeamPermissionCommand(Command[bool]):
-#     user_id: int
-#     team_id: int
-#     permission_name: str
-#     check_denied_only: bool = False
-
-#     async def handle(self, db_wrapper, s3_wrapper):
-#         timestamp = int(datetime.now(timezone.utc).timestamp())
-#         async with db_wrapper.connect() as db:
-
-#             def check_perms(rows: Iterable[Row]):
-#                 if len(rows) == 0:
-#                     # if check_denied_only is True, we only care about the absence of a denied permission,
-#                     # so an empty result set satisfies that
-#                     if self.check_denied_only:
-#                         return True
-#                     else:
-#                         return False
-#                 # if we find an instance of the permission which isnt denied, we have the permission no matter what,
-#                 # so just return True once we find one. otherwise, the permission must have been denied, so we return
-#                 # False after iterating
-#                 for row in rows:
-#                     is_denied = row[0]
-#                     if not is_denied:
-#                         return True
-#                 return False
-
-#             # check team roles
-#             async with db.execute("""
-#                 SELECT DISTINCT rp.is_denied
-#                 FROM team_roles r
-#                 JOIN user_team_roles ur ON ur.role_id = r.id
-#                 JOIN team_role_permissions rp ON rp.role_id = r.id
-#                 JOIN team_permissions p on rp.permission_id = p.id
-#                 WHERE ur.user_id = ? AND ur.team_id = ? AND p.name = ?
-#                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                 """, (self.user_id, self.team_id, self.permission_name, timestamp)) as cursor:
-#                 rows = await cursor.fetchall()
-
-#             if check_perms(rows):
-#                 return True
-
-#             # check user roles
-#             async with db.execute("""
-#                 SELECT DISTINCT rp.is_denied
-#                 FROM roles r
-#                 JOIN user_roles ur ON ur.role_id = r.id
-#                 JOIN role_permissions rp ON rp.role_id = r.id
-#                 JOIN permissions p on rp.permission_id = p.id
-#                 WHERE ur.user_id = ? AND p.name = ?
-#                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                 """, (self.user_id, self.permission_name, timestamp)) as cursor:
-#                 rows = await cursor.fetchall()
-
-#             return check_perms(rows)
-
-# @dataclass
-# class CheckUserHasSeriesPermissionCommand(Command[bool]):
-#     user_id: int
-#     series_id: int
-#     permission_name: str
-#     check_denied_only: bool = False
-
-#     async def handle(self, db_wrapper, s3_wrapper):
-#         timestamp = int(datetime.now(timezone.utc).timestamp())
-#         async with db_wrapper.connect() as db:
-
-#             def check_perms(rows: Iterable[Row]):
-#                 if len(rows) == 0:
-#                     # if check_denied_only is True, we only care about the absence of a denied permission,
-#                     # so an empty result set satisfies that
-#                     if self.check_denied_only:
-#                         return True
-#                     else:
-#                         return False
-#                 # if we find an instance of the permission which isnt denied, we have the permission no matter what,
-#                 # so just return True once we find one. otherwise, the permission must have been denied, so we return
-#                 # False after iterating
-#                 for row in rows:
-#                     is_denied = row[0]
-#                     if not is_denied:
-#                         return True
-#                 return False
-            
-#             # check series roles
-#             async with db.execute("""
-#                 SELECT DISTINCT rp.is_denied
-#                 FROM series_roles r
-#                 JOIN user_series_roles ur ON ur.role_id = r.id
-#                 JOIN series_role_permissions rp ON rp.role_id = r.id
-#                 JOIN series_permissions p on rp.permission_id = p.id
-#                 WHERE ur.user_id = ? AND ur.series_id = ? AND p.name = ?
-#                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                 """, (self.user_id, self.series_id, self.permission_name, timestamp)) as cursor:
-#                 rows = await cursor.fetchall()
-
-#             if check_perms(rows):
-#                 return True
-
-#             # check user roles
-#             async with db.execute("""
-#                 SELECT DISTINCT rp.is_denied
-#                 FROM roles r
-#                 JOIN user_roles ur ON ur.role_id = r.id
-#                 JOIN role_permissions rp ON rp.role_id = r.id
-#                 JOIN permissions p on rp.permission_id = p.id
-#                 WHERE ur.user_id = ? AND p.name = ?
-#                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                 """, (self.user_id, self.permission_name, timestamp)) as cursor:
-#                 rows = await cursor.fetchall()
-
-#             return check_perms(rows)
-        
-# @dataclass
-# class CheckUserHasTournamentPermissionCommand(Command[bool]):
-#     user_id: int
-#     tournament_id: int
-#     permission_name: str
-#     check_denied_only: bool = False
-
-#     async def handle(self, db_wrapper, s3_wrapper):
-#         timestamp = int(datetime.now(timezone.utc).timestamp())
-#         async with db_wrapper.connect() as db:
-
-#             def check_perms(rows: Iterable[Row]):
-#                 if len(rows) == 0:
-#                     # if check_denied_only is True, we only care about the absence of a denied permission,
-#                     # so an empty result set satisfies that
-#                     if self.check_denied_only:
-#                         return True
-#                     else:
-#                         return False
-#                 # if we find an instance of the permission which isnt denied, we have the permission no matter what,
-#                 # so just return True once we find one. otherwise, the permission must have been denied, so we return
-#                 # False after iterating
-#                 for row in rows:
-#                     is_denied = row[0]
-#                     if not is_denied:
-#                         return True
-#                 return False
-            
-#             async with db.execute("SELECT series_id FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
-#                 row = await cursor.fetchone()
-#                 if not row:
-#                     raise Problem("Tournament not found", status=400)
-#                 series_id = row[0]
-
-#             # check tournament roles
-#             async with db.execute("""
-#                 SELECT DISTINCT rp.is_denied
-#                 FROM tournament_roles r
-#                 JOIN user_tournament_roles ur ON ur.role_id = r.id
-#                 JOIN tournament_role_permissions rp ON rp.role_id = r.id
-#                 JOIN tournament_permissions p on rp.permission_id = p.id
-#                 WHERE ur.user_id = ? AND ur.tournament_id = ? AND p.name = ?
-#                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                 """, (self.user_id, self.tournament_id, self.permission_name, timestamp)) as cursor:
-#                 rows = await cursor.fetchall()
-
-#             if check_perms(rows):
-#                 return True
-            
-#             if series_id:
-#                 # check series roles
-#                 async with db.execute("""
-#                     SELECT DISTINCT rp.is_denied
-#                     FROM series_roles r
-#                     JOIN user_series_roles ur ON ur.role_id = r.id
-#                     JOIN series_role_permissions rp ON rp.role_id = r.id
-#                     JOIN series_permissions p on rp.permission_id = p.id
-#                     WHERE ur.user_id = ? AND ur.series_id = ? AND p.name = ?
-#                     AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                     """, (self.user_id, series_id, self.permission_name, timestamp)) as cursor:
-#                     rows = await cursor.fetchall()
-
-#                 if check_perms(rows):
-#                     return True
-            
-#             # check user roles
-#             async with db.execute("""
-#                 SELECT DISTINCT rp.is_denied
-#                 FROM roles r
-#                 JOIN user_roles ur ON ur.role_id = r.id
-#                 JOIN role_permissions rp ON rp.role_id = r.id
-#                 JOIN permissions p on rp.permission_id = p.id
-#                 WHERE ur.user_id = ? AND p.name = ?
-#                 AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-#                 """, (self.user_id, self.permission_name, timestamp)) as cursor:
-#                 rows = await cursor.fetchall()
-
-#             return check_perms(rows)
 
 @dataclass
 class GetUserWithPermissionFromSessionCommand(Command[User | None]):
@@ -368,60 +176,76 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
             return User(int(row[0]), row[1])
         
 @dataclass
-class CheckPermissionsCommand(Command[tuple[list[str], list[TeamPermissions], list[SeriesPermissions]]]):
+class CheckPermissionsCommand(Command[tuple[list[Permission], list[TeamPermissions], list[SeriesPermissions], list[TournamentPermissions]]]):
     user_id: int
-    permissions: list[str]
-    check_team_perms: bool
-    check_series_perms: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             valid_perms: list[str] = []
             async with db.execute(f"""
-                SELECT DISTINCT p.name
+                SELECT DISTINCT p.name, rp.is_denied
                 FROM user_roles ur
                 JOIN role_permissions rp ON ur.role_id = rp.role_id
                 JOIN permissions p ON rp.permission_id = p.id 
-                WHERE ur.user_id = ? AND p.name IN ({','.join([f"?" for _ in self.permissions])})
-                """, (self.user_id, *self.permissions)) as cursor:
+                WHERE ur.user_id = ?
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
-                valid_perms = [row[0] for row in rows]
+                valid_perms: list[Permission] = []
+                for row in rows:
+                    name, is_denied = row
+                    valid_perms.append(Permission(name, is_denied))
+
             team_perms = []
-            # only check team permissions if we are on a page that needs them
-            if self.check_team_perms:
-                async with db.execute(f"""
-                    SELECT ur.team_id, p.name
-                    FROM user_team_roles ur
-                    JOIN team_role_permissions rp ON ur.role_id = rp.role_id
-                    JOIN team_permissions p ON rp.permission_id = p.id
-                    WHERE ur.user_id = ?
-                    """, (self.user_id,)) as cursor:
-                    rows = await cursor.fetchall()
-                    team_perm_dict: dict[int, list[str]] = {}
-                    for row in rows:
-                        team_id, perm = row
-                        if team_id not in team_perm_dict:
-                            team_perm_dict[team_id] = []
-                        team_perm_dict[team_id].append(perm)
-                    team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
+            async with db.execute(f"""
+                SELECT ur.team_id, p.name, rp.is_denied
+                FROM user_team_roles ur
+                JOIN team_role_permissions rp ON ur.role_id = rp.role_id
+                JOIN team_permissions p ON rp.permission_id = p.id
+                WHERE ur.user_id = ?
+                """, (self.user_id,)) as cursor:
+                rows = await cursor.fetchall()
+                team_perm_dict: dict[int, list[Permission]] = {}
+                for row in rows:
+                    team_id, name, is_denied = row
+                    if team_id not in team_perm_dict:
+                        team_perm_dict[team_id] = []
+                    team_perm_dict[team_id].append(Permission(name, is_denied))
+                team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
+
             series_perms = []
-            if self.check_series_perms:
-                async with db.execute(f"""
-                    SELECT ur.series_id, p.name
-                    FROM user_series_roles ur
-                    JOIN series_role_permissions rp ON ur.role_id = rp.role_id
-                    JOIN team_permissions p ON rp.permission_id = p.id
-                    WHERE ur.user_id = ?
-                    """, (self.user_id,)) as cursor:
-                    rows = await cursor.fetchall()
-                    series_perm_dict: dict[int, list[str]] = {}
-                    for row in rows:
-                        series_id, perm = row
-                        if series_id not in series_perm_dict:
-                            series_perm_dict[series_id] = []
-                        series_perm_dict[series_id].append(perm)
-                    series_perms = [SeriesPermissions(series_id, perms) for series_id, perms in series_perm_dict.items()]
-        return valid_perms, team_perms, series_perms
+            async with db.execute(f"""
+                SELECT ur.series_id, p.name, rp.is_denied
+                FROM user_series_roles ur
+                JOIN series_role_permissions rp ON ur.role_id = rp.role_id
+                JOIN series_permissions p ON rp.permission_id = p.id
+                WHERE ur.user_id = ?
+                """, (self.user_id,)) as cursor:
+                rows = await cursor.fetchall()
+                series_perm_dict: dict[int, list[Permission]] = {}
+                for row in rows:
+                    series_id, name, is_denied = row
+                    if series_id not in series_perm_dict:
+                        series_perm_dict[series_id] = []
+                    series_perm_dict[series_id].append(Permission(name, is_denied))
+                series_perms = [SeriesPermissions(series_id, perms) for series_id, perms in series_perm_dict.items()]
+
+            tournament_perms = []
+            async with db.execute(f"""
+                SELECT ur.tournament_id, p.name, rp.is_denied
+                FROM user_tournament_roles ur
+                JOIN tournament_role_permissions rp ON ur.role_id = rp.role_id
+                JOIN tournament_permissions p ON rp.permission_id = p.id
+                WHERE ur.user_id = ?
+                """, (self.user_id,)) as cursor:
+                rows = await cursor.fetchall()
+                tournament_perm_dict: dict[int, list[Permission]] = {}
+                for row in rows:
+                    tournament_id, name, is_denied = row
+                    if tournament_id not in tournament_perm_dict:
+                        tournament_perm_dict[tournament_id] = []
+                    tournament_perm_dict[tournament_id].append(Permission(name, is_denied))
+                tournament_perms = [TournamentPermissions(tournament_id, perms) for tournament_id, perms in tournament_perm_dict.items()]
+        return valid_perms, team_perms, series_perms, tournament_perms
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -514,12 +338,13 @@ class GrantRoleCommand(Command[None]):
                 
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
-    valid_perms: list[str]
+    valid_perms: list[Permission]
 
     async def handle(self, db_wrapper, s3_wrapper):
         mod_notifications = ModNotifications()
+        string_perms = [p.name for p in self.valid_perms if not p.is_denied]
         async with db_wrapper.connect(readonly=True) as db:
-            if permissions.MANAGE_TEAMS in self.valid_perms:
+            if permissions.MANAGE_TEAMS in string_perms:
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
@@ -538,7 +363,7 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     row = await cursor.fetchone()
                     assert row is not None
                     mod_notifications.pending_team_edits += row[0]
-            if permissions.MANAGE_TRANSFERS in self.valid_perms:
+            if permissions.MANAGE_TRANSFERS in string_perms:
                 async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE is_accepted = 1 AND approval_status='pending'") as cursor:
                     row = await cursor.fetchone()
                     assert row is not None

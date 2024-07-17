@@ -3,14 +3,14 @@
     import { page } from '$app/stores';
     import type { Team } from '$lib/types/team';
     import Section from '$lib/components/common/Section.svelte';
-    import { setTeamPerms, team_permissions, permissions } from '$lib/util/util';
-    import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
-    import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
+    import { team_permissions, permissions, check_team_permission, check_permission } from '$lib/util/permissions';
     import LL from '$i18n/i18n-svelte';
     import ColorSelect from '$lib/components/common/ColorSelect.svelte';
     import Button from '$lib/components/common/buttons/Button.svelte';
     import LanguageSelect from '$lib/components/common/LanguageSelect.svelte';
     import TeamNameTagRequest from './TeamNameTagRequest.svelte';
+    import type { UserInfo } from '$lib/types/user-info';
+    import { user } from '$lib/stores/stores';
 
     export let is_mod = false;
   
@@ -18,8 +18,11 @@
     let team: Team;
   
     $: team_name = team ? team.name : 'Registry';
-  
-    setTeamPerms();
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+      user_info = value;
+    });
   
     onMount(async () => {
       let param_id = $page.url.searchParams.get('id');
@@ -106,13 +109,14 @@
       </div>
     </Section>
     {#if !is_mod}
-        <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_name_tag}>
-            <Section header="Team Name/Tag">
-              <TeamNameTagRequest {team}/>
-            </Section>
-        </TeamPermissionCheck>
-        <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
-            <form method="post" on:submit|preventDefault={editTeam}>
+         {#if check_team_permission(user_info, team_permissions.edit_team_name_tag, id)}
+          <Section header="Team Name/Tag">
+            <TeamNameTagRequest {team}/>
+          </Section>
+         {/if}
+            
+         {#if check_team_permission(user_info, team_permissions.edit_team_info, id)}
+          <form method="post" on:submit|preventDefault={editTeam}>
             <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
                 <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
                 <ColorSelect name="color" tag={team.tag} bind:color={team.color}/>
@@ -132,51 +136,51 @@
                 <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
             </Section>
             </form>
-        </TeamPermissionCheck>
+         {/if}
     {:else}
-        <PermissionCheck permission={permissions.manage_teams}>
-        <form method="post" on:submit|preventDefault={forceEditTeam}>
-          <Section header="Team Name/Tag">
-            <label for="name">Team Name</label>
-            <input name="name" type="text" value={team.name} required />
-            <br />
-            <label for="tag">Team Tag</label>
-            <input name="tag" type="text" bind:value={team.tag} required />
-          </Section>
-          <Section header="Customization">
-            <label for="color">Team Color</label>
-            <ColorSelect bind:color={team.color} tag={team.tag} name="color"/>
-            <br />
-            <label for="logo">Team Logo</label>
-            <input name="logo" type="text" value={team.logo} />
-          </Section>
-          <Section header="Misc. Info">
-            <label for="language">Language</label>
-            <LanguageSelect bind:language={team.language}/>
-            <br />
-            <label for="description">Team Description</label>
-            <textarea name="description" value={team.description} />
-            <br />
-          </Section>
-          <Section header="Team Status">
-            <label for="approval_status">Approval Status</label>
-            <select name="approval_status" value={team.approval_status}>
-              <option value="approved">Approved</option>
-              <option value="denied">Denied</option>
-              <option value="pending">Pending</option>
-            </select>
-            <br />
-            <label for="is_historical">Active/Historical</label>
-            <select name="historical" value={team.is_historical ? 'true' : 'false'}>
-              <option value="false">Active</option>
-              <option value="true">Historical</option>
-            </select>
-          </Section>
-          <Section header="Submit">
-            <Button type="submit">Submit</Button>
-          </Section>
-        </form>
-        </PermissionCheck>
+        {#if check_permission(user_info, permissions.manage_teams)}
+          <form method="post" on:submit|preventDefault={forceEditTeam}>
+            <Section header="Team Name/Tag">
+              <label for="name">Team Name</label>
+              <input name="name" type="text" value={team.name} required />
+              <br />
+              <label for="tag">Team Tag</label>
+              <input name="tag" type="text" bind:value={team.tag} required />
+            </Section>
+            <Section header="Customization">
+              <label for="color">Team Color</label>
+              <ColorSelect bind:color={team.color} tag={team.tag} name="color"/>
+              <br />
+              <label for="logo">Team Logo</label>
+              <input name="logo" type="text" value={team.logo} />
+            </Section>
+            <Section header="Misc. Info">
+              <label for="language">Language</label>
+              <LanguageSelect bind:language={team.language}/>
+              <br />
+              <label for="description">Team Description</label>
+              <textarea name="description" value={team.description} />
+              <br />
+            </Section>
+            <Section header="Team Status">
+              <label for="approval_status">Approval Status</label>
+              <select name="approval_status" value={team.approval_status}>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
+                <option value="pending">Pending</option>
+              </select>
+              <br />
+              <label for="is_historical">Active/Historical</label>
+              <select name="historical" value={team.is_historical ? 'true' : 'false'}>
+                <option value="false">Active</option>
+                <option value="true">Historical</option>
+              </select>
+            </Section>
+            <Section header="Submit">
+              <Button type="submit">Submit</Button>
+            </Section>
+          </form>
+        {/if}
     {/if}
     
     
