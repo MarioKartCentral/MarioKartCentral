@@ -6,12 +6,14 @@ class PlayerBan:
     player_id: int
     staff_id: int
     is_indefinite: bool
+    ban_date: int
     expiration_date: int
     reason: str
 
 @dataclass
 class PlayerBanRequestData:
     is_indefinite: bool
+    ban_date: int
     expiration_date: int
     reason: str
 
@@ -22,4 +24,6 @@ class PlayerBanFilter:
     is_indefinite: Literal['0', '1'] | None = None
     expires_before: str | None = None
     expires_after: str | None = None
+    banned_before: str | None = None
+    banned_after: str | None = None
     reason: str | None = None

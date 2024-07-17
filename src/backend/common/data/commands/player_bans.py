@@ -29,8 +29,8 @@ class BanPlayerCommand(Command[PlayerBan]):
         data = self.data
 
         async with db_wrapper.connect() as db:
-            command = "INSERT INTO player_bans(player_id, staff_id, is_indefinite, expiration_date, reason) VALUES (?, ?, ?, ?, ?)"
-            params = (self.player_id, self.staff_id, data.is_indefinite, data.expiration_date, data.reason)
+            command = "INSERT INTO player_bans(player_id, staff_id, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?)"
+            params = (self.player_id, self.staff_id, data.is_indefinite, data.ban_date, data.expiration_date, data.reason)
             
             try:
                 player_row = await db.execute_insert(command, params)
@@ -79,15 +79,15 @@ class EditPlayerBanCommand(Command[PlayerBan]):
         data = self.data
         
         async with db_wrapper.connect() as db:
-            command = "UPDATE player_bans SET staff_id = ?, is_indefinite = ?, expiration_date = ?, reason = ? WHERE player_id = ?"
-            params = (self.staff_id, data.is_indefinite, data.expiration_date, data.reason, self.player_id)
+            command = "UPDATE player_bans SET staff_id = ?, is_indefinite = ?, ban_date = ?, expiration_date = ?, reason = ? WHERE player_id = ?"
+            params = (self.staff_id, data.is_indefinite, data.ban_date, data.expiration_date, data.reason, self.player_id)
             
             async with db.execute(command, params) as cursor:
                 if cursor.rowcount != 1:
                     raise Problem("Player not found", "Unable to find player in the ban table", status=404)
 
             await db.commit()
-            return PlayerBan(self.player_id, self.staff_id, data.is_indefinite, data.expiration_date, data.reason)
+            return PlayerBan(self.player_id, self.staff_id, data.is_indefinite, data.ban_date, data.expiration_date, data.reason)
 
 @dataclass
 class ListBannedPlayersCommand(Command[list[PlayerBan]]):
@@ -118,10 +118,12 @@ class ListBannedPlayersCommand(Command[list[PlayerBan]]):
             append_equal_filter(filter.is_indefinite, 'is_indefinite', 'is_indefinite = ?')
             append_equal_filter(filter.expires_before, 'expires_before', 'expiration_date <= ?', cast_fn=int)
             append_equal_filter(filter.expires_after, 'expires_after', 'expiration_date >= ?', cast_fn=int)
+            append_equal_filter(filter.banned_before, 'banned_before', 'ban_date <= ?', cast_fn=int)
+            append_equal_filter(filter.banned_after, 'banned_after', 'ban_date >= ?', cast_fn=int)
             append_equal_filter(filter.reason, 'reason', "reason LIKE ?", var_param=f"%{filter.reason}%")
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
-            query = f"""SELECT player_id, staff_id, is_indefinite, expiration_date, reason from player_bans {where_clause}"""
+            query = f"""SELECT player_id, staff_id, is_indefinite, ban_date, expiration_date, reason from player_bans {where_clause}"""
 
             player_bans: list[PlayerBan] = []
             async with db.execute(query, variable_parameters) as cursor:

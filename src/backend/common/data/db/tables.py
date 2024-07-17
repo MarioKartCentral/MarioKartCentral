@@ -668,6 +668,7 @@ class PlayerBans(TableModel):
     player_id: int
     staff_id: int
     is_indefinite: bool
+    ban_date: int
     expiration_date: int
     reason: str
 
@@ -677,6 +678,7 @@ class PlayerBans(TableModel):
             player_id INTEGER PRIMARY KEY REFERENCES players(id),
             staff_id INTEGER NOT NULL REFERENCES users(id),
             is_indefinite BOOLEAN NOT NULL,
+            ban_date iNTEGER NOT NULL,
             expiration_date INTEGER NOT NULL,
             reason TEXT NOT NULL
             ) WITHOUT ROWID"""
