@@ -109,17 +109,12 @@ class EditPlayerBanCommand(Command[PlayerBan]):
             await db.commit()
             return PlayerBan(self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason)
 
-def _append_equal_filter(where_clauses: list[str], variable_parameters: list[Any], filter_value: Any, clause_name: str, where_clause: str, var_param: str | None = None, cast_fn: Callable[[str], Any] | None = None):
+def _append_equal_filter(where_clauses: list[str], variable_parameters: list[Any], filter_value: Any, where_clause: str, var_param: str | None = None):
     if filter_value is not None:
         where_clauses.append(where_clause)
         if var_param:
             variable_parameters.append(var_param)
         else:
-            if cast_fn:
-                try:
-                    filter_value = cast_fn(filter_value)
-                except Exception as e:
-                    raise Problem(f"Bad {clause_name} query", detail=str(e), status=400)
             variable_parameters.append(filter_value)
 
 @dataclass
@@ -138,14 +133,14 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
-            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id', 'player_id = ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by', 'banned_by = ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite', 'is_indefinite = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expires_before', 'expiration_date <= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expires_after', 'expiration_date >= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'banned_before', 'ban_date <= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'banned_after', 'ban_date >= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.reason, 'reason', "reason LIKE ?", var_param=f"%{filter.reason}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expiration_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expiration_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'ban_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'ban_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.reason, "reason LIKE ?", f"%{filter.reason}%")
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
             ban_query = f"""SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans {where_clause} LIMIT ? OFFSET ?"""
@@ -180,15 +175,15 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanHistoricalList]):
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
-            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id', 'player_id = ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by', 'banned_by = ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'unbanned_by', 'unbanned_by = ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite', 'is_indefinite = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expires_before', 'expiration_date <= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expires_after', 'expiration_date >= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'banned_before', 'ban_date <= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'banned_after', 'ban_date >= ?', cast_fn=int)
-            _append_equal_filter(where_clauses, variable_parameters, filter.reason, 'reason', "reason LIKE ?", var_param=f"%{filter.reason}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'unbanned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expiration_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expiration_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'ban_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'ban_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.reason, "reason LIKE ?", f"%{filter.reason}%")
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
             ban_query = f"""SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, unbanned_by FROM player_bans_historical {where_clause} LIMIT ? OFFSET ?"""

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Literal
 
 @dataclass
 class PlayerBan:
@@ -22,19 +21,19 @@ class PlayerBanRequestData:
 
 @dataclass
 class PlayerBanFilter:
-    player_id: str | None = None
-    banned_by: str | None = None
-    is_indefinite: Literal['0', '1'] | None = None
-    expires_before: str | None = None
-    expires_after: str | None = None
-    banned_before: str | None = None
-    banned_after: str | None = None
+    player_id: int | None = None
+    banned_by: int | None = None
+    is_indefinite: bool | None = None
+    expires_before: int | None = None
+    expires_after: int | None = None
+    banned_before: int | None = None
+    banned_after: int | None = None
     reason: str | None = None
     page: int | None = None
 
 @dataclass
 class PlayerBanHistoricalFilter(PlayerBanFilter):
-    unbanned_by: str | None = None
+    unbanned_by: int | None = None
 
 @dataclass
 class PlayerBanList:
