@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Literal, List
+from typing import Literal, List
 from datetime import datetime, timezone
 
 from aiosqlite import Connection
