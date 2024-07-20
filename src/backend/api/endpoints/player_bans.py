@@ -17,9 +17,9 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
 
 @require_permission(permissions.BAN_PLAYER)
 async def unban_player(request: Request) -> Response:
-    command = UnbanPlayerCommand(request.path_params['id'])
-    await handle(command)
-    return JSONResponse({}, status_code=200)
+    command = UnbanPlayerCommand(request.path_params['id'], request.state.user.id)
+    player_unban = await handle(command)
+    return JSONResponse(player_unban, status_code=200)
 
 @bind_request_body(PlayerBanRequestData)
 @require_permission(permissions.BAN_PLAYER)
@@ -35,9 +35,17 @@ async def list_banned_players(request: Request, filter: PlayerBanFilter) -> Resp
     bans = await handle(command)
     return JSONResponse(bans, status_code=200)
 
+@bind_request_query(PlayerBanHistoricalFilter)
+@require_permission(permissions.BAN_PLAYER)
+async def list_banned_players_historical(request: Request, filter: PlayerBanHistoricalFilter) -> Response:
+    command = ListBannedPlayersHistoricalCommand(filter)
+    bans = await handle(command)
+    return JSONResponse(bans, status_code=200)
+
 routes = [
     Route('/api/registry/players/{id:int}/ban', ban_player, methods=['POST']),
     Route('/api/registry/players/{id:int}/editBan', edit_player_ban, methods=['POST']),
     Route('/api/registry/players/{id:int}/unban', unban_player, methods=['POST']),
-    Route('/api/registry/players/bans', list_banned_players)
+    Route('/api/registry/players/bans', list_banned_players),
+    Route('/api/registry/players/historicalBans', list_banned_players_historical)
 ]

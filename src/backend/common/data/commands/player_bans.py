@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, Literal
+from typing import Callable, Literal, List
 from datetime import datetime, timezone
 
 from aiosqlite import Connection
@@ -11,7 +11,7 @@ from common.data.models import *
 @dataclass
 class BanPlayerCommand(Command[PlayerBan]):
     player_id: int
-    staff_id: int
+    banned_by: int
     data: PlayerBanRequestData
 
     async def player_exists_in_table(self, db: Connection, table: Literal['players', 'player_bans'], player_id: int) -> bool:
@@ -31,8 +31,8 @@ class BanPlayerCommand(Command[PlayerBan]):
         ban_date = int(datetime.now(timezone.utc).timestamp())
 
         async with db_wrapper.connect() as db:
-            command = "INSERT INTO player_bans(player_id, staff_id, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?)"
-            params = (self.player_id, self.staff_id, data.is_indefinite, ban_date, data.expiration_date, data.reason)
+            command = "INSERT INTO player_bans(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?)"
+            params = (self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason)
             
             try:
                 player_row = await db.execute_insert(command, params)
@@ -42,7 +42,7 @@ class BanPlayerCommand(Command[PlayerBan]):
                 if not await self.player_exists_in_table(db, 'players', self.player_id):
                     raise Problem("Player not found", status=404)
                 if await self.player_exists_in_table(db, 'player_bans', self.player_id):
-                    raise Problem("Player is already banned", status=400)
+                    raise Problem("Player is already banned")
                 raise Problem("Error", detail=str(e))
 
             async with db.execute("""UPDATE players SET is_banned = TRUE WHERE id = ?""", (self.player_id,)) as cursor:
@@ -54,18 +54,19 @@ class BanPlayerCommand(Command[PlayerBan]):
 
 @save_to_command_log
 @dataclass
-class UnbanPlayerCommand(Command[PlayerBan]):
+class UnbanPlayerCommand(Command[PlayerBanHistorical]):
     player_id: int
+    unbanned_by: int | None = None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # copy current ban into historical ban table
-            async with db.execute("SELECT player_id, staff_id, is_indefinite, ban_date, expiration_date, reason FROM player_bans WHERE player_id = ?", (self.player_id, )) as cursor:
+            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans WHERE player_id = ?", (self.player_id, )) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Player not found", "Unable to find player in the ban table", status=404)
-            player_id, staff_id, is_indefinite, ban_date, expiration_date, reason = row
-            async with db.execute("INSERT INTO player_bans_historical(player_id, staff_id, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?)", (player_id, staff_id, is_indefinite, ban_date, expiration_date, reason)) as cursor:
+            player_id, banned_by, is_indefinite, ban_date, expiration_date, reason = row
+            async with db.execute("INSERT INTO player_bans_historical(player_id, banned_by, unbanned_by, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?, ?)", (player_id, banned_by, self.unbanned_by, is_indefinite, ban_date, expiration_date, reason)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount != 1:
                     raise Problem("Failed to unban player", "Failed to insert into historical ban table")
@@ -80,21 +81,21 @@ class UnbanPlayerCommand(Command[PlayerBan]):
                 if cursor.rowcount != 1:
                     raise Problem("Failed to unban player", "Failed to update is_banned in player table")
             await db.commit()
-        return PlayerBan(*row)
+        return PlayerBanHistorical(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, self.unbanned_by)
 
 @save_to_command_log
 @dataclass
 class EditPlayerBanCommand(Command[PlayerBan]):
     player_id: int
-    staff_id: int
+    banned_by: int
     data: PlayerBanRequestData
 
     async def handle(self, db_wrapper, s3_wrapper):
         data = self.data
         
         async with db_wrapper.connect() as db:
-            command = "UPDATE player_bans SET staff_id = ?, is_indefinite = ?, expiration_date = ?, reason = ? WHERE player_id = ?"
-            params = (self.staff_id, data.is_indefinite, data.expiration_date, data.reason, self.player_id)
+            command = "UPDATE player_bans SET banned_by = ?, is_indefinite = ?, expiration_date = ?, reason = ? WHERE player_id = ?"
+            params = (self.banned_by, data.is_indefinite, data.expiration_date, data.reason, self.player_id)
             
             async with db.execute(command, params) as cursor:
                 if cursor.rowcount != 1:
@@ -106,7 +107,20 @@ class EditPlayerBanCommand(Command[PlayerBan]):
                 ban_date = row[0]
 
             await db.commit()
-            return PlayerBan(self.player_id, self.staff_id, data.is_indefinite, ban_date, data.expiration_date, data.reason)
+            return PlayerBan(self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason)
+
+def _append_equal_filter(where_clauses: list[str], variable_parameters: list[Any], filter_value: Any, clause_name: str, where_clause: str, var_param: str | None = None, cast_fn: Callable[[str], Any] | None = None):
+    if filter_value is not None:
+        where_clauses.append(where_clause)
+        if var_param:
+            variable_parameters.append(var_param)
+        else:
+            if cast_fn:
+                try:
+                    filter_value = cast_fn(filter_value)
+                except Exception as e:
+                    raise Problem(f"Bad {clause_name} query", detail=str(e), status=400)
+            variable_parameters.append(filter_value)
 
 @dataclass
 class ListBannedPlayersCommand(Command[PlayerBanList]):
@@ -120,35 +134,21 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             variable_parameters: list[Any] = []
             limit:int = 50
             offset:int = 0
-            table_name = "player_bans_historical" if filter.is_historical == "1" else "player_bans"
 
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
-            def append_equal_filter(filter_value: Any, clause_name: str, where_clause: str, var_param: str | None = None, cast_fn: Callable[[str], Any] | None = None):
-                if filter_value is not None:
-                    where_clauses.append(where_clause)
-                    if var_param:
-                        variable_parameters.append(var_param)
-                    else:
-                        if cast_fn:
-                            try:
-                                filter_value = cast_fn(filter_value)
-                            except Exception as e:
-                                raise Problem(f"Bad {clause_name} query", detail=str(e), status=400)
-                        variable_parameters.append(filter_value)
-
-            append_equal_filter(filter.player_id, 'player_id', 'player_id = ?', cast_fn=int)
-            append_equal_filter(filter.staff_id, 'staff_id', 'staff_id = ?', cast_fn=int)
-            append_equal_filter(filter.is_indefinite, 'is_indefinite', 'is_indefinite = ?')
-            append_equal_filter(filter.expires_before, 'expires_before', 'expiration_date <= ?', cast_fn=int)
-            append_equal_filter(filter.expires_after, 'expires_after', 'expiration_date >= ?', cast_fn=int)
-            append_equal_filter(filter.banned_before, 'banned_before', 'ban_date <= ?', cast_fn=int)
-            append_equal_filter(filter.banned_after, 'banned_after', 'ban_date >= ?', cast_fn=int)
-            append_equal_filter(filter.reason, 'reason', "reason LIKE ?", var_param=f"%{filter.reason}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id', 'player_id = ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by', 'banned_by = ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite', 'is_indefinite = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expires_before', 'expiration_date <= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expires_after', 'expiration_date >= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'banned_before', 'ban_date <= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'banned_after', 'ban_date >= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.reason, 'reason', "reason LIKE ?", var_param=f"%{filter.reason}%")
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
-            ban_query = f"""SELECT player_id, staff_id, is_indefinite, ban_date, expiration_date, reason FROM {table_name} {where_clause} LIMIT ? OFFSET ?"""
+            ban_query = f"""SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans {where_clause} LIMIT ? OFFSET ?"""
 
             ban_list: list[PlayerBan] = []
             async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
@@ -156,10 +156,67 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
                 for row in rows:
                     ban_list.append(PlayerBan(*row))
             
-            async with db.execute(f"SELECT COUNT (*) FROM {table_name}") as cursor:
+            async with db.execute(f"SELECT COUNT (*) FROM player_bans {where_clause}", variable_parameters) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 ban_count = row[0]
 
             page_count = int(ban_count / limit) + (1 if ban_count % limit else 0)
             return PlayerBanList(ban_list, ban_count, page_count)
+        
+@dataclass
+class ListBannedPlayersHistoricalCommand(Command[PlayerBanHistoricalList]):
+    filter: PlayerBanHistoricalFilter
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        filter = self.filter
+
+        async with db_wrapper.connect(readonly=True) as db:
+            where_clauses: list[str] = []
+            variable_parameters: list[Any] = []
+            limit:int = 50
+            offset:int = 0
+
+            if filter.page is not None:
+                offset = (filter.page - 1) * limit
+
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id', 'player_id = ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by', 'banned_by = ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'unbanned_by', 'unbanned_by = ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite', 'is_indefinite = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expires_before', 'expiration_date <= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expires_after', 'expiration_date >= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'banned_before', 'ban_date <= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'banned_after', 'ban_date >= ?', cast_fn=int)
+            _append_equal_filter(where_clauses, variable_parameters, filter.reason, 'reason', "reason LIKE ?", var_param=f"%{filter.reason}%")
+
+            where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
+            ban_query = f"""SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, unbanned_by FROM player_bans_historical {where_clause} LIMIT ? OFFSET ?"""
+
+            ban_list: list[PlayerBanHistorical] = []
+            async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    ban_list.append(PlayerBanHistorical(*row))
+            
+            async with db.execute(f"SELECT COUNT (*) FROM player_bans_historical {where_clause}", variable_parameters) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                ban_count = row[0]
+
+            page_count = int(ban_count / limit) + (1 if ban_count % limit else 0)
+            return PlayerBanHistoricalList(ban_list, ban_count, page_count)
+
+@dataclass
+class GetPlayersToUnbanCommand(Command[List[PlayerBan]]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        now = int(datetime.now(timezone.utc).timestamp())
+
+        async with db_wrapper.connect(readonly=True) as db:
+            ban_list: list[PlayerBan] = []
+            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans WHERE is_indefinite = FALSE AND expiration_date < ?", (now,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    ban_list.append(PlayerBan(*row))
+
+                return ban_list

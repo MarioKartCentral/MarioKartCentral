@@ -128,7 +128,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 
             ban_info = None
             if is_banned:
-                ban_query = "SELECT player_id, staff_id, is_indefinite, expiration_date, reason from player_bans WHERE player_id = ?"
+                ban_query = "SELECT player_id, banned_by, is_indefinite, expiration_date, reason from player_bans WHERE player_id = ?"
                 async with db.execute(ban_query, (self.id,)) as cursor:
                     ban_row = await cursor.fetchone()
                 ban_info = None if ban_row is None else PlayerBan(*ban_row)
