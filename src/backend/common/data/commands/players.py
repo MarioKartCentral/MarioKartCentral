@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from typing import Callable, List, Literal
+from typing import List
 import re
-
-from aiosqlite import Connection
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
