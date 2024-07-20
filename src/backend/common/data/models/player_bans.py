@@ -13,7 +13,6 @@ class PlayerBan:
 @dataclass
 class PlayerBanRequestData:
     is_indefinite: bool
-    ban_date: int
     expiration_date: int
     reason: str
 
@@ -27,3 +26,11 @@ class PlayerBanFilter:
     banned_before: str | None = None
     banned_after: str | None = None
     reason: str | None = None
+    page: int | None = None
+    is_historical: Literal['0', '1'] | None = None
+
+@dataclass
+class PlayerBanList:
+    ban_list: list[PlayerBan]
+    ban_count: int
+    page_count: int
