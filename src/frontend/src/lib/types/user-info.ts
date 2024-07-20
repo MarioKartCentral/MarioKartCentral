@@ -6,34 +6,54 @@ type ModNotifications = {
   pending_transfers: number;
 };
 
-type Permission = {
+export type Permission = {
   name: string;
   is_denied: boolean;
 };
 
-type TeamPermissions = {
+type UserRole = {
+  id: number;
+  name: string;
+  position: number;
+  expires_on: number | null;
+  permissions: Permission[];
+}
+
+type TeamRole = UserRole & {
   team_id: number;
-  permissions: Permission[];
-};
+}
 
-type SeriesPermissions = {
+type SeriesRole = UserRole & {
   series_id: number;
-  permissions: Permission[];
-};
+}
 
-type TournamentPermissions = {
+type TournamentRole = UserRole & {
   tournament_id: number;
-  permissions: Permission[];
-};
+}
+
+// type TeamPermissions = {
+//   team_id: number;
+//   permissions: Permission[];
+// };
+
+// type SeriesPermissions = {
+//   series_id: number;
+//   permissions: Permission[];
+// };
+
+// type TournamentPermissions = {
+//   tournament_id: number;
+//   permissions: Permission[];
+// };
 
 export type UserInfo = {
   id: number | null;
   player_id: number | null;
   player: PlayerInfo | null;
-  permissions: Permission[];
-  team_permissions: TeamPermissions[];
-  series_permissions: SeriesPermissions[];
-  tournament_permissions: TournamentPermissions[];
+  user_roles: UserRole[];
+  team_roles: TeamRole[];
+  series_roles: SeriesRole[];
+  tournament_roles: TournamentRole[];
   mod_notifications: ModNotifications | null;
   is_checked: boolean;
 };

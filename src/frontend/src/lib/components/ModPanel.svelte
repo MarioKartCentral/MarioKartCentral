@@ -62,4 +62,9 @@
       {/if}
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.manage_user_roles)}
+    <DropdownItem href="/{$page.params.lang}/moderator/manage_user_roles">
+      User Roles
+    </DropdownItem>
+  {/if}
 </Dropdown>

@@ -1,13 +1,17 @@
-import type { UserInfo } from '$lib/types/user-info';
+import type { UserInfo, Permission } from '$lib/types/user-info';
 
 export function check_permission(user_info: UserInfo, permission: string, check_denied_only: boolean = false) {
-  const accepted_perm = user_info.permissions.find((p) => p.name === permission && !p.is_denied);
+  const permissions: Permission[] = [];
+  for(const role of user_info.user_roles) {
+    permissions.push(...role.permissions);
+  }
+  const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
   // if we have the permission and it isnt denied, return true
   if (accepted_perm) return true;
   // if check_denied_only is true, we only care about the absence of a denied permission
   if (check_denied_only) {
     // if there is no denied permission we return true
-    const denied_perm = user_info.permissions.find((p) => p.name === permission && p.is_denied);
+    const denied_perm = permissions.find((p) => p.name === permission && p.is_denied);
     if (denied_perm) return false;
     return true;
   }
@@ -20,12 +24,16 @@ export function check_team_permission(
   team_id: number,
   check_denied_only: boolean = false,
 ) {
-  const team_perms = user_info.team_permissions.find((t) => t.team_id === team_id);
-  if (team_perms) {
-    const accepted_perm = team_perms.permissions.find((p) => p.name === permission && !p.is_denied);
+  const team_roles = user_info.team_roles.filter((r) => r.team_id === team_id);
+  const permissions: Permission[] = [];
+  for(const role of team_roles) {
+    permissions.push(...role.permissions);
+  }
+  if (permissions.length) {
+    const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
     if (accepted_perm) return true;
     if (check_denied_only) {
-      const denied_perm = team_perms.permissions.find((p) => p.name === permission && p.is_denied);
+      const denied_perm = permissions.find((p) => p.name === permission && p.is_denied);
       // if we have a denied team permission, it can be overridden by an accepted user permission,
       // so we just run check_permission function with check_denied_only set to false
       if (denied_perm) {
@@ -43,12 +51,16 @@ export function check_series_permission(
   series_id: number | null,
   check_denied_only: boolean = false,
 ) {
-  const series_perms = user_info.series_permissions.find((s) => s.series_id === series_id);
-  if (series_perms) {
-    const accepted_perm = series_perms.permissions.find((p) => p.name === permission && !p.is_denied);
+  const series_roles = user_info.series_roles.filter((r) => r.series_id === series_id);
+  const permissions: Permission[] = [];
+  for(const role of series_roles) {
+    permissions.push(...role.permissions);
+  }
+  if (permissions.length) {
+    const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
     if (accepted_perm) return true;
     if (check_denied_only) {
-      const denied_perm = series_perms.permissions.find((p) => p.name === permission && p.is_denied);
+      const denied_perm = permissions.find((p) => p.name === permission && p.is_denied);
       // if we have a denied series permission, it can be overridden by an accepted user permission,
       // so we just run check_permission function with check_denied_only set to false
       if (denied_perm) {
@@ -67,12 +79,16 @@ export function check_tournament_permission(
   series_id: number | null = null,
   check_denied_only: boolean = false,
 ) {
-  const tournament_perms = user_info.tournament_permissions.find((t) => t.tournament_id === tournament_id);
-  if (tournament_perms) {
-    const accepted_perm = tournament_perms.permissions.find((p) => p.name === permission && !p.is_denied);
+  const tournament_roles = user_info.tournament_roles.filter((r) => r.tournament_id === tournament_id);
+  const permissions: Permission[] = [];
+  for(const role of tournament_roles) {
+    permissions.push(...role.permissions);
+  }
+  if (permissions.length) {
+    const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
     if (accepted_perm) return true;
     if (check_denied_only) {
-      const denied_perm = tournament_perms.permissions.find((p) => p.name === permission && p.is_denied);
+      const denied_perm = permissions.find((p) => p.name === permission && p.is_denied);
       // if we have a denied tournament permission, it can be overridden by an accepted user or series permission,
       // so just run check_series_permission function with check_denied_only set to false
       if (denied_perm) {

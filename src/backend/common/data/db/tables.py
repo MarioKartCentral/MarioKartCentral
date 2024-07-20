@@ -84,7 +84,7 @@ class Session(TableModel):
 class Role(TableModel):
     id: int
     name: str
-    order: int
+    position: int
 
     @staticmethod
     def get_create_table_command():

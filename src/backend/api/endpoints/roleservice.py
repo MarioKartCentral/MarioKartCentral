@@ -1,8 +1,9 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_logged_in
+from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse
+from common.auth import permissions
 from common.data.commands import GrantRoleCommand
 
 @require_logged_in
@@ -15,6 +16,10 @@ async def grant_role(request: Request) -> JSONResponse:
     await handle(command)
 
     return JSONResponse({}, status_code=200)
+
+@require_permission(permissions.MANAGE_USER_ROLES)
+async def list_roles(request: Request) -> JSONResponse:
+    pass
 
 
 routes = [

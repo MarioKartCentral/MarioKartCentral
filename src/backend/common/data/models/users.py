@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from common.data.models.players import PlayerDetailed
 from common.data.models.teams import TeamInvite
 from common.data.models.tournaments import TournamentInvite
+from common.data.models.roles import UserRole, TeamRole, SeriesRole, TournamentRole
 
 @dataclass
 class User:
@@ -16,34 +17,14 @@ class ModNotifications:
     pending_transfers: int = 0
 
 @dataclass
-class Permission:
-    name: str
-    is_denied: bool
-
-@dataclass
-class TeamPermissions:
-    team_id: int
-    permissions: list[Permission]
-
-@dataclass
-class SeriesPermissions:
-    series_id: int
-    permissions: list[Permission]
-
-@dataclass
-class TournamentPermissions:
-    tournament_id: int
-    permissions: list[Permission]
-
-@dataclass
 class UserPlayer:
     id: int
     player_id: int | None
     player: PlayerDetailed | None
-    permissions: list[str]
-    team_permissions: list[TeamPermissions]
-    series_permissions: list[SeriesPermissions]
-    tournament_permissions: list[TournamentPermissions]
+    user_roles: list[UserRole]
+    team_roles: list[TeamRole]
+    series_roles: list[SeriesRole]
+    tournament_roles: list[TournamentRole]
     mod_notifications: ModNotifications | None
 
 @dataclass

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, ModNotifications, Permission, TeamPermissions, SeriesPermissions, TournamentPermissions
+from common.data.models import Problem, User, ModNotifications, Permission, UserRole
 from common.auth import permissions
 from datetime import datetime, timezone
 from typing import Iterable
@@ -174,78 +174,6 @@ class GetUserWithTeamPermissionFromSessionCommand(Command[User | None]):
                 return None
             
             return User(int(row[0]), row[1])
-        
-@dataclass
-class CheckPermissionsCommand(Command[tuple[list[Permission], list[TeamPermissions], list[SeriesPermissions], list[TournamentPermissions]]]):
-    user_id: int
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect(readonly=True) as db:
-            valid_perms: list[str] = []
-            async with db.execute(f"""
-                SELECT DISTINCT p.name, rp.is_denied
-                FROM user_roles ur
-                JOIN role_permissions rp ON ur.role_id = rp.role_id
-                JOIN permissions p ON rp.permission_id = p.id 
-                WHERE ur.user_id = ?
-                """, (self.user_id,)) as cursor:
-                rows = await cursor.fetchall()
-                valid_perms: list[Permission] = []
-                for row in rows:
-                    name, is_denied = row
-                    valid_perms.append(Permission(name, is_denied))
-
-            team_perms = []
-            async with db.execute(f"""
-                SELECT ur.team_id, p.name, rp.is_denied
-                FROM user_team_roles ur
-                JOIN team_role_permissions rp ON ur.role_id = rp.role_id
-                JOIN team_permissions p ON rp.permission_id = p.id
-                WHERE ur.user_id = ?
-                """, (self.user_id,)) as cursor:
-                rows = await cursor.fetchall()
-                team_perm_dict: dict[int, list[Permission]] = {}
-                for row in rows:
-                    team_id, name, is_denied = row
-                    if team_id not in team_perm_dict:
-                        team_perm_dict[team_id] = []
-                    team_perm_dict[team_id].append(Permission(name, is_denied))
-                team_perms = [TeamPermissions(team_id, perms) for team_id, perms in team_perm_dict.items()]
-
-            series_perms = []
-            async with db.execute(f"""
-                SELECT ur.series_id, p.name, rp.is_denied
-                FROM user_series_roles ur
-                JOIN series_role_permissions rp ON ur.role_id = rp.role_id
-                JOIN series_permissions p ON rp.permission_id = p.id
-                WHERE ur.user_id = ?
-                """, (self.user_id,)) as cursor:
-                rows = await cursor.fetchall()
-                series_perm_dict: dict[int, list[Permission]] = {}
-                for row in rows:
-                    series_id, name, is_denied = row
-                    if series_id not in series_perm_dict:
-                        series_perm_dict[series_id] = []
-                    series_perm_dict[series_id].append(Permission(name, is_denied))
-                series_perms = [SeriesPermissions(series_id, perms) for series_id, perms in series_perm_dict.items()]
-
-            tournament_perms = []
-            async with db.execute(f"""
-                SELECT ur.tournament_id, p.name, rp.is_denied
-                FROM user_tournament_roles ur
-                JOIN tournament_role_permissions rp ON ur.role_id = rp.role_id
-                JOIN tournament_permissions p ON rp.permission_id = p.id
-                WHERE ur.user_id = ?
-                """, (self.user_id,)) as cursor:
-                rows = await cursor.fetchall()
-                tournament_perm_dict: dict[int, list[Permission]] = {}
-                for row in rows:
-                    tournament_id, name, is_denied = row
-                    if tournament_id not in tournament_perm_dict:
-                        tournament_perm_dict[tournament_id] = []
-                    tournament_perm_dict[tournament_id].append(Permission(name, is_denied))
-                tournament_perms = [TournamentPermissions(tournament_id, perms) for tournament_id, perms in tournament_perm_dict.items()]
-        return valid_perms, team_perms, series_perms, tournament_perms
             
 @dataclass
 class IsValidSessionCommand(Command[bool]):
@@ -338,11 +266,16 @@ class GrantRoleCommand(Command[None]):
                 
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
-    valid_perms: list[Permission]
+    #valid_perms: list[Permission]
+    user_roles: list[UserRole]
 
     async def handle(self, db_wrapper, s3_wrapper):
         mod_notifications = ModNotifications()
-        string_perms = [p.name for p in self.valid_perms if not p.is_denied]
+        string_perms = []
+        for role in self.user_roles:
+            for perm in role.permissions:
+                string_perms.append(perm.name)
+
         async with db_wrapper.connect(readonly=True) as db:
             if permissions.MANAGE_TEAMS in string_perms:
                 async with db.execute("SELECT COUNT(id) FROM teams WHERE approval_status='pending'") as cursor:
