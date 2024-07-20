@@ -20,7 +20,8 @@ class Job(ABC):
 _jobs: list[Job] = []
 
 def get_all_jobs():
-    from worker.jobs import log_processor
+    from worker.jobs import log_processor, unban_players_checker
     if not _jobs:
         _jobs.extend(log_processor.get_jobs())
+        _jobs.extend(unban_players_checker.get_jobs())
     return _jobs
