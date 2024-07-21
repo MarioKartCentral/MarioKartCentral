@@ -4,7 +4,7 @@ from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse
 from common.auth import permissions
-from common.data.commands import GrantRoleCommand
+from common.data.commands import *
 
 @require_logged_in
 async def grant_role(request: Request) -> JSONResponse:
@@ -19,9 +19,17 @@ async def grant_role(request: Request) -> JSONResponse:
 
 @require_permission(permissions.MANAGE_USER_ROLES)
 async def list_roles(request: Request) -> JSONResponse:
-    pass
+    roles = await handle(ListRolesCommand())
+    return JSONResponse(roles)
 
+@require_permission(permissions.MANAGE_USER_ROLES)
+async def role_info(request: Request) -> JSONResponse:
+    role_id = request.path_params['id']
+    role_info = await handle(GetRoleInfoCommand(role_id))
+    return JSONResponse(role_info)
 
 routes = [
     Route('/api/user/grant_role', grant_role, methods=['POST']),
+    Route('/api/roles', list_roles),
+    Route('/api/roles/{id:int}', role_info)
 ]

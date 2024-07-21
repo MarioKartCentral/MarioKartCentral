@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from common.data.models.players import Player
 
 @dataclass
 class Permission:
@@ -10,6 +11,11 @@ class Role:
     id: int
     name: str
     position: int
+
+@dataclass
+class RoleInfo(Role):
+    permissions: list[Permission]
+    players: list[Player]
 
 @dataclass
 class UserRole(Role):

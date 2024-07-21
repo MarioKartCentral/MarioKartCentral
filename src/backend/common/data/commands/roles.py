@@ -2,18 +2,66 @@ from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+from common.auth.roles import BANNED
 from datetime import datetime, timezone
 
 @dataclass
-class GetRolesCommand(Command[None]):
+class ListRolesCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            # we get banned users in another endpoint
-            async with db.execute("SELECT id, name, position FROM roles WHERE name != 'Banned'") as cursor:
+            roles: list[Role] = []
+            # ban info can be retrieved in its own endpoint
+            async with db.execute(f"SELECT id, name, position FROM roles WHERE name != '{BANNED}'") as cursor:
                 rows = await cursor.fetchall()
-
+                for row in rows:
+                    id, name, position = row
+                    roles.append(Role(id, name, position))
+            return roles
+        
 @dataclass
-class GetUserRolePermissionsCommand(Command[None]):
+class GetRoleInfoCommand(Command[None]):
+    role_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            async with db.execute("SELECT name, position FROM roles WHERE id = ?", (self.role_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Role not found", status=400)
+                role_name, position = row
+
+            permissions: list[Permission] = []
+            async with db.execute(f"""
+                SELECT p.name, rp.is_denied
+                FROM permissions p
+                JOIN role_permissions rp ON p.id = rp.permission_id
+                WHERE rp.role_id = ?
+                """, (self.role_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    permission_name, is_denied = row
+                    permissions.append(Permission(permission_name, is_denied))
+            
+            players: list[Player] = []
+            async with db.execute(f"""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                FROM user_roles ur
+                JOIN users u ON u.id = ur.user_id
+                JOIN players p ON p.id = u.player_id
+                WHERE ur.role_id = ?
+                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
+                """, (self.role_id, timestamp)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
+                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+            role_info = RoleInfo(self.role_id, role_name, position, permissions, players)
+            return role_info
+
+                
+@dataclass
+class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], list[SeriesRole], list[TournamentRole]]]):
     user_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
