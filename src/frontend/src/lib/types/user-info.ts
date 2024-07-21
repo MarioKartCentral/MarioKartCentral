@@ -1,14 +1,10 @@
 import type { PlayerInfo } from '$lib/types/player-info';
+import type { Permission } from '$lib/types/permission';
 
 type ModNotifications = {
   pending_teams: number;
   pending_team_edits: number;
   pending_transfers: number;
-};
-
-export type Permission = {
-  name: string;
-  is_denied: boolean;
 };
 
 type UserRole = {
@@ -30,21 +26,6 @@ type SeriesRole = UserRole & {
 type TournamentRole = UserRole & {
   tournament_id: number;
 }
-
-// type TeamPermissions = {
-//   team_id: number;
-//   permissions: Permission[];
-// };
-
-// type SeriesPermissions = {
-//   series_id: number;
-//   permissions: Permission[];
-// };
-
-// type TournamentPermissions = {
-//   tournament_id: number;
-//   permissions: Permission[];
-// };
 
 export type UserInfo = {
   id: number | null;

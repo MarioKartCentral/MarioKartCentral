@@ -1,4 +1,5 @@
-import type { UserInfo, Permission } from '$lib/types/user-info';
+import type { UserInfo } from '$lib/types/user-info';
+import type { Permission } from '$lib/types/permission';
 
 export function check_permission(user_info: UserInfo, permission: string, check_denied_only: boolean = false) {
   const permissions: Permission[] = [];
