@@ -20,6 +20,7 @@
     width: 100%;
     font-size: small;
     text-align: left;
+    word-break: break-word;
   }
   table :global(thead) {
     background-color: theme('colors.primary.700');
