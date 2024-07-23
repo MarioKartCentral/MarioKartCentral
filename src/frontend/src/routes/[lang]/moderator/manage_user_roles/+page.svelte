@@ -20,15 +20,15 @@
 </script>
 
 <Section header="User Roles">
-    <div>
-        {#if roles.length}
+    {#if roles.length}
+        <div class="select">
             <select bind:value={selected_role}>
                 {#each roles as role}
                     <option value={role}>{role.name}</option>
                 {/each}
             </select>
-        {/if}
-    </div>
+        </div>
+    {/if}
     <div>
         {#if selected_role}
             {#key selected_role}
@@ -37,3 +37,10 @@
         {/if}
     </div>
 </Section>
+
+<style>
+    div.select {
+        margin: auto;
+        width: min-content;
+    }
+</style>
