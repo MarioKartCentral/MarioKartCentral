@@ -114,6 +114,14 @@ const en_us: BaseTranslation & Translation = {
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
   },
+  PLAYER_BAN: {
+    PLAYER_ID: 'Player ID',
+		BANNED_BY: 'Banned By',
+		IS_INDEFINITE: 'Is Indefinite',
+		BAN_DATE: 'Ban Date',
+		EXPIRATION_DATE: 'Expiration Date',
+		REASON: 'Reason'
+  },
   LANGUAGES: {
     EN_US: 'English (United States)',
     EN_GB: 'English (Great Britain)',

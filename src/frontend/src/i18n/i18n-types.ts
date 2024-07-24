@@ -1983,6 +1983,33 @@ export type TranslationFunctions = {
 		 */
 		SAVE: () => LocalizedString
 	}
+	PLAYER_BAN: {
+		/**
+		 * Player Id
+		 */
+		PLAYER_ID: () => LocalizedString
+		/**
+		 * Banned By
+		 */
+		BANNED_BY: () => LocalizedString
+		/**
+		 * Is Indefinite
+		 */
+		IS_INDEFINITE: () => LocalizedString
+		/**
+		 * Ban Date
+		 */
+		BAN_DATE: () => LocalizedString
+		/**
+		 * Expiration Date
+		 */
+		EXPIRATION_DATE: () => LocalizedString	
+		/**
+		 * Reason
+		 */
+		REASON: () => LocalizedString
+		
+	}
 	LANGUAGES: {
 		/**
 		 * English (United States)
