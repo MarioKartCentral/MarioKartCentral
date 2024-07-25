@@ -100,6 +100,11 @@ export function check_tournament_permission(
   return check_series_permission(user_info, permission, series_id, check_denied_only);
 }
 
+export function get_highest_role_position(user_info: UserInfo) {
+  const role_positions = user_info.user_roles.map((r) => r.position);
+  return Math.min(...role_positions);
+}
+
 export const permissions = {
   create_user_roles: 'user_roles_create',
   edit_user_roles: 'user_roles_edit',

@@ -34,3 +34,11 @@ class SeriesRole(UserRole):
 class TournamentRole(UserRole):
     tournament_id: int
 
+@dataclass
+class RemoveRoleRequestData:
+    player_id: int
+    role_name: str
+
+@dataclass
+class GrantRoleRequestData(RemoveRoleRequestData):
+    expires_on: int | None = None
