@@ -45,7 +45,7 @@ async def list_banned_players_historical(request: Request, filter: PlayerBanHist
 routes = [
     Route('/api/registry/players/{id:int}/ban', ban_player, methods=['POST']),
     Route('/api/registry/players/{id:int}/editBan', edit_player_ban, methods=['POST']),
-    Route('/api/registry/players/{id:int}/unban', unban_player, methods=['POST']),
+    Route('/api/registry/players/{id:int}/ban', unban_player, methods=['DELETE']),
     Route('/api/registry/players/bans', list_banned_players),
     Route('/api/registry/players/historicalBans', list_banned_players_historical)
 ]
