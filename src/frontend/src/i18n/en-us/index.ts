@@ -119,8 +119,10 @@ const en_us: BaseTranslation & Translation = {
 		BANNED_BY: 'Banned By',
 		IS_INDEFINITE: 'Is Indefinite',
 		BAN_DATE: 'Ban Date',
+    DURATION: 'Duration',
 		EXPIRATION_DATE: 'Expiration Date',
-		REASON: 'Reason'
+		REASON: 'Reason',
+    SUBMIT: 'Submit'
   },
   LANGUAGES: {
     EN_US: 'English (United States)',

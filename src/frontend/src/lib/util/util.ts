@@ -337,3 +337,10 @@ export const colors: Color[] = [
     value: '#000000',
   },
 ];
+export const default_player_ban_options: string[] = [
+  "Alternate Account",
+  "Alting",
+  "Harassment",
+  "Sexual Misconduct",
+  "Other"
+];

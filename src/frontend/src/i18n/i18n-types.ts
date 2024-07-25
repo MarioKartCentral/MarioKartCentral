@@ -2001,6 +2001,10 @@ export type TranslationFunctions = {
 		 */
 		BAN_DATE: () => LocalizedString
 		/**
+		 * Duration
+		 */
+		DURATION: () => LocalizedString
+		/**
 		 * Expiration Date
 		 */
 		EXPIRATION_DATE: () => LocalizedString	
@@ -2008,6 +2012,10 @@ export type TranslationFunctions = {
 		 * Reason
 		 */
 		REASON: () => LocalizedString
+		/**
+		 * Submit
+		 */
+		SUBMIT: () => LocalizedString
 		
 	}
 	LANGUAGES: {
