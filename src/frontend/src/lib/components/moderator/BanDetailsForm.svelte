@@ -2,20 +2,20 @@
     import LL from "$i18n/i18n-svelte";
     import { default_player_ban_options } from "$lib/util/util";
     import Button from "$lib/components/common/buttons/Button.svelte";
-    import Section from '$lib/components/common/Section.svelte';
 
     export let handleSubmit: (event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) => void;
     export let isIndefinite: boolean | null = true;
     export let numDays: number | null = null;
-    export let reason: default_player_ban_options[number] | null = null;
+    export let reason: typeof default_player_ban_options[number] | null = null;
     export let customReason: string | null = null;
     
-    function handleDurationChange(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    function handleDurationChange(event: Event & { currentTarget: EventTarget & HTMLSelectElement }) {
         isIndefinite = event.currentTarget.value === 'indefinite'
     }
 </script>
 
-<Section header="Ban Details">
+<div>
+    <h2>Ban Details</h2>
     <form method="post" on:submit|preventDefault={handleSubmit}>
         <div>
             <label for="duration">{$LL.PLAYER_BAN.DURATION()}</label> <br/>
@@ -36,15 +36,19 @@
                 {/each}
             </select>
             {#if reason === 'Other'}
-                <input class name='custom_reason' type='text' placeholder='Enter reason' value={customReason} required/>
+                <input name='custom_reason' type='text' placeholder='Enter reason' value={customReason} required/>
             {/if}
         </div>
         <br/>
-        <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
+        <Button type="submit">{$LL.PLAYER_BAN.SUBMIT()}</Button>
     </form>
-</Section>
+</div>
 
 <style>
+    h2 {
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
     input[name="days"] {
         width: 60px;
     }

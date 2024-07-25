@@ -1,32 +1,18 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
     import type { PlayerInfo } from '$lib/types/player-info';
-    import PlayerBanDetailsForm from '$lib/components/moderator/PlayerBanDetailsForm.svelte';
-    import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
-    import Section from '$lib/components/common/Section.svelte';
+    import PlayerBanDetailsForm from '$lib/components/moderator/BanDetailsForm.svelte';
 
-    let player: PlayerInfo | null = null;
-
-    onMount(async () => {
-      let paramId = $page.url.searchParams.get('id')
-      if (paramId) {
-        const res = await fetch(`/api/registry/players/${paramId}`)
-        if (res.status != 200)
-            return
-        player = await res.json()
-      }
-    });
+    export let player: PlayerInfo | null = null;
 
     async function banPlayer(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         if (!player)
-            return alert('You need to select a player')
+            return alert('A player is not selected')
         
         const data = new FormData(event.currentTarget)
         let expirationDate = 0
-        if (data.get('days')) {
-            expirationDate = Math.floor((Date.now() + 86400000*data.get('days')) / 1000)
+        let days = Number(data.get('days'))
+        if (days) {
+            expirationDate = Math.floor((Date.now() + 86400000*days) / 1000)
         }
 
         const payload = {
@@ -45,7 +31,7 @@
 
         if (response.status < 300) {
             alert(`Successfully banned ${player.name} (Player ID: ${player.id})`)
-            goto('/moderator/player_bans')
+            window.location.reload()
         } else {
             const detail = result.detail ? `, ${result.detail}` : ''
             alert(`${result.title}${detail}`)
@@ -53,9 +39,4 @@
     }
 </script>
 
-<div>
-    <Section header='Select Player'>
-        <PlayerSearch bind:player={player}/>
-    </Section>
-    <PlayerBanDetailsForm handleSubmit={banPlayer}/>
-</div>
+<PlayerBanDetailsForm handleSubmit={banPlayer}/>
