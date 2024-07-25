@@ -4,10 +4,11 @@
     import Button from "$lib/components/common/buttons/Button.svelte";
     import Section from '$lib/components/common/Section.svelte';
 
-    export let handleSubmit;
-
-    let isIndefinite: boolean = true;
-    let reason: string | null = null;
+    export let handleSubmit: (event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) => void;
+    export let isIndefinite: boolean | null = true;
+    export let numDays: number | null = null;
+    export let reason: default_player_ban_options[number] | null = null;
+    export let customReason: string | null = null;
     
     function handleDurationChange(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         isIndefinite = event.currentTarget.value === 'indefinite'
@@ -19,23 +20,23 @@
         <div>
             <label for="duration">{$LL.PLAYER_BAN.DURATION()}</label> <br/>
             <select name="duration" on:change={handleDurationChange} required>
-                <option value='indefinite'>Indefinite</option>
-                <option value='number of days'>Number of Days</option>
+                <option value='indefinite'>{$LL.PLAYER_BAN.INDEFINITE()}</option>
+                <option value='number of days'>{$LL.PLAYER_BAN.NUMBER_OF_DAYS()}</option>
             </select>
             {#if !isIndefinite}
-                <input name='days' type='number' required/>
+                <input name='days' type='number' min='1' step='1' value={numDays} required/>
             {/if}
         </div>
         <div>
             <label for="reason">{$LL.PLAYER_BAN.REASON()}</label> <br/>
             <select name='reason' bind:value={reason} required>
-                <option value={null} disabled>Select Reason</option>
+                <option value={null} disabled>{$LL.PLAYER_BAN.SELECT_REASON()}</option>
                 {#each default_player_ban_options as o}
                     <option value={o}>{o}</option>
                 {/each}
             </select>
             {#if reason === 'Other'}
-                <input class name='custom_reason' type='text' placeholder='Enter reason' required/>
+                <input class name='custom_reason' type='text' placeholder='Enter reason' value={customReason} required/>
             {/if}
         </div>
         <br/>

@@ -2016,7 +2016,18 @@ export type TranslationFunctions = {
 		 * Submit
 		 */
 		SUBMIT: () => LocalizedString
-		
+		/**
+		 * Indefinite
+		 */
+		INDEFINITE: () => LocalizedString
+		/**
+		 * Number of Days
+		 */
+		NUMBER_OF_DAYS: () => LocalizedString
+		/**
+		 * Select Reason
+		 */
+		SELECT_REASON: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**

@@ -122,7 +122,10 @@ const en_us: BaseTranslation & Translation = {
     DURATION: 'Duration',
 		EXPIRATION_DATE: 'Expiration Date',
 		REASON: 'Reason',
-    SUBMIT: 'Submit'
+    SUBMIT: 'Submit',
+    INDEFINITE: 'Indefinite',
+    NUMBER_OF_DAYS: 'Number of Days',
+    SELECT_REASON: 'Select Reason'
   },
   LANGUAGES: {
     EN_US: 'English (United States)',
