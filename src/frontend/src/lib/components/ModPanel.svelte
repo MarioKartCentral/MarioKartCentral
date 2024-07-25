@@ -62,4 +62,9 @@
       {/if}
     </DropdownItem>
   {/if}
+  {#if user_info.permissions.includes(permissions.ban_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/player_bans">
+      Player Bans
+    </DropdownItem>
+  {/if}
 </Dropdown>
