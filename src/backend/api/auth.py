@@ -63,9 +63,12 @@ def require_team_permission(permission_name: str, check_denied_only: bool = Fals
                 resp.delete_cookie("session")
                 return resp
             
-            body = await request.json()
-            team_id = body.get("team_id", None)
-
+            team_id = request.path_params.get("team_id", None)
+            if team_id is None:
+                team_id = request.query_params.get("team_id", None)
+            if team_id is None and request.method == "POST":
+                body = await request.json()
+                team_id = body.get("team_id", None)
             if team_id is None:
                 raise Problem("No team ID specified", status=400)
             
@@ -95,8 +98,12 @@ def require_series_permission(permission_name: str, check_denied_only: bool = Fa
             
             # some things may be optionally part of a series, such as tournaments or tournament templates,
             # so we don't raise a problem if series_id is None for this function.
-            body = await request.json()
-            series_id = body.get("series_id", None)
+            series_id = request.path_params.get("series_id", None)
+            if series_id is None:
+                series_id = request.query_params.get("series_id", None)
+            if series_id is None and request.method == "POST":
+                body = await request.json()
+                series_id = body.get("series_id", None)
             
             user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permission_name, check_denied_only, series_id=series_id))
 
@@ -122,7 +129,12 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool 
                 resp.delete_cookie("session")
                 return resp
             
-            tournament_id = request.path_params.get("id", None)
+            tournament_id = request.path_params.get("tournament_id", None)
+            if tournament_id is None:
+                tournament_id = request.query_params.get("tournament_id", None)
+            if tournament_id is None and request.method == "POST":
+                body = await request.json()
+                tournament_id = body.get("tournament_id", None)
 
             if tournament_id is None:
                 raise Problem("No tournament ID specified", status=400)

@@ -36,7 +36,9 @@ permissions_by_id = {
     22: series_permissions.EDIT_SERIES,
     23: tournament_permissions.EDIT_TOURNAMENT,
     24: tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
-    25: tournament_permissions.REGISTER_TOURNAMENT
+    25: tournament_permissions.REGISTER_TOURNAMENT,
+    26: tournament_permissions.MANAGE_PLACEMENTS,
+    27: tournament_permissions.MANAGE_TOURNAMENT_ROLES
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

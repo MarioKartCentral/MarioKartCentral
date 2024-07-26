@@ -45,7 +45,9 @@ default_permissions_by_default_role = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
-        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES
     ],
     ADMINISTRATOR: [
         permissions.CREATE_USER_ROLES, 
@@ -72,7 +74,9 @@ default_permissions_by_default_role = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
-        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES
     ],
     SITE_MODERATOR: [
         permissions.EDIT_PLAYER,
@@ -96,7 +100,9 @@ default_permissions_by_default_role = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
-        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES
     ],
     SUPPORT_STAFF: [
         permissions.EDIT_PLAYER,

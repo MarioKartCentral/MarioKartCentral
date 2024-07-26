@@ -17,13 +17,13 @@ async def create_tournament(request: Request, body: CreateTournamentRequestData)
 @bind_request_body(EditTournamentRequestData)
 @require_tournament_permission(tournament_permissions.EDIT_TOURNAMENT)
 async def edit_tournament(request: Request, body: EditTournamentRequestData) -> JSONResponse:
-    tournament_id = request.path_params['id']
+    tournament_id = request.path_params['tournament_id']
     command = EditTournamentCommand(body, tournament_id)
     await handle(command)
     return JSONResponse({})
 
 async def tournament_info(request: Request) -> JSONResponse:
-    tournament_id = request.path_params['id']
+    tournament_id = request.path_params['tournament_id']
     command = GetTournamentDataCommand(tournament_id)
     tournament = await handle(command)
     return JSONResponse(tournament)
@@ -44,13 +44,13 @@ async def create_series(request: Request, body: SeriesRequestData) -> JSONRespon
 @bind_request_body(EditSeriesRequestData)
 @require_series_permission(series_permissions.EDIT_SERIES)
 async def edit_series(request: Request, body: SeriesRequestData) -> JSONResponse:
-    series_id = request.path_params['id']
+    series_id = request.path_params['series_id']
     command = EditSeriesCommand(body, series_id)
     await handle(command)
     return JSONResponse({})
 
 async def series_info(request: Request) -> JSONResponse:
-    series_id = request.path_params['id']
+    series_id = request.path_params['series_id']
     command = GetSeriesDataCommand(series_id)
     series = await handle(command)
     return JSONResponse(series)
@@ -71,13 +71,13 @@ async def create_template(request: Request, body: TournamentTemplateRequestData)
 @bind_request_body(TournamentTemplateRequestData)
 @require_series_permission(series_permissions.EDIT_TOURNAMENT_TEMPLATE)
 async def edit_template(request: Request, body: TournamentTemplateRequestData) -> JSONResponse:
-    template_id = request.path_params['id']
+    template_id = request.path_params['template_id']
     command = EditTournamentTemplateCommand(body, template_id)
     await handle(command)
     return JSONResponse({})
 
 async def template_info(request: Request) -> JSONResponse:
-    template_id = request.path_params['id']
+    template_id = request.path_params['template_id']
     command = GetTournamentTemplateDataCommand(template_id)
     template = await handle(command)
     return JSONResponse(template)
@@ -90,15 +90,15 @@ async def template_list(request: Request, filter: TemplateFilter) -> JSONRespons
 
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
-    Route('/api/tournaments/{id:int}/edit', edit_tournament, methods=["POST"]),
-    Route('/api/tournaments/{id:int}', tournament_info),
+    Route('/api/tournaments/{tournament_id:int}/edit', edit_tournament, methods=["POST"]),
+    Route('/api/tournaments/{tournament_id:int}', tournament_info),
     Route('/api/tournaments/list', tournament_list),
     Route('/api/tournaments/series/create', create_series, methods=['POST']),
-    Route('/api/tournaments/series/{id:int}/edit', edit_series, methods=['POST']),
-    Route('/api/tournaments/series/{id:int}', series_info),
+    Route('/api/tournaments/series/{series_id:int}/edit', edit_series, methods=['POST']),
+    Route('/api/tournaments/series/{series_id:int}', series_info),
     Route('/api/tournaments/series/list', series_list),
     Route('/api/tournaments/templates/create', create_template, methods=['POST']),
-    Route('/api/tournaments/templates/{id:int}/edit', edit_template, methods=['POST']),
-    Route('/api/tournaments/templates/{id:int}', template_info),
+    Route('/api/tournaments/templates/{template_id:int}/edit', edit_template, methods=['POST']),
+    Route('/api/tournaments/templates/{template_id:int}', template_info),
     Route('/api/tournaments/templates/list', template_list)    
 ]

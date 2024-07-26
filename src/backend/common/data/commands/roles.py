@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.auth import permissions
+from common.auth import permissions, team_permissions, series_permissions, tournament_permissions
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 from common.auth.roles import BANNED
@@ -12,6 +12,42 @@ class ListRolesCommand(Command[None]):
             roles: list[Role] = []
             # ban info can be retrieved in its own endpoint
             async with db.execute(f"SELECT id, name, position FROM roles WHERE name != '{BANNED}'") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, name, position = row
+                    roles.append(Role(id, name, position))
+            return roles
+        
+@dataclass
+class ListTeamRolesCommand(Command[None]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            roles: list[Role] = []
+            async with db.execute(f"SELECT id, name, position FROM team_roles") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, name, position = row
+                    roles.append(Role(id, name, position))
+            return roles
+        
+@dataclass
+class ListSeriesRolesCommand(Command[None]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            roles: list[Role] = []
+            async with db.execute(f"SELECT id, name, position FROM series_roles") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, name, position = row
+                    roles.append(Role(id, name, position))
+            return roles
+        
+@dataclass
+class ListTournamentRolesCommand(Command[None]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            roles: list[Role] = []
+            async with db.execute(f"SELECT id, name, position FROM tournament_roles") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row
@@ -58,7 +94,132 @@ class GetRoleInfoCommand(Command[None]):
                     players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
             role_info = RoleInfo(self.role_id, role_name, position, permissions, players)
             return role_info
+        
+@dataclass
+class GetTeamRoleInfoCommand(Command[None]):
+    role_id: int
+    team_id: int
 
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            async with db.execute("SELECT name, position FROM team_roles WHERE id = ?", (self.role_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Role not found", status=400)
+                role_name, position = row
+
+            permissions: list[Permission] = []
+            async with db.execute(f"""
+                SELECT p.name, rp.is_denied
+                FROM team_permissions p
+                JOIN team_role_permissions rp ON p.id = rp.permission_id
+                WHERE rp.role_id = ?
+                """, (self.role_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    permission_name, is_denied = row
+                    permissions.append(Permission(permission_name, is_denied))
+            
+            players: list[Player] = []
+            async with db.execute(f"""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                FROM user_team_roles ur
+                JOIN users u ON u.id = ur.user_id
+                JOIN players p ON p.id = u.player_id
+                WHERE ur.role_id = ?  AND ur.team_id = ?
+                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
+                """, (self.role_id, self.team_id, timestamp)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
+                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+            role_info = TeamRoleInfo(self.role_id, role_name, position, permissions, players, self.team_id)
+            return role_info
+        
+@dataclass
+class GetSeriesRoleInfoCommand(Command[None]):
+    role_id: int
+    series_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            async with db.execute("SELECT name, position FROM series_roles WHERE id = ?", (self.role_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Role not found", status=400)
+                role_name, position = row
+
+            permissions: list[Permission] = []
+            async with db.execute(f"""
+                SELECT p.name, rp.is_denied
+                FROM series_permissions p
+                JOIN series_role_permissions rp ON p.id = rp.permission_id
+                WHERE rp.role_id = ?
+                """, (self.role_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    permission_name, is_denied = row
+                    permissions.append(Permission(permission_name, is_denied))
+            
+            players: list[Player] = []
+            async with db.execute(f"""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                FROM user_series_roles ur
+                JOIN users u ON u.id = ur.user_id
+                JOIN players p ON p.id = u.player_id
+                WHERE ur.role_id = ? AND ur.series_id = ?
+                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
+                """, (self.role_id, self.series_id, timestamp)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
+                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+            role_info = SeriesRoleInfo(self.role_id, role_name, position, permissions, players, self.series_id)
+            return role_info
+        
+@dataclass
+class GetTournamentRoleInfoCommand(Command[None]):
+    role_id: int
+    tournament_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            async with db.execute("SELECT name, position FROM tournament_roles WHERE id = ?", (self.role_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Role not found", status=400)
+                role_name, position = row
+
+            permissions: list[Permission] = []
+            async with db.execute(f"""
+                SELECT p.name, rp.is_denied
+                FROM tournament_permissions p
+                JOIN tournament_role_permissions rp ON p.id = rp.permission_id
+                WHERE rp.role_id = ?
+                """, (self.role_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    permission_name, is_denied = row
+                    permissions.append(Permission(permission_name, is_denied))
+            
+            players: list[Player] = []
+            async with db.execute(f"""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                FROM user_tournament_roles ur
+                JOIN users u ON u.id = ur.user_id
+                JOIN players p ON p.id = u.player_id
+                WHERE ur.role_id = ? AND ur.tournament_id = ?
+                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
+                """, (self.role_id, self.tournament_id, timestamp)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
+                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+            role_info = TournamentRoleInfo(self.role_id, role_name, position, permissions, players, self.tournament_id)
+            return role_info
                 
 @dataclass
 class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], list[SeriesRole], list[TournamentRole]]]):
@@ -272,6 +433,75 @@ class GrantRoleCommand(Command[None]):
             
 @save_to_command_log
 @dataclass
+class GrantTeamRoleCommand(Command[None]):
+    granter_user_id: int
+    target_player_id: int
+    team_id: int
+    role: str
+    expires_on: int | None = None
+
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
+        async with db_wrapper.connect() as db:
+            # get user id from player
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User not found", status=404)
+                target_user_id = row[0]
+            
+            # get role id from name
+            async with db.execute("SELECT id FROM team_roles where name = ?", (self.role,)) as cursor:
+                row = await cursor.fetchone()
+                role_id = None if row is None else int(row[0])
+
+                if role_id is None:
+                    raise Problem("Role not found", status=404)
+            
+            async with db.execute("SELECT user_id FROM user_team_roles WHERE user_id = ? AND role_id = ? AND team_id = ?", (target_user_id, role_id, self.team_id)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem(f"Player already has role {self.role}", status=400)
+            
+            # if we have the team_permissions.MANAGE_ROLES user permission, bypass team role checks
+            async with db.execute("""
+                SELECT EXISTS (
+                    SELECT 1 FROM user_roles ur
+                    JOIN role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN permissions p On rp.permission_id = p.id
+                    WHERE ur.user_id = ? AND p.name = ? AND rp.is_denied = 0
+                )
+                """, (self.granter_user_id, team_permissions.MANAGE_ROLES)) as cursor:
+                row = await cursor.fetchone()
+                is_mod = row is not None and bool(row[0])
+        
+            if not is_mod:
+                # to have permission to grant a role, we should have a role which is both higher
+                # in the role hierarchy than the role we wish to grant, and has the MANAGE_USER_ROLES
+                # permission.
+                async with db.execute("""
+                    SELECT EXISTS(
+                        SELECT 1 FROM roles r1
+                        JOIN user_team_roles ur ON ur.role_id = r1.id
+                        JOIN team_role_permissions rp ON ur.role_id = rp.role_id
+                        JOIN team_permissions p ON rp.permission_id = p.id
+                        JOIN team_roles r2
+                        WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
+                        AND rp.is_denied = 0 AND p.name = ? AND ur.team_id = ?
+                    )
+                    """, (self.granter_user_id, self.role, permissions.MANAGE_USER_ROLES, self.team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    can_grant = row is not None and bool(row[0])
+                if not can_grant:
+                    raise Problem("Not authorized to grant role", status=401)
+
+            try:
+                await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id, expires_on) VALUES (?, ?, ?, ?)", (target_user_id, role_id, self.team_id, self.expires_on))
+                await db.commit()
+            except Exception:
+                raise Problem("Unexpected error")
+            
+@save_to_command_log
+@dataclass
 class RemoveRoleCommand(Command[None]):
     remover_user_id: int
     target_player_id: int
@@ -321,6 +551,74 @@ class RemoveRoleCommand(Command[None]):
             
             try:
                 await db.execute("DELETE FROM user_roles WHERE user_id = ? AND role_id = ?", (target_user_id, role_id))
+                await db.commit()
+            except Exception:
+                raise Problem("Unexpected error")
+            
+@save_to_command_log
+@dataclass
+class RemoveTeamRoleCommand(Command[None]):
+    remover_user_id: int
+    target_player_id: int
+    team_id: int
+    role: str
+
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
+        async with db_wrapper.connect() as db:
+            # get user id from player
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User not found", status=404)
+                target_user_id = row[0]
+            
+            # get role id from name
+            async with db.execute("SELECT id FROM team_roles where name = ?", (self.role,)) as cursor:
+                row = await cursor.fetchone()
+                role_id = None if row is None else int(row[0])
+
+                if role_id is None:
+                    raise Problem("Role not found", status=404)
+            
+            async with db.execute("SELECT user_id FROM user_team_roles WHERE user_id = ? AND role_id = ? AND team_id = ?", (target_user_id, role_id, self.team_id)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem(f"Player does not have role {self.role}", status=400)
+            
+            # if we have the team_permissions.MANAGE_ROLES user permission, bypass team role checks
+            async with db.execute("""
+                SELECT EXISTS (
+                    SELECT 1 FROM user_roles ur
+                    JOIN role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN permissions p On rp.permission_id = p.id
+                    WHERE ur.user_id = ? AND p.name = ? AND rp.is_denied = 0
+                )
+                """, (self.remover_user_id, team_permissions.MANAGE_ROLES)) as cursor:
+                row = await cursor.fetchone()
+                is_mod = row is not None and bool(row[0])
+        
+            if not is_mod:
+                # to have permission to remove a role, we should have a role which is both higher
+                # in the role hierarchy than the role we wish to remove, and has the MANAGE_USER_ROLES
+                # permission.
+                async with db.execute("""
+                    SELECT EXISTS(
+                        SELECT 1 FROM roles r1
+                        JOIN user_team_roles ur ON ur.role_id = r1.id
+                        JOIN team_role_permissions rp ON ur.role_id = rp.role_id
+                        JOIN team_permissions p ON rp.permission_id = p.id
+                        JOIN team_roles r2
+                        WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
+                        AND rp.is_denied = 0 AND p.name = ? AND ur.team_id = ?
+                    )
+                    """, (self.remover_user_id, self.role, permissions.MANAGE_USER_ROLES, self.team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    can_grant = row is not None and bool(row[0])
+                if not can_grant:
+                    raise Problem("Not authorized to grant role", status=401)
+
+            try:
+                await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND role_id = ? AND team_id = ?", (target_user_id, role_id, self.team_id))
                 await db.commit()
             except Exception:
                 raise Problem("Unexpected error")

@@ -18,6 +18,18 @@ class RoleInfo(Role):
     players: list[Player]
 
 @dataclass
+class TeamRoleInfo(RoleInfo):
+    team_id: int
+
+@dataclass
+class SeriesRoleInfo(RoleInfo):
+    series_id: int
+
+@dataclass
+class TournamentRoleInfo(RoleInfo):
+    tournament_id: int
+
+@dataclass
 class UserRole(Role):
     expires_on: int | None
     permissions: list[Permission]
@@ -40,5 +52,13 @@ class RemoveRoleRequestData:
     role_name: str
 
 @dataclass
+class RemoveTeamRoleRequestData(RemoveRoleRequestData):
+    team_id: int
+
+@dataclass
 class GrantRoleRequestData(RemoveRoleRequestData):
+    expires_on: int | None = None
+
+@dataclass
+class GrantTeamRoleRequestData(RemoveTeamRoleRequestData):
     expires_on: int | None = None

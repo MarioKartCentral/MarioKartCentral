@@ -22,14 +22,18 @@ default_permissions_by_default_role = {
         series_permissions.EDIT_TOURNAMENT_TEMPLATE,
         series_permissions.MANAGE_SERIES_ROLES,
         tournament_permissions.EDIT_TOURNAMENT,
-        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES
     ],
     ORGANIZER: [
         series_permissions.CREATE_TOURNAMENT_TEMPLATE, 
         series_permissions.EDIT_TOURNAMENT_TEMPLATE,
         series_permissions.MANAGE_SERIES_ROLES,
         tournament_permissions.EDIT_TOURNAMENT, 
-        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES
     ],
     HOST_BANNED: [],
     BANNED: []
