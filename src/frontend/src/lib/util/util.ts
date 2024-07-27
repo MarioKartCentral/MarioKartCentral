@@ -85,6 +85,11 @@ export function sort_placement_list(a: PlacementOrganizer, b: PlacementOrganizer
   return a.placement < b.placement ? -1 : 1;
 }
 
+export function findNumberOfDaysBetweenDates(start: number, end: number, isMs: boolean=false) {
+  const timeInDay = isMs ? 86400000 : 86400 // js/ts uses milliseconds while Python uses seconds
+  return Math.floor((end - start) / timeInDay)
+}
+
 export const permissions = {
   create_tournament: 'tournament_create',
   edit_tournament: 'tournament_edit',

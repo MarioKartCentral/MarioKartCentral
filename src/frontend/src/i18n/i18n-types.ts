@@ -2017,6 +2017,10 @@ export type TranslationFunctions = {
 		 */
 		SUBMIT: () => LocalizedString
 		/**
+		 * Submit
+		 */
+		CANCEL: () => LocalizedString
+		/**
 		 * Indefinite
 		 */
 		INDEFINITE: () => LocalizedString
@@ -2028,6 +2032,90 @@ export type TranslationFunctions = {
 		 * Select Reason
 		 */
 		SELECT_REASON: () => LocalizedString
+		/**
+		 * Ban Player
+		 */
+		BAN_PLAYER: () => LocalizedString
+		/**
+		 * Edit Player Ban
+		 */
+		EDIT_BAN: () => LocalizedString
+		/**
+		 * View/Edit Ban
+		 */
+		VIEW_EDIT_BAN: () => LocalizedString
+		/**
+		 * Unban Player
+		 */
+		UNBAN: () => LocalizedString
+		/**
+		 * Ban Details
+		 */
+		BAN_DETAILS: () => LocalizedString
+		/**
+		 * Edit Ban Details
+		 */
+		EDIT_BAN_DETAILS: () => LocalizedString
+		/**
+		 * Banned
+		 */
+		BANNED: () => LocalizedString
+		/**
+		 * Unbanned
+		 */
+		UNBANNED: () => LocalizedString
+		/**
+		 * Enter reason
+		 */
+		ENTER_REASON: () => LocalizedString
+		/**
+		 * Player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * The player is already banned
+		 */
+		THE_PLAYER_IS_ALREADY_BANNED: () => LocalizedString
+		/**
+		 * From initial ban date
+		 */
+		FROM_INITIAL_BAN_DATE: () => LocalizedString
+		/**
+		 * List of Banned Players
+		 */
+		LIST_OF_BANNED_PLAYERS: () => LocalizedString
+		/**
+		 * List of Historical Bans
+		 */
+		LIST_OF_HISTORICAL_BANS: () => LocalizedString
+		/**
+		 * day
+		 */
+		DAY: () => LocalizedString
+		/**
+		 * days
+		 */
+		DAYS: () => LocalizedString
+		/**
+		 * In ddd day
+		 */
+		IN_DDD_DAY: () => LocalizedString
+		/**
+		 * In ddd days
+		 */
+		IN_DDD_DAYS: () => LocalizedString
+		/**
+		 * yes
+		 */
+		YES: () => LocalizedString
+		/**
+		 * no
+		 */
+		NO: () => LocalizedString
+		/**
+		 * STAFF
+		 */
+		STAFF: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**
