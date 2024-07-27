@@ -105,6 +105,16 @@ export function get_highest_role_position(user_info: UserInfo) {
   return Math.min(...role_positions);
 }
 
+export function get_highest_team_role_position(user_info: UserInfo, team_id: number) {
+  // if we have the manage team roles permission we can edit any roles in the hierarchy
+  if (check_permission(user_info, team_permissions.manage_roles)) {
+    return -1;
+  }
+  const team_roles = user_info.team_roles.filter((r) => r.team_id === team_id);
+  const role_positions = team_roles.map((r) => r.position);
+  return Math.min(...role_positions);
+}
+
 export const permissions = {
   create_user_roles: 'user_roles_create',
   edit_user_roles: 'user_roles_edit',

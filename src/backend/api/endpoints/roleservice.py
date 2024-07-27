@@ -45,19 +45,23 @@ async def team_role_info(request: Request) -> JSONResponse:
     role_info = await handle(GetTeamRoleInfoCommand(role_id, team_id))
     return JSONResponse(role_info)
 
-@bind_request_body(GrantTeamRoleRequestData)
+@bind_request_body(GrantRoleRequestData)
 @require_team_permission(team_permissions.MANAGE_ROLES)
-async def grant_team_role_to_player(request: Request, body: GrantTeamRoleRequestData) -> JSONResponse:
+async def grant_team_role_to_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
     user_id = request.state.user.id
-    command = GrantTeamRoleCommand(user_id, body.player_id, body.team_id, body.role_name, body.expires_on)
+    team_id = request.path_params['team_id']
+    command = GrantTeamRoleCommand(user_id, body.player_id, team_id, body.role_name, body.expires_on)
     await handle(command)
     return JSONResponse({})
 
-@bind_request_body(RemoveTeamRoleRequestData)
+@bind_request_body(RemoveRoleRequestData)
 @require_team_permission(team_permissions.MANAGE_ROLES)
-async def remove_team_role_from_player(request: Request, body: RemoveTeamRoleRequestData) -> JSONResponse:
+async def remove_team_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
     user_id = request.state.user.id
-    command = RemoveTeamRoleCommand(user_id, body.player_id, body.team_id, body.role_name)
+    team_id = request.path_params['team_id']
+    command = RemoveTeamRoleCommand(user_id, body.player_id, team_id, body.role_name)
+    await handle(command)
+    return JSONResponse({})
 
 async def list_series_roles(request: Request) -> JSONResponse:
     roles = await handle(ListSeriesRolesCommand())

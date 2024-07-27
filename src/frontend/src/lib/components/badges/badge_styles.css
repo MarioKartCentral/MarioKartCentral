@@ -104,3 +104,15 @@
     background-color: #006633;
     border: 1px solid #005621;
   }
+
+.team_manager_badge {
+  background-color: #04bd04;
+  border: 1px solid #038203;
+  font-weight: bold;
+}
+
+.team_leader_badge {
+  background-color: #029dbd;
+  border: 1px solid #027d99;
+  font-weight: bold;
+}

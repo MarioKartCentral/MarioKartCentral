@@ -52,13 +52,5 @@ class RemoveRoleRequestData:
     role_name: str
 
 @dataclass
-class RemoveTeamRoleRequestData(RemoveRoleRequestData):
-    team_id: int
-
-@dataclass
 class GrantRoleRequestData(RemoveRoleRequestData):
-    expires_on: int | None = None
-
-@dataclass
-class GrantTeamRoleRequestData(RemoveTeamRoleRequestData):
     expires_on: int | None = None

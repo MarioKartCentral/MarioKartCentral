@@ -12,7 +12,13 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import RosterNameTagRequest from './RosterNameTagRequest.svelte';
-
+  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import Dropdown from '$lib/components/common/Dropdown.svelte';
+  import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { check_permission, check_team_permission, team_permissions, get_highest_team_role_position } from '$lib/util/permissions';
+  import RosterPlayerName from './RosterPlayerName.svelte';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -22,12 +28,28 @@
   let curr_player: RosterPlayer;
   let invite_player: PlayerInfo | null;
 
+  let user_info: UserInfo;
+    user.subscribe((value) => {
+      user_info = value;
+    });
+
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour12: true,
   };
+
+  function can_kick(player: RosterPlayer) {
+    let player_hierarchy = 2;
+    if(player.is_manager) {
+      player_hierarchy = 0;
+    }
+    else if(player.is_leader) {
+      player_hierarchy = 1;
+    }
+    return get_highest_team_role_position(user_info, roster.team_id) < player_hierarchy;
+  }
 
   async function invitePlayer(player_id: number) {
     const payload = {
@@ -166,6 +188,48 @@
       alert(`Editing roster failed: ${result['title']}`);
     }
   }
+
+  async function grantTeamRole(player: RosterPlayer, role_name: string) {
+    let conf = window.confirm(`Are you sure you want to give the ${role_name} role to ${player.name}?`);
+    if(!conf) return;
+    const payload = {
+      player_id: player.player_id,
+      role_name: role_name
+    }
+    const endpoint = `/api/registry/teams/${roster.team_id}/roles/grant`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.status < 300) {
+      window.location.reload();
+    } else {
+      alert(`Granting role failed: ${result['title']}`);
+    }
+  }
+
+  async function removeTeamRole(player: RosterPlayer, role_name: string) {
+    let conf = window.confirm(`Are you sure you want to remove the ${role_name} role from ${player.name}?`);
+    if(!conf) return;
+    const payload = {
+      player_id: player.player_id,
+      role_name: role_name
+    }
+    const endpoint = `/api/registry/teams/${roster.team_id}/roles/remove`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.status < 300) {
+      window.location.reload();
+    } else {
+      alert(`Removing role failed: ${result['title']}`);
+    }
+  }
 </script>
 
 <Section header="{roster.name}">
@@ -178,40 +242,7 @@
   {roster.players.length}
   {roster.players.length !== 1 ? $LL.TEAM_PROFILE.PLAYERS() : $LL.TEAM_PROFILE.PLAYERS()}
   {#if roster.players.length}
-    <Table>
-      <col class="country" />
-      <col class="name" />
-      <col class="fc mobile-hide" />
-      <col class="join_date mobile-hide" />
-      <col class="manage_player" />
-      <thead>
-        <tr>
-          <th></th>
-          <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-          <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
-          <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {#each roster.players as player}
-          <tr>
-            <td><Flag country_code={player.country_code} /></td>
-            <td>{player.name}</td>
-            <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
-            <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
-            <td>
-              <Button on:click={() => kickDialog(player)}>Kick</Button>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </Table>
-  {/if}
-  <br /><br />
-  {#if roster.approval_status === 'approved' || is_mod}
-    <h3>{$LL.TEAM_EDIT.INVITATIONS()}</h3>
-    {#if roster.invites.length}
+    <div class="section">
       <Table>
         <col class="country" />
         <col class="name" />
@@ -228,27 +259,94 @@
           </tr>
         </thead>
         <tbody>
-          {#each roster.invites as player}
-            <tr>
+          {#each roster.players as player, i}
+            <tr class="row-{i % 2} {user_info.player_id === player.player_id ? 'me' : ''}">
               <td><Flag country_code={player.country_code} /></td>
-              <td>{player.name}</td>
-              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
-              <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
               <td>
-                <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAM_EDIT.RETRACT_INVITE()}</Button>
+                <RosterPlayerName {player}/>
+              </td>
+              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+              <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
+              <td>
+                <ChevronDownSolid class="cursor-pointer"/>
+                <Dropdown>
+                  {#if can_kick(player)}
+                    <DropdownItem on:click={() => kickDialog(player)}>
+                      Kick Player
+                    </DropdownItem>
+                  {/if}
+                  {#if check_team_permission(user_info, team_permissions.manage_roles, roster.team_id)}
+                    {#if player.is_leader}
+                      <DropdownItem on:click={() => removeTeamRole(player, "Leader")}>
+                        Remove Leader
+                      </DropdownItem>
+                    {:else if !player.is_manager}
+                      <DropdownItem on:click={() => grantTeamRole(player, "Leader")}>
+                        Make Leader
+                      </DropdownItem>
+                    {/if}
+                  {/if}
+                  {#if check_permission(user_info, team_permissions.manage_roles)}
+                    {#if player.is_manager}
+                      <DropdownItem on:click={() => removeTeamRole(player, "Manager")}>
+                        Remove Manager
+                      </DropdownItem>
+                    {:else}
+                      <DropdownItem on:click={() => grantTeamRole(player, "Manager")}>
+                        Make Manager
+                      </DropdownItem>
+                    {/if}
+                  {/if}
+                </Dropdown>
               </td>
             </tr>
           {/each}
         </tbody>
       </Table>
+    </div>
+  {/if}
+  {#if roster.approval_status === 'approved' || is_mod}
+    {#if roster.invites.length}
+      <div class="section">
+        <h3>{$LL.TEAM_EDIT.INVITATIONS()}</h3>
+        <Table>
+          <col class="country" />
+          <col class="name" />
+          <col class="fc mobile-hide" />
+          <col class="join_date mobile-hide" />
+          <col class="manage_player" />
+          <thead>
+            <tr>
+              <th></th>
+              <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
+              <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
+              <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {#each roster.invites as player}
+              <tr>
+                <td><Flag country_code={player.country_code} /></td>
+                <td>{player.name}</td>
+                <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+                <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
+                <td>
+                  <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAM_EDIT.RETRACT_INVITE()}</Button>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </Table>
+      </div>
     {/if}
-    <br />
-    <b>{$LL.TEAM_EDIT.INVITE_PLAYER()}</b>
-    <br />
-    <PlayerSearch bind:player={invite_player} game={roster.game} />
-    {#if invite_player}
-      <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAM_EDIT.INVITE_PLAYER()}</Button>
-    {/if}
+    <div class="section">
+      <b>{$LL.TEAM_EDIT.INVITE_PLAYER()}</b>
+      <PlayerSearch bind:player={invite_player} game={roster.game} />
+      {#if invite_player}
+        <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAM_EDIT.INVITE_PLAYER()}</Button>
+      {/if}
+    </div>
   {:else}
     Roster is pending approval from MKCentral staff.
   {/if}
@@ -321,5 +419,8 @@
   }
   col.manage_player {
     width: 20%;
+  }
+  div.section {
+    margin: 10px 0;
   }
 </style>

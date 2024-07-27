@@ -128,8 +128,6 @@
 
 {#if check_registrations_open(tournament) && rosters.length}
 <div class="container">
-
-
   <div>
     <b>Register Team</b>
   </div>
@@ -153,7 +151,6 @@
         {roster.name}
         {#if i === 0}
           <PrimaryBadge/>
-          <!-- (Primary) -->
         {/if}
         <CancelButton on:click={() => removeRoster(roster)}/>
       </div>
