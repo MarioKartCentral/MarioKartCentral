@@ -133,25 +133,30 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
-            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expiration_date <= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expiration_date >= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'ban_date <= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'ban_date >= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.reason, "reason LIKE ?", f"%{filter.reason}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'b.player_id = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'b.banned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'b.expiration_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'b.expiration_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'b.ban_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'b.ban_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
-            ban_query = f"""SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans {where_clause} LIMIT ? OFFSET ?"""
+            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.name
+                FROM player_bans b
+                JOIN players p ON b.player_id = p.id
+                JOIN users bbu ON b.banned_by = bbu.id
+                LEFT JOIN players bbp ON bbu.player_id = bbp.id
+                {where_clause} LIMIT ? OFFSET ?"""
 
-            ban_list: list[PlayerBan] = []
+            ban_list: list[PlayerBanDetailed] = []
             async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    ban_list.append(PlayerBan(*row))
+                    ban_list.append(PlayerBanDetailed(*row))
             
-            async with db.execute(f"SELECT COUNT (*) FROM player_bans {where_clause}", variable_parameters) as cursor:
+            async with db.execute(f"SELECT COUNT (*) FROM player_bans b {where_clause}", variable_parameters) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 ban_count = row[0]
@@ -160,7 +165,7 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             return PlayerBanList(ban_list, ban_count, page_count)
         
 @dataclass
-class ListBannedPlayersHistoricalCommand(Command[PlayerBanHistoricalList]):
+class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
     filter: PlayerBanHistoricalFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -175,32 +180,50 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanHistoricalList]):
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
-            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'player_id = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'banned_by = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'unbanned_by = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'is_indefinite = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'expiration_date <= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'expiration_date >= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'ban_date <= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'ban_date >= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.reason, "reason LIKE ?", f"%{filter.reason}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'b.player_id = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'b.banned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'b.unbanned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'b.expiration_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'b.expiration_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'b.ban_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'b.ban_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
+
+            unbanned_by_name_lookup:dict[int, str] = {}
+            unbanned_by_name_lookup_query = """SELECT b.unbanned_by, p.name
+                FROM player_bans_historical b
+                JOIN users u ON b.unbanned_by = u.id
+                JOIN players p ON u.player_id = p.id
+                """
+            async with db.execute(unbanned_by_name_lookup_query) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    unbanned_by_name_lookup[row[0]] = row[1]
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
-            ban_query = f"""SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, unbanned_by FROM player_bans_historical {where_clause} LIMIT ? OFFSET ?"""
+            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.name, b.unbanned_by
+                FROM player_bans_historical b
+                JOIN players p ON b.player_id = p.id
+                JOIN users bbu ON b.banned_by = bbu.id
+                LEFT JOIN players bbp ON bbu.player_id = bbp.id
+                {where_clause} LIMIT ? OFFSET ?"""        
 
-            ban_list: list[PlayerBanHistorical] = []
+            ban_list: list[PlayerBanDetailed] = []
             async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    ban_list.append(PlayerBanHistorical(*row))
+                    unbanned_by_name = unbanned_by_name_lookup.get(row[9], None)
+                    name, id, country_code, is_indefinite, ban_date, expiration_date, reason, banned_by, ub_name, unbanned_by = row
+                    ban_list.append(PlayerBanDetailed(name, id, country_code, is_indefinite, ban_date, expiration_date, reason, banned_by, ub_name, unbanned_by, unbanned_by_name))
             
-            async with db.execute(f"SELECT COUNT (*) FROM player_bans_historical {where_clause}", variable_parameters) as cursor:
+            async with db.execute(f"SELECT COUNT (*) FROM player_bans_historical b {where_clause}", variable_parameters) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 ban_count = row[0]
 
             page_count = int(ban_count / limit) + (1 if ban_count % limit else 0)
-            return PlayerBanHistoricalList(ban_list, ban_count, page_count)
+            return PlayerBanList(ban_list, ban_count, page_count)
 
 @dataclass
 class GetPlayersToUnbanCommand(Command[List[PlayerBan]]):
