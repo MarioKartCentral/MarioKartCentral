@@ -1,5 +1,5 @@
 import type { FriendCode } from '$lib/types/friend-code';
-import type { BanInfo } from '$lib/types/ban-info';
+import type { BanInfoDetailed } from '$lib/types/ban-info';
 import type { UserSettings } from '$lib/types/user-settings';
 import type { PlayerRoster } from './player-roster';
 
@@ -13,6 +13,6 @@ export type PlayerInfo = {
   discord_id: string | null;
   friend_codes: FriendCode[];
   rosters: PlayerRoster[];
-  ban_info: BanInfo | null;
+  ban_info: BanInfoDetailed | null;
   user_settings: UserSettings | null;
 };

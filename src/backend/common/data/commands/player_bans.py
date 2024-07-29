@@ -193,7 +193,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'b.unbanned_by = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date <= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date >= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_after, 'b.unban_date >= ?')
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
 

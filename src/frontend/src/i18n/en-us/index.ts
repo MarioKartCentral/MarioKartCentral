@@ -117,10 +117,12 @@ const en_us: BaseTranslation & Translation = {
   PLAYER_BAN: {
     PLAYER_ID: 'Player ID',
 		BANNED_BY: 'Banned By',
+		UNBANNED_BY: 'Unbanned By',
 		IS_INDEFINITE: 'Is Indefinite',
 		BAN_DATE: 'Ban Date',
     DURATION: 'Duration',
 		EXPIRATION_DATE: 'Expiration Date',
+		EXPIRES: 'Expires',
 		REASON: 'Reason',
     SUBMIT: 'Submit',
     CANCEL: 'Cancel',
@@ -137,6 +139,7 @@ const en_us: BaseTranslation & Translation = {
     UNBANNED: 'Unbanned',
     ENTER_REASON: 'Enter reason',
     PLAYER: 'Player',
+    USER: 'User',
     THE_PLAYER_IS_ALREADY_BANNED: 'The player is already banned',
     FROM_INITIAL_BAN_DATE: 'From initial ban date',
     LIST_OF_BANNED_PLAYERS: 'List of Banned Players',
@@ -147,7 +150,9 @@ const en_us: BaseTranslation & Translation = {
     IN_DDD_DAYS: 'In ddd days',
     YES: 'Yes',
     NO: 'No',
-    STAFF: 'STAFF'
+    STAFF: 'STAFF',
+    SYSTEM: 'SYSTEM',
+    SEARCH: 'Search'
   },
   LANGUAGES: {
     EN_US: 'English (United States)',

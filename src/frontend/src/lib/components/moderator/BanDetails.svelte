@@ -2,28 +2,20 @@
     import { onMount } from 'svelte';
     import LL from "$i18n/i18n-svelte";
     import { page } from '$app/stores';
-    import type { PlayerInfo } from '$lib/types/player-info';
+    import type { BanInfoDetailed } from '$lib/types/ban-info';
     import { findNumberOfDaysBetweenDates } from '$lib/util/util'
 
-    export let player: PlayerInfo;
+    export let banInfo: BanInfoDetailed;
     
-    let bannedBy: PlayerInfo | null = null;
     let daysRemaining: string = ''
     let duration: number = 0;
 
     onMount(async () => {
-        if (!player.ban_info)
-            return
-        
         const nowSeconds: number = Math.floor(Date.now() / 1000)
-        const days: number = findNumberOfDaysBetweenDates(nowSeconds, player.ban_info.expiration_date)
+        const days: number = Math.max(-1, findNumberOfDaysBetweenDates(nowSeconds, banInfo.expiration_date))
         if (days >= 0)
-            daysRemaining = days === 1 ? `(${$LL.PLAYER_BAN.IN_DDD_DAY()?.replace('ddd', days)})` : `(${$LL.PLAYER_BAN.IN_DDD_DAYS()?.replace('ddd', days)})`
-        duration = findNumberOfDaysBetweenDates(player.ban_info.ban_date, player.ban_info.expiration_date)
-        
-        const res = await fetch(`/api/registry/players/${player.ban_info.banned_by}`)
-        if (res.status === 200)
-            bannedBy = await res.json()
+            daysRemaining = days === 1 ? `(${$LL.PLAYER_BAN.IN_DDD_DAY()?.replace('ddd', days.toString())})` : `(${$LL.PLAYER_BAN.IN_DDD_DAYS()?.replace('ddd', days.toString())})`
+        duration = findNumberOfDaysBetweenDates(banInfo.ban_date, banInfo.expiration_date)
     });
 
     function unixTimestampToString(timestamp: number) {
@@ -32,20 +24,26 @@
     }
 </script>
 
-{#if player.ban_info}
+<div>
     <h2>{$LL.PLAYER_BAN.BAN_DETAILS()}</h2>
     <p>
-    <strong>{$LL.PLAYER_BAN.PLAYER()}</strong>: <a href={`/registry/players/profile?id=${player.id}`}>{player.name}</a> <br/>
-    <strong>{$LL.PLAYER_BAN.BANNED_BY()}</strong>: {#if bannedBy} <a href={`/registry/players/profile?id=${bannedBy.id}`}>{bannedBy.name}</a> {:else} {$LL.PLAYER_BAN.STAFF()} {/if} <br/>
-    <strong>{$LL.PLAYER_BAN.IS_INDEFINITE()}</strong>: {player.ban_info.is_indefinite ? $LL.PLAYER_BAN.YES() : $LL.PLAYER_BAN.NO()} <br/>
-    <strong>{$LL.PLAYER_BAN.BANNED()}</strong>: {unixTimestampToString(player.ban_info.ban_date)} <br/>
-    {#if !player.ban_info.is_indefinite}
-        <strong>{$LL.PLAYER_BAN.UNBANNED()}</strong>: {unixTimestampToString(player.ban_info.expiration_date)} {daysRemaining}<br/>
+    <strong>{$LL.PLAYER_BAN.PLAYER()}</strong>: <a href={`/registry/players/profile?id=${banInfo.player_id}`}>{banInfo.player_name}</a> <br/>
+    <strong>{$LL.PLAYER_BAN.BANNED_BY()}</strong>: {#if banInfo.banned_by_pid} <a href={`/registry/players/profile?id=${banInfo.banned_by_pid}`}>{banInfo.banned_by_name}</a> {:else} {$LL.PLAYER_BAN.USER()} {banInfo.banned_by_uid} {/if} <br/>
+    <strong>{$LL.PLAYER_BAN.IS_INDEFINITE()}</strong>: {banInfo.is_indefinite ? $LL.PLAYER_BAN.YES() : $LL.PLAYER_BAN.NO()} <br/>
+    <strong>{$LL.PLAYER_BAN.BANNED()}</strong>: {unixTimestampToString(banInfo.ban_date)} <br/>
+    {#if !banInfo.is_indefinite }
+        <strong>{$LL.PLAYER_BAN.EXPIRES()}</strong>: {unixTimestampToString(banInfo.expiration_date)} {daysRemaining}<br/>
+    {/if}
+    {#if banInfo.unban_date}
+        <strong>{$LL.PLAYER_BAN.UNBANNED()}</strong>: {unixTimestampToString(banInfo.unban_date)}<br/>
+        <strong>{$LL.PLAYER_BAN.UNBANNED_BY()}</strong>: {#if banInfo.unbanned_by_pid} <a href={`/registry/players/profile?id=${banInfo.unbanned_by_pid}`}>{banInfo.unbanned_by_name}</a> {:else if banInfo.unbanned_by_uid !== null} {$LL.PLAYER_BAN.USER()} {banInfo.unbanned_by_uid} {:else} {$LL.PLAYER_BAN.SYSTEM()} {/if} <br/>
+    {/if}
+    {#if !banInfo.is_indefinite }
         <strong>{$LL.PLAYER_BAN.DURATION()}</strong>: {duration} {duration > 1 ? $LL.PLAYER_BAN.DAYS() : $LL.PLAYER_BAN.DAYS()}<br/>
     {/if}
-    <strong>{$LL.PLAYER_BAN.REASON()}</strong>: {player.ban_info.reason}
+    <strong>{$LL.PLAYER_BAN.REASON()}</strong>: {banInfo.reason}
     </p>
-{/if}
+</div>
 
 <style>
     h2 {

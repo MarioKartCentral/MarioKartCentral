@@ -1,20 +1,20 @@
 <script lang='ts'>
     import LL from '$i18n/i18n-svelte';
-    import type { PlayerInfo } from '$lib/types/player-info';
+    import type { BanInfoDetailed } from '$lib/types/ban-info';
     import BanDetails from '$lib/components/moderator/BanDetails.svelte';
     import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
     import Button from "$lib/components/common/buttons/Button.svelte";
 
-    export let player: PlayerInfo;
+    export let banInfo: BanInfoDetailed;
 
     let showBanPlayerForm : boolean = false;
 
     export async function unbanPlayer() {
-        const confirm = window.confirm(`Are you sure you want to unban ${player.name}?`)
+        const confirm = window.confirm(`Are you sure you want to unban ${banInfo.player_name}?`)
         if (!confirm)
             return
 
-        const endpoint = `/api/registry/players/${player.id}/ban`;
+        const endpoint = `/api/registry/players/${banInfo.player_id}/ban`;
         const response = await fetch(endpoint, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
@@ -22,7 +22,7 @@
         
         const result = await response.json();
         if (response.status < 300) {
-            alert(`Successfully unbanned ${player.name}`)
+            alert(`Successfully unbanned ${banInfo.player_name}`)
             window.location.reload();
         } 
         else {
@@ -33,10 +33,10 @@
 </script>
 
 <div>
-    <BanDetails {player}/>
+    <BanDetails {banInfo} />
     {#if showBanPlayerForm}
         <hr/>
-        <BanPlayerForm {player} isEditBan handleCancel={() => showBanPlayerForm = false}/>
+        <BanPlayerForm playerId={banInfo.player_id} playerName={banInfo.player_name} isEditBan handleCancel={() => {showBanPlayerForm = false}}/>
     {:else}
         <div class='button-wrapper'>
             <Button on:click={() => showBanPlayerForm = true}>{$LL.PLAYER_BAN.EDIT_BAN_DETAILS()}</Button>

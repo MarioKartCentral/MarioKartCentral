@@ -1,13 +1,17 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { PlayerInfo } from '$lib/types/player-info';
+    import type { BanInfoDetailed } from '$lib/types/ban-info';
     import LL from "$i18n/i18n-svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import { findNumberOfDaysBetweenDates, default_player_ban_options } from '$lib/util/util'
 
-    export let player: PlayerInfo;
+    // use playerId and playerName instead of full PlayerInfo object since the /player_bans page doesn't fetch PlayerInfo 
+    export let playerId: number;
+    export let playerName: string;
+    export let banInfo: BanInfoDetailed | null = null;
     export let isEditBan: boolean = false;
-    export let handleCancel: () => void | null = null
+    export let handleCancel: (() => void) | null = null
 
     let isIndefinite: boolean | null = true;
     let numDays: number | null = null;
@@ -15,30 +19,28 @@
     let customReason: string | null = null;
 
     onMount(async () => {
-        if (!player.ban_info) {
-            const res = await fetch(`/api/registry/players/${player.id}`)
+        if (!banInfo) {
+            const res = await fetch(`/api/registry/players/${playerId}`)
             if (res.status === 200) {
-                player = await res.json()
+                const player: PlayerInfo = await res.json()
+                banInfo = player.ban_info
             }
         }
-        if (player.ban_info) {
-            isIndefinite = player.ban_info.is_indefinite
-            numDays = isIndefinite ? null : findNumberOfDaysBetweenDates(player.ban_info.ban_date, player.ban_info.expiration_date)
-            reason = player.ban_info.reason
-            if (!default_player_ban_options.includes(player.ban_info.reason)) {
+        if (banInfo) {
+            isIndefinite = banInfo.is_indefinite
+            numDays = isIndefinite ? null : findNumberOfDaysBetweenDates(banInfo.ban_date, banInfo.expiration_date)
+            reason = banInfo.reason
+            if (!default_player_ban_options.includes(banInfo.reason)) {
                 reason = 'Other'
-                customReason = player.ban_info.reason
+                customReason = banInfo.reason
             }
         }
     });
 
     async function banPlayer(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
-        if (!player)
-            return alert('A player is not selected')
-    
-        let confirmText = `Are you sure you want to ban ${player.name}?`
+        let confirmText = `Are you sure you want to ban ${playerName}?`
         if (isEditBan)
-            confirmText = `Are you sure you want to edit the ban for ${player.name}?`
+            confirmText = `Are you sure you want to edit the ban for ${playerName}?`
         const confirm = window.confirm(confirmText)
         if (!confirm)
             return
@@ -47,7 +49,7 @@
         let expirationDate = 0
         let days = Number(data.get('days'))
         if (days) {
-            const startDate = player.ban_info?.ban_date || Math.floor(Date.now()/1000)
+            const startDate = banInfo?.ban_date || Math.floor(Date.now()/1000)
             expirationDate = startDate + 86400*days
         }
 
@@ -57,7 +59,7 @@
             reason: data.get('custom_reason') || data.get('reason')
         };
 
-        const endpoint = isEditBan ? `/api/registry/players/${player.id}/editBan` : `/api/registry/players/${player.id}/ban`
+        const endpoint = isEditBan ? `/api/registry/players/${playerId}/editBan` : `/api/registry/players/${playerId}/ban`
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -67,9 +69,9 @@
 
         if (response.status < 300) {
             if (isEditBan)
-                alert(`Successfully edited the ban for ${player.name} (Player ID: ${player.id})`)
+                alert(`Successfully edited the ban for ${playerName} (Player ID: ${playerId})`)
             else
-                alert(`Successfully banned ${player.name} (Player ID: ${player.id})`)
+                alert(`Successfully banned ${playerName} (Player ID: ${playerId})`)
             window.location.reload()
         } else {
             const detail = result.detail ? `, ${result.detail}` : ''

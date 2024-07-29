@@ -1993,6 +1993,10 @@ export type TranslationFunctions = {
 		 */
 		BANNED_BY: () => LocalizedString
 		/**
+		 * Unbanned By
+		 */
+		UNBANNED_BY: () => LocalizedString
+		/**
 		 * Is Indefinite
 		 */
 		IS_INDEFINITE: () => LocalizedString
@@ -2007,7 +2011,11 @@ export type TranslationFunctions = {
 		/**
 		 * Expiration Date
 		 */
-		EXPIRATION_DATE: () => LocalizedString	
+		EXPIRATION_DATE: () => LocalizedString
+		/**
+		 * Expires
+		 */
+		EXPIRES: () => LocalizedString	
 		/**
 		 * Reason
 		 */
@@ -2073,6 +2081,10 @@ export type TranslationFunctions = {
 		 */
 		PLAYER: () => LocalizedString
 		/**
+		 * User
+		 */
+		USER: () => LocalizedString
+		/**
 		 * The player is already banned
 		 */
 		THE_PLAYER_IS_ALREADY_BANNED: () => LocalizedString
@@ -2116,6 +2128,14 @@ export type TranslationFunctions = {
 		 * STAFF
 		 */
 		STAFF: () => LocalizedString
+		/**
+		 * SYSTEM
+		 */
+		SYSTEM: () => LocalizedString
+		/**
+		 * Search
+		 */
+		SEARCH: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**

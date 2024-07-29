@@ -54,10 +54,12 @@
       </div>
     </Section>
     <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-      <BanPlayerForm player={player} handleCancel={() => banDialog.close()}/>
+      <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()}/>
     </Dialog>
     <Dialog bind:this={editBanDialog} header={$LL.PLAYER_BAN.VIEW_EDIT_BAN()}>
-      <ViewEditBan player={player}/>
+      {#if player.ban_info}
+        <ViewEditBan banInfo={player.ban_info}/>
+      {/if}
     </Dialog>
   </PermissionCheck>
   <PlayerProfile {player} />
