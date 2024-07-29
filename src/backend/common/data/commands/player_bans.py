@@ -59,6 +59,8 @@ class UnbanPlayerCommand(Command[PlayerBanHistorical]):
     unbanned_by: int | None = None
 
     async def handle(self, db_wrapper, s3_wrapper):
+        unban_date = int(datetime.now(timezone.utc).timestamp())
+
         async with db_wrapper.connect() as db:
             # copy current ban into historical ban table
             async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans WHERE player_id = ?", (self.player_id, )) as cursor:
@@ -66,7 +68,7 @@ class UnbanPlayerCommand(Command[PlayerBanHistorical]):
                 if row is None:
                     raise Problem("Player not found", "Unable to find player in the ban table", status=404)
             player_id, banned_by, is_indefinite, ban_date, expiration_date, reason = row
-            async with db.execute("INSERT INTO player_bans_historical(player_id, banned_by, unbanned_by, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?, ?)", (player_id, banned_by, self.unbanned_by, is_indefinite, ban_date, expiration_date, reason)) as cursor:
+            async with db.execute("INSERT INTO player_bans_historical(player_id, banned_by, unbanned_by, unban_date, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (player_id, banned_by, self.unbanned_by, unban_date, is_indefinite, ban_date, expiration_date, reason)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount != 1:
                     raise Problem("Failed to unban player", "Failed to insert into historical ban table")
@@ -143,7 +145,8 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
-            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.name
+            # bbu: BannedByUser, bbp: BannedByPlayer
+            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.id, bbp.name
                 FROM player_bans b
                 JOIN players p ON b.player_id = p.id
                 JOIN users bbu ON b.banned_by = bbu.id
@@ -182,40 +185,33 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
 
             _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'b.player_id = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'b.banned_by = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'b.unbanned_by = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'b.expiration_date <= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'b.expiration_date >= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'b.ban_date <= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'b.ban_date >= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
-
-            unbanned_by_name_lookup:dict[int, str] = {}
-            unbanned_by_name_lookup_query = """SELECT b.unbanned_by, p.name
-                FROM player_bans_historical b
-                JOIN users u ON b.unbanned_by = u.id
-                JOIN players p ON u.player_id = p.id
-                """
-            async with db.execute(unbanned_by_name_lookup_query) as cursor:
-                rows = await cursor.fetchall()
-                for row in rows:
-                    unbanned_by_name_lookup[row[0]] = row[1]
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'b.unbanned_by = ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date <= ?')
+            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date >= ?')
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
-            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.name, b.unbanned_by
+
+            # bbu: BannedByUser, bbp: BannedByPlayer
+            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.id, bbp.name, b.unban_date, b.unbanned_by, ubp.id, ubp.name
                 FROM player_bans_historical b
                 JOIN players p ON b.player_id = p.id
                 JOIN users bbu ON b.banned_by = bbu.id
                 LEFT JOIN players bbp ON bbu.player_id = bbp.id
+                LEFT JOIN users ubu ON b.unbanned_by = ubu.id
+                LEFT JOIN players ubp ON ubu.player_id = ubp.id 
                 {where_clause} LIMIT ? OFFSET ?"""        
 
             ban_list: list[PlayerBanDetailed] = []
             async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    unbanned_by_name = unbanned_by_name_lookup.get(row[9], None)
-                    name, id, country_code, is_indefinite, ban_date, expiration_date, reason, banned_by, ub_name, unbanned_by = row
-                    ban_list.append(PlayerBanDetailed(name, id, country_code, is_indefinite, ban_date, expiration_date, reason, banned_by, ub_name, unbanned_by, unbanned_by_name))
+                    ban_list.append(PlayerBanDetailed(*row))
             
             async with db.execute(f"SELECT COUNT (*) FROM player_bans_historical b {where_clause}", variable_parameters) as cursor:
                 row = await cursor.fetchone()

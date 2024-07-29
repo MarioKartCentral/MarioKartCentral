@@ -22,9 +22,12 @@ class PlayerBanDetailed:
     ban_date: int
     expiration_date: int
     reason: str
-    banned_by_id: int
+    banned_by_uid: int
+    banned_by_pid: int
     banned_by_name: str | None = None
-    unbanned_by_id: int | None = None
+    unban_date: int | None = None
+    unbanned_by_uid: int | None = None
+    unbanned_by_pid: int | None = None
     unbanned_by_name: str | None = None
 
 @dataclass
@@ -48,6 +51,8 @@ class PlayerBanFilter:
 @dataclass
 class PlayerBanHistoricalFilter(PlayerBanFilter):
     unbanned_by: int | None = None
+    unbanned_before: int | None = None
+    unbanned_after: int | None = None
 
 @dataclass
 class PlayerBanList:

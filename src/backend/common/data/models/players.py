@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from common.data.models.common import Game, CountryCode
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
-from common.data.models.player_bans import PlayerBan
+from common.data.models.player_bans import PlayerBanDetailed
 
     
 @dataclass
@@ -36,7 +36,7 @@ class PlayerRoster:
 @dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
-    ban_info: PlayerBan | None
+    ban_info: PlayerBanDetailed | None
     user_settings: UserSettings | None
 
 @dataclass

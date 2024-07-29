@@ -689,6 +689,7 @@ class PlayerBansHistorical(TableModel):
     player_id: int
     banned_by: int
     unbanned_by: int | None
+    unban_date: int
     is_indefinite: bool
     ban_date: int
     expiration_date: int
@@ -701,6 +702,7 @@ class PlayerBansHistorical(TableModel):
             player_id INTEGER REFERENCES players(id),
             banned_by INTEGER NOT NULL REFERENCES users(id),
             unbanned_by INTEGER REFERENCES users(id),
+            unban_date INTEGER NOT NULL,
             is_indefinite BOOLEAN NOT NULL,
             ban_date INTEGER NOT NULL,
             expiration_date INTEGER NOT NULL,
