@@ -107,7 +107,7 @@ export function get_highest_role_position(user_info: UserInfo) {
 
 export function get_highest_team_role_position(user_info: UserInfo, team_id: number) {
   // if we have the manage team roles permission we can edit any roles in the hierarchy
-  if (check_permission(user_info, team_permissions.manage_roles)) {
+  if (check_permission(user_info, team_permissions.manage_team_roles)) {
     return -1;
   }
   const team_roles = user_info.team_roles.filter((r) => r.team_id === team_id);
@@ -132,7 +132,7 @@ export const team_permissions = {
   edit_team_info: 'team_info_edit',
   create_rosters: 'roster_create',
   manage_rosters: 'roster_manage',
-  manage_roles: 'team_roles_manage',
+  manage_team_roles: 'team_roles_manage',
   invite_players: 'team_player_invite',
   kick_players: 'team_player_kick',
   register_tournament: 'team_tournament_register',

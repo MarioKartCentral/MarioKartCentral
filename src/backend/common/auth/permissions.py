@@ -24,7 +24,7 @@ permissions_by_id = {
     10: team_permissions.EDIT_TEAM_INFO,
     11: team_permissions.CREATE_ROSTERS,
     12: team_permissions.MANAGE_ROSTERS,
-    13: team_permissions.MANAGE_ROLES,
+    13: team_permissions.MANAGE_TEAM_ROLES,
     14: team_permissions.INVITE_PLAYERS,
     15: team_permissions.KICK_PLAYERS,
     16: team_permissions.REGISTER_TOURNAMENT,

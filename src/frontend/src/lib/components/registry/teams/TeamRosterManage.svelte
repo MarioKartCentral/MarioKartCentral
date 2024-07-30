@@ -275,7 +275,7 @@
                       Kick Player
                     </DropdownItem>
                   {/if}
-                  {#if check_team_permission(user_info, team_permissions.manage_roles, roster.team_id)}
+                  {#if check_team_permission(user_info, team_permissions.manage_team_roles, roster.team_id)}
                     {#if player.is_leader}
                       <DropdownItem on:click={() => removeTeamRole(player, "Leader")}>
                         Remove Leader
@@ -286,7 +286,7 @@
                       </DropdownItem>
                     {/if}
                   {/if}
-                  {#if check_permission(user_info, team_permissions.manage_roles)}
+                  {#if check_permission(user_info, team_permissions.manage_team_roles)}
                     {#if player.is_manager}
                       <DropdownItem on:click={() => removeTeamRole(player, "Manager")}>
                         Remove Manager

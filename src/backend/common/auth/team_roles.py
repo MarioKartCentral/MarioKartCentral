@@ -17,7 +17,7 @@ default_permissions_by_default_role = {
         team_permissions.EDIT_TEAM_INFO, 
         team_permissions.CREATE_ROSTERS, 
         team_permissions.MANAGE_ROSTERS,
-        team_permissions.MANAGE_ROLES, 
+        team_permissions.MANAGE_TEAM_ROLES, 
         team_permissions.INVITE_PLAYERS, 
         team_permissions.KICK_PLAYERS, 
         team_permissions.REGISTER_TOURNAMENT,
