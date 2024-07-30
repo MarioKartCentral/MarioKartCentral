@@ -36,7 +36,7 @@
     {/if}
     {#if banInfo.unban_date}
         <strong>{$LL.PLAYER_BAN.UNBANNED()}</strong>: {unixTimestampToString(banInfo.unban_date)}<br/>
-        <strong>{$LL.PLAYER_BAN.UNBANNED_BY()}</strong>: {#if banInfo.unbanned_by_pid} <a href={`/registry/players/profile?id=${banInfo.unbanned_by_pid}`}><u>{banInfo.unbanned_by_name}</u></a> {:else if banInfo.unbanned_by_uid !== null} {$LL.PLAYER_BAN.USER()} {banInfo.unbanned_by_uid} {:else} {$LL.PLAYER_BAN.SYSTEM()} {/if} <br/>
+        <strong>{$LL.PLAYER_BAN.UNBANNED_BY()}</strong>: {#if banInfo.unbanned_by_pid} <a href={`/registry/players/profile?id=${banInfo.unbanned_by_pid}`}><u>{banInfo.unbanned_by_name}</u></a> {:else if banInfo.unbanned_by_uid !== null} {$LL.PLAYER_BAN.USER()} {banInfo.unbanned_by_uid} {:else} SYSTEM {/if} <br/>
     {/if}
     {#if !banInfo.is_indefinite }
         <strong>{$LL.PLAYER_BAN.DURATION()}</strong>: {duration} {duration > 1 ? $LL.PLAYER_BAN.DAYS() : $LL.PLAYER_BAN.DAYS()}<br/>

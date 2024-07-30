@@ -556,10 +556,6 @@ type RootTranslation = {
 		 */
 		STAFF: string
 		/**
-		 * S​Y​S​T​E​M
-		 */
-		SYSTEM: string
-		/**
 		 * S​e​a​r​c​h
 		 */
 		SEARCH: string
@@ -2322,10 +2318,6 @@ export type TranslationFunctions = {
 		 * STAFF
 		 */
 		STAFF: () => LocalizedString
-		/**
-		 * SYSTEM
-		 */
-		SYSTEM: () => LocalizedString
 		/**
 		 * Search
 		 */

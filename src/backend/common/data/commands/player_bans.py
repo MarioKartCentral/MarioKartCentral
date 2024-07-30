@@ -192,9 +192,14 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_before, 'b.ban_date <= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'b.ban_date >= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'ubp.name LIKE ?', f"%{filter.unbanned_by}%")
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date <= ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_after, 'b.unban_date >= ?')
+
+            if type(filter) == PlayerBanHistoricalFilter: # filter will sometimes randomly be PlayerBanFilter instead of PlayerBanHistoricalFilter
+                if filter.unbanned_by and filter.unbanned_by.lower() in 'system':
+                    _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, '(ubp.name LIKE ? OR ubu.id IS NULL)', f"%{filter.unbanned_by}%")
+                else:
+                    _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'ubp.name LIKE ?', f"%{filter.unbanned_by}%")
+                _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date <= ?')
+                _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_after, 'b.unban_date >= ?')
 
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
             joined_tables = """player_bans_historical b

@@ -152,7 +152,6 @@ const en_us: BaseTranslation & Translation = {
     YES: 'Yes',
     NO: 'No',
     STAFF: 'STAFF',
-    SYSTEM: 'SYSTEM',
     SEARCH: 'Search',
     NAME: 'Name',
     BANNED_BEFORE: 'Banned Before',

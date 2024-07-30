@@ -72,7 +72,7 @@
             {:else if bid.unbanned_by_uid !== null}
               <td class="mobile-hide">User {bid.unbanned_by_uid}</td>
             {:else}
-              <td class="mobile-hide">{$LL.PLAYER_BAN.SYSTEM()}</td>
+              <td class="mobile-hide">SYSTEM</td>
             {/if}
             <td><Button on:click={() => handleClick(bid)}>{$LL.PLAYER_BAN.BAN_DETAILS()}</Button></td>
           {:else}
