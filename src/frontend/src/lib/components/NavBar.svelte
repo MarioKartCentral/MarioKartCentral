@@ -12,7 +12,7 @@
   import DropdownItem from './common/DropdownItem.svelte';
   import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline, GlobeSolid } from 'flowbite-svelte-icons';
   import AlertCount from './common/AlertCount.svelte';
-  import { check_permission } from '$lib/util/permissions';
+  import { check_permission, series_permissions } from '$lib/util/permissions';
   
   let notify: Notification;
 
@@ -103,7 +103,9 @@
       <Dropdown>
         <DropdownItem href="/{$page.params.lang}/tournaments">Tournament Listing</DropdownItem>
         <DropdownItem href="/{$page.params.lang}/tournaments/series">Tournament Series</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/tournaments/templates">Tournament Templates</DropdownItem>
+        {#if check_permission(user_info, series_permissions.create_tournament_template)}
+          <DropdownItem href="/{$page.params.lang}/tournaments/templates">Tournament Templates</DropdownItem>
+        {/if}
       </Dropdown>
       <NavLi href="/{$page.params.lang}/time-trials" class={checkSelectedNav('TIME TRIALS')}>{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
       <NavLi href="/{$page.params.lang}/lounge" class={checkSelectedNav('LOUNGE')}>{$LL.NAVBAR.LOUNGE()}</NavLi>

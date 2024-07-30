@@ -1,5 +1,5 @@
 import type { Permission } from "$lib/types/permission";
-import type { Player } from "$lib/types/player";
+import type { RolePlayer } from "$lib/types/role-player";
 
 export type Role = {
     id: number;
@@ -9,5 +9,5 @@ export type Role = {
 
 export type RoleInfo = Role & {
     permissions: Permission[];
-    players: Player[];
+    players: RolePlayer[];
 }

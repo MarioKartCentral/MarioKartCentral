@@ -115,6 +115,26 @@ export function get_highest_team_role_position(user_info: UserInfo, team_id: num
   return Math.min(...role_positions);
 }
 
+export function get_highest_series_role_position(user_info: UserInfo, series_id: number) {
+  // if we have the manage series roles permission we can edit any roles in the hierarchy
+  if (check_permission(user_info, series_permissions.manage_series_roles)) {
+    return -1;
+  }
+  const series_roles = user_info.series_roles.filter((r) => r.series_id === series_id);
+  const role_positions = series_roles.map((r) => r.position);
+  return Math.min(...role_positions);
+}
+
+export function get_highest_tournament_role_position(user_info: UserInfo, tournament_id: number) {
+  // if we have the manage series roles permission we can edit any roles in the hierarchy
+  if (check_permission(user_info, tournament_permissions.manage_tournament_roles)) {
+    return -1;
+  }
+  const tournament_roles = user_info.tournament_roles.filter((r) => r.tournament_id === tournament_id);
+  const role_positions = tournament_roles.map((r) => r.position);
+  return Math.min(...role_positions);
+}
+
 export const permissions = {
   create_user_roles: 'user_roles_create',
   edit_user_roles: 'user_roles_edit',
@@ -152,6 +172,8 @@ export const tournament_permissions = {
   manage_tournament_registrations: 'tournament_registrations_manage',
   register_tournament: 'tournament_register',
   register_host: 'tournament_register_host',
+  manage_placements: 'tournament_placements_manage',
+  manage_tournament_roles: 'tournament_roles_manage'
 };
 
 export const mod_panel_permissions = [
@@ -159,4 +181,5 @@ export const mod_panel_permissions = [
   permissions.manage_teams,
   permissions.manage_transfers,
   permissions.ban_player,
+  permissions.manage_user_roles
 ];
