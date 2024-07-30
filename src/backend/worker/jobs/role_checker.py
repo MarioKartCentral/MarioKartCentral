@@ -14,7 +14,6 @@ class RemoveExpiredRolesJob(Job):
     
     async def run(self):
         await handle(RemoveExpiredRolesCommand())
-        print("yes")
 
 _jobs: list[Job] = []
 

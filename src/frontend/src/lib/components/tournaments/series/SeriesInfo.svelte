@@ -31,6 +31,9 @@
     {#if check_series_permission(user_info, series_permissions.create_tournament_template, series.id)}
       <Button href="/{$page.params.lang}/tournaments/series/templates?id={series.id}">Manage Templates</Button>
     {/if}
+    {#if check_series_permission(user_info, series_permissions.manage_series_roles, series.id)}
+      <Button href="/{$page.params.lang}/tournaments/series/manage_roles?id={series.id}">Manage Roles</Button>
+    {/if}
   </div>
   <div class="container">
     {#if series.logo}

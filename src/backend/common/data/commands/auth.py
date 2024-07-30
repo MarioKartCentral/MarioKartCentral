@@ -37,7 +37,6 @@ class CheckUserHasPermissionCommand(Command[bool]):
     tournament_id: int | None = None
 
     async def handle(self, db_wrapper, s3_wrapper):
-        timestamp = int(datetime.now(timezone.utc).timestamp())
         series_id = self.series_id
 
         async with db_wrapper.connect() as db:
@@ -75,8 +74,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     JOIN tournament_role_permissions rp ON rp.role_id = r.id
                     JOIN tournament_permissions p on rp.permission_id = p.id
                     WHERE ur.user_id = ? AND ur.tournament_id = ? AND p.name = ?
-                    AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                    """, (self.user_id, self.tournament_id, self.permission_name, timestamp)) as cursor:
+                    """, (self.user_id, self.tournament_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
 
                 if check_perms(rows):
@@ -91,8 +89,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     JOIN series_role_permissions rp ON rp.role_id = r.id
                     JOIN series_permissions p on rp.permission_id = p.id
                     WHERE ur.user_id = ? AND ur.series_id = ? AND p.name = ?
-                    AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                    """, (self.user_id, self.series_id, self.permission_name, timestamp)) as cursor:
+                    """, (self.user_id, self.series_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
 
                 if check_perms(rows):
@@ -107,8 +104,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     JOIN team_role_permissions rp ON rp.role_id = r.id
                     JOIN team_permissions p on rp.permission_id = p.id
                     WHERE ur.user_id = ? AND ur.team_id = ? AND p.name = ?
-                    AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                    """, (self.user_id, self.team_id, self.permission_name, timestamp)) as cursor:
+                    """, (self.user_id, self.team_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
 
                 if check_perms(rows):
@@ -122,8 +118,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                 JOIN role_permissions rp ON rp.role_id = r.id
                 JOIN permissions p on rp.permission_id = p.id
                 WHERE ur.user_id = ? AND p.name = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, self.permission_name, timestamp)) as cursor:
+                """, (self.user_id, self.permission_name)) as cursor:
                 rows = await cursor.fetchall()
 
             return check_perms(rows)

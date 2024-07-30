@@ -5,7 +5,7 @@
     import Table from "$lib/components/common/Table.svelte";
     import Flag from "$lib/components/common/Flag.svelte";
     import { page } from "$app/stores";
-    import { get_highest_role_position } from "$lib/util/permissions";
+    import { get_highest_series_role_position } from "$lib/util/permissions";
     import type { PlayerInfo } from "$lib/types/player-info";
     import PlayerSearch from "$lib/components/common/PlayerSearch.svelte";
     import { user } from "$lib/stores/stores";
@@ -13,11 +13,15 @@
     import Button from "$lib/components/common/buttons/Button.svelte";
     import CancelButton from "$lib/components/common/buttons/CancelButton.svelte";
     import type { Player } from "$lib/types/player";
+    import { locale } from "$i18n/i18n-svelte";
 
     export let role: Role;
+    export let series_id: number;
+
     let role_info: RoleInfo;
 
     let selected_player: PlayerInfo | null = null;
+    let expires_on: string | null = null;
 
     let user_info: UserInfo;
 
@@ -25,12 +29,17 @@
         user_info = value;
     });
 
+    function is_expirable_role() {
+        const expirable_roles = ["Banned", "Host Banned"];
+        return expirable_roles.includes(role.name);
+    }
+
     onMount(async() => {
         await loadInfo();
     });
 
     async function loadInfo() {
-        const res = await fetch(`/api/roles/${role.id}`);
+        const res = await fetch(`/api/tournaments/series/${series_id}/roles/${role.id}`);
         if(res.status === 200) {
             const body: RoleInfo = await res.json();
             selected_player = null;
@@ -39,11 +48,17 @@
     }
 
     async function giveRoleToPlayer(player_id: number) {
+        let expires_on_payload: number | null = null;
+        if(expires_on) {
+            let date = new Date(expires_on);
+            expires_on_payload = date.getTime() / 1000;
+        }
         const payload = {
             player_id: player_id,
-            role_name: role.name
+            role_name: role.name,
+            expires_on: expires_on_payload
         };
-        const endpoint = `/api/roles/grant`;
+        const endpoint = `/api/tournaments/series/${series_id}/roles/grant`;
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -64,7 +79,7 @@
             player_id: player.id,
             role_name: role.name
         };
-        const endpoint = `/api/roles/remove`;
+        const endpoint = `/api/tournaments/series/${series_id}/roles/remove`;
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -77,18 +92,27 @@
             alert(`Failed to remove role: ${result['title']}`);
         }
     }
+
+    const options: Intl.DateTimeFormatOptions = {
+        dateStyle: 'short',
+        timeStyle: 'short'
+    };
 </script>
 
 <div>
     {#if role_info}
         <div class="role">
-            {#if get_highest_role_position(user_info) < role.position}
+            {#if get_highest_series_role_position(user_info, series_id) < role.position}
                 <div>
                     Add Player
                 </div>
                 <div class="addplayer">
                     <PlayerSearch bind:player={selected_player}/>
                     {#if selected_player !== null}
+                        {#if is_expirable_role()}
+                            <label for="expires_on">Until</label>
+                            <input name="expires_on" type="datetime-local" bind:value={expires_on}/>
+                        {/if}
                         <Button on:click={() => giveRoleToPlayer(Number(selected_player?.id))}>Add</Button>
                     {/if}
                 </div>
@@ -101,6 +125,9 @@
                 <Table>
                     <col class="country"/>
                     <col class="name"/>
+                    {#if is_expirable_role()}
+                        <col class="until mobile-hide"/>
+                    {/if}
                     <col class="remove"/>
                     <tbody>
                         {#each role_info.players as player}
@@ -111,8 +138,15 @@
                                     {player.name}
                                 </a>
                             </td>
+                            {#if is_expirable_role()}
+                                <td class="mobile-hide">
+                                    {#if player.expires_on}
+                                        expires {new Date(player.expires_on * 1000).toLocaleString($locale, options)}
+                                    {/if}
+                                </td>
+                            {/if}
                             <td style="text-align:right;">
-                                {#if get_highest_role_position(user_info) < role.position}
+                                {#if get_highest_series_role_position(user_info, series_id) < role.position}
                                     <div class="close">
                                         <CancelButton on:click={() => removeRoleFromPlayer(player)}/>
                                     </div>
@@ -149,14 +183,21 @@
         width: 15%;
     }
     col.name {
-        width: 50%;
+        width: 35%;
+    }
+    col.until {
+        width: 20%;
     }
     col.remove {
-        width: 35%;
+        width: 30%;
     }
     .close {
         display: flex;
         flex-direction: row-reverse;
         padding-right: 10px;
+    }
+    label {
+        display: flex;
+        align-items: center;
     }
 </style>

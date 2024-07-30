@@ -60,7 +60,6 @@ class GetRoleInfoCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            timestamp = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("SELECT name, position FROM roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -79,19 +78,18 @@ class GetRoleInfoCommand(Command[None]):
                     permission_name, is_denied = row
                     permissions.append(Permission(permission_name, is_denied))
             
-            players: list[Player] = []
+            players: list[RolePlayer] = []
             async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, ur.expires_on
                 FROM user_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
                 WHERE ur.role_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.role_id, timestamp)) as cursor:
+                """, (self.role_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on))
             role_info = RoleInfo(self.role_id, role_name, position, permissions, players)
             return role_info
         
@@ -102,7 +100,6 @@ class GetTeamRoleInfoCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            timestamp = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("SELECT name, position FROM team_roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -121,19 +118,18 @@ class GetTeamRoleInfoCommand(Command[None]):
                     permission_name, is_denied = row
                     permissions.append(Permission(permission_name, is_denied))
             
-            players: list[Player] = []
+            players: list[RolePlayer] = []
             async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, ur.expires_on
                 FROM user_team_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
                 WHERE ur.role_id = ?  AND ur.team_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.role_id, self.team_id, timestamp)) as cursor:
+                """, (self.role_id, self.team_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on))
             role_info = TeamRoleInfo(self.role_id, role_name, position, permissions, players, self.team_id)
             return role_info
         
@@ -144,7 +140,6 @@ class GetSeriesRoleInfoCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            timestamp = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("SELECT name, position FROM series_roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -163,19 +158,18 @@ class GetSeriesRoleInfoCommand(Command[None]):
                     permission_name, is_denied = row
                     permissions.append(Permission(permission_name, is_denied))
             
-            players: list[Player] = []
+            players: list[RolePlayer] = []
             async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, ur.expires_on
                 FROM user_series_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
                 WHERE ur.role_id = ? AND ur.series_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.role_id, self.series_id, timestamp)) as cursor:
+                """, (self.role_id, self.series_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on))
             role_info = SeriesRoleInfo(self.role_id, role_name, position, permissions, players, self.series_id)
             return role_info
         
@@ -186,7 +180,6 @@ class GetTournamentRoleInfoCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            timestamp = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("SELECT name, position FROM tournament_roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -207,17 +200,16 @@ class GetTournamentRoleInfoCommand(Command[None]):
             
             players: list[Player] = []
             async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, ur.expires_on
                 FROM user_tournament_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
                 WHERE ur.role_id = ? AND ur.tournament_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.role_id, self.tournament_id, timestamp)) as cursor:
+                """, (self.role_id, self.tournament_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-                    players.append(Player(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, discord_id, expires_on))
             role_info = TournamentRoleInfo(self.role_id, role_name, position, permissions, players, self.tournament_id)
             return role_info
                 
@@ -236,8 +228,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 FROM user_roles ur
                 JOIN roles r ON ur.role_id = r.id
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
                 
                 for row in rows:
@@ -250,8 +241,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 JOIN role_permissions rp ON ur.role_id = rp.role_id
                 JOIN permissions p ON rp.permission_id = p.id 
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 for row in rows:
@@ -268,8 +258,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 FROM user_team_roles ur
                 JOIN team_roles r ON ur.role_id = r.id
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 for row in rows:
@@ -284,8 +273,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 JOIN team_role_permissions rp ON ur.role_id = rp.role_id
                 JOIN team_permissions p ON rp.permission_id = p.id 
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 # since we can have the same role in multiple teams potentially, we just
@@ -306,8 +294,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 FROM user_series_roles ur
                 JOIN series_roles r ON ur.role_id = r.id
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 for row in rows:
@@ -322,8 +309,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 JOIN series_role_permissions rp ON ur.role_id = rp.role_id
                 JOIN series_permissions p ON rp.permission_id = p.id 
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 # since we can have the same role in multiple series potentially, we just
@@ -344,8 +330,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 FROM user_tournament_roles ur
                 JOIN tournament_roles r ON ur.role_id = r.id
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 for row in rows:
@@ -360,8 +345,7 @@ class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], li
                 JOIN tournament_role_permissions rp ON ur.role_id = rp.role_id
                 JOIN tournament_permissions p ON rp.permission_id = p.id 
                 WHERE ur.user_id = ?
-                AND (ur.expires_on > ? OR ur.expires_on IS NULL)
-                """, (self.user_id, timestamp)) as cursor:
+                """, (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()
 
                 # since we can have the same role in multiple tournaments potentially, we just
@@ -385,6 +369,10 @@ class GrantRoleCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            if self.expires_on and self.expires_on < timestamp:
+                raise Problem("Role cannot expire in the past", status=400)
+            
             # get user id from player
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -442,6 +430,10 @@ class GrantTeamRoleCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            if self.expires_on and self.expires_on < timestamp:
+                raise Problem("Role cannot expire in the past", status=400)
+            
             # get user id from player
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -511,6 +503,10 @@ class GrantSeriesRoleCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            if self.expires_on and self.expires_on < timestamp:
+                raise Problem("Role cannot expire in the past", status=400)
+            
             # get user id from player
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -580,6 +576,10 @@ class GrantTournamentRoleCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            if self.expires_on and self.expires_on < timestamp:
+                raise Problem("Role cannot expire in the past", status=400)
+            
             # get user id from player
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -896,3 +896,15 @@ class RemoveTournamentRoleCommand(Command[None]):
                 await db.commit()
             except Exception:
                 raise Problem("Unexpected error")
+
+@save_to_command_log
+@dataclass
+class RemoveExpiredRolesCommand(Command[None]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        timestamp = int(datetime.now(timezone.utc).timestamp())
+        async with db_wrapper.connect() as db:
+            await db.execute("DELETE FROM user_roles WHERE expires_on < ?", (timestamp,))
+            await db.execute("DELETE FROM user_team_roles WHERE expires_on < ?", (timestamp,))
+            await db.execute("DELETE FROM user_series_roles WHERE expires_on < ?", (timestamp,))
+            await db.execute("DELETE FROM user_tournament_roles WHERE expires_on < ?", (timestamp,))
+            await db.commit()

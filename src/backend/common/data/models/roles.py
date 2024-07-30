@@ -54,3 +54,7 @@ class RemoveRoleRequestData:
 @dataclass
 class GrantRoleRequestData(RemoveRoleRequestData):
     expires_on: int | None = None
+
+@dataclass
+class RolePlayer(Player):
+    expires_on: int | None = None
