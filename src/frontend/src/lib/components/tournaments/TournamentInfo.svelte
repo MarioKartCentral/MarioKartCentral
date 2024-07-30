@@ -39,6 +39,9 @@
       <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">Edit Tournament</Button>
       <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">Edit Placements</Button>
     {/if}
+    {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_roles, tournament.id, tournament.series_id)}
+      <Button href="/{$page.params.lang}/tournaments/manage_roles?id={tournament.id}">Manage Roles</Button>
+    {/if}
   </div>
   <div class="centered">
     {#if tournament.logo}

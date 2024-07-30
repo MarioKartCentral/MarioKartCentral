@@ -600,17 +600,31 @@ class GrantTournamentRoleCommand(Command[None]):
                 if row:
                     raise Problem(f"Player already has role {self.role}", status=400)
             
-            # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES user permission, bypass series role checks
+            # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES user permission, bypass series/tournament role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
                     JOIN role_permissions rp ON ur.role_id = rp.role_id
-                    JOIN permissions p On rp.permission_id = p.id
+                    JOIN permissions p ON rp.permission_id = p.id
                     WHERE ur.user_id = ? AND p.name = ? AND rp.is_denied = 0
                 )
                 """, (self.granter_user_id, tournament_permissions.MANAGE_TOURNAMENT_ROLES)) as cursor:
                 row = await cursor.fetchone()
                 is_mod = row is not None and bool(row[0])
+            
+            if not is_mod:
+                # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES series permission, bypass tournament role checks
+                async with db.execute("""
+                    SELECT EXISTS (
+                        SELECT 1 FROM user_series_roles ur
+                        JOIN tournaments t ON ur.series_id = t.series_id
+                        JOIN series_role_permissions rp ON ur.role_id = rp.role_id
+                        JOIN series_permissions p ON rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ? AND rp.is_denied = 0 AND t.id = ?
+                    )
+                    """, (self.granter_user_id, tournament_permissions.MANAGE_TOURNAMENT_ROLES, self.tournament_id)) as cursor:
+                    row = await cursor.fetchone()
+                    is_mod = row is not None and bool(row[0])
         
             if not is_mod:
                 # to have permission to grant a role, we should have a role which is both higher
@@ -870,6 +884,20 @@ class RemoveTournamentRoleCommand(Command[None]):
                 """, (self.remover_user_id, tournament_permissions.MANAGE_TOURNAMENT_ROLES)) as cursor:
                 row = await cursor.fetchone()
                 is_mod = row is not None and bool(row[0])
+
+            if not is_mod:
+                # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES series permission, bypass tournament role checks
+                async with db.execute("""
+                    SELECT EXISTS (
+                        SELECT 1 FROM user_series_roles ur
+                        JOIN tournaments t ON ur.series_id = t.series_id
+                        JOIN series_role_permissions rp ON ur.role_id = rp.role_id
+                        JOIN series_permissions p ON rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ? AND rp.is_denied = 0 AND t.id = ?
+                    )
+                    """, (self.remover_user_id, tournament_permissions.MANAGE_TOURNAMENT_ROLES, self.tournament_id)) as cursor:
+                    row = await cursor.fetchone()
+                    is_mod = row is not None and bool(row[0])
         
             if not is_mod:
                 # to have permission to remove a role, we should have a role which is both higher

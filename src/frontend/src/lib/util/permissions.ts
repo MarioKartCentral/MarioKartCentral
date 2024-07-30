@@ -125,9 +125,14 @@ export function get_highest_series_role_position(user_info: UserInfo, series_id:
   return Math.min(...role_positions);
 }
 
-export function get_highest_tournament_role_position(user_info: UserInfo, tournament_id: number) {
-  // if we have the manage series roles permission we can edit any roles in the hierarchy
-  if (check_permission(user_info, tournament_permissions.manage_tournament_roles)) {
+export function get_highest_tournament_role_position(user_info: UserInfo, tournament_id: number, series_id: number | null = null) {
+  // if we have series permissions to edit tournament roles, we can edit any roles in the hierarchy
+  if(series_id) {
+    if(check_series_permission(user_info, tournament_permissions.manage_tournament_roles, series_id)) {
+      return -1;
+    }
+  }
+  else if (check_permission(user_info, tournament_permissions.manage_tournament_roles)) {
     return -1;
   }
   const tournament_roles = user_info.tournament_roles.filter((r) => r.tournament_id === tournament_id);
