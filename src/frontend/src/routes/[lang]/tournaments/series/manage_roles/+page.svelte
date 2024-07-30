@@ -1,19 +1,31 @@
 <script lang="ts">
     import Section from "$lib/components/common/Section.svelte";
-    import SeriesRoleInfo from "$lib/components/tournaments/series/SeriesRoleInfo.svelte";
+    import RoleInfo from "$lib/components/common/RoleInfo.svelte";
     import type { Role } from "$lib/types/role";
     import { onMount } from "svelte";
     import { page } from "$app/stores";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import { get_highest_series_role_position } from "$lib/util/permissions";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
 
     let roles: Role[] = [];
-    let id = 0;
+    let series_id = 0;
     let selected_role: Role | null;
+
+    let endpoint: string;
+
+    let user_info: UserInfo;
+
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     onMount(async() => {
         let param_id = $page.url.searchParams.get('id');
-        id = Number(param_id);
-        const res = await fetch('/api/tournaments/series/roles');
+        series_id = Number(param_id);
+        endpoint = `/api/tournaments/series/${series_id}`;
+        const res = await fetch(`/api/tournaments/series/roles`);
         if(res.status === 200) {
             const body: Role[] = await res.json();
             roles = body;
@@ -26,7 +38,7 @@
 
 <Section header="Series Roles">
     <div slot="header_content">
-        <Button href="/{$page.params.lang}/tournaments/series/details?id={id}">Back to Series</Button>
+        <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
     </div>
     {#if roles.length}
         <div class="select">
@@ -40,7 +52,7 @@
     <div>
         {#if selected_role}
             {#key selected_role}
-                <SeriesRoleInfo role={selected_role} series_id={id}/>
+                <RoleInfo role={selected_role} url={endpoint} user_position={get_highest_series_role_position(user_info, series_id)}/>
             {/key}
         {/if}
     </div>

@@ -1,11 +1,22 @@
 <script lang="ts">
     import Section from "$lib/components/common/Section.svelte";
-    import UserRoleInfo from "$lib/components/moderator/UserRoleInfo.svelte";
     import type { Role } from "$lib/types/role";
     import { onMount } from "svelte";
+    import { get_highest_role_position } from "$lib/util/permissions";
+    import RoleInfo from "$lib/components/common/RoleInfo.svelte";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
 
     let roles: Role[] = [];
     let selected_role: Role | null;
+
+    let endpoint = "/api";
+
+    let user_info: UserInfo;
+
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     onMount(async() => {
         const res = await fetch('/api/roles');
@@ -32,7 +43,7 @@
     <div>
         {#if selected_role}
             {#key selected_role}
-                <UserRoleInfo role={selected_role}/>
+                <RoleInfo role={selected_role} url={endpoint} user_position={get_highest_role_position(user_info)}/>
             {/key}
         {/if}
     </div>
