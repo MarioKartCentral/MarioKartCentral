@@ -89,7 +89,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     JOIN series_role_permissions rp ON rp.role_id = r.id
                     JOIN series_permissions p on rp.permission_id = p.id
                     WHERE ur.user_id = ? AND ur.series_id = ? AND p.name = ?
-                    """, (self.user_id, self.series_id, self.permission_name)) as cursor:
+                    """, (self.user_id, series_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
 
                 if check_perms(rows):
