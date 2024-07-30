@@ -29,27 +29,23 @@
   </script>
   
   <Table>
-    <col class="w5"/> 
-    <col class="w10"/>
-    <col class="w5 mobile-hide"/>
-    <col class="w5"/>
-    <col class="w10"/>
-    <col class="w10 mobile-hide"/>
-    {#if isHistorical}
-      <col class="w10 mobile-hide"/>
-    {/if}
-    <col class="w10"/>
+    <col class="w5"/> <!-- flag -->
+    <col class="w20"/> <!-- name -->
+    <col class="w10 mobile-hide"/> <!-- ban date -->
+    <col class="w10"/> <!-- expiration date / unban date -->
+    <col class="w20"/> <!-- reason -->
+    <col class="w10 mobile-hide"/> <!-- banned by -->
+    <col class="w10 mobile-hide"/> <!-- unbanned by -->
+    <col class="w15"/> <!-- view details button -->
     <thead>
       <tr>
         <th></th>
-        <th>Name</th>
-        <th class="mobile-hide">Banned</th>
-        <th>{#if isHistorical} Unbanned {:else} Expires {/if}</th>
-        <th>Reason</th>
-        <th class="mobile-hide">Banned By</th>
-        {#if isHistorical}
-          <th class="mobile-hide">Unbanned By</th>
-        {/if}
+        <th>{$LL.PLAYER_BAN.NAME()}</th>
+        <th class="mobile-hide">{$LL.PLAYER_BAN.BANNED()}</th>
+        <th>{#if isHistorical} {$LL.PLAYER_BAN.UNBANNED()} {:else} {$LL.PLAYER_BAN.EXPIRES()} {/if}</th>
+        <th>{$LL.PLAYER_BAN.REASON()}</th>
+        <th class="mobile-hide">{$LL.PLAYER_BAN.BANNED_BY()}</th>
+        <th class="mobile-hide">{isHistorical ? $LL.PLAYER_BAN.UNBANNED_BY() : ""}</th>
         <th></th>
       </tr>
     </thead>
@@ -62,7 +58,7 @@
           {#if isHistorical}
             <td>{datetimeToString(bid.unban_date)}</td>
           {:else}
-            <td>{bid.is_indefinite ? 'INDEF' : datetimeToString(bid.expiration_date)}</td>
+            <td>{bid.is_indefinite ? $LL.PLAYER_BAN.INDEFINITE() : datetimeToString(bid.expiration_date)}</td>
           {/if}
           <td>{bid.reason}</td>
           {#if bid.banned_by_pid}
@@ -76,10 +72,11 @@
             {:else if bid.unbanned_by_uid !== null}
               <td class="mobile-hide">User {bid.unbanned_by_uid}</td>
             {:else}
-              <td class="mobile-hide">SYSTEM</td>
+              <td class="mobile-hide">{$LL.PLAYER_BAN.SYSTEM()}</td>
             {/if}
             <td><Button on:click={() => handleClick(bid)}>{$LL.PLAYER_BAN.BAN_DETAILS()}</Button></td>
           {:else}
+            <td class="mobile-hide"></td>
             <td><Button on:click={() => handleClick(bid)}>{$LL.PLAYER_BAN.VIEW_EDIT_BAN()}</Button></td>
           {/if}
         </tr>
@@ -98,6 +95,9 @@
   </Dialog>
   
   <style>
+    .w20 {
+        width: 20%;
+    }
     .w15 {
         width: 15%;
     }

@@ -139,6 +139,7 @@ const en_us: BaseTranslation & Translation = {
     UNBANNED: 'Unbanned',
     ENTER_REASON: 'Enter reason',
     PLAYER: 'Player',
+    PLAYERS: 'Players',
     USER: 'User',
     THE_PLAYER_IS_ALREADY_BANNED: 'The player is already banned',
     FROM_INITIAL_BAN_DATE: 'From initial ban date',
@@ -152,7 +153,15 @@ const en_us: BaseTranslation & Translation = {
     NO: 'No',
     STAFF: 'STAFF',
     SYSTEM: 'SYSTEM',
-    SEARCH: 'Search'
+    SEARCH: 'Search',
+    NAME: 'Name',
+    BANNED_BEFORE: 'Banned Before',
+    BANNED_AFTER: 'Banned After',
+    UNBANNED_BEFORE: 'Unbanned Before',
+    UNBANNED_AFTER: 'Unbanned After',
+    EXPIRES_BEFORE: 'Expires Before',
+    EXPIRES_AFTER: 'Expires After',
+    SEARCH_BY_NAME: 'Search by Name'
   },
   LANGUAGES: {
     EN_US: 'English (United States)',

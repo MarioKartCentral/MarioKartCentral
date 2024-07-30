@@ -1,6 +1,6 @@
 export type BanFilter = {
-    player_id: number | null;
-    banned_by: number | null;
+    name: string | null;
+    banned_by: string | null;
     is_indefinite: boolean | null;
     expires_before: number | null;
     expires_after: number | null;
@@ -11,7 +11,7 @@ export type BanFilter = {
 };
 
 export type BanHistoricalFilter = BanFilter & {
-    unbanned_by: number | null;
+    unbanned_by: string | null;
     unbanned_before: number | null;
     unbanned_after: number | null;
 };

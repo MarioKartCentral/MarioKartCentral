@@ -38,8 +38,8 @@ class PlayerBanRequestData:
 
 @dataclass
 class PlayerBanFilter:
-    player_id: int | None = None
-    banned_by: int | None = None
+    name: str | None = None
+    banned_by: str | None = None
     is_indefinite: bool | None = None
     expires_before: int | None = None
     expires_after: int | None = None
@@ -50,7 +50,7 @@ class PlayerBanFilter:
 
 @dataclass
 class PlayerBanHistoricalFilter(PlayerBanFilter):
-    unbanned_by: int | None = None
+    unbanned_by: str | None = None
     unbanned_before: int | None = None
     unbanned_after: int | None = None
 

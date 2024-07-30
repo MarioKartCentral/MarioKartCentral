@@ -86,7 +86,7 @@
 
 <div>
     <h2> {#if isEditBan} {$LL.PLAYER_BAN.EDIT_BAN_DETAILS()} {:else} {$LL.PLAYER_BAN.BAN_DETAILS()} {/if}</h2>
-    <form method="post" on:submit|preventDefault={banPlayer}>
+    <form on:submit|preventDefault={banPlayer}>
         <div>
             <label for="duration">{$LL.PLAYER_BAN.DURATION()} {#if isEditBan}({$LL.PLAYER_BAN.FROM_INITIAL_BAN_DATE()}){/if}</label> <br/>
             <select name="duration" value={isIndefinite ? 'indefinite' : 'number of days'} on:change={handleDurationChange} required>

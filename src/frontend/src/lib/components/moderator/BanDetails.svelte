@@ -27,8 +27,8 @@
 <div>
     <h2>{$LL.PLAYER_BAN.BAN_DETAILS()}</h2>
     <p>
-    <strong>{$LL.PLAYER_BAN.PLAYER()}</strong>: <a href={`/registry/players/profile?id=${banInfo.player_id}`}>{banInfo.player_name}</a> <br/>
-    <strong>{$LL.PLAYER_BAN.BANNED_BY()}</strong>: {#if banInfo.banned_by_pid} <a href={`/registry/players/profile?id=${banInfo.banned_by_pid}`}>{banInfo.banned_by_name}</a> {:else} {$LL.PLAYER_BAN.USER()} {banInfo.banned_by_uid} {/if} <br/>
+    <strong>{$LL.PLAYER_BAN.PLAYER()}</strong>: <a href={`/registry/players/profile?id=${banInfo.player_id}`}><u>{banInfo.player_name}</u></a> <br/>
+    <strong>{$LL.PLAYER_BAN.BANNED_BY()}</strong>: {#if banInfo.banned_by_pid} <a href={`/registry/players/profile?id=${banInfo.banned_by_pid}`}><u>{banInfo.banned_by_name}</u></a> {:else} {$LL.PLAYER_BAN.USER()} {banInfo.banned_by_uid} {/if} <br/>
     <strong>{$LL.PLAYER_BAN.IS_INDEFINITE()}</strong>: {banInfo.is_indefinite ? $LL.PLAYER_BAN.YES() : $LL.PLAYER_BAN.NO()} <br/>
     <strong>{$LL.PLAYER_BAN.BANNED()}</strong>: {unixTimestampToString(banInfo.ban_date)} <br/>
     {#if !banInfo.is_indefinite }
@@ -36,7 +36,7 @@
     {/if}
     {#if banInfo.unban_date}
         <strong>{$LL.PLAYER_BAN.UNBANNED()}</strong>: {unixTimestampToString(banInfo.unban_date)}<br/>
-        <strong>{$LL.PLAYER_BAN.UNBANNED_BY()}</strong>: {#if banInfo.unbanned_by_pid} <a href={`/registry/players/profile?id=${banInfo.unbanned_by_pid}`}>{banInfo.unbanned_by_name}</a> {:else if banInfo.unbanned_by_uid !== null} {$LL.PLAYER_BAN.USER()} {banInfo.unbanned_by_uid} {:else} {$LL.PLAYER_BAN.SYSTEM()} {/if} <br/>
+        <strong>{$LL.PLAYER_BAN.UNBANNED_BY()}</strong>: {#if banInfo.unbanned_by_pid} <a href={`/registry/players/profile?id=${banInfo.unbanned_by_pid}`}><u>{banInfo.unbanned_by_name}</u></a> {:else if banInfo.unbanned_by_uid !== null} {$LL.PLAYER_BAN.USER()} {banInfo.unbanned_by_uid} {:else} {$LL.PLAYER_BAN.SYSTEM()} {/if} <br/>
     {/if}
     {#if !banInfo.is_indefinite }
         <strong>{$LL.PLAYER_BAN.DURATION()}</strong>: {duration} {duration > 1 ? $LL.PLAYER_BAN.DAYS() : $LL.PLAYER_BAN.DAYS()}<br/>

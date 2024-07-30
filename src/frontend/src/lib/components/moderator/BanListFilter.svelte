@@ -1,23 +1,11 @@
 <script lang="ts">
     import type { BanFilter, BanHistoricalFilter } from '$lib/types/ban-filter';
-    import type { PlayerInfo } from '$lib/types/player-info';
     import LL from "$i18n/i18n-svelte";
-    import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+    import Button from "$lib/components/common/buttons/Button.svelte";
 
     export let filter: BanFilter | BanHistoricalFilter;
-    export let maxPage: number = 1;
+    export let handleSubmit: () => void;
     
-    let player: PlayerInfo | null = null;
-    let bannedBy: PlayerInfo | null = null;
-    let unbannedBy: PlayerInfo | null = null;
-
-    $: filter.player_id = player?.id || null
-    $: filter.banned_by = bannedBy?.id || null
-    $: {
-        if ('unbanned_by' in filter)
-            filter.unbanned_by = unbannedBy?.id || null
-    }
-
     function getDate(value: string, isBefore: boolean) {
         if (!value)
             return null
@@ -27,23 +15,23 @@
     }
 </script>
 
-<div class='container'>
+<form on:submit|preventDefault={handleSubmit}>
     <div>
-        <label for="player">{'Player'}</label> <br/>
-        <PlayerSearch bind:player={player}/>
+        <label for="player">{$LL.PLAYER_BAN.PLAYER()}</label> <br/>
+        <input name='player' type='text' bind:value={filter.name} placeholder={$LL.PLAYER_BAN.SEARCH_BY_NAME()}/>
     </div>
     <div>
-        <label for="bannedBy">{'Banned By'}</label> <br/>
-        <PlayerSearch bind:player={bannedBy}/>
+        <label for="bannedBy">{$LL.PLAYER_BAN.BANNED_BY()}</label> <br/>
+        <input name='bannedBy' type='text' bind:value={filter.banned_by} placeholder={$LL.PLAYER_BAN.SEARCH_BY_NAME()}/>
     </div>
     {#if 'unbanned_by' in filter}
         <div>
-            <label for="unbannedBy">{'Unbanned By'}</label> <br/>
-            <PlayerSearch bind:player={unbannedBy}/>
+            <label for="unbannedBy">{$LL.PLAYER_BAN.UNBANNED_BY()}</label> <br/>
+            <input name='unbannedBy' type='text' bind:value={filter.unbanned_by} placeholder={$LL.PLAYER_BAN.SEARCH_BY_NAME()}/>
         </div>
     {/if}
     <div>
-        <label for="isIndefinite">{'Is Indefinite'}</label> <br/>
+        <label for="isIndefinite">{$LL.PLAYER_BAN.IS_INDEFINITE()}</label> <br/>
         <select name="isIndefinite" bind:value={filter.is_indefinite}>
             <option value={null}></option>
             <option value={true}>{$LL.PLAYER_BAN.YES()}</option>
@@ -51,48 +39,46 @@
         </select>
     </div>
     <div>
-        <label for="bannedBefore">{'Banned Before'}</label> <br/>
+        <label for="bannedBefore">{$LL.PLAYER_BAN.BANNED_BEFORE()}</label> <br/>
         <input name='bannedBefore' type='date' on:change={event => {filter.banned_before = getDate(event.currentTarget.value, true)}}/>
     </div>
     <div>
-        <label for="bannedAfter">{'Banned After'}</label> <br/>
+        <label for="bannedAfter">{$LL.PLAYER_BAN.BANNED_AFTER()}</label> <br/>
         <input name='bannedAfter' type='date' on:change={event => {filter.banned_after = getDate(event.currentTarget.value, false)}}/>
     </div>
-    <div>
-        <label for="expiresBefore">{'Expires Before'}</label> <br/>
-        <input name='expiresBefore' type='date' on:change={event => {filter.expires_before = getDate(event.currentTarget.value, true)}}/>
-    </div>
-    <div>
-        <label for="expiresAfter">{'Expires After'}</label> <br/>
-        <input name='expiresAfter' type='date' on:change={event => {filter.expires_after = getDate(event.currentTarget.value, false)}}/>
-    </div>
-    {#if 'unbanned_by' in filter}
+    {#if 'unbanned_before' in filter}
         <div>
-            <label for="unbannedBefore">{'Unbanned Before'}</label> <br/>
+            <label for="unbannedBefore">{$LL.PLAYER_BAN.UNBANNED_BEFORE()}</label> <br/>
             <input name='unbannedBefore' type='date' on:change={event => {filter.unbanned_before = getDate(event.currentTarget.value, true)}}/>
         </div>
         <div>
-            <label for="unbannedAfter">{'Unbanned After'}</label> <br/>
+            <label for="unbannedAfter">{$LL.PLAYER_BAN.UNBANNED_AFTER()}</label> <br/>
             <input name='unbannedAfter' type='date' on:change={event => {filter.unbanned_before = getDate(event.currentTarget.value, false)}}/>
+        </div>
+    {:else}
+        <div>
+            <label for="expiresBefore">{$LL.PLAYER_BAN.EXPIRES_BEFORE()}</label> <br/>
+            <input name='expiresBefore' type='date' on:change={event => {filter.expires_before = getDate(event.currentTarget.value, true)}}/>
+        </div>
+        <div>
+            <label for="expiresAfter">{$LL.PLAYER_BAN.EXPIRES_AFTER()}</label> <br/>
+            <input name='expiresAfter' type='date' on:change={event => {filter.expires_after = getDate(event.currentTarget.value, false)}}/>
         </div>
     {/if}
     <div>
-        <label for="reason">{'Reason'}</label> <br/>
+        <label for="reason">{$LL.PLAYER_BAN.REASON()}</label> <br/>
         <input name='reason' type='text' bind:value={filter.reason} placeholder={$LL.PLAYER_BAN.REASON()}/>
     </div>
     <div>
-        <label for="page">{'Page'}</label> <br/>
-        <input name='page' type='number' min='1' max={maxPage} step='1' bind:value={filter.page}/>
+        <Button type='submit'>{$LL.PLAYER_BAN.SEARCH()}</Button>
     </div>
-</div>
+</form>
 
 <style>
-    .container {
+    form {
         display: flex;
         flex-wrap: wrap;
+        align-items: flex-end;
         gap: 10px;
-    }
-    input[name="page"] {
-        width: 60px;
     }
 </style>

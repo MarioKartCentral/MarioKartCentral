@@ -29,7 +29,7 @@ export type HistoricalBanInfo = BanInfo & {
 };
 
 export type BanListData = {
-  ban_list: BanInfoDetailed[] | null
+  ban_list: BanInfoDetailed[]
   ban_count: number
   page_count: number
 }

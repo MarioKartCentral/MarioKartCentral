@@ -11,13 +11,13 @@
   import BanListFilter from '$lib/components/moderator/BanListFilter.svelte';
   import BanList from '$lib/components/moderator/BanList.svelte';
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
-  import Button from "$lib/components/common/buttons/Button.svelte";
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
   import { permissions } from '$lib/util/util';
 
   let player: PlayerInfo | null = null;
   let playerDetailed: PlayerInfo | null = null;
   let banFilter: BanFilter = {
-    player_id: null,
+    name: null,
     banned_by: null,
     is_indefinite: null,
     expires_before: null,
@@ -28,7 +28,7 @@
     page: null,
   }
   let banHistoricalFilter: BanHistoricalFilter = {
-    player_id: null,
+    name: null,
     banned_by: null,
     unbanned_by: null,
     unbanned_before: null,
@@ -42,15 +42,18 @@
     page: null,
   }
   let banListData: BanListData = {
-    ban_list: null,
+    ban_list: [],
     ban_count: 0,
-    page_count: 0,
+    page_count: 1,
   }
   let historicalBanListData: BanListData = {
-    ban_list: null,
+    ban_list: [],
     ban_count: 0,
-    page_count: 0,
+    page_count: 1,
   }
+
+  let currentBanPage: number = 1;
+  let currentHistPage: number = 1;
 
   $: updatePlayerDetailed(player)
 
@@ -80,21 +83,23 @@
     return params.join("&")
   }
 
-  async function updateBanList() {
+  async function updateBanList(isPageChange: boolean) {
+    banFilter.page = isPageChange ? currentBanPage : 1
     const res = await fetch(`/api/registry/players/bans?${getQueryString(banFilter)}`);
     if (res.status === 200) {
       banListData = await res.json()
     }
   }
-  async function updateHistoricalBanList() {
+  async function updateHistoricalBanList(isPageChange: boolean) {
+    banHistoricalFilter.page = isPageChange ? currentHistPage : 1
     const res = await fetch(`/api/registry/players/historicalBans?${getQueryString(banHistoricalFilter)}`);
     if (res.status === 200)
       historicalBanListData = await res.json()
   }
 
   onMount(async () => {
-    updateBanList()
-    updateHistoricalBanList()
+    updateBanList(false)
+    updateHistoricalBanList(false)
   });
 </script>
 
@@ -118,23 +123,21 @@
   </Section>
 
   <Section header={$LL.PLAYER_BAN.LIST_OF_BANNED_PLAYERS()}>
-    <BanListFilter bind:filter={banFilter}/>
-    <div class='button-wrapper'>
-      <Button on:click={updateBanList}>{$LL.PLAYER_BAN.SEARCH()}</Button>
+    <BanListFilter bind:filter={banFilter} handleSubmit={() => updateBanList(false)}/>
+    <div class="player-count">
+      <PageNavigation bind:currentPage={currentBanPage} bind:totalPages={banListData.page_count} refresh_function={() => updateBanList(true)}/>
+      {banListData.ban_count} {banListData.ban_count === 1 ? $LL.PLAYER_BAN.PLAYER() : $LL.PLAYER_BAN.PLAYERS()}
     </div>
-    {#if banListData.ban_list}
-      <BanList banInfoDetailedArray={banListData.ban_list} />
-    {/if}
+    <BanList banInfoDetailedArray={banListData.ban_list} />
   </Section>
 
   <Section header={$LL.PLAYER_BAN.LIST_OF_HISTORICAL_BANS()}>
-    <BanListFilter bind:filter={banHistoricalFilter}/>
-    <div class='button-wrapper'>
-      <Button on:click={updateHistoricalBanList}>{$LL.PLAYER_BAN.SEARCH()}</Button>
+    <BanListFilter bind:filter={banHistoricalFilter} handleSubmit={() => updateHistoricalBanList(false)}/>
+    <div class="player-count">
+      <PageNavigation bind:currentPage={currentHistPage} bind:totalPages={historicalBanListData.page_count} refresh_function={() => updateHistoricalBanList(true)}/>
+      {historicalBanListData.ban_count} {historicalBanListData.ban_count === 1 ? $LL.PLAYER_BAN.PLAYER() : $LL.PLAYER_BAN.PLAYERS()}
     </div>
-    {#if historicalBanListData.ban_list}
-      <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
-    {/if}
+    <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
   </Section>
 </PermissionCheck>
 
@@ -142,7 +145,7 @@
   hr {
     margin: 10px 0px;
   }
-  .button-wrapper {
+  .player-count {
     margin-top: 10px;
   }
 </style>
