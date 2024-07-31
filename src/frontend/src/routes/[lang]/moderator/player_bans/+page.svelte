@@ -26,7 +26,7 @@
     banned_after: null,
     reason: null,
     page: null,
-  }
+  };
   let banHistoricalFilter: BanHistoricalFilter = {
     name: null,
     banned_by: null,
@@ -40,66 +40,66 @@
     banned_after: null,
     reason: null,
     page: null,
-  }
+  };
   let banListData: BanListData = {
     ban_list: [],
     ban_count: 0,
     page_count: 1,
-  }
+  };
   let historicalBanListData: BanListData = {
     ban_list: [],
     ban_count: 0,
     page_count: 1,
-  }
+  };
 
   let currentBanPage: number = 1;
   let currentHistPage: number = 1;
 
-  $: updatePlayerDetailed(player)
+  $: updatePlayerDetailed(player);
 
   async function updatePlayerDetailed(player: PlayerInfo | null) {
     if (!player) {
-      playerDetailed = null
-      return
+      playerDetailed = null;
+      return;
     }
 
     const res = await fetch(`/api/registry/players/${player.id}`);
     if (res.status === 200) {
-      playerDetailed = await res.json()
+      playerDetailed = await res.json();
     }
-  }
+  };
 
   function handleCancel() {
-    player = null
-  }
+    player = null;
+  };
 
   function getQueryString(filter: BanFilter | BanHistoricalFilter) {
-    let params = []
-    let key: keyof (BanFilter | BanHistoricalFilter)
+    let params = [];
+    let key: keyof (BanFilter | BanHistoricalFilter);
     for (key in filter) {
       if (filter[key] !== null)
-        params.push(`${key}=${filter[key]}`)
+        params.push(`${key}=${filter[key]}`);
     }
-    return params.join("&")
-  }
+    return params.join("&");
+  };
 
   async function updateBanList(isPageChange: boolean) {
-    banFilter.page = isPageChange ? currentBanPage : 1
+    banFilter.page = isPageChange ? currentBanPage : 1;
     const res = await fetch(`/api/registry/players/bans?${getQueryString(banFilter)}`);
     if (res.status === 200) {
-      banListData = await res.json()
+      banListData = await res.json();
     }
-  }
+  };
   async function updateHistoricalBanList(isPageChange: boolean) {
-    banHistoricalFilter.page = isPageChange ? currentHistPage : 1
+    banHistoricalFilter.page = isPageChange ? currentHistPage : 1;
     const res = await fetch(`/api/registry/players/historicalBans?${getQueryString(banHistoricalFilter)}`);
     if (res.status === 200)
-      historicalBanListData = await res.json()
-  }
+      historicalBanListData = await res.json();
+  };
 
   onMount(async () => {
-    updateBanList(false)
-    updateHistoricalBanList(false)
+    updateBanList(false);
+    updateHistoricalBanList(false);
   });
 </script>
 

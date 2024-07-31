@@ -8,10 +8,10 @@
     
     function getDate(value: string, isBefore: boolean) {
         if (!value)
-            return null
+            return null;
 
-        const date = new Date(`${value} ${isBefore ? '23:59:59' : ''}`)
-        return Math.ceil(date.getTime() / 1000) // divide by 1000 since Python uses seconds instead of ms
+        const date = new Date(`${value} ${isBefore ? '23:59:59' : ''}`);
+        return Math.ceil(date.getTime() / 1000); // divide by 1000 since Python uses seconds instead of ms
     }
 </script>
 

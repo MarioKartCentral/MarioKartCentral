@@ -17,15 +17,15 @@
 
     function datetimeToString(datetime: number | null) {
       if (datetime === null)
-        return ''
-      const date = new Date(datetime * 1000)
-      return date.toLocaleString().split(",")[0]
-    }
+        return '';
+      const date = new Date(datetime * 1000);
+      return date.toLocaleString().split(",")[0];
+    };
 
     function handleClick(banInfo: BanInfoDetailed) {
-      selectedBanInfo = banInfo
-      dialog.open()
-    }
+      selectedBanInfo = banInfo;
+      dialog.open();
+    };
   </script>
   
   <Table>

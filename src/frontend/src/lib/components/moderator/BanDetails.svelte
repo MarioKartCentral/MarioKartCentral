@@ -7,21 +7,21 @@
 
     export let banInfo: BanInfoDetailed;
     
-    let daysRemaining: string = ''
+    let daysRemaining: string = '';
     let duration: number = 0;
 
     onMount(async () => {
-        const nowSeconds: number = Math.floor(Date.now() / 1000)
-        const days: number = Math.max(-1, findNumberOfDaysBetweenDates(nowSeconds, banInfo.expiration_date))
+        const nowSeconds: number = Math.floor(Date.now() / 1000);
+        const days: number = Math.max(-1, findNumberOfDaysBetweenDates(nowSeconds, banInfo.expiration_date));
         if (days >= 0)
-            daysRemaining = days === 1 ? `(${$LL.PLAYER_BAN.IN_DDD_DAY()?.replace('ddd', days.toString())})` : `(${$LL.PLAYER_BAN.IN_DDD_DAYS()?.replace('ddd', days.toString())})`
-        duration = findNumberOfDaysBetweenDates(banInfo.ban_date, banInfo.expiration_date)
+            daysRemaining = days === 1 ? `(${$LL.PLAYER_BAN.IN_DDD_DAY()?.replace('ddd', days.toString())})` : `(${$LL.PLAYER_BAN.IN_DDD_DAYS()?.replace('ddd', days.toString())})`;
+        duration = findNumberOfDaysBetweenDates(banInfo.ban_date, banInfo.expiration_date);
     });
 
     function unixTimestampToString(timestamp: number) {
-        let date = new Date(timestamp * 1000)
-        return date.toLocaleString($page.params.lang)
-    }
+        let date = new Date(timestamp * 1000);
+        return date.toLocaleString($page.params.lang);
+    };
 </script>
 
 <div>

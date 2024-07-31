@@ -10,9 +10,9 @@
     let showBanPlayerForm : boolean = false;
 
     export async function unbanPlayer() {
-        const confirm = window.confirm(`Are you sure you want to unban ${banInfo.player_name}?`)
+        const confirm = window.confirm(`Are you sure you want to unban ${banInfo.player_name}?`);
         if (!confirm)
-            return
+            return;
 
         const endpoint = `/api/registry/players/${banInfo.player_id}/ban`;
         const response = await fetch(endpoint, {
@@ -22,14 +22,14 @@
         
         const result = await response.json();
         if (response.status < 300) {
-            alert(`Successfully unbanned ${banInfo.player_name}`)
+            alert(`Successfully unbanned ${banInfo.player_name}`);
             window.location.reload();
         } 
         else {
-            const detail = result.detail ? `, ${result.detail}` : ''
+            const detail = result.detail ? `, ${result.detail}` : '';
             alert(`${result.title}${detail}`);
         }
-    }
+    };
 </script>
 
 <div>
