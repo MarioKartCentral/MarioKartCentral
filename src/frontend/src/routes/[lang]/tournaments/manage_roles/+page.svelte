@@ -46,7 +46,7 @@
     });
 </script>
 
-<Section header="Series Roles">
+<Section header="Tournament Roles">
     <div slot="header_content">
         <Button href="/{$page.params.lang}/tournaments/details?id={tournament_id}">Back to Tournament</Button>
     </div>
