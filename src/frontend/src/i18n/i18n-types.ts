@@ -564,29 +564,29 @@ type RootTranslation = {
 		 */
 		NAME: string
 		/**
-		 * B​a​n​n​e​d​ ​B​e​f​o​r​e
+		 * B​a​n​n​e​d​ ​T​o
 		 */
-		BANNED_BEFORE: string
+		BANNED_TO: string
 		/**
-		 * B​a​n​n​e​d​ ​A​f​t​e​r
+		 * B​a​n​n​e​d​ ​F​r​o​m
 		 */
-		BANNED_AFTER: string
+		BANNED_FROM: string
 		/**
-		 * U​n​b​a​n​n​e​d​ ​B​e​f​o​r​e
+		 * U​n​b​a​n​n​e​d​ ​T​o
 		 */
-		UNBANNED_BEFORE: string
+		UNBANNED_TO: string
 		/**
-		 * U​n​b​a​n​n​e​d​ ​A​f​t​e​r
+		 * U​n​b​a​n​n​e​d​ ​F​r​o​m
 		 */
-		UNBANNED_AFTER: string
+		UNBANNED_FROM: string
 		/**
-		 * E​x​p​i​r​e​s​ ​B​e​f​o​r​e
+		 * E​x​p​i​r​e​s​ ​T​o
 		 */
-		EXPIRES_BEFORE: string
+		EXPIRES_TO: string
 		/**
-		 * E​x​p​i​r​e​s​ ​A​f​t​e​r
+		 * E​x​p​i​r​e​s​ ​F​r​o​m
 		 */
-		EXPIRES_AFTER: string
+		EXPIRES_FROM: string
 		/**
 		 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e
 		 */
@@ -2327,29 +2327,29 @@ export type TranslationFunctions = {
 		 */
 		NAME: () => LocalizedString
 		/**
-		 * Banned Before
+		 * Banned To
 		 */
-		BANNED_BEFORE: () => LocalizedString
+		BANNED_TO: () => LocalizedString
 		/**
-		 * Banned After
+		 * Banned From
 		 */
-		BANNED_AFTER: () => LocalizedString
+		BANNED_FROM: () => LocalizedString
 		/**
-		 * Unbanned Before
+		 * Unbanned To
 		 */
-		UNBANNED_BEFORE: () => LocalizedString
+		UNBANNED_TO: () => LocalizedString
 		/**
-		 * Unbanned After
+		 * Unbanned From
 		 */
-		UNBANNED_AFTER: () => LocalizedString
+		UNBANNED_FROM: () => LocalizedString
 		/**
-		 * Expires Before
+		 * Expires To
 		 */
-		EXPIRES_BEFORE: () => LocalizedString
+		EXPIRES_TO: () => LocalizedString
 		/**
-		 * Expires After
+		 * Expires From
 		 */
-		EXPIRES_AFTER: () => LocalizedString
+		EXPIRES_FROM: () => LocalizedString
 		/**
 		 * Search by Name
 		 */

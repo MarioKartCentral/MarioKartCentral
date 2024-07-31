@@ -154,12 +154,12 @@ const en_us: BaseTranslation & Translation = {
     STAFF: 'STAFF',
     SEARCH: 'Search',
     NAME: 'Name',
-    BANNED_BEFORE: 'Banned Before',
-    BANNED_AFTER: 'Banned After',
-    UNBANNED_BEFORE: 'Unbanned Before',
-    UNBANNED_AFTER: 'Unbanned After',
-    EXPIRES_BEFORE: 'Expires Before',
-    EXPIRES_AFTER: 'Expires After',
+    BANNED_TO: 'Banned To',
+    BANNED_FROM: 'Banned From',
+    UNBANNED_TO: 'Unbanned To',
+    UNBANNED_FROM: 'Unbanned From',
+    EXPIRES_TO: 'Expires To',
+    EXPIRES_FROM: 'Expires From',
     SEARCH_BY_NAME: 'Search by Name'
   },
   LANGUAGES: {

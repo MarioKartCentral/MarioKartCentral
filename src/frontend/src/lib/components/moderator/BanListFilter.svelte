@@ -39,30 +39,30 @@
         </select>
     </div>
     <div>
-        <label for="bannedBefore">{$LL.PLAYER_BAN.BANNED_BEFORE()}</label> <br/>
-        <input name='bannedBefore' type='date' on:change={event => {filter.banned_before = getDate(event.currentTarget.value, true)}}/>
+        <label for="bannedAfter">{$LL.PLAYER_BAN.BANNED_FROM()}</label> <br/>
+        <input name='bannedAfter' type="date" on:change={event => {filter.banned_after = getDate(event.currentTarget.value, false)}}/>
     </div>
     <div>
-        <label for="bannedAfter">{$LL.PLAYER_BAN.BANNED_AFTER()}</label> <br/>
-        <input name='bannedAfter' type='date' on:change={event => {filter.banned_after = getDate(event.currentTarget.value, false)}}/>
+        <label for="bannedBefore">{$LL.PLAYER_BAN.BANNED_TO()}</label> <br/>
+        <input name='bannedBefore' type='date' on:change={event => {filter.banned_before = getDate(event.currentTarget.value, true)}}/>
     </div>
     {#if 'unbanned_before' in filter}
         <div>
-            <label for="unbannedBefore">{$LL.PLAYER_BAN.UNBANNED_BEFORE()}</label> <br/>
-            <input name='unbannedBefore' type='date' on:change={event => {filter.unbanned_before = getDate(event.currentTarget.value, true)}}/>
+            <label for="unbannedAfter">{$LL.PLAYER_BAN.UNBANNED_FROM()}</label> <br/>
+            <input name='unbannedAfter' type='date' on:change={event => {filter.unbanned_after = getDate(event.currentTarget.value, false)}}/>
         </div>
         <div>
-            <label for="unbannedAfter">{$LL.PLAYER_BAN.UNBANNED_AFTER()}</label> <br/>
-            <input name='unbannedAfter' type='date' on:change={event => {filter.unbanned_before = getDate(event.currentTarget.value, false)}}/>
+            <label for="unbannedBefore">{$LL.PLAYER_BAN.UNBANNED_TO()}</label> <br/>
+            <input name='unbannedBefore' type='date' on:change={event => {filter.unbanned_before = getDate(event.currentTarget.value, true)}}/>
         </div>
     {:else}
         <div>
-            <label for="expiresBefore">{$LL.PLAYER_BAN.EXPIRES_BEFORE()}</label> <br/>
-            <input name='expiresBefore' type='date' on:change={event => {filter.expires_before = getDate(event.currentTarget.value, true)}}/>
+            <label for="expiresAfter">{$LL.PLAYER_BAN.EXPIRES_FROM()}</label> <br/>
+            <input name='expiresAfter' type='date' on:change={event => {filter.expires_after = getDate(event.currentTarget.value, false)}}/>
         </div>
         <div>
-            <label for="expiresAfter">{$LL.PLAYER_BAN.EXPIRES_AFTER()}</label> <br/>
-            <input name='expiresAfter' type='date' on:change={event => {filter.expires_after = getDate(event.currentTarget.value, false)}}/>
+            <label for="expiresBefore">{$LL.PLAYER_BAN.EXPIRES_TO()}</label> <br/>
+            <input name='expiresBefore' type='date' on:change={event => {filter.expires_before = getDate(event.currentTarget.value, true)}}/>
         </div>
     {/if}
     <div>
