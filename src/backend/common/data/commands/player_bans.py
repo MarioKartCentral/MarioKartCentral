@@ -31,8 +31,8 @@ class BanPlayerCommand(Command[PlayerBan]):
         ban_date = int(datetime.now(timezone.utc).timestamp())
 
         async with db_wrapper.connect() as db:
-            command = "INSERT INTO player_bans(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?)"
-            params = (self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason)
+            command = "INSERT INTO player_bans(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            params = (self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason, data.comment)
             
             try:
                 player_row = await db.execute_insert(command, params)
@@ -63,12 +63,12 @@ class UnbanPlayerCommand(Command[PlayerBanHistorical]):
 
         async with db_wrapper.connect() as db:
             # copy current ban into historical ban table
-            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans WHERE player_id = ?", (self.player_id, )) as cursor:
+            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment FROM player_bans WHERE player_id = ?", (self.player_id, )) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Player not found", "Unable to find player in the ban table", status=404)
-            player_id, banned_by, is_indefinite, ban_date, expiration_date, reason = row
-            async with db.execute("INSERT INTO player_bans_historical(player_id, banned_by, unbanned_by, unban_date, is_indefinite, ban_date, expiration_date, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (player_id, banned_by, self.unbanned_by, unban_date, is_indefinite, ban_date, expiration_date, reason)) as cursor:
+            player_id, banned_by, is_indefinite, ban_date, expiration_date, reason , comment= row
+            async with db.execute("INSERT INTO player_bans_historical(player_id, banned_by, unbanned_by, unban_date, is_indefinite, ban_date, expiration_date, reason, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (player_id, banned_by, self.unbanned_by, unban_date, is_indefinite, ban_date, expiration_date, reason, comment)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount != 1:
                     raise Problem("Failed to unban player", "Failed to insert into historical ban table")
@@ -83,7 +83,7 @@ class UnbanPlayerCommand(Command[PlayerBanHistorical]):
                 if cursor.rowcount != 1:
                     raise Problem("Failed to unban player", "Failed to update is_banned in player table")
             await db.commit()
-        return PlayerBanHistorical(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, self.unbanned_by)
+        return PlayerBanHistorical(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment, self.unbanned_by)
 
 @save_to_command_log
 @dataclass
@@ -96,8 +96,8 @@ class EditPlayerBanCommand(Command[PlayerBan]):
         data = self.data
         
         async with db_wrapper.connect() as db:
-            command = "UPDATE player_bans SET banned_by = ?, is_indefinite = ?, expiration_date = ?, reason = ? WHERE player_id = ?"
-            params = (self.banned_by, data.is_indefinite, data.expiration_date, data.reason, self.player_id)
+            command = "UPDATE player_bans SET banned_by = ?, is_indefinite = ?, expiration_date = ?, reason = ? , comment = ? WHERE player_id = ?"
+            params = (self.banned_by, data.is_indefinite, data.expiration_date, data.reason, data.comment, self.player_id)
             
             async with db.execute(command, params) as cursor:
                 if cursor.rowcount != 1:
@@ -109,7 +109,7 @@ class EditPlayerBanCommand(Command[PlayerBan]):
                 ban_date = row[0]
 
             await db.commit()
-            return PlayerBan(self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason)
+            return PlayerBan(self.player_id, self.banned_by, data.is_indefinite, ban_date, data.expiration_date, data.reason, data.comment)
 
 def _append_equal_filter(where_clauses: list[str], variable_parameters: list[Any], filter_value: Any, where_clause: str, var_param: str | None = None):
     if filter_value is not None and filter_value != "":
@@ -135,6 +135,7 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'p.id = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.name, 'p.name LIKE ?', f"%{filter.name}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'bbp.name LIKE ?', f"%{filter.reason}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
@@ -144,13 +145,15 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'b.ban_date >= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
 
+            if filter.comment and filter.comment.strip():
+                _append_equal_filter(where_clauses, variable_parameters, filter.comment, "b.comment LIKE ?", f"%{filter.comment}%")
             where_clause = "" if not where_clauses else f"WHERE {' AND '.join(where_clauses)}"
             joined_tables = """player_bans b
                 JOIN players p ON b.player_id = p.id
                 JOIN users bbu ON b.banned_by = bbu.id
                 LEFT JOIN players bbp ON bbu.player_id = bbp.id"""
             # bbu: BannedByUser, bbp: BannedByPlayer
-            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.id, bbp.name
+            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.comment, b.banned_by, bbp.id, bbp.name
                 FROM {joined_tables} {where_clause} LIMIT ? OFFSET ?"""
 
             ban_list: list[PlayerBanDetailed] = []
@@ -184,6 +187,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
 
+            _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'p.id = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.name, 'p.name LIKE ?', f"%{filter.name}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'bbp.name LIKE ?', f"%{filter.banned_by}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
@@ -193,6 +197,8 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             _append_equal_filter(where_clauses, variable_parameters, filter.banned_after, 'b.ban_date >= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.reason, "b.reason LIKE ?", f"%{filter.reason}%")
 
+            if filter.comment and filter.comment.strip():
+                _append_equal_filter(where_clauses, variable_parameters, filter.comment, "b.comment LIKE ?", f"%{filter.comment}%")
             if type(filter) == PlayerBanHistoricalFilter: # filter will sometimes randomly be PlayerBanFilter instead of PlayerBanHistoricalFilter
                 if filter.unbanned_by and filter.unbanned_by.lower() in 'system':
                     _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, '(ubp.name LIKE ? OR ubu.id IS NULL)', f"%{filter.unbanned_by}%")
@@ -209,7 +215,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
                 LEFT JOIN users ubu ON b.unbanned_by = ubu.id
                 LEFT JOIN players ubp ON ubu.player_id = ubp.id"""
             # bbu: BannedByUser, bbp: BannedByPlayer
-            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.banned_by, bbp.id, bbp.name, b.unban_date, b.unbanned_by, ubp.id, ubp.name
+            ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.comment, b.banned_by, bbp.id, bbp.name, b.unban_date, b.unbanned_by, ubp.id, ubp.name
                 FROM {joined_tables} {where_clause} LIMIT ? OFFSET ?"""        
 
             ban_list: list[PlayerBanDetailed] = []
@@ -233,7 +239,7 @@ class GetPlayersToUnbanCommand(Command[List[PlayerBan]]):
 
         async with db_wrapper.connect(readonly=True) as db:
             ban_list: list[PlayerBan] = []
-            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason FROM player_bans WHERE is_indefinite = FALSE AND expiration_date < ?", (now,)) as cursor:
+            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment FROM player_bans WHERE is_indefinite = FALSE AND expiration_date < ?", (now,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     ban_list.append(PlayerBan(*row))

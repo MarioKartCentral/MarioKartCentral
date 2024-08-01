@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
+  import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
   import Section from '$lib/components/common/Section.svelte';
   import Button from "$lib/components/common/buttons/Button.svelte";
   import Dialog from '$lib/components/common/Dialog.svelte';
@@ -20,6 +21,8 @@
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let player_found = true;
   let player: PlayerInfo;
+  let banInfo: BanInfoDetailed | null = null;
+
   $: player_name = player ? player.name : 'Registry';
 
   onMount(async () => {
@@ -32,6 +35,16 @@
     }
     const body: PlayerInfo = await res.json();
     player = body;
+
+    if (player.ban_info) {
+      // fetch detailed ban info. api will only return successfully if the user is a mod
+      const res2 = await fetch(`/api/registry/players/bans?player_id=${player.id}`);
+      if (res2.status === 200) {
+        const data: BanListData = await res2.json();
+        if (data.ban_count === 1)
+          banInfo = data.ban_list[0];
+      }
+    }
   });
 </script>
 
@@ -57,8 +70,8 @@
       <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()}/>
     </Dialog>
     <Dialog bind:this={editBanDialog} header={$LL.PLAYER_BAN.VIEW_EDIT_BAN()}>
-      {#if player.ban_info}
-        <ViewEditBan banInfo={player.ban_info}/>
+      {#if banInfo}
+        <ViewEditBan {banInfo}/>
       {/if}
     </Dialog>
   </PermissionCheck>

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { BanFilter } from '$lib/types/ban-filter';
+    import type { BanHistoricalFilter } from '$lib/types/ban-filter';
     import LL from "$i18n/i18n-svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
 
-    export let filter: BanFilter;
+    export let filter: BanHistoricalFilter;
     export let handleSubmit: () => void;
     
     function getDate(value: string, isBefore: boolean) {
@@ -25,6 +25,10 @@
         <input name='bannedBy' type='text' bind:value={filter.banned_by} placeholder={$LL.PLAYER_BAN.SEARCH_BY_NAME()}/>
     </div>
     <div>
+        <label for="unbannedBy">{$LL.PLAYER_BAN.UNBANNED_BY()}</label> <br/>
+        <input name='unbannedBy' type='text' bind:value={filter.unbanned_by} placeholder={$LL.PLAYER_BAN.SEARCH_BY_NAME()}/>
+    </div>
+    <div>
         <label for="isIndefinite">{$LL.PLAYER_BAN.IS_INDEFINITE()}</label> <br/>
         <select name="isIndefinite" bind:value={filter.is_indefinite}>
             <option value={null}></option>
@@ -41,12 +45,12 @@
         <input name='bannedBefore' type='date' on:change={event => {filter.banned_before = getDate(event.currentTarget.value, true)}}/>
     </div>
     <div>
-        <label for="expiresAfter">{$LL.PLAYER_BAN.EXPIRES_FROM()}</label> <br/>
-        <input name='expiresAfter' type='date' on:change={event => {filter.expires_after = getDate(event.currentTarget.value, false)}}/>
+        <label for="unbannedAfter">{$LL.PLAYER_BAN.UNBANNED_FROM()}</label> <br/>
+        <input name='unbannedAfter' type='date' on:change={event => {filter.unbanned_after = getDate(event.currentTarget.value, false)}}/>
     </div>
     <div>
-        <label for="expiresBefore">{$LL.PLAYER_BAN.EXPIRES_TO()}</label> <br/>
-        <input name='expiresBefore' type='date' on:change={event => {filter.expires_before = getDate(event.currentTarget.value, true)}}/>
+        <label for="unbannedBefore">{$LL.PLAYER_BAN.UNBANNED_TO()}</label> <br/>
+        <input name='unbannedBefore' type='date' on:change={event => {filter.unbanned_before = getDate(event.currentTarget.value, true)}}/>
     </div>
     <div>
         <label for="reason">{$LL.PLAYER_BAN.REASON()}</label> <br/>

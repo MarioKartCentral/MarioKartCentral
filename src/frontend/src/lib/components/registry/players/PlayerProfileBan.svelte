@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { BanInfoDetailed } from '$lib/types/ban-info';
+  import type { BanInfoBasic } from '$lib/types/ban-info';
 
-  export let ban_info: BanInfoDetailed;
+  export let ban_info: BanInfoBasic;
 </script>
 
 <div class="container">

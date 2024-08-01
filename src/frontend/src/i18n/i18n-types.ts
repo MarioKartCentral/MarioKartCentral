@@ -444,6 +444,18 @@ type RootTranslation = {
 		 */
 		REASON: string
 		/**
+		 * C​o​m​m​e​n​t
+		 */
+		COMMENT: string
+		/**
+		 * C​o​m​m​e​n​t​ ​I​n​c​l​u​d​e​s
+		 */
+		COMMENT_INCLUDES: string
+		/**
+		 * C​o​m​m​e​n​t​ ​(​O​n​l​y​ ​m​o​d​e​r​a​t​o​r​s​ ​c​a​n​ ​s​e​e​ ​t​h​i​s​)
+		 */
+		COMMENT_ONLY_MODS: string
+		/**
 		 * S​u​b​m​i​t
 		 */
 		SUBMIT: string
@@ -2206,6 +2218,18 @@ export type TranslationFunctions = {
 		 * Reason
 		 */
 		REASON: () => LocalizedString
+		/**
+		 * Comment
+		 */
+		COMMENT: () => LocalizedString
+		/**
+		 * Comment Includes
+		 */
+		COMMENT_INCLUDES: () => LocalizedString
+		/**
+		 * Comment (Only moderators can see this)
+		 */
+		COMMENT_ONLY_MODS: () => LocalizedString
 		/**
 		 * Submit
 		 */

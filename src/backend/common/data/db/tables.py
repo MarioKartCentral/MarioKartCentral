@@ -671,6 +671,7 @@ class PlayerBans(TableModel):
     ban_date: int
     expiration_date: int
     reason: str
+    comment: str
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -680,7 +681,8 @@ class PlayerBans(TableModel):
             is_indefinite BOOLEAN NOT NULL,
             ban_date INTEGER NOT NULL,
             expiration_date INTEGER NOT NULL,
-            reason TEXT NOT NULL
+            reason TEXT NOT NULL,
+            comment TEXT NOT NULL
             ) WITHOUT ROWID"""
     
 @dataclass
@@ -694,6 +696,7 @@ class PlayerBansHistorical(TableModel):
     ban_date: int
     expiration_date: int
     reason: str
+    comment: str
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -706,7 +709,8 @@ class PlayerBansHistorical(TableModel):
             is_indefinite BOOLEAN NOT NULL,
             ban_date INTEGER NOT NULL,
             expiration_date INTEGER NOT NULL,
-            reason TEXT NOT NULL)"""
+            reason TEXT NOT NULL,
+            comment TEXT NOT NULL)"""
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 

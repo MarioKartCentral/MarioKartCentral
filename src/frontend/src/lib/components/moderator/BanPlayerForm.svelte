@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import type { PlayerInfo } from '$lib/types/player-info';
-    import type { BanInfoDetailed } from '$lib/types/ban-info';
+    import type { BanInfoDetailed, BanListData } from '$lib/types/ban-info';
     import LL from "$i18n/i18n-svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import { findNumberOfDaysBetweenDates, default_player_ban_options } from '$lib/util/util'
@@ -9,27 +8,30 @@
     // use playerId and playerName instead of full PlayerInfo object since the /player_bans page doesn't fetch PlayerInfo 
     export let playerId: number;
     export let playerName: string;
-    export let banInfo: BanInfoDetailed | null = null;
     export let isEditBan: boolean = false;
     export let handleCancel: (() => void) | null = null;
 
+    let banInfo: BanInfoDetailed | null = null;
     let isIndefinite: boolean | null = true;
     let numDays: number | null = null;
     let reason: string | null = null;
     let customReason: string | null = null;
+    let comment: string = "";
 
     onMount(async () => {
         if (!banInfo) {
-            const res = await fetch(`/api/registry/players/${playerId}`);
+            const res = await fetch(`/api/registry/players/bans?player_id=${playerId}`);
             if (res.status === 200) {
-                const player: PlayerInfo = await res.json();
-                banInfo = player.ban_info;
+                const data: BanListData = await res.json();
+                if (data.ban_count === 1)
+                    banInfo = data.ban_list[0];
             }
         }
         if (banInfo) {
             isIndefinite = banInfo.is_indefinite;
             numDays = isIndefinite ? null : findNumberOfDaysBetweenDates(banInfo.ban_date, banInfo.expiration_date);
             reason = banInfo.reason;
+            comment = banInfo.comment
             if (!default_player_ban_options.includes(banInfo.reason)) {
                 reason = 'Other';
                 customReason = banInfo.reason;
@@ -56,7 +58,8 @@
         const payload = {
             is_indefinite: data.get('duration') === 'indefinite',
             expiration_date: expirationDate,
-            reason: data.get('custom_reason') || data.get('reason')
+            reason: data.get('custom_reason') || data.get('reason'),
+            comment: data.get('comment') || ""
         };
 
         const endpoint = isEditBan ? `/api/registry/players/${playerId}/editBan` : `/api/registry/players/${playerId}/ban`;
@@ -108,6 +111,10 @@
             {#if reason === 'Other'}
                 <input name='custom_reason' type='text' placeholder={$LL.PLAYER_BAN.ENTER_REASON()} value={customReason} required/>
             {/if}
+        </div>
+        <div>
+            <label for="comment">{$LL.PLAYER_BAN.COMMENT_ONLY_MODS()}</label> <br/>
+            <textarea name='comment' bind:value={comment}></textarea>
         </div>
         <br/>
         <Button type="submit">{$LL.PLAYER_BAN.SUBMIT()}</Button>

@@ -5,6 +5,12 @@ export type BanInfo = {
   is_indefinite: boolean;
   expiration_date: number;
   reason: string;
+  comment: string;
+};
+
+export type BanInfoBasic = {
+  player_id: number;
+  reason: string;
 };
 
 export type BanInfoDetailed = {
@@ -15,6 +21,7 @@ export type BanInfoDetailed = {
   ban_date: number;
   expiration_date: number;
   reason: string;
+  comment: string;
   banned_by_uid: number;
   banned_by_pid: number;
   banned_by_name: string | null;

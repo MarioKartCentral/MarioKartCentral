@@ -3,20 +3,22 @@
   import { onMount } from 'svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { BanFilter, BanHistoricalFilter } from '$lib/types/ban-filter';
-  import type { BanListData } from '$lib/types/ban-info';
+  import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
   import Section from '$lib/components/common/Section.svelte';
   import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
   import ViewEditBan from '$lib/components/moderator/ViewEditBan.svelte';
   import BanListFilter from '$lib/components/moderator/BanListFilter.svelte';
+  import BanListHistoricalFilter from '$lib/components/moderator/BanListHistoricalFilter.svelte';
   import BanList from '$lib/components/moderator/BanList.svelte';
   import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
   import { permissions } from '$lib/util/util';
 
   let player: PlayerInfo | null = null;
-  let playerDetailed: PlayerInfo | null = null;
+  let banInfo: BanInfoDetailed | null = null;
   let banFilter: BanFilter = {
+    player_id: null,
     name: null,
     banned_by: null,
     is_indefinite: null,
@@ -25,9 +27,11 @@
     banned_before: null,
     banned_after: null,
     reason: null,
+    comment: null,
     page: null,
   };
   let banHistoricalFilter: BanHistoricalFilter = {
+    player_id: null,
     name: null,
     banned_by: null,
     unbanned_by: null,
@@ -39,6 +43,7 @@
     banned_before: null,
     banned_after: null,
     reason: null,
+    comment: null,
     page: null,
   };
   let banListData: BanListData = {
@@ -55,17 +60,19 @@
   let currentBanPage: number = 1;
   let currentHistPage: number = 1;
 
-  $: updatePlayerDetailed(player);
+  $: updateBanInfo(player);
 
-  async function updatePlayerDetailed(player: PlayerInfo | null) {
+  async function updateBanInfo(player: PlayerInfo | null) {
     if (!player) {
-      playerDetailed = null;
+      banInfo = null;
       return;
     }
 
-    const res = await fetch(`/api/registry/players/${player.id}`);
+    const res = await fetch(`/api/registry/players/bans?player_id=${player.id}`);
     if (res.status === 200) {
-      playerDetailed = await res.json();
+      const data: BanListData = await res.json();
+      if (data.ban_count === 1)
+        banInfo = data.ban_list[0];
     }
   };
 
@@ -110,14 +117,14 @@
 <PermissionCheck permission={permissions.ban_player}>
   <Section header={$LL.PLAYER_BAN.BAN_PLAYER()}>
     <PlayerSearch bind:player={player}/>
-    {#if playerDetailed}
-      {#if playerDetailed.ban_info}
+    {#if player}
+      {#if banInfo}
         <strong>{$LL.PLAYER_BAN.THE_PLAYER_IS_ALREADY_BANNED()}</strong>
         <hr/>
-        <ViewEditBan banInfo={playerDetailed.ban_info}/>
+        <ViewEditBan {banInfo}/>
       {:else}
         <br/>
-        <BanPlayerForm playerId={playerDetailed.id} playerName={playerDetailed.name} {handleCancel}/>
+        <BanPlayerForm playerId={player.id} playerName={player.name} {handleCancel}/>
       {/if}
     {/if}
   </Section>
@@ -132,7 +139,7 @@
   </Section>
 
   <Section header={$LL.PLAYER_BAN.LIST_OF_HISTORICAL_BANS()}>
-    <BanListFilter bind:filter={banHistoricalFilter} handleSubmit={() => updateHistoricalBanList(false)}/>
+    <BanListHistoricalFilter bind:filter={banHistoricalFilter} handleSubmit={() => updateHistoricalBanList(false)}/>
     <div class="player-count">
       <PageNavigation bind:currentPage={currentHistPage} bind:totalPages={historicalBanListData.page_count} refresh_function={() => updateHistoricalBanList(true)}/>
       {historicalBanListData.ban_count} {historicalBanListData.ban_count === 1 ? $LL.PLAYER_BAN.PLAYER() : $LL.PLAYER_BAN.PLAYERS()}
