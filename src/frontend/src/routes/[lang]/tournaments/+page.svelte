@@ -3,15 +3,12 @@
   import TournamentPageItem from '$lib/components/tournaments/TournamentPageItem.svelte';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
   import Section from '$lib/components/common/Section.svelte';
-  //import { addPermission, permissions } from '$lib/util/util';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import { check_permission, series_permissions } from '$lib/util/permissions';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
-
-  //addPermission(permissions.create_tournament);
 
   let user_info: UserInfo;
   user.subscribe((value) => {
