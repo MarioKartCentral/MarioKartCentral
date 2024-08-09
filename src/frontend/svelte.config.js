@@ -15,8 +15,6 @@ function getEntriesForLocale(locale) {
     `/${locale}/tournaments/edit`,
     `/${locale}/tournaments/edit_placements`,
     `/${locale}/tournaments/edit_placements/raw`,
-    `/${locale}/tournaments/mod/edit`,
-    `/${locale}/tournaments/mod/templates/edit`,
     `/${locale}/tournaments/series`,
     `/${locale}/tournaments/series/create`,
     `/${locale}/tournaments/series/create_template`,
