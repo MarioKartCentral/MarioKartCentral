@@ -3,7 +3,7 @@ import type { Permission } from '$lib/types/permission';
 
 export function check_permission(user_info: UserInfo, permission: string, check_denied_only: boolean = false) {
   const permissions: Permission[] = [];
-  for(const role of user_info.user_roles) {
+  for (const role of user_info.user_roles) {
     permissions.push(...role.permissions);
   }
   const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
@@ -27,7 +27,7 @@ export function check_team_permission(
 ) {
   const team_roles = user_info.team_roles.filter((r) => r.team_id === team_id);
   const permissions: Permission[] = [];
-  for(const role of team_roles) {
+  for (const role of team_roles) {
     permissions.push(...role.permissions);
   }
   if (permissions.length) {
@@ -54,7 +54,7 @@ export function check_series_permission(
 ) {
   const series_roles = user_info.series_roles.filter((r) => r.series_id === series_id);
   const permissions: Permission[] = [];
-  for(const role of series_roles) {
+  for (const role of series_roles) {
     permissions.push(...role.permissions);
   }
   if (permissions.length) {
@@ -82,7 +82,7 @@ export function check_tournament_permission(
 ) {
   const tournament_roles = user_info.tournament_roles.filter((r) => r.tournament_id === tournament_id);
   const permissions: Permission[] = [];
-  for(const role of tournament_roles) {
+  for (const role of tournament_roles) {
     permissions.push(...role.permissions);
   }
   if (permissions.length) {
@@ -125,14 +125,17 @@ export function get_highest_series_role_position(user_info: UserInfo, series_id:
   return Math.min(...role_positions);
 }
 
-export function get_highest_tournament_role_position(user_info: UserInfo, tournament_id: number, series_id: number | null = null) {
+export function get_highest_tournament_role_position(
+  user_info: UserInfo,
+  tournament_id: number,
+  series_id: number | null = null,
+) {
   // if we have series permissions to edit tournament roles, we can edit any roles in the hierarchy
-  if(series_id) {
-    if(check_series_permission(user_info, tournament_permissions.manage_tournament_roles, series_id)) {
+  if (series_id) {
+    if (check_series_permission(user_info, tournament_permissions.manage_tournament_roles, series_id)) {
       return -1;
     }
-  }
-  else if (check_permission(user_info, tournament_permissions.manage_tournament_roles)) {
+  } else if (check_permission(user_info, tournament_permissions.manage_tournament_roles)) {
     return -1;
   }
   const tournament_roles = user_info.tournament_roles.filter((r) => r.tournament_id === tournament_id);
@@ -178,7 +181,7 @@ export const tournament_permissions = {
   register_tournament: 'tournament_register',
   register_host: 'tournament_register_host',
   manage_placements: 'tournament_placements_manage',
-  manage_tournament_roles: 'tournament_roles_manage'
+  manage_tournament_roles: 'tournament_roles_manage',
 };
 
 export const mod_panel_permissions = [
@@ -186,5 +189,5 @@ export const mod_panel_permissions = [
   permissions.manage_teams,
   permissions.manage_transfers,
   permissions.ban_player,
-  permissions.manage_user_roles
+  permissions.manage_user_roles,
 ];

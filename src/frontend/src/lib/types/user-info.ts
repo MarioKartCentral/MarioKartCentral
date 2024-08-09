@@ -13,19 +13,19 @@ type UserRole = {
   position: number;
   expires_on: number | null;
   permissions: Permission[];
-}
+};
 
 type TeamRole = UserRole & {
   team_id: number;
-}
+};
 
 type SeriesRole = UserRole & {
   series_id: number;
-}
+};
 
 type TournamentRole = UserRole & {
   tournament_id: number;
-}
+};
 
 export type UserInfo = {
   id: number | null;

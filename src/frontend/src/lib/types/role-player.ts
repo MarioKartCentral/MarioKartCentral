@@ -1,5 +1,5 @@
-import type { Player } from "$lib/types/player";
+import type { Player } from '$lib/types/player';
 
 export type RolePlayer = Player & {
-    expires_on: number | null;
-}
+  expires_on: number | null;
+};

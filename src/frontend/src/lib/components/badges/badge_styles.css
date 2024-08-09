@@ -1,37 +1,37 @@
 .captain_badge {
-    width: 60px;
-    font-weight: 700;
-    background-color: #029dbd;
-    border: 1px solid #027d99;
+  width: 60px;
+  font-weight: 700;
+  background-color: #029dbd;
+  border: 1px solid #027d99;
 }
 .game_mkt_badge {
-    background-color: #a1385d;
-    border: 1px solid #8e1643;
-  }
+  background-color: #a1385d;
+  border: 1px solid #8e1643;
+}
 
 .game_smk_badge {
-    background-color: #52a3a3;
-    border: 1px solid #247373;
-  }
+  background-color: #52a3a3;
+  border: 1px solid #247373;
+}
 
 .game_mkw_badge {
-    background-color: #65bedc;
-    border: 1px solid #57a2c8;
-  }
+  background-color: #65bedc;
+  border: 1px solid #57a2c8;
+}
 
 .game_mk7_badge {
-    background-color: #ab5555;
-    border: 1px solid #902a2a;
-  }
+  background-color: #ab5555;
+  border: 1px solid #902a2a;
+}
 
 .game_mk8_badge {
-    background-color: #5555ab;
-    border: 1px solid #282887;
-  }
+  background-color: #5555ab;
+  border: 1px solid #282887;
+}
 
 .game_mk8dx_badge {
-    background-color: #9755ab;
-    border: 1px solid #892bad;
+  background-color: #9755ab;
+  border: 1px solid #892bad;
 }
 .mode_mixed_badge,
 .mode_mixed_battle_badge,
@@ -51,7 +51,6 @@
   border: 1px solid #005ea8;
 }
 
-
 .mode_200cc_badge,
 .mode_ct_badge {
   background-color: #d4008b;
@@ -69,41 +68,41 @@
 }
 
 .tag_badge {
-    width: 60px;
-    font-weight: 700;
+  width: 60px;
+  font-weight: 700;
 }
 .primary {
-    background-color: #029dbd;
-    border: 1px solid #027d99;
+  background-color: #029dbd;
+  border: 1px solid #027d99;
 }
 .recruiting_badge {
-    background-color: #00997b;
-    border: 1px solid #006b5c;
+  background-color: #00997b;
+  border: 1px solid #006b5c;
 }
 
 .not_recruiting_badge {
-    background-color: #7f7f80;
-    border: 1px solid #4b4b4b;
+  background-color: #7f7f80;
+  border: 1px solid #4b4b4b;
 }
 
 .primary {
-    background-color: #029dbd;
-    border: 1px solid #027d99;
+  background-color: #029dbd;
+  border: 1px solid #027d99;
 }
 .type_team_badge {
-    background-color: #006ea1;
-    border: 1px solid #004c80;
-  }
+  background-color: #006ea1;
+  border: 1px solid #004c80;
+}
 
 .type_solo_badge {
-    background-color: #a1006b;
-    border: 1px solid #6b0040;
-  }
+  background-color: #a1006b;
+  border: 1px solid #6b0040;
+}
 
 .type_squad_badge {
-    background-color: #006633;
-    border: 1px solid #005621;
-  }
+  background-color: #006633;
+  border: 1px solid #005621;
+}
 
 .team_manager_badge {
   background-color: #04bd04;

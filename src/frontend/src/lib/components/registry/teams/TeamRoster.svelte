@@ -2,7 +2,6 @@
   import type { TeamRoster } from '$lib/types/team-roster';
   import Table from '$lib/components/common/Table.svelte';
   import { LL, locale } from '$i18n/i18n-svelte';
-  import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';

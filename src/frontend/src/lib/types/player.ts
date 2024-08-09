@@ -6,4 +6,4 @@ export type Player = {
   is_shadow: boolean;
   is_banned: boolean;
   discord_id: string | null;
-}
+};
