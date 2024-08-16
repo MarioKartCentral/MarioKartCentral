@@ -14,6 +14,10 @@ from common.data.models import *
 async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
+    player_host_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, tournament_permissions.REGISTER_HOST, True, 
+                                                                        tournament_id=tournament_id))
+    if body.can_host and not player_host_permission:
+        raise Problem("User does not have permission to register as a host", status=401)
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, player_id, player_id, tournament_id, 
         False, body.mii_name, body.can_host, body.selected_fc_id, [], [], admin=False)
     await handle(command)
@@ -87,6 +91,10 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
 async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
+    player_host_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, tournament_permissions.REGISTER_HOST, True, 
+                                                                        tournament_id=tournament_id))
+    if body.can_host and not player_host_permission:
+        raise Problem("User does not have permission to register as a host", status=401)
     command = RegisterPlayerCommand(player_id, tournament_id, None, False, False, body.mii_name, body.can_host, False, body.selected_fc_id, False, False)
     await handle(command)
     return JSONResponse({})
@@ -115,6 +123,10 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
 async def edit_my_registration(request: Request, body: EditMyRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
+    player_host_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, tournament_permissions.REGISTER_HOST, True, 
+                                                                        tournament_id=tournament_id))
+    if body.can_host and not player_host_permission:
+        raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host, False, None, None, body.selected_fc_id,
                                             None, False)
     await handle(command)
@@ -125,6 +137,10 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
 async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
+    player_host_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, tournament_permissions.REGISTER_HOST, True, 
+                                                                        tournament_id=tournament_id))
+    if body.can_host and not player_host_permission:
+        raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host,
         False, False, False, body.selected_fc_id, None, False)
     await handle(command)

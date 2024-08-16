@@ -11,6 +11,7 @@
   import MyRegistration from './MyRegistration.svelte';
   import TeamTournamentRegister from './TeamTournamentRegister.svelte';
   import { check_registrations_open } from '$lib/util/util';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
 
   export let tournament: Tournament;
 
@@ -44,32 +45,39 @@
         {tournament}
         friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
       />
-      {#if tournament.teams_allowed}
+    {/if}
+    {#if !check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
+      <div>
+        You do not have permission to register for this tournament.
+      </div>
+    {:else}
+      {#if tournament.teams_allowed && user_info.player}
         <TeamTournamentRegister {tournament} player={user_info.player} />
       {/if}
-    {/if}
-    {#if !registration.player}
-      {#if !check_registrations_open(tournament)}
-        Registration for this tournament is closed.
-      {:else if user_info.player}
-        <div>Want to register for this tournament? Just fill out your registration details below!</div>
-
-        {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-          {#if !tournament.teams_only}
-            <SoloSquadTournamentRegister
-              {tournament}
-              friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
-            />
+      {#if !registration.player}
+        {#if !check_registrations_open(tournament)}
+          <div>
+            Registration for this tournament is closed.
+          </div>
+        {:else if user_info.player}
+          <div>Want to register for this tournament? Just fill out your registration details below!</div>
+          {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
+            {#if !tournament.teams_only}
+              <SoloSquadTournamentRegister
+                {tournament}
+                friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
+              />
+            {/if}
+          {:else}
+            <div>Please add an FC for {tournament.game} to register for this tournament.</div>
           {/if}
         {:else}
-          <div>Please add an FC for {tournament.game} to register for this tournament.</div>
+          <div>
+            <a href="/{$page.params.lang}/player-signup"
+              >Please complete your player registration to register for this tournament.</a
+            >
+          </div>
         {/if}
-      {:else}
-        <div>
-          <a href="/{$page.params.lang}/player-signup"
-            >Please complete your player registration to register for this tournament.</a
-          >
-        </div>
       {/if}
     {/if}
   {/if}

@@ -17,6 +17,9 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import { check_registrations_open, unregister } from '$lib/util/util';
   import EditMyRegistration from './EditMyRegistration.svelte';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   export let tournament: Tournament;
   export let squad: TournamentSquad;
@@ -30,6 +33,11 @@
 
   let registered_players = squad.players.filter((p) => !p.is_invite);
   let invited_players = squad.players.filter((p) => p.is_invite);
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   async function invitePlayer(player: PlayerInfo | null) {
     if (!player) {
@@ -268,7 +276,8 @@
             <ChevronDownSolid class="cursor-pointer"/>
             <Dropdown>
               {#if registration.player?.player_id === player.player_id}
-                {#if tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required}
+              {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
+                  (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
                   <DropdownItem on:click={edit_reg_dialog.open}>Edit</DropdownItem>
                 {/if}
                 <DropdownItem on:click={() => unregister(registration, tournament, squad)}>Unregister</DropdownItem>
@@ -329,7 +338,8 @@
 
 {#if check_registrations_open(tournament) && registration.player?.is_squad_captain}
   <!-- If registrations are open and our squad is not full and we are the squad captain -->
-  {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
+  {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
+    (!tournament.max_squad_size || squad.players.length < tournament.max_squad_size)}
     <div><b>Invite players</b></div>
     <PlayerSearch
       bind:player={invite_player}
@@ -344,7 +354,9 @@
   {/if}
   <br />
   <div>
-    <Button on:click={edit_squad_dialog.open}>Edit Squad</Button>
+    {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
+      <Button on:click={edit_squad_dialog.open}>Edit Squad</Button>
+    {/if}
     <Button on:click={unregisterSquad}>Unregister Squad</Button>
   </div>
 {/if}

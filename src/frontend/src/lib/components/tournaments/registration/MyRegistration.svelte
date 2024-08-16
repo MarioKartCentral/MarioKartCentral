@@ -5,19 +5,27 @@
   import TournamentInviteList from './TournamentInviteList.svelte';
   import type { FriendCode } from '$lib/types/friend-code';
   import MySquad from './MySquad.svelte';
-    import Flag from '$lib/components/common/Flag.svelte';
-    import Dropdown from '$lib/components/common/Dropdown.svelte';
-    import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-    import { ChevronDownSolid } from 'flowbite-svelte-icons';
-    import PlayerName from './PlayerName.svelte';
-    import { check_registrations_open, unregister } from '$lib/util/util';
-    import EditMyRegistration from './EditMyRegistration.svelte';
+  import Flag from '$lib/components/common/Flag.svelte';
+  import Dropdown from '$lib/components/common/Dropdown.svelte';
+  import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import PlayerName from './PlayerName.svelte';
+  import { check_registrations_open, unregister } from '$lib/util/util';
+  import EditMyRegistration from './EditMyRegistration.svelte';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   export let registration: MyTournamentRegistration;
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
 
   let edit_reg_dialog: EditMyRegistration;
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   function getRegSquad() {
     for (let squad of registration.squads) {
@@ -100,7 +108,8 @@
             {#if check_registrations_open(tournament)}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
-                {#if tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required}
+                {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
+                  (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
                 <DropdownItem on:click={edit_reg_dialog.open}>
                   Edit
                 </DropdownItem>
