@@ -40,11 +40,14 @@ class CheckUserHasPermissionCommand(Command[bool]):
         series_id = self.series_id
 
         async with db_wrapper.connect() as db:
+            denied_permission_exists = False
             def check_perms(rows: Iterable[Row]):
                 if len(rows) == 0:
                     # if check_denied_only is True, we only care about the absence of a denied permission,
-                    # so an empty result set satisfies that
-                    if self.check_denied_only:
+                    # so an empty result set satisfies that.
+                    # if we have previously found a denied permission, we must have a explicitly
+                    # approved permission to override it, so don't return true in that case
+                    if self.check_denied_only and not denied_permission_exists:
                         return True
                     else:
                         return False
@@ -76,9 +79,15 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     WHERE ur.user_id = ? AND ur.tournament_id = ? AND p.name = ?
                     """, (self.user_id, self.tournament_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
-
-                if check_perms(rows):
+                perm_check = check_perms(rows)
+                # if check_denied_only is false and check_perms returns true,
+                # we have the permission, so just return true
+                if perm_check and not self.check_denied_only:
                     return True
+                # if check_denied_only is true and check_perms returns false,
+                # we must have found a denied permission
+                if not perm_check and self.check_denied_only:
+                    denied_permission_exists = True
                 
             if series_id:
                 # check series roles
@@ -92,8 +101,15 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     """, (self.user_id, series_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
 
-                if check_perms(rows):
+                perm_check = check_perms(rows)
+                # if check_denied_only is false and check_perms returns true,
+                # we have the permission, so just return true
+                if perm_check and not self.check_denied_only:
                     return True
+                # if check_denied_only is true and check_perms returns false,
+                # we must have found a denied permission
+                if not perm_check and self.check_denied_only:
+                    denied_permission_exists = True
             
             if self.team_id:
                 # check team roles
@@ -107,8 +123,15 @@ class CheckUserHasPermissionCommand(Command[bool]):
                     """, (self.user_id, self.team_id, self.permission_name)) as cursor:
                     rows = await cursor.fetchall()
 
-                if check_perms(rows):
+                perm_check = check_perms(rows)
+                # if check_denied_only is false and check_perms returns true,
+                # we have the permission, so just return true
+                if perm_check and not self.check_denied_only:
                     return True
+                # if check_denied_only is true and check_perms returns false,
+                # we must have found a denied permission
+                if not perm_check and self.check_denied_only:
+                    denied_permission_exists = True
             
             #finally, check user roles
             async with db.execute("""
