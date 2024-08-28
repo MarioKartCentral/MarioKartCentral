@@ -1,16 +1,38 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import TypeBadge from '$lib/components/badges/TypeBadge.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { series_permissions } from '$lib/util/util';
   import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
+  import SeriesInfoList from './SeriesInfoList.svelte';
+  import SeriesStats from './SeriesStats.svelte';
+  import { makePodiumRankings } from '$lib/util/stats';
 
   export let series: TournamentSeries;
+  export let tournaments = [];
+  export let teams = [];
+
+  onMount(async () => {
+    const res = await fetch(`/api/tournaments/series/${series.id}/placements`);
+    if (res.status === 200) {
+      const body = await res.json();
+      const tab = [];
+      for (let t of body) {
+        tab.push(t);
+      }
+      tournaments = tab;
+      teams = makePodiumRankings(tournaments)
+    }
+  });
 </script>
 
-<Section header="Series Info">
+<Section header={series.series_name}>
   <div slot="header_content">
     <Button href="/{$page.params.lang}/tournaments/series">Back to Series Listing</Button>
     <SeriesPermissionCheck series_id={series.id} permission={series_permissions.edit_series}>
@@ -31,17 +53,48 @@
         <img src={series.logo} alt={series.series_name} />
       </div>
     {/if}
+    <div class="sub_container">
+      <div class="seriesInfoBadge">
+        <GameBadge game={series.game} />
+      </div>
+      <div class="seriesInfoBadge">
+        <ModeBadge mode={series.mode} />
+      </div>
+      <div class="seriesInfoBadge">
+        <TypeBadge type={'Squad'} />
+      </div>
+    </div>
     <MarkdownBox content={series.description} />
   </div>
+</Section>
+<Section header="Tournament History">
+  <SeriesInfoList {tournaments} />
+</Section>
+<Section header="Stats">
+  <SeriesStats {teams} />
 </Section>
 
 <style>
   .container {
-    width: 100%;
+    text-align: center;
+    display: grid;
+    background-color: rgba(24, 82, 28, 0.8);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin: 10px auto 10px auto;
   }
   img {
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
     max-width: 400px;
     max-height: 200px;
+  }
+  .sub_container {
+    margin: auto;
+    display: flex;
+  }
+  .seriesInfoBadge {
+    margin-right: 3px;
   }
 </style>

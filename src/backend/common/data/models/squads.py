@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from common.data.models.tournament_registrations import TournamentPlayerDetails
 
-
 @dataclass
 class Squad:
     id: int
@@ -81,6 +80,10 @@ class TournamentSquadDetails():
     timestamp: int
     is_registered: int
     players: list[SquadPlayerDetails]
+
+@dataclass
+class TournamentTeam(TournamentSquadDetails):
+    roster_id: int
 
 @dataclass
 class MyTournamentRegistrationDetails():

@@ -100,5 +100,5 @@ routes = [
     Route('/api/tournaments/templates/create', create_template, methods=['POST']),
     Route('/api/tournaments/templates/{id:int}/edit', edit_template, methods=['POST']),
     Route('/api/tournaments/templates/{id:int}', template_info),
-    Route('/api/tournaments/templates/list', template_list)    
+    Route('/api/tournaments/templates/list', template_list),
 ]

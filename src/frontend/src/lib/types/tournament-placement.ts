@@ -20,3 +20,16 @@ export type TournamentPlacementList = {
   placements: TournamentPlacement[];
   unplaced: TournamentPlacement[];
 };
+
+export type TournamentSeriesPlacements = {
+  id: number;
+  name: string;
+  tag: string;
+  gold_medals: number;
+  silver_medals: number;
+  bronze_medals: number;
+  participations: number;
+  podiums_placement: number;
+  participations_placement: number;
+  finals_placement: number;
+};

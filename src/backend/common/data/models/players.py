@@ -102,4 +102,3 @@ class PlayerBanFilter:
     expires_before: str | None = None
     expires_after: str | None = None
     reason: str | None = None
-
