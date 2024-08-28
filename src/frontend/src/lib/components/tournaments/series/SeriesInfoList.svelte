@@ -46,34 +46,38 @@
   <tbody>
     {#if tournaments[0]?.is_squad}
       {#each tournaments as tournament}
-        <tr>
-          <td>
-            <a href="/{$page.params.lang}/tournaments?id={tournament.id}">{tournament.tournament_name}</a>
-          </td>
-          <td class="right">
-            {new Date(tournament.date_start * 1000).toLocaleDateString('fr-FR', options)} - {new Date(
-              tournament.date_end * 1000,
-            ).toLocaleDateString('fr-FR', options)}
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <GameBadge game={tournament.game} />
-            <ModeBadge mode={tournament.mode} />
-            <TypeBadge type={tournament.is_squad ? 'Squad' : 'Solo'} />
-          </td>
-          <td class="right">
-            {#each tournament.placements as placement}
-              <span style="color:{getColor(placement.placement)}">
-                <a
-                  href={`/${$page.params.lang}/tournaments/squads?id=${placement.squad.id}&tournament_id=${tournament.id}`}
-                >
-                  {'   ' + getMedail(placement.placement) + ' ' + placement.squad.name}
-                </a>
-              </span>
-            {/each}
-          </td>
-        </tr>
+        {#if tournament.placements.length > 0}
+          <tr>
+            <td>
+              <a href="/{$page.params.lang}/tournaments?id={tournament.id}">{tournament.tournament_name}</a>
+            </td>
+            <td class="right">
+              {new Date(tournament.date_start * 1000).toLocaleDateString('fr-FR', options)} - {new Date(
+                tournament.date_end * 1000,
+              ).toLocaleDateString('fr-FR', options)}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <GameBadge game={tournament.game} />
+              <ModeBadge mode={tournament.mode} />
+              <TypeBadge type={tournament.is_squad ? 'Squad' : 'Solo'} />
+            </td>
+            <td class="right">
+              {#each tournament.placements as placement}
+                {#if placement.placement < 3}
+                  <span style="color:{getColor(placement.placement)}">
+                    <a
+                      href={`/${$page.params.lang}/tournaments/squads?id=${placement.squad.id}&tournament_id=${tournament.id}`}
+                    >
+                      {'   ' + getMedail(placement.placement) + ' ' + placement.squad.name}
+                    </a>
+                  </span>
+                {/if}
+              {/each}
+            </td>
+          </tr>
+        {/if}
       {/each}
     {:else}
       {#each tournaments as tournament}

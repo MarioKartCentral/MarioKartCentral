@@ -82,6 +82,10 @@ class TournamentSquadDetails():
     players: list[SquadPlayerDetails]
 
 @dataclass
+class TournamentTeam(TournamentSquadDetails):
+    roster_id: int
+
+@dataclass
 class MyTournamentRegistrationDetails():
     player_id: int
     tournament_id: int

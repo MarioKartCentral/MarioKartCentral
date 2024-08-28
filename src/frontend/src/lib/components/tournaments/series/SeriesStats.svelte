@@ -15,12 +15,12 @@
   <col class="bronze" />
   {#each teams as team}
     <tr>
-      <td>{team.podiumsPlacement}</td>
-      <td><TagBadge tag={team.squad.tag} color={1} /></td>
-      <td>{team.squad.name}</td>
-      <td>{team.gold}</td>
-      <td>{team.silver}</td>
-      <td>{team.bronze}</td>
+      <td>{team.podiums_placement}</td>
+      <td><TagBadge tag={team.tag} color={1} /></td>
+      <td>{team.name}</td>
+      <td>{team.gold_medals}</td>
+      <td>{team.silver_medals}</td>
+      <td>{team.bronze_medals}</td>
     </tr>
   {/each}
 </Table>
