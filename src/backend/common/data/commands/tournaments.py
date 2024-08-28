@@ -257,9 +257,10 @@ class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements
             series_id = self.series_id
             tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments WHERE series_id = ?"
             placements_query = f"""  
-                SELECT tsp.id, ts.tournament_id, ts.id AS squad_id, ts.name AS squad_name, placement, placement_description, is_disqualified
+                SELECT tsp.id, ts.tournament_id, ts.id AS squad_id, ts.name AS squad_name, ts.tag AS tag, tsr.roster_id, placement, placement_description, is_disqualified
                 FROM tournament_squad_placements tsp
                 JOIN tournament_squads ts ON ts.id = tsp.squad_id
+                JOIN team_squad_registrations tsr ON tsr.squad_id = tsp.squad_id
                 WHERE ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
             """
             tournaments: list[TournamentWithPlacements] = []
@@ -274,8 +275,8 @@ class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements
             async with db.execute(placements_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows: 
-                    id, tournament_id, squad_id, squad_name, placement , placement_description, is_disqualified = row
-                    squad =  TournamentSquadDetails(squad_id, squad_name, None, 1, 1, 1, [])
+                    id, tournament_id, squad_id, squad_name, tag, roster_id, placement , placement_description, is_disqualified = row
+                    squad =  TournamentTeam(squad_id, squad_name, tag, 1, 1, 1, [], roster_id)
                     placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, None, squad)
                     placements[tournament_id].append(placement)
             return tournaments

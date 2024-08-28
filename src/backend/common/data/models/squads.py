@@ -103,6 +103,10 @@ class TournamentSquadMin():
     players: list[PlayerMin]
 
 @dataclass
+class TournamentTeam(TournamentSquadDetails):
+    roster_id: int
+
+@dataclass
 class MyTournamentRegistrationDetails():
     player_id: int
     tournament_id: int
