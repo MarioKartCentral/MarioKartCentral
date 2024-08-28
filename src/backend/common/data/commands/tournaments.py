@@ -23,6 +23,8 @@ class CreateTournamentCommand(Command[None]):
             raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
         if b.teams_allowed and (b.mii_name_required or b.host_status_required or b.require_single_fc):
             raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+        if b.teams_allowed and (not b.squad_tag_required or not b.squad_name_required):
+            raise Problem('Team tournaments must require a squad tag/name', status=400)
         if not b.series_id and b.use_series_logo:
             raise Problem('Cannot use series logo if no series is selected', status=400)
 
@@ -77,6 +79,8 @@ class EditTournamentCommand(Command[None]):
                 raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
             if b.teams_allowed and (b.mii_name_required or b.host_status_required):
                 raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+            if b.teams_allowed and (not b.squad_tag_required or not b.squad_name_required):
+                raise Problem('Team tournaments must require a squad tag/name', status=400)
             if not b.series_id and b.use_series_logo:
                 raise Problem('Cannot use series logo if no series is selected', status=400)
             cursor = await db.execute("""UPDATE tournaments

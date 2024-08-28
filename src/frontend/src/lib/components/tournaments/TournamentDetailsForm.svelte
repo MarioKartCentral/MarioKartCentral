@@ -32,6 +32,8 @@
       data.mii_name_required = false;
       data.host_status_required = false;
       data.require_single_fc = false;
+      data.squad_tag_required = true;
+      data.squad_name_required = true;
       if (!data.teams_only) {
         data.team_members_only = false;
         data.min_representatives = null;
@@ -190,30 +192,28 @@
           <input class="number" type="number" name="max_squad_size" min="1" max="99" bind:value={data.max_squad_size} />
         </div>
       </div>
-      {#if !data.teams_only}
-        <div class="option">
-          <div>
-            <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
-          </div>
-          <div>
-            <select name="squad_tag_required" bind:value={data.squad_tag_required} disabled={is_edit}>
-              <option value={false}>No</option>
-              <option value={true}>Yes</option>
-            </select>
-          </div>
+      <div class="option">
+        <div>
+          <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
         </div>
-        <div class="option">
-          <div>
-            <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
-          </div>
-          <div>
-            <select name="squad_name_required" bind:value={data.squad_name_required} disabled={is_edit}>
-              <option value={false}>No</option>
-              <option value={true}>Yes</option>
-            </select>
-          </div>
+        <div>
+          <select name="squad_tag_required" bind:value={data.squad_tag_required} on:change={updateData} disabled={is_edit || data.teams_allowed}>
+            <option value={false}>No</option>
+            <option value={true}>Yes</option>
+          </select>
         </div>
-      {/if}
+      </div>
+      <div class="option">
+        <div>
+          <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
+        </div>
+        <div>
+          <select name="squad_name_required" bind:value={data.squad_name_required} on:change={updateData} disabled={is_edit || data.teams_allowed}>
+            <option value={false}>No</option>
+            <option value={true}>Yes</option>
+          </select>
+        </div>
+      </div>
       <div class="option">
         <div>
           <label for="teams_allowed">Teams allowed? (this cannot be changed)</label>
