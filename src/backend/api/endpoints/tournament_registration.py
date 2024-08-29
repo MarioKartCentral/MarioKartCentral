@@ -197,6 +197,28 @@ async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(MakeCaptainRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def add_team_representative(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    captain_player_id = request.state.user.player_id
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
+    await handle(command)
+    command = AddRepresentativeCommand(tournament_id, body.squad_id, body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(MakeCaptainRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def remove_team_representative(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    captain_player_id = request.state.user.player_id
+    command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
+    await handle(command)
+    command = RemoveRepresentativeCommand(tournament_id, body.squad_id, body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
 @bind_request_body(UnregisterSquadRequestData)
 @require_logged_in
 async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
@@ -261,6 +283,8 @@ routes = [
     Route('/api/tournaments/{tournament_id:int}/unregister', unregister_me, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/forceUnregister', staff_unregister, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/makeCaptain', change_squad_captain, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/addRepresentative', add_team_representative, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/removeRepresentative', remove_team_representative, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/unregisterSquad', unregister_squad, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/squads/{squad_id:int}', view_squad),
     Route('/api/tournaments/{tournament_id:int}/registrations', list_registrations),

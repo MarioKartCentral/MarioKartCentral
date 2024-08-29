@@ -159,6 +159,58 @@
     }
   }
 
+  async function addRepresentative(player_id: number) {
+    if (!registration.player) {
+      return;
+    }
+    if (!registration.player.is_squad_captain) {
+      return;
+    }
+    const payload = {
+      squad_id: registration.player.squad_id,
+      player_id: player_id,
+    };
+    const endpoint = `/api/tournaments/${tournament.id}/addRepresentative`;
+    console.log(payload);
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.status < 300) {
+      window.location.reload();
+    } else {
+      alert(`Adding representative failed: ${result['title']}`);
+    }
+  }
+
+  async function removeRepresentative(player_id: number) {
+    if (!registration.player) {
+      return;
+    }
+    if (!registration.player.is_squad_captain) {
+      return;
+    }
+    const payload = {
+      squad_id: registration.player.squad_id,
+      player_id: player_id,
+    };
+    const endpoint = `/api/tournaments/${tournament.id}/removeRepresentative`;
+    console.log(payload);
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.status < 300) {
+      window.location.reload();
+    } else {
+      alert(`Adding representative failed: ${result['title']}`);
+    }
+  }
+
   async function unregisterSquad() {
     if (!registration.player) {
       return;
@@ -276,7 +328,7 @@
             <ChevronDownSolid class="cursor-pointer"/>
             <Dropdown>
               {#if registration.player?.player_id === player.player_id}
-              {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
+                {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
                   (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
                   <DropdownItem on:click={edit_reg_dialog.open}>Edit</DropdownItem>
                 {/if}
@@ -284,9 +336,15 @@
               {:else if registration.player?.is_squad_captain}
                 <DropdownItem on:click={() => kickPlayer(player.player_id)}>Kick</DropdownItem>
                 <DropdownItem on:click={() => makeCaptain(player.player_id)}>Make Captain</DropdownItem>
+                {#if tournament.teams_only}
+                  {#if !player.is_representative}
+                    <DropdownItem on:click={() => addRepresentative(player.player_id)}>Make Representative</DropdownItem>
+                  {:else}
+                    <DropdownItem on:click={() => removeRepresentative(player.player_id)}>Remove Representative</DropdownItem>
+                  {/if}
+                {/if}
               {/if}
             </Dropdown>
-            
           {/if}
         </td>
       </tr>

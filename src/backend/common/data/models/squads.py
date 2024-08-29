@@ -70,6 +70,7 @@ class StaffUnregisterPlayerRequestData():
 @dataclass
 class SquadPlayerDetails(TournamentPlayerDetails):
     is_squad_captain: bool
+    is_representative: bool
     is_invite: bool
 
 @dataclass

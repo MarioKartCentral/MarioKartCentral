@@ -202,6 +202,42 @@ class ChangeSquadCaptainCommand(Command[None]):
             await db.commit()
 
 @dataclass
+class AddRepresentativeCommand(Command[None]):
+    tournament_id: int
+    squad_id: int
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ? AND is_invite = ?",
+                                  (self.tournament_id, self.squad_id, self.player_id, False)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Specified player is not in this squad", status=400)
+                
+            await db.execute("UPDATE tournament_players SET is_representative = 1 WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
+                             (self.tournament_id, self.squad_id, self.player_id))
+            await db.commit()
+
+@dataclass
+class RemoveRepresentativeCommand(Command[None]):
+    tournament_id: int
+    squad_id: int
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ? AND is_invite = ?",
+                                  (self.tournament_id, self.squad_id, self.player_id, False)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Specified player is not in this squad", status=400)
+                
+            await db.execute("UPDATE tournament_players SET is_representative = 0 WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
+                             (self.tournament_id, self.squad_id, self.player_id))
+            await db.commit()
+
+@dataclass
 class UnregisterSquadCommand(Command[None]):
     tournament_id: int
     squad_id: int
@@ -226,7 +262,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 if not squad_row:
                     raise Problem("Squad not found", status=404)
                 squad_id, name, tag, color, timestamp, is_registered = squad_row
-            async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
+            async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id,
                                     p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
@@ -238,9 +274,9 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 player_dict: dict[int, SquadPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
                 fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
-                    reg_id, player_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, player_name, country, discord_id = row
+                    reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, player_name, country, discord_id = row
                     curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
-                        player_name, country, discord_id, [], is_squad_captain, is_invite)
+                        player_name, country, discord_id, [], is_squad_captain, is_representative, is_invite)
                     players.append(curr_player)
 
                     player_dict[curr_player.player_id] = curr_player

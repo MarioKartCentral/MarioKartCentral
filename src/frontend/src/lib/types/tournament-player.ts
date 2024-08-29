@@ -11,5 +11,6 @@ export type TournamentPlayer = {
   discord_id: string | null;
   friend_codes: string[];
   is_squad_captain: boolean;
+  is_representative: boolean;
   is_invite: boolean;
 };

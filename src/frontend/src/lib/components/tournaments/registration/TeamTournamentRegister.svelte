@@ -142,55 +142,64 @@
     </select>
   {/if}
   {#if selected_rosters.length}
-    <div>
-      <b>Selected Rosters:</b>
-    </div>
-    {#each selected_rosters as roster, i}
+    <div class="section">
       <div>
-        <TagBadge tag={roster.tag} color={roster.color}/>
-        {roster.name}
-        {#if i === 0}
-          <PrimaryBadge/>
-        {/if}
-        <CancelButton on:click={() => removeRoster(roster)}/>
+        <b>Selected Rosters:</b>
       </div>
-    {/each}
-    <div>
+      {#each selected_rosters as roster, i}
+        <div>
+          <TagBadge tag={roster.tag} color={roster.color}/>
+          {roster.name}
+          {#if i === 0}
+            <PrimaryBadge/>
+          {/if}
+          <CancelButton on:click={() => removeRoster(roster)}/>
+        </div>
+      {/each}
+    </div>
+    <div class="section">
       <div>Squad Color</div>
       <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
     </div>
     {#if captain_player}
-      <div><b>Captain:</b></div>
-      <div>
-          <Flag country_code={captain_player.country_code}/>
-          {captain_player.name}
-        {#if captain_player.player_id !== player.id}
-          <CancelButton on:click={() => (captain_player = null)}/>
-        {/if}
-      </div>
-      {#if representatives.length}
+      <div class="section">
+        <div><b>Captain:</b></div>
         <div>
-          <b>Representatives</b>
-        </div>
-        {#each representatives as player}
-          <div>
             <Flag country_code={captain_player.country_code}/>
-            {player.name}
-            <CancelButton on:click={() => removeRep(player)}/>
+            {captain_player.name}
+          {#if captain_player.player_id !== player.id}
+            <CancelButton on:click={() => (captain_player = null)}/>
+          {/if}
+        </div>
+      </div>
+      
+      {#if representatives.length}
+        <div class="section">
+          <div>
+            <b>Representatives</b>
           </div>
-        {/each}
+          {#each representatives as player}
+            <div>
+              <Flag country_code={captain_player.country_code}/>
+              {player.name}
+              <CancelButton on:click={() => removeRep(player)}/>
+            </div>
+          {/each}
+        </div>
       {/if}
       {#if tournament.min_representatives && representatives.length + 1 < tournament.min_representatives}
-        <div>
-          <b>Select {tournament.min_representatives - representatives.length - 1} more representatives</b>
+        <div class="section">
+          <div>
+            <b>Select {tournament.min_representatives - representatives.length - 1} more representatives</b>
+          </div>
+          <select bind:value={selected_rep} on:change={() => selectRep(selected_rep)}>
+            {#each unselected_players as player}
+              <option value={player}>
+                {player.name}
+              </option>
+            {/each}
+          </select>
         </div>
-        <select bind:value={selected_rep} on:change={() => selectRep(selected_rep)}>
-          {#each unselected_players as player}
-            <option value={player}>
-              {player.name}
-            </option>
-          {/each}
-        </select>
       {:else}
         <Button on:click={register}>Register</Button>
       {/if}
@@ -209,7 +218,7 @@
 {/if}
 
 <style>
-  .container {
-    margin: 20px 0;
+  .section {
+    margin: 15px 0;
   }
 </style>

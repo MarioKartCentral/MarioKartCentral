@@ -271,7 +271,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered = row
                     curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, [])
                     squads[squad_id] = curr_squad
-            async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
+            async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
@@ -280,10 +280,11 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[str]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
-                    reg_id, player_id, squad_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
+                    reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, is_invite)
+                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, 
+                                                     is_representative, is_invite)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []
@@ -385,7 +386,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, [])
                     squads[squad_id] = curr_squad
             # get all players from squads that the requested player is in
-            async with db.execute(f"""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.timestamp, t.is_checked_in, 
+            async with db.execute(f"""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
@@ -398,10 +399,11 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[str]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
-                    reg_id, player_id, squad_id, is_squad_captain, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
+                    reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, is_invite)
+                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain,
+                                                     is_representative, is_invite)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []

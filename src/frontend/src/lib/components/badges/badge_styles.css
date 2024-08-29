@@ -4,6 +4,11 @@
   background-color: #029dbd;
   border: 1px solid #027d99;
 }
+.representative_badge {
+  font-weight: 700;
+  background-color: #bd8000;
+  border: 1px solid #905f00;
+}
 .game_mkt_badge {
   background-color: #a1385d;
   border: 1px solid #8e1643;
