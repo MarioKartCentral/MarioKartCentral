@@ -47,7 +47,7 @@
     background-color: theme('colors.primary.800'/ 30%) ;
   }
 
-  @media(max-width: 1000px) {
+  @media(max-width: 1024px) {
     table :global(.mobile-hide) {
       display: none;
     }

@@ -230,6 +230,14 @@ async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(UnregisterSquadRequestData)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+async def force_unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    command = UnregisterSquadCommand(tournament_id, body.squad_id)
+    await handle(command)
+    return JSONResponse({})
+
 async def view_squad(request: Request) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     squad_id = request.path_params['squad_id']
@@ -286,6 +294,7 @@ routes = [
     Route('/api/tournaments/{tournament_id:int}/addRepresentative', add_team_representative, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/removeRepresentative', remove_team_representative, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/unregisterSquad', unregister_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/forceUnregisterSquad', force_unregister_squad, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/squads/{squad_id:int}', view_squad),
     Route('/api/tournaments/{tournament_id:int}/registrations', list_registrations),
     Route('/api/tournaments/{tournament_id:int}/myRegistration', my_registration)
