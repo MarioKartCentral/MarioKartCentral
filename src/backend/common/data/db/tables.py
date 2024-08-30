@@ -303,7 +303,8 @@ class TournamentPlayer(TableModel):
             can_host BOOLEAN NOT NULL,
             is_invite BOOLEAN NOT NULL,
             selected_fc_id INTEGER,
-            is_representative BOOLEAN NOT NULL
+            is_representative BOOLEAN NOT NULL,
+            is_bagger_clause BOOLEAN NOT NULL
             )"""
     
 @dataclass

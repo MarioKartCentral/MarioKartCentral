@@ -608,9 +608,10 @@ class ApproveTransferCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False) for tournament_id, squad_id in squads.items()]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, False) for tournament_id, squad_id in squads.items()]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                                 is_representative, is_bagger_clause)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log
@@ -1007,9 +1008,10 @@ class ForceTransferPlayerCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False) for tournament_id, squad_id in squads.items()]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, False) for tournament_id, squad_id in squads.items()]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                                 is_representative, is_bagger_clause)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log

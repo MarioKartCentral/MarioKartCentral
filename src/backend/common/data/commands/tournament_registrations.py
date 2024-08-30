@@ -102,9 +102,10 @@ class RegisterPlayerCommand(Command[None]):
                     if player_squad_size >= max_squad_size:
                         raise Problem('Squad at maximum number of players', status=400)
                     
-            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
-                self.is_invite, selected_fc_id, self.is_representative))
+            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                             is_representative, is_bagger_clause)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, self.squad_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
+                self.is_invite, selected_fc_id, self.is_representative, False))
             await db.commit()
 
 

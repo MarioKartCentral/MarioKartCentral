@@ -132,12 +132,14 @@ class CreateSquadCommand(Command[None]):
                         is_representative = True
                     else:
                         is_representative = False
-                    queries_parameters.append((p, self.tournament_id, squad_id, False, timestamp, self.is_checked_in, None, False, False, None, is_representative))
-                await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
-            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, squad_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite,
-                selected_fc_id, False))
+                    queries_parameters.append((p, self.tournament_id, squad_id, False, timestamp, self.is_checked_in, None, False, False, None, is_representative, False))
+                await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                                     is_representative, is_bagger_clause)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
+            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                             is_representative, is_bagger_clause)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, squad_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, is_invite,
+                selected_fc_id, False, False))
             await db.commit()
 
 @save_to_command_log
