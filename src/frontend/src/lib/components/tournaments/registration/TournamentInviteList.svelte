@@ -5,19 +5,24 @@
   import Table from '$lib/components/common/Table.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
-  import type { FriendCode } from '$lib/types/friend-code';
-    import Button from '$lib/components/common/buttons/Button.svelte';
-    import TagBadge from '$lib/components/badges/TagBadge.svelte';
-    import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
-    import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
+  import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
-  export let friend_codes: FriendCode[];
 
   let all_toggle_on = false;
   let accept_dialog: Dialog;
   let curr_invite: TournamentSquad;
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   // use this to store whether we should display players for each squad, as well as convert their timestamps to Dates
   let squad_data: { [id: number]: { display_players: boolean; date: Date } } = {};
@@ -160,20 +165,23 @@
 
 <Dialog bind:this={accept_dialog} header="Accept squad invite">
   <form method="POST" on:submit|preventDefault={acceptInvite}>
-    <SoloTournamentFields {tournament} {friend_codes} />
-    <br />
-    <div>Squad ID: {curr_invite?.id}</div>
-    {#if tournament.squad_tag_required}
-      <div>Squad Tag: {curr_invite?.tag}</div>
+    {#if user_info.player}
+      <SoloTournamentFields {tournament} friend_codes={user_info.player.friend_codes} />
+      <br />
+      <div>Squad ID: {curr_invite?.id}</div>
+      {#if tournament.squad_tag_required}
+        <div>Squad Tag: {curr_invite?.tag}</div>
+      {/if}
+      {#if tournament.squad_name_required}
+        <div>Squad Name: {curr_invite?.name}</div>
+      {/if}
+      <br />
+      <div>
+        <Button type="submit">Accept</Button>
+        <Button type="button" on:click={accept_dialog.close}>Cancel</Button>
+      </div>
     {/if}
-    {#if tournament.squad_name_required}
-      <div>Squad Name: {curr_invite?.name}</div>
-    {/if}
-    <br />
-    <div>
-      <Button type="submit">Accept</Button>
-      <Button type="button" on:click={accept_dialog.close}>Cancel</Button>
-    </div>
+    
   </form>
 </Dialog>
 

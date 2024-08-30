@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails
+from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails, FriendCode
 
 
 @save_to_command_log
@@ -42,6 +42,8 @@ class RegisterPlayerCommand(Command[None]):
                         raise Problem("Tournament should not have a Mii Name", status=400)
                 if require_single_fc and not self.selected_fc_id and not self.is_invite:
                     raise Problem("Please select an FC to use for this tournament", status=400)
+                if not is_squad and (self.is_squad_captain or self.is_representative):
+                    raise Problem("is_squad_captain and is_representative fields must be false when is_squad is true", status=400)
 
                 selected_fc_id = self.selected_fc_id
                 if not require_single_fc:
@@ -126,11 +128,11 @@ class EditPlayerRegistrationCommand(Command[None]):
     
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT registrations_open, mii_name_required FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT is_squad, mii_name_required, registrations_open, require_single_fc FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('Tournament not found', status=404)
-                registrations_open, mii_name_required = row
+                is_squad, mii_name_required, registrations_open, require_single_fc = row
                 # make sure players can't edit their registration details after registrations have closed
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so you cannot edit your registration details", status=400)
@@ -140,6 +142,10 @@ class EditPlayerRegistrationCommand(Command[None]):
                         raise Problem("Tournament requires a Mii Name", status=400)
                     if mii_name_required == 0 and self.mii_name:
                         raise Problem("Tournament should not have a Mii Name", status=400)
+                if require_single_fc and not self.selected_fc_id and not self.is_invite:
+                    raise Problem("Please select an FC to use for this tournament", status=400)
+                if not is_squad and (self.is_squad_captain or self.is_representative):
+                    raise Problem("is_squad_captain and is_representative fields must be false when is_squad is true", status=400)
                     
             #check if registration exists
             async with db.execute("SELECT id, is_invite, is_representative, is_squad_captain, is_checked_in FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?",
@@ -196,6 +202,11 @@ class EditPlayerRegistrationCommand(Command[None]):
                         await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 1", (self.tournament_id, old_squad_id))
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND squad_id = ?",
                         (self.tournament_id, self.player_id, old_squad_id))
+                    
+            # if we're making this player the captain, make sure no one else is captain
+            if is_squad_captain:
+                await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND squad_id = ? AND player_id != ?",
+                                 (False, self.tournament_id, self.squad_id, self.player_id))
             await db.execute("UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, selected_fc_id = ?, is_representative = ? WHERE id = ?", (
                 self.mii_name, self.can_host, self.is_invite, is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, registration_id))
             await db.commit()
@@ -273,7 +284,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, [])
                     squads[squad_id] = curr_squad
             async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
-                                    t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
+                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
                                     WHERE t.tournament_id = ?""",
@@ -281,33 +292,26 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[str]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
-                    reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
+                    reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, player_name, country, discord_id = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain, 
+                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, selected_fc_id, [], is_squad_captain, 
                                                      is_representative, is_invite)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []
-            # check if only single FCs are allowed or not
-            async with db.execute("SELECT require_single_fc, game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
-                row = await cursor.fetchone()
-                assert row is not None
-                require_single_fc, game = row
-                fc_where_clause = ""
-                if require_single_fc:
-                    fc_where_clause = "AND f.id = t.selected_fc_id"
+
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT player_id, fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id {fc_where_clause}
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id
                         )"""
             async with db.execute(fc_query, (game, self.tournament_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, fc = row
+                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
                     if player_id not in player_fc_dict:
                         continue
-                    player_fc_dict[player_id].append(fc)
+                    player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
             # finally, set all players' friend codes.
             # we need to do this at the end because some players might have two registration entries
             # (ex. if a player is invited to two different squads), so we need to make sure both of their
@@ -329,7 +333,7 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
             if self.hosts_only:
                 where_clauses.append("t.can_host = 1")
             where_clause = " AND ".join(where_clauses)
-            async with db.execute(f"""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, p.name, p.country_code, p.discord_id
+            async with db.execute(f"""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
                                     WHERE {where_clause}""",
@@ -340,30 +344,22 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
                 player_dict: dict[int, TournamentPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
 
                 for row in rows:
-                    reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id = row
-                    curr_player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])
+                    reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
+                    curr_player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, selected_fc_id, [])
                     players.append(curr_player)
                     
                     player_dict[player_id] = curr_player
 
-            # check if only single FCs are allowed or not and get the tournament's game
-            async with db.execute("SELECT require_single_fc, game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
-                row = await cursor.fetchone()
-                assert row is not None
-                require_single_fc, game = row
-                fc_where_clause = ""
-                if require_single_fc:
-                    fc_where_clause = "AND f.id = t.selected_fc_id"
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT player_id, fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE {where_clause} AND t.player_id = f.player_id {fc_where_clause}
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+                            SELECT t.id FROM tournament_players t WHERE {where_clause} AND t.player_id = f.player_id
                         )
                         """
             async with db.execute(fc_query, (game, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, fc = row
-                    player_dict[player_id].friend_codes.append(fc)
+                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
+                    player_dict[player_id].friend_codes.append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
                 return players
             
 @dataclass
@@ -388,7 +384,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     squads[squad_id] = curr_squad
             # get all players from squads that the requested player is in
             async with db.execute(f"""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
-                                    t.mii_name, t.can_host, t.is_invite, p.name, p.country_code, p.discord_id
+                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
                                     WHERE t.tournament_id = ?
@@ -400,27 +396,18 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[str]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
-                    reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, player_name, country, discord_id = row
+                    reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, player_name, country, discord_id = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, [], is_squad_captain,
+                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, selected_fc_id, [], is_squad_captain,
                                                      is_representative, is_invite)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []
 
-            # check if only single FCs are allowed or not and get the tournament's game
-            async with db.execute("SELECT require_single_fc, game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
-                row = await cursor.fetchone()
-                assert row is not None
-                require_single_fc, game = row
-                fc_where_clause = ""
-                if require_single_fc:
-                    fc_where_clause = "AND (f.id = t.selected_fc_id OR t.is_invite = 1)"
-
             # gathering all the valid FCs for each player in their squads
-            fc_query = f"""SELECT f.player_id, f.fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id {fc_where_clause}
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id
                             AND EXISTS (
                                 SELECT p2.id FROM tournament_players p2
                                 WHERE p2.squad_id = t.squad_id AND p2.player_id = ?
@@ -430,9 +417,9 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, fc = row
+                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
                     print(fc)
-                    player_fc_dict[player_id].append(fc)
+                    player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
 
             details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, list(squads.values()), None)
             # finally, set all players' friend codes.
@@ -454,7 +441,7 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, p.name, p.country_code, p.discord_id
+            async with db.execute("""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
                                     WHERE t.tournament_id = ? AND t.player_id = ?""",
@@ -463,27 +450,18 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                 if not row:
                     return MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], None)
                 
-                reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id = row
-                player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, [])
+                reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
+                player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, selected_fc_id, [])
 
-            # check if only single FCs are allowed or not and get the tournament's game
-            async with db.execute("SELECT require_single_fc, game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
-                row = await cursor.fetchone()
-                assert row is not None
-                require_single_fc, game = row
-                fc_where_clause = ""
-                if require_single_fc:
-                    fc_where_clause = "AND f.id = t.selected_fc_id"
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT player_id, fc FROM friend_codes f WHERE f.game = ? AND EXISTS (
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
                             SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = ? AND t.player_id = f.player_id
-                            {fc_where_clause}
                         )
                         """
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, fc = row
-                    player.friend_codes.append(fc)
+                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
+                    player.friend_codes.append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
             details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], player)
             return details

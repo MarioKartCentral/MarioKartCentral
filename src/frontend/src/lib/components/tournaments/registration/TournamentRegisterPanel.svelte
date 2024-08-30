@@ -40,11 +40,7 @@
 <Section header="Register">
   {#if registration}
     {#if user_info.player}
-      <MyRegistration
-        {registration}
-        {tournament}
-        friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
-      />
+      <MyRegistration {registration} {tournament}/>
     {/if}
     {#if !check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
       <div>

@@ -5,9 +5,6 @@
   import TournamentPlayerList from './TournamentPlayerList.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
-  import { tournament_permissions, check_tournament_permission } from '$lib/util/permissions';
-  import type { UserInfo } from '$lib/types/user-info';
-  import { user } from '$lib/stores/stores';
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import Dropdown from '../common/Dropdown.svelte';
   import DropdownItem from '../common/DropdownItem.svelte';
@@ -15,6 +12,7 @@
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
+  export let is_privileged = false;
 
   let edit_squad_dialog: EditSquadDialog;
 
@@ -25,12 +23,6 @@
   for (const squad of squads) {
     squad_data[squad.id] = { display_players: false, date: new Date(squad.timestamp * 1000) };
   }
-
-  let user_info: UserInfo;
-
-  user.subscribe((value) => {
-    user_info = value;
-  });
 
   function is_squad_eligible(squad: TournamentSquad) {
     if (tournament.min_squad_size === null) {
@@ -90,7 +82,7 @@
   <col class="players" />
   <col class="eligible mobile-hide" />
   <col class="date mobile-hide" />
-  {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
+  {#if is_privileged}
     <col class="actions"/>
   {/if}
   <thead>
@@ -110,7 +102,7 @@
       </th>
       <th class="mobile-hide">Eligible?</th>
       <th class="mobile-hide">Registration Date</th>
-      {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
+      {#if is_privileged}
         <th>Actions</th>
       {/if}
     </tr>
@@ -135,7 +127,7 @@
         >
         <td class="mobile-hide">{is_squad_eligible(squad)}</td>
         <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
-        {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
+        {#if is_privileged}
           <td>
             <ChevronDownSolid class="cursor-pointer"/>
             <Dropdown>
@@ -148,7 +140,7 @@
       {#if squad_data[squad.id].display_players}
         <tr class="row-{i % 2}">
           <td colspan="10">
-            <TournamentPlayerList {tournament} players={squad.players} />
+            <TournamentPlayerList {tournament} players={squad.players} {is_privileged}/>
           </td>
         </tr>
       {/if}
@@ -156,7 +148,7 @@
   </tbody>
 </Table>
 
-<EditSquadDialog bind:this={edit_squad_dialog} {tournament} is_privileged={true}/>
+<EditSquadDialog bind:this={edit_squad_dialog} {tournament} {is_privileged}/>
 
 <style>
   button.show-players {

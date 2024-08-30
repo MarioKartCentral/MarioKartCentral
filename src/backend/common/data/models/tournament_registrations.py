@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from common.data.models.friend_codes import FriendCode
 
 @dataclass
 class RegisterTeamRequestData:
@@ -34,10 +35,10 @@ class EditMyRegistrationRequestData():
 @dataclass
 class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
     player_id: int
-    is_squad_captain: bool
+    is_squad_captain: bool | None
     is_invite: bool
-    is_checked_in: bool
-    is_representative: bool
+    is_checked_in: bool | None
+    is_representative: bool | None
 
 @dataclass
 class TournamentPlayerDetails():
@@ -51,7 +52,8 @@ class TournamentPlayerDetails():
     name: str
     country_code: str | None
     discord_id: str | None
-    friend_codes: list[str]
+    selected_fc_id: int | None
+    friend_codes: list[FriendCode]
 
 @dataclass
 class TournamentRegistrationFilter():

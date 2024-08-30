@@ -4,7 +4,6 @@
     import type { TournamentSquad } from '$lib/types/tournament-squad';
     import SquadTournamentFields from "./SquadTournamentFields.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
-
     
     export let tournament: Tournament;
     export let is_privileged: boolean;
