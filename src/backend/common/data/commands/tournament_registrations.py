@@ -262,6 +262,11 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Tournament not found", status=400)
+                game = row[0]
             where_clauses = ["tournament_id = ?"]
             variable_parameters = [self.tournament_id]
             # get only squads which have not withdrawn from the tournament
@@ -328,6 +333,11 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Tournament not found", status=400)
+                game = row[0]
             where_clauses = ["t.tournament_id = ?"]
             variable_parameters = [self.tournament_id]
             if self.hosts_only:
@@ -369,6 +379,11 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
     
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Tournament not found", status=400)
+                game = row[0]
             # get squads that the player is either in or has been invited to
             async with db.execute(f"""SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads s
                                   WHERE s.tournament_id = ? AND EXISTS (
@@ -413,12 +428,10 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                                 WHERE p2.squad_id = t.squad_id AND p2.player_id = ?
                             )
                         )"""
-            print(fc_query)
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, game, fc, is_verified, is_primary, description = row
-                    print(fc)
                     player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
 
             details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, list(squads.values()), None)
@@ -441,6 +454,11 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Tournament not found", status=400)
+                game = row[0]
             async with db.execute("""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, p.discord_id
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
