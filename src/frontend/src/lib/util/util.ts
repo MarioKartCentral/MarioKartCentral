@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Color } from '$lib/types/colors';
 import type { Tournament } from '$lib/types/tournament';
-import type { TournamentSquad } from '$lib/types/tournament-squad';
-import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
 import type { PlacementOrganizer } from '$lib/types/placement-organizer';
 
 export function check_registrations_open(tournament: Tournament) {
@@ -20,40 +18,6 @@ export function check_registrations_open(tournament: Tournament) {
     return false;
   }
   return true;
-}
-
-export async function unregister(
-  registration: MyTournamentRegistration,
-  tournament: Tournament,
-  squad: TournamentSquad | null = null,
-) {
-  if (!registration.player) {
-    return;
-  }
-  if (registration.player.is_squad_captain && squad && squad.players.length > 1) {
-    alert('Please unregister this squad or set another player as captain before unregistering for this tournament');
-    return;
-  }
-  const conf = window.confirm('Are you sure you would like to unregister for this tournament?');
-  if (!conf) {
-    return;
-  }
-  const payload = {
-    squad_id: registration.player.squad_id,
-  };
-  console.log(payload);
-  const endpoint = `/api/tournaments/${tournament.id}/unregister`;
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const result = await response.json();
-  if (response.status < 300) {
-    window.location.reload();
-  } else {
-    alert(`Failed to unregister: ${result['title']}`);
-  }
 }
 
 export function sort_placement_list(a: PlacementOrganizer, b: PlacementOrganizer) {

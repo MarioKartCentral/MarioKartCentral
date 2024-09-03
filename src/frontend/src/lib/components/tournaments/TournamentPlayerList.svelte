@@ -35,7 +35,7 @@
     return players.filter((p) => !p.is_invite);
   }
 
-  export async function unregisterPlayer(player: TournamentPlayer) {
+  async function unregisterPlayer(player: TournamentPlayer) {
     const conf = window.confirm(`Are you sure you would like to unregister ${player.name} from this tournament?`);
     if (!conf) {
       return;
