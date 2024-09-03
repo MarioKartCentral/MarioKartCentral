@@ -1,4 +1,4 @@
-import type { FriendCode } from "./friend-code";
+import type { FriendCode } from './friend-code';
 
 export type TournamentPlayer = {
   id: number;

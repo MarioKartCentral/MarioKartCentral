@@ -12,6 +12,7 @@
   import { check_registrations_open } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import EditPlayerRegistration from './registration/EditPlayerRegistration.svelte';
+  import FriendCodeDisplay from '../common/FriendCodeDisplay.svelte';
 
   export let tournament: Tournament;
   export let players: TournamentPlayer[];
@@ -220,7 +221,7 @@
         {/if}
         <td class="mobile-hide">
           {#if player.friend_codes.length > 0}
-            {player.friend_codes[0]}
+            <FriendCodeDisplay friend_codes={player.friend_codes} selected_fc_id={player.selected_fc_id}/>
           {/if}
         </td>
         {#if tournament.host_status_required && exclude_invites}
