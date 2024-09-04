@@ -64,6 +64,9 @@
     if (data.use_series_logo) {
       data.logo = null;
     }
+    if(data.game !== "mkw" || !data.teams_allowed) {
+      data.bagger_clause_enabled = false;
+    }
     update_function();
   }
 </script>
@@ -227,6 +230,19 @@
       </div>
       {#if data.teams_allowed}
         <div class="indented">
+          {#if data.game === "mkw"}
+            <div class="option">
+              <div>
+                <label for="bagger_clause_enabled">Enable Bagger Clause? (this cannot be changed)</label>
+              </div>
+              <div>
+                <select name="bagger_clause_enabled" bind:value={data.bagger_clause_enabled} on:change={updateData} disabled={is_edit}>
+                  <option value={false}>No</option>
+                  <option value={true}>Yes</option>
+                </select>
+              </div>
+            </div>
+          {/if}
           <div class="option">
             <div>
               <label for="teams_only">Teams only? (this cannot be changed)</label>

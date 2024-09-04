@@ -9,6 +9,11 @@
   background-color: #bd8000;
   border: 1px solid #905f00;
 }
+.bagger_badge {
+  font-weight: 700;
+  background-color: #00bd6e;
+  border: 1px solid #047942;
+}
 .game_mkt_badge {
   background-color: #a1385d;
   border: 1px solid #8e1643;

@@ -3,6 +3,7 @@
     import CaptainBadge from "$lib/components/badges/CaptainBadge.svelte";
     import { page } from "$app/stores";
     import RepresentativeBadge from "$lib/components/badges/RepresentativeBadge.svelte";
+    import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
     export let player: TournamentPlayer;
 </script>
@@ -15,6 +16,9 @@
         <CaptainBadge/>
     {:else if player.is_representative}
         <RepresentativeBadge/>
+    {/if}
+    {#if player.is_bagger_clause}
+        <BaggerBadge/>
     {/if}
 </div>
 

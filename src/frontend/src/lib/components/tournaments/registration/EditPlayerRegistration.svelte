@@ -24,6 +24,7 @@
         let can_host = formData.get('can_host');
         let is_squad_captain = formData.get('is_squad_captain');
         let is_representative = formData.get('is_representative');
+        let is_bagger_clause = formData.get('is_bagger_clause');
         const payload = {
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
@@ -33,7 +34,8 @@
             is_squad_captain: is_squad_captain !== null ? is_squad_captain === "true" : null,
             is_invite: Boolean(player.is_invite),
             is_checked_in: Boolean(player.is_checked_in),
-            is_representative: is_representative !== null ? is_representative === "true" : null
+            is_representative: is_representative !== null ? is_representative === "true" : null,
+            is_bagger_clause: is_bagger_clause !== null ? is_bagger_clause === "true" : null,
         };
         const endpoint = `/api/tournaments/${tournament.id}/editRegistration`;
         console.log(payload);
@@ -103,6 +105,17 @@
                             <label for="is_representative">Team representative?</label>
                         </span>
                         <select name="is_representative" value={Boolean(player.is_representative)} required>
+                            <option value={false}>No</option>
+                            <option value={true}>Yes</option>
+                        </select>
+                    </div>
+                {/if}
+                {#if tournament.bagger_clause_enabled}
+                    <div class="item">
+                        <span class="item-label">
+                            <label for="is_bagger_clause">Bagging clause?</label>
+                        </span>
+                        <select name="is_bagger_clause" value={Boolean(player.is_bagger_clause)} required>
                             <option value={false}>No</option>
                             <option value={true}>Yes</option>
                         </select>

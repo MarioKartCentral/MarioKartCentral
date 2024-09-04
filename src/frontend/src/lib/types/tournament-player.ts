@@ -16,4 +16,5 @@ export type TournamentPlayer = {
   is_squad_captain: boolean;
   is_representative: boolean;
   is_invite: boolean;
+  is_bagger_clause: boolean;
 };

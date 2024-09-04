@@ -9,6 +9,7 @@ class RegisterTeamRequestData:
     captain_player: int
     roster_ids: list[int]
     representative_ids: list[int]
+    bagger_ids: list[int]
 
 @dataclass
 class RegisterPlayerRequestData:
@@ -24,6 +25,7 @@ class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     is_invite: bool
     is_checked_in: bool
     is_representative: bool
+    is_bagger_clause: bool
 
 @dataclass
 class EditMyRegistrationRequestData():
@@ -39,6 +41,7 @@ class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
     is_invite: bool
     is_checked_in: bool | None
     is_representative: bool | None
+    is_bagger_clause: bool | None
 
 @dataclass
 class TournamentPlayerDetails():

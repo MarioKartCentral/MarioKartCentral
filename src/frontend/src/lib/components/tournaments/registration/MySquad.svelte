@@ -21,6 +21,7 @@
   let edit_squad_dialog: Dialog;
 
   let invite_player: PlayerInfo | null = null;
+  let invite_as_bagger = false;
 
   let registered_players = squad.players.filter((p) => !p.is_invite);
   let invited_players = squad.players.filter((p) => p.is_invite);
@@ -42,6 +43,7 @@
       squad_id: my_player.squad_id,
       player_id: player.id,
       is_representative: false,
+      is_bagger_clause: invite_as_bagger
     };
     const endpoint = `/api/tournaments/${tournament.id}/invitePlayer`;
     console.log(payload);
@@ -133,14 +135,27 @@
   <!-- If registrations are open and our squad is not full and we are the squad captain -->
   {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
     (!tournament.max_squad_size || squad.players.length < tournament.max_squad_size)}
-    <div><b>Invite players</b></div>
-    <PlayerSearch
-      bind:player={invite_player}
-      game={tournament.game}
-      squad_id={tournament.team_members_only ? my_player.squad_id : null}
-    />
+    <div class="section">
+      <div><b>Invite players</b></div>
+      <PlayerSearch
+        bind:player={invite_player}
+        game={tournament.game}
+        squad_id={tournament.team_members_only ? my_player.squad_id : null}
+      />
+    </div>
     {#if invite_player}
-      <div>
+      {#if tournament.bagger_clause_enabled}
+        <div class="section">
+          <label for="invite_as_bagger">
+            Bagger?
+          </label>
+          <select name="invite_as_bagger" bind:value={invite_as_bagger}>
+            <option value={false}>No</option>
+            <option value={true}>Yes</option>
+          </select>
+        </div>
+      {/if}
+      <div class="section">
         <Button on:click={() => invitePlayer(invite_player)}>Invite Player</Button>
       </div>
     {/if}
@@ -164,3 +179,9 @@
     </div>
   </form>
 </Dialog>
+
+<style>
+  div.section {
+    margin: 10px 0;
+  }
+</style>

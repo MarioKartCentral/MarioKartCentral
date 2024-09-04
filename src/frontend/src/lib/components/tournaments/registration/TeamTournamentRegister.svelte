@@ -22,7 +22,9 @@
 
   let captain_player: RosterPlayer | null = null;
   let selected_rep: RosterPlayer | null = null;
+  let selected_bagger: RosterPlayer | null = null;
   let representatives: RosterPlayer[] = [];
+  let baggers: RosterPlayer[] = [];
 
   let squad_color = 1;
 
@@ -30,6 +32,8 @@
   $: checkCaptain(selected_rosters);
   $: all_players = selected_rosters.flatMap((r) => r.players);
   $: unselected_players = all_players.filter((p) => !representatives.includes(p) && p !== captain_player);
+  $: non_baggers = all_players.filter((p) => !baggers.includes(p))
+  $: can_register = captain_player && !(tournament.min_representatives && representatives.length + 1 < tournament.min_representatives)
 
   onMount(async () => {
     const res = await fetch(
@@ -99,6 +103,19 @@
     representatives = representatives.filter((r) => r.player_id !== player.player_id);
   }
 
+  function selectBagger(player: RosterPlayer | null) {
+    if(!player) {
+      return;
+    }
+    baggers.push(player);
+    baggers = baggers;
+    selected_bagger = null;
+  }
+
+  function removeBagger(player: RosterPlayer) {
+    baggers = baggers.filter((b) => b.player_id !== player.player_id);
+  }
+
   async function register() {
     const payload = {
       squad_color: squad_color,
@@ -107,6 +124,7 @@
       captain_player: captain_player?.player_id,
       roster_ids: selected_rosters.map((r) => r.id),
       representative_ids: representatives.map((r) => r.player_id),
+      bagger_ids: baggers.map((r) => r.player_id)
     };
     const endpoint = `/api/tournaments/${tournament.id}/registerTeam`;
     console.log(payload);
@@ -127,7 +145,7 @@
 </script>
 
 {#if check_registrations_open(tournament) && rosters.length}
-<div class="container">
+<div class="team_register">
   <div>
     <b>Register Team</b>
   </div>
@@ -180,7 +198,7 @@
           </div>
           {#each representatives as player}
             <div>
-              <Flag country_code={captain_player.country_code}/>
+              <Flag country_code={player.country_code}/>
               {player.name}
               <CancelButton on:click={() => removeRep(player)}/>
             </div>
@@ -200,7 +218,38 @@
             {/each}
           </select>
         </div>
-      {:else}
+      {/if}
+      {#if tournament.bagger_clause_enabled}
+        {#if non_baggers.length}
+          <div class="section">
+            <div>
+              Select bagger players
+            </div>
+            <select bind:value={selected_bagger} on:change={() => selectBagger(selected_bagger)}>
+              {#each non_baggers as player}
+                <option value={player}>
+                  {player.name}
+                </option>
+              {/each}
+            </select>
+          </div>
+        {/if}
+        {#if baggers.length}
+          <div class="section">
+            <div>
+              <b>Baggers</b>
+            </div>
+            {#each baggers as player}
+              <div>
+                <Flag country_code={player.country_code}/>
+                {player.name}
+                <CancelButton on:click={() => removeBagger(player)}/>
+              </div>
+            {/each}
+          </div>
+        {/if}
+      {/if}
+      {#if can_register}
         <Button on:click={register}>Register</Button>
       {/if}
     {:else}
@@ -220,5 +269,8 @@
 <style>
   .section {
     margin: 15px 0;
+  }
+  .team_register {
+    margin-bottom: 15px;
   }
 </style>
