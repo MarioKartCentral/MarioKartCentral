@@ -198,6 +198,10 @@ class Tournament(TableModel):
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
+    bagger_clause_enabled: bool
+    use_series_ruleset: bool
+    organizer: str | None
+    location: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -237,7 +241,11 @@ class Tournament(TableModel):
             is_deleted BOOLEAN NOT NULL,
             show_on_profiles BOOLEAN NOT NULL,
             require_single_fc BOOLEAN NOT NULL,
-            min_representatives INTEGER
+            min_representatives INTEGER,
+            bagger_clause_enabled BOOLEAN NOT NULL,
+            use_series_ruleset BOOLEAN DEFAULT 0 NOT NULL,
+            organizer TEXT,
+            location TEXT
             )"""
 
 @dataclass

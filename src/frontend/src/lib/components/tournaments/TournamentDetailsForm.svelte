@@ -78,7 +78,7 @@
         name="tournament_name"
         class="tournament_name"
         type="text"
-        bind:value={data.tournament_name}
+        bind:value={data.name}
         minlength="1"
         required
       />

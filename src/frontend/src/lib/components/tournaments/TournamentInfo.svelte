@@ -45,10 +45,10 @@
   </div>
   <div class="centered">
     {#if tournament.logo}
-      <img src={tournament.logo} alt={tournament.tournament_name} />
+      <img src={tournament.logo} alt={tournament.name} />
     {/if}
     <div class="name">
-      {tournament.tournament_name}
+      {tournament.name}
     </div>
     <div class="badges">
       <GameBadge game={tournament.game}/>

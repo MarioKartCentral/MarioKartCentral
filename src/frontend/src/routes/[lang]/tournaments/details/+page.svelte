@@ -14,7 +14,7 @@
   let id = 0;
 
   let tournament: Tournament;
-  $: tournament_name = tournament ? `${tournament.tournament_name}` : 'Tournaments';
+  $: tournament_name = tournament ? `${tournament.name}` : 'Tournaments';
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');

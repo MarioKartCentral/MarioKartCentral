@@ -20,7 +20,7 @@
 
   let data: CreateTemplate = {
     template_name: '',
-    tournament_name: '',
+    name: '',
     series_id: null,
     date_start: 0,
     date_end: 0,
@@ -55,9 +55,11 @@
     registration_deadline: null,
     is_viewable: true,
     is_public: true,
+    is_deleted: false,
     show_on_profiles: true,
     series_stats_include: false,
     verified_fc_required: false,
+    bagger_clause_enabled: false
   };
 
   function updateData() {
