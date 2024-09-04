@@ -27,8 +27,8 @@ class CreateTournamentCommand(Command[None]):
             raise Problem('Team tournaments must require a squad tag/name', status=400)
         if not b.series_id and b.use_series_logo:
             raise Problem('Cannot use series logo if no series is selected', status=400)
-        if b.bagger_clause_enabled and not (b.game == 'mkw' and b.teams_allowed):
-            raise Problem('Game must be set to MKW and teams must be enabled to use bagger clause', status=400)
+        if b.bagger_clause_enabled and not (b.game == 'mkw' and b.is_squad):
+            raise Problem('Game must be set to MKW and it must be a squad tournament to use bagger clause', status=400)
 
         # store minimal data about each tournament in the SQLite DB
         async with db_wrapper.connect() as db:
@@ -85,8 +85,8 @@ class EditTournamentCommand(Command[None]):
                 raise Problem('Team tournaments must require a squad tag/name', status=400)
             if not b.series_id and b.use_series_logo:
                 raise Problem('Cannot use series logo if no series is selected', status=400)
-            if b.bagger_clause_enabled and not (game == 'mkw' and b.teams_allowed):
-                raise Problem('Game must be set to MKW and teams must be enabled to use bagger clause', status=400)
+            if b.bagger_clause_enabled and not (game == 'mkw' and is_squad):
+                raise Problem('Game must be set to MKW and it must be a squad tournament to use bagger clause', status=400)
             cursor = await db.execute("""UPDATE tournaments
                 SET name = ?,
                 series_id = ?,

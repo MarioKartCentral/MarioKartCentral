@@ -18,6 +18,7 @@ class CreateSquadRequestData:
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class ForceCreateSquadRequestData(CreateSquadRequestData):

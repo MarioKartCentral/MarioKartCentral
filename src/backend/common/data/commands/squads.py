@@ -16,6 +16,7 @@ class CreateSquadCommand(Command[None]):
     captain_player_id: int # captain of the squad
     tournament_id: int
     is_checked_in: bool
+    is_bagger_clause: bool
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
@@ -92,7 +93,7 @@ class CreateSquadCommand(Command[None]):
                         missing_rosters = [i for i in self.roster_ids if i not in roster_permissions]
                         raise Problem(f"Missing permissions for following rosters: {missing_rosters}")
                     
-            captain_is_bagger = self.captain_player_id in self.bagger_ids
+            captain_is_bagger = self.is_bagger_clause or self.captain_player_id in self.bagger_ids
             # check if player has already registered for the tournament
             async with db.execute("SELECT squad_id FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0 AND is_bagger_clause = ?", 
                                   (self.captain_player_id, self.tournament_id, captain_is_bagger)) as cursor:
@@ -146,7 +147,7 @@ class CreateSquadCommand(Command[None]):
                 async with db.execute(players_query) as cursor:
                     rows = await cursor.fetchall()
                     valid_players = set([row[0] for row in rows if row[0] not in already_registered_players])
-                    
+
                 queries_parameters: list[Iterable[Any]] = []
                 for p in valid_players:
                     if p == self.captain_player_id:

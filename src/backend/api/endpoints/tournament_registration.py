@@ -18,7 +18,7 @@ async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSO
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, player_id, player_id, tournament_id, 
-        False, body.mii_name, body.can_host, body.selected_fc_id, [], [], [], admin=False)
+        False, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, [], [], [], admin=False)
     await handle(command)
     return JSONResponse({})
 
@@ -29,7 +29,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, player_id, body.captain_player, tournament_id,
-                                 False, None, False, None, body.roster_ids, body.representative_ids, body.bagger_ids, admin=False)
+                                 False, False, None, False, None, body.roster_ids, body.representative_ids, body.bagger_ids, admin=False)
     await handle(command)
     return JSONResponse({})
 
@@ -38,7 +38,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
 async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.captain_player, body.captain_player, tournament_id,
-                                 False, None, False, None, body.roster_ids, body.representative_ids, body.bagger_ids, admin=True)
+                                 False, False, None, False, None, body.roster_ids, body.representative_ids, body.bagger_ids, admin=True)
     await handle(command)
     return JSONResponse({})
 
@@ -48,7 +48,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, body.player_id, tournament_id, 
-        False, body.mii_name, body.can_host, body.selected_fc_id, body.roster_ids, body.representative_ids, body.bagger_ids, admin=True)
+        False, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, body.roster_ids, body.representative_ids, body.bagger_ids, admin=True)
     await handle(command)
     return JSONResponse({})
 
