@@ -16,14 +16,14 @@
 <div class="container">
   <!-- <div>{tournament.id}</div> -->
   <div class="name">
-    <h3><a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">{tournament.tournament_name}</a></h3>
+    <h3><a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">{tournament.name}</a></h3>
   </div>
   <GameBadge game={tournament.game}/>
   <ModeBadge mode={tournament.mode}/>
   <TypeBadge type={tournament_type}/>
   <div>{months[date_start.getMonth()]} {date_start.getDate()}-{months[date_end.getMonth()]} {date_end.getDate()}</div>
   {#if tournament.logo != null}
-    <div><img src={tournament.logo} alt={tournament.tournament_name} /></div>
+    <div><img src={tournament.logo} alt={tournament.name} /></div>
   {/if}
   {#if tournament.series_id != null}
     <div><a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">Series {tournament.series_id} - {tournament.series_name}</a></div>

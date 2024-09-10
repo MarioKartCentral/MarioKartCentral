@@ -16,6 +16,10 @@ class SeriesRequestData():
     ruleset: str
     organizer: str
     location: str | None
+
+@dataclass
+class EditSeriesRequestData(SeriesRequestData):
+    series_id: int
     
 @dataclass
 class Series():

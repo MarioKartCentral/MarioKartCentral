@@ -4,8 +4,7 @@
   import Table from '$lib/components/common/Table.svelte';
   import type { TeamEditRequest } from '$lib/types/team-edit-request';
   import type { RosterEditRequest } from '$lib/types/roster-edit-request';
-  import { permissions } from '$lib/util/util';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -13,9 +12,16 @@
   import ArrowRight from '$lib/components/common/ArrowRight.svelte';
   import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   let team_requests: TeamEditRequest[] = [];
   let roster_requests: RosterEditRequest[] = [];
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     const team_res = await fetch(`/api/registry/teams/changeRequests`);
@@ -115,7 +121,7 @@
   }
 </script>
 
-<PermissionCheck permission={permissions.manage_teams}>
+{#if check_permission(user_info, permissions.manage_teams)}
   <Section header="Pending Team Edit Requests">
     {#if team_requests.length}
     <Table>
@@ -233,7 +239,7 @@
     {/if}
     
   </Section>
-</PermissionCheck>
+{/if}
 
 <style>
   .flex {

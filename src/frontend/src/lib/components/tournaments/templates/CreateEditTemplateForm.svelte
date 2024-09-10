@@ -6,9 +6,10 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import type { TournamentTemplate } from '$lib/types/tournaments/create/tournament-template';
-  import { series_permissions } from '$lib/util/util';
-  import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import { check_series_permission, series_permissions } from '$lib/util/permissions';
 
   export let template_id: number | null = null;
   export let is_edit = false;
@@ -19,7 +20,7 @@
 
   let data: CreateTemplate = {
     template_name: '',
-    tournament_name: '',
+    name: '',
     series_id: null,
     date_start: 0,
     date_end: 0,
@@ -54,9 +55,11 @@
     registration_deadline: null,
     is_viewable: true,
     is_public: true,
+    is_deleted: false,
     show_on_profiles: true,
     series_stats_include: false,
     verified_fc_required: false,
+    bagger_clause_enabled: false
   };
 
   function updateData() {
@@ -64,6 +67,11 @@
   }
 
   let data_retrieved = false;
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     data.series_id = series_id;
@@ -118,10 +126,10 @@
 </script>
 
 {#if data_retrieved}
-  <SeriesPermissionCheck
-    series_id={data.series_id}
-    permission={is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template}
-  >
+  {#if check_series_permission(user_info,
+    is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template,
+    data.series_id
+  )}
     <form method="POST" on:submit|preventDefault={is_edit ? editTemplate : createTemplate}>
       <Section header="Template Details">
         <div>
@@ -138,5 +146,5 @@
         </Button>
       </Section>
     </form>
-  </SeriesPermissionCheck>
+  {/if}
 {/if}

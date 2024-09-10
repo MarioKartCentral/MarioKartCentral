@@ -4,7 +4,7 @@ from typing import List
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
-from common.auth import team_permissions
+from common.auth import team_permissions, team_roles
 
 
 @save_to_command_log
@@ -66,6 +66,24 @@ class GetTeamInfoCommand(Command[Team]):
                     raise Problem('Team not found', status=404)
                 team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical = row
                 team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [], [])
+
+            # use a set for O(1) lookup
+            managers = set()
+            leaders = set()
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, tr.name FROM players p
+                JOIN users u ON u.player_id = p.id
+                JOIN user_team_roles ur ON ur.user_id = u.id
+                JOIN team_roles tr ON tr.id = ur.role_id
+                WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, role_name = row
+                    if role_name == team_roles.MANAGER:
+                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                        managers.add(player_id)
+                    else:
+                        leaders.add(player_id)
+                #team.managers = [Player(*row) for row in rows]
             
             # get all rosters for our team
             rosters: list[TeamRoster] = []
@@ -129,7 +147,9 @@ class GetTeamInfoCommand(Command[Team]):
             for member in team_members:
                 curr_roster = roster_dict[member.roster_id]
                 p = player_dict[member.player_id]
-                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, member.join_date,
+                is_manager = p.player_id in managers
+                is_leader = p.player_id in leaders
+                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, member.join_date, is_manager, is_leader,
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
 
@@ -140,12 +160,8 @@ class GetTeamInfoCommand(Command[Team]):
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.invites.append(curr_player) 
 
-            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id FROM players p
-                JOIN users u ON u.player_id = p.id
-                JOIN user_team_roles ur ON ur.user_id = u.id
-                WHERE ur.team_id = ? AND ur.role_id = 0""", (self.team_id,)) as cursor:
-                rows = await cursor.fetchall()
-                team.managers = [Player(*row) for row in rows]
+
+            
             team.rosters = rosters
             return team
 
@@ -413,7 +429,7 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Player is already on this roster", status=400)
-            async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
+            async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE player_id = ? AND roster_id = ? AND approval_status != 'approved'", (self.player_id, self.roster_id)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 num_invites = row[0]
@@ -517,6 +533,18 @@ class LeaveRosterCommand(Command[None]):
             # players leaving a roster goes into the transfer history too
             await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
                              VALUES (?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved"))
+            # get all team tournament rosters the player is in where the tournament hasn't ended yet
+            async with db.execute("""SELECT p.squad_id FROM tournament_players p
+                                JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+                                JOIN tournaments t ON p.tournament_id = t.id
+                                WHERE p.player_id = ? AND s.roster_id = ?
+                                AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
+                                (self.player_id, self.roster_id, leave_date, True, True)) as cursor:
+                rows = await cursor.fetchall()
+                squad_ids: list[int] = [row[0] for row in rows]
+            # finally remove the player from all the tournaments they shouldn't be in
+            await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (self.player_id,))
+            await db.commit()
 
 @save_to_command_log
 @dataclass
@@ -592,9 +620,10 @@ class ApproveTransferCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False) for tournament_id, squad_id in squads.items()]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, False) for tournament_id, squad_id in squads.items()]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                                 is_representative, is_bagger_clause)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log
@@ -991,9 +1020,10 @@ class ForceTransferPlayerCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False) for tournament_id, squad_id in squads.items()]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, False) for tournament_id, squad_id in squads.items()]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+                                 is_representative, is_bagger_clause)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log
@@ -1186,6 +1216,28 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     rosters.append(roster)
 
             # get players for our rosters
+
+            # use a set for O(1) lookup
+            managers = set()
+            leaders = set()
+            async with db.execute(f"""SELECT p.id, tr.name FROM players p
+                JOIN users u ON u.player_id = p.id
+                JOIN user_team_roles ur ON ur.user_id = u.id
+                JOIN team_roles tr ON tr.id = ur.role_id
+                JOIN teams t ON t.id = ur.team_id
+                JOIN team_rosters r ON r.team_id = t.id
+                WHERE (tr.name = ? OR tr.name = ?)
+                AND r.id IN (
+                    SELECT tr.id {rosters_query}
+                )""", (team_roles.MANAGER, team_roles.LEADER, *variable_parameters)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, role_name = row
+                    if role_name == team_roles.MANAGER:
+                        managers.add(player_id)
+                    else:
+                        leaders.add(player_id)
+
             async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, p.discord_id, m.roster_id, m.join_date
                                 FROM players p
                                 JOIN team_members m ON p.id = m.player_id
@@ -1195,7 +1247,9 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                 )""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
+                    is_manager = player_id in managers
+                    is_leader = player_id in leaders
                     player_id, name, country_code, is_banned, discord_id, roster_id, join_date = row
-                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, discord_id, join_date, [])
+                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, discord_id, join_date, is_manager, is_leader, [])
                     roster_dict[roster_id].append(player)
             return rosters

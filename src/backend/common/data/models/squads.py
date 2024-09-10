@@ -17,12 +17,14 @@ class CreateSquadRequestData:
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class ForceCreateSquadRequestData(CreateSquadRequestData):
     player_id: int
     roster_ids: list[int]
     representative_ids: list[int]
+    bagger_ids: list[int]
 
 @dataclass
 class EditMySquadRequestData:
@@ -40,6 +42,7 @@ class InvitePlayerRequestData:
     squad_id: int
     player_id: int
     is_representative: bool = False
+    is_bagger_clause: bool = False
 
 @dataclass
 class KickSquadPlayerRequestData:
@@ -69,7 +72,9 @@ class StaffUnregisterPlayerRequestData():
 @dataclass
 class SquadPlayerDetails(TournamentPlayerDetails):
     is_squad_captain: bool
+    is_representative: bool
     is_invite: bool
+    is_bagger_clause: bool
 
 @dataclass
 class TournamentSquadDetails():

@@ -1,6 +1,6 @@
 export type TournamentListItem = {
   id: number;
-  tournament_name: string;
+  name: string;
   game: string;
   mode: string;
   date_start: number;

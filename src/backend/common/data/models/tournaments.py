@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from common.data.models import Game, GameMode, TournamentPlacementDetailed
+from common.data.models.common import Game, GameMode
 
 @dataclass
-class CreateTournamentRequestData():
-    tournament_name: str
+class TournamentDBFields():
+    name: str
     game: Game
     mode: GameMode
     series_id: int | None
@@ -35,14 +35,21 @@ class CreateTournamentRequestData():
     verified_fc_required: bool
     is_viewable: bool
     is_public: bool
+    is_deleted: bool
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
-    # s3-only fields below
-    ruleset: str
+    bagger_clause_enabled: bool
     use_series_ruleset: bool
     organizer: str | None
     location: str | None
+
+@dataclass
+class TournamentS3Fields():
+    ruleset: str
+
+@dataclass
+class CreateTournamentRequestData(TournamentDBFields, TournamentS3Fields): pass
 
 @dataclass
 class GetTournamentRequestData(CreateTournamentRequestData):
@@ -53,10 +60,9 @@ class GetTournamentRequestData(CreateTournamentRequestData):
     series_description: str | None = None
     series_ruleset: str | None = None
     
-
 @dataclass
 class EditTournamentRequestData():
-    tournament_name: str
+    name: str
     series_id: int | None
     registrations_open: bool
     date_start: int
@@ -87,16 +93,17 @@ class EditTournamentRequestData():
     is_deleted: bool
     show_on_profiles: bool
     min_representatives: int | None
-    # s3-only fields below
-    ruleset: str
+    bagger_clause_enabled: bool
     use_series_ruleset: bool
     organizer: str | None
     location: str | None
+    # s3-only fields below
+    ruleset: str
 
 @dataclass
 class TournamentDataMinimal():
     id: int
-    tournament_name: str
+    name: str
     game: Game
     mode: GameMode
     date_start: int

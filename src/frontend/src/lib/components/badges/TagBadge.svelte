@@ -11,10 +11,3 @@
 <Badge badgeClass="tag_badge" style="background-color:{color_val};border: 1px solid {color_val}">
   {tag ? tag : "-"}
 </Badge>
-
-<style>
-  :global(.tag_badge) {
-    width: 60px;
-    font-weight: 700;
-  }
-</style>

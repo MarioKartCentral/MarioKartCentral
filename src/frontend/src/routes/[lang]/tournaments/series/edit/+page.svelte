@@ -1,12 +1,15 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { permissions, addPermission, setSeriesPerms, series_permissions } from '$lib/util/util';
-  import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import CreateEditTournamentSeriesForm from '$lib/components/tournaments/series/CreateEditTournamentSeriesForm.svelte';
   import { onMount } from 'svelte';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { check_series_permission, series_permissions } from '$lib/util/permissions';
 
-  setSeriesPerms();
-  addPermission(permissions.edit_series);
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let series_id: number | null;
 
@@ -17,7 +20,7 @@
 </script>
 
 {#if series_id}
-  <SeriesPermissionCheck {series_id} permission={series_permissions.edit_series}>
+  {#if check_series_permission(user_info, series_permissions.edit_series, series_id)}
     <CreateEditTournamentSeriesForm {series_id} is_edit={true} />
-  </SeriesPermissionCheck>
+  {/if}
 {/if}
