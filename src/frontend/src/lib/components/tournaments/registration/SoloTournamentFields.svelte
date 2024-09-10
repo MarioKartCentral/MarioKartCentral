@@ -1,6 +1,9 @@
 <script lang="ts">
   import type { FriendCode } from '$lib/types/friend-code';
   import type { Tournament } from '$lib/types/tournament';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
@@ -8,7 +11,10 @@
   export let mii_name: string | null = null;
   export let can_host = false;
 
-  $: console.log(tournament);
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 </script>
 
 {#if tournament.require_single_fc}
@@ -41,7 +47,8 @@
     
     <select name="can_host" value={Boolean(can_host)} required>
       <option value={false}>No</option>
-      <option value={true}>Yes</option>
+      <option value={true} disabled={!check_tournament_permission(user_info, tournament_permissions.register_host, tournament.id, 
+      tournament.series_id, true)}>Yes</option>
     </select>
   </div>
 {/if}

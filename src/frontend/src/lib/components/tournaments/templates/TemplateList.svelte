@@ -4,15 +4,20 @@
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
-  import { permissions, addPermission, series_permissions } from '$lib/util/util';
-  import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
+  import { check_series_permission, series_permissions } from '$lib/util/permissions';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+
   import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let series_id: number | null = null;
 
   let templates: TournamentTemplateMinimal[] = [];
-  addPermission(permissions.create_tournament_template);
-  addPermission(permissions.edit_tournament_template);
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     const series_var = series_id ? `?series_id=${series_id}` : '';
@@ -29,7 +34,7 @@
 
 <Section header="Templates">
   <div slot="header_content">
-    <SeriesPermissionCheck {series_id} permission={series_permissions.create_tournament_template}>
+    {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
       {#if series_id}
         <Button href="/{$page.params.lang}/tournaments/series/create_template?series_id={series_id}"
           >Create Template</Button
@@ -37,7 +42,7 @@
       {:else}
         <Button href="/{$page.params.lang}/tournaments/templates/create">Create Template</Button>
       {/if}
-    </SeriesPermissionCheck>
+    {/if}
     {#if series_id}
       <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
     {/if}
@@ -50,10 +55,10 @@
         </td>
         <td>
           <div class="settings">
-            <SeriesPermissionCheck {series_id} permission={series_permissions.edit_tournament_template}>
+            {#if check_series_permission(user_info, series_permissions.edit_tournament_template, series_id)}
               <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">Edit</Button>
-            </SeriesPermissionCheck>
-            <SeriesPermissionCheck {series_id} permission={series_permissions.create_tournament_template}>
+            {/if}
+            {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
               {#if series_id}
                 <Button
                   href="/{$page.params
@@ -65,7 +70,7 @@
                   >Duplicate</Button
                 >
               {/if}
-            </SeriesPermissionCheck>
+            {/if}
             <div>Delete</div>
           </div>
         </td>

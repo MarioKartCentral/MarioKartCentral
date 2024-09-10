@@ -6,12 +6,13 @@
   import type { UserInfo } from '$lib/types/user-info';
   import Notification from './Notification.svelte';
   import ModPanel from './ModPanel.svelte';
-  import { mod_panel_permissions } from '$lib/util/util';
+  import { mod_panel_permissions } from '$lib/util/permissions';
   import { Navbar, NavBrand, NavUl, NavLi, NavHamburger, Avatar, Button } from 'flowbite-svelte';
   import Dropdown from './common/Dropdown.svelte';
   import DropdownItem from './common/DropdownItem.svelte';
   import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline, GlobeSolid } from 'flowbite-svelte-icons';
   import AlertCount from './common/AlertCount.svelte';
+  import { check_permission, series_permissions } from '$lib/util/permissions';
   
   let notify: Notification;
 
@@ -102,7 +103,9 @@
       <Dropdown>
         <DropdownItem href="/{$page.params.lang}/tournaments">Tournament Listing</DropdownItem>
         <DropdownItem href="/{$page.params.lang}/tournaments/series">Tournament Series</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/tournaments/templates">Tournament Templates</DropdownItem>
+        {#if check_permission(user_info, series_permissions.create_tournament_template)}
+          <DropdownItem href="/{$page.params.lang}/tournaments/templates">Tournament Templates</DropdownItem>
+        {/if}
       </Dropdown>
       <NavLi href="/{$page.params.lang}/time-trials" class={checkSelectedNav('TIME TRIALS')}>{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
       <NavLi href="/{$page.params.lang}/lounge" class={checkSelectedNav('LOUNGE')}>{$LL.NAVBAR.LOUNGE()}</NavLi>
@@ -116,7 +119,7 @@
         <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">Recent Transactions</DropdownItem>
       </Dropdown>
       <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
-      {#if user_info.permissions.some((p) => mod_panel_permissions.includes(p))}
+      {#if mod_panel_permissions.some((p) => check_permission(user_info, p))}
         <ModPanel/>
       {/if}
     </NavUl>

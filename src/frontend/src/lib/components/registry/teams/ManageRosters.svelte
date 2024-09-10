@@ -2,13 +2,14 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import type { Team } from '$lib/types/team';
-    import { setTeamPerms, team_permissions } from '$lib/util/util';
-    import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
     import TeamRosterManage from '$lib/components/registry/teams/TeamRosterManage.svelte';
     import Section from '$lib/components/common/Section.svelte';
     import LL from '$i18n/i18n-svelte';
     import Button from '$lib/components/common/buttons/Button.svelte';
     import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+    import { user } from '$lib/stores/stores';
+    import type { UserInfo } from '$lib/types/user-info';
+    import { check_team_permission, team_permissions } from '$lib/util/permissions';
 
     export let is_mod = false;
   
@@ -16,7 +17,11 @@
     let team: Team;
     $: team_name = team ? team.name : 'Registry';
   
-    setTeamPerms();
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+      user_info = value;
+    });
   
     onMount(async () => {
       let param_id = $page.url.searchParams.get('id');
@@ -69,12 +74,12 @@
         <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</Button>
       </div>
     </Section>
-    <TeamPermissionCheck team_id={id} permission={team_permissions.manage_rosters}>
+    {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
       {#each team.rosters.filter((r) => r.approval_status !== 'denied') as roster}
         <TeamRosterManage {roster} {is_mod}/>
       {/each}
-    </TeamPermissionCheck>
-    <TeamPermissionCheck team_id={id} permission={team_permissions.create_rosters}>
+    {/if}
+    {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
       <Section header={$LL.TEAM_EDIT.NEW_ROSTER()}>
         <form method="post" on:submit|preventDefault={createRoster}>
             <GameModeSelect flex required/>
@@ -110,7 +115,7 @@
           </div>
         </form>
       </Section>
-    </TeamPermissionCheck>
+    {/if}
   {/if}
 
 <style>

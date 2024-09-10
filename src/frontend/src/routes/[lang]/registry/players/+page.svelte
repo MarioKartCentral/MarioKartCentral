@@ -69,16 +69,23 @@
       <Button type="submit">{$LL.PLAYER_LIST.SEARCH()}</Button>
     </div>
   </form>
-  {totalPlayers}
-  {$LL.PLAYER_LIST.PLAYERS()}
-  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
-  <PlayerList {players}/>
+  <div class="player_list">
+    {totalPlayers}
+    {$LL.PLAYER_LIST.PLAYERS()}
+    <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+    <PlayerList {players}/>
+  </div>
+  
 </Section>
 
 <style>
   .flex {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 5px;
+  }
+  .player_list {
+    margin-top: 10px;
   }
 </style>

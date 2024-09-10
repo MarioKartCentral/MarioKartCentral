@@ -12,7 +12,7 @@
   export let template_id: number | null = null;
   export let series_restrict = false;
   export let data: CreateTournament = {
-    tournament_name: '',
+    name: '',
     series_id: null,
     date_start: 0,
     date_end: 0,
@@ -47,9 +47,11 @@
     registration_deadline: null,
     is_viewable: true,
     is_public: true,
+    is_deleted: false,
     show_on_profiles: true,
     series_stats_include: false,
     verified_fc_required: false,
+    bagger_clause_enabled: false
   };
 
   let is_edit = tournament_id ? true : false; // if we specified a tournament id, assume we're editing that tournament

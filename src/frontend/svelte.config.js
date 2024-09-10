@@ -15,8 +15,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/tournaments/edit`,
     `/${locale}/tournaments/edit_placements`,
     `/${locale}/tournaments/edit_placements/raw`,
-    `/${locale}/tournaments/mod/edit`,
-    `/${locale}/tournaments/mod/templates/edit`,
+    `/${locale}/tournaments/manage_roles`,
     `/${locale}/tournaments/series`,
     `/${locale}/tournaments/series/create`,
     `/${locale}/tournaments/series/create_template`,
@@ -24,6 +23,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/tournaments/series/create_tournament/select_template`,
     `/${locale}/tournaments/series/details`,
     `/${locale}/tournaments/series/edit`,
+    `/${locale}/tournaments/series/manage_roles`,
     `/${locale}/tournaments/series/templates`,
     `/${locale}/tournaments/templates`,
     `/${locale}/tournaments/templates/create`,
@@ -44,6 +44,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/approve_teams`,
     `/${locale}/moderator/approve_team_edits`,
     `/${locale}/moderator/approve_transfers`,
+    `/${locale}/moderator/manage_user_roles`,
   ];
 }
 

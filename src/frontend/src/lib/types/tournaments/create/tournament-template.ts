@@ -1,7 +1,7 @@
 export type TournamentTemplate = {
   id: number;
   template_name: string;
-  tournament_name: string;
+  name: string;
   game: string;
   mode: string;
   series_id: number | null;

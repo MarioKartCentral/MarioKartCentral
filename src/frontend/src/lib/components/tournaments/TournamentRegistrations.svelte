@@ -5,6 +5,9 @@
   import { onMount } from 'svelte';
   import TournamentSquadList from './TournamentSquadList.svelte';
   import TournamentPlayerList from './TournamentPlayerList.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
 
   export let tournament: Tournament;
   let tournament_squads: TournamentSquad[];
@@ -12,6 +15,12 @@
   let registrations_loaded = false;
   let registration_count = 0;
   let setting = 'any';
+
+  let user_info: UserInfo;
+
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     const res = await fetch(`/api/tournaments/${tournament.id}/registrations`);
@@ -73,9 +82,13 @@
         {tournament.is_squad ? 'Squads' : 'Players'}
       </div>
       {#if tournament.is_squad}
-        <TournamentSquadList {tournament} squads={tournament_squads} />
+        <TournamentSquadList {tournament} squads={tournament_squads} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+          tournament.id, tournament.series_id
+        )}/>
       {:else}
-        <TournamentPlayerList {tournament} players={tournament_players} />
+        <TournamentPlayerList {tournament} players={tournament_players} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+          tournament.id, tournament.series_id
+        )}/>
       {/if}
     {:else}
       No {tournament.is_squad ? 'squad' : 'player'}s. Be the first to register!

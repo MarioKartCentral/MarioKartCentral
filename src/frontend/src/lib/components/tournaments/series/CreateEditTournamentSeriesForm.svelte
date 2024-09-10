@@ -12,6 +12,7 @@
   export let is_edit = false;
 
   let data: CreateTournamentSeries = {
+    series_id: null,
     series_name: '',
     url: null,
     organizer: 'MKCentral',
@@ -58,6 +59,7 @@
     }
   }
   async function editSeries() {
+    data.series_id = series_id;
     let payload = data;
     console.log(payload);
     const endpoint = `/api/tournaments/series/${series_id}/edit`;

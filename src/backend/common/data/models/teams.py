@@ -98,6 +98,8 @@ class RosterPlayerInfo():
     is_banned: bool
     discord_id: str
     join_date: int
+    is_manager: bool
+    is_leader: bool
     friend_codes: list[FriendCode]
 
 @dataclass

@@ -41,6 +41,7 @@
     let selected_fc_id = formData.get('selected_fc_id');
     let mii_name = formData.get('mii_name');
     let can_host = formData.get('can_host');
+    let is_bagger_clause = formData.get('is_bagger_clause');
     const payload = {
       squad_color: Number(squad_color),
       squad_name: squad_name,
@@ -48,6 +49,7 @@
       selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
       mii_name: mii_name,
       can_host: can_host === 'true',
+      is_bagger_clause: is_bagger_clause === 'true',
     };
     const endpoint = `/api/tournaments/${tournament.id}/createSquad`;
     console.log(payload);
@@ -69,6 +71,30 @@
 <form method="POST" on:submit|preventDefault={tournament.is_squad ? registerSquad : registerSolo}>
   <SquadTournamentFields {tournament} />
   <SoloTournamentFields {tournament} {friend_codes} />
+  {#if tournament.bagger_clause_enabled}
+    <div class="item">
+      <span class="item-label">
+        <label for="is_bagger_clause">Register as bagger?</label>
+      </span>
+      
+      <select name="is_bagger_clause" required>
+        <option value={false}>No</option>
+        <option value={true}>Yes</option>
+      </select>
+    </div>
+  {/if}
 
   <Button type="submit">Register</Button>
 </form>
+
+<style>
+  .item-label {
+    display: inline-block;
+    width: 150px;
+    font-weight: 525;
+  }
+  .item {
+    margin: 10px 0;
+  }
+</style>
+

@@ -6,6 +6,7 @@ from .db_admin import *
 from .friend_codes import *
 from .notifications import *
 from .players import *
+from .roles import *
 from .s3 import *
 from .squads import *
 from .teams import *

@@ -12,9 +12,15 @@
     display: inline;
   }
   .large {
+    min-width: 36px;
+    max-width: 36px;
+    min-height: 36px;
     max-height: 36px;
   }
   .small {
+    min-width: 26px;
+    max-width: 26px;
+    min-height: 26px;
     max-height: 26px;
   }
 </style>
