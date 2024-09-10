@@ -35,14 +35,14 @@ export function check_team_permission(
     if (accepted_perm) return true;
     if (check_denied_only) {
       const denied_perm = permissions.find((p) => p.name === permission && p.is_denied);
-      // if we have a denied team permission, it can be overridden by an accepted user permission,
+      // if we have a denied team permission, it can be overridden by an accepted global permission,
       // so we just run check_permission function with check_denied_only set to false
       if (denied_perm) {
         return check_permission(user_info, permission, false);
       }
     }
   }
-  // if we cant find a team permission, check user permissions last
+  // if we cant find a team permission, check global permissions last
   return check_permission(user_info, permission, check_denied_only);
 }
 
@@ -62,14 +62,14 @@ export function check_series_permission(
     if (accepted_perm) return true;
     if (check_denied_only) {
       const denied_perm = permissions.find((p) => p.name === permission && p.is_denied);
-      // if we have a denied series permission, it can be overridden by an accepted user permission,
+      // if we have a denied series permission, it can be overridden by an accepted global permission,
       // so we just run check_permission function with check_denied_only set to false
       if (denied_perm) {
         return check_permission(user_info, permission, false);
       }
     }
   }
-  // if we cant find a series permission, check user permissions last
+  // if we cant find a series permission, check global permissions last
   return check_permission(user_info, permission, check_denied_only);
 }
 

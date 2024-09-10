@@ -454,7 +454,7 @@ class GrantTeamRoleCommand(Command[None]):
                 if row:
                     raise Problem(f"Player already has role {self.role}", status=400)
             
-            # if we have the team_permissions.MANAGE_TEAM_ROLES user permission, bypass team role checks
+            # if we have the team_permissions.MANAGE_TEAM_ROLES global permission, bypass team role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
@@ -527,7 +527,7 @@ class GrantSeriesRoleCommand(Command[None]):
                 if row:
                     raise Problem(f"Player already has role {self.role}", status=400)
             
-            # if we have the series_permissions.MANAGE_SERIES_ROLES user permission, bypass series role checks
+            # if we have the series_permissions.MANAGE_SERIES_ROLES global permission, bypass series role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
@@ -600,7 +600,7 @@ class GrantTournamentRoleCommand(Command[None]):
                 if row:
                     raise Problem(f"Player already has role {self.role}", status=400)
             
-            # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES user permission, bypass series/tournament role checks
+            # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES global permission, bypass series/tournament role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
@@ -737,7 +737,7 @@ class RemoveTeamRoleCommand(Command[None]):
                 if not row:
                     raise Problem(f"Player does not have role {self.role}", status=400)
             
-            # if we have the team_permissions.MANAGE_TEAM_ROLES user permission, bypass team role checks
+            # if we have the team_permissions.MANAGE_TEAM_ROLES global permission, bypass team role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
@@ -805,7 +805,7 @@ class RemoveSeriesRoleCommand(Command[None]):
                 if not row:
                     raise Problem(f"Player does not have role {self.role}", status=400)
             
-            # if we have the series_permissions.MANAGE_SERIES_ROLES user permission, bypass team role checks
+            # if we have the series_permissions.MANAGE_SERIES_ROLES global permission, bypass team role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
@@ -873,7 +873,7 @@ class RemoveTournamentRoleCommand(Command[None]):
                 if not row:
                     raise Problem(f"Player does not have role {self.role}", status=400)
             
-            # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES user permission, bypass team role checks
+            # if we have the tournament_permissions.MANAGE_TOURNAMENT_ROLES global permission, bypass team role checks
             async with db.execute("""
                 SELECT EXISTS (
                     SELECT 1 FROM user_roles ur
