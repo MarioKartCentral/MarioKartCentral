@@ -227,47 +227,46 @@
         {#if tournament.host_status_required && exclude_invites}
           <td class="mobile-hide">{player.can_host ? 'Yes' : 'No'}</td>
         {/if}
-        {#if is_privileged}
+        
+        {#if is_privileged || my_player}
           <td>
-            <ChevronDownSolid class="cursor-pointer"/>
-            <Dropdown>
-              <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>Edit</DropdownItem>
-              <DropdownItem on:click={() => unregisterPlayer(player)}>Remove</DropdownItem>
-            </Dropdown>
-          </td>
-        {/if}
-        {#if my_player?.player_id === player.player_id}
-          <td>
-            <ChevronDownSolid class="cursor-pointer"/>
-            <Dropdown>
-              {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
-                (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
-                <DropdownItem on:click={() => edit_reg_dialog.open(player)}>Edit</DropdownItem>
-              {/if}
-              <DropdownItem on:click={unregister}>Unregister</DropdownItem>
-            </Dropdown>
-          </td>
-          
-        {:else if my_player?.is_squad_captain && my_player?.squad_id === player.squad_id && check_registrations_open(tournament)}
-          <td>
-            <ChevronDownSolid class="cursor-pointer"/>
-            <Dropdown>
-              <DropdownItem on:click={() => kickPlayer(player)}>
-                {player.is_invite ? "Retract Invite" : "Kick"}
-              </DropdownItem>
-              {#if !player.is_invite}
-                <DropdownItem on:click={() => makeCaptain(player)}>Make Captain</DropdownItem>
-                {#if tournament.teams_only}
-                  {#if !player.is_representative}
-                    <DropdownItem on:click={() => addRepresentative(player)}>Make Representative</DropdownItem>
-                  {:else}
-                    <DropdownItem on:click={() => removeRepresentative(player)}>Remove Representative</DropdownItem>
+            {#if is_privileged}
+              <ChevronDownSolid class="cursor-pointer"/>
+              <Dropdown>
+                <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>Edit</DropdownItem>
+                <DropdownItem on:click={() => unregisterPlayer(player)}>Remove</DropdownItem>
+              </Dropdown>
+            {:else if my_player?.player_id === player.player_id && check_registrations_open(tournament)}
+              <ChevronDownSolid class="cursor-pointer"/>
+              <Dropdown>
+                {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
+                  (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
+                  <DropdownItem on:click={() => edit_reg_dialog.open(player)}>Edit</DropdownItem>
+                {/if}
+                <DropdownItem on:click={unregister}>Unregister</DropdownItem>
+              </Dropdown>
+            {:else if my_player?.is_squad_captain && my_player?.squad_id === player.squad_id && check_registrations_open(tournament)}
+              <ChevronDownSolid class="cursor-pointer"/>
+              <Dropdown>
+                <DropdownItem on:click={() => kickPlayer(player)}>
+                  {player.is_invite ? "Retract Invite" : "Kick"}
+                </DropdownItem>
+                {#if !player.is_invite}
+                  <DropdownItem on:click={() => makeCaptain(player)}>Make Captain</DropdownItem>
+                  {#if tournament.teams_only}
+                    {#if !player.is_representative}
+                      <DropdownItem on:click={() => addRepresentative(player)}>Make Representative</DropdownItem>
+                    {:else}
+                      <DropdownItem on:click={() => removeRepresentative(player)}>Remove Representative</DropdownItem>
+                    {/if}
                   {/if}
                 {/if}
-              {/if}
-            </Dropdown>
+              </Dropdown>
+            {/if}
           </td>
+          
         {/if}
+        
       </tr>
     {/each}
   </tbody>

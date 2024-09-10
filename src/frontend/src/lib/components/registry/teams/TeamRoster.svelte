@@ -8,6 +8,7 @@
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import RosterPlayerName from './RosterPlayerName.svelte';
+    import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let roster: TeamRoster;
 
@@ -23,6 +24,27 @@
     day: 'numeric',
     hour12: true,
   };
+
+  async function leaveRoster() {
+    let conf = window.confirm(`Are you sure you want to leave the roster ${roster.name}?`);
+    if(!conf) return;
+    const payload = {
+      roster_id: roster.id
+    };
+    const endpoint = '/api/registry/teams/leave';
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.status < 300) {
+      window.location.reload();
+      alert('Successfully left roster');
+    } else {
+      alert(`Leaving roster failed: ${result['title']}`);
+    }
+  }
 </script>
 
 <div class="roster-container">
@@ -62,6 +84,9 @@
         {/each}
       </tbody>
     </Table>
+  {/if}
+  {#if roster.players.find((r) => r.player_id === user_info.player_id)}
+    <Button on:click={leaveRoster}>Leave Roster</Button>
   {/if}
 </div>
 

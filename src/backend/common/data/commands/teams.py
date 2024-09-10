@@ -429,7 +429,7 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Player is already on this roster", status=400)
-            async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE player_id = ? AND roster_id = ?", (self.player_id, self.roster_id)) as cursor:
+            async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE player_id = ? AND roster_id = ? AND approval_status != 'approved'", (self.player_id, self.roster_id)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 num_invites = row[0]
@@ -533,6 +533,18 @@ class LeaveRosterCommand(Command[None]):
             # players leaving a roster goes into the transfer history too
             await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
                              VALUES (?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved"))
+            # get all team tournament rosters the player is in where the tournament hasn't ended yet
+            async with db.execute("""SELECT p.squad_id FROM tournament_players p
+                                JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+                                JOIN tournaments t ON p.tournament_id = t.id
+                                WHERE p.player_id = ? AND s.roster_id = ?
+                                AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
+                                (self.player_id, self.roster_id, leave_date, True, True)) as cursor:
+                rows = await cursor.fetchall()
+                squad_ids: list[int] = [row[0] for row in rows]
+            # finally remove the player from all the tournaments they shouldn't be in
+            await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (self.player_id,))
+            await db.commit()
 
 @save_to_command_log
 @dataclass
