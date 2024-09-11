@@ -14,6 +14,8 @@ services:
       S3_ENDPOINT: http://s3-emulator:9000/
       API_ADMIN_EMAIL : ${API_ADMIN_EMAIL:-admin@admin.com}
       API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-1283454053937971304}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development

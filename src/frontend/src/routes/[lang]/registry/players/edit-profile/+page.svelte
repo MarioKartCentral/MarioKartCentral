@@ -78,6 +78,10 @@
 {/if}
 </Section>
 
+<Section header="Discord">
+  <Button href="/api/user/link_discord">Link</Button>
+</Section>
+
 <Section header="Edit Profile">
 {#if user_settings}
 <form method="post" on:submit|preventDefault={editProfile}>
