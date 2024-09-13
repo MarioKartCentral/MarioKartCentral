@@ -79,6 +79,32 @@ class Session(TableModel):
             session_id TEXT PRIMARY KEY NOT NULL,
             user_id INTEGER NOT NULL REFERENCES users(id),
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
+    
+@dataclass
+class UserDiscord(TableModel):
+    user_id: int
+    discord_id: int
+    username: str
+    discriminator: str
+    global_name: str | None
+    avatar: str | None
+    access_token: str
+    token_expires_on: int
+    refresh_token: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_discords(
+        user_id INTEGER PRIMARY KEY REFERENCES users(id),
+        discord_id INTEGER NOT NULL,
+        username TEXT NOT NULL,
+        discriminator TEXT NOT NULL,
+        global_name TEXT,
+        avatar TEXT,
+        access_token TEXT NOT NULL,
+        token_expires_on INTEGER NOT NULL,
+        refresh_token TEXT NOT NULL
+        )"""
 
 @dataclass
 class Role(TableModel):
@@ -766,7 +792,7 @@ class PlayerBans(TableModel):
             ) WITHOUT ROWID"""
     
 all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
+    Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
