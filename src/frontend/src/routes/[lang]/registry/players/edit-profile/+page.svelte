@@ -10,6 +10,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import FriendCodeForm from '$lib/components/registry/players/FriendCodeForm.svelte';
+  import LinkDiscord from '$lib/components/common/LinkDiscord.svelte';
 
   let user_info: UserInfo;
   let user_settings: UserSettings | null;
@@ -49,6 +50,11 @@
       alert(`Editing profile failed: ${result['title']}`);
     }
   }
+
+  async function linkDiscord() {
+    let url = `/api/user/link_discord?page_url=${encodeURIComponent(window.location.href)}`;
+    window.location.replace(url);
+  }
 </script>
 
 <svelte:head>
@@ -79,7 +85,7 @@
 </Section>
 
 <Section header="Discord">
-  <Button href="/api/user/link_discord">Link</Button>
+  <LinkDiscord/>
 </Section>
 
 <Section header="Edit Profile">

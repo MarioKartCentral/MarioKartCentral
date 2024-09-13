@@ -11,9 +11,7 @@ from api.utils.responses import JSONResponse, bind_request_body, bind_request_qu
 from api import settings
 from common.auth import pw_hasher
 from common.data.commands import *
-from common.data.models import Problem
-import aiohttp
-import msgspec
+from common.data.models import *
 
 @dataclass
 class LoginRequestData:
@@ -63,55 +61,28 @@ async def log_out(request: Request) -> Response:
 
 redirect_uri = 'http://localhost:5000/api/user/discord_callback'
 
-@dataclass
-class DiscordAuthCallbackData:
-    code: str
-
-@dataclass
-class DiscordAccessTokenResponse:
-    access_token: str
-    token_type: str
-    expires_in: int
-    refresh_token: str
-    scope: str
-
+@bind_request_query(LinkDiscordRequestData)
 @require_logged_in
-async def link_discord(request: Request) -> Response:
+async def link_discord(request: Request, data: LinkDiscordRequestData) -> Response:
     client = WebApplicationClient(settings.DISCORD_CLIENT_ID)
     authorization_url = "https://discord.com/oauth2/authorize"
     url = client.prepare_request_uri(
         authorization_url,
         redirect_uri = redirect_uri,
-        scope = ['identify guilds']
+        scope = ['identify guilds'],
+        state = data.page_url # store the URL we came from in the state so we can redirect back there after linking
     )
     return RedirectResponse(url, 302)
 
 @bind_request_query(DiscordAuthCallbackData)
 @require_logged_in
 async def discord_callback(request: Request, data: DiscordAuthCallbackData) -> Response:
-    code = data.code
-    body = {
-        "code": code,
-        "redirect_uri": redirect_uri,
-        "grant_type": 'authorization_code'
-    }
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    async with aiohttp.ClientSession() as session:
-        base_url = 'https://discord.com/api/v10'
-        async with session.post(f'{base_url}/oauth2/token', data=body, headers=headers, auth=aiohttp.BasicAuth(settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)) as resp:
-            print(resp.status)
-            r = await resp.json()
-            token_resp = msgspec.convert(r, type=DiscordAccessTokenResponse)
-            print(token_resp)
-        headers = {
-            'authorization': f'{token_resp.token_type} {token_resp.access_token}'
-        }
-        async with session.get(f'{base_url}/users/@me', headers=headers) as resp:
-            print(resp.status)
-            r = await resp.json()
-            print(r)
+    command = LinkUserDiscordCommand(request.state.user.id, data)
+    await handle(command)
+    # state should contain the URL we were on before linking our discord account,
+    # so we should redirect them back there if it exists
+    if data.state:
+        return RedirectResponse(data.state, 302)
     return JSONResponse({})
 
 routes = [

@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 from common.auth import roles
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, User, ModNotifications, Permission, UserRole
+from common.data.models import *
 from common.auth import permissions
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Iterable
 from aiosqlite import Row
+import aiohttp
+from api import settings
+import msgspec
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -221,3 +224,46 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     assert row is not None
                     mod_notifications.pending_transfers = row[0]
         return mod_notifications
+    
+@dataclass
+@save_to_command_log
+class LinkUserDiscordCommand(Command[None]):
+    user_id: int
+    data: DiscordAuthCallbackData
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        redirect_uri = 'http://localhost:5000/api/user/discord_callback'
+        code = self.data.code
+        body = {
+            "code": code,
+            "redirect_uri": redirect_uri,
+            "grant_type": 'authorization_code'
+        }
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        async with aiohttp.ClientSession() as session:
+            base_url = 'https://discord.com/api/v10'
+            async with session.post(f'{base_url}/oauth2/token', data=body, headers=headers, auth=aiohttp.BasicAuth(settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)) as resp:
+                if int(resp.status/100) != 2:
+                    raise Problem(f"Discord returned an error code while trying to authenticate: {resp.status}") 
+                r = await resp.json()
+                token_resp = msgspec.convert(r, type=DiscordAccessTokenResponse)
+            headers = {
+                'authorization': f'{token_resp.token_type} {token_resp.access_token}'
+            }
+            async with session.get(f'{base_url}/users/@me', headers=headers) as resp:
+                if int(resp.status/100) != 2:
+                    raise Problem(f"Discord returned an error code while fetching user data: {resp.status}") 
+                r = await resp.json()
+                discord_user = msgspec.convert(r, type=DiscordUser)
+        expires_in = timedelta(seconds=token_resp.expires_in)
+        expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
+        async with db_wrapper.connect() as db:
+            await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
+            await db.execute("""INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar,
+                                  access_token, token_expires_on, refresh_token) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                  (self.user_id, int(discord_user.id), discord_user.username, discord_user.discriminator,
+                                   discord_user.global_name, discord_user.avatar, token_resp.access_token, expires_on,
+                                   token_resp.refresh_token))
+            await db.commit()
