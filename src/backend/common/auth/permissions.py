@@ -10,7 +10,7 @@ MANAGE_REGISTRATION_HISTORY = "registration_history_edit"
 MANAGE_TRANSFERS = "transfers_manage"
 CREATE_SERIES = "series_create"
 
-permissions_by_id = {
+permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
     1: EDIT_USER_ROLES,
     2: MANAGE_USER_ROLES,

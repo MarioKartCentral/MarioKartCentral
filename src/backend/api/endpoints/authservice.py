@@ -66,13 +66,13 @@ redirect_uri = 'http://localhost:5000/api/user/discord_callback'
 async def link_discord(request: Request, data: LinkDiscordRequestData) -> Response:
     client = WebApplicationClient(settings.DISCORD_CLIENT_ID)
     authorization_url = "https://discord.com/oauth2/authorize"
-    url = client.prepare_request_uri(
+    url = client.prepare_request_uri( # type: ignore
         authorization_url,
         redirect_uri = redirect_uri,
         scope = ['identify guilds'],
         state = data.page_url # store the URL we came from in the state so we can redirect back there after linking
     )
-    return RedirectResponse(url, 302)
+    return RedirectResponse(url, 302) # type: ignore
 
 @bind_request_query(DiscordAuthCallbackData)
 @require_logged_in
