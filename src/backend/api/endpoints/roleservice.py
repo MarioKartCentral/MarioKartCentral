@@ -1,8 +1,8 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_logged_in, require_permission, require_team_permission, require_series_permission, require_tournament_permission
+from api.auth import require_permission, require_team_permission, require_series_permission, require_tournament_permission
 from api.data import handle
-from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
+from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
@@ -85,7 +85,7 @@ async def grant_series_role_to_player(request: Request, body: GrantRoleRequestDa
 
 @bind_request_body(RemoveRoleRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_ROLES)
-async def remove_series_role_from_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
+async def remove_series_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
     user_id = request.state.user.id
     series_id = request.path_params['series_id']
     command = RemoveSeriesRoleCommand(user_id, body.player_id, series_id, body.role_name)

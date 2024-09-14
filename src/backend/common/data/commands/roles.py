@@ -5,8 +5,10 @@ from common.data.models import *
 from common.auth.roles import BANNED
 from datetime import datetime, timezone
 
+from common.data.models.roles import TeamRoleInfo
+
 @dataclass
-class ListRolesCommand(Command[None]):
+class ListRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
@@ -19,7 +21,7 @@ class ListRolesCommand(Command[None]):
             return roles
         
 @dataclass
-class ListTeamRolesCommand(Command[None]):
+class ListTeamRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
@@ -31,7 +33,7 @@ class ListTeamRolesCommand(Command[None]):
             return roles
         
 @dataclass
-class ListSeriesRolesCommand(Command[None]):
+class ListSeriesRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
@@ -43,7 +45,7 @@ class ListSeriesRolesCommand(Command[None]):
             return roles
         
 @dataclass
-class ListTournamentRolesCommand(Command[None]):
+class ListTournamentRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
@@ -55,7 +57,7 @@ class ListTournamentRolesCommand(Command[None]):
             return roles
         
 @dataclass
-class GetRoleInfoCommand(Command[None]):
+class GetRoleInfoCommand(Command[RoleInfo]):
     role_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -94,11 +96,11 @@ class GetRoleInfoCommand(Command[None]):
             return role_info
         
 @dataclass
-class GetTeamRoleInfoCommand(Command[None]):
+class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
     role_id: int
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper, s3_wrapper) -> TeamRoleInfo:
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name, position FROM team_roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -134,7 +136,7 @@ class GetTeamRoleInfoCommand(Command[None]):
             return role_info
         
 @dataclass
-class GetSeriesRoleInfoCommand(Command[None]):
+class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
     role_id: int
     series_id: int
 
@@ -174,7 +176,7 @@ class GetSeriesRoleInfoCommand(Command[None]):
             return role_info
         
 @dataclass
-class GetTournamentRoleInfoCommand(Command[None]):
+class GetTournamentRoleInfoCommand(Command[TournamentRoleInfo]):
     role_id: int
     tournament_id: int
 
@@ -198,7 +200,7 @@ class GetTournamentRoleInfoCommand(Command[None]):
                     permission_name, is_denied = row
                     permissions.append(Permission(permission_name, is_denied))
             
-            players: list[Player] = []
+            players: list[RolePlayer] = []
             async with db.execute(f"""
                 SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, ur.expires_on
                 FROM user_tournament_roles ur
@@ -214,13 +216,11 @@ class GetTournamentRoleInfoCommand(Command[None]):
             return role_info
                 
 @dataclass
-class GetUserRolePermissionsCommand(Command[tuple[list[Role], list[TeamRole], list[SeriesRole], list[TournamentRole]]]):
+class GetUserRolePermissionsCommand(Command[tuple[list[UserRole], list[TeamRole], list[SeriesRole], list[TournamentRole]]]):
     user_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            timestamp = int(datetime.now(timezone.utc).timestamp())
-            
             # user roles
             role_dict: dict[int, UserRole] = {}
             async with db.execute("""

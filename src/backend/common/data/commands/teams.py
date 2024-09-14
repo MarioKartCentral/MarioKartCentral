@@ -68,8 +68,8 @@ class GetTeamInfoCommand(Command[Team]):
                 team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [], [])
 
             # use a set for O(1) lookup
-            managers = set()
-            leaders = set()
+            managers = set[int]()
+            leaders = set[int]()
             async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
@@ -1199,7 +1199,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         )"""
             variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id)
             rosters: list[TeamRoster] = []
-            roster_dict = {}
+            roster_dict: dict[int, list[RosterPlayerInfo]] = {}
             async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
                                   tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag, t.color
                                   {rosters_query}""",
@@ -1218,8 +1218,8 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
             # get players for our rosters
 
             # use a set for O(1) lookup
-            managers = set()
-            leaders = set()
+            managers = set[int]()
+            leaders = set[int]()
             async with db.execute(f"""SELECT p.id, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
@@ -1247,9 +1247,9 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                 )""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
+                    player_id, name, country_code, is_banned, discord_id, roster_id, join_date = row
                     is_manager = player_id in managers
                     is_leader = player_id in leaders
-                    player_id, name, country_code, is_banned, discord_id, roster_id, join_date = row
                     player = RosterPlayerInfo(player_id, name, country_code, is_banned, discord_id, join_date, is_manager, is_leader, [])
                     roster_dict[roster_id].append(player)
             return rosters

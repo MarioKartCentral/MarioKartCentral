@@ -17,9 +17,9 @@ default_roles = [
     (5, BANNED, 99)
 ]
 
-id_by_default_role = { name: roleid for roleid, name, pos in default_roles}
+id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
 
-default_permissions_by_default_role = {
+default_permissions_by_default_role: dict[str, list[str]] = {
     SUPER_ADMINISTRATOR: [
         permissions.CREATE_USER_ROLES, 
         permissions.EDIT_USER_ROLES,
@@ -123,7 +123,7 @@ default_permissions_by_default_role = {
     BANNED: []
 }
 
-default_denied_permissions_by_default_role = {
+default_denied_permissions_by_default_role: dict[str, list[str]] = {
     SUPER_ADMINISTRATOR: [],
     ADMINISTRATOR: [],
     SITE_MODERATOR: [],

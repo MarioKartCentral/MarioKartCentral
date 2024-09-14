@@ -2,8 +2,8 @@ from starlette.requests import Request
 from starlette.routing import Route
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
-from api.auth import require_permission, require_tournament_permission, require_series_permission
-from common.auth import series_permissions, tournament_permissions
+from api.auth import require_tournament_permission
+from common.auth import tournament_permissions
 from common.data.commands import *
 from common.data.models import *
 
