@@ -72,7 +72,7 @@ def require_team_permission(permission_name: str, check_denied_only: bool = Fals
             if team_id is None:
                 raise Problem("No team ID specified", status=400)
             
-            user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permission_name, check_denied_only, team_id=team_id))
+            user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permission_name, check_denied_only, team_id=int(team_id)))
 
             if user_has_permission:
                 request.state.session_id = session_id
@@ -105,6 +105,8 @@ def require_series_permission(permission_name: str, check_denied_only: bool = Fa
                 body = await request.json()
                 series_id = body.get("series_id", None)
             
+            if series_id is not None:
+                series_id = int(series_id)
             user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permission_name, check_denied_only, series_id=series_id))
 
             if user_has_permission:
@@ -139,7 +141,7 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool 
             if tournament_id is None:
                 raise Problem("No tournament ID specified", status=400)
 
-            user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permission_name, check_denied_only, tournament_id=tournament_id))
+            user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permission_name, check_denied_only, tournament_id=int(tournament_id)))
 
             if user_has_permission:
                 request.state.session_id = session_id

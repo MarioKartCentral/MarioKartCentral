@@ -9,7 +9,7 @@ default_roles = [
     (1, LEADER, 1)
 ]
 
-id_by_default_role = { name: roleid for roleid, name, pos in default_roles}
+id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
 
 default_permissions_by_default_role = {
     MANAGER: [
@@ -32,7 +32,7 @@ default_permissions_by_default_role = {
     ]
 }
 
-default_denied_permissions_by_default_role = {
+default_denied_permissions_by_default_role: dict[str, list[str]] = {
     MANAGER: [],
     LEADER: []
 }

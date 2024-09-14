@@ -13,9 +13,9 @@ default_roles = [
     (3, BANNED, 99)
 ]
 
-id_by_default_role = { name: roleid for roleid, name, pos in default_roles}
+id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
 
-default_permissions_by_default_role = {
+default_permissions_by_default_role: dict[str, list[str]] = {
     ADMINISTRATOR: [ 
         series_permissions.CREATE_TOURNAMENT,
         series_permissions.CREATE_TOURNAMENT_TEMPLATE, 
@@ -39,7 +39,7 @@ default_permissions_by_default_role = {
     BANNED: []
 }
 
-default_denied_permissions_by_default_role = {
+default_denied_permissions_by_default_role: dict[str, list[str]] = {
     ADMINISTRATOR: [],
     ORGANIZER: [],
     HOST_BANNED: [
