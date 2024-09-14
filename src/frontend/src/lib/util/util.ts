@@ -1,25 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getContext } from 'svelte';
 import type { Color } from '$lib/types/colors';
 import type { Tournament } from '$lib/types/tournament';
-import type { TournamentSquad } from '$lib/types/tournament-squad';
-import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
 import type { PlacementOrganizer } from '$lib/types/placement-organizer';
-
-export function addPermission(permission: string) {
-  const ctx: any = getContext('page-init');
-  ctx.addPermission(permission);
-}
-
-export function setTeamPerms() {
-  const ctx: any = getContext('page-init');
-  ctx.checkTeamPerms();
-}
-
-export function setSeriesPerms() {
-  const ctx: any = getContext('page-init');
-  ctx.checkSeriesPerms();
-}
 
 export function check_registrations_open(tournament: Tournament) {
   if (!tournament.registrations_open) {
@@ -36,40 +18,6 @@ export function check_registrations_open(tournament: Tournament) {
     return false;
   }
   return true;
-}
-
-export async function unregister(
-  registration: MyTournamentRegistration,
-  tournament: Tournament,
-  squad: TournamentSquad | null = null,
-) {
-  if (!registration.player) {
-    return;
-  }
-  if (registration.player.is_squad_captain && squad && squad.players.length > 1) {
-    alert('Please unregister this squad or set another player as captain before unregistering for this tournament');
-    return;
-  }
-  const conf = window.confirm('Are you sure you would like to unregister for this tournament?');
-  if (!conf) {
-    return;
-  }
-  const payload = {
-    squad_id: registration.player.squad_id,
-  };
-  console.log(payload);
-  const endpoint = `/api/tournaments/${tournament.id}/unregister`;
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const result = await response.json();
-  if (response.status < 300) {
-    window.location.reload();
-  } else {
-    alert(`Failed to unregister: ${result['title']}`);
-  }
 }
 
 export function sort_placement_list(a: PlacementOrganizer, b: PlacementOrganizer) {
@@ -89,54 +37,6 @@ export function findNumberOfDaysBetweenDates(start: number, end: number, isMs: b
   const timeInDay = isMs ? 86400000 : 86400; // js/ts uses milliseconds while Python uses seconds
   return Math.floor((end - start) / timeInDay);
 }
-
-export const permissions = {
-  create_tournament: 'tournament_create',
-  edit_tournament: 'tournament_edit',
-  create_series: 'series_create',
-  edit_series: 'series_edit',
-  create_tournament_template: 'tournament_template_create',
-  edit_tournament_template: 'tournament_template_edit',
-  manage_tournament_registrations: 'tournament_registrations_manage',
-  edit_player: 'player_edit',
-  manage_teams: 'team_manage',
-  invite_team_players: 'team_player_invite',
-  manage_team_rosters: 'team_roster_manage',
-  edit_team_info: 'team_info_edit',
-  manage_registration_history: 'registration_history_edit',
-  manage_transfers: 'transfers_manage',
-  register_team_tournament: 'team_tournament_register',
-  ban_player: 'player_ban',
-};
-
-export const team_permissions = {
-  edit_team_name_tag: 'team_name_tag_edit',
-  edit_team_info: 'team_info_edit',
-  create_rosters: 'roster_create',
-  manage_rosters: 'roster_manage',
-  manage_roles: 'role_manage',
-  invite_players: 'player_invite',
-  kick_players: 'player_kick',
-  register_tournament: 'tournament_register',
-  manage_tournament_rosters: 'tournament_rosters_manage',
-};
-
-export const series_permissions = {
-  create_tournament: 'tournament_create',
-  edit_tournament: 'tournament_edit',
-  create_tournament_template: 'tournament_template_create',
-  edit_tournament_template: 'tournament_template_edit',
-  manage_tournament_registrations: 'tournament_registrations_manage',
-  manage_series_roles: 'series_roles_manage',
-  edit_series: 'series_edit',
-};
-
-export const mod_panel_permissions = [
-  permissions.edit_player,
-  permissions.manage_teams,
-  permissions.manage_transfers,
-  permissions.ban_player,
-];
 
 export const valid_games: { [key: string]: string } = {
   mk8dx: 'Mario Kart 8 Deluxe',

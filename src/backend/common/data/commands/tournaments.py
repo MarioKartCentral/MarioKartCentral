@@ -1,11 +1,11 @@
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
 import msgspec
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 import common.data.s3 as s3
-
+from aiosqlite import Row
 
 @save_to_command_log
 @dataclass
@@ -23,8 +23,12 @@ class CreateTournamentCommand(Command[None]):
             raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
         if b.teams_allowed and (b.mii_name_required or b.host_status_required or b.require_single_fc):
             raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+        if b.teams_allowed and (not b.squad_tag_required or not b.squad_name_required):
+            raise Problem('Team tournaments must require a squad tag/name', status=400)
         if not b.series_id and b.use_series_logo:
             raise Problem('Cannot use series logo if no series is selected', status=400)
+        if b.bagger_clause_enabled and not (b.game == 'mkw' and b.is_squad):
+            raise Problem('Game must be set to MKW and it must be a squad tournament to use bagger clause', status=400)
 
         # store minimal data about each tournament in the SQLite DB
         async with db_wrapper.connect() as db:
@@ -34,17 +38,17 @@ class CreateTournamentCommand(Command[None]):
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
                     logo, use_series_logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
                     squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
-                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (b.tournament_name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
+                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
                 b.series_stats_include, b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin, b.verification_required,
-                b.verified_fc_required, b.is_viewable, b.is_public, False, b.show_on_profiles, b.require_single_fc, b.min_representatives))
+                b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives, b.bagger_clause_enabled,
+                b.use_series_ruleset, b.organizer, b.location))
             tournament_id = cursor.lastrowid
             await db.commit()
-        # make sure tournament ID is at the top of the s3's body
-        s3_body = {'id': tournament_id, 'is_deleted': False}
-        s3_body.update(asdict(self.body))
+
+        s3_body = TournamentS3Fields(b.ruleset)
         s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
             
@@ -58,11 +62,11 @@ class EditTournamentCommand(Command[None]):
         b = self.body
         
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.id,)) as cursor:
+            async with db.execute("SELECT is_squad, game FROM tournaments WHERE id = ?", (self.id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=404)
-                is_squad = row[0]
+                is_squad, game = row
             if b.series_id:
                 async with db.execute("SELECT id FROM tournament_series WHERE id = ?", (b.series_id,)) as cursor:
                     row = await cursor.fetchone()
@@ -77,8 +81,12 @@ class EditTournamentCommand(Command[None]):
                 raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
             if b.teams_allowed and (b.mii_name_required or b.host_status_required):
                 raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+            if b.teams_allowed and (not b.squad_tag_required or not b.squad_name_required):
+                raise Problem('Team tournaments must require a squad tag/name', status=400)
             if not b.series_id and b.use_series_logo:
                 raise Problem('Cannot use series logo if no series is selected', status=400)
+            if b.bagger_clause_enabled and not (game == 'mkw' and is_squad):
+                raise Problem('Game must be set to MKW and it must be a squad tournament to use bagger clause', status=400)
             cursor = await db.execute("""UPDATE tournaments
                 SET name = ?,
                 series_id = ?,
@@ -112,7 +120,7 @@ class EditTournamentCommand(Command[None]):
                 show_on_profiles = ?,
                 min_representatives = ?
                 WHERE id = ?""",
-                (b.tournament_name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
+                (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
                 b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
@@ -120,17 +128,9 @@ class EditTournamentCommand(Command[None]):
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
-            
 
-            s3_data = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
-            if s3_data is None:
-                raise Problem("No tournament found", status=404)
-            
-            json_body = msgspec.json.decode(s3_data)
-            updated_values = asdict(self.body)
-            json_body.update(updated_values)
-
-            s3_message = bytes(msgspec.json.encode(json_body))
+            s3_body = TournamentS3Fields(b.ruleset)
+            s3_message = bytes(msgspec.json.encode(s3_body))
             await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
 
             await db.commit()
@@ -140,13 +140,65 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        body = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
-        if body is None:
-            raise Problem('No tournament found', status=404)
-        tournament_data = msgspec.json.decode(body, type=GetTournamentRequestData)
-        
-        if tournament_data.series_id is not None:
-            async with db_wrapper.connect(readonly=True) as db:
+        async with db_wrapper.connect(readonly=True) as db:
+            db.row_factory = Row
+            async with db.execute("""SELECT * FROM tournaments WHERE id = ?""", (self.id,)) as cursor:
+                row = await cursor.fetchone()
+                t = msgspec.convert(row, type=TournamentDBFields, strict=False)
+                if not row:
+                    raise Problem("No tournament found", status=404)
+
+                s3_body = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
+                if s3_body is None:
+                    raise Problem('No tournament found', status=404)
+                s3_fields = msgspec.json.decode(s3_body, type=TournamentS3Fields)
+
+            tournament_data = GetTournamentRequestData(id=self.id,
+                                                       name=t.name,
+                                                       game=t.game,
+                                                       mode=t.mode,
+                                                       series_id=t.series_id,
+                                                       is_squad=t.is_squad,
+                                                       registrations_open=t.registrations_open,
+                                                       date_start=t.date_start,
+                                                       date_end=t.date_end,
+                                                       description=t.description,
+                                                       use_series_description=t.use_series_description,
+                                                       series_stats_include=t.series_stats_include,
+                                                       logo=t.logo,
+                                                       use_series_logo=t.use_series_logo,
+                                                       url=t.url,
+                                                       registration_deadline=t.registration_deadline,
+                                                       registration_cap=t.registration_cap,
+                                                       teams_allowed=t.teams_allowed,
+                                                       teams_only=t.teams_only,
+                                                       team_members_only=t.team_members_only,
+                                                       min_squad_size=t.min_squad_size,
+                                                       max_squad_size=t.max_squad_size,
+                                                       squad_tag_required=t.squad_tag_required,
+                                                       squad_name_required=t.squad_name_required,
+                                                       mii_name_required=t.mii_name_required,
+                                                       host_status_required=t.host_status_required,
+                                                       checkins_open=t.checkins_open,
+                                                       min_players_checkin=t.min_players_checkin,
+                                                       verification_required=t.verification_required,
+                                                       verified_fc_required=t.verified_fc_required,
+                                                       is_viewable=t.is_viewable,
+                                                       is_public=t.is_public,
+                                                       show_on_profiles=t.show_on_profiles,
+                                                       require_single_fc=t.require_single_fc,
+                                                       min_representatives=t.min_representatives,
+                                                       bagger_clause_enabled=t.bagger_clause_enabled,
+                                                       is_deleted=t.is_deleted,
+                                                       use_series_ruleset=t.use_series_ruleset, 
+                                                       organizer=t.organizer,
+                                                       location=t.location,
+                                                       ruleset=s3_fields.ruleset,
+                                                       series_name=None,
+                                                       series_url=None,
+                                                       series_description=None,
+                                                       series_ruleset=None)
+            if tournament_data.series_id:
                 async with db.execute("SELECT name, url, description, ruleset, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None

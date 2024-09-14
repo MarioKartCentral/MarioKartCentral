@@ -32,6 +32,8 @@
       data.mii_name_required = false;
       data.host_status_required = false;
       data.require_single_fc = false;
+      data.squad_tag_required = true;
+      data.squad_name_required = true;
       if (!data.teams_only) {
         data.team_members_only = false;
         data.min_representatives = null;
@@ -62,6 +64,9 @@
     if (data.use_series_logo) {
       data.logo = null;
     }
+    if(data.game !== "mkw" || !data.is_squad) {
+      data.bagger_clause_enabled = false;
+    }
     update_function();
   }
 </script>
@@ -76,7 +81,7 @@
         name="tournament_name"
         class="tournament_name"
         type="text"
-        bind:value={data.tournament_name}
+        bind:value={data.name}
         minlength="1"
         required
       />
@@ -190,24 +195,35 @@
           <input class="number" type="number" name="max_squad_size" min="1" max="99" bind:value={data.max_squad_size} />
         </div>
       </div>
-      {#if !data.teams_only}
-        <div class="option">
-          <div>
-            <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
-          </div>
-          <div>
-            <select name="squad_tag_required" bind:value={data.squad_tag_required} disabled={is_edit}>
-              <option value={false}>No</option>
-              <option value={true}>Yes</option>
-            </select>
-          </div>
+      <div class="option">
+        <div>
+          <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
         </div>
+        <div>
+          <select name="squad_tag_required" bind:value={data.squad_tag_required} on:change={updateData} disabled={is_edit || data.teams_allowed}>
+            <option value={false}>No</option>
+            <option value={true}>Yes</option>
+          </select>
+        </div>
+      </div>
+      <div class="option">
+        <div>
+          <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
+        </div>
+        <div>
+          <select name="squad_name_required" bind:value={data.squad_name_required} on:change={updateData} disabled={is_edit || data.teams_allowed}>
+            <option value={false}>No</option>
+            <option value={true}>Yes</option>
+          </select>
+        </div>
+      </div>
+      {#if data.game === "mkw"}
         <div class="option">
           <div>
-            <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
+            <label for="bagger_clause_enabled">Enable Bagger Clause? (this cannot be changed)</label>
           </div>
           <div>
-            <select name="squad_name_required" bind:value={data.squad_name_required} disabled={is_edit}>
+            <select name="bagger_clause_enabled" bind:value={data.bagger_clause_enabled} on:change={updateData} disabled={is_edit}>
               <option value={false}>No</option>
               <option value={true}>Yes</option>
             </select>
@@ -227,6 +243,7 @@
       </div>
       {#if data.teams_allowed}
         <div class="indented">
+          
           <div class="option">
             <div>
               <label for="teams_only">Teams only? (this cannot be changed)</label>

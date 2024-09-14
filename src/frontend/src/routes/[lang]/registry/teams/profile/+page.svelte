@@ -5,17 +5,20 @@
   import Section from '$lib/components/common/Section.svelte';
   import TeamProfile from '$lib/components/registry/teams/TeamProfile.svelte';
   import TeamRoster from '$lib/components/registry/teams/TeamRoster.svelte';
-  import { setTeamPerms, team_permissions, permissions } from '$lib/util/util';
   import Button from "$lib/components/common/buttons/Button.svelte";
-  import TeamPermissionCheck from '$lib/components/common/TeamPermissionCheck.svelte';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
+  import { check_team_permission, team_permissions, check_permission, permissions } from '$lib/util/permissions';
   import LL from '$i18n/i18n-svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
 
   let id = 0;
   let team: Team;
   $: team_name = team ? team.name : 'Registry';
 
-  setTeamPerms();
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
@@ -34,7 +37,7 @@
 </svelte:head>
 
 {#if team}
-  <PermissionCheck permission={permissions.manage_teams}>
+  {#if check_permission(user_info, permissions.manage_teams)}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
         <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
@@ -45,19 +48,19 @@
         >
       </div>
     </Section>
-  </PermissionCheck>
+  {/if}
   <Section header={$LL.TEAM_PROFILE.TEAM_PROFILE()}>
     <div slot="header_content">
       {#if team.approval_status === 'approved' && !team.is_historical}
-        <TeamPermissionCheck team_id={id} permission={team_permissions.manage_roles}>
+        {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
           <Button href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
             >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
           >
-        </TeamPermissionCheck>
-        <TeamPermissionCheck team_id={id} permission={team_permissions.edit_team_info}>
+        {/if}
+        {#if check_team_permission(user_info, team_permissions.edit_team_info, id)}
           <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
-        </TeamPermissionCheck>
+        {/if}
       {/if}
     </div>
     <TeamProfile {team} />

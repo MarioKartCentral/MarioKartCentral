@@ -54,7 +54,8 @@
     onMount(fetchData);
 
     const options: Intl.DateTimeFormatOptions = {
-        dateStyle: 'medium'
+        dateStyle: 'medium',
+        timeStyle: 'short'
     };
 
     async function approveTransfer(transfer: TeamTransfer) {
@@ -200,6 +201,7 @@
     div.flex {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
     }
     col.country {
         width: 15%;

@@ -1,4 +1,5 @@
 export type CreateTournamentSeries = {
+  series_id: number | null;
   series_name: string;
   url: string | null;
   display_order: number;

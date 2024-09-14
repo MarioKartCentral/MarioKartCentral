@@ -1,11 +1,7 @@
 <script lang="ts">
   import CreateEditTemplateForm from '$lib/components/tournaments/templates/CreateEditTemplateForm.svelte';
-  import { permissions, addPermission, setSeriesPerms } from '$lib/util/util';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-
-  addPermission(permissions.create_tournament_template);
-  setSeriesPerms();
 
   let template_id: number | null;
   let series_id: number | null;

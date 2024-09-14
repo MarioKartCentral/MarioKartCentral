@@ -1,15 +1,13 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
-  import { addPermission, permissions } from '$lib/util/util';
+  import { check_permission, permissions } from '$lib/util/permissions';
   import { onMount } from 'svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import SeriesPageItem from '$lib/components/tournaments/series/SeriesPageItem.svelte';
-
-  addPermission(permissions.create_series);
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -33,7 +31,7 @@
 
 <Section header="Tournament Series">
   <div slot="header_content">
-    {#if user_info.permissions.includes(permissions.create_series)}
+    {#if check_permission(user_info, permissions.create_series)}
       <Button href="/{$page.params.lang}/tournaments/series/create">Create Series</Button>
     {/if}
   </div>

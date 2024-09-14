@@ -14,15 +14,13 @@
   <col class="tag" />
   <col class="name" />
   <col class="game" />
-  <col class="recruiting" />
-  <col class="mode" />
+  <!-- <col class="recruiting" />
+  <col class="mode" /> -->
   <thead>
     <tr>
       <th>{$LL.TEAM_LIST.TAG()}</th>
       <th>{$LL.TEAM_LIST.NAME()}</th>
       <th>{$LL.TEAM_LIST.STATUS()}</th>
-      <th>{$LL.TEAM_LIST.GAME()}</th>
-      <th>{$LL.TEAM_LIST.MODE()}</th>
     </tr>
   </thead>
   <tbody>
@@ -34,14 +32,10 @@
         <td>
           {roster.name}
         </td>
-        <td>
-          <RecruitingBadge recruiting={roster.is_recruiting} />
-        </td>
-        <td>
+        <td>     
           <GameBadge game={roster.game} />
-        </td>
-        <td>
           <ModeBadge mode={roster.mode} />
+          <RecruitingBadge recruiting={roster.is_recruiting} />
         </td>
       </tr>
     {/each}
@@ -53,15 +47,15 @@
     width: 15%;
   }
   col.name {
-    width: 30%;
+    width: 45%;
   }
-  col.recruiting {
+  /* col.recruiting {
     width: 25%;
-  }
+  } */
   col.game {
-    width: 15%;
+    width: 40%;
   }
-  col.mode {
+  /* col.mode {
     width: 15%;
-  }
+  } */
 </style>
