@@ -25,7 +25,7 @@
       <div class="name">
         <h3>
           <a
-            class="text-2xl font-bold hover:text-emerald-400 p-1"
+            class="text-lg font-bold hover:text-emerald-400 p-1"
             href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
             >{tournament.name}
           </a>
@@ -63,8 +63,10 @@
     <!-- Logo Section -->
     <div class="logo flex flex-col justify-center items-center text-center">
       {#if tournament.logo != null}
-        <div class="font-bold">{tournament.series_name}</div>
-        <img src={tournament.logo} alt={tournament.name} />
+        <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
+          <div class="font-bold">{tournament.series_name}</div>
+          <img src={tournament.logo} alt={tournament.name} />
+        </a>
       {/if}
     </div>
 
@@ -78,7 +80,9 @@
       </div>
       <!-- FIXME: Register button needs to link to a page or an api route? -->
       <div class="register-button p-1">
-        <Button size="lg" color="yellow" href="/"><b>Register Now!</b></Button>
+        <Button size="lg" color="yellow" href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
+          ><b>View Tournament</b></Button
+        >
       </div>
     </div>
   </div>
