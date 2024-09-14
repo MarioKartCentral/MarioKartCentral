@@ -126,7 +126,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     is_bagger_clause: bool | None
     is_privileged: bool
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled FROM tournaments WHERE id = ?", 
                                   (self.tournament_id,)) as cursor:
@@ -302,7 +302,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                                     WHERE t.tournament_id = ?""",
                                     (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
-                player_fc_dict: dict[int, list[str]] = {} # create a dictionary of player fcs so we can give all players their FCs
+                player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
                     (reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                      is_bagger_clause, player_name, country, discord_id) = row
@@ -417,7 +417,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                                     )
                                     """, (self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
-                player_fc_dict: dict[int, list[str]] = {} # create a dictionary of player fcs so we can give all players their FCs
+                player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
                     (reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                      is_bagger_clause, player_name, country, discord_id) = row

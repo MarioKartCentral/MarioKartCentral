@@ -126,7 +126,7 @@ class CreateSquadCommand(Command[None]):
                     WHERE m.roster_id IN ({','.join([str(i) for i in self.roster_ids])})
                     AND t.tournament_id = ?
                     """
-                already_registered_players = []
+                already_registered_players: list[int] = []
                 async with db.execute(already_registered_query, (self.tournament_id,)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
@@ -300,7 +300,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 for row in player_rows:
                     reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, is_bagger_clause, player_name, country, discord_id = row
                     curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
-                        player_name, country, discord_id, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
+                        player_name, country, discord_id, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
                     players.append(curr_player)
 
                     player_dict[curr_player.player_id] = curr_player

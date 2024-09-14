@@ -45,7 +45,8 @@ class CheckUserHasPermissionCommand(Command[bool]):
         async with db_wrapper.connect() as db:
             denied_permission_exists = False
             def check_perms(rows: Iterable[Row]):
-                if len(rows) == 0:
+                num_rows = sum(1 for r in rows) # type: ignore
+                if num_rows == 0:
                     # if check_denied_only is True, we only care about the absence of a denied permission,
                     # so an empty result set satisfies that.
                     # if we have previously found a denied permission, we must have a explicitly
@@ -193,7 +194,7 @@ class GetModNotificationsCommand(Command[ModNotifications]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         mod_notifications = ModNotifications()
-        string_perms = []
+        string_perms: list[str] = []
         for role in self.user_roles:
             for perm in role.permissions:
                 string_perms.append(perm.name)

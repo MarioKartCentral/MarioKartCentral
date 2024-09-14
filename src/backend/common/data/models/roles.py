@@ -7,6 +7,10 @@ class Permission:
     is_denied: bool
 
 @dataclass
+class RolePlayer(Player):
+    expires_on: int | None = None
+
+@dataclass
 class Role:
     id: int
     name: str
@@ -15,7 +19,7 @@ class Role:
 @dataclass
 class RoleInfo(Role):
     permissions: list[Permission]
-    players: list[Player]
+    players: list[RolePlayer]
 
 @dataclass
 class TeamRoleInfo(RoleInfo):
@@ -55,6 +59,3 @@ class RemoveRoleRequestData:
 class GrantRoleRequestData(RemoveRoleRequestData):
     expires_on: int | None = None
 
-@dataclass
-class RolePlayer(Player):
-    expires_on: int | None = None
