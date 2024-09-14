@@ -95,7 +95,6 @@
 
 <style>
   .container {
-    display: grid;
     background-color: rgba(29, 33, 33, 0.8);
     padding-top: 10px;
     padding-bottom: 10px;
@@ -118,7 +117,6 @@
   .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* justify-content: space-evenly; */
   }
   .description {
     font-size: 0.9rem;
