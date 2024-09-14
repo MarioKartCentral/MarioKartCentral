@@ -1,9 +1,9 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission, require_logged_in, require_tournament_permission
+from api.auth import require_logged_in, require_tournament_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from common.auth import permissions, series_permissions, tournament_permissions
+from common.auth import tournament_permissions
 from common.data.commands import *
 from common.data.models import *
 
@@ -128,7 +128,7 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host, False, None, None, body.selected_fc_id,
-                                            None, False)
+                                            None, None, False)
     await handle(command)
     return JSONResponse({})
 
@@ -142,7 +142,7 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host,
-        False, False, False, body.selected_fc_id, None, False)
+        False, False, False, body.selected_fc_id, None, None, False)
     await handle(command)
     return JSONResponse({})
 

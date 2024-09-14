@@ -9,7 +9,7 @@ from common.data.models import EditUserSettingsRequestData, Problem, UserSetting
 class CreateUserSettingsCommand(Command[None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
             async with db.execute("INSERT INTO user_settings(user_id) VALUES (?)", (self.user_id,)) as cursor:
                 rows_inserted = cursor.rowcount
