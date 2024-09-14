@@ -2,6 +2,8 @@
   import LL from '$i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
   import Section from '$lib/components/common/Section.svelte';
@@ -9,13 +11,17 @@
   import Dialog from '$lib/components/common/Dialog.svelte';
   import PlayerProfile from '$lib/components/registry/players/PlayerProfile.svelte';
   import PlayerProfileBan from '$lib/components/registry/players/PlayerProfileBan.svelte';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
   import ViewEditBan from '$lib/components/moderator/ViewEditBan.svelte';
-  import { permissions } from '$lib/util/util';
+  import { check_permission, permissions } from '$lib/util/permissions';
 
+  let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
+
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let id = 0;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -56,7 +62,8 @@
   {#if player.ban_info}
     <PlayerProfileBan ban_info={player.ban_info} />
   {/if}
-  <PermissionCheck permission={permissions.ban_player}>
+
+  {#if check_permission(user_info, permissions.ban_player)}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
         {#if !player.is_banned}
@@ -74,6 +81,7 @@
         <ViewEditBan {banInfo}/>
       {/if}
     </Dialog>
-  </PermissionCheck>
+    {/if}
+
   <PlayerProfile {player} />
 {/if}

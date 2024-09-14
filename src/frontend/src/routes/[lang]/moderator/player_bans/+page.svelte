@@ -4,6 +4,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { BanFilter, BanHistoricalFilter } from '$lib/types/ban-filter';
   import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
+  import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
   import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
@@ -11,10 +12,11 @@
   import BanListFilter from '$lib/components/moderator/BanListFilter.svelte';
   import BanListHistoricalFilter from '$lib/components/moderator/BanListHistoricalFilter.svelte';
   import BanList from '$lib/components/moderator/BanList.svelte';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
-  import { permissions } from '$lib/util/util';
+  import { check_permission, permissions } from '$lib/util/permissions';
+  import { user } from '$lib/stores/stores';
 
+  let user_info: UserInfo;
   let player: PlayerInfo | null = null;
   let banInfo: BanInfoDetailed | null = null;
   let banFilter: BanFilter = {
@@ -56,6 +58,10 @@
     ban_count: 0,
     page_count: 1,
   };
+
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let currentBanPage: number = 1;
   let currentHistPage: number = 1;
@@ -114,7 +120,7 @@
   <title>Player Bans | Mario Kart Central</title>
 </svelte:head>
 
-<PermissionCheck permission={permissions.ban_player}>
+{#if check_permission(user_info, permissions.ban_player)}
   <Section header={$LL.PLAYER_BAN.BAN_PLAYER()}>
     <PlayerSearch bind:player={player}/>
     {#if player}
@@ -146,8 +152,7 @@
     </div>
     <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
   </Section>
-</PermissionCheck>
-
+{/if}
 <style>
   hr {
     margin: 10px 0px;
