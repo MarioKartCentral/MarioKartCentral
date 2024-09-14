@@ -63,10 +63,15 @@
     <!-- Logo Section -->
     <div class="logo flex flex-col justify-center items-center text-center">
       {#if tournament.logo != null}
+        <div class="font-bold">
+          <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
+            {tournament.series_name}
+          </a>
+        </div>
         <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
-          <div class="font-bold">{tournament.series_name}</div>
           <img src={tournament.logo} alt={tournament.name} />
         </a>
+        <!-- </a> -->
       {/if}
     </div>
 
