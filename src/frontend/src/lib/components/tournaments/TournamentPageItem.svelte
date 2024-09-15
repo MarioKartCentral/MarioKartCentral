@@ -17,8 +17,6 @@
 </script>
 
 <div class="container">
-  <!-- <div>{tournament.id}</div> -->
-
   <div class="grid-container">
     <!-- Informational Section -->
     <div class="information flex flex-col align-middle items-center justify-center text-center">
@@ -65,13 +63,14 @@
       {#if tournament.logo != null}
         <div class="font-bold">
           <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
-            {tournament.series_name}
+            {#if tournament.series_name != null}
+              {tournament.series_name}
+            {/if}
           </a>
         </div>
         <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
           <img src={tournament.logo} alt={tournament.name} />
         </a>
-        <!-- </a> -->
       {/if}
     </div>
 
@@ -79,16 +78,22 @@
     <div class="cta flex flex-col justify-center">
       <div class="description">
         {#if tournament.series_id != null}
-          <!-- <div>Series {tournament.series_id} - {tournament.series_name}</div> -->
           <div class="text-gray-300 p-1">{tournament.series_description}</div>
         {/if}
       </div>
-      <!-- FIXME: Register button needs to link to a page or an api route? -->
-      <div class="register-button p-1">
-        <Button size="lg" color="yellow" href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
-          ><b>View Tournament</b></Button
-        >
-      </div>
+      {#if tournament.registrations_open}
+        <div class="register-button p-1">
+          <Button size="sm" color="yellow" href="/{$page.params.leng}/tournaments/details?id={tournament.id}">
+            <b>Register now!</b>
+          </Button>
+        </div>
+      {:else}
+        <div class="view-tournament-button p-1">
+          <Button size="sm" href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
+            ><b>View Tournament</b></Button
+          >
+        </div>
+      {/if}
     </div>
   </div>
 </div>
