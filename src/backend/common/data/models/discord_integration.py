@@ -24,3 +24,13 @@ class DiscordUser:
     discriminator: str
     global_name: str | None
     avatar: str | None
+
+@dataclass
+class MyDiscordData:
+    user_id: int
+    discord_id: str
+    username: str
+    discriminator: str
+    global_name: str | None
+    avatar: str | None
+    token_expires_on: int

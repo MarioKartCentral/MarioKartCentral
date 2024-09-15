@@ -263,7 +263,51 @@ class LinkUserDiscordCommand(Command[None]):
             await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
             await db.execute("""INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar,
                                   access_token, token_expires_on, refresh_token) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                                  (self.user_id, int(discord_user.id), discord_user.username, discord_user.discriminator,
+                                  (self.user_id, discord_user.id, discord_user.username, discord_user.discriminator,
                                    discord_user.global_name, discord_user.avatar, token_resp.access_token, expires_on,
                                    token_resp.refresh_token))
             await db.commit()
+
+@dataclass
+class GetUserDiscordCommand(Command[MyDiscordData | None]):
+    user_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT discord_id, username, discriminator, global_name, avatar, token_expires_on FROM user_discords WHERE user_id = ?",
+                                  (self.user_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    return None
+                discord_id, username, discriminator, global_name, avatar, token_expires_on = row
+                user_discord = MyDiscordData(self.user_id, discord_id, username, discriminator, global_name, avatar,
+                                     token_expires_on)
+                return user_discord
+            
+@dataclass
+class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
+    user_id: int
+    
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT access_token, token_expires_on FROM user_discords WHERE user_id = ?", (self.user_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User does not have a Discord account linked", status=400)
+                access_token, token_expires_on = row
+
+            headers = {
+                'authorization': f'Bearer {access_token}'
+            }
+            base_url = 'https://discord.com/api/v10'
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'{base_url}/users/@me', headers=headers) as resp:
+                    if int(resp.status/100) != 2:
+                        raise Problem(f"Discord returned an error code while fetching user data: {resp.status}") 
+                    r = await resp.json()
+                    discord_user = msgspec.convert(r, type=DiscordUser)
+                    await db.execute("UPDATE user_discords SET discord_id = ?, username = ?, discriminator = ?, global_name = ?, avatar = ? WHERE user_id = ?",
+                                    (discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar,
+                                     self.user_id))
+        return MyDiscordData(self.user_id, discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name,
+            discord_user.avatar, token_expires_on)

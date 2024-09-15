@@ -2,6 +2,9 @@
     import { user } from '$lib/stores/stores';
     import type { UserInfo } from '$lib/types/user-info';
     import Button from '$lib/components/common/buttons/Button.svelte';
+    import type { MyDiscord } from '$lib/types/my-discord';
+    import { onMount } from 'svelte';
+    import { DiscordSolid } from 'flowbite-svelte-icons';
 
     let user_info: UserInfo;
 
@@ -9,10 +12,90 @@
         user_info = value;
     });
 
+    let linked_account: MyDiscord | null;
+
+    let discord_avatar_url = "https://cdn.discordapp.com/avatars"
+
+    $: avatar_url = linked_account ? `${discord_avatar_url}/${linked_account.discord_id}/${linked_account.avatar}.png?size=64` : null;
+
+    onMount(async() => {
+        const res = await fetch("/api/user/my_discord");
+        if(res.status == 200) {
+            const body: MyDiscord | null = await res.json();
+            linked_account = body;
+        }
+    });
+
     async function linkDiscord() {
         let url = `/api/user/link_discord?page_url=${encodeURIComponent(window.location.href)}`;
         window.location.replace(url);
     }
+
+    async function refreshDiscordData() {
+        let endpoint = '/api/user/refresh_discord';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const result = await response.json();
+        if (response.status == 200) {
+            linked_account = result;
+        } else {
+            alert(`An error occurred: ${result['title']}`);
+        }
+
+    }
 </script>
 
-<Button on:click={linkDiscord}>Link Discord Account</Button>
+{#if user_info.id === null}
+    Sign in or Register to link your Discord Account
+{:else if linked_account !== undefined}
+    {#if linked_account === null}
+        <Button on:click={linkDiscord}>Link Discord Account</Button>
+    {:else}
+        <div class="flex">
+            {#if avatar_url}
+                <div class="section">
+                    <img src={avatar_url} alt={linked_account.username}/>
+                </div>
+            {/if}
+            <div class="section">
+                {#if linked_account.global_name}
+                    <div>
+                        {linked_account.global_name}
+                    </div>
+                {/if}
+                <div class="flex">
+                    <DiscordSolid/>
+                    <div class="username">
+                        {linked_account.username}
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="disc_button">
+                    <Button size="xs" extra_classes="w-32" on:click={linkDiscord}>Relink account</Button>
+                </div>
+                <div class="disc_button">
+                    <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData}>Refresh</Button>
+                </div>
+            </div>
+        </div>
+    {/if}
+{/if}
+
+<style>
+    div.flex {
+        display: flex;
+        align-items: center;
+    }
+    div.section {
+        margin: 0 10px;
+    }
+    div.username {
+        margin-left: 5px;
+    }
+    div.disc_button {
+        margin: 5px 0;
+    }
+</style>

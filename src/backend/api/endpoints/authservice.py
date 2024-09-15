@@ -85,10 +85,24 @@ async def discord_callback(request: Request, data: DiscordAuthCallbackData) -> R
         return RedirectResponse(data.state, 302)
     return JSONResponse({})
 
+@require_logged_in
+async def my_discord_data(request: Request) -> Response:
+    command = GetUserDiscordCommand(request.state.user.id)
+    discord_data = await handle(command)
+    return JSONResponse(discord_data)
+
+@require_logged_in
+async def refresh_discord_data(request: Request) -> JSONResponse:
+    command = RefreshUserDiscordDataCommand(request.state.user.id)
+    discord_data = await handle(command)
+    return JSONResponse(discord_data)
+
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
     Route('/api/user/logout', log_out, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
-    Route('/api/user/discord_callback', discord_callback)
+    Route('/api/user/discord_callback', discord_callback),
+    Route('/api/user/my_discord', my_discord_data),
+    Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST'])
 ]

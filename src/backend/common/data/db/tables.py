@@ -96,7 +96,7 @@ class UserDiscord(TableModel):
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS user_discords(
         user_id INTEGER PRIMARY KEY REFERENCES users(id),
-        discord_id INTEGER NOT NULL,
+        discord_id TEXT NOT NULL,
         username TEXT NOT NULL,
         discriminator TEXT NOT NULL,
         global_name TEXT,
