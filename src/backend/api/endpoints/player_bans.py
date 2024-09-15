@@ -7,25 +7,37 @@ from api.utils.responses import JSONResponse, bind_request_body, bind_request_qu
 from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
+from common.auth.roles import BANNED
 
 @bind_request_body(PlayerBanRequestData)
 @require_permission(permissions.BAN_PLAYER)
 async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
-    command = BanPlayerCommand(request.path_params['id'], request.state.user.id, body)
-    player_ban = await handle(command)
+    player_id = request.path_params['id']
+    banned_by_id = request.state.user.id
+    expires_on = None if body.is_indefinite else body.expiration_date
+
+    await handle(GrantRoleCommand(banned_by_id, player_id, BANNED, expires_on))
+    player_ban = await handle(BanPlayerCommand(player_id, banned_by_id, body))
     return JSONResponse(player_ban, status_code=200)
 
 @require_permission(permissions.BAN_PLAYER)
 async def unban_player(request: Request) -> Response:
-    command = UnbanPlayerCommand(request.path_params['id'], request.state.user.id)
-    player_unban = await handle(command)
+    player_id = request.path_params['id']
+    unbanned_by_id = request.state.user.id
+
+    await handle(RemoveRoleCommand(unbanned_by_id, player_id, BANNED))
+    player_unban = await handle(UnbanPlayerCommand(player_id, unbanned_by_id))
     return JSONResponse(player_unban, status_code=200)
 
 @bind_request_body(PlayerBanRequestData)
 @require_permission(permissions.BAN_PLAYER)
 async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Response:
-    command = EditPlayerBanCommand(request.path_params['id'], request.state.user.id, body)
-    player_ban = await handle(command)
+    player_id = request.path_params['id']
+    banned_by_id = request.state.user.id
+    expires_on = None if body.is_indefinite else body.expiration_date
+
+    await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, BANNED, expires_on))
+    player_ban = await handle(EditPlayerBanCommand(player_id, banned_by_id, body))
     return JSONResponse(player_ban, status_code=200)
 
 @bind_request_query(PlayerBanFilter)
