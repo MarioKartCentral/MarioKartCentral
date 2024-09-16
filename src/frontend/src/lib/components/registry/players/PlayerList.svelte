@@ -31,7 +31,7 @@
       <tr class="row-{i % 2}">
         <td><Flag country_code={player.country_code} /></td>
         <td>
-          <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
+          <a href="/{$page.params.lang}/registry/players/profile?id={player.id}" class={player.is_banned ? 'banned_name' : ''}>{player.name}</a>
         </td>
         <td class="mobile-hide"
           >{#each player.friend_codes.filter((fc) => fc.game === "mk8dx") as friend_code}{friend_code.fc}{/each}</td
@@ -67,5 +67,9 @@
   col.mk7,
   col.mk8 {
     width: 15%;
+  }
+  .banned_name {
+    opacity: 0.7;
+    text-decoration: line-through;
   }
 </style>

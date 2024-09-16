@@ -33,6 +33,11 @@ export function sort_placement_list(a: PlacementOrganizer, b: PlacementOrganizer
   return a.placement < b.placement ? -1 : 1;
 }
 
+export function findNumberOfDaysBetweenDates(start: number, end: number, isMs: boolean = false) {
+  const timeInDay = isMs ? 86400000 : 86400; // js/ts uses milliseconds while Python uses seconds
+  return Math.floor((end - start) / timeInDay);
+}
+
 export const valid_games: { [key: string]: string } = {
   mk8dx: 'Mario Kart 8 Deluxe',
   mk8: 'Mario Kart 8',
@@ -236,4 +241,11 @@ export const colors: Color[] = [
     label: 'BLACK',
     value: '#000000',
   },
+];
+export const default_player_ban_options: string[] = [
+  'Alternate Account',
+  'Alting',
+  'Harassment',
+  'Sexual Misconduct',
+  'Other',
 ];

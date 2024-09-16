@@ -14,3 +14,4 @@ from .tournament_templates import *
 from .tournaments import *
 from .user_settings import *
 from .users import *
+from .player_bans import *

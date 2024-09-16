@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import Literal
 
 from common.data.models.common import Game, CountryCode
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
+from common.data.models.player_bans import PlayerBanBasic
 
     
 @dataclass
@@ -21,14 +21,6 @@ class PlayerAndFriendCodes(Player):
     friend_codes: list[FriendCode]
 
 @dataclass
-class PlayerBan:
-    player_id: int
-    staff_id: int
-    is_indefinite: bool
-    expiration_date: int
-    reason: str
-
-@dataclass
 class PlayerRoster:
     roster_id: int
     join_date: int
@@ -44,7 +36,7 @@ class PlayerRoster:
 @dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
-    ban_info: PlayerBan | None
+    ban_info: PlayerBanBasic | None
     user_settings: UserSettings | None
 
 @dataclass
@@ -87,19 +79,3 @@ class PlayerFilter:
     page: int | None = None
     squad_id: int | None = None
     matching_fcs_only: bool = False
-
-@dataclass
-class PlayerBanRequestData:
-    is_indefinite: bool
-    expiration_date: int
-    reason: str
-
-@dataclass
-class PlayerBanFilter:
-    player_id: str | None = None
-    staff_id: str | None = None
-    is_indefinite: Literal['0', '1'] | None = None
-    expires_before: str | None = None
-    expires_after: str | None = None
-    reason: str | None = None
-
