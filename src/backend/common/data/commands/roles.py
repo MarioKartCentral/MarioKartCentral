@@ -924,6 +924,61 @@ class RemoveTournamentRoleCommand(Command[None]):
                 await db.commit()
             except Exception:
                 raise Problem("Unexpected error")
+            
+@save_to_command_log
+@dataclass
+class UpdateRoleExpirationCommand(Command[None]):
+    granter_user_id: int
+    target_player_id: int
+    role: str
+    expires_on: int | None = None
+
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
+        async with db_wrapper.connect() as db:
+            timestamp = int(datetime.now(timezone.utc).timestamp())
+            if self.expires_on and self.expires_on < timestamp:
+                raise Problem("Role cannot expire in the past", status=400)
+            
+            # get user id from player
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User not found", status=404)
+                target_user_id = row[0]
+            
+            # get role id from name
+            async with db.execute("SELECT id FROM roles where name = ?", (self.role,)) as cursor:
+                row = await cursor.fetchone()
+                role_id = None if row is None else int(row[0])
+
+                if role_id is None:
+                    raise Problem("Role not found", status=404)
+        
+            # to have permission to grant a role, we should have a role which is both higher
+            # in the role hierarchy than the role we wish to grant, and has the MANAGE_USER_ROLES
+            # permission.
+            async with db.execute("""
+                SELECT EXISTS(
+                    SELECT 1 FROM roles r1
+                    JOIN user_roles ur ON ur.role_id = r1.id
+                    JOIN role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN permissions p ON rp.permission_id = p.id
+                    JOIN roles r2
+                    WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
+                    AND rp.is_denied = 0 AND p.name = ?
+                )
+                """, (self.granter_user_id, self.role, permissions.MANAGE_USER_ROLES)) as cursor:
+                row = await cursor.fetchone()
+                can_grant = row is not None and bool(row[0])
+
+            if not can_grant:
+                raise Problem("Not authorized to grant role", status=401)
+
+            try:
+                await db.execute("UPDATE user_roles SET expires_on = ? WHERE user_id = ? AND role_id = ?", (self.expires_on, target_user_id, role_id))
+                await db.commit()
+            except Exception:
+                raise Problem("Unexpected error")
 
 @save_to_command_log
 @dataclass

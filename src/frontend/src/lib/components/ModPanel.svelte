@@ -67,4 +67,9 @@
       User Roles
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.ban_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/player_bans">
+      Player Bans
+    </DropdownItem>
+  {/if}
 </Dropdown>

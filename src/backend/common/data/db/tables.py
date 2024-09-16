@@ -750,20 +750,51 @@ class CommandLog(TableModel):
 @dataclass
 class PlayerBans(TableModel):
     player_id: int
-    staff_id: int
+    banned_by: int
     is_indefinite: bool
+    ban_date: int
     expiration_date: int
     reason: str
+    comment: str
 
     @staticmethod
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS player_bans(
             player_id INTEGER PRIMARY KEY REFERENCES players(id),
-            staff_id INTEGER NOT NULL REFERENCES users(id),
+            banned_by INTEGER NOT NULL REFERENCES users(id),
             is_indefinite BOOLEAN NOT NULL,
+            ban_date INTEGER NOT NULL,
             expiration_date INTEGER NOT NULL,
-            reason TEXT NOT NULL
+            reason TEXT NOT NULL,
+            comment TEXT NOT NULL
             ) WITHOUT ROWID"""
+    
+@dataclass
+class PlayerBansHistorical(TableModel):
+    id: int
+    player_id: int
+    banned_by: int
+    unbanned_by: int | None
+    unban_date: int
+    is_indefinite: bool
+    ban_date: int
+    expiration_date: int
+    reason: str
+    comment: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_bans_historical(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER REFERENCES players(id),
+            banned_by INTEGER NOT NULL REFERENCES users(id),
+            unbanned_by INTEGER REFERENCES users(id),
+            unban_date INTEGER NOT NULL,
+            is_indefinite BOOLEAN NOT NULL,
+            ban_date INTEGER NOT NULL,
+            expiration_date INTEGER NOT NULL,
+            reason TEXT NOT NULL,
+            comment TEXT NOT NULL)"""
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
@@ -773,4 +804,4 @@ all_tables : list[type[TableModel]] = [
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
+    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, PlayerBansHistorical]

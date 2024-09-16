@@ -406,6 +406,204 @@ type RootTranslation = {
 		 */
 		SAVE: string
 	}
+	PLAYER_BAN: {
+		/**
+		 * P​l​a​y​e​r​ ​I​D
+		 */
+		PLAYER_ID: string
+		/**
+		 * B​a​n​n​e​d​ ​B​y
+		 */
+		BANNED_BY: string
+		/**
+		 * U​n​b​a​n​n​e​d​ ​B​y
+		 */
+		UNBANNED_BY: string
+		/**
+		 * I​s​ ​I​n​d​e​f​i​n​i​t​e
+		 */
+		IS_INDEFINITE: string
+		/**
+		 * B​a​n​ ​D​a​t​e
+		 */
+		BAN_DATE: string
+		/**
+		 * D​u​r​a​t​i​o​n
+		 */
+		DURATION: string
+		/**
+		 * E​x​p​i​r​a​t​i​o​n​ ​D​a​t​e
+		 */
+		EXPIRATION_DATE: string
+		/**
+		 * E​x​p​i​r​e​s
+		 */
+		EXPIRES: string
+		/**
+		 * R​e​a​s​o​n
+		 */
+		REASON: string
+		/**
+		 * C​o​m​m​e​n​t
+		 */
+		COMMENT: string
+		/**
+		 * C​o​m​m​e​n​t​ ​I​n​c​l​u​d​e​s
+		 */
+		COMMENT_INCLUDES: string
+		/**
+		 * C​o​m​m​e​n​t​ ​(​O​n​l​y​ ​m​o​d​e​r​a​t​o​r​s​ ​c​a​n​ ​s​e​e​ ​t​h​i​s​)
+		 */
+		COMMENT_ONLY_MODS: string
+		/**
+		 * S​u​b​m​i​t
+		 */
+		SUBMIT: string
+		/**
+		 * C​a​n​c​e​l
+		 */
+		CANCEL: string
+		/**
+		 * I​n​d​e​f​i​n​i​t​e
+		 */
+		INDEFINITE: string
+		/**
+		 * N​u​m​b​e​r​ ​o​f​ ​D​a​y​s
+		 */
+		NUMBER_OF_DAYS: string
+		/**
+		 * S​e​l​e​c​t​ ​R​e​a​s​o​n
+		 */
+		SELECT_REASON: string
+		/**
+		 * B​a​n​ ​P​l​a​y​e​r
+		 */
+		BAN_PLAYER: string
+		/**
+		 * E​d​i​t​ ​B​a​n
+		 */
+		EDIT_BAN: string
+		/**
+		 * V​i​e​w​/​E​d​i​t​ ​B​a​n
+		 */
+		VIEW_EDIT_BAN: string
+		/**
+		 * U​n​b​a​n
+		 */
+		UNBAN: string
+		/**
+		 * B​a​n​ ​D​e​t​a​i​l​s
+		 */
+		BAN_DETAILS: string
+		/**
+		 * E​d​i​t​ ​B​a​n​ ​D​e​t​a​i​l​s
+		 */
+		EDIT_BAN_DETAILS: string
+		/**
+		 * B​a​n​n​e​d
+		 */
+		BANNED: string
+		/**
+		 * U​n​b​a​n​n​e​d
+		 */
+		UNBANNED: string
+		/**
+		 * E​n​t​e​r​ ​r​e​a​s​o​n
+		 */
+		ENTER_REASON: string
+		/**
+		 * P​l​a​y​e​r
+		 */
+		PLAYER: string
+		/**
+		 * P​l​a​y​e​r​s
+		 */
+		PLAYERS: string
+		/**
+		 * U​s​e​r
+		 */
+		USER: string
+		/**
+		 * T​h​e​ ​p​l​a​y​e​r​ ​i​s​ ​a​l​r​e​a​d​y​ ​b​a​n​n​e​d
+		 */
+		THE_PLAYER_IS_ALREADY_BANNED: string
+		/**
+		 * F​r​o​m​ ​i​n​i​t​i​a​l​ ​b​a​n​ ​d​a​t​e
+		 */
+		FROM_INITIAL_BAN_DATE: string
+		/**
+		 * L​i​s​t​ ​o​f​ ​B​a​n​n​e​d​ ​P​l​a​y​e​r​s
+		 */
+		LIST_OF_BANNED_PLAYERS: string
+		/**
+		 * L​i​s​t​ ​o​f​ ​H​i​s​t​o​r​i​c​a​l​ ​B​a​n​s
+		 */
+		LIST_OF_HISTORICAL_BANS: string
+		/**
+		 * d​a​y
+		 */
+		DAY: string
+		/**
+		 * d​a​y​s
+		 */
+		DAYS: string
+		/**
+		 * I​n​ ​d​d​d​ ​d​a​y
+		 */
+		IN_DDD_DAY: string
+		/**
+		 * I​n​ ​d​d​d​ ​d​a​y​s
+		 */
+		IN_DDD_DAYS: string
+		/**
+		 * Y​e​s
+		 */
+		YES: string
+		/**
+		 * N​o
+		 */
+		NO: string
+		/**
+		 * S​T​A​F​F
+		 */
+		STAFF: string
+		/**
+		 * S​e​a​r​c​h
+		 */
+		SEARCH: string
+		/**
+		 * N​a​m​e
+		 */
+		NAME: string
+		/**
+		 * B​a​n​n​e​d​ ​T​o
+		 */
+		BANNED_TO: string
+		/**
+		 * B​a​n​n​e​d​ ​F​r​o​m
+		 */
+		BANNED_FROM: string
+		/**
+		 * U​n​b​a​n​n​e​d​ ​T​o
+		 */
+		UNBANNED_TO: string
+		/**
+		 * U​n​b​a​n​n​e​d​ ​F​r​o​m
+		 */
+		UNBANNED_FROM: string
+		/**
+		 * E​x​p​i​r​e​s​ ​T​o
+		 */
+		EXPIRES_TO: string
+		/**
+		 * E​x​p​i​r​e​s​ ​F​r​o​m
+		 */
+		EXPIRES_FROM: string
+		/**
+		 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e
+		 */
+		SEARCH_BY_NAME: string
+	}
 	LANGUAGES: {
 		/**
 		 * E​n​g​l​i​s​h​ ​(​U​n​i​t​e​d​ ​S​t​a​t​e​s​)
@@ -1982,6 +2180,204 @@ export type TranslationFunctions = {
 		 * Save
 		 */
 		SAVE: () => LocalizedString
+	}
+	PLAYER_BAN: {
+		/**
+		 * Player ID
+		 */
+		PLAYER_ID: () => LocalizedString
+		/**
+		 * Banned By
+		 */
+		BANNED_BY: () => LocalizedString
+		/**
+		 * Unbanned By
+		 */
+		UNBANNED_BY: () => LocalizedString
+		/**
+		 * Is Indefinite
+		 */
+		IS_INDEFINITE: () => LocalizedString
+		/**
+		 * Ban Date
+		 */
+		BAN_DATE: () => LocalizedString
+		/**
+		 * Duration
+		 */
+		DURATION: () => LocalizedString
+		/**
+		 * Expiration Date
+		 */
+		EXPIRATION_DATE: () => LocalizedString
+		/**
+		 * Expires
+		 */
+		EXPIRES: () => LocalizedString
+		/**
+		 * Reason
+		 */
+		REASON: () => LocalizedString
+		/**
+		 * Comment
+		 */
+		COMMENT: () => LocalizedString
+		/**
+		 * Comment Includes
+		 */
+		COMMENT_INCLUDES: () => LocalizedString
+		/**
+		 * Comment (Only moderators can see this)
+		 */
+		COMMENT_ONLY_MODS: () => LocalizedString
+		/**
+		 * Submit
+		 */
+		SUBMIT: () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		CANCEL: () => LocalizedString
+		/**
+		 * Indefinite
+		 */
+		INDEFINITE: () => LocalizedString
+		/**
+		 * Number of Days
+		 */
+		NUMBER_OF_DAYS: () => LocalizedString
+		/**
+		 * Select Reason
+		 */
+		SELECT_REASON: () => LocalizedString
+		/**
+		 * Ban Player
+		 */
+		BAN_PLAYER: () => LocalizedString
+		/**
+		 * Edit Ban
+		 */
+		EDIT_BAN: () => LocalizedString
+		/**
+		 * View/Edit Ban
+		 */
+		VIEW_EDIT_BAN: () => LocalizedString
+		/**
+		 * Unban
+		 */
+		UNBAN: () => LocalizedString
+		/**
+		 * Ban Details
+		 */
+		BAN_DETAILS: () => LocalizedString
+		/**
+		 * Edit Ban Details
+		 */
+		EDIT_BAN_DETAILS: () => LocalizedString
+		/**
+		 * Banned
+		 */
+		BANNED: () => LocalizedString
+		/**
+		 * Unbanned
+		 */
+		UNBANNED: () => LocalizedString
+		/**
+		 * Enter reason
+		 */
+		ENTER_REASON: () => LocalizedString
+		/**
+		 * Player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * Players
+		 */
+		PLAYERS: () => LocalizedString
+		/**
+		 * User
+		 */
+		USER: () => LocalizedString
+		/**
+		 * The player is already banned
+		 */
+		THE_PLAYER_IS_ALREADY_BANNED: () => LocalizedString
+		/**
+		 * From initial ban date
+		 */
+		FROM_INITIAL_BAN_DATE: () => LocalizedString
+		/**
+		 * List of Banned Players
+		 */
+		LIST_OF_BANNED_PLAYERS: () => LocalizedString
+		/**
+		 * List of Historical Bans
+		 */
+		LIST_OF_HISTORICAL_BANS: () => LocalizedString
+		/**
+		 * day
+		 */
+		DAY: () => LocalizedString
+		/**
+		 * days
+		 */
+		DAYS: () => LocalizedString
+		/**
+		 * In ddd day
+		 */
+		IN_DDD_DAY: () => LocalizedString
+		/**
+		 * In ddd days
+		 */
+		IN_DDD_DAYS: () => LocalizedString
+		/**
+		 * Yes
+		 */
+		YES: () => LocalizedString
+		/**
+		 * No
+		 */
+		NO: () => LocalizedString
+		/**
+		 * STAFF
+		 */
+		STAFF: () => LocalizedString
+		/**
+		 * Search
+		 */
+		SEARCH: () => LocalizedString
+		/**
+		 * Name
+		 */
+		NAME: () => LocalizedString
+		/**
+		 * Banned To
+		 */
+		BANNED_TO: () => LocalizedString
+		/**
+		 * Banned From
+		 */
+		BANNED_FROM: () => LocalizedString
+		/**
+		 * Unbanned To
+		 */
+		UNBANNED_TO: () => LocalizedString
+		/**
+		 * Unbanned From
+		 */
+		UNBANNED_FROM: () => LocalizedString
+		/**
+		 * Expires To
+		 */
+		EXPIRES_TO: () => LocalizedString
+		/**
+		 * Expires From
+		 */
+		EXPIRES_FROM: () => LocalizedString
+		/**
+		 * Search by Name
+		 */
+		SEARCH_BY_NAME: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**

@@ -45,6 +45,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/approve_team_edits`,
     `/${locale}/moderator/approve_transfers`,
     `/${locale}/moderator/manage_user_roles`,
+    `/${locale}/moderator/player_bans`,
   ];
 }
 
