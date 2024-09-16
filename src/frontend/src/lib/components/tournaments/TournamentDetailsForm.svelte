@@ -64,7 +64,7 @@
     if (data.use_series_logo) {
       data.logo = null;
     }
-    if(data.game !== "mkw" || !data.is_squad) {
+    if (data.game !== 'mkw' || !data.is_squad) {
       data.bagger_clause_enabled = false;
     }
     update_function();
@@ -77,14 +77,7 @@
       <label for="tournament_name">Tournament Name (required)</label>
     </div>
     <div>
-      <input
-        name="tournament_name"
-        class="tournament_name"
-        type="text"
-        bind:value={data.name}
-        minlength="1"
-        required
-      />
+      <input name="tournament_name" class="tournament_name" type="text" bind:value={data.name} minlength="1" required />
     </div>
   </div>
   <div class="option">
@@ -137,7 +130,7 @@
         <label for="logo">Logo</label>
       </div>
       <div>
-        <input name="logo" type="text" />
+        <input name="logo" type="text" bind:value={data.logo} />
       </div>
     </div>
   {/if}
@@ -200,7 +193,12 @@
           <label for="squad_tag_required">Squad Tag required for registration (this cannot be changed)</label>
         </div>
         <div>
-          <select name="squad_tag_required" bind:value={data.squad_tag_required} on:change={updateData} disabled={is_edit || data.teams_allowed}>
+          <select
+            name="squad_tag_required"
+            bind:value={data.squad_tag_required}
+            on:change={updateData}
+            disabled={is_edit || data.teams_allowed}
+          >
             <option value={false}>No</option>
             <option value={true}>Yes</option>
           </select>
@@ -211,19 +209,29 @@
           <label for="squad_name_required">Squad Name required for registration (this cannot be changed)</label>
         </div>
         <div>
-          <select name="squad_name_required" bind:value={data.squad_name_required} on:change={updateData} disabled={is_edit || data.teams_allowed}>
+          <select
+            name="squad_name_required"
+            bind:value={data.squad_name_required}
+            on:change={updateData}
+            disabled={is_edit || data.teams_allowed}
+          >
             <option value={false}>No</option>
             <option value={true}>Yes</option>
           </select>
         </div>
       </div>
-      {#if data.game === "mkw"}
+      {#if data.game === 'mkw'}
         <div class="option">
           <div>
             <label for="bagger_clause_enabled">Enable Bagger Clause? (this cannot be changed)</label>
           </div>
           <div>
-            <select name="bagger_clause_enabled" bind:value={data.bagger_clause_enabled} on:change={updateData} disabled={is_edit}>
+            <select
+              name="bagger_clause_enabled"
+              bind:value={data.bagger_clause_enabled}
+              on:change={updateData}
+              disabled={is_edit}
+            >
               <option value={false}>No</option>
               <option value={true}>Yes</option>
             </select>
@@ -243,7 +251,6 @@
       </div>
       {#if data.teams_allowed}
         <div class="indented">
-          
           <div class="option">
             <div>
               <label for="teams_only">Teams only? (this cannot be changed)</label>

@@ -11,6 +11,8 @@ export type TournamentListItem = {
   series_description: string | null;
   is_squad: boolean;
   teams_allowed: boolean;
+  registrations_open: boolean;
+  use_series_logo: boolean;
   description: string;
   logo: string | null;
 };
