@@ -97,6 +97,12 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
     discord_data = await handle(command)
     return JSONResponse(discord_data)
 
+@require_logged_in
+async def delete_discord_data(request: Request) -> JSONResponse:
+    command = DeleteUserDiscordDataCommand(request.state.user.id)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
@@ -104,5 +110,6 @@ routes = [
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
-    Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST'])
+    Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
+    Route('/api/user/delete_discord', delete_discord_data, methods=['POST'])
 ]

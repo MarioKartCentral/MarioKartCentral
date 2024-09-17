@@ -38,12 +38,28 @@
             headers: { 'Content-Type': 'application/json' },
         });
         const result = await response.json();
-        if (response.status == 200) {
+        if (response.status === 200) {
             linked_account = result;
         } else {
             alert(`An error occurred: ${result['title']}`);
         }
 
+    }
+
+    async function deleteDiscordData() {
+        let conf = window.confirm("Are you sure you would like to delete your Discord data?");
+        if(!conf) return;
+        let endpoint = '/api/user/delete_discord';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const result = await response.json();
+        if (response.status === 200) {
+            linked_account = null;
+        } else {
+            alert(`An error occurred: ${result['title']}`);
+        }
     }
 </script>
 
@@ -55,7 +71,7 @@
     {:else}
         <div class="flex">
             {#if avatar_url}
-                <div class="section">
+                <div class="section avatar">
                     <img src={avatar_url} alt={linked_account.username}/>
                 </div>
             {/if}
@@ -73,11 +89,16 @@
                 </div>
             </div>
             <div class="section">
-                <div class="disc_button">
-                    <Button size="xs" extra_classes="w-32" on:click={linkDiscord}>Relink account</Button>
-                </div>
-                <div class="disc_button">
-                    <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData}>Refresh</Button>
+                <div class="flex buttons">
+                    <div class="disc_button">
+                        <Button size="xs" extra_classes="w-32" on:click={linkDiscord}>Relink account</Button>
+                    </div>
+                    <div class="disc_button">
+                        <Button size="xs" extra_classes="w-32" on:click={deleteDiscordData}>Unlink account</Button>
+                    </div>
+                    <div class="disc_button">
+                        <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData}>Refresh</Button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,14 +109,21 @@
     div.flex {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
+    }
+    div.buttons {
+        max-width: 500px;
     }
     div.section {
-        margin: 0 10px;
+        margin: 5px 10px;
+    }
+    div.avatar {
+        min-width: 64px;
     }
     div.username {
         margin-left: 5px;
     }
     div.disc_button {
-        margin: 5px 0;
+        margin: 3px;
     }
 </style>

@@ -5,5 +5,4 @@ export type MyDiscord = {
     discriminator: string;
     global_name: string | null;
     avatar: string | null;
-    token_expires_on: number;
 }

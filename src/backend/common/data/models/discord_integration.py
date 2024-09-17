@@ -33,4 +33,3 @@ class MyDiscordData:
     discriminator: str
     global_name: str | None
     avatar: str | None
-    token_expires_on: int
