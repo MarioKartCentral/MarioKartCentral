@@ -12,7 +12,7 @@
 
   let user_info: UserInfo;
   user.subscribe((value) => {
-   user_info = value;
+    user_info = value;
   });
 
   let tournaments: TournamentListItem[] = [];
