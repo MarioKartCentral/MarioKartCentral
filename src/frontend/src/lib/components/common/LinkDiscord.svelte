@@ -14,9 +14,10 @@
 
     let linked_account: MyDiscord | null;
 
+    let default_avatar = "https://cdn.discordapp.com/embed/avatars/0.png?size=64";
     let discord_avatar_url = "https://cdn.discordapp.com/avatars"
 
-    $: avatar_url = linked_account ? `${discord_avatar_url}/${linked_account.discord_id}/${linked_account.avatar}.png?size=64` : null;
+    $: avatar_url = linked_account?.avatar ? `${discord_avatar_url}/${linked_account.discord_id}/${linked_account.avatar}.png?size=64` : default_avatar;
 
     onMount(async() => {
         const res = await fetch("/api/user/my_discord");
@@ -118,7 +119,7 @@
         margin: 5px 10px;
     }
     div.avatar {
-        min-width: 64px;
+        width: 64px;
     }
     div.username {
         margin-left: 5px;

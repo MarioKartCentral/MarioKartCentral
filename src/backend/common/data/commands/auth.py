@@ -232,6 +232,18 @@ class LinkUserDiscordCommand(Command[None]):
     data: DiscordAuthCallbackData
 
     async def handle(self, db_wrapper, s3_wrapper):
+        # If we're in a dev environment, we don't want to require everyone to have a client secret just to use the discord functionality.
+        # Therefore, just make a fake user so we don't have to make any requests to the Discord API.
+        if settings.ENV == "Development":
+            async with db_wrapper.connect() as db:
+                await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
+                await db.execute("""INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar,
+                                    access_token, token_expires_on, refresh_token) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                    (self.user_id, 0, "test_user", 0,
+                                    None, None, "access_token", 0,
+                                    "refresh_token"))
+                await db.commit()
+                return
         redirect_uri = 'http://localhost:5000/api/user/discord_callback'
         code = self.data.code
         body = {
