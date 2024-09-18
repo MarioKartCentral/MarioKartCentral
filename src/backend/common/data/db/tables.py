@@ -15,7 +15,6 @@ class Player(TableModel):
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
-    discord_id: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -25,8 +24,8 @@ class Player(TableModel):
             country_code TEXT NOT NULL,
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
-            is_banned BOOLEAN NOT NULL,
-            discord_id TEXT)"""
+            is_banned BOOLEAN NOT NULL
+            )"""
 
 @dataclass
 class FriendCode(TableModel):
@@ -83,7 +82,7 @@ class Session(TableModel):
 @dataclass
 class UserDiscord(TableModel):
     user_id: int
-    discord_id: int
+    discord_id: str
     username: str
     discriminator: str
     global_name: str | None
@@ -709,7 +708,6 @@ class RosterEditRequest(TableModel):
 class UserSettings(TableModel):
     user_id: int
     avatar: str | None
-    discord_tag: str | None
     about_me: str | None
     language: str
     color_scheme: str

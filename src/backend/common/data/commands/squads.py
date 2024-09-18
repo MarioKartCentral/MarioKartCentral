@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Iterable
 from common.auth import team_permissions
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails
+from common.data.models import Problem, SquadPlayerDetails, TournamentSquadDetails, Discord
 
 
 @save_to_command_log
@@ -288,9 +288,11 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 squad_id, name, tag, color, timestamp, is_registered = squad_row
             async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause,
-                                    p.name, p.country_code, p.discord_id
+                                    p.name, p.country_code, d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
                                     WHERE t.squad_id IS ?""",
                                     (self.squad_id,)) as cursor:
                 player_rows = await cursor.fetchall()
@@ -298,9 +300,14 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 player_dict: dict[int, SquadPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
                 fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
-                    reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, curr_fc_id, is_bagger_clause, player_name, country, discord_id = row
+                    (reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, 
+                     can_host, is_invite, curr_fc_id, is_bagger_clause, player_name, country, 
+                     discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
                     curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
-                        player_name, country, discord_id, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
+                        player_name, country, player_discord, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
                     players.append(curr_player)
 
                     player_dict[curr_player.player_id] = curr_player

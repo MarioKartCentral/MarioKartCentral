@@ -1,4 +1,5 @@
 import type { FriendCode } from './friend-code';
+import type { Discord } from './discord';
 
 export type TournamentPlayer = {
   id: number;
@@ -10,7 +11,7 @@ export type TournamentPlayer = {
   can_host: boolean;
   name: string;
   country_code: string | null;
-  discord_id: string | null;
+  discord: Discord | null;
   selected_fc_id: number | null;
   friend_codes: FriendCode[];
   is_squad_captain: boolean;

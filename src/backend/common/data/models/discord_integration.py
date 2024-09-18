@@ -26,10 +26,13 @@ class DiscordUser:
     avatar: str | None
 
 @dataclass
-class MyDiscordData:
-    user_id: int
+class Discord:
     discord_id: str
     username: str
     discriminator: str
     global_name: str | None
     avatar: str | None
+
+@dataclass
+class MyDiscordData(Discord):
+    user_id: int

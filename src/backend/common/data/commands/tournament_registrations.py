@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails, FriendCode
+from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails, FriendCode, Discord
 
 
 @save_to_command_log
@@ -296,19 +296,26 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, [])
                     squads[squad_id] = curr_squad
             async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
-                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, p.name, p.country_code, p.discord_id
+                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, p.name, p.country_code, 
+                                    d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
                                     WHERE t.tournament_id = ?""",
                                     (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
                     (reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                     is_bagger_clause, player_name, country, discord_id) = row
+                     is_bagger_clause, player_name, country, 
+                     discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, selected_fc_id, [], is_squad_captain, 
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, player_discord, selected_fc_id, [], is_squad_captain, 
                                                      is_representative, is_invite, is_bagger_clause)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
@@ -351,9 +358,12 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
             if self.hosts_only:
                 where_clauses.append("t.can_host = 1")
             where_clause = " AND ".join(where_clauses)
-            async with db.execute(f"""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, p.discord_id
+            async with db.execute(f"""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, 
+                                    d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
                                     WHERE {where_clause}""",
                                     variable_parameters) as cursor:
                 rows = await cursor.fetchall()
@@ -362,8 +372,12 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
                 player_dict: dict[int, TournamentPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
 
                 for row in rows:
-                    reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
-                    curr_player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, selected_fc_id, [])
+                    (reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, 
+                     discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    curr_player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, player_discord, selected_fc_id, [])
                     players.append(curr_player)
                     
                     player_dict[player_id] = curr_player
@@ -407,9 +421,12 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     squads[squad_id] = curr_squad
             # get all players from squads that the requested player is in
             async with db.execute(f"""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
-                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, p.name, p.country_code, p.discord_id
+                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, p.name, p.country_code, 
+                                    d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
                                     WHERE t.tournament_id = ?
                                     AND EXISTS (
                                         SELECT p2.id FROM tournament_players p2
@@ -419,11 +436,15 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
-                    (reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                     is_bagger_clause, player_name, country, discord_id) = row
+                    (reg_id, player_id, squad_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, can_host, 
+                     is_invite, selected_fc_id, is_bagger_clause, player_name, country, 
+                     discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
                     if squad_id not in squads:
                         continue
-                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, discord_id, selected_fc_id, [], is_squad_captain,
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    curr_player = SquadPlayerDetails(reg_id, player_id, squad_id, player_timestamp, is_checked_in, mii_name, can_host, player_name, country, player_discord, selected_fc_id, [], is_squad_captain,
                                                      is_representative, is_invite, is_bagger_clause)
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
@@ -468,17 +489,24 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                 if not row:
                     raise Problem("Tournament not found", status=400)
                 game = row[0]
-            async with db.execute("""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, p.discord_id
+            async with db.execute("""SELECT t.id, t.player_id, t.timestamp, t.is_checked_in, t.mii_name, t.can_host, t.selected_fc_id, p.name, p.country_code, 
+                                    d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
                                     WHERE t.tournament_id = ? AND t.player_id = ?""",
                                     (self.tournament_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     return MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], None)
                 
-                reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, discord_id = row
-                player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, discord_id, selected_fc_id, [])
+                (reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, name, country, 
+                 discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
+                player_discord = None
+                if discord_id:
+                    player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, mii_name, can_host, name, country, player_discord, selected_fc_id, [])
 
             # gathering all the valid FCs for each player for this tournament
             fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (

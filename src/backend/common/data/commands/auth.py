@@ -285,14 +285,14 @@ class GetUserDiscordCommand(Command[MyDiscordData | None]):
     user_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT discord_id, username, discriminator, global_name, avatar FROM user_discords WHERE user_id = ?",
                                   (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     return None
                 discord_id, username, discriminator, global_name, avatar = row
-                user_discord = MyDiscordData(self.user_id, discord_id, username, discriminator, global_name, avatar)
+                user_discord = MyDiscordData(discord_id, username, discriminator, global_name, avatar, self.user_id)
                 return user_discord
             
 @dataclass
@@ -326,8 +326,8 @@ class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
                                     (discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar,
                                      self.user_id))
                     await db.commit()
-        return MyDiscordData(self.user_id, discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name,
-            discord_user.avatar)
+        return MyDiscordData(discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name,
+            discord_user.avatar, self.user_id)
     
 @dataclass
 class DeleteUserDiscordDataCommand(Command[None]):
@@ -372,7 +372,7 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
             async with db.execute("SELECT user_id, refresh_token FROM user_discords WHERE token_expires_on > ? AND token_expires_on < ?",
                                   (expires_from, expires_to)) as cursor:
                 rows = await cursor.fetchall()
-            # we execute one big query at the end, so need to store all our parameters in this list
+        # we execute one big query at the end, so need to store all our parameters in this list
         variable_parameters: list[tuple[str, int, str, int]] = []
         async with aiohttp.ClientSession() as session:
             for row in rows:

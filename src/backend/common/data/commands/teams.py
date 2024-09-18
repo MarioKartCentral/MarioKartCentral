@@ -70,16 +70,16 @@ class GetTeamInfoCommand(Command[Team]):
             # use a set for O(1) lookup
             managers = set[int]()
             leaders = set[int]()
-            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, tr.name FROM players p
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
                 WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, role_name = row
+                    player_id, name, country_code, is_hidden, is_shadow, is_banned, role_name = row
                     if role_name == team_roles.MANAGER:
-                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, None))
                         managers.add(player_id)
                     else:
                         leaders.add(player_id)
@@ -129,11 +129,20 @@ class GetTeamInfoCommand(Command[Team]):
             if len(team_members) > 0 or len(team_invites) > 0:
                 # get info about all players who are in/invited to at least 1 roster on our team
                 member_id_query = ','.join(set([str(m.player_id) for m in team_members] + [str(m.player_id) for m in team_invites]))
-                async with db.execute(f"SELECT id, name, country_code, is_banned, discord_id FROM players WHERE id IN ({member_id_query})") as cursor:
+                async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, 
+                                      d.discord_id, d.username, d.discriminator, d.global_name, d.avatar 
+                                      FROM players p
+                                      LEFT JOIN users u ON u.player_id = p.id
+                                      LEFT JOIN user_discords d ON u.id = d.user_id
+                                      WHERE p.id IN ({member_id_query})""") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        player_id, player_name, country, is_banned, discord_id = row
-                        player_dict[player_id] = PartialPlayer(player_id, player_name, country, bool(is_banned), discord_id, [])
+                        (player_id, player_name, country, is_banned, 
+                         discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
+                        player_discord = None
+                        if discord_id:
+                            player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                        player_dict[player_id] = PartialPlayer(player_id, player_name, country, bool(is_banned), player_discord, [])
 
                 # get all friend codes for members of our team that are from a game that our team has a roster for
                 game_query = ','.join(set([f"'{r.game}'" for r in rosters]))
@@ -149,19 +158,17 @@ class GetTeamInfoCommand(Command[Team]):
                 p = player_dict[member.player_id]
                 is_manager = p.player_id in managers
                 is_leader = p.player_id in leaders
-                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, member.join_date, is_manager, is_leader,
+                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord, member.join_date, is_manager, is_leader,
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
 
             for invite in team_invites:
                 curr_roster = roster_dict[invite.roster_id]
                 p = player_dict[invite.player_id]
-                curr_player = RosterInvitedPlayer(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, invite.join_date,
+                curr_player = RosterInvitedPlayer(p.player_id, p.name, p.country_code, p.is_banned, p.discord, invite.join_date,
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.invites.append(curr_player) 
 
-
-            
             team.rosters = rosters
             return team
 
@@ -1179,7 +1186,6 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
     game: Game
     mode: GameMode
     
-
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             rosters_query = f"""
@@ -1238,8 +1244,12 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     else:
                         leaders.add(player_id)
 
-            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, p.discord_id, m.roster_id, m.join_date
+            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, 
+                                  d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
+                                  m.roster_id, m.join_date
                                 FROM players p
+                                LEFT JOIN users u ON u.player_id = p.id
+                                LEFT JOIN user_discords d ON u.id = d.user_id
                                 JOIN team_members m ON p.id = m.player_id
                                 WHERE m.roster_id IN (
                                   SELECT tr.id
@@ -1247,9 +1257,14 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                 )""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_banned, discord_id, roster_id, join_date = row
+                    (player_id, name, country_code, is_banned, 
+                     discord_id, d_username, d_discriminator, d_global_name, d_avatar,
+                     roster_id, join_date) = row
                     is_manager = player_id in managers
                     is_leader = player_id in leaders
-                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, discord_id, join_date, is_manager, is_leader, [])
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, player_discord, join_date, is_manager, is_leader, [])
                     roster_dict[roster_id].append(player)
             return rosters

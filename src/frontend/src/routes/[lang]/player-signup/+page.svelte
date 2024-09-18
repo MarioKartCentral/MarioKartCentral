@@ -31,7 +31,6 @@
       is_hidden: false,
       is_shadow: false,
       is_banned: false,
-      discord_id: data.get('discord_id'),
     };
     const endpoint = '/api/registry/players/create';
     const response = await fetch(endpoint, {
@@ -87,10 +86,6 @@
     <div>
       <label for="nnid">Nintendo Network ID</label>
       <input name="nnid" />
-    </div>
-    <div>
-      <label for="discord_id">Discord ID</label>
-      <input name="discord_id" type="discord_id" />
     </div>
     <button class="register-btn" type="submit">Register</button>
   </form>

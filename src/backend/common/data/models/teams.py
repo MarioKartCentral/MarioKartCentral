@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
 from common.data.models.players import Player
+from common.data.models.discord_integration import Discord
 
 
 @dataclass
@@ -87,7 +88,7 @@ class PartialPlayer():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     friend_codes: list[FriendCode]
 
 @dataclass
@@ -96,7 +97,7 @@ class RosterPlayerInfo():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     join_date: int
     is_manager: bool
     is_leader: bool
@@ -108,7 +109,7 @@ class RosterInvitedPlayer():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     invite_date: int
     friend_codes: list[FriendCode]
     

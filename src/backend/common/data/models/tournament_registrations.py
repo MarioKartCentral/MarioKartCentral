@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from common.data.models.friend_codes import FriendCode
+from common.data.models.discord_integration import Discord
 
 @dataclass
 class RegisterTeamRequestData:
@@ -54,7 +55,7 @@ class TournamentPlayerDetails():
     can_host: bool
     name: str
     country_code: str | None
-    discord_id: str | None
+    discord: Discord | None
     selected_fc_id: int | None
     friend_codes: list[FriendCode]
 

@@ -21,11 +21,11 @@ class CreatePlayerCommand(Command[Player]):
                     assert row is not None
                     if row[0] is not None:
                         raise Problem("Can only have one player per user", status=400)
-            command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned, discord_id) 
-                VALUES (?, ?, ?, ?, ?, ?)"""
+            command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned) 
+                VALUES (?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
                 command, 
-                (data.name, data.country_code, data.is_hidden, data.is_shadow, False, data.discord_id))
+                (data.name, data.country_code, data.is_hidden, data.is_shadow, False))
             
             # TODO: Run queries to determine why it errored
             if player_row is None:
@@ -63,7 +63,7 @@ class CreatePlayerCommand(Command[Player]):
             await db.executemany("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
-            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, data.discord_id)
+            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, None)
 
 @save_to_command_log
 @dataclass
@@ -74,9 +74,9 @@ class UpdatePlayerCommand(Command[bool]):
         data = self.data
         async with db_wrapper.connect() as db:
             update_query = """UPDATE players 
-            SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?, discord_id = ?
+            SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?
             WHERE id = ?"""
-            params = (data.name, data.country_code, data.is_hidden, data.is_shadow, data.discord_id, data.player_id)
+            params = (data.name, data.country_code, data.is_hidden, data.is_shadow, data.player_id)
 
             async with db.execute(update_query, params) as cursor:
                 if cursor.rowcount != 1:
@@ -91,15 +91,15 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
-            query = "SELECT name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players WHERE id = ?"
+        async with db_wrapper.connect(readonly=True) as db:
+            query = "SELECT name, country_code, is_hidden, is_shadow, is_banned FROM players WHERE id = ?"
             async with db.execute(query, (self.id,)) as cursor:
                 player_row = await cursor.fetchone()
             
             if player_row is None:
                 return None
             
-            name, country_code, is_hidden, is_shadow, is_banned, discord_id = player_row
+            name, country_code, is_hidden, is_shadow, is_banned = player_row
 
             fc_query = "SELECT id, game, fc, is_verified, is_primary, description FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
@@ -139,7 +139,15 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     if settings_row is not None:
                         user_settings = UserSettings(user.id, *settings_row)
 
-            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, friend_codes, rosters, ban_info, user_settings)
+            discord = None
+            if user:
+                async with db.execute("SELECT discord_id, username, discriminator, global_name, avatar FROM user_discords WHERE user_id = ?",
+                                      (user.id,)) as cursor:
+                    discord_row = await cursor.fetchone()
+                    if discord_row is not None:
+                        discord = Discord(*discord_row)
+
+            return PlayerDetailed(self.id, name, country_code, is_hidden, is_shadow, is_banned, discord, friend_codes, rosters, ban_info, user_settings)
         
 @dataclass
 class ListPlayersCommand(Command[PlayerList]):
@@ -169,11 +177,11 @@ class ListPlayersCommand(Command[PlayerList]):
                 where_clauses.append(f"name LIKE ?")
                 variable_parameters.append(f"%{filter.name}%")
 
-            append_equal_filter(filter.country, "country_code")
-            append_equal_filter(filter.is_hidden, "is_hidden")
-            append_equal_filter(filter.is_shadow, "is_shadow")
-            append_equal_filter(filter.is_banned, "is_banned")
-            append_equal_filter(filter.discord_id, "discord_id")
+            append_equal_filter(filter.country, "p.country_code")
+            append_equal_filter(filter.is_hidden, "p.is_hidden")
+            append_equal_filter(filter.is_shadow, "p.is_shadow")
+            append_equal_filter(filter.is_banned, "p.is_banned")
+            append_equal_filter(filter.discord_id, "d.discord_id")
 
             # make sure that player is in a team roster which is linked to the passed-in squad ID
             if filter.squad_id is not None:
@@ -185,6 +193,8 @@ class ListPlayersCommand(Command[PlayerList]):
                 variable_parameters.append(filter.squad_id)
                 variable_parameters.append(None)
 
+            # some filters require us to check if a player has a matching friend code,
+            # so we do that here
             if filter.friend_code or filter.name_or_fc or filter.game:
 
                 if filter.friend_code is not None:
@@ -193,20 +203,24 @@ class ListPlayersCommand(Command[PlayerList]):
 
                 # check names and friend codes
                 if filter.name_or_fc:
-                    fc_where_clauses.append("(fc LIKE ? OR p.name LIKE ?)")
+                    fc_where_clauses.append("(f.fc LIKE ? OR p.name LIKE ?)")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
 
                 if filter.game is not None:
-                    fc_where_clauses.append("game = ?")
+                    fc_where_clauses.append("f.game = ?")
                     variable_parameters.append(filter.game)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
-                #fc_where_clauses.extend(where_clauses)
-                where_clauses.append(f"id IN (SELECT player_id FROM friend_codes WHERE {fc_where_clauses_str})")
+                where_clauses.append(f"p.id IN (SELECT player_id FROM friend_codes f WHERE {fc_where_clauses_str})")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            players_query = f"SELECT p.id, name, country_code, is_hidden, is_shadow, is_banned, discord_id FROM players p {player_where_clause} ORDER BY name LIMIT ? OFFSET ? "
+            players_query = f"""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned,
+                                    d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
+                                    FROM players p
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
+                                    {player_where_clause} ORDER BY name LIMIT ? OFFSET ? """
 
             fc_where_clause = ""
             fc_where_clauses = []
@@ -214,32 +228,42 @@ class ListPlayersCommand(Command[PlayerList]):
             # for player search, we want to return only the FCs with matching game and/or fc that we typed in
             if filter.detailed and filter.matching_fcs_only:
                 if filter.game is not None:
-                    fc_where_clauses.append("game = ?")
+                    fc_where_clauses.append("f.game = ?")
                     fc_variable_parameters.append(filter.game)
                 if filter.friend_code:
-                    fc_where_clauses.append("fc LIKE ?")
+                    fc_where_clauses.append("f.fc LIKE ?")
                     fc_variable_parameters.append(f"%{filter.friend_code}%")
                 if filter.name_or_fc:
                     match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", filter.name_or_fc)
                     if match:
-                        fc_where_clauses.append("fc LIKE ?")
+                        fc_where_clauses.append("f.fc LIKE ?")
                         fc_variable_parameters.append(f"%{filter.name_or_fc}%")
                 fc_where_clause = "" if not len(fc_where_clauses) else f"AND {' AND '.join(fc_where_clauses)}"
-            friend_codes_query = f"""SELECT id, fc, game, player_id, is_verified, is_primary, description FROM friend_codes f WHERE player_id IN (
-                SELECT p.id FROM players p {player_where_clause} {fc_where_clause} LIMIT ? OFFSET ?
+            friend_codes_query = f"""SELECT f.id, f.fc, f.game, f.player_id, f.is_verified, f.is_primary, f.description FROM friend_codes f WHERE f.player_id IN (
+                SELECT p.id FROM players p
+                LEFT JOIN users u ON u.player_id = p.id
+                LEFT JOIN user_discords d ON u.id = d.user_id
+                {player_where_clause} {fc_where_clause} LIMIT ? OFFSET ?
             )"""
 
-            count_query = f"SELECT COUNT (*) FROM (SELECT p.id FROM players p {player_where_clause})"
+            count_query = f"""SELECT COUNT (*) FROM (SELECT p.id FROM players p
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    LEFT JOIN user_discords d ON u.id = d.user_id
+                                    {player_where_clause})"""
 
             players: List[PlayerAndFriendCodes] = []
             friend_codes: dict[int, list[FriendCode]] = {}
 
-            print(players_query)
+            # print(players_query)
             async with db.execute(players_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    id, name, country_code, is_hidden, is_shadow, is_banned, discord_id = row
-                    player = PlayerAndFriendCodes(id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, [])
+                    (id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, d_username,
+                     d_discriminator, d_global_name, d_avatar) = row
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    player = PlayerAndFriendCodes(id, name, country_code, is_hidden, is_shadow, is_banned, player_discord, [])
                     players.append(player)
                     friend_codes[player.id] = player.friend_codes
 
