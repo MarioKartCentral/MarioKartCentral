@@ -4,7 +4,7 @@
     import Button from '$lib/components/common/buttons/Button.svelte';
     import type { MyDiscord } from '$lib/types/my-discord';
     import { onMount } from 'svelte';
-    import { DiscordSolid } from 'flowbite-svelte-icons';
+    import DiscordUser from './DiscordUser.svelte';
 
     let user_info: UserInfo;
 
@@ -13,11 +13,6 @@
     });
 
     let linked_account: MyDiscord | null;
-
-    let default_avatar = "https://cdn.discordapp.com/embed/avatars/0.png?size=64";
-    let discord_avatar_url = "https://cdn.discordapp.com/avatars"
-
-    $: avatar_url = linked_account?.avatar ? `${discord_avatar_url}/${linked_account.discord_id}/${linked_account.avatar}.png?size=64` : default_avatar;
 
     onMount(async() => {
         const res = await fetch("/api/user/my_discord");
@@ -44,7 +39,6 @@
         } else {
             alert(`An error occurred: ${result['title']}`);
         }
-
     }
 
     async function deleteDiscordData() {
@@ -71,24 +65,7 @@
         <Button on:click={linkDiscord}>Link Discord Account</Button>
     {:else}
         <div class="flex">
-            {#if avatar_url}
-                <div class="section avatar">
-                    <img src={avatar_url} alt={linked_account.username}/>
-                </div>
-            {/if}
-            <div class="section">
-                {#if linked_account.global_name}
-                    <div>
-                        {linked_account.global_name}
-                    </div>
-                {/if}
-                <div class="flex">
-                    <DiscordSolid/>
-                    <div class="username">
-                        {linked_account.username}
-                    </div>
-                </div>
-            </div>
+            <DiscordUser discord={linked_account}/>
             <div class="section">
                 <div class="flex buttons">
                     <div class="disc_button">
@@ -117,12 +94,6 @@
     }
     div.section {
         margin: 5px 10px;
-    }
-    div.avatar {
-        width: 64px;
-    }
-    div.username {
-        margin-left: 5px;
     }
     div.disc_button {
         margin: 3px;

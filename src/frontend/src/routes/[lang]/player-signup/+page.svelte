@@ -3,7 +3,10 @@
   import type { UserInfo } from '$lib/types/user-info';
   import type { FriendCode } from '$lib/types/friend-code';
   import { goto } from '$app/navigation';
-  import { country_codes } from '$lib/stores/country_codes';
+  import Section from '$lib/components/common/Section.svelte';
+  import CountrySelect from '$lib/components/common/CountrySelect.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
 
   let user_info: UserInfo;
 
@@ -26,7 +29,7 @@
 
     const payload = {
       name: data.get('name'),
-      country_code: data.get('country_code'),
+      country_code: data.get('country'),
       friend_codes: friend_codes,
       is_hidden: false,
       is_shadow: false,
@@ -49,44 +52,70 @@
   }
 </script>
 
-<h2>Player Signup</h2>
-
 {#if user_info.player_id !== null}
   Already registered
 {:else}
-  <form method="post" on:submit|preventDefault={register}>
-    <div>
-      <label for="name">Name</label>
-      <input name="name" type="name" minlength="2" />
-    </div>
-    <div>
-      <label for="country_code">Country</label>
-      <select name="country_code" required>
-        {#each country_codes as country_code}
-          <option value={country_code}>{country_code}</option>
-        {/each}
-      </select>
-    </div>
-    <div>
-      <label for="switch_fc">Switch FC</label>
-      <input name="switch_fc" />
-    </div>
-    <div>
-      <label for="mkt_fc">MKTour FC</label>
-      <input name="mkt_fc" />
-    </div>
-    <div>
-      <label for="mkw_fc">MKW FC</label>
-      <input name="mkw_fc" />
-    </div>
-    <div>
-      <label for="3ds_fc">3DS FC</label>
-      <input name="3ds_fc" />
-    </div>
-    <div>
-      <label for="nnid">Nintendo Network ID</label>
-      <input name="nnid" />
-    </div>
-    <button class="register-btn" type="submit">Register</button>
-  </form>
+  <Section header="Discord">
+    <LinkDiscord/>
+  </Section>
+  <Section header="Player Signup">
+    <form method="post" on:submit|preventDefault={register}>
+      <div class="field">
+        <span class="item-label">
+          <label for="name">Name</label>
+        </span>
+        <input name="name" type="name" minlength="2" />
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="country">Country</label>
+        </span>
+        <CountrySelect is_required={true}/>
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="switch_fc">Switch FC</label>
+        </span>
+        <input name="switch_fc" />
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="mkt_fc">MKTour FC</label>
+        </span>
+        <input name="mkt_fc" />
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="mkw_fc">MKW FC</label>
+        </span>
+        <input name="mkw_fc" />
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="3ds_fc">3DS FC</label>
+        </span>
+        <input name="3ds_fc" />
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="nnid">Nintendo Network ID</label>
+        </span>
+        <input name="nnid" />
+      </div>
+      <Button type="submit">Register</Button>
+    </form>
+  </Section>
 {/if}
+
+<style>
+  div.field {
+    margin-bottom: 5px;
+  }
+  span.item-label {
+    display: inline-block;
+    width: 150px;
+  }
+  input {
+    width: 200px;
+  }
+</style>
