@@ -1245,7 +1245,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         leaders.add(player_id)
 
             async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, 
-                                  d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
+                                  d.discord_id, d.username, d.discriminator, d.global_name, d.avatar,
                                   m.roster_id, m.join_date
                                 FROM players p
                                 LEFT JOIN users u ON u.player_id = p.id

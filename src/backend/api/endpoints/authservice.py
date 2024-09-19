@@ -12,6 +12,7 @@ from api import settings
 from common.auth import pw_hasher
 from common.data.commands import *
 from common.data.models import *
+from urllib.parse import urlparse
 
 @dataclass
 class LoginRequestData:
@@ -59,12 +60,13 @@ async def log_out(request: Request) -> Response:
     resp.delete_cookie('session')
     return resp
 
-redirect_uri = 'http://localhost:5000/api/user/discord_callback'
-
 @bind_request_query(LinkDiscordRequestData)
 @require_logged_in
 async def link_discord(request: Request, data: LinkDiscordRequestData) -> Response:
     client = WebApplicationClient(settings.DISCORD_CLIENT_ID)
+    # get the base URL to figure out the redirect URI
+    base_url = urlparse(data.page_url)._replace(path='', params='', query='').geturl()
+    redirect_uri = f'{base_url}/api/user/discord_callback'
     authorization_url = "https://discord.com/oauth2/authorize"
     url = client.prepare_request_uri( # type: ignore
         authorization_url,

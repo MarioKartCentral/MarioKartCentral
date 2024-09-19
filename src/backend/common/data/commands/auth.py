@@ -8,6 +8,7 @@ from aiosqlite import Row
 import aiohttp
 from api import settings
 import msgspec
+from urllib.parse import urlparse
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -244,7 +245,9 @@ class LinkUserDiscordCommand(Command[None]):
                                     "refresh_token"))
                 await db.commit()
                 return
-        redirect_uri = 'http://localhost:5000/api/user/discord_callback'
+        # get the base URL to figure out the redirect URI
+        base_url = urlparse(self.data.state)._replace(path='', params='', query='').geturl()
+        redirect_uri = f'{base_url}/api/user/discord_callback'
         code = self.data.code
         body = {
             "code": code,
@@ -354,7 +357,8 @@ class DeleteUserDiscordDataCommand(Command[None]):
                 async with aiohttp.ClientSession() as session:
                     async with session.post(f'{base_url}/oauth2/token/revoke', data=data, headers=headers, 
                                             auth=aiohttp.BasicAuth(settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)) as resp:
-                        if int(resp.status/100) != 2:
+                        # 401 means unauthorized which means token is revoked already, so only raise problem if another error occurs
+                        if resp.status != 401 and int(resp.status/100) != 2:
                             raise Problem(f"Discord returned an error code: {resp.status}") 
             await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
             await db.commit()
