@@ -1,4 +1,4 @@
-import type { Discord } from "./discord";
+import type { Discord } from './discord';
 
 export type Player = {
   id: number;

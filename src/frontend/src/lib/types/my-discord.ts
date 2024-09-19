@@ -1,5 +1,5 @@
-import type { Discord } from "./discord";
+import type { Discord } from './discord';
 
 export type MyDiscord = Discord & {
-    user_id: number;
-}
+  user_id: number;
+};
