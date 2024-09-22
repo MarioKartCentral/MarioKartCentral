@@ -1244,6 +1244,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     else:
                         leaders.add(player_id)
 
+            fc_dict: dict[int, list[FriendCode]] = {}
             async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, 
                                   d.discord_id, d.username, d.discriminator, d.global_name, d.avatar,
                                   m.roster_id, m.join_date
@@ -1266,5 +1267,18 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
                     player = RosterPlayerInfo(player_id, name, country_code, is_banned, player_discord, join_date, is_manager, is_leader, [])
+                    fc_dict[player_id] = player.friend_codes
                     roster_dict[roster_id].append(player)
+            
+            async with db.execute(f"""SELECT f.id, f.player_id, f.game, f.fc, f.is_verified, f.is_primary FROM friend_codes f
+                                  JOIN players p ON f.player_id = p.id
+                                  JOIN team_members m ON p.id = m.player_id
+                                  WHERE f.game = ? AND m.roster_id IN (
+                                    SELECT tr.id
+                                    {rosters_query}
+                                  )""", (self.game, *variable_parameters)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    fc_id, player_id, game, fc, is_verified, is_primary = row
+                    fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary))
             return rosters

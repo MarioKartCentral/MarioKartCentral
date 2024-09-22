@@ -3,16 +3,6 @@ from common.data.models.friend_codes import FriendCode
 from common.data.models.discord_integration import Discord
 
 @dataclass
-class RegisterTeamRequestData:
-    squad_color: int
-    squad_name: str
-    squad_tag: str
-    captain_player: int
-    roster_ids: list[int]
-    representative_ids: list[int]
-    bagger_ids: list[int]
-
-@dataclass
 class RegisterPlayerRequestData:
     mii_name: str | None
     can_host: bool

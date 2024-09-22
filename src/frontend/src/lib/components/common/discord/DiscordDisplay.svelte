@@ -11,7 +11,7 @@
     <div id="name">
         <DiscordName {discord}/>
     </div>
-    <Popover triggeredBy="#name" class="bg-gray-600 text-white">
+    <Popover class="bg-gray-600 text-white">
         <DiscordUser {discord}/>
     </Popover>
 {/if}

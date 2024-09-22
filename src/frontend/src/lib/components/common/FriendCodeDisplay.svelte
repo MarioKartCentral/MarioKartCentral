@@ -30,7 +30,7 @@
 <div class="default_view" id="fc">
     {display_fc.fc}   
 </div>
-<Popover triggeredBy="#fc" class="bg-gray-600 text-white">
+<Popover class="bg-gray-600 text-white">
     {#if selected_fc_id}
         <div class="selected">Selected FC:</div>
         <div>

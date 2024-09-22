@@ -102,3 +102,18 @@ class MakeCaptainRequestData():
 @dataclass
 class UnregisterSquadRequestData():
     squad_id: int
+
+@dataclass
+class TeamTournamentPlayer():
+    player_id: int
+    is_captain: bool
+    is_representative: bool
+    is_bagger_clause: bool
+
+@dataclass
+class RegisterTeamRequestData():
+    squad_color: int
+    squad_name: str
+    squad_tag: str
+    roster_ids: list[int]
+    players: list[TeamTournamentPlayer]

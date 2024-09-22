@@ -214,7 +214,8 @@
           <Flag country_code={player.country_code}/>
         </td>
         <td>
-          <PlayerName {player}/>
+          <PlayerName player_id={player.id} name={player.name} is_squad_captain={player.is_squad_captain} is_representative={player.is_representative}
+          is_bagger_clause={player.is_bagger_clause}/>
         </td>
         {#if tournament.mii_name_required && exclude_invites}
           <td>{player.mii_name}</td>
