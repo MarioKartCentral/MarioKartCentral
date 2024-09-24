@@ -1,5 +1,5 @@
 <script lang="ts">
-    import ColorSelect from '$lib/components/common/ColorSelect.svelte';
+  import ColorSelect from '$lib/components/common/ColorSelect.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { RosterPlayer } from '$lib/types/roster-player';
   import type { TeamRoster } from '$lib/types/team-roster';
@@ -20,7 +20,7 @@
   import PlayerName from './PlayerName.svelte';
 
   export let tournament: Tournament;
-  export let player: PlayerInfo;
+  export let user_player: PlayerInfo;
 
   let rosters: TeamRoster[] = [];
 
@@ -58,7 +58,11 @@
     }
     selected_rosters.push(roster);
     for(let p of roster.players) {
-      players.push({...p, is_captain: p.player_id === player.id, is_representative: false, is_bagger_clause: false});
+      // if player is already in our list don't add them
+      if(players.some((p2) => p2.player_id === p.player_id)) {
+        continue;
+      }
+      players.push({...p, is_captain: p.player_id === user_player.id, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false});
     }
     rosters = rosters;
     players = players;
@@ -73,39 +77,39 @@
     players = players.filter((p) => selected_players.some((p2) => p.player_id === p2.player_id));
   }
 
-  function toggleCaptain(selected_player: TeamTournamentPlayer) {
-    if(selected_player.is_captain) {
-      selected_player.is_captain = false;
+  function toggleCaptain(player: TeamTournamentPlayer) {
+    if(player.is_captain) {
+      player.is_captain = false;
       players = players;
       return;
     }
     for(let p of players) {
       p.is_captain = false;
     }
-    selected_player.is_captain = true;
-    selected_player.is_representative = false;
+    player.is_captain = true;
+    player.is_representative = false;
     players = players;
   }
 
-  function toggleRep(selected_player: TeamTournamentPlayer) {
-    selected_player.is_representative = !selected_player.is_representative;
-    selected_player.is_captain = false;
+  function toggleRep(player: TeamTournamentPlayer) {
+    player.is_representative = !player.is_representative;
+    player.is_captain = false;
     players = players;
   }
 
-  function toggleBagger(selected_player: TeamTournamentPlayer) {
-    selected_player.is_bagger_clause = !selected_player.is_bagger_clause;
+  function toggleBagger(player: TeamTournamentPlayer) {
+    player.is_bagger_clause = !player.is_bagger_clause;
     players = players;
   }
 
-  function removePlayer(selected_player: TeamTournamentPlayer) {
-    players = players.filter((p) => p.player_id !== selected_player.player_id);
+  function removePlayer(player: TeamTournamentPlayer) {
+    players = players.filter((p) => p.player_id !== player.player_id);
   }
 
-  function addPlayer(selected_p: RosterPlayer | null) {
-    if(!selected_p) return;
-    if(!players.some((p) => p.player_id === selected_p.player_id)) {
-      players.push({...selected_p, is_captain: false, is_representative: false, is_bagger_clause: false});
+  function addPlayer(player: RosterPlayer | null) {
+    if(!player) return;
+    if(!players.some((p) => p.player_id === player.player_id)) {
+      players.push({...player, is_captain: false, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? player.is_bagger_clause : false});
     }
     selected_player = null;
     players = players;
@@ -188,29 +192,29 @@
           </tr>
         </thead>
         <tbody>
-          {#each players as p, i}
+          {#each players as player, i}
             <tr class="row-{i % 2}">
               <td>
-                <Flag country_code={p.country_code}/>
+                <Flag country_code={player.country_code}/>
               </td>
               <td>
-                <PlayerName player_id={p.player_id} name={p.name} is_squad_captain={p.is_captain}
-                is_representative={p.is_representative} is_bagger_clause={p.is_bagger_clause}/>
+                <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
+                is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause}/>
               </td>
               <td class="mobile-hide">
-                <FriendCodeDisplay friend_codes={p.friend_codes}/>
+                <FriendCodeDisplay friend_codes={player.friend_codes}/>
               </td>
               <td>
                 <ChevronDownSolid class="cursor-pointer"/>
                 <Dropdown>
-                  <DropdownItem on:click={() => toggleCaptain(p)}>Toggle Captain</DropdownItem>
-                  {#if !p.is_captain}
-                    <DropdownItem on:click={() => toggleRep(p)}>Toggle Representative</DropdownItem>
+                  <DropdownItem on:click={() => toggleCaptain(player)}>Toggle Captain</DropdownItem>
+                  {#if !player.is_captain}
+                    <DropdownItem on:click={() => toggleRep(player)}>Toggle Representative</DropdownItem>
                   {/if}
-                  {#if tournament.bagger_clause_enabled}
-                    <DropdownItem on:click={() => toggleBagger(p)}>Toggle Bagger</DropdownItem>
+                  {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
+                    <DropdownItem on:click={() => toggleBagger(player)}>Toggle Bagger</DropdownItem>
                   {/if}
-                  <DropdownItem on:click={() => removePlayer(p)}>Remove</DropdownItem>
+                  <DropdownItem on:click={() => removePlayer(player)}>Remove</DropdownItem>
                 </Dropdown>
               </td>
             </tr>
@@ -221,9 +225,9 @@
     {#if unselected_players.length}
       <div class="section">
         <select bind:value={selected_player} on:change={() => addPlayer(selected_player)}>
-          {#each unselected_players as p}
-            <option value={p}>
-              {p.name}
+          {#each unselected_players as player}
+            <option value={player}>
+              {player.name}
             </option>
           {/each}
         </select>

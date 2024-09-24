@@ -457,7 +457,8 @@ class TeamMember(TableModel):
             roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
             player_id INTEGER NOT NULL REFERENCES players(id),
             join_date INTEGER NOT NULL,
-            leave_date INTEGER
+            leave_date INTEGER,
+            is_bagger_clause BOOLEAN NOT NULL
             )
             """
 
@@ -663,8 +664,9 @@ class RosterInvite(TableModel):
             roster_id INTEGER REFERENCES team_rosters(id),
             date INTEGER NOT NULL,
             roster_leave_id INTEGER REFERENCES team_rosters(id),
+            is_bagger_clause BOOLEAN NOT NULL,
             is_accepted BOOLEAN NOT NULL,
-            approval_status TEXT NOT NULL 
+            approval_status TEXT NOT NULL
             )"""
 
 @dataclass

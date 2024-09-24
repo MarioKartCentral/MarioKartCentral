@@ -8,5 +8,6 @@ export type RosterInvite = {
   is_banned: boolean;
   discord: Discord | null;
   invite_date: number;
+  is_bagger_clause: boolean;
   friend_codes: FriendCode[];
 };

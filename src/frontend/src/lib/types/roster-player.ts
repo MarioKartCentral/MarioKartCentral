@@ -10,5 +10,6 @@ export type RosterPlayer = {
   join_date: number;
   is_manager: boolean;
   is_leader: boolean;
+  is_bagger_clause: boolean;
   friend_codes: FriendCode[];
 };

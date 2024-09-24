@@ -3,6 +3,7 @@
     import TeamManagerBadge from "$lib/components/badges/TeamManagerBadge.svelte";
     import type { RosterPlayer } from "$lib/types/roster-player";
     import { page } from "$app/stores";
+    import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
     export let player: RosterPlayer;
 </script>
@@ -12,6 +13,9 @@
         {player.name}
     </a>
 </span>
+{#if player.is_bagger_clause}
+    <BaggerBadge/>
+{/if}
 {#if player.is_manager}
     <TeamManagerBadge/>
 {:else if player.is_leader}

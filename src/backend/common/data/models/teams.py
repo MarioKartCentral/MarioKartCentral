@@ -81,6 +81,7 @@ class PartialTeamMember():
     player_id: int
     roster_id: int
     join_date: int
+    is_bagger_clause: bool
 
 @dataclass
 class PartialPlayer():
@@ -101,6 +102,7 @@ class RosterPlayerInfo():
     join_date: int
     is_manager: bool
     is_leader: bool
+    is_bagger_clause: bool
     friend_codes: list[FriendCode]
 
 @dataclass
@@ -111,6 +113,7 @@ class RosterInvitedPlayer():
     is_banned: bool
     discord: Discord | None
     invite_date: int
+    is_bagger_clause: bool
     friend_codes: list[FriendCode]
     
 @dataclass
@@ -175,10 +178,14 @@ class EditRosterRequestData():
     approval_status: Approval
 
 @dataclass
-class InviteRosterPlayerRequestData():
+class DeleteInviteRequestData():
     team_id: int
     player_id: int
     roster_id: int
+
+@dataclass
+class InviteRosterPlayerRequestData(DeleteInviteRequestData):
+    is_bagger_clause: bool
 
 @dataclass
 class AcceptRosterInviteRequestData():
@@ -231,6 +238,7 @@ class ForceTransferPlayerRequestData():
     roster_id: int
     team_id: int
     roster_leave_id: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class EditTeamMemberInfoRequestData():
@@ -239,6 +247,7 @@ class EditTeamMemberInfoRequestData():
     team_id: int
     join_date: int | None
     leave_date: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class KickPlayerRequestData():
@@ -260,6 +269,7 @@ class TeamFilter():
 class TeamInvite():
     invite_id: int
     date: int
+    is_bagger_clause: bool
     team_id: int
     team_name: str
     team_tag: str
@@ -284,6 +294,7 @@ class TransferRoster():
 class TeamTransfer():
     invite_id: int
     date: int
+    is_bagger_clause: bool
     game: Game
     mode: GameMode
     player_id: int

@@ -33,6 +33,7 @@ class PlayerRoster:
     roster_tag: str | None
     game: str
     mode: str
+    is_bagger_clause: bool
 
 @dataclass
 class PlayerDetailed(PlayerAndFriendCodes):

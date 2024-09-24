@@ -48,7 +48,7 @@
       </div>
     {:else}
       {#if tournament.teams_allowed && user_info.player}
-        <TeamTournamentRegister {tournament} player={user_info.player} />
+        <TeamTournamentRegister {tournament} user_player={user_info.player} />
       {/if}
       {#if !registration.player}
         {#if !check_registrations_open(tournament)}
