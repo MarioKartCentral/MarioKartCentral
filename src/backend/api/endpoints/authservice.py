@@ -50,7 +50,17 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
     password_hash = pw_hasher.hash(body.password)
     user = await handle(CreateUserCommand(email, password_hash))
     await handle(CreateUserSettingsCommand(user.id))
-    return JSONResponse(user, status_code=201)
+
+    # login user after registering
+    session_id = secrets.token_hex(16)
+    max_age = timedelta(days=365)
+    expiration_date = datetime.now(timezone.utc) + max_age
+
+    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+
+    resp = JSONResponse(user, status_code=201)
+    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    return resp
 
 @require_logged_in
 async def log_out(request: Request) -> Response:
