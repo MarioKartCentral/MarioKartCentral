@@ -10,13 +10,13 @@ class RegisterPlayerRequestData:
 
 @dataclass
 class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
-    squad_id: int | None
     player_id: int
-    is_squad_captain: bool
-    is_invite: bool
-    is_checked_in: bool
-    is_representative: bool
-    is_bagger_clause: bool
+    squad_id: int | None = None
+    is_squad_captain: bool = False
+    is_invite: bool = False
+    is_checked_in: bool = False
+    is_representative: bool = False
+    is_bagger_clause: bool = False
 
 @dataclass
 class EditMyRegistrationRequestData():

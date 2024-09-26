@@ -23,9 +23,6 @@ class CreateSquadRequestData:
 @dataclass
 class ForceCreateSquadRequestData(CreateSquadRequestData):
     player_id: int
-    roster_ids: list[int]
-    representative_ids: list[int]
-    bagger_ids: list[int]
 
 @dataclass
 class EditMySquadRequestData:

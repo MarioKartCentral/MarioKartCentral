@@ -9,12 +9,14 @@
   import Dropdown from '../common/Dropdown.svelte';
   import DropdownItem from '../common/DropdownItem.svelte';
   import EditSquadDialog from './registration/EditSquadDialog.svelte';
+  import AddPlayerToSquad from './registration/AddPlayerToSquad.svelte';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
   export let is_privileged = false;
 
   let edit_squad_dialog: EditSquadDialog;
+  let add_player_dialog: AddPlayerToSquad;
 
   let all_toggle_on = false;
 
@@ -131,6 +133,9 @@
           <td>
             <ChevronDownSolid class="cursor-pointer"/>
             <Dropdown>
+              {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
+                <DropdownItem on:click={() => add_player_dialog.open(squad)}>Add Player</DropdownItem>
+              {/if}
               <DropdownItem on:click={() => edit_squad_dialog.open(squad)}>Edit</DropdownItem>
               <DropdownItem on:click={() => unregisterSquad(squad)}>Remove</DropdownItem>
             </Dropdown>
@@ -148,6 +153,7 @@
   </tbody>
 </Table>
 
+<AddPlayerToSquad bind:this={add_player_dialog} {tournament}/>
 <EditSquadDialog bind:this={edit_squad_dialog} {tournament} {is_privileged}/>
 
 <style>

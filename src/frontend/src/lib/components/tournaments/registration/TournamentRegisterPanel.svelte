@@ -12,6 +12,7 @@
   import TeamTournamentRegister from './TeamTournamentRegister.svelte';
   import { check_registrations_open } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+    import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
 
   export let tournament: Tournament;
 
@@ -56,9 +57,9 @@
             Registration for this tournament is closed.
           </div>
         {:else if user_info.player}
-          <div>Want to register for this tournament? Just fill out your registration details below!</div>
           {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
             {#if !tournament.teams_only}
+              <div>Want to register for this tournament? Just fill out your registration details below!</div>
               <SoloSquadTournamentRegister
                 {tournament}
                 friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
@@ -75,6 +76,11 @@
           </div>
         {/if}
       {/if}
+    {/if}
+  {/if}
+  {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
+    {#if !tournament.teams_only}
+      <ForceRegisterSoloSquad {tournament}/>
     {/if}
   {/if}
 </Section>
