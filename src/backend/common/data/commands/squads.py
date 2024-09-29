@@ -165,7 +165,7 @@ class RegisterTeamTournamentCommand(Command[None]):
             # get players already registered for this tournament who are in rosters we are registering
             player_dict = {p.player_id: p for p in self.players}
             already_registered_query = f"""
-                SELECT t.player_id, p.name, t.is_bagger_clause FROM tournament_players t
+                SELECT DISTINCT t.player_id, p.name, t.is_bagger_clause FROM tournament_players t
                 JOIN team_members m ON m.player_id = t.player_id
                 JOIN players p ON t.player_id = p.id
                 WHERE m.roster_id IN ({','.join([str(i) for i in self.roster_ids])})

@@ -110,7 +110,7 @@ class GetTeamInfoCommand(Command[Team]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     player_id, roster_id, join_date, is_bagger_clause = row
-                    curr_team_member = PartialTeamMember(player_id, roster_id, join_date, is_bagger_clause)
+                    curr_team_member = PartialTeamMember(player_id, roster_id, join_date, bool(is_bagger_clause))
                     team_members.append(curr_team_member)
 
             team_invites: list[PartialTeamMember] = []
@@ -121,7 +121,7 @@ class GetTeamInfoCommand(Command[Team]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     player_id, roster_id, join_date, is_bagger_clause = row
-                    curr_invited_player = PartialTeamMember(player_id, roster_id, join_date, is_bagger_clause)
+                    curr_invited_player = PartialTeamMember(player_id, roster_id, join_date, bool(is_bagger_clause))
                     team_invites.append(curr_invited_player)
 
             player_dict: dict[int, PartialPlayer] = {}
@@ -1106,7 +1106,7 @@ class ListTeamsCommand(Command[List[Team]]):
             def append_team_roster_like_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
-                    variable_parameters.extend([filter_value, filter_value])
+                    variable_parameters.extend([f"%{filter_value}%", f"%{filter_value}%"])
 
             append_team_roster_like_filter(filter.name, "name")
             append_team_roster_like_filter(filter.tag, "tag")

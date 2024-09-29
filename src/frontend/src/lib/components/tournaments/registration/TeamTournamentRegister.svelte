@@ -1,6 +1,5 @@
 <script lang="ts">
   import ColorSelect from '$lib/components/common/ColorSelect.svelte';
-  import type { PlayerInfo } from '$lib/types/player-info';
   import type { RosterPlayer } from '$lib/types/roster-player';
   import type { TeamRoster } from '$lib/types/team-roster';
   import type { Tournament } from '$lib/types/tournament';
@@ -18,9 +17,11 @@
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import PlayerName from './PlayerName.svelte';
+  import RosterSearch from '$lib/components/common/RosterSearch.svelte';
+  import type { Team } from '$lib/types/team';
 
   export let tournament: Tournament;
-  export let user_player: PlayerInfo;
+  export let is_privileged = false;
 
   let rosters: TeamRoster[] = [];
 
@@ -42,6 +43,7 @@
     && (!tournament.min_squad_size || players.length >= tournament.min_squad_size) && (!tournament.max_squad_size || players.length <= tournament.max_squad_size));
 
   onMount(async () => {
+    if(is_privileged) return; 
     const res = await fetch(
       `/api/registry/teams/getRegisterable?tournament_id=${tournament.id}&game=${tournament.game}&mode=${tournament.mode}`,
     );
@@ -52,7 +54,36 @@
     }
   });
 
-  function selectRoster(roster: TeamRoster | null) {
+  async function selectRosterFromSearch(roster: TeamRoster | null) {
+    selected_roster = null;
+    if(!roster) return;
+    if(selected_rosters.some((r) => r.id == roster.id)) return;
+
+    // do an API request to get the players in the team
+    const url = `/api/registry/teams/${roster.team_id}`;
+    const res = await fetch(url);
+    if(res.status !== 200) {
+        alert(`Error ${res.status}`);
+    }
+    const body = await res.json();
+    let team: Team = body;
+    for(let r of team.rosters) {
+        if(r.id === roster.id) {
+            roster.players = r.players;
+        }
+    }
+    selected_rosters.push(roster);
+    for(let p of roster.players) {
+        if(players.some((p2) => p2.player_id === p.player_id)) {
+            continue;
+        }
+        players.push({...p, is_captain: p.is_manager, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false});
+    }
+    selected_rosters = selected_rosters;
+    players = players;
+  }
+
+  function selectRosterFromList(roster: TeamRoster | null) {
     if (!roster) {
       return;
     }
@@ -62,9 +93,9 @@
       if(players.some((p2) => p2.player_id === p.player_id)) {
         continue;
       }
-      players.push({...p, is_captain: p.player_id === user_player.id, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false});
+      players.push({...p, is_captain: p.is_manager, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false});
     }
-    rosters = rosters;
+    // rosters = rosters;
     players = players;
     selected_rosters = selected_rosters;
     selected_roster = null;
@@ -123,7 +154,7 @@
       roster_ids: selected_rosters.map((r) => r.id),
       players: players
     };
-    const endpoint = `/api/tournaments/${tournament.id}/registerTeam`;
+    const endpoint = `/api/tournaments/${tournament.id}/${is_privileged ? 'forceRegisterTeam' : 'registerTeam'}`;
     console.log(payload);
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -141,123 +172,127 @@
 
 </script>
 
-{#if check_registrations_open(tournament) && rosters.length}
-<div class="team_register">
-  <div>
-    <b>Register Team</b>
-  </div>
-  {#if unselected_rosters.length}
-    <select bind:value={selected_roster} on:change={() => selectRoster(selected_roster)}>
-      <option value={null}>Select a team</option>
-      {#each unselected_rosters as roster}
-        <option value={roster}>
-          {roster.name}
-        </option>
-      {/each}
-    </select>
-  {/if}
-  {#if selected_rosters.length}
-    <div class="section">
-      <div>
-        <b>Selected Rosters:</b>
-      </div>
-      {#each selected_rosters as roster, i}
-        <div>
-          <TagBadge tag={roster.tag} color={roster.color}/>
-          {roster.name}
-          {#if i === 0}
-            <PrimaryBadge/>
-          {/if}
-          <CancelButton on:click={() => removeRoster(roster)}/>
-        </div>
-      {/each}
+{#if is_privileged || (check_registrations_open(tournament) && rosters.length)}
+  <div class="team_register">
+    <div>
+      <b>
+        {is_privileged ? "Manually Register Team" : "Register Team"}
+      </b>
     </div>
-    <div class="section">
-      <div>Squad Color</div>
-      <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
-    </div>
-    <div class="section">
-      <b>Players:</b>
-      <Table>
-        <col class="country"/>
-        <col class="name"/>
-        <col class="friend-codes mobile-hide" />
-        <col class="actions"/>
-        <thead>
-          <tr>
-            <th />
-            <th>Name</th>
-            <th class="mobile-hide">Friend Codes</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each players as player, i}
-            <tr class="row-{i % 2}">
-              <td>
-                <Flag country_code={player.country_code}/>
-              </td>
-              <td>
-                <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
-                is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause}/>
-              </td>
-              <td class="mobile-hide">
-                <FriendCodeDisplay friend_codes={player.friend_codes}/>
-              </td>
-              <td>
-                <ChevronDownSolid class="cursor-pointer"/>
-                <Dropdown>
-                  <DropdownItem on:click={() => toggleCaptain(player)}>Toggle Captain</DropdownItem>
-                  {#if !player.is_captain}
-                    <DropdownItem on:click={() => toggleRep(player)}>Toggle Representative</DropdownItem>
-                  {/if}
-                  {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
-                    <DropdownItem on:click={() => toggleBagger(player)}>Toggle Bagger</DropdownItem>
-                  {/if}
-                  <DropdownItem on:click={() => removePlayer(player)}>Remove</DropdownItem>
-                </Dropdown>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table>
-    </div>
-    {#if unselected_players.length}
+    {#if is_privileged}
+      <RosterSearch bind:roster={selected_roster} game={tournament.game} on:change={() => selectRosterFromSearch(selected_roster)}/>
+    {:else if unselected_rosters.length}
+      <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>
+        <option value={null}>Select a team</option>
+        {#each unselected_rosters as roster}
+          <option value={roster}>
+            {roster.name}
+          </option>
+        {/each}
+      </select>
+    {/if}
+    {#if selected_rosters.length}
       <div class="section">
-        <select bind:value={selected_player} on:change={() => addPlayer(selected_player)}>
-          {#each unselected_players as player}
-            <option value={player}>
-              {player.name}
-            </option>
-          {/each}
-        </select>
+        <div>
+          <b>Selected Rosters:</b>
+        </div>
+        {#each selected_rosters as roster, i}
+          <div>
+            <TagBadge tag={roster.tag} color={roster.color}/>
+            {roster.name}
+            {#if i === 0}
+              <PrimaryBadge/>
+            {/if}
+            <CancelButton on:click={() => removeRoster(roster)}/>
+          </div>
+        {/each}
+      </div>
+      <div class="section">
+        <div>Squad Color</div>
+        <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
+      </div>
+      <div class="section">
+        <b>Players:</b>
+        <Table>
+          <col class="country"/>
+          <col class="name"/>
+          <col class="friend-codes mobile-hide" />
+          <col class="actions"/>
+          <thead>
+            <tr>
+              <th />
+              <th>Name</th>
+              <th class="mobile-hide">Friend Codes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each players as player, i}
+              <tr class="row-{i % 2}">
+                <td>
+                  <Flag country_code={player.country_code}/>
+                </td>
+                <td>
+                  <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
+                  is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause}/>
+                </td>
+                <td class="mobile-hide">
+                  <FriendCodeDisplay friend_codes={player.friend_codes}/>
+                </td>
+                <td>
+                  <ChevronDownSolid class="cursor-pointer"/>
+                  <Dropdown>
+                    <DropdownItem on:click={() => toggleCaptain(player)}>Toggle Captain</DropdownItem>
+                    {#if !player.is_captain}
+                      <DropdownItem on:click={() => toggleRep(player)}>Toggle Representative</DropdownItem>
+                    {/if}
+                    {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
+                      <DropdownItem on:click={() => toggleBagger(player)}>Toggle Bagger</DropdownItem>
+                    {/if}
+                    <DropdownItem on:click={() => removePlayer(player)}>Remove</DropdownItem>
+                  </Dropdown>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </Table>
+      </div>
+      {#if unselected_players.length}
+        <div class="section">
+          <select bind:value={selected_player} on:change={() => addPlayer(selected_player)}>
+            {#each unselected_players as player}
+              <option value={player}>
+                {player.name}
+              </option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      <div class="section">
+        {#if num_captains !== 1}
+          <div>
+            Please select exactly one captain
+          </div>
+        {/if}
+        {#if tournament.min_representatives && num_reps !== tournament.min_representatives}
+          <div>
+            Please select exactly {tournament.min_representatives} captains/representatives
+          </div>
+        {/if}
+        {#if tournament.min_squad_size && players.length < tournament.min_squad_size}
+          <div>
+            Please add {tournament.min_squad_size - players.length} more players
+          </div>
+        {/if}
+        {#if tournament.max_squad_size && players.length > tournament.max_squad_size}
+          <div>
+            This tournament's max squad size is {tournament.max_squad_size}, please remove at least {tournament.max_squad_size - players.length} players
+          </div>
+        {/if}
+        <Button on:click={register} disabled={!can_register}>Register</Button>
       </div>
     {/if}
-    <div class="section">
-      {#if num_captains !== 1}
-        <div>
-          Please select exactly one captain
-        </div>
-      {/if}
-      {#if tournament.min_representatives && num_reps !== tournament.min_representatives}
-        <div>
-          Please select exactly {tournament.min_representatives} captains/representatives
-        </div>
-      {/if}
-      {#if tournament.min_squad_size && players.length < tournament.min_squad_size}
-        <div>
-          Please add {tournament.min_squad_size - players.length} more players
-        </div>
-      {/if}
-      {#if tournament.max_squad_size && players.length > tournament.max_squad_size}
-        <div>
-          This tournament's max squad size is {tournament.max_squad_size}, please remove at least {tournament.max_squad_size - players.length} players
-        </div>
-      {/if}
-      <Button on:click={register} disabled={!can_register}>Register</Button>
-    </div>
-  {/if}
-</div>
+  </div>
 {/if}
 
 <style>
@@ -265,7 +300,7 @@
     margin: 15px 0;
   }
   .team_register {
-    margin-bottom: 15px;
+    margin: 15px 0;
   }
   col.country {
     width: 15%;

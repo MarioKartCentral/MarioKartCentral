@@ -12,7 +12,7 @@
   import TeamTournamentRegister from './TeamTournamentRegister.svelte';
   import { check_registrations_open } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
-    import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
+  import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
 
   export let tournament: Tournament;
 
@@ -48,8 +48,8 @@
         You do not have permission to register for this tournament.
       </div>
     {:else}
-      {#if tournament.teams_allowed && user_info.player}
-        <TeamTournamentRegister {tournament} user_player={user_info.player} />
+      {#if tournament.teams_allowed}
+        <TeamTournamentRegister {tournament}/>
       {/if}
       {#if !registration.player}
         {#if !check_registrations_open(tournament)}
@@ -81,6 +81,9 @@
   {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
     {#if !tournament.teams_only}
       <ForceRegisterSoloSquad {tournament}/>
+    {/if}
+    {#if tournament.teams_allowed}
+      <TeamTournamentRegister {tournament} is_privileged={true}/>
     {/if}
   {/if}
 </Section>
