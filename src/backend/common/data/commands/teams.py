@@ -542,8 +542,8 @@ class LeaveRosterCommand(Command[None]):
             leave_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
             # players leaving a roster goes into the transfer history too
-            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
-                             VALUES (?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved"))
+            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
+                             VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved", False))
             # get all team tournament rosters the player is in where the tournament hasn't ended yet
             async with db.execute("""SELECT p.squad_id FROM tournament_players p
                                 JOIN team_squad_registrations s ON p.squad_id = s.squad_id
@@ -986,6 +986,10 @@ class ForceTransferPlayerCommand(Command[None]):
                     team_member_id = row[0]
             else:
                 team_member_id = None
+            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_id, None)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem("Player is already on this roster", status=400)
             curr_time = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date, is_bagger_clause) VALUES (?, ?, ?, ?)", 
                              (self.roster_id, self.player_id, curr_time, self.is_bagger_clause))
@@ -1027,7 +1031,7 @@ class ForceTransferPlayerCommand(Command[None]):
                                     AND s.roster_id = ? AND NOT EXISTS (
                                         SELECT p.id FROM tournament_players p 
                                         WHERE p.player_id = ? AND p.squad_id = s.squad_id
-                                    )""", (True, True, self.roster_id)) as cursor:
+                                    )""", (True, True, self.roster_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 squads: dict[int, int] = {}
                 for row in rows:

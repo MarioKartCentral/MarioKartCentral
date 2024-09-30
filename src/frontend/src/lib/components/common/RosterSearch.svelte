@@ -6,6 +6,7 @@
     import TagBadge from "../badges/TagBadge.svelte";
     import { UserAddSolid } from "flowbite-svelte-icons";
     import CancelButton from "./buttons/CancelButton.svelte";
+    import GameBadge from "../badges/GameBadge.svelte";
 
     export let roster: TeamRoster | null = null;
     export let game: string | null = null;
@@ -28,7 +29,6 @@
         const name_var = query ? `name=${query}` : ``;
         const game_var = game ? `&game=${game}` : ``;
         const url = `/api/registry/teams?${name_var}${game_var}`;
-        console.log(url);
         const res = await fetch(url);
         if (res.status === 200) {
             const body = await res.json();
@@ -57,6 +57,7 @@
                     <Table show_padding={false}>
                         <col class="tag"/>
                         <col class="name"/>
+                        <col class="game"/>
                         <col class="select"/>
                         <tbody>
                             {#each results as result}
@@ -66,6 +67,9 @@
                                     </td>
                                     <td>
                                         {result.name}
+                                    </td>
+                                    <td>
+                                        <GameBadge game={result.game}/>
                                     </td>
                                     <td>
                                         <UserAddSolid size="lg"/>
@@ -92,7 +96,6 @@
       position: relative;
     }
     input {
-      /* min-width: 350px; */
       width: 100%;
     }
     div.table-outer {
@@ -109,13 +112,16 @@
       cursor: pointer;
     }
     col.tag {
-        width: 30%;
+        width: 20%;
     }
     col.name {
       width: 40%;
     }
+    col.game {
+        width: 20%;
+    }
     col.select {
-      width: 30%;
+      width: 20%;
     }
   </style>
   

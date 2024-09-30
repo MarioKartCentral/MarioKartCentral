@@ -43,7 +43,7 @@ class PlayerDetailed(PlayerAndFriendCodes):
 
 @dataclass
 class PlayerList:
-    player_list: list[PlayerAndFriendCodes]
+    player_list: list[PlayerDetailed]
     player_count: int
     page_count: int
 

@@ -122,7 +122,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode, is_bagger_clause = row
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
-                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode, is_bagger_clause))
+                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode, bool(is_bagger_clause)))
 
             ban_info = None
             if is_banned:
@@ -251,7 +251,7 @@ class ListPlayersCommand(Command[PlayerList]):
                                     LEFT JOIN user_discords d ON u.id = d.user_id
                                     {player_where_clause})"""
 
-            players: List[PlayerAndFriendCodes] = []
+            players: List[PlayerDetailed] = []
             friend_codes: dict[int, list[FriendCode]] = {}
 
             # print(players_query)
@@ -263,7 +263,7 @@ class ListPlayersCommand(Command[PlayerList]):
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    player = PlayerAndFriendCodes(id, name, country_code, is_hidden, is_shadow, is_banned, player_discord, [])
+                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, player_discord, [], [], None, None)
                     players.append(player)
                     friend_codes[player.id] = player.friend_codes
 
