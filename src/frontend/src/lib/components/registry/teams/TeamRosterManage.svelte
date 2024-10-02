@@ -19,6 +19,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { check_permission, check_team_permission, team_permissions, get_highest_team_role_position } from '$lib/util/permissions';
   import RosterPlayerName from './RosterPlayerName.svelte';
+    import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -27,6 +28,7 @@
   let force_edit_dialog: Dialog;
   let curr_player: RosterPlayer;
   let invite_player: PlayerInfo | null;
+  let invite_player_bagger: boolean = false;
 
   let user_info: UserInfo;
     user.subscribe((value) => {
@@ -56,6 +58,7 @@
       team_id: roster.team_id,
       roster_id: roster.id,
       player_id: player_id,
+      is_bagger_clause: invite_player_bagger
     };
     const endpoint = '/api/registry/teams/invitePlayer';
     const response = await fetch(endpoint, {
@@ -328,7 +331,12 @@
             {#each roster.invites as player}
               <tr>
                 <td><Flag country_code={player.country_code} /></td>
-                <td>{player.name}</td>
+                <td>
+                  {player.name}
+                  {#if player.is_bagger_clause}
+                    <BaggerBadge/>
+                  {/if}
+                </td>
                 <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
                 <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
                 <td>
@@ -344,6 +352,19 @@
       <b>{$LL.TEAM_EDIT.INVITE_PLAYER()}</b>
       <PlayerSearch bind:player={invite_player} game={roster.game} />
       {#if invite_player}
+        {#if roster.game === 'mkw'}
+          <div>
+            Bagger?
+            <select bind:value={invite_player_bagger}>
+              <option value={false}>
+                No
+              </option>
+              <option value={true}>
+                Yes
+              </option>
+            </select>
+          </div>
+        {/if}
         <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAM_EDIT.INVITE_PLAYER()}</Button>
       {/if}
     </div>

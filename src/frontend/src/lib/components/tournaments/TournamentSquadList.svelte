@@ -9,12 +9,14 @@
   import Dropdown from '../common/Dropdown.svelte';
   import DropdownItem from '../common/DropdownItem.svelte';
   import EditSquadDialog from './registration/EditSquadDialog.svelte';
+  import AddPlayerToSquad from './registration/AddPlayerToSquad.svelte';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
   export let is_privileged = false;
 
   let edit_squad_dialog: EditSquadDialog;
+  let add_player_dialog: AddPlayerToSquad;
 
   let all_toggle_on = false;
 
@@ -25,10 +27,17 @@
   }
 
   function is_squad_eligible(squad: TournamentSquad) {
-    if (tournament.min_squad_size === null) {
-      return 'Yes';
+    if (tournament.min_squad_size !== null) {
+      if (squad.players.filter(p => !p.is_invite).length < tournament.min_squad_size) {
+        return false;
+      }
     }
-    return squad.players.filter(p => !p.is_invite).length >= tournament.min_squad_size ? 'Yes' : 'No';
+    if(tournament.min_players_checkin !== null) {
+      if(squad.players.filter(p => p.is_checked_in).length < tournament.min_players_checkin) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function toggle_show_players(squad_id: number) {
@@ -103,7 +112,7 @@
       <th class="mobile-hide">Eligible?</th>
       <th class="mobile-hide">Registration Date</th>
       {#if is_privileged}
-        <th>Actions</th>
+        <th/>
       {/if}
     </tr>
   </thead>
@@ -125,12 +134,17 @@
             ({squad_data[squad.id].display_players ? 'hide' : 'show'})
           </button></td
         >
-        <td class="mobile-hide">{is_squad_eligible(squad)}</td>
+        <td class="mobile-hide">
+          {is_squad_eligible(squad) ? "Yes" : "No"}
+        </td>
         <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
         {#if is_privileged}
           <td>
             <ChevronDownSolid class="cursor-pointer"/>
             <Dropdown>
+              {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
+                <DropdownItem on:click={() => add_player_dialog.open(squad)}>Add Player</DropdownItem>
+              {/if}
               <DropdownItem on:click={() => edit_squad_dialog.open(squad)}>Edit</DropdownItem>
               <DropdownItem on:click={() => unregisterSquad(squad)}>Remove</DropdownItem>
             </Dropdown>
@@ -148,6 +162,7 @@
   </tbody>
 </Table>
 
+<AddPlayerToSquad bind:this={add_player_dialog} {tournament}/>
 <EditSquadDialog bind:this={edit_squad_dialog} {tournament} {is_privileged}/>
 
 <style>

@@ -3,7 +3,7 @@
   import Badge from './Badge.svelte';
 
   export let tag: string | null;
-  export let color: number | null;
+  export let color: number | null = null;
 
   $: color_val = colors[(color === null ? 0 : color) % colors.length].value;
 </script>

@@ -1,6 +1,7 @@
 export type TeamInvite = {
   invite_id: number;
   date: number;
+  is_bagger_clause: boolean;
   team_id: number;
   team_name: string;
   team_tag: string;

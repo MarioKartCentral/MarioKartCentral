@@ -34,6 +34,7 @@
       data.require_single_fc = false;
       data.squad_tag_required = true;
       data.squad_name_required = true;
+      data.checkins_enabled = false;
       if (!data.teams_only) {
         data.team_members_only = false;
         data.min_representatives = null;
@@ -52,7 +53,8 @@
       data.team_members_only = false;
       data.min_representatives = null;
     }
-    if (!data.checkins_open) {
+    if (!data.checkins_enabled) {
+      data.checkins_open = false;
       data.min_players_checkin = null;
     }
     if (!data.series_id) {
@@ -333,32 +335,45 @@
     </div>
     <div class="option">
       <div>
-        <label for="checkins_open">Check-ins enabled</label>
+        <label for="checkins_enabled">Check-ins enabled</label>
       </div>
       <div>
-        <select name="checkins_open" bind:value={data.checkins_open} on:change={updateData}>
+        <select name="checkins_enabled" bind:value={data.checkins_enabled} on:change={updateData}>
           <option value={false}>No</option>
           <option value={true}>Yes</option>
         </select>
       </div>
     </div>
-    {#if data.checkins_open && data.is_squad}
+    {#if data.checkins_enabled}
       <div class="option indented">
         <div>
-          <label for="min_players_checkin">Minimum Check-ins per Squad</label>
+          <label for="checkins_open">Checkins open?</label>
         </div>
         <div>
-          <input
-            class="number"
-            type="number"
-            name="min_players_checkin"
-            bind:value={data.min_players_checkin}
-            min="1"
-            max="99"
-            required
-          />
+          <select name="checkins_open" bind:value={data.checkins_open} on:change={updateData}>
+            <option value={false}>No</option>
+            <option value={true}>Yes</option>
+          </select>
         </div>
       </div>
+      {#if data.is_squad}
+        <div class="option indented">
+          <div>
+            <label for="min_players_checkin">Minimum Check-ins per Squad</label>
+          </div>
+          <div>
+            <input
+              class="number"
+              type="number"
+              name="min_players_checkin"
+              bind:value={data.min_players_checkin}
+              min="1"
+              max="99"
+              required
+            />
+          </div>
+        </div>
+      {/if}
     {/if}
   {/if}
   <div class="option">

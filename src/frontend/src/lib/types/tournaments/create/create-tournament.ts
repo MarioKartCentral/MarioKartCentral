@@ -22,6 +22,7 @@ export type CreateTournament = {
   host_status_required: boolean;
   mii_name_required: boolean;
   require_single_fc: boolean;
+  checkins_enabled: boolean;
   checkins_open: boolean;
   min_players_checkin: number | null;
   verification_required: boolean;

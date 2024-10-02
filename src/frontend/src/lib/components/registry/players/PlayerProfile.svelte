@@ -10,7 +10,8 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import { Avatar } from 'flowbite-svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
-    import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
 
   let user_info: UserInfo;
 
@@ -73,13 +74,14 @@
         </div>
       {/if}
     </div>
-    
+    <div class="item">
+      <DiscordDisplay discord={player.discord}/>
+    </div>
     <div class="about_me">
       {#if player.user_settings && player.user_settings.about_me}
         {player.user_settings.about_me}
       {/if}
     </div>
-    
   </div>
 </Section>
 

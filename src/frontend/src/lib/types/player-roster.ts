@@ -9,4 +9,5 @@ export type PlayerRoster = {
   roster_tag: string | null;
   game: string;
   mode: string;
+  is_bagger_clause: boolean;
 };

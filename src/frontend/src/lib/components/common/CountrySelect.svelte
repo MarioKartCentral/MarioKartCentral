@@ -4,6 +4,7 @@
 
     export let value: string | null = null;
     export let is_filter = false; // used to determine whether null/all countries is a select option
+    export let is_required = false;
 
     type Country = {
         country_code: string,
@@ -23,7 +24,7 @@
     countries.sort((a, b) => a.translated_name.localeCompare(b.translated_name));
 </script>
 
-<select class="country" bind:value={value}>
+<select class="country" name="country" bind:value={value} required={is_required}>
     {#if is_filter}
         <option value={null}>{$LL.PLAYER_LIST.FILTERS.ALL_COUNTRIES()}</option>
     {/if}

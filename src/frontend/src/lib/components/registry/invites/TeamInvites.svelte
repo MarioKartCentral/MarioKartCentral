@@ -11,6 +11,7 @@
     import GameBadge from "$lib/components/badges/GameBadge.svelte";
     import ModeBadge from "$lib/components/badges/ModeBadge.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
     export let invites: TeamInvite[];
 
@@ -44,13 +45,17 @@
         if (!user_info.player) {
             return [];
         }
-        let rosters = user_info.player.rosters.filter((r) => r.game === invite.game && r.mode === invite.mode);
+        let rosters = user_info.player.rosters.filter((r) => r.game === invite.game && r.mode === invite.mode && r.is_bagger_clause === invite.is_bagger_clause);
         return rosters;
     }
 
     $: leaveable_rosters = curr_invite ? getLeaveableRosters(curr_invite) : [];
 
     async function acceptInvite(invite: TeamInvite) {
+        if(leaveable_rosters.length && !leave_roster_id) {
+            alert("Please select a roster to leave");
+            return;
+        }
         accept_dialog.close();
         const payload = {
             invite_id: invite.invite_id,
@@ -112,7 +117,12 @@
             <td>
                 <TagBadge tag={invite.roster_tag ? invite.roster_tag : invite.team_tag} color={invite.team_color}/>
             </td>
-            <td>{invite.roster_name ? invite.roster_name : invite.team_name}</td>
+            <td>
+                {invite.roster_name ? invite.roster_name : invite.team_name}
+                {#if invite.is_bagger_clause}
+                    <BaggerBadge/>
+                {/if}
+            </td>
             <td class="mode mobile-hide">
                 <GameBadge game={invite.game}/>
                 <ModeBadge mode={invite.mode}/>
@@ -139,11 +149,11 @@
         {#each leaveable_rosters as r}
           <option value={r.roster_id}>{r.roster_name ? r.roster_name : r.team_name}</option>
         {/each}
-        <option value={null}>None</option>
+        <!-- <option value={null}>None</option> -->
       </select>
-      {#if !leave_roster_id}
+      <!-- {#if !leave_roster_id}
         <div><b>NOTE:</b> Selecting to not leave a roster may result in your transfer being denied.</div>
-      {/if}
+      {/if} -->
     {/if}
     <div class="accept">
       <Button on:click={() => acceptInvite(curr_invite)}>Accept</Button>

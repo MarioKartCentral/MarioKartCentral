@@ -1,6 +1,7 @@
 # re-export all the models
 from .common import *
 from .command_log import *
+from .discord_integration import *
 from .friend_codes import *
 from .notifications import *
 from .players import *

@@ -6,6 +6,7 @@
     import { locale } from "$i18n/i18n-svelte";
     import ArrowRight from "$lib/components/common/ArrowRight.svelte";
     import type { TournamentInvite } from "$lib/types/tournament-invite";
+    import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
     export let invites: TournamentInvite[];
 
@@ -35,6 +36,9 @@
                     <td>
                         <a href="/{$page.params.lang}/tournaments/details?id={invite.tournament_id}">
                             {invite.tournament_name}
+                            {#if invite.is_bagger_clause}
+                                <BaggerBadge/>
+                            {/if}
                         </a>
                     </td>
                     <td>

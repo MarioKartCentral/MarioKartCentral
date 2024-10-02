@@ -15,6 +15,7 @@
     import ModeBadge from "$lib/components/badges/ModeBadge.svelte";
     import PageNavigation from "$lib/components/common/PageNavigation.svelte";
     import GameModeSelect from "$lib/components/common/GameModeSelect.svelte";
+    import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
     export let approval_status: "approved" | "pending" | "denied";
 
@@ -143,6 +144,9 @@
             <td>
                 <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
                     {transfer.player_name}
+                    {#if transfer.is_bagger_clause}
+                        <BaggerBadge/>
+                    {/if}
                 </a>
             </td>
             <td class="mobile-hide">

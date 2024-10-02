@@ -4,6 +4,7 @@ from common.data.models.common import Game, CountryCode
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
+from common.data.models.discord_integration import Discord
 
     
 @dataclass
@@ -14,7 +15,7 @@ class Player:
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
-    discord_id: str | None
+    discord: Discord | None
     
 @dataclass
 class PlayerAndFriendCodes(Player):
@@ -32,6 +33,7 @@ class PlayerRoster:
     roster_tag: str | None
     game: str
     mode: str
+    is_bagger_clause: bool
 
 @dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
@@ -41,7 +43,7 @@ class PlayerDetailed(PlayerAndFriendCodes):
 
 @dataclass
 class PlayerList:
-    player_list: list[PlayerAndFriendCodes]
+    player_list: list[PlayerDetailed]
     player_count: int
     page_count: int
 
@@ -52,7 +54,6 @@ class CreatePlayerRequestData:
     friend_codes: list[CreateFriendCodeRequestData]
     is_hidden: bool = False
     is_shadow: bool = False
-    discord_id: str | None = None
     
 
 @dataclass
@@ -62,7 +63,6 @@ class EditPlayerRequestData:
     country_code: CountryCode
     is_hidden: bool
     is_shadow: bool
-    discord_id: str | None
 
 @dataclass
 class PlayerFilter:
