@@ -17,6 +17,7 @@ class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     is_checked_in: bool = False
     is_representative: bool = False
     is_bagger_clause: bool = False
+    is_approved: bool = False
 
 @dataclass
 class EditMyRegistrationRequestData():
@@ -33,6 +34,7 @@ class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
     is_checked_in: bool | None
     is_representative: bool | None
     is_bagger_clause: bool | None
+    is_approved: bool | None
 
 @dataclass
 class TournamentPlayerDetails():
@@ -41,6 +43,7 @@ class TournamentPlayerDetails():
     squad_id: int | None
     timestamp: int
     is_checked_in: bool
+    is_approved: bool
     mii_name: str | None
     can_host: bool
     name: str
@@ -54,3 +57,8 @@ class TournamentRegistrationFilter():
     registered_only: bool = True
     eligible_only: bool = False
     hosts_only: bool = False
+    is_approved: bool | None = None
+
+@dataclass
+class TournamentCheckinRequestData():
+    squad_id: int | None

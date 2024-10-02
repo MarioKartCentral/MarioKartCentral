@@ -18,7 +18,7 @@ async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSO
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, player_id, tournament_id, 
-        False, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, is_privileged=False)
+        False, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, False, is_privileged=False)
     await handle(command)
     return JSONResponse({})
 
@@ -29,7 +29,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
     command = RegisterTeamTournamentCommand(tournament_id, body.squad_name, body.squad_tag, body.squad_color,
-                                            player_id, body.roster_ids, body.players)
+                                            player_id, body.roster_ids, body.players, False)
     await handle(command)
     return JSONResponse({})
 
@@ -39,7 +39,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
     command = RegisterTeamTournamentCommand(tournament_id, body.squad_name, body.squad_tag, body.squad_color,
-                                            player_id, body.roster_ids, body.players, is_privileged=True)
+                                            player_id, body.roster_ids, body.players, True, is_privileged=True)
     await handle(command)
     return JSONResponse({})
 
@@ -49,7 +49,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, tournament_id, 
-        False, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, is_privileged=True)
+        body.is_checked_in, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, body.is_approved, is_privileged=True)
     await handle(command)
     return JSONResponse({})
 
@@ -57,7 +57,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
-    command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered)
+    command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered, body.is_approved)
     await handle(command)
     return JSONResponse({})
 
@@ -68,7 +68,7 @@ async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONR
     captain_player_id = request.state.user.player_id
     command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
     await handle(command)
-    command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, True)
+    command = EditSquadCommand(tournament_id, body.squad_id, body.squad_name, body.squad_tag, body.squad_color, True, None)
     await handle(command)
     return JSONResponse({})
 
@@ -81,7 +81,7 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
     captain_player_id = request.state.user.player_id
     command = CheckSquadCaptainPermissionsCommand(tournament_id, body.squad_id, captain_player_id)
     await handle(command)
-    command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, False, False, None, False, True, None, body.is_representative, body.is_bagger_clause, False)
+    command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, False, False, None, False, True, None, body.is_representative, body.is_bagger_clause, False, False)
     await handle(command)
     return JSONResponse({})
 
@@ -95,7 +95,7 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
                                                                         tournament_id=tournament_id))
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
-    command = RegisterPlayerCommand(player_id, tournament_id, None, False, False, body.mii_name, body.can_host, False, body.selected_fc_id, False, False, False)
+    command = RegisterPlayerCommand(player_id, tournament_id, None, False, False, body.mii_name, body.can_host, False, body.selected_fc_id, False, False, False, False)
     await handle(command)
     return JSONResponse({})
 
@@ -105,7 +105,7 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, body.is_squad_captain, body.is_checked_in, 
-        body.mii_name, body.can_host, body.is_invite, body.selected_fc_id, body.is_representative, body.is_bagger_clause, True)
+        body.mii_name, body.can_host, body.is_invite, body.selected_fc_id, body.is_representative, body.is_bagger_clause, body.is_approved, True)
     await handle(command)
     return JSONResponse({})
 
@@ -115,7 +115,7 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     tournament_id = request.path_params['tournament_id']
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, body.player_id, body.mii_name, body.can_host,
         body.is_invite, body.is_checked_in, body.is_squad_captain, body.selected_fc_id, body.is_representative, 
-        body.is_bagger_clause, True)
+        body.is_bagger_clause, body.is_approved, True)
     await handle(command)
     return JSONResponse({})
 
@@ -129,7 +129,7 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host, False, None, None, body.selected_fc_id,
-                                            None, None, False)
+                                            None, None, None, False)
     await handle(command)
     return JSONResponse({})
 
@@ -143,7 +143,7 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host,
-        False, False, False, body.selected_fc_id, None, None, False)
+        False, False, False, body.selected_fc_id, None, None, None, False)
     await handle(command)
     return JSONResponse({})
 
@@ -252,9 +252,10 @@ async def list_registrations(request: Request, body: TournamentRegistrationFilte
     command = CheckIfSquadTournament(tournament_id)
     is_squad = await handle(command)
     if is_squad:
-        command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only, body.hosts_only)
+        print(body.is_approved)
+        command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only, body.hosts_only, body.is_approved)
     else:
-        command = GetFFARegistrationsCommand(tournament_id, body.hosts_only)
+        command = GetFFARegistrationsCommand(tournament_id, body.eligible_only, body.hosts_only, body.is_approved)
     registrations = await handle(command)
     return JSONResponse(registrations)
 
@@ -273,6 +274,15 @@ async def my_registration(request: Request) -> JSONResponse:
         command = GetPlayerSoloRegCommand(tournament_id, request.state.user.player_id)
     registrations = await handle(command)
     return JSONResponse(registrations)
+
+@bind_request_body(TournamentCheckinRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def toggle_checkin(request: Request, body: TournamentCheckinRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    player_id = request.state.user.player_id
+    command = TogglePlayerCheckinCommand(tournament_id, body.squad_id, player_id)
+    await handle(command)
+    return JSONResponse({})
 
 routes = [
     Route('/api/tournaments/{tournament_id:int}/register', register_me, methods=['POST']),
@@ -298,5 +308,6 @@ routes = [
     Route('/api/tournaments/{tournament_id:int}/forceUnregisterSquad', force_unregister_squad, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/squads/{squad_id:int}', view_squad),
     Route('/api/tournaments/{tournament_id:int}/registrations', list_registrations),
-    Route('/api/tournaments/{tournament_id:int}/myRegistration', my_registration)
+    Route('/api/tournaments/{tournament_id:int}/myRegistration', my_registration),
+    Route('/api/tournaments/{tournament_id:int}/toggleCheckin', toggle_checkin, methods=['POST'])
 ]

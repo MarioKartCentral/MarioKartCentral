@@ -19,6 +19,7 @@ class CreateSquadCommand(Command[None]):
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
+    is_approved: bool
     is_privileged: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
@@ -76,15 +77,15 @@ class CreateSquadCommand(Command[None]):
                     if squad_is_registered == 1:
                         raise Problem('Player is already registered for this tournament', status=400)
                     
-            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered)
-                VALUES (?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True)) as cursor:
+            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
                 squad_id = cursor.lastrowid
             await db.commit()
             
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                             is_representative, is_bagger_clause)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, squad_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, False,
-                selected_fc_id, False, self.is_bagger_clause))
+                             is_representative, is_bagger_clause, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, squad_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, False,
+                selected_fc_id, False, self.is_bagger_clause, self.is_approved))
             await db.commit()
 
 @save_to_command_log
@@ -97,6 +98,7 @@ class RegisterTeamTournamentCommand(Command[None]):
     creator_player_id: int
     roster_ids: list[int]
     players: list[TeamTournamentPlayer]
+    is_approved: bool
     is_privileged: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
@@ -203,8 +205,8 @@ class RegisterTeamTournamentCommand(Command[None]):
                                   status=400)
             
             timestamp = int(datetime.now(timezone.utc).timestamp())
-            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered)
-                VALUES (?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True)) as cursor:
+            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
                 squad_id = cursor.lastrowid
             await db.commit()
             
@@ -216,10 +218,10 @@ class RegisterTeamTournamentCommand(Command[None]):
             queries_parameters: list[Iterable[Any]] = []
             for player in self.players:
                 queries_parameters.append((player.player_id, self.tournament_id, squad_id, player.is_captain, timestamp, False, None, False, False, None, player.is_representative,
-                                           player.is_bagger_clause))
+                                           player.is_bagger_clause, self.is_approved))
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                                    is_representative, is_bagger_clause)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
+                                    is_representative, is_bagger_clause, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
             await db.commit()
                 
 
@@ -228,20 +230,31 @@ class RegisterTeamTournamentCommand(Command[None]):
 class EditSquadCommand(Command[None]):
     tournament_id: int
     squad_id: int
-    squad_name: str
-    squad_tag: str
-    squad_color: int
-    is_registered: int
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: int | None
+    is_registered: bool | None
+    is_approved: bool | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
-            async with db.execute("UPDATE tournament_squads SET name = ?, tag = ?, color = ?, is_registered = ? WHERE id = ? AND tournament_id = ?",
-                (self.squad_name, self.squad_tag, self.squad_color, self.is_registered, self.squad_id, self.tournament_id)) as cursor:
+            async with db.execute("SELECT is_approved, name, tag, color, is_registered FROM tournament_squads WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Squad not found", status=400)
+                curr_is_approved, curr_name, curr_tag, curr_color, curr_registered = row
+            is_approved = curr_is_approved if self.is_approved is None else self.is_approved
+            name = curr_name if self.squad_name is None else self.squad_name
+            tag = curr_tag if self.squad_tag is None else self.squad_tag
+            color = curr_color if self.squad_color is None else self.squad_color
+            is_registered = curr_registered if self.is_registered is None else self.is_registered
+            async with db.execute("UPDATE tournament_squads SET name = ?, tag = ?, color = ?, is_registered = ?, is_approved = ? WHERE id = ? AND tournament_id = ?",
+                (name, tag, color, is_registered, is_approved, self.squad_id, self.tournament_id)) as cursor:
                 updated_rows = cursor.rowcount
                 if updated_rows == 0:
                     raise Problem("Squad not found", status=404)
             # unregister all players if squad is being withdrawn
-            if not self.is_registered:
+            if not is_registered:
                 await db.execute("DELETE FROM tournament_players WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
             await db.commit()
 
@@ -339,14 +352,14 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT id, name, tag, color, timestamp, is_registered FROM tournament_squads WHERE tournament_id = ? AND id = ?",
+            async with db.execute("SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads WHERE tournament_id = ? AND id = ?",
                 (self.tournament_id, self.squad_id)) as cursor:
                 squad_row = await cursor.fetchone()
                 if not squad_row:
                     raise Problem("Squad not found", status=404)
-                squad_id, name, tag, color, timestamp, is_registered = squad_row
+                squad_id, name, tag, color, timestamp, is_registered, squad_is_approved = squad_row
             async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
-                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause,
+                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved,
                                     p.name, p.country_code, d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
@@ -360,12 +373,12 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
                     (reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, 
-                     can_host, is_invite, curr_fc_id, is_bagger_clause, player_name, country, 
+                     can_host, is_invite, curr_fc_id, is_bagger_clause, player_is_approved, player_name, country, 
                      discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, mii_name, can_host,
+                    curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, player_is_approved, mii_name, can_host,
                         player_name, country, player_discord, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
                     players.append(curr_player)
 
@@ -386,4 +399,4 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 for row in rows:
                     player_id, fc = row
                     player_dict[player_id].friend_codes.append(fc)
-            return TournamentSquadDetails(squad_id, name, tag, color, timestamp, is_registered, players)
+            return TournamentSquadDetails(squad_id, name, tag, color, timestamp, is_registered, squad_is_approved, players)

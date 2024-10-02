@@ -23,7 +23,7 @@
   });
 
   onMount(async () => {
-    const res = await fetch(`/api/tournaments/${tournament.id}/registrations`);
+    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?is_approved=true`);
     if (res.status < 300) {
       const body = await res.json();
       if (tournament.is_squad) {
@@ -40,15 +40,19 @@
   async function filter_registrations() {
     let eligible_only = false;
     let hosts_only = false;
+    let is_approved = true;
     if (setting === 'eligible' || setting === 'hosts') {
       eligible_only = true;
     }
     if (setting === 'hosts') {
       hosts_only = true;
     }
-    const res = await fetch(
-      `/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}&hosts_only=${hosts_only}`,
-    );
+    if (setting === 'pending') {
+      is_approved = false;
+    }
+    
+    let url = `/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}&hosts_only=${hosts_only}&is_approved=${is_approved}`
+    const res = await fetch(url);
     if (res.status < 300) {
       const body = await res.json();
       console.log(body);
@@ -74,6 +78,10 @@
         {#if tournament.host_status_required}
           <option value={'hosts'}>Hosts Only</option>
         {/if}
+        {#if tournament.verification_required && check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+          tournament.id, tournament.series_id)}
+          <option value={'pending'}>Pending</option>
+        {/if}
       </select>
     </div>
     {#if registration_count > 0}
@@ -82,13 +90,17 @@
         {tournament.is_squad ? 'Squads' : 'Players'}
       </div>
       {#if tournament.is_squad}
-        <TournamentSquadList {tournament} squads={tournament_squads} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
-          tournament.id, tournament.series_id
-        )}/>
+        {#key tournament_squads}
+          <TournamentSquadList {tournament} squads={tournament_squads} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+            tournament.id, tournament.series_id
+          )}/>
+        {/key}
       {:else}
-        <TournamentPlayerList {tournament} players={tournament_players} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
-          tournament.id, tournament.series_id
-        )}/>
+        {#key tournament_players}
+          <TournamentPlayerList {tournament} players={tournament_players} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+            tournament.id, tournament.series_id
+          )}/>
+        {/key}
       {/if}
     {:else}
       No {tournament.is_squad ? 'squad' : 'player'}s. Be the first to register!

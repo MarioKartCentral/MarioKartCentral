@@ -26,6 +26,7 @@ export type TournamentTemplate = {
   squad_name_required: boolean;
   mii_name_required: boolean;
   host_status_required: boolean;
+  checkins_enabled: boolean;
   checkins_open: boolean;
   min_players_checkin: number | null;
   verification_required: boolean;

@@ -182,11 +182,14 @@
   <col class="country" />
   <col class="name" />
   {#if tournament.mii_name_required && exclude_invites}
-    <col class="mii-name" />
+    <col class="mii-name mobile-hide" />
   {/if}
   <col class="friend-codes mobile-hide" />
   {#if tournament.host_status_required && exclude_invites}
     <col class="can-host mobile-hide" />
+  {/if}
+  {#if tournament.checkins_enabled}
+    <col class="is-checked-in mobile-hide"/>
   {/if}
   {#if is_privileged || my_player}
     <col class="actions"/>
@@ -196,14 +199,17 @@
       <th />
       <th>Name</th>
       {#if tournament.mii_name_required && exclude_invites}
-        <th>In-Game Name</th>
+        <th class="mobile-hide">In-Game Name</th>
       {/if}
       <th class="mobile-hide">Friend Codes</th>
       {#if tournament.host_status_required && exclude_invites}
         <th class="mobile-hide">Can Host</th>
       {/if}
+      {#if tournament.checkins_enabled}
+        <th class="mobile-hide">Checked In</th>
+      {/if}
       {#if is_privileged || my_player}
-        <th>Actions</th>
+        <th/>
       {/if}
     </tr>
   </thead>
@@ -218,7 +224,7 @@
           is_bagger_clause={player.is_bagger_clause}/>
         </td>
         {#if tournament.mii_name_required && exclude_invites}
-          <td>{player.mii_name}</td>
+          <td class="mobile-hide">{player.mii_name}</td>
         {/if}
         <td class="mobile-hide">
           {#if player.friend_codes.length > 0}
@@ -227,6 +233,9 @@
         </td>
         {#if tournament.host_status_required && exclude_invites}
           <td class="mobile-hide">{player.can_host ? 'Yes' : 'No'}</td>
+        {/if}
+        {#if tournament.checkins_enabled}
+          <td class="mobile-hide">{player.is_checked_in ? 'Yes' : 'No'}</td>
         {/if}
         
         {#if is_privileged || my_player}
@@ -283,12 +292,15 @@
     width: 25%;
   }
   col.mii-name {
-    width: 25%;
-  }
-  col.friend-codes {
     width: 20%;
   }
+  col.friend-codes {
+    width: 15%;
+  }
   col.can-host {
+    width: 10%;
+  }
+  col.is-checked-in {
     width: 10%;
   }
   col.actions {

@@ -29,6 +29,7 @@ class TournamentDBFields():
     squad_name_required: bool
     mii_name_required: bool
     host_status_required: bool
+    checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
     verification_required: bool
@@ -77,6 +78,7 @@ class CreateTournamentRequestData():
     squad_name_required: bool
     mii_name_required: bool
     host_status_required: bool
+    checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
     verification_required: bool
@@ -126,6 +128,7 @@ class EditTournamentRequestData():
     squad_name_required: bool
     mii_name_required: bool
     host_status_required: bool
+    checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
     verification_required: bool

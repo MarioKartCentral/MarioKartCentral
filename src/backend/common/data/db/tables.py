@@ -213,6 +213,7 @@ class Tournament(TableModel):
     squad_name_required: bool
     mii_name_required: bool
     host_status_required: bool
+    checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
     verification_required: bool
@@ -257,6 +258,7 @@ class Tournament(TableModel):
             squad_name_required BOOLEAN NOT NULL,
             mii_name_required BOOLEAN NOT NULL,
             host_status_required BOOLEAN NOT NULL,
+            checkins_enabled BOOLEAN NOT NULL,
             checkins_open BOOLEAN NOT NULL,
             min_players_checkin INTEGER,
             verification_required BOOLEAN NOT NULL,
@@ -295,6 +297,7 @@ class TournamentSquad(TableModel):
     timestamp: int
     tournament_id: int
     is_registered: int
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -305,7 +308,9 @@ class TournamentSquad(TableModel):
             color INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            is_registered INTEGER NOT NULL)"""
+            is_registered INTEGER NOT NULL,
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL
+            )"""
 
 @dataclass
 class TournamentPlayer(TableModel):
@@ -321,6 +326,7 @@ class TournamentPlayer(TableModel):
     is_invite: bool
     selected_fc_id: int
     is_representative: bool
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -337,7 +343,8 @@ class TournamentPlayer(TableModel):
             is_invite BOOLEAN NOT NULL,
             selected_fc_id INTEGER,
             is_representative BOOLEAN NOT NULL,
-            is_bagger_clause BOOLEAN NOT NULL
+            is_bagger_clause BOOLEAN NOT NULL,
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL
             )"""
     
 @dataclass

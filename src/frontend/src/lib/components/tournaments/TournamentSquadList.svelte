@@ -27,10 +27,17 @@
   }
 
   function is_squad_eligible(squad: TournamentSquad) {
-    if (tournament.min_squad_size === null) {
-      return 'Yes';
+    if (tournament.min_squad_size !== null) {
+      if (squad.players.filter(p => !p.is_invite).length < tournament.min_squad_size) {
+        return false;
+      }
     }
-    return squad.players.filter(p => !p.is_invite).length >= tournament.min_squad_size ? 'Yes' : 'No';
+    if(tournament.min_players_checkin !== null) {
+      if(squad.players.filter(p => p.is_checked_in).length < tournament.min_players_checkin) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function toggle_show_players(squad_id: number) {
@@ -105,7 +112,7 @@
       <th class="mobile-hide">Eligible?</th>
       <th class="mobile-hide">Registration Date</th>
       {#if is_privileged}
-        <th>Actions</th>
+        <th/>
       {/if}
     </tr>
   </thead>
@@ -127,7 +134,9 @@
             ({squad_data[squad.id].display_players ? 'hide' : 'show'})
           </button></td
         >
-        <td class="mobile-hide">{is_squad_eligible(squad)}</td>
+        <td class="mobile-hide">
+          {is_squad_eligible(squad) ? "Yes" : "No"}
+        </td>
         <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
         {#if is_privileged}
           <td>

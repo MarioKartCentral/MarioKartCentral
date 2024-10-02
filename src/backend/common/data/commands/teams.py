@@ -634,10 +634,11 @@ class ApproveTransferCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, is_bagger_clause) for tournament_id, squad_id in squads.items()]
+            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, is_bagger_clause,
+                            False) for tournament_id, squad_id in squads.items()]
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                                 is_representative, is_bagger_clause)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+                                 is_representative, is_bagger_clause, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log
@@ -1046,10 +1047,11 @@ class ForceTransferPlayerCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, self.is_bagger_clause) for tournament_id, squad_id in squads.items()]
+            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, self.is_bagger_clause,
+                            False) for tournament_id, squad_id in squads.items()]
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                                 is_representative, is_bagger_clause)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+                                 is_representative, is_bagger_clause, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log

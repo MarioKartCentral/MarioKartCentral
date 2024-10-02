@@ -16,11 +16,15 @@
         let selected_fc_id = formData.get('selected_fc_id');
         let mii_name = formData.get('mii_name');
         let can_host = formData.get('can_host');
+        let is_checked_in = formData.get('is_checked_in');
+        let is_approved = formData.get('is_approved');
         const payload = {
             player_id: player.id,
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
-            can_host: can_host === 'true'    
+            can_host: can_host === 'true',
+            is_checked_in: is_checked_in === 'true',
+            is_approved: is_approved === 'true'    
         };
         const endpoint = `/api/tournaments/${tournament.id}/forceRegister`;
         console.log(payload);
@@ -47,6 +51,8 @@
         let mii_name = formData.get('mii_name');
         let can_host = formData.get('can_host');
         let is_bagger_clause = formData.get('is_bagger_clause');
+        let is_checked_in = formData.get('is_checked_in');
+        let is_approved = formData.get('is_approved');
         const payload = {
             player_id: player.id,
             squad_color: Number(squad_color),
@@ -56,6 +62,8 @@
             mii_name: mii_name,
             can_host: can_host === 'true',
             is_bagger_clause: is_bagger_clause === 'true',
+            is_checked_in: is_checked_in === 'true',
+            is_approved: is_approved === 'true'
         };
         const endpoint = `/api/tournaments/${tournament.id}/forceCreateSquad`;
         console.log(payload);
