@@ -2,6 +2,7 @@ import type { FriendCode } from '$lib/types/friend-code';
 import type { BanInfoBasic } from '$lib/types/ban-info';
 import type { UserSettings } from '$lib/types/user-settings';
 import type { PlayerRoster } from './player-roster';
+import type { Discord } from './discord';
 
 export type PlayerInfo = {
   id: number;
@@ -10,7 +11,7 @@ export type PlayerInfo = {
   is_hidden: boolean;
   is_shadow: boolean;
   is_banned: boolean;
-  discord_id: string | null;
+  discord: Discord | null;
   friend_codes: FriendCode[];
   rosters: PlayerRoster[];
   ban_info: BanInfoBasic | null;

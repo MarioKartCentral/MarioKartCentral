@@ -21,11 +21,13 @@
         let squad_color = formData.get('squad_color');
         let squad_name = formData.get('squad_name');
         let squad_tag = formData.get('squad_tag');
+        let is_approved = formData.get('is_approved');
         const payload = {
             squad_id: squad.id,
             squad_color: Number(squad_color),
             squad_name: squad_name,
             squad_tag: squad_tag,
+            is_approved: is_approved !== null ? is_approved === "true" : null
         };
         const endpoint = `/api/tournaments/${tournament.id}/editSquad`;
         const response = await fetch(endpoint, {
@@ -71,11 +73,32 @@
     {#if squad}
         <form method="POST" on:submit|preventDefault={is_privileged ? editSquad : editMySquad}>
             <SquadTournamentFields {tournament} squad_color={squad.color} squad_name={squad.name} squad_tag={squad.tag} />
-            <br />
+            {#if is_privileged && tournament.verification_required}
+                <div class="item">
+                    <span class="item-label">
+                        <label for="is_approved">Approved?</label>
+                    </span>
+                    <select name="is_approved" value={Boolean(squad.is_approved)} required>
+                        <option value={false}>No</option>
+                        <option value={true}>Yes</option>
+                    </select>
+                </div>
+            {/if}
             <div>
-            <Button type="submit">Edit Squad</Button>
-            <Button type="button" on:click={edit_squad_dialog.close}>Cancel</Button>
+                <Button type="submit">Edit Squad</Button>
+                <Button type="button" on:click={edit_squad_dialog.close}>Cancel</Button>
             </div>
         </form>
     {/if}
 </Dialog>
+
+<style>
+    .item-label {
+        display: inline-block;
+        width: 150px;
+        font-weight: 525;
+    }
+    .item {
+        margin: 10px 0;
+    }
+</style>

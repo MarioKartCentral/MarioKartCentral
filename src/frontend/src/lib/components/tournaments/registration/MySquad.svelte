@@ -114,7 +114,6 @@
 </script>
 
 <div>My squad</div>
-
 <div>
   {#if tournament.squad_tag_required}
     <TagBadge tag={squad.tag} color={squad.color}/>

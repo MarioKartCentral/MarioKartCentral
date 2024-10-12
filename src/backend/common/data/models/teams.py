@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
 from common.data.models.players import Player
+from common.data.models.discord_integration import Discord
 
 
 @dataclass
@@ -80,6 +81,7 @@ class PartialTeamMember():
     player_id: int
     roster_id: int
     join_date: int
+    is_bagger_clause: bool
 
 @dataclass
 class PartialPlayer():
@@ -87,7 +89,7 @@ class PartialPlayer():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     friend_codes: list[FriendCode]
 
 @dataclass
@@ -96,10 +98,11 @@ class RosterPlayerInfo():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     join_date: int
     is_manager: bool
     is_leader: bool
+    is_bagger_clause: bool
     friend_codes: list[FriendCode]
 
 @dataclass
@@ -108,8 +111,9 @@ class RosterInvitedPlayer():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     invite_date: int
+    is_bagger_clause: bool
     friend_codes: list[FriendCode]
     
 @dataclass
@@ -174,10 +178,14 @@ class EditRosterRequestData():
     approval_status: Approval
 
 @dataclass
-class InviteRosterPlayerRequestData():
+class DeleteInviteRequestData():
     team_id: int
     player_id: int
     roster_id: int
+
+@dataclass
+class InviteRosterPlayerRequestData(DeleteInviteRequestData):
+    is_bagger_clause: bool
 
 @dataclass
 class AcceptRosterInviteRequestData():
@@ -230,6 +238,7 @@ class ForceTransferPlayerRequestData():
     roster_id: int
     team_id: int
     roster_leave_id: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class EditTeamMemberInfoRequestData():
@@ -238,6 +247,7 @@ class EditTeamMemberInfoRequestData():
     team_id: int
     join_date: int | None
     leave_date: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class KickPlayerRequestData():
@@ -259,6 +269,7 @@ class TeamFilter():
 class TeamInvite():
     invite_id: int
     date: int
+    is_bagger_clause: bool
     team_id: int
     team_name: str
     team_tag: str
@@ -283,6 +294,7 @@ class TransferRoster():
 class TeamTransfer():
     invite_id: int
     date: int
+    is_bagger_clause: bool
     game: Game
     mode: GameMode
     player_id: int

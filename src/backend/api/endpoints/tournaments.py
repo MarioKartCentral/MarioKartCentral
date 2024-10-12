@@ -3,7 +3,7 @@ from starlette.routing import Route
 from api.auth import require_permission, require_tournament_permission, require_series_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from common.auth import series_permissions, tournament_permissions
+from common.auth import permissions, series_permissions, tournament_permissions
 from common.data.commands import *
 from common.data.models import *
 

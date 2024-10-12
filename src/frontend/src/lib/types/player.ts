@@ -1,3 +1,5 @@
+import type { Discord } from './discord';
+
 export type Player = {
   id: number;
   name: string;
@@ -5,5 +7,5 @@ export type Player = {
   is_hidden: boolean;
   is_shadow: boolean;
   is_banned: boolean;
-  discord_id: string | null;
+  discord: Discord | null;
 };

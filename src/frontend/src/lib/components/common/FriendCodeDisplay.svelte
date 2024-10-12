@@ -8,6 +8,9 @@
 
     // we want to display the selected FC if there is one, otherwise just display the first FC in the list
     function get_display_fc() {
+        if(!friend_codes.length) {
+            return null;
+        }
         let fc = friend_codes.find((fc) => fc.id === selected_fc_id);
         if(!fc) {
             fc = friend_codes[0];
@@ -27,27 +30,30 @@
     let other_fcs = get_other_fcs();
 </script>
 
-<div class="default_view" id="fc">
-    {display_fc.fc}   
-</div>
-<Popover triggeredBy="#fc" class="bg-gray-600 text-white">
-    {#if selected_fc_id}
-        <div class="selected">Selected FC:</div>
-        <div>
-            <GameBadge game={display_fc.game}/>
-            {display_fc.fc}
-        </div>
-    {/if}
-    {#if selected_fc_id && other_fcs.length}
-        <div class="selected">Other FCs:</div>
-    {/if}
-    {#each other_fcs as fc}
-        <div>
-            <GameBadge game={fc.game}/>
-            {fc.fc}
-        </div> 
-    {/each}
-</Popover>
+{#if display_fc}
+    <div class="default_view" id="fc">
+        {display_fc.fc}   
+    </div>
+    <Popover class="bg-gray-600 text-white">
+        {#if selected_fc_id}
+            <div class="selected">Selected FC:</div>
+            <div>
+                <GameBadge game={display_fc.game}/>
+                {display_fc.fc}
+            </div>
+        {/if}
+        {#if selected_fc_id && other_fcs.length}
+            <div class="selected">Other FCs:</div>
+        {/if}
+        {#each other_fcs as fc}
+            <div>
+                <GameBadge game={fc.game}/>
+                {fc.fc}
+            </div> 
+        {/each}
+    </Popover>
+{/if}
+
 
 <style>
     div.default_view {

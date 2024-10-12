@@ -15,7 +15,6 @@ class Player(TableModel):
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
-    discord_id: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -25,8 +24,8 @@ class Player(TableModel):
             country_code TEXT NOT NULL,
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
-            is_banned BOOLEAN NOT NULL,
-            discord_id TEXT)"""
+            is_banned BOOLEAN NOT NULL
+            )"""
 
 @dataclass
 class FriendCode(TableModel):
@@ -79,6 +78,32 @@ class Session(TableModel):
             session_id TEXT PRIMARY KEY NOT NULL,
             user_id INTEGER NOT NULL REFERENCES users(id),
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
+    
+@dataclass
+class UserDiscord(TableModel):
+    user_id: int
+    discord_id: str
+    username: str
+    discriminator: str
+    global_name: str | None
+    avatar: str | None
+    access_token: str
+    token_expires_on: int
+    refresh_token: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_discords(
+        user_id INTEGER PRIMARY KEY REFERENCES users(id),
+        discord_id TEXT NOT NULL,
+        username TEXT NOT NULL,
+        discriminator TEXT NOT NULL,
+        global_name TEXT,
+        avatar TEXT,
+        access_token TEXT NOT NULL,
+        token_expires_on INTEGER NOT NULL,
+        refresh_token TEXT NOT NULL
+        )"""
 
 @dataclass
 class Role(TableModel):
@@ -188,6 +213,7 @@ class Tournament(TableModel):
     squad_name_required: bool
     mii_name_required: bool
     host_status_required: bool
+    checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
     verification_required: bool
@@ -232,6 +258,7 @@ class Tournament(TableModel):
             squad_name_required BOOLEAN NOT NULL,
             mii_name_required BOOLEAN NOT NULL,
             host_status_required BOOLEAN NOT NULL,
+            checkins_enabled BOOLEAN NOT NULL,
             checkins_open BOOLEAN NOT NULL,
             min_players_checkin INTEGER,
             verification_required BOOLEAN NOT NULL,
@@ -270,6 +297,7 @@ class TournamentSquad(TableModel):
     timestamp: int
     tournament_id: int
     is_registered: int
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -280,7 +308,9 @@ class TournamentSquad(TableModel):
             color INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            is_registered INTEGER NOT NULL)"""
+            is_registered INTEGER NOT NULL,
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL
+            )"""
 
 @dataclass
 class TournamentPlayer(TableModel):
@@ -296,6 +326,7 @@ class TournamentPlayer(TableModel):
     is_invite: bool
     selected_fc_id: int
     is_representative: bool
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -312,7 +343,8 @@ class TournamentPlayer(TableModel):
             is_invite BOOLEAN NOT NULL,
             selected_fc_id INTEGER,
             is_representative BOOLEAN NOT NULL,
-            is_bagger_clause BOOLEAN NOT NULL
+            is_bagger_clause BOOLEAN NOT NULL,
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL
             )"""
     
 @dataclass
@@ -432,7 +464,8 @@ class TeamMember(TableModel):
             roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
             player_id INTEGER NOT NULL REFERENCES players(id),
             join_date INTEGER NOT NULL,
-            leave_date INTEGER
+            leave_date INTEGER,
+            is_bagger_clause BOOLEAN NOT NULL
             )
             """
 
@@ -638,8 +671,9 @@ class RosterInvite(TableModel):
             roster_id INTEGER REFERENCES team_rosters(id),
             date INTEGER NOT NULL,
             roster_leave_id INTEGER REFERENCES team_rosters(id),
+            is_bagger_clause BOOLEAN NOT NULL,
             is_accepted BOOLEAN NOT NULL,
-            approval_status TEXT NOT NULL 
+            approval_status TEXT NOT NULL
             )"""
 
 @dataclass
@@ -683,7 +717,6 @@ class RosterEditRequest(TableModel):
 class UserSettings(TableModel):
     user_id: int
     avatar: str | None
-    discord_tag: str | None
     about_me: str | None
     language: str
     color_scheme: str
@@ -797,7 +830,7 @@ class PlayerBansHistorical(TableModel):
             comment TEXT NOT NULL)"""
     
 all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
+    Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,

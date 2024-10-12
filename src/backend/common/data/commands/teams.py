@@ -70,20 +70,19 @@ class GetTeamInfoCommand(Command[Team]):
             # use a set for O(1) lookup
             managers = set[int]()
             leaders = set[int]()
-            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.discord_id, tr.name FROM players p
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
                 WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, role_name = row
+                    player_id, name, country_code, is_hidden, is_shadow, is_banned, role_name = row
                     if role_name == team_roles.MANAGER:
-                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, discord_id))
+                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, None))
                         managers.add(player_id)
                     else:
                         leaders.add(player_id)
-                #team.managers = [Player(*row) for row in rows]
             
             # get all rosters for our team
             rosters: list[TeamRoster] = []
@@ -104,24 +103,25 @@ class GetTeamInfoCommand(Command[Team]):
             team_members: list[PartialTeamMember] = []
             # get all current team members who are in a roster that belongs to our team
             roster_id_query = ','.join(map(str, roster_dict.keys()))
-            async with db.execute(f"""SELECT player_id, roster_id, join_date
+            async with db.execute(f"""SELECT player_id, roster_id, join_date, is_bagger_clause
                                     FROM team_members
                                     WHERE roster_id IN ({roster_id_query}) AND leave_date IS ?
                                     """, (None,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, roster_id, join_date = row
-                    curr_team_member = PartialTeamMember(player_id, roster_id, join_date)
+                    player_id, roster_id, join_date, is_bagger_clause = row
+                    curr_team_member = PartialTeamMember(player_id, roster_id, join_date, bool(is_bagger_clause))
                     team_members.append(curr_team_member)
 
             team_invites: list[PartialTeamMember] = []
             # get all invited players to a roster on our team
-            async with db.execute(f"""SELECT player_id, roster_id, date
+            async with db.execute(f"""SELECT player_id, roster_id, date, is_bagger_clause
                                   FROM team_transfers
                                   WHERE roster_id IN ({roster_id_query}) AND approval_status = 'pending'""") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    curr_invited_player = PartialTeamMember(*row)
+                    player_id, roster_id, join_date, is_bagger_clause = row
+                    curr_invited_player = PartialTeamMember(player_id, roster_id, join_date, bool(is_bagger_clause))
                     team_invites.append(curr_invited_player)
 
             player_dict: dict[int, PartialPlayer] = {}
@@ -129,11 +129,20 @@ class GetTeamInfoCommand(Command[Team]):
             if len(team_members) > 0 or len(team_invites) > 0:
                 # get info about all players who are in/invited to at least 1 roster on our team
                 member_id_query = ','.join(set([str(m.player_id) for m in team_members] + [str(m.player_id) for m in team_invites]))
-                async with db.execute(f"SELECT id, name, country_code, is_banned, discord_id FROM players WHERE id IN ({member_id_query})") as cursor:
+                async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, 
+                                      d.discord_id, d.username, d.discriminator, d.global_name, d.avatar 
+                                      FROM players p
+                                      LEFT JOIN users u ON u.player_id = p.id
+                                      LEFT JOIN user_discords d ON u.id = d.user_id
+                                      WHERE p.id IN ({member_id_query})""") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        player_id, player_name, country, is_banned, discord_id = row
-                        player_dict[player_id] = PartialPlayer(player_id, player_name, country, bool(is_banned), discord_id, [])
+                        (player_id, player_name, country, is_banned, 
+                         discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
+                        player_discord = None
+                        if discord_id:
+                            player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                        player_dict[player_id] = PartialPlayer(player_id, player_name, country, bool(is_banned), player_discord, [])
 
                 # get all friend codes for members of our team that are from a game that our team has a roster for
                 game_query = ','.join(set([f"'{r.game}'" for r in rosters]))
@@ -149,19 +158,17 @@ class GetTeamInfoCommand(Command[Team]):
                 p = player_dict[member.player_id]
                 is_manager = p.player_id in managers
                 is_leader = p.player_id in leaders
-                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, member.join_date, is_manager, is_leader,
+                curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord, member.join_date, is_manager, is_leader, member.is_bagger_clause,
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
 
             for invite in team_invites:
                 curr_roster = roster_dict[invite.roster_id]
                 p = player_dict[invite.player_id]
-                curr_player = RosterInvitedPlayer(p.player_id, p.name, p.country_code, p.is_banned, p.discord_id, invite.join_date,
+                curr_player = RosterInvitedPlayer(p.player_id, p.name, p.country_code, p.is_banned, p.discord, invite.join_date, invite.is_bagger_clause,
                     [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
                 curr_roster.invites.append(curr_player) 
 
-
-            
             team.rosters = rosters
             return team
 
@@ -405,6 +412,7 @@ class InvitePlayerCommand(Command[None]):
     player_id: int
     roster_id: int
     team_id: int
+    is_bagger_clause: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -414,9 +422,11 @@ class InvitePlayerCommand(Command[None]):
                     raise Problem("Roster not found", status=404)
                 roster_team_id, game, approval_status = row
                 if approval_status != "approved":
-                    raise Problem("Cannot invite players to roster if it is not approved")
+                    raise Problem("Cannot invite players to roster if it is not approved", status=400)
                 if int(roster_team_id) != self.team_id:
                     raise Problem("Roster is not part of specified team", status=400)
+                if self.is_bagger_clause and game != "mkw":
+                    raise Problem("Cannot invite players as baggers for games other than MKW", status=400)
             async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -436,7 +446,8 @@ class InvitePlayerCommand(Command[None]):
                 if num_invites > 0:
                     raise Problem("Player has already been invited", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?)", (self.player_id, self.roster_id, creation_date, False, "pending"))
+            await db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_bagger_clause, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?, ?)", 
+                             (self.player_id, self.roster_id, creation_date, self.is_bagger_clause, False, "pending"))
             await db.commit()
 
 @save_to_command_log
@@ -531,8 +542,8 @@ class LeaveRosterCommand(Command[None]):
             leave_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
             # players leaving a roster goes into the transfer history too
-            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
-                             VALUES (?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved"))
+            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
+                             VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved", False))
             # get all team tournament rosters the player is in where the tournament hasn't ended yet
             async with db.execute("""SELECT p.squad_id FROM tournament_players p
                                 JOIN team_squad_registrations s ON p.squad_id = s.squad_id
@@ -553,11 +564,11 @@ class ApproveTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
-                player_id, roster_id, roster_leave_id, is_accepted = row
+                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause = row
             if not is_accepted:
                 raise Problem("Invite has not been accepted by the player yet", status=400)
             if roster_leave_id:
@@ -572,7 +583,7 @@ class ApproveTransferCommand(Command[None]):
             curr_time = int(datetime.now(timezone.utc).timestamp())
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
             await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
-            await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (roster_id, player_id, curr_time))
+            await db.execute("INSERT INTO team_members(roster_id, player_id, join_date, is_bagger_clause) VALUES (?, ?, ?, ?)", (roster_id, player_id, curr_time, is_bagger_clause))
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
@@ -580,8 +591,9 @@ class ApproveTransferCommand(Command[None]):
                                     JOIN team_squad_registrations s ON p.squad_id = s.squad_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
-                                    (player_id, roster_leave_id, curr_time, True, True)) as cursor:
+                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (player_id, roster_leave_id, curr_time, True, True, is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     squad_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
@@ -590,8 +602,9 @@ class ApproveTransferCommand(Command[None]):
                                     JOIN team_squad_registrations s ON p.squad_id = s.squad_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
-                                    (player_id, roster_id, curr_time, True, True)) as cursor:
+                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (player_id, roster_id, curr_time, True, True, is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         if row[0] in squad_ids:
@@ -604,26 +617,28 @@ class ApproveTransferCommand(Command[None]):
             async with db.execute("""SELECT s.squad_id, t.id FROM team_squad_registrations s
                                     JOIN tournaments t ON s.tournament_id = t.id
                                     WHERE t.teams_allowed = ? AND t.registrations_open = ?
-                                    AND s.roster_id = ?""", (True, True, roster_id)) as cursor:
+                                    AND s.roster_id = ? AND NOT EXISTS (
+                                        SELECT p.id FROM tournament_players p WHERE p.player_id = ? AND p.squad_id = s.squad_id
+                                  )""", (True, True, roster_id, player_id)) as cursor:
                 rows = await cursor.fetchall()
-                #squads = [(row[0], row[1]) for row in rows]
                 squads: dict[int, int] = {}
                 for row in rows:
                     squad, tournament = row
                     squads[tournament] = squad
             # if the player is already in some of these tournaments we don't want to add them again
             tournament_query = ','.join(map(str, squads.keys()))
-            async with db.execute(f"SELECT squad_id, tournament_id FROM tournament_players WHERE player_id = ? AND tournament_id IN ({tournament_query})",
-                                  (player_id,)) as cursor:
+            async with db.execute(f"SELECT squad_id, tournament_id FROM tournament_players WHERE player_id = ? AND is_bagger_clause = ? AND tournament_id IN ({tournament_query})",
+                                  (player_id, is_bagger_clause)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, False) for tournament_id, squad_id in squads.items()]
+            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, is_bagger_clause,
+                            False) for tournament_id, squad_id in squads.items()]
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                                 is_representative, is_bagger_clause)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+                                 is_representative, is_bagger_clause, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log
@@ -678,7 +693,7 @@ class ViewTransfersCommand(Command[TransferList]):
         async with db_wrapper.connect() as db:
             # we need to do left outer joins with both the leave roster and the join roster,
             # since it's possible one of them doesn't exist.
-            async with db.execute(f"""SELECT i.id, i.date, i.approval_status,
+            async with db.execute(f"""SELECT i.id, i.date, i.approval_status, i.is_bagger_clause,
                                     t1.id, t1.name, t1.tag, t1.color,
                                     i.roster_id, r1.name, r1.tag, r1.game, r1.mode, 
                                     t2.id, t2.name, t2.tag, t2.color,
@@ -695,7 +710,7 @@ class ViewTransfersCommand(Command[TransferList]):
                                     (self.approval_status, *variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (invite_id, date, approval_status, 
+                    (invite_id, date, approval_status, is_bagger_clause,
                      join_team_id, join_team_name, join_team_tag, join_team_color, 
                      join_roster_id, join_roster_name, join_roster_tag, join_roster_game, join_roster_mode,
                      leave_team_id, leave_team_name, leave_team_tag, leave_team_color, 
@@ -735,7 +750,7 @@ class ViewTransfersCommand(Command[TransferList]):
                     else:
                         join_roster = None
 
-                    transfers.append(TeamTransfer(invite_id, date, game, mode, player_id, player_name, player_country_code, approval_status, leave_roster, join_roster))
+                    transfers.append(TeamTransfer(invite_id, date, is_bagger_clause, game, mode, player_id, player_name, player_country_code, approval_status, leave_roster, join_roster))
 
             async with db.execute(f"""SELECT COUNT(*)
                                     FROM team_transfers i
@@ -948,6 +963,7 @@ class ForceTransferPlayerCommand(Command[None]):
     roster_id: int
     team_id: int
     roster_leave_id: int | None
+    is_bagger_clause: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -956,6 +972,8 @@ class ForceTransferPlayerCommand(Command[None]):
                 if not row:
                     raise Problem("Roster not found", status=404)
                 game = row[1]
+                if self.is_bagger_clause and game != "mkw":
+                    raise Problem("Cannot make players baggers for games other than MKW", status=400)
             async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -969,10 +987,15 @@ class ForceTransferPlayerCommand(Command[None]):
                     team_member_id = row[0]
             else:
                 team_member_id = None
+            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_id, None)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem("Player is already on this roster", status=400)
             curr_time = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("INSERT INTO team_members(roster_id, player_id, join_date) VALUES (?, ?, ?)", (self.roster_id, self.player_id, curr_time))
-            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
-                             VALUES(?, ?, ?, ?, ?, ?)""", (self.player_id, self.roster_id, curr_time, self.roster_leave_id, True, "approved"))
+            await db.execute("INSERT INTO team_members(roster_id, player_id, join_date, is_bagger_clause) VALUES (?, ?, ?, ?)", 
+                             (self.roster_id, self.player_id, curr_time, self.is_bagger_clause))
+            await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
+                             VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.roster_id, curr_time, self.roster_leave_id, True, "approved", self.is_bagger_clause))
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
@@ -980,8 +1003,9 @@ class ForceTransferPlayerCommand(Command[None]):
                                     JOIN team_squad_registrations s ON p.squad_id = s.squad_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
-                                    (self.player_id, self.roster_leave_id, curr_time, True, True)) as cursor:
+                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (self.player_id, self.roster_leave_id, curr_time, True, True, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     squad_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
@@ -990,8 +1014,9 @@ class ForceTransferPlayerCommand(Command[None]):
                                     JOIN team_squad_registrations s ON p.squad_id = s.squad_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
-                                    (self.player_id, self.roster_id, curr_time, True, True)) as cursor:
+                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (self.player_id, self.roster_id, curr_time, True, True, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         if row[0] in squad_ids:
@@ -1004,9 +1029,11 @@ class ForceTransferPlayerCommand(Command[None]):
             async with db.execute("""SELECT s.squad_id, t.id FROM team_squad_registrations s
                                     JOIN tournaments t ON s.tournament_id = t.id
                                     WHERE t.teams_allowed = ? AND t.registrations_open = ?
-                                    AND s.roster_id = ?""", (True, True, self.roster_id)) as cursor:
+                                    AND s.roster_id = ? AND NOT EXISTS (
+                                        SELECT p.id FROM tournament_players p 
+                                        WHERE p.player_id = ? AND p.squad_id = s.squad_id
+                                    )""", (True, True, self.roster_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
-                #squads = [(row[0], row[1]) for row in rows]
                 squads: dict[int, int] = {}
                 for row in rows:
                     squad, tournament = row
@@ -1020,10 +1047,11 @@ class ForceTransferPlayerCommand(Command[None]):
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, False) for tournament_id, squad_id in squads.items()]
+            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, self.is_bagger_clause,
+                            False) for tournament_id, squad_id in squads.items()]
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
-                                 is_representative, is_bagger_clause)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+                                 is_representative, is_bagger_clause, is_approved)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
 
 @save_to_command_log
@@ -1034,10 +1062,11 @@ class EditTeamMemberCommand(Command[None]):
     team_id: int
     join_date: int | None
     leave_date: int | None
+    is_bagger_clause: bool | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT m.id, m.join_date, m.leave_date FROM team_members m
+            async with db.execute("""SELECT m.id, m.join_date, m.leave_date, m.is_bagger_clause FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
                                     WHERE m.player_id = ? AND m.roster_id = ? AND t.id = ?
@@ -1045,14 +1074,16 @@ class EditTeamMemberCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Team member not found", status=404)
-                id, member_join_date, member_leave_date = row
+                id, member_join_date, member_leave_date, member_is_bagger = row
                 if not self.join_date:
                     self.join_date = member_join_date
+                if self.is_bagger_clause is None:
+                    self.is_bagger_clause = member_is_bagger
                 # if we're kicking the member add log of it in team transfers
                 if member_leave_date is None and self.leave_date is not None:
-                    await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status)
-                                     VALUES(?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved"))
-            await db.execute("UPDATE team_members SET join_date = ?, leave_date = ? WHERE id = ?", (self.join_date, self.leave_date, id))
+                    await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
+                                     VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved", member_is_bagger))
+            await db.execute("UPDATE team_members SET join_date = ?, leave_date = ?, is_bagger_clause = ? WHERE id = ?", (self.join_date, self.leave_date, self.is_bagger_clause, id))
             await db.commit()
 
 @dataclass
@@ -1081,7 +1112,7 @@ class ListTeamsCommand(Command[List[Team]]):
             def append_team_roster_like_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
-                    variable_parameters.extend([filter_value, filter_value])
+                    variable_parameters.extend([f"%{filter_value}%", f"%{filter_value}%"])
 
             append_team_roster_like_filter(filter.name, "name")
             append_team_roster_like_filter(filter.tag, "tag")
@@ -1179,7 +1210,6 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
     game: Game
     mode: GameMode
     
-
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             rosters_query = f"""
@@ -1238,18 +1268,44 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     else:
                         leaders.add(player_id)
 
-            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, p.discord_id, m.roster_id, m.join_date
+            fc_dict: dict[int, list[FriendCode]] = {}
+            async with db.execute(f"""SELECT p.id, p.name, p.country_code, p.is_banned, 
+                                  d.discord_id, d.username, d.discriminator, d.global_name, d.avatar,
+                                  m.roster_id, m.join_date, m.is_bagger_clause
                                 FROM players p
+                                LEFT JOIN users u ON u.player_id = p.id
+                                LEFT JOIN user_discords d ON u.id = d.user_id
                                 JOIN team_members m ON p.id = m.player_id
-                                WHERE m.roster_id IN (
+                                WHERE m.leave_date IS NULL AND
+                                m.roster_id IN (
                                   SELECT tr.id
                                   {rosters_query}
                                 )""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_banned, discord_id, roster_id, join_date = row
+                    (player_id, name, country_code, is_banned, 
+                     discord_id, d_username, d_discriminator, d_global_name, d_avatar,
+                     roster_id, join_date, is_bagger_clause) = row
                     is_manager = player_id in managers
                     is_leader = player_id in leaders
-                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, discord_id, join_date, is_manager, is_leader, [])
+                    player_discord = None
+                    if discord_id:
+                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    if player_id not in fc_dict:
+                        fc_dict[player_id] = []
+                    player = RosterPlayerInfo(player_id, name, country_code, is_banned, player_discord, join_date, bool(is_manager), bool(is_leader), 
+                                              bool(is_bagger_clause), fc_dict[player_id])
                     roster_dict[roster_id].append(player)
+            
+            async with db.execute(f"""SELECT DISTINCT f.id, f.player_id, f.game, f.fc, f.is_verified, f.is_primary FROM friend_codes f
+                                  JOIN players p ON f.player_id = p.id
+                                  JOIN team_members m ON p.id = m.player_id
+                                  WHERE f.game = ? AND m.roster_id IN (
+                                    SELECT tr.id
+                                    {rosters_query}
+                                  )""", (self.game, *variable_parameters)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    fc_id, player_id, game, fc, is_verified, is_primary = row
+                    fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary))
             return rosters
