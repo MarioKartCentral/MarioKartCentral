@@ -206,7 +206,7 @@ class RegisterTeamTournamentCommand(Command[None]):
             
             timestamp = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
+                VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
                 squad_id = cursor.lastrowid
             await db.commit()
             
