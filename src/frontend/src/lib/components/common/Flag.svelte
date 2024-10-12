@@ -4,7 +4,8 @@
 </script>
 
 <span>
-  <img src={'/src/lib/assets/flags/' + country_code?.toUpperCase() + '.png'} alt={country_code} class="flag {size}" />
+  <!-- <img src={'/src/lib/assets/flags/' + country_code?.toUpperCase() + '.png'} alt={country_code} class="flag {size}" /> -->
+  <img src={'https://raw.githubusercontent.com/gosquared/flags/refs/heads/master/flags/flags-iso/flat/64/' + country_code?.toUpperCase() + '.png'} alt={country_code} class="flag {size}" />
 </span>
 
 <style>
