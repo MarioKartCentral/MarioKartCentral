@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from common.data.commands import Command, save_to_command_log
+from common.data.commands import Command
 from common.data.models import *
 from common.auth import permissions
 from datetime import datetime, timedelta, timezone
 from typing import Iterable
 from aiosqlite import Row
 import aiohttp
-from api import settings
 import msgspec
 from urllib.parse import urlparse
 
@@ -227,15 +226,17 @@ class GetModNotificationsCommand(Command[ModNotifications]):
         return mod_notifications
     
 @dataclass
-@save_to_command_log
 class LinkUserDiscordCommand(Command[None]):
     user_id: int
     data: DiscordAuthCallbackData
+    discord_client_id: str
+    discord_client_secret: str
+    environment: str | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         # If we're in a dev environment, we don't want to require everyone to have a client secret just to use the discord functionality.
         # Therefore, just make a fake user so we don't have to make any requests to the Discord API.
-        if settings.ENV == "Development":
+        if self.environment == "Development":
             async with db_wrapper.connect() as db:
                 await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
                 await db.execute("""INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar,
@@ -259,7 +260,7 @@ class LinkUserDiscordCommand(Command[None]):
         }
         async with aiohttp.ClientSession() as session:
             base_url = 'https://discord.com/api/v10'
-            async with session.post(f'{base_url}/oauth2/token', data=body, headers=headers, auth=aiohttp.BasicAuth(settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)) as resp:
+            async with session.post(f'{base_url}/oauth2/token', data=body, headers=headers, auth=aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)) as resp:
                 if int(resp.status/100) != 2:
                     raise Problem(f"Discord returned an error code while trying to authenticate: {resp.status}") 
                 r = await resp.json()
@@ -335,6 +336,8 @@ class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
 @dataclass
 class DeleteUserDiscordDataCommand(Command[None]):
     user_id: int
+    discord_client_id: str
+    discord_client_secret: str
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -356,7 +359,7 @@ class DeleteUserDiscordDataCommand(Command[None]):
                 base_url = 'https://discord.com/api/v10'
                 async with aiohttp.ClientSession() as session:
                     async with session.post(f'{base_url}/oauth2/token/revoke', data=data, headers=headers, 
-                                            auth=aiohttp.BasicAuth(settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)) as resp:
+                                            auth=aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)) as resp:
                         # 401 means unauthorized which means token is revoked already, so only raise problem if another error occurs
                         if resp.status != 401 and int(resp.status/100) != 2:
                             raise Problem(f"Discord returned an error code: {resp.status}") 
@@ -365,6 +368,9 @@ class DeleteUserDiscordDataCommand(Command[None]):
 
 @dataclass
 class RefreshDiscordAccessTokensCommand(Command[None]):
+    discord_client_id: str
+    discord_client_secret: str
+
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # get all the tokens which expire within a day from now
@@ -390,7 +396,7 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
                 }
                 base_url = 'https://discord.com/api/v10'
                 async with session.post(f'{base_url}/oauth2/token', data=data, headers=headers, 
-                                        auth=aiohttp.BasicAuth(settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)) as resp:
+                                        auth=aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)) as resp:
                     # if we don't get a 200 response, just ignore this token and move on to prevent errors
                     if int(resp.status/100) != 2:
                         continue
