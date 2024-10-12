@@ -153,11 +153,11 @@ export const permissions = {
   manage_registration_history: 'registration_history_edit',
   manage_transfers: 'transfers_manage',
   create_series: 'series_create',
-  create_team: "team_create",
-  join_team: "team_join",
-  invite_to_team: "team_invite",
-  edit_profile: "profile_edit",
-  link_discord: "discord_link"
+  create_team: 'team_create',
+  join_team: 'team_join',
+  invite_to_team: 'team_invite',
+  edit_profile: 'profile_edit',
+  link_discord: 'discord_link',
 };
 
 export const team_permissions = {
