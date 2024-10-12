@@ -17,10 +17,26 @@ class SeriesRequestData():
     organizer: str
     location: str | None
 
-@dataclass
-class EditSeriesRequestData(SeriesRequestData):
-    series_id: int
+# @dataclass
+# class EditSeriesRequestData(SeriesRequestData):
+#     series_id: int
     
+@dataclass
+class EditSeriesRequestData():
+    series_name: str
+    url: str | None
+    display_order: int
+    game: Game
+    mode: GameMode
+    is_historical: bool
+    is_public: bool
+    description: str
+    logo: str | None
+    ruleset: str
+    organizer: str
+    location: str | None
+    series_id: int
+
 @dataclass
 class Series():
     id: int

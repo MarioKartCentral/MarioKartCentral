@@ -43,7 +43,7 @@ async def create_series(request: Request, body: SeriesRequestData) -> JSONRespon
 
 @bind_request_body(EditSeriesRequestData)
 @require_series_permission(series_permissions.EDIT_SERIES)
-async def edit_series(request: Request, body: SeriesRequestData) -> JSONResponse:
+async def edit_series(request: Request, body: EditSeriesRequestData) -> JSONResponse:
     series_id = request.path_params['series_id']
     command = EditSeriesCommand(body, series_id)
     await handle(command)

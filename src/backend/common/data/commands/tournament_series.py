@@ -4,7 +4,7 @@ from typing import Any
 import msgspec
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, Series, SeriesFilter, SeriesRequestData
+from common.data.models import Problem, Series, SeriesFilter, EditSeriesRequestData, SeriesRequestData
 import common.data.s3 as s3
 
 
@@ -31,7 +31,7 @@ class CreateSeriesCommand(Command[None]):
 @save_to_command_log
 @dataclass
 class EditSeriesCommand(Command[None]):
-    body: SeriesRequestData
+    body: EditSeriesRequestData
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
