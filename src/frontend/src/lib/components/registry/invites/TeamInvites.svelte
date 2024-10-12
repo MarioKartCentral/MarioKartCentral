@@ -12,6 +12,7 @@
     import ModeBadge from "$lib/components/badges/ModeBadge.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
+    import { check_permission, permissions } from "$lib/util/permissions";
 
     export let invites: TeamInvite[];
 
@@ -129,7 +130,9 @@
             </td>
             <td class="mode mobile-hide">{new Date(invite.date * 1000).toLocaleString($locale, options)}</td>
             <td>
-            <ConfirmButton on:click={() => acceptDialog(invite)}/>
+            {#if check_permission(user_info, permissions.join_team, true)}
+                <ConfirmButton on:click={() => acceptDialog(invite)}/>
+            {/if}
             <CancelButton on:click={() => declineDialog(invite)}/>
             </td>
         </tr>

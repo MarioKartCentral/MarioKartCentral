@@ -8,6 +8,7 @@
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import LL from '$i18n/i18n-svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;
 
@@ -31,7 +32,7 @@
 
 <Section header={$LL.TEAM_LIST.TEAM_LISTING()}>
   <div slot="header_content">
-    {#if user_info.player_id}
+    {#if user_info.player_id && check_permission(user_info, permissions.create_team, true)}
       <Button href="/{$page.params.lang}/registry/teams/create">{$LL.TEAM_LIST.CREATE_TEAM()}</Button>
     {/if}
   </div>

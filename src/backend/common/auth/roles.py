@@ -129,7 +129,12 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
     SITE_MODERATOR: [],
     SITE_SUPPORTER: [],
     BANNED: [
-        tournament_permissions.REGISTER_TOURNAMENT
+        tournament_permissions.REGISTER_TOURNAMENT,
+        permissions.CREATE_TEAM,
+        permissions.JOIN_TEAM,
+        permissions.INVITE_TO_TEAM,
+        permissions.EDIT_PROFILE,
+        permissions.LINK_DISCORD
     ]
 }
 

@@ -1,7 +1,8 @@
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
-from api.auth import require_logged_in
+from api.auth import require_logged_in, require_permission
+from common.auth import permissions
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.data.commands import *
@@ -17,7 +18,7 @@ async def get_settings(request: Request) -> Response:
     return JSONResponse(user_settings)
 
 @bind_request_body(EditUserSettingsRequestData)
-@require_logged_in
+@require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def edit_settings(request: Request, body: EditUserSettingsRequestData) -> JSONResponse:
     command = EditUserSettingsCommand(request.state.user.id, body)
     succeeded = await handle(command)

@@ -11,45 +11,42 @@
 
 <Section header={$LL.NAVBAR.TIME_TRIALS()}>
   <div slot="header_content"></div>
+  <div>
+    <p>
+      This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now,
+      players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find
+      the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every
+      category imagineable. Submit your times to see where you stack up!
+    </p>
+  </div>
+  
+  <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+    <a href="/{$page.params.lang}/time-trials/mk8dx">
+      <Button size="xl">
+        <img src={MK8DX} alt="Mario Kart 8 Deluxe"/>
+      </Button>
+    </a>
+    <a href="/{$page.params.lang}/time-trials/mk8">
+      <Button size="xl">
+        <img src={MK8} alt="Mario Kart 8"/>
+      </Button>
+    </a>
+    <a href="/{$page.params.lang}/time-trials/mk7">
+      <Button size="xl">
+        <img src={MK7} alt="Mario Kart 7"/>
+      </Button>
+    </a>
+    <a href="/{$page.params.lang}/time-trials/mkw">
+      <Button size="xl">
+        <img src={MKW} alt="Mario Kart Wii"/>
+      </Button>
+    </a>
+  </div>
 </Section>
 
-<div>
-  <p>
-    This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now,
-    players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find
-    the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every
-    category imagineable. Submit your times to see where you stack up!
-  </p>
-</div>
-
-<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-  <a href="/{$page.params.lang}/time-trials/mk8dx" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
-    <Button
-      style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;"
-    >
-      <img src={MK8DX} alt="Mario Kart 8 Deluxe" style="max-width: 100%;" />
-    </Button>
-  </a>
-  <a href="/{$page.params.lang}/time-trials/mk8" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
-    <Button
-      style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;"
-    >
-      <img src={MK8} alt="Mario Kart 8" style="max-width: 100%;" />
-    </Button>
-  </a>
-  <a href="/{$page.params.lang}/time-trials/mk7" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
-    <Button
-      style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;"
-    >
-      <img src={MK7} alt="Mario Kart 7" style="max-width: 100%;" />
-    </Button>
-  </a>
-  <a href="/{$page.params.lang}/time-trials/mkw" style="flex: 1 1 calc(33.333% - 10px); text-decoration: none;">
-    <Button
-      style="width: 100%; padding: 10px; border: none; background-color: transparent; display: flex; justify-content: center; align-items: center;"
-    >
-      <img src={MKW} alt="Mario Kart Wii" style="max-width: 100%;" />
-    </Button>
-  </a>
-</div>
-
+<style>
+  img {
+    height: 50px;
+    object-fit: scale-down;
+  }
+</style>
