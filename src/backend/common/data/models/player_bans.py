@@ -10,8 +10,18 @@ class PlayerBan:
     reason: str
     comment: str
 
+# @dataclass
+# class PlayerBanHistorical(PlayerBan):
+#     unbanned_by: int | None = None
 @dataclass
-class PlayerBanHistorical(PlayerBan):
+class PlayerBanHistorical:
+    player_id: int
+    banned_by: int
+    is_indefinite: bool
+    ban_date: int
+    expiration_date: int
+    reason: str
+    comment: str
     unbanned_by: int | None = None
 
 @dataclass
@@ -58,8 +68,24 @@ class PlayerBanFilter:
     comment: str | None = None
     page: int | None = None
 
+# @dataclass
+# class PlayerBanHistoricalFilter(PlayerBanFilter):
+#     unbanned_by: str | None = None
+#     unbanned_before: int | None = None
+#     unbanned_after: int | None = None
 @dataclass
-class PlayerBanHistoricalFilter(PlayerBanFilter):
+class PlayerBanHistoricalFilter:
+    player_id: int | None = None
+    name: str | None = None
+    banned_by: str | None = None
+    is_indefinite: bool | None = None
+    expires_before: int | None = None
+    expires_after: int | None = None
+    banned_before: int | None = None
+    banned_after: int | None = None
+    reason: str | None = None
+    comment: str | None = None
+    page: int | None = None
     unbanned_by: str | None = None
     unbanned_before: int | None = None
     unbanned_after: int | None = None
