@@ -5,6 +5,7 @@
     import type { MyDiscord } from '$lib/types/my-discord';
     import { onMount } from 'svelte';
     import DiscordUser from './DiscordUser.svelte';
+    import { permissions, check_permission } from '$lib/util/permissions';
 
     let user_info: UserInfo;
 
@@ -62,20 +63,20 @@
     Sign in or Register to link your Discord Account
 {:else if linked_account !== undefined}
     {#if linked_account === null}
-        <Button on:click={linkDiscord}>Link Discord Account</Button>
+        <Button on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}>Link Discord Account</Button>
     {:else}
         <div class="flex">
             <DiscordUser discord={linked_account}/>
             <div class="section">
                 <div class="flex buttons">
                     <div class="disc_button">
-                        <Button size="xs" extra_classes="w-32" on:click={linkDiscord}>Relink account</Button>
+                        <Button size="xs" extra_classes="w-32" on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}>Relink account</Button>
                     </div>
                     <div class="disc_button">
                         <Button size="xs" extra_classes="w-32" on:click={deleteDiscordData}>Unlink account</Button>
                     </div>
                     <div class="disc_button">
-                        <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData}>Refresh</Button>
+                        <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData} disabled={!check_permission(user_info, permissions.link_discord, true)}>Refresh</Button>
                     </div>
                 </div>
             </div>

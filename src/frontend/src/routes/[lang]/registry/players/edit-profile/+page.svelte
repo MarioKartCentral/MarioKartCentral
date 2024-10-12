@@ -11,13 +11,14 @@
   import Dialog from '$lib/components/common/Dialog.svelte';
   import FriendCodeForm from '$lib/components/registry/players/FriendCodeForm.svelte';
   import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;
   let user_settings: UserSettings | null;
   let fc_dialog: Dialog;
 
-  const color_schemes = ['light', 'dark'];
-  const timezones = ['utc'];
+  // const color_schemes = ['light', 'dark'];
+  // const timezones = ['utc'];
 
   user.subscribe((value) => {
     user_info = value;
@@ -32,8 +33,10 @@
       avatar: data.get('avatar_url')?.toString(),
       about_me: data.get('about_me')?.toString(),
       language: data.get('language')?.toString(),
-      color_scheme: data.get('theme')?.toString(),
-      timezone: data.get('timezone')?.toString(),
+      // color_scheme: data.get('theme')?.toString(),
+      // timezone: data.get('timezone')?.toString(),
+      color_scheme: 'light',
+      timezone: 'utc'
     };
     const endpoint = '/api/user/settings/edit';
     const response = await fetch(endpoint, {
@@ -101,7 +104,7 @@
     <br />
     <LanguageSelect bind:language={user_settings.language}/>
   </div>
-  <div>
+  <!-- <div>
     <label for="theme">{$LL.PLAYER_PROFILE.THEME()}</label>
     <br />
     <select name="theme">
@@ -118,9 +121,9 @@
         <option value={tz}>{tz}</option>
       {/each}
     </select>
-  </div>
+  </div> -->
   <div class="button">
-    <Button type="submit">{$LL.PLAYER_PROFILE.SAVE()}</Button>
+    <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.PLAYER_PROFILE.SAVE()}</Button>
   </div>
   
 </form>

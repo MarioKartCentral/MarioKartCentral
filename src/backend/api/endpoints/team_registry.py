@@ -19,7 +19,7 @@ async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResp
     return JSONResponse({})
 
 @bind_request_body(RequestCreateTeamRequestData)
-@require_logged_in
+@require_permission(permissions.CREATE_TEAM, check_denied_only=True)
 async def request_create_team(request: Request, body: RequestCreateTeamRequestData) -> JSONResponse:
     approval_status = "pending"
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
@@ -146,6 +146,7 @@ async def deny_roster_edit_request(request: Request, body: EditRosterChangeReque
 
 @bind_request_body(InviteRosterPlayerRequestData)
 @require_team_permission(team_permissions.INVITE_PLAYERS)
+@require_permission(permissions.INVITE_TO_TEAM, check_denied_only=True)
 async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
     command = InvitePlayerCommand(body.player_id, body.roster_id, body.team_id, body.is_bagger_clause)
     await handle(command)
@@ -166,7 +167,7 @@ async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> 
     return JSONResponse({})
 
 @bind_request_body(AcceptRosterInviteRequestData)
-@require_logged_in
+@require_permission(permissions.JOIN_TEAM, check_denied_only=True)
 async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
     command = AcceptInviteCommand(body.invite_id, body.roster_leave_id, request.state.user.player_id)
     await handle(command)

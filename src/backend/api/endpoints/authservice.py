@@ -5,11 +5,11 @@ from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route
 from oauthlib.oauth2 import WebApplicationClient
-from api.auth import require_logged_in
+from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from api import settings
-from common.auth import pw_hasher
+from common.auth import pw_hasher, permissions
 from common.data.commands import *
 from common.data.models import *
 from urllib.parse import urlparse
@@ -71,7 +71,7 @@ async def log_out(request: Request) -> Response:
     return resp
 
 @bind_request_query(LinkDiscordRequestData)
-@require_logged_in
+@require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request, data: LinkDiscordRequestData) -> Response:
     client = WebApplicationClient(settings.DISCORD_CLIENT_ID)
     # get the base URL to figure out the redirect URI
@@ -87,7 +87,7 @@ async def link_discord(request: Request, data: LinkDiscordRequestData) -> Respon
     return RedirectResponse(url, 302) # type: ignore
 
 @bind_request_query(DiscordAuthCallbackData)
-@require_logged_in
+@require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def discord_callback(request: Request, data: DiscordAuthCallbackData) -> Response:
     command = LinkUserDiscordCommand(request.state.user.id, data, settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET, settings.ENV)
     await handle(command)
@@ -103,7 +103,7 @@ async def my_discord_data(request: Request) -> Response:
     discord_data = await handle(command)
     return JSONResponse(discord_data)
 
-@require_logged_in
+@require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def refresh_discord_data(request: Request) -> JSONResponse:
     command = RefreshUserDiscordDataCommand(request.state.user.id)
     discord_data = await handle(command)
