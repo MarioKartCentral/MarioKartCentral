@@ -2,7 +2,7 @@ from datetime import timedelta
 from worker.data import handle
 from common.data.commands import RefreshDiscordAccessTokensCommand
 from worker.jobs import Job
-from settings import DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET
+from worker.settings import DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET
 
 class RefreshDiscordTokensJob(Job):
     @property

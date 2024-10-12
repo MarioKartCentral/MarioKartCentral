@@ -980,7 +980,6 @@ class UpdateRoleExpirationCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
 
-@save_to_command_log
 @dataclass
 class RemoveExpiredRolesCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
