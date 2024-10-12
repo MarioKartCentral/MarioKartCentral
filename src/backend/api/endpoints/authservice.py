@@ -89,7 +89,7 @@ async def link_discord(request: Request, data: LinkDiscordRequestData) -> Respon
 @bind_request_query(DiscordAuthCallbackData)
 @require_logged_in
 async def discord_callback(request: Request, data: DiscordAuthCallbackData) -> Response:
-    command = LinkUserDiscordCommand(request.state.user.id, data)
+    command = LinkUserDiscordCommand(request.state.user.id, data, settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET, settings.ENV)
     await handle(command)
     # state should contain the URL we were on before linking our discord account,
     # so we should redirect them back there if it exists
@@ -111,7 +111,7 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
 
 @require_logged_in
 async def delete_discord_data(request: Request) -> JSONResponse:
-    command = DeleteUserDiscordDataCommand(request.state.user.id)
+    command = DeleteUserDiscordDataCommand(request.state.user.id, settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)
     await handle(command)
     return JSONResponse({})
 
