@@ -163,6 +163,7 @@
         flex-direction: column;
     }
     div.addplayer {
+        width: 400px;
         display: flex;
         gap: 10px;
     }

@@ -8,5 +8,6 @@ export type TournamentSquad = {
   color: number;
   timestamp: number;
   is_registered: boolean;
+  is_approved: boolean;
   players: TournamentPlayer[];
 };

@@ -37,14 +37,14 @@ class CreateTournamentCommand(Command[None]):
                 """INSERT INTO tournaments(
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
                     logo, use_series_logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
-                    squad_name_required, mii_name_required, host_status_required, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
+                    squad_name_required, mii_name_required, host_status_required, checkins_enabled, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
                     is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
                 b.series_stats_include, b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
-                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open, b.min_players_checkin, b.verification_required,
-                b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives, b.bagger_clause_enabled,
-                b.use_series_ruleset, b.organizer, b.location))
+                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open, b.min_players_checkin, 
+                b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives,
+                b.bagger_clause_enabled, b.use_series_ruleset, b.organizer, b.location))
             tournament_id = cursor.lastrowid
             await db.commit()
 
@@ -110,6 +110,7 @@ class EditTournamentCommand(Command[None]):
                 squad_name_required = ?,
                 mii_name_required = ?,
                 host_status_required = ?,
+                checkins_enabled = ?,
                 checkins_open = ?,
                 min_players_checkin = ?,
                 verification_required = ?,
@@ -122,7 +123,7 @@ class EditTournamentCommand(Command[None]):
                 WHERE id = ?""",
                 (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
                 b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
-                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_open,
+                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
                 b.min_representatives, self.id))
             updated_rows = cursor.rowcount
@@ -179,6 +180,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                                                        squad_name_required=t.squad_name_required,
                                                        mii_name_required=t.mii_name_required,
                                                        host_status_required=t.host_status_required,
+                                                       checkins_enabled=t.checkins_enabled,
                                                        checkins_open=t.checkins_open,
                                                        min_players_checkin=t.min_players_checkin,
                                                        verification_required=t.verification_required,

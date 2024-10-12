@@ -83,7 +83,7 @@
       </div>
       {#if tournament.registrations_open}
         <div class="register-button p-1">
-          <Button size="sm" color="yellow" href="/{$page.params.leng}/tournaments/details?id={tournament.id}">
+          <Button size="sm" color="yellow" href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
             <b>Register now!</b>
           </Button>
         </div>

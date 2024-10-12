@@ -1,23 +1,26 @@
 <script lang="ts">
-    import type { TournamentPlayer } from "$lib/types/tournament-player";
     import CaptainBadge from "$lib/components/badges/CaptainBadge.svelte";
     import { page } from "$app/stores";
     import RepresentativeBadge from "$lib/components/badges/RepresentativeBadge.svelte";
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
-    export let player: TournamentPlayer;
+    export let player_id: number;
+    export let name: string;
+    export let is_squad_captain: boolean = false;
+    export let is_representative: boolean = false;
+    export let is_bagger_clause: boolean = false;
 </script>
 
-<div class="{player.is_squad_captain ? "captain" : player.is_representative ? "representative" : ""}">
-    <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">
-        {player.name}
+<div class="{is_squad_captain ? "captain" : is_representative ? "representative" : ""}">
+    <a href="/{$page.params.lang}/registry/players/profile?id={player_id}">
+        {name}
     </a>
-    {#if player.is_squad_captain}
+    {#if is_squad_captain}
         <CaptainBadge/>
-    {:else if player.is_representative}
+    {:else if is_representative}
         <RepresentativeBadge/>
     {/if}
-    {#if player.is_bagger_clause}
+    {#if is_bagger_clause}
         <BaggerBadge/>
     {/if}
 </div>

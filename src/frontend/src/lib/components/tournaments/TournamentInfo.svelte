@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import { locale } from '$i18n/i18n-svelte';
-  import { valid_games } from '$lib/util/util';
+  import { valid_games, mode_names } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import Section from '../common/Section.svelte';
   import Button from '../common/buttons/Button.svelte';
@@ -69,7 +69,7 @@
           <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
         {/if}
         <li><b>Game:</b> {valid_games[tournament.game]}</li>
-        <li><b>Mode:</b> {tournament.mode}</li>
+        <li><b>Mode:</b> {mode_names[tournament.mode]}</li>
         <li><b>Registration Format:</b> {tournament_type}</li>
         {#if tournament.is_squad}
           {#if tournament.min_squad_size}

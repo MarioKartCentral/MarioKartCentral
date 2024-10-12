@@ -22,20 +22,20 @@ class CreateSquadRequestData:
 @dataclass
 class ForceCreateSquadRequestData(CreateSquadRequestData):
     player_id: int
-    roster_ids: list[int]
-    representative_ids: list[int]
-    bagger_ids: list[int]
+    is_checked_in: bool = False
+    is_approved: bool = False
 
 @dataclass
 class EditMySquadRequestData:
     squad_id: int
-    squad_name: str
-    squad_tag: str
-    squad_color: int
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: int | None
 
 @dataclass
 class EditSquadRequestData(EditMySquadRequestData):
-    is_registered: bool
+    is_registered: bool | None = None
+    is_approved: bool | None = None
 
 @dataclass
 class InvitePlayerRequestData:
@@ -83,7 +83,8 @@ class TournamentSquadDetails():
     tag: str | None
     color: int
     timestamp: int
-    is_registered: int
+    is_registered: bool
+    is_approved: bool
     players: list[SquadPlayerDetails]
 
 @dataclass
@@ -105,3 +106,18 @@ class MakeCaptainRequestData():
 @dataclass
 class UnregisterSquadRequestData():
     squad_id: int
+
+@dataclass
+class TeamTournamentPlayer():
+    player_id: int
+    is_captain: bool
+    is_representative: bool
+    is_bagger_clause: bool
+
+@dataclass
+class RegisterTeamRequestData():
+    squad_color: int
+    squad_name: str
+    squad_tag: str
+    roster_ids: list[int]
+    players: list[TeamTournamentPlayer]

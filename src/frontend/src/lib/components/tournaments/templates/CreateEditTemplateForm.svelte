@@ -43,6 +43,7 @@
     host_status_required: false,
     mii_name_required: false,
     require_single_fc: false,
+    checkins_enabled: false,
     checkins_open: false,
     min_players_checkin: null,
     verification_required: false,

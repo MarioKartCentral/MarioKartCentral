@@ -7,6 +7,7 @@
   export let type: 'submit' | 'button' | 'reset' | null | undefined = 'button';
   export let size: 'xs' | 'sm' | 'lg' | 'xl' | 'md' = 'sm';
   export let disabled = false;
+  export let extra_classes = '';
   export let color:
     | 'red'
     | 'green'
@@ -38,7 +39,7 @@
     | undefined = undefined;
 </script>
 
-<Button pill={circle} class={circle ? '!p-2' : ''} on:click {size} {href} {type} {disabled} {color}>
+<Button pill={circle} class="{extra_classes} {circle ? '!p-2' : ''}" on:click {size} {href} {type} {disabled} {color}>
   <slot />
 <Button pill={circle} class={circle ? '!p-2' : ''} on:click {size} {href} {type} {disabled} {color}>
   <slot />

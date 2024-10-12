@@ -10,6 +10,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import FriendCodeForm from '$lib/components/registry/players/FriendCodeForm.svelte';
+  import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
 
   let user_info: UserInfo;
   let user_settings: UserSettings | null;
@@ -76,6 +77,10 @@
     <Button on:click={fc_dialog.open}>{$LL.PLAYER_PROFILE.ADD_FRIEND_CODE()}</Button>
   </div>
 {/if}
+</Section>
+
+<Section header="Discord">
+  <LinkDiscord/>
 </Section>
 
 <Section header="Edit Profile">
