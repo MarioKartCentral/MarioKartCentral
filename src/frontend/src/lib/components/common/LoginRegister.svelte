@@ -37,13 +37,13 @@
             <span class="item-label">
                 <label for="email">{$LL.EMAIL()}</label>
             </span>
-            <input name="email" type="email" />
+            <input name="email" type="email" required/>
         </div>
         <div class="field">
             <span class="item-label">
                 <label for="password">{$LL.PASSWORD()}</label>
             </span>
-            <input name="password" type="password" />
+            <input name="password" type="password" required/>
         </div>
         <Button extra_classes="login-btn" type="submit">{$LL.NAVBAR.LOGIN()}</Button>
         <Button extra_classes="register-btn" type="submit">{$LL.NAVBAR.REGISTER()}</Button>

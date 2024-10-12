@@ -31,6 +31,10 @@ class EditFriendCodeRequestData:
 class EditPrimaryFriendCodeRequestData:
     id: int
 
+# @dataclass
+# class ModEditPrimaryFriendCodeRequestData(EditPrimaryFriendCodeRequestData):
+#     player_id: int
 @dataclass
-class ModEditPrimaryFriendCodeRequestData(EditPrimaryFriendCodeRequestData):
+class ModEditPrimaryFriendCodeRequestData:
+    id: int
     player_id: int

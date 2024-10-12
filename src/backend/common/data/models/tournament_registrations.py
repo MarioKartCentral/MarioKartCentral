@@ -26,8 +26,21 @@ class EditMyRegistrationRequestData():
     selected_fc_id: int | None
     squad_id: int | None
 
+# @dataclass
+# class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
+#     player_id: int
+#     is_squad_captain: bool | None
+#     is_invite: bool
+#     is_checked_in: bool | None
+#     is_representative: bool | None
+#     is_bagger_clause: bool | None
+#     is_approved: bool | None
 @dataclass
-class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
+class EditPlayerRegistrationRequestData:
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
+    squad_id: int | None
     player_id: int
     is_squad_captain: bool | None
     is_invite: bool

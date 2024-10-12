@@ -19,8 +19,21 @@ class CreateSquadRequestData:
     selected_fc_id: int | None
     is_bagger_clause: bool
 
+# @dataclass
+# class ForceCreateSquadRequestData(CreateSquadRequestData):
+#     player_id: int
+#     is_checked_in: bool = False
+#     is_approved: bool = False
+
 @dataclass
-class ForceCreateSquadRequestData(CreateSquadRequestData):
+class ForceCreateSquadRequestData:
+    squad_color: int
+    squad_name: str | None
+    squad_tag: str | None
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
+    is_bagger_clause: bool
     player_id: int
     is_checked_in: bool = False
     is_approved: bool = False
@@ -32,8 +45,17 @@ class EditMySquadRequestData:
     squad_tag: str | None
     squad_color: int | None
 
+# @dataclass
+# class EditSquadRequestData(EditMySquadRequestData):
+#     is_registered: bool | None = None
+#     is_approved: bool | None = None
+
 @dataclass
-class EditSquadRequestData(EditMySquadRequestData):
+class EditSquadRequestData:
+    squad_id: int
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: int | None
     is_registered: bool | None = None
     is_approved: bool | None = None
 
