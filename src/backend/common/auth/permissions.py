@@ -9,6 +9,11 @@ MANAGE_TEAMS = "team_manage"
 MANAGE_REGISTRATION_HISTORY = "registration_history_edit"
 MANAGE_TRANSFERS = "transfers_manage"
 CREATE_SERIES = "series_create"
+CREATE_TEAM = "team_create"
+JOIN_TEAM = "team_join"
+INVITE_TO_TEAM = "team_invite"
+EDIT_PROFILE = "profile_edit"
+LINK_DISCORD = "discord_link"
 
 permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
@@ -38,7 +43,12 @@ permissions_by_id: dict[int, str] = {
     24: tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
     25: tournament_permissions.REGISTER_TOURNAMENT,
     26: tournament_permissions.MANAGE_PLACEMENTS,
-    27: tournament_permissions.MANAGE_TOURNAMENT_ROLES
+    27: tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+    28: CREATE_TEAM,
+    29: JOIN_TEAM,
+    30: INVITE_TO_TEAM,
+    31: EDIT_PROFILE,
+    32: LINK_DISCORD
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

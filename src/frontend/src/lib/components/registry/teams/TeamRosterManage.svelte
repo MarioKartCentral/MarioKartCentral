@@ -17,9 +17,9 @@
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { check_permission, check_team_permission, team_permissions, get_highest_team_role_position } from '$lib/util/permissions';
+  import { check_permission, check_team_permission, team_permissions, get_highest_team_role_position, permissions } from '$lib/util/permissions';
   import RosterPlayerName from './RosterPlayerName.svelte';
-    import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
+  import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -348,26 +348,29 @@
         </Table>
       </div>
     {/if}
-    <div class="section">
-      <b>{$LL.TEAM_EDIT.INVITE_PLAYER()}</b>
-      <PlayerSearch bind:player={invite_player} game={roster.game} />
-      {#if invite_player}
-        {#if roster.game === 'mkw'}
-          <div>
-            Bagger?
-            <select bind:value={invite_player_bagger}>
-              <option value={false}>
-                No
-              </option>
-              <option value={true}>
-                Yes
-              </option>
-            </select>
-          </div>
+    {#if check_permission(user_info, permissions.invite_to_team, true)}
+      <div class="section">
+        <b>{$LL.TEAM_EDIT.INVITE_PLAYER()}</b>
+        <PlayerSearch bind:player={invite_player} game={roster.game} />
+        {#if invite_player}
+          {#if roster.game === 'mkw'}
+            <div>
+              Bagger?
+              <select bind:value={invite_player_bagger}>
+                <option value={false}>
+                  No
+                </option>
+                <option value={true}>
+                  Yes
+                </option>
+              </select>
+            </div>
+          {/if}
+          <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAM_EDIT.INVITE_PLAYER()}</Button>
         {/if}
-        <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAM_EDIT.INVITE_PLAYER()}</Button>
-      {/if}
-    </div>
+      </div>
+    {/if}
+    
   {:else}
     Roster is pending approval from MKCentral staff.
   {/if}
