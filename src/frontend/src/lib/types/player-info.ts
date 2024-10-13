@@ -9,7 +9,7 @@ type PlayerNameChange = {
   name: string;
   date: number;
   approval_status: string;
-}
+};
 
 export type PlayerInfo = {
   id: number;
