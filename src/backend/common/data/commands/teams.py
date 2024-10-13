@@ -826,7 +826,7 @@ class RequestEditRosterCommand(Command[None]):
         async with db_wrapper.connect() as db:
             # check if this roster has made a request in the last 90 days
             async with db.execute("SELECT date FROM roster_edit_requests WHERE roster_id = ? AND date > ? AND approval_status != 'denied' LIMIT 1",
-                                  (self.roster_id, (datetime.now(timezone.utc)-timedelta(minutes=90)).timestamp())) as cursor:
+                                  (self.roster_id, (datetime.now(timezone.utc)-timedelta(days=90)).timestamp())) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Roster has requested name/tag change in the last 90 days", status=400)

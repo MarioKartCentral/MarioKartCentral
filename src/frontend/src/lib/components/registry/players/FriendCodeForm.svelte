@@ -15,7 +15,7 @@
         if(!player || is_privileged) return [];
         // get all games where we have reached the FC limit
         let maxed_games = Object.keys(fc_limits).filter(
-            (game) => player.friend_codes.filter((fc) => fc.game === game).length >= fc_limits[game]
+            (game) => player.friend_codes.filter((fc) => fc.game === game && fc.is_active).length >= fc_limits[game]
         );
         maxed_games.push('smk'); // smk is on switch so should use mk8dx fcs for that
         console.log(maxed_games);

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from common.data.models.common import Game, CountryCode
+from common.data.models.common import Game, CountryCode, Approval
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
@@ -36,10 +36,18 @@ class PlayerRoster:
     is_bagger_clause: bool
 
 @dataclass
+class PlayerNameChange:
+    id: int
+    name: str
+    date: int
+    approval_status: Approval
+
+@dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
     ban_info: PlayerBanBasic | None
     user_settings: UserSettings | None
+    name_changes: list[PlayerNameChange]
 
 @dataclass
 class PlayerList:
@@ -79,3 +87,21 @@ class PlayerFilter:
     page: int | None = None
     squad_id: int | None = None
     matching_fcs_only: bool = False
+
+@dataclass
+class PlayerRequestNameRequestData:
+    name: str
+
+@dataclass
+class PlayerNameRequest:
+    id: int
+    player_id: int
+    player_name: str
+    player_country: CountryCode
+    request_name: str
+    date: int
+    approval_status: Approval
+
+@dataclass
+class ApprovePlayerNameRequestData:
+    request_id: int

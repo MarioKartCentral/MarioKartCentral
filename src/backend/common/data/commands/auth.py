@@ -223,6 +223,11 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     row = await cursor.fetchone()
                     assert row is not None
                     mod_notifications.pending_transfers = row[0]
+            if permissions.EDIT_PLAYER in string_perms:
+                async with db.execute("SELECT COUNT(id) FROM player_name_edit_requests WHERE approval_status='pending'") as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    mod_notifications.pending_player_name_changes = row[0]
         return mod_notifications
     
 @dataclass

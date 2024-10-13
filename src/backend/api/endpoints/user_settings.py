@@ -33,9 +33,17 @@ async def edit_settings(request: Request, body: EditUserSettingsRequestData) -> 
         resp.set_cookie('color_scheme', body.color_scheme)
 
     return resp
+
+@bind_request_body(EditPlayerUserSettingsRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def edit_player_user_settings(request: Request, body: EditPlayerUserSettingsRequestData) -> JSONResponse:
+    command = EditPlayerUserSettingsCommand(body)
+    await handle(command)
+    return JSONResponse({})
     
 
 routes = [
     Route('/api/user/settings', get_settings),
     Route('/api/user/settings/edit', edit_settings, methods=["POST"]),
+    Route('/api/user/settings/forceEdit', edit_player_user_settings, methods=["POST"]),
 ]

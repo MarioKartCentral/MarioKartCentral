@@ -25,7 +25,7 @@
 
   async function fetchData() {
     players = [];
-    let url = '/api/registry/players?detailed=true&is_banned=false';
+    let url = '/api/registry/players?detailed=true&is_banned=false&is_hidden=false';
     if (filters.game != null && filters.game != '') {
       url += '&game=' + filters.game;
     }
