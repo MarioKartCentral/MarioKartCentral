@@ -8,12 +8,11 @@
 
     // we want to display the selected FC if there is one, otherwise just display the first FC in the list
     function get_display_fc() {
-        if(!friend_codes.length) {
-            return null;
-        }
         let fc = friend_codes.find((fc) => fc.id === selected_fc_id);
         if(!fc) {
-            fc = friend_codes[0];
+            let filtered_fcs = friend_codes.filter((fc) => fc.is_active);
+            if(!filtered_fcs.length) return null;
+            fc = filtered_fcs[0];
         }
         return fc;
     }
@@ -22,9 +21,9 @@
 
     function get_other_fcs() {
         if(!selected_fc_id) {
-            return friend_codes;
+            return friend_codes.filter((fc) => fc.is_active);
         }
-        return friend_codes.filter((fc) => fc !== display_fc);
+        return friend_codes.filter((fc) => fc !== display_fc && fc.is_active);
     }
 
     let other_fcs = get_other_fcs();

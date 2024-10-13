@@ -146,11 +146,11 @@ class GetTeamInfoCommand(Command[Team]):
 
                 # get all friend codes for members of our team that are from a game that our team has a roster for
                 game_query = ','.join(set([f"'{r.game}'" for r in rosters]))
-                async with db.execute(f"SELECT id, player_id, game, fc, is_verified, is_primary FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
+                async with db.execute(f"SELECT id, player_id, game, fc, is_verified, is_primary, is_active FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        id, player_id, game, fc, is_verified, is_primary = row
-                        curr_fc = FriendCode(id, fc, game, player_id, bool(is_verified), bool(is_primary))
+                        id, player_id, game, fc, is_verified, is_primary, is_active = row
+                        curr_fc = FriendCode(id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active))
                         player_dict[player_id].friend_codes.append(curr_fc)
 
             for member in team_members:
@@ -1297,7 +1297,8 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                               bool(is_bagger_clause), fc_dict[player_id])
                     roster_dict[roster_id].append(player)
             
-            async with db.execute(f"""SELECT DISTINCT f.id, f.player_id, f.game, f.fc, f.is_verified, f.is_primary FROM friend_codes f
+            async with db.execute(f"""SELECT DISTINCT f.id, f.player_id, f.game, f.fc, f.is_verified, f.is_primary, f.is_active
+                                  FROM friend_codes f
                                   JOIN players p ON f.player_id = p.id
                                   JOIN team_members m ON p.id = m.player_id
                                   WHERE f.game = ? AND m.roster_id IN (
@@ -1306,6 +1307,6 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                   )""", (self.game, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, game, fc, is_verified, is_primary = row
-                    fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary))
+                    fc_id, player_id, game, fc, is_verified, is_primary, is_active = row
+                    fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
             return rosters

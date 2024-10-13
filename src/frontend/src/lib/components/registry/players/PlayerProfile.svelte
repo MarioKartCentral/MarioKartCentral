@@ -51,7 +51,7 @@
       {#if player.friend_codes.length > 0}
         <div class="item">
           <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
-          {#each player.friend_codes as fc}
+          {#each player.friend_codes.filter((f) => f.is_active) as fc}
             <div>
               <GameBadge game={fc.game}/>
               {fc.fc}
