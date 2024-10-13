@@ -79,6 +79,8 @@
         </div>
         <Dropdown>
           <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">{$LL.NAVBAR.PROFILE()}</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/registry/invites">Invites</DropdownItem>
           <DropdownItem on:click={logout}>{$LL.LOGOUT()}</DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}

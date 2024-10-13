@@ -17,7 +17,7 @@
     user_info = value;
     let mod_notifs = value.mod_notifications
     if(mod_notifs) {
-      unread_count = mod_notifs.pending_teams + mod_notifs.pending_team_edits + mod_notifs.pending_transfers;
+      unread_count = mod_notifs.pending_teams + mod_notifs.pending_team_edits + mod_notifs.pending_transfers + mod_notifs.pending_player_name_changes;
     }
   });
 
@@ -70,6 +70,14 @@
   {#if check_permission(user_info, permissions.ban_player)}
     <DropdownItem href="/{$page.params.lang}/moderator/player_bans">
       Player Bans
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.edit_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/approve_player_names">
+      Player Name Changes
+      {#if user_info.mod_notifications?.pending_player_name_changes}
+        <AlertCount count={user_info.mod_notifications.pending_player_name_changes}/>
+      {/if}
     </DropdownItem>
   {/if}
 </Dropdown>

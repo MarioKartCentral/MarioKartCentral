@@ -11,6 +11,7 @@ class FriendCode:
     is_verified: int
     is_primary: int
     description: str | None = None
+    is_active: bool = True
 
 @dataclass
 class CreateFriendCodeRequestData:
@@ -20,10 +21,25 @@ class CreateFriendCodeRequestData:
     description: str | None
 
 @dataclass
-class EditFriendCodeRequestData:
-    id: int
+class ForceCreateFriendCodeRequestData:
+    player_id: int
     fc: str
     game: Game
+    is_primary: bool
+    description: str | None
+
+@dataclass
+class EditMyFriendCodeRequestData:
+    id: int
+    is_primary: bool
+    description: str | None
+
+@dataclass
+class ForceEditFriendCodeRequestData:
+    player_id: int
+    id: int
+    fc: str
+    is_primary: bool
     is_active: bool
     description: str | None
 

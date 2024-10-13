@@ -29,6 +29,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/player-signup`,
     `/${locale}/registry/players`,
     `/${locale}/registry/players/edit-profile`,
+    `/${locale}/registry/players/mod-edit-profile`,
     `/${locale}/registry/players/profile`,
     `/${locale}/registry/invites`,
     `/${locale}/registry/teams`,
@@ -44,6 +45,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/approve_transfers`,
     `/${locale}/moderator/manage_user_roles`,
     `/${locale}/moderator/player_bans`,
+    `/${locale}/moderator/approve_player_names`,
   ];
 }
 

@@ -42,7 +42,7 @@ class FriendCode(TableModel):
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS friend_codes(
             id INTEGER PRIMARY KEY,
-            player_id INTEGER NOT NULL,
+            player_id INTEGER NOT NULL REFERENCES players(id),
             game TEXT NOT NULL,
             fc TEXT NOT NULL,
             is_verified BOOLEAN NOT NULL,
@@ -829,6 +829,24 @@ class PlayerBansHistorical(TableModel):
             reason TEXT NOT NULL,
             comment TEXT NOT NULL)"""
     
+@dataclass
+class PlayerNameEditRequest(TableModel):
+    id: int
+    player_id: int
+    name: str
+    date: int
+    approval_status: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_name_edit_requests (
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            name TEXT NOT NULL,
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
+            )"""
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -837,4 +855,5 @@ all_tables : list[type[TableModel]] = [
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, PlayerBansHistorical]
+    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
+    PlayerNameEditRequest]

@@ -195,4 +195,5 @@ export const mod_panel_permissions = [
   permissions.manage_transfers,
   permissions.ban_player,
   permissions.manage_user_roles,
+  permissions.edit_player,
 ];

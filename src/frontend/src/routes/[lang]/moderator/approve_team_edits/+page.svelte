@@ -7,7 +7,6 @@
   import { check_permission, permissions } from '$lib/util/permissions';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import ArrowRight from '$lib/components/common/ArrowRight.svelte';
   import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
@@ -94,7 +93,7 @@
     const result = await res.json();
     if (res.status < 300) {
       alert('Successfully approved roster profile change');
-      goto(`/${$page.params.lang}/registry/teams`);
+      window.location.reload();
     } else {
       alert(`Team edit failed: ${result['title']}`);
     }
@@ -114,7 +113,7 @@
     const result = await res.json();
     if (res.status < 300) {
       alert('Successfully denied roster profile change');
-      goto(`/${$page.params.lang}/registry/teams`);
+      window.location.reload();
     } else {
       alert(`Failed: ${result['title']}`);
     }

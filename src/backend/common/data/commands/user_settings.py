@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 from common.data.commands import Command, save_to_command_log
-from common.data.models import EditUserSettingsRequestData, Problem, UserSettings
+from common.data.models import *
 
 
 @save_to_command_log
@@ -69,3 +69,39 @@ class EditUserSettingsCommand(Command[bool]):
 
             await db.commit()
             return True
+        
+@save_to_command_log
+@dataclass
+class EditPlayerUserSettingsCommand(Command[None]):
+    data: EditPlayerUserSettingsRequestData
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            data = self.data
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (data.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player not found", status=404)
+                user_id = row[0]
+            
+            set_clauses: list[str] = []
+            variable_parameters: list[Any] = []
+
+            def set_value(value: Any, column_name: str):
+                if value is not None:
+                    set_clauses.append(f"{column_name} = ?")
+                    variable_parameters.append(value)
+
+            set_value(data.avatar, "avatar")
+            set_value(data.about_me, "about_me")
+            set_value(data.language, "language")
+            set_value(data.color_scheme, "color_scheme")
+            set_value(data.timezone, "timezone")
+
+            if not set_clauses:
+                raise Problem("Bad request body", detail="There are no values to set")
+
+            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"""
+            variable_parameters.append(user_id)
+            await db.execute(update_query, variable_parameters)
+            await db.commit()

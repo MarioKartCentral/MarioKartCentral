@@ -5,6 +5,7 @@ type ModNotifications = {
   pending_teams: number;
   pending_team_edits: number;
   pending_transfers: number;
+  pending_player_name_changes: number;
 };
 
 type UserRole = {
