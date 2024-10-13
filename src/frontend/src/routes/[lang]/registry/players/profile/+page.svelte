@@ -63,13 +63,18 @@
     <PlayerProfileBan ban_info={player.ban_info} />
   {/if}
 
-  {#if check_permission(user_info, permissions.ban_player)}
+  {#if check_permission(user_info, permissions.ban_player) || check_permission(user_info, permissions.edit_player)}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
-        {#if !player.is_banned}
-          <Button on:click={banDialog.open}>{$LL.PLAYER_BAN.BAN_PLAYER()}</Button>
-        {:else}
-          <Button on:click={editBanDialog.open}>{$LL.PLAYER_BAN.VIEW_EDIT_BAN()}</Button>
+        {#if check_permission(user_info, permissions.ban_player)}
+          {#if !player.is_banned}
+            <Button on:click={banDialog.open}>{$LL.PLAYER_BAN.BAN_PLAYER()}</Button>
+          {:else}
+            <Button on:click={editBanDialog.open}>{$LL.PLAYER_BAN.VIEW_EDIT_BAN()}</Button>
+          {/if}
+        {/if}
+        {#if check_permission(user_info, permissions.edit_player)}
+          <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">Edit Player</Button>
         {/if}
       </div>
     </Section>

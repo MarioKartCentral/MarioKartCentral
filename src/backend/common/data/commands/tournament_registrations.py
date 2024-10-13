@@ -334,16 +334,16 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     player_fc_dict[player_id] = []
 
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
                             SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id
                         )"""
             async with db.execute(fc_query, (game, self.tournament_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
+                    fc_id, player_id, game, fc, is_verified, is_primary, description, is_active = row
                     if player_id not in player_fc_dict:
                         continue
-                    player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
+                    player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), description, bool(is_active)))
             # finally, set all players' friend codes.
             # we need to do this at the end because some players might have two registration entries
             # (ex. if a player is invited to two different squads), so we need to make sure both of their
@@ -402,15 +402,15 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
                     player_dict[player_id] = curr_player
 
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
                             SELECT t.id FROM tournament_players t WHERE {where_clause} AND t.player_id = f.player_id
                         )
                         """
             async with db.execute(fc_query, (game, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
-                    player_dict[player_id].friend_codes.append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
+                    fc_id, player_id, game, fc, is_verified, is_primary, description, is_active = row
+                    player_dict[player_id].friend_codes.append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), description, bool(is_active)))
                 return players
             
 @dataclass
@@ -471,7 +471,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     player_fc_dict[player_id] = []
 
             # gathering all the valid FCs for each player in their squads
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
                             SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id
                             AND EXISTS (
                                 SELECT p2.id FROM tournament_players p2
@@ -481,8 +481,9 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
-                    player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
+                    fc_id, player_id, game, fc, is_verified, is_primary, description, is_active = row
+                    player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), description,
+                                                                bool(is_active)))
 
             details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, list(squads.values()), None)
             # finally, set all players' friend codes.
@@ -530,15 +531,15 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                 player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, is_approved, mii_name, can_host, name, country, player_discord, selected_fc_id, [])
 
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description FROM friend_codes f WHERE f.game = ? AND EXISTS (
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
                             SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = ? AND t.player_id = f.player_id
                         )
                         """
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, game, fc, is_verified, is_primary, description = row
-                    player.friend_codes.append(FriendCode(fc_id, fc, game, player_id, is_verified, is_primary, description))
+                    fc_id, player_id, game, fc, is_verified, is_primary, description, is_active = row
+                    player.friend_codes.append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), description, bool(is_active)))
             details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], player)
             return details
 

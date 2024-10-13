@@ -18,3 +18,12 @@ class EditUserSettingsRequestData:
     language: Literal['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'] | None = None
     color_scheme: Literal['light', 'dark'] | None = None
     timezone: str | None = None
+
+@dataclass
+class EditPlayerUserSettingsRequestData:
+    player_id: int
+    avatar: str | None = None
+    about_me: str | None = None
+    language: Literal['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'] | None = None
+    color_scheme: Literal['light', 'dark'] | None = None
+    timezone: str | None = None

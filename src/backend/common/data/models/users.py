@@ -15,6 +15,7 @@ class ModNotifications:
     pending_teams: int = 0
     pending_team_edits: int = 0
     pending_transfers: int = 0
+    pending_player_name_changes: int = 0
 
 @dataclass
 class UserPlayer:

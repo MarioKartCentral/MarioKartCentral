@@ -4,6 +4,13 @@ import type { UserSettings } from '$lib/types/user-settings';
 import type { PlayerRoster } from './player-roster';
 import type { Discord } from './discord';
 
+type PlayerNameChange = {
+  id: number;
+  name: string;
+  date: number;
+  approval_status: string;
+};
+
 export type PlayerInfo = {
   id: number;
   name: string;
@@ -16,4 +23,5 @@ export type PlayerInfo = {
   rosters: PlayerRoster[];
   ban_info: BanInfoBasic | null;
   user_settings: UserSettings | null;
+  name_changes: PlayerNameChange[];
 };

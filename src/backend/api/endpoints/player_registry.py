@@ -41,16 +41,31 @@ async def list_players(_: Request, filter: PlayerFilter) -> Response:
     return JSONResponse(players)
 
 @bind_request_body(CreateFriendCodeRequestData)
-@require_logged_in
+@require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSONResponse:
     command = CreateFriendCodeCommand(request.state.user.player_id, body.fc, body.game, False, body.is_primary, True, body.description, False)
     await handle(command)
     return JSONResponse({})
 
-@bind_request_body(EditFriendCodeRequestData)
-@require_logged_in
-async def edit_fc(request: Request, body: EditFriendCodeRequestData) -> JSONResponse:
-    command = EditFriendCodeCommand(body.id, body.fc, body.game, body.is_active, body.description)
+@bind_request_body(ForceCreateFriendCodeRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestData) -> JSONResponse:
+    command = CreateFriendCodeCommand(body.player_id, body.fc, body.game, False, body.is_primary, True, body.description, True)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ForceEditFriendCodeRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) -> JSONResponse:
+    command = EditFriendCodeCommand(body.player_id, body.id, body.fc, body.is_primary, body.is_active, body.description)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(EditMyFriendCodeRequestData)
+@require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
+async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSONResponse:
+    player_id = request.state.user.player_id
+    command = EditFriendCodeCommand(player_id, body.id, None, body.is_primary, None, body.description)
     await handle(command)
     return JSONResponse({})
 
@@ -68,13 +83,46 @@ async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeReque
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(PlayerRequestNameRequestData)
+@require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
+async def request_edit_player_name(request: Request, body: PlayerRequestNameRequestData) -> JSONResponse:
+    command = RequestEditPlayerNameCommand(request.state.user.player_id, body.name)
+    await handle(command)
+    return JSONResponse({})
+
+@require_permission(permissions.EDIT_PLAYER)
+async def get_pending_player_name_requests(request: Request) -> JSONResponse:
+    command = ListPlayerNameRequestsCommand("pending")
+    changes = await handle(command)
+    return JSONResponse(changes)
+
+@bind_request_body(ApprovePlayerNameRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def approve_player_name_request(request: Request, body: ApprovePlayerNameRequestData) -> JSONResponse:
+    command = ApprovePlayerNameRequestCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ApprovePlayerNameRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequestData) -> JSONResponse:
+    command = DenyPlayerNameRequestCommand(body.request_id)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
     Route('/api/registry/players', list_players),
     Route('/api/registry/addFriendCode', create_fc, methods=['POST']),
-    Route('/api/registry/forceEditFriendCode', edit_fc, methods=['POST']),
+    Route('/api/registry/forceAddFriendCode', force_create_fc, methods=['POST']),
+    Route('/api/registry/forceEditFriendCode', force_edit_fc, methods=['POST']),
+    Route('/api/registry/editFriendCode', edit_my_fc, methods=['POST']),
     Route('/api/registry/setPrimaryFriendCode', set_primary_fc, methods=['POST']),
-    Route('/api/registry/forcePrimaryFriendCode', force_primary_fc, methods=['POST'])
+    Route('/api/registry/forcePrimaryFriendCode', force_primary_fc, methods=['POST']),
+    Route('/api/registry/players/requestName', request_edit_player_name, methods=['POST']),
+    Route('/api/registry/players/pendingNameChanges', get_pending_player_name_requests),
+    Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']),
+    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST'])
 ]
