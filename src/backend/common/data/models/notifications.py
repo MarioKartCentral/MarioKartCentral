@@ -1,12 +1,14 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, List
 
 
 @dataclass
 class Notification:
     id: int
     type: int
-    content: str
+    content_id: int
+    content_args: List[str]
+    link: str
     created_date: int
     is_read: bool
 
