@@ -38,11 +38,11 @@
     <Accordion>
       <AccordionItem open>
         <span slot="header">Tournament Description</span>
-        <MarkdownBox content={tournament.description} />
+        <MarkdownBox content={tournament.use_series_description ? String(tournament.series_description) : tournament.description} />
       </AccordionItem>
       <AccordionItem open>
         <span slot="header">Tournament Rules</span>
-        <MarkdownBox content={tournament.ruleset} />
+        <MarkdownBox content={tournament.use_series_ruleset ? String(tournament.series_ruleset) : tournament.ruleset} />
       </AccordionItem>
     </Accordion>
   </Section>

@@ -9,7 +9,7 @@ from aiosqlite import Row
 
 @save_to_command_log
 @dataclass
-class CreateTournamentCommand(Command[None]):
+class CreateTournamentCommand(Command[int | None]):
     body: CreateTournamentRequestData
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -51,6 +51,7 @@ class CreateTournamentCommand(Command[None]):
         s3_body = TournamentS3Fields(b.ruleset)
         s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
+        return tournament_id
             
 @save_to_command_log
 @dataclass
@@ -95,6 +96,7 @@ class EditTournamentCommand(Command[None]):
                 date_end = ?,
                 description = ?,
                 use_series_description = ?,
+                use_series_ruleset = ?,
                 series_stats_include = ?,
                 logo = ?,
                 use_series_logo = ?,
@@ -121,7 +123,7 @@ class EditTournamentCommand(Command[None]):
                 show_on_profiles = ?,
                 min_representatives = ?
                 WHERE id = ?""",
-                (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.series_stats_include,
+                (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
                 b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,

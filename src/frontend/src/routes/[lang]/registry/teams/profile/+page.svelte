@@ -63,6 +63,9 @@
         {/if}
       {/if}
     </div>
+    {#if team.approval_status === 'pending'}
+      This team is pending approval from MKCentral Staff.
+    {/if}
     <TeamProfile {team} />
   </Section>
   <Section header={$LL.TEAM_PROFILE.ROSTERS()}>

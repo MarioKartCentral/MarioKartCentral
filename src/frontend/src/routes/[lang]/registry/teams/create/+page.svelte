@@ -4,7 +4,8 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
   import { colors } from '$lib/util/util';
-    import Button from '$lib/components/common/buttons/Button.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import { page } from '$app/stores';
 
   const valid_games: { [key: string]: string } = {
     mk8dx: 'Mario Kart 8 Deluxe',
@@ -57,7 +58,13 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/`);
+      let team_id = result['id'];
+      if(team_id) {
+        goto(`/${$page.params.lang}/registry/teams/profile?id=${team_id}`);
+      }
+      else {
+        goto(`/${$page.params.lang}/registry/teams`);
+      }
       alert('Your team has been sent to MKCentral staff for approval.');
     } else {
       alert(`Creating team failed: ${result['title']}`);
