@@ -15,4 +15,6 @@
   });
 </script>
 
-<CreateEditTemplateForm {template_id} {series_id} series_restrict={true} />
+{#key series_id}
+  <CreateEditTemplateForm {template_id} {series_id} series_restrict={true} />
+{/key}

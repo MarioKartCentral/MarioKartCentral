@@ -11,9 +11,10 @@
   export let tournament_id: number | null = null;
   export let template_id: number | null = null;
   export let series_restrict = false;
+  export let series_id: number | null = null;
   export let data: CreateTournament = {
     name: '',
-    series_id: null,
+    series_id: series_id,
     date_start: 0,
     date_end: 0,
     logo: null,
@@ -107,7 +108,8 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/${$page.params.lang}/tournaments`);
+      let new_id = result["id"];
+      goto(`/${$page.params.lang}/tournaments/details?id=${new_id}`);
       alert('Successfully created tournament!');
     } else {
       alert(`Creating tournament failed: ${result['title']}`);

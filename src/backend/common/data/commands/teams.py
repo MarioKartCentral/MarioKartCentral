@@ -9,7 +9,7 @@ from common.auth import team_permissions, team_roles
 
 @save_to_command_log
 @dataclass
-class CreateTeamCommand(Command[None]):
+class CreateTeamCommand(Command[int | None]):
     name: str
     tag: str
     description: str
@@ -52,6 +52,7 @@ class CreateTeamCommand(Command[None]):
             if self.user_id is not None:
                 await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES (?, 0, ?)", (self.user_id, team_id))
             await db.commit()
+            return team_id
 
 @dataclass
 class GetTeamInfoCommand(Command[Team]):
