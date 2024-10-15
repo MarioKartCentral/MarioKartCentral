@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, List
 import json
+from common.auth import team_roles
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
@@ -107,29 +108,66 @@ class GetUnreadNotificationsCountCommand(Command[int]):
 
 @save_to_command_log
 @dataclass
-class DispatchNotificationsCommand(Command[bool]):
-    user_id: int
+class DispatchNotificationCommand(Command[int]):
+    user_ids: list[int]
     content_id: int
     content_args: list[str]
     link: str | None
     notification_type: int = 0
 
     async def handle(self, db_wrapper, s3_wrapper):
-        """CREATE TABLE IF NOT EXISTS notifications(
-            id INTEGER PRIMARY KEY,
-             user_id INTEGER NOT NULL REFERENCES users(id),
-             type INTEGER DEFAULT 0 NOT NULL,
-             content_id INTEGER NOT NULL,
-             content_args TEXT NOT NULL,
-             link TEXT,
-             created_date INTEGER NOT NULL,
-            is_read INTEGER DEFAULT 0 NOT NULL)"""
         async with db_wrapper.connect() as db:
             created_date = int(datetime.now(timezone.utc).timestamp())
-            async with await db.execute("INSERT INTO notifications(user_id, type, content_id, content_args, link, created_date) VALUES (?, ?, ?, ?, ?, ?)", 
-                (self.user_id, self.notification_type, self.content_id, json.dumps(self.content_args), self.link, created_date)) as cursor:
+            row_args = [(user_id, self.notification_type, self.content_id, json.dumps(self.content_args), self.link, created_date) for user_id in self.user_ids]
+
+            async with await db.executemany("INSERT INTO notifications(user_id, type, content_id, content_args, link, created_date) VALUES (?, ?, ?, ?, ?, ?)", row_args) as cursor:
                 count = cursor.rowcount
                 if count > 0:
                     await db.commit()
 
-            return count > 0
+            return count
+        
+@dataclass
+class GetFieldFromTableCommand(Command[str]):
+    query: str
+    where_params: Any
+
+    async def handle(self, db_wrapper, s3_wrapper) -> str:
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute(self.query, self.where_params) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Failed to get field from table", status=500)
+
+                return row[0]
+
+@dataclass
+class GetRowFromTableCommand(Command[List[Any]]):
+    query: str
+    where_params: Any
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute(self.query, self.where_params) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Failed to get row from table", status=500)
+
+                return [i for i in row]
+
+@dataclass
+class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
+    team_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            user_ids: List[int] = []
+            async with db.execute("""SELECT u.id FROM players p
+                JOIN users u ON u.player_id = p.id
+                JOIN user_team_roles ur ON ur.user_id = u.id
+                JOIN team_roles tr ON tr.id = ur.role_id
+                WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    user_ids.append(row[0])
+            return user_ids

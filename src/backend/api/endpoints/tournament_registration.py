@@ -6,6 +6,7 @@ from api.utils.responses import JSONResponse, bind_request_body, bind_request_qu
 from common.auth import tournament_permissions
 from common.data.commands import *
 from common.data.models import *
+import common.data.notifications as notifications
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
@@ -83,6 +84,10 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
     await handle(command)
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, False, False, None, False, True, None, body.is_representative, body.is_bagger_clause, False, False)
     await handle(command)
+    squad_name = await handle(GetFieldFromTableCommand("SELECT name FROM tournament_squads WHERE id = ?", (body.squad_id,)))
+    tournament_name = await handle(GetFieldFromTableCommand("SELECT name from tournaments WHERE id = ?", (tournament_id,)))
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TOURNAMENT_INVITE , [squad_name, tournament_name], '/registry/invites', notifications.INFO))
     return JSONResponse({})
 
 # endpoint used when a user registers themself for a tournament
@@ -107,6 +112,9 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, body.is_squad_captain, body.is_checked_in, 
         body.mii_name, body.can_host, body.is_invite, body.selected_fc_id, body.is_representative, body.is_bagger_clause, body.is_approved, True)
     await handle(command)
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    tournament_name = await handle(GetFieldFromTableCommand("SELECT name FROM tournaments WHERE id = ?", (tournament_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TOURNAMENT_STAFF_REGISTERED , [tournament_name], f'/tournaments/details?id={tournament_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(EditPlayerRegistrationRequestData)
@@ -145,6 +153,9 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, player_id, body.mii_name, body.can_host,
         False, False, False, body.selected_fc_id, None, None, None, False)
     await handle(command)
+    player_name = await handle(GetFieldFromTableCommand("SELECT name FROM players WHERE player_id = ?", (player_id,)))
+    captain_id, squad_name = await handle(GetRowFromTableCommand("SELECT u.id, ts.name FROM users u JOIN tournament_players tp ON tp.player_id = u.player_id JOIN tournament_squads ts ON ts.id = tp.squad_id WHERE tournament_id = ? AND tp.squad_id = ? AND tp.is_squad_captain = TRUE", (player_id, body.squad_id)))
+    await handle(DispatchNotificationCommand([int(captain_id)], notifications.TOURNAMENT_INVITE_ACCEPTED , [player_name, squad_name], f'/registry/players/profile?id={player_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(DeclineInviteRequestData)
@@ -166,6 +177,9 @@ async def remove_player_from_squad(request: Request, body: KickSquadPlayerReques
     await handle(command)
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, False)
     await handle(command)
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    squad_name = await handle(GetFieldFromTableCommand("SELECT name FROM tournament_squads WHERE id = ?", (body.squad_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TOURNAMENT_KICKED , [squad_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
     return JSONResponse({})
 
 # used when a player unregisters themself from the tournament
@@ -185,6 +199,9 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
     tournament_id = request.path_params['tournament_id']
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, True)
     await handle(command)
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    tournament_name = await handle(GetFieldFromTableCommand("SELECT name FROM tournaments WHERE id = ?", (tournament_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TOURNAMENT_STAFF_UNREGISTERED , [tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
     return JSONResponse({})
 
 @bind_request_body(MakeCaptainRequestData)

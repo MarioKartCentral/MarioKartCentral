@@ -8,6 +8,7 @@ from common.auth import permissions
 from common.auth import team_permissions
 from common.data.commands import *
 from common.data.models import *
+import common.data.notifications as notifications
 
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateTeamRequestData)
@@ -47,6 +48,9 @@ async def approve_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'approved')
     await handle(command)
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    team_name = await handle(GetFieldFromTableCommand("SELECT name FROM teams WHERE id = ?", (team_id,)))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_APPROVED , [team_name], f'/registry/teams/profile?id={team_id}', notifications.INFO))
     return JSONResponse({})
 
 @require_permission(permissions.MANAGE_TEAMS)
@@ -54,6 +58,9 @@ async def deny_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'denied')
     await handle(command)
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    team_name = await handle(GetFieldFromTableCommand("SELECT name FROM teams WHERE id = ?", (team_id,)))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_DENIED , [team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
     return JSONResponse({})
 
 # for editing non-essential team info such as description, color, etc
@@ -77,6 +84,9 @@ async def request_edit_team(request: Request, body: RequestEditTeamRequestData) 
 async def approve_team_edit_request(request: Request, body: ApproveTeamEditRequestData) -> JSONResponse:
     command = ApproveTeamEditCommand(body.request_id)
     await handle(command)
+    team_name, team_id = await handle(GetRowFromTableCommand("SELECT t.name, t.id FROM teams t JOIN team_edit_requests r ON t.id = r.team_id WHERE r.id = ?", (body.request_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_ACCEPTED, [team_name], f'/registry/teams/profile?id={team_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(DenyTeamEditRequestData)
@@ -84,6 +94,9 @@ async def approve_team_edit_request(request: Request, body: ApproveTeamEditReque
 async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData) -> JSONResponse:
     command = DenyTeamEditCommand(body.request_id)
     await handle(command)
+    team_name, team_id = await handle(GetRowFromTableCommand("SELECT t.name, t.id FROM teams t JOIN team_edit_requests r ON t.id = r.team_id WHERE r.id = ?", (body.request_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_DENIED, [team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
     return JSONResponse({})
 
 @require_permission(permissions.MANAGE_TEAMS)
@@ -135,6 +148,9 @@ async def request_edit_roster(request: Request, body: RequestEditRosterRequestDa
 async def approve_roster_edit_request(request: Request, body: EditRosterChangeRequestData) -> JSONResponse:
     command = ApproveRosterEditCommand(body.request_id)
     await handle(command)
+    team_name, team_id, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, t.id, tr.name FROM teams t JOIN team_rosters tr ON tr.team_id = t.id JOIN team_edit_requests r ON tr.id = r.roster_id WHERE r.id = ?", (body.request_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_ACCEPTED, [roster_name or team_name], f'/registry/teams/profile?id={team_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(EditRosterChangeRequestData)
@@ -142,6 +158,9 @@ async def approve_roster_edit_request(request: Request, body: EditRosterChangeRe
 async def deny_roster_edit_request(request: Request, body: EditRosterChangeRequestData) -> JSONResponse:
     command = DenyRosterEditCommand(body.request_id)
     await handle(command)
+    team_name, team_id, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, t.id, tr.name FROM teams t JOIN team_rosters tr ON tr.team_id = t.id JOIN team_edit_requests r ON tr.id = r.roster_id WHERE r.id = ?", (body.request_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_DENIED, [roster_name or team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
     return JSONResponse({})
 
 @bind_request_body(InviteRosterPlayerRequestData)
@@ -150,6 +169,9 @@ async def deny_roster_edit_request(request: Request, body: EditRosterChangeReque
 async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
     command = InvitePlayerCommand(body.player_id, body.roster_id, body.team_id, body.is_bagger_clause)
     await handle(command)
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    team_name, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, r.name FROM teams t JOIN team_rosters ON t.id = r.team_id WHERE r.id = ?", (body.roster_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TEAM_INVITE , [roster_name or team_name], '/registry/invites', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(DeleteInviteRequestData)
@@ -171,6 +193,10 @@ async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> 
 async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
     command = AcceptInviteCommand(body.invite_id, body.roster_leave_id, request.state.user.player_id)
     await handle(command)
+    player_name = await handle(GetFieldFromTableCommand("SELECT name FROM players WHERE id = ?", (request.state.user.player_id,)))
+    team_name, team_id, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, t.team_id, tr.name FROM teams t JOIN team_rosters tr ON t.id = tr.team_id JOIN team_transfers tt ON tt.roster_id = tr.id WHERE tt.id = ?", (body.invite_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_INVITE_ACCEPTED, [player_name, roster_name or team_name], f'/registry/players/profile?id={request.state.user.player_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(DeclineRosterInviteRequestData)
@@ -178,6 +204,10 @@ async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -
 async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> JSONResponse:
     command = DeclineInviteCommand(body.invite_id, request.state.user.player_id)
     await handle(command)
+    player_name = await handle(GetFieldFromTableCommand("SELECT name FROM players WHERE id = ?", (request.state.user.player_id,)))
+    team_name, team_id, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, t.team_id, tr.name FROM teams t JOIN team_rosters tr ON t.id = tr.team_id JOIN team_transfers tt ON tt.roster_id = tr.id WHERE tt.id = ?", (body.invite_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_INVITE_DECLINED, [player_name, roster_name or team_name], f'/registry/players/profile?id={request.state.user.player_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(LeaveRosterRequestData)
@@ -185,6 +215,10 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
 async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResponse:
     command = LeaveRosterCommand(request.state.user.player_id, body.roster_id)
     await handle(command)
+    player_name, player_id = await handle(GetRowFromTableCommand("SELECT name, id FROM players WHERE id = ?", (request.state.user.player_id,)))
+    team_name, team_id, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, t.id, r.name FROM teams t JOIN team_rosters ON t.id = re.team_id WHERE r.id = ?", (body.roster_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_PLAYER_LEFT , [player_name, roster_name or team_name], f'/registry/players/profile?id={player_id}', notifications.WARNING))
     return JSONResponse({})
 
 @bind_request_body(ApproveTransferRequestData)
@@ -192,6 +226,9 @@ async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResp
 async def approve_transfer(request: Request, body: ApproveTransferRequestData) -> JSONResponse:
     command = ApproveTransferCommand(body.invite_id)
     await handle(command)
+    player_name, player_id, team_id, team_name, roster_name = await handle(GetRowFromTableCommand("SELECT p.name, p.id, t.id, t.name, r.name FROM players p JOIN team_transfers tt ON p.id = tt.player_id JOIN team_rosters r ON tt.roster_id = r.id JOIN teams t ON t.id = r.team_id WHERE t.id = ?", (body.invite_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , [player_name, roster_name or team_name], f'/registry/players/profile?id={player_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(DenyTransferRequestData)
@@ -199,6 +236,9 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
 async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSONResponse:
     command = DenyTransferCommand(body.invite_id, body.send_back)
     await handle(command)
+    player_name, player_id, team_id, team_name, roster_name = await handle(GetRowFromTableCommand("SELECT p.name, p.id, t.id, t.name, r.name FROM players p JOIN team_transfers tt ON p.id = tt.player_id JOIN team_rosters r ON tt.roster_id = r.id JOIN teams t ON t.id = r.team_id WHERE t.id = ?", (body.invite_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_DENIED , [player_name, roster_name or team_name], f'/registry/players/profile?id={player_id}', notifications.WARNING))
     return JSONResponse({})
 
 @bind_request_query(TransferFilter)
@@ -232,6 +272,10 @@ async def list_roster_edit_requests(request: Request) -> JSONResponse:
 async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> JSONResponse:
     command = ForceTransferPlayerCommand(body.player_id, body.roster_id, body.team_id, body.roster_leave_id, body.is_bagger_clause)
     await handle(command)
+    player_name= await handle(GetFieldFromTableCommand("SELECT name FROM players WHERE id = ?", (body.player_id,)))
+    team_name, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, r.name FROM teams t JOIN team_rosters r ON t.id = r.team_id WHERE r.id = ?", (body.roster_id,)))
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(body.team_id))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , [player_name, roster_name or team_name], f'/registry/players/profile?id={body.player_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_body(EditTeamMemberInfoRequestData)
@@ -247,6 +291,9 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
     timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp, None)
     await handle(command)
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    team_name, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, r.name FROM teams t JOIN team_rosters r ON t.id = r.team_id WHERE r.id = ?", (body.roster_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TEAM_KICKED , [roster_name or team_name], f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
     return JSONResponse({})
 
 @bind_request_body(KickPlayerRequestData)
@@ -255,6 +302,9 @@ async def mod_kick_player(request: Request, body: KickPlayerRequestData) -> JSON
     timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp, None)
     await handle(command)
+    user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
+    team_name, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, r.name FROM teams t JOIN team_rosters r ON t.id = r.team_id WHERE r.id = ?", (body.roster_id,)))
+    await handle(DispatchNotificationCommand([int(user_id)], notifications.TEAM_KICKED , [roster_name or team_name], f'/registry/teams/profile?id={body.team_id}', notifications.INFO))
     return JSONResponse({})
 
 @bind_request_query(TeamFilter)
@@ -282,6 +332,9 @@ async def approve_roster(request: Request) -> JSONResponse:
     roster_id = request.path_params['rosterId']
     command = ApproveRosterCommand(team_id, roster_id)
     await handle(command)
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    team_name, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, r.name FROM teams t JOIN team_rosters r ON t.id = r.team_id WHERE r.id = ?", (roster_id,)))
+    await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_APPROVED , [roster_name or team_name], f'/registry/teams/profile?id={team_id}', notifications.INFO))
     return JSONResponse({})
 
 @require_permission(permissions.MANAGE_TEAMS)
@@ -290,6 +343,9 @@ async def deny_roster(request: Request) -> JSONResponse:
     roster_id = request.path_params['rosterId']
     command = DenyRosterCommand(team_id, roster_id)
     await handle(command)
+    user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
+    team_name, roster_name = await handle(GetRowFromTableCommand("SELECT t.name, r.name FROM teams t JOIN team_rosters r ON t.id = r.team_id WHERE r.id = ?", (roster_id,)))
+    await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_DENIED , [roster_name or team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
     return JSONResponse({})
 
 @bind_request_query(RegisterableRostersRequestData)
