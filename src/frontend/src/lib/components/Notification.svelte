@@ -6,6 +6,9 @@
   import Dropdown from './common/Dropdown.svelte';
   import DropdownItem from './common/DropdownItem.svelte';
   import LL from '$i18n/i18n-svelte';
+  import { goto } from '$app/navigation';
+  import NotificationContent from './common/NotificationContent.svelte';
+  import { DropdownDivider } from 'flowbite-svelte';
 
   let dropdown: DropdownMenu;
   export function toggleNotificationMenu() {
@@ -63,20 +66,27 @@
       }));
     }
   }
+
+  async function handleClick(id: number, link: string) {
+    await makeNotificationAsRead(id)
+    goto(link)
+  }
 </script>
 
 <Dropdown>
-  {#each notifications as { id, content, created_date, is_read, type }}
-    <DropdownItem>
-      <span>{id}: </span>
-      <span>{content}</span>
-      <span>{new Date(created_date * 1000).toLocaleString()}</span>
-      <span>{$LL.NAVBAR.TYPE()}: {type}</span>
-      <button on:click={async () => await makeNotificationAsRead(id)}>☑</button>
-      <span>{$LL.NAVBAR.IS_READ()}: {is_read}</span>
+  {#each notifications as { id, type, content_id, content_args, link, created_date, is_read}}
+    <DropdownItem on:click={() => handleClick(id, link)}>
+      <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
     </DropdownItem>
+    <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
   {/each}
   <DropdownItem>
-    <button on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
+    <button class="mark-as-read" on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
   </DropdownItem>
 </Dropdown>
+
+<style>
+  .mark-as-read {
+    width: inherit;
+  }
+</style>
