@@ -71,10 +71,7 @@ export const valid_team_games: { [key: string]: string } = {
   mkt: 'Mario Kart Tour',
 };
 export const valid_team_modes: { [key: string]: string[] } = {
-  mk8dx: [
-    '150cc',
-    '200cc',
-  ],
+  mk8dx: ['150cc', '200cc'],
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],
 };
