@@ -24,7 +24,7 @@
       <label for="squad_name">Squad Name</label>
     </span>
     
-    <input name="squad_name" value={squad_name} required />
+    <input name="squad_name" value={squad_name} required pattern="^\S.*\S$|^\S$"/>
   </div>
 {/if}
 {#if tournament.squad_tag_required}
@@ -32,7 +32,7 @@
     <span class="item-label">
       <label for="squad_tag">Squad Tag</label>
     </span>
-    <input name="squad_tag" maxlength=5 bind:value={entered_tag} required />
+    <input name="squad_tag" maxlength=5 bind:value={entered_tag} required pattern="^\S.*\S$|^\S$"/>
   </div>
 {/if}
 

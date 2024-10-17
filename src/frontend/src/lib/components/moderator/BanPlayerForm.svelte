@@ -97,7 +97,7 @@
                 <option value='number of days'>{$LL.PLAYER_BAN.NUMBER_OF_DAYS()}</option>
             </select>
             {#if !isIndefinite}
-                <input name='days' type='number' min='1' step='1' value={numDays} required/>
+                <input name='days' type='number' min='1' step='1' max='99999' value={numDays} required/>
             {/if}
         </div>
         <div>

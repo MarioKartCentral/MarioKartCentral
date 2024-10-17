@@ -65,6 +65,16 @@ export const valid_modes: { [key: string]: string[] } = {
   mk7: ['vsrace'],
   smk: ['match_race'],
 };
+export const valid_team_games: { [key: string]: string } = {
+  mk8dx: 'Mario Kart 8 Deluxe',
+  mkw: 'Mario Kart Wii',
+  mkt: 'Mario Kart Tour',
+};
+export const valid_team_modes: { [key: string]: string[] } = {
+  mk8dx: ['150cc', '200cc'],
+  mkw: ['rt', 'ct'],
+  mkt: ['vsrace'],
+};
 export const mode_names: { [key: string]: string } = {
   '150cc': '150cc',
   '200cc': '200cc',

@@ -82,13 +82,13 @@
     {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
       <Section header={$LL.TEAM_EDIT.NEW_ROSTER()}>
         <form method="post" on:submit|preventDefault={createRoster}>
-            <GameModeSelect flex required/>
+            <GameModeSelect flex required is_team/>
             <div class="option">
               <div>
                 <label for="name">{$LL.TEAM_EDIT.ROSTER_NAME()}</label>
               </div>
               <div>
-                <input name="name" type="text" required />
+                <input name="name" type="text" pattern="^\S.*\S$|^\S$" required />
               </div>
             </div>
             <div class="option">

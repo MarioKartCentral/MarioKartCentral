@@ -229,7 +229,7 @@ class ListPlayersCommand(Command[PlayerList]):
                                     FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    {player_where_clause} ORDER BY name LIMIT ? OFFSET ? """
+                                    {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ? """
 
             fc_where_clause = ""
             fc_where_clauses = []

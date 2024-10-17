@@ -16,6 +16,7 @@
     let selected_fc: FriendCode;
 
     let friend_codes = is_privileged ? player.friend_codes : player.friend_codes.filter((f) => f.is_active);
+    // let friend_codes = player.friend_codes;
 
     function open_edit_dialog(fc: FriendCode) {
         selected_fc = fc;
@@ -29,7 +30,7 @@
         const payload = {
             player_id: player.id,
             id: selected_fc?.id,
-            fc: data.get('fc')?.toString(),
+            fc: data.get('fc')?.toString().replaceAll(" ", "-"),
             is_primary: data.get('is_primary') ? true : false,
             description: data.get('description')?.toString(),
             is_active: data.get('is_active') ? true : false,
@@ -81,9 +82,7 @@
         {#if !fc.is_active}
             (inactive)
         {/if}
-        {#if is_privileged}
-            <EditSolid on:click={() => open_edit_dialog(fc)}/>
-        {/if}
+        <EditSolid on:click={() => open_edit_dialog(fc)}/>
     </div>
 {/each}
 <div class="button">
@@ -121,7 +120,7 @@
                         <label for="description">{$LL.PLAYER_PROFILE.DESCRIPTION()}</label>
                     </div>
                     <div>
-                        <input name="description" placeholder={$LL.PLAYER_PROFILE.DESCRIPTION()} />
+                        <input name="description" placeholder={$LL.PLAYER_PROFILE.DESCRIPTION()} value={selected_fc.description}/>
                     </div>
                 </div>
                 {#if is_privileged}

@@ -24,7 +24,7 @@
       if (fc === '') {
         continue;
       }
-      friend_codes.push({ id: 0, fc: fc, game: games[i], is_primary: true, description: null, is_verified: false });
+      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), game: games[i], is_primary: true, description: null, is_verified: false, is_active: true });
     }
 
     const payload = {
@@ -64,7 +64,7 @@
         <span class="item-label">
           <label for="name">Name</label>
         </span>
-        <input name="name" type="name" minlength="2" />
+        <input name="name" type="name" minlength="2" pattern="^\S.*\S$|^\S$" />
       </div>
       <div class="field">
         <span class="item-label">
@@ -76,31 +76,31 @@
         <span class="item-label">
           <label for="switch_fc">Switch FC</label>
         </span>
-        <input name="switch_fc" />
+        <input name="switch_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="mkt_fc">MKTour FC</label>
+          <label for="mkt_fc">MKT FC</label>
         </span>
-        <input name="mkt_fc" />
+        <input name="mkt_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="mkw_fc">MKW FC</label>
         </span>
-        <input name="mkw_fc" />
+        <input name="mkw_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="3ds_fc">3DS FC</label>
         </span>
-        <input name="3ds_fc" />
+        <input name="3ds_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="nnid">Nintendo Network ID</label>
         </span>
-        <input name="nnid" />
+        <input name="nnid" placeholder='NNID'/>
       </div>
       <Button type="submit">Register</Button>
     </form>

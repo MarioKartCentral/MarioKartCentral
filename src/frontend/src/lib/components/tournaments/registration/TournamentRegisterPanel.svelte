@@ -54,7 +54,7 @@
       {#if !registration.player}
         {#if !check_registrations_open(tournament)}
           <div>
-            Registration for this tournament is closed.
+            Registrations for this tournament are closed.
           </div>
         {:else if user_info.player}
           {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
