@@ -72,10 +72,6 @@ type RootTranslation = {
 		 */
 		TYPE: string
 		/**
-		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
-		 */
-		MARK_ALL_READ: string
-		/**
 		 * I​s​ ​R​e​a​d
 		 */
 		IS_READ: string
@@ -792,9 +788,39 @@ type RootTranslation = {
 		 */
 		BLACK: string
 	}
+	NOTIFICATION: {
+		/**
+		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
+		 */
+		MARK_ALL_READ: string
+		/**
+		 * S​e​e​ ​A​l​l​ ​N​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		SEE_ALL_NOTIFICATIONS: string
+		/**
+		 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​u​n​r​e​a​d​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		NO_UNREAD: string
+		/**
+		 * Y​o​u​ ​m​u​s​t​ ​b​e​ ​l​o​g​g​e​d​ ​i​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+		 */
+		MUST_BE_LOGGED_IN: string
+		/**
+		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​a​n​y​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​.
+		 */
+		NO_NOTIFICATIONS: string
+		/**
+		 * M​a​r​k​ ​A​s​ ​R​e​a​d
+		 */
+		MARK_READ: string
+		/**
+		 * M​a​r​k​ ​A​s​ ​U​n​r​e​a​d
+		 */
+		MARK_UNREAD: string
+	}
 	NOTIFICATION_CONTENT: {
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​$​0​.
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​$​0​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​$​1
 		 */
 		'0': string
 		/**
@@ -814,7 +840,7 @@ type RootTranslation = {
 		 */
 		'4': string
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​r​o​m​ ​$​0​.
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​o​r​ ​$​0​.
 		 */
 		'5': string
 		/**
@@ -830,107 +856,107 @@ type RootTranslation = {
 		 */
 		'8': string
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​$​0​.
+		 * $​0​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​$​1​.
 		 */
 		'9': string
 		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​$​0​.
 		 */
 		'10': string
 		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * Y​o​u​r​ ​t​e​a​m​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
 		 */
 		'11': string
 		/**
-		 * $​0​ ​h​a​s​ ​j​o​i​n​e​d​ ​$​0​!
+		 * Y​o​u​r​ ​t​e​a​m​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
 		 */
 		'12': string
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​d​e​n​i​e​d​ ​$​0​ ​f​r​o​m​ ​j​o​i​n​i​n​g​ ​$​1​.
+		 * $​0​ ​h​a​s​ ​j​o​i​n​e​d​ ​$​0​!
 		 */
 		'13': string
 		/**
-		 * $​0​ ​h​a​s​ ​l​e​f​t​ ​$​1​.
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​d​e​n​i​e​d​ ​$​0​ ​f​r​o​m​ ​j​o​i​n​i​n​g​ ​$​1​.
 		 */
 		'14': string
 		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * $​0​ ​h​a​s​ ​l​e​f​t​ ​$​1​.
 		 */
 		'15': string
 		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
 		 */
 		'16': string
 		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
 		 */
 		'17': string
 		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
 		 */
 		'18': string
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​$​0​.
+		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
 		 */
 		'19': string
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​o​n​e​ ​o​f​ ​y​o​u​r​ ​f​r​i​e​n​d​ ​c​o​d​e​s​.
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​$​0​.
 		 */
 		'20': string
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​o​n​e​ ​o​f​ ​y​o​u​r​ ​f​r​i​e​n​d​ ​c​o​d​e​s​.
 		 */
 		'21': string
 		/**
-		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
 		 */
 		'22': string
 		/**
-		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
 		 */
 		'23': string
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​r​o​l​e​ ​$​0​!
+		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
 		 */
 		'24': string
 		/**
-		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​!
 		 */
 		'25': string
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​r​o​l​e​ ​$​0​ ​f​o​r​ ​$​1​.
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
 		 */
 		'26': string
 		/**
-		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​.
 		 */
 		'27': string
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​r​o​l​e​ ​$​0​ ​f​o​r​ ​$​1​.
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
 		 */
 		'28': string
 		/**
-		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​.
 		 */
 		'29': string
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​r​o​l​e​ ​$​0​ ​f​o​r​ ​$​1​.
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
 		 */
 		'30': string
 		/**
-		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​.
 		 */
 		'31': string
 		/**
-		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
 		 */
 		'32': string
 		/**
-		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d
+		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
 		 */
 		'33': string
 		/**
-		 * $​0​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​e​ ​t​o​ ​$​1​.
+		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
 		 */
 		'34': string
 	}
@@ -1989,10 +2015,6 @@ export type TranslationFunctions = {
 		 */
 		TYPE: () => LocalizedString
 		/**
-		 * Mark All as Read
-		 */
-		MARK_ALL_READ: () => LocalizedString
-		/**
 		 * Is Read
 		 */
 		IS_READ: () => LocalizedString
@@ -2709,9 +2731,39 @@ export type TranslationFunctions = {
 		 */
 		BLACK: () => LocalizedString
 	}
+	NOTIFICATION: {
+		/**
+		 * Mark All as Read
+		 */
+		MARK_ALL_READ: () => LocalizedString
+		/**
+		 * See All Notifications
+		 */
+		SEE_ALL_NOTIFICATIONS: () => LocalizedString
+		/**
+		 * There are no unread notifications
+		 */
+		NO_UNREAD: () => LocalizedString
+		/**
+		 * You must be logged in to view this page.
+		 */
+		MUST_BE_LOGGED_IN: () => LocalizedString
+		/**
+		 * You do not have any notifications.
+		 */
+		NO_NOTIFICATIONS: () => LocalizedString
+		/**
+		 * Mark As Read
+		 */
+		MARK_READ: () => LocalizedString
+		/**
+		 * Mark As Unread
+		 */
+		MARK_UNREAD: () => LocalizedString
+	}
 	NOTIFICATION_CONTENT: {
 		/**
-		 * You have been banned and may not participate in MKCentral competitions. Reason: $0.
+		 * You have been banned and may not participate in MKCentral competitions. Reason: $0. Unban Date: $1
 		 */
 		'0': () => LocalizedString
 		/**
@@ -2731,7 +2783,7 @@ export type TranslationFunctions = {
 		 */
 		'4': () => LocalizedString
 		/**
-		 * A moderator has registered you from $0.
+		 * A moderator has registered you for $0.
 		 */
 		'5': () => LocalizedString
 		/**
@@ -2747,107 +2799,107 @@ export type TranslationFunctions = {
 		 */
 		'8': () => LocalizedString
 		/**
-		 * You have been kicked from $0.
+		 * $0 declined their invitation to $1.
 		 */
 		'9': () => LocalizedString
 		/**
-		 * Your team $0 has been approved!
+		 * You have been kicked from $0.
 		 */
 		'10': () => LocalizedString
 		/**
-		 * Your team $0 has been denied.
+		 * Your team $0 has been approved!
 		 */
 		'11': () => LocalizedString
 		/**
-		 * $0 has joined $0!
+		 * Your team $0 has been denied.
 		 */
 		'12': () => LocalizedString
 		/**
-		 * A moderator has denied $0 from joining $1.
+		 * $0 has joined $0!
 		 */
 		'13': () => LocalizedString
 		/**
-		 * $0 has left $1.
+		 * A moderator has denied $0 from joining $1.
 		 */
 		'14': () => LocalizedString
 		/**
-		 * Your team name/tag change for $0 has been approved!
+		 * $0 has left $1.
 		 */
 		'15': () => LocalizedString
 		/**
-		 * Your team name/tag change for $0 has been denied.
+		 * Your team name/tag change for $0 has been approved!
 		 */
 		'16': () => LocalizedString
 		/**
-		 * Your team roster name/tag change for $0 has been approved!
+		 * Your team name/tag change for $0 has been denied.
 		 */
 		'17': () => LocalizedString
 		/**
-		 * Your team roster name/tag change for $0 has been denied.
+		 * Your team roster name/tag change for $0 has been approved!
 		 */
 		'18': () => LocalizedString
 		/**
-		 * A moderator has added a friend code to your profile. Game: $0.
+		 * Your team roster name/tag change for $0 has been denied.
 		 */
 		'19': () => LocalizedString
 		/**
-		 * A moderator has edited one of your friend codes.
+		 * A moderator has added a friend code to your profile. Game: $0.
 		 */
 		'20': () => LocalizedString
 		/**
-		 * A moderator has set your primary friend code.
+		 * A moderator has edited one of your friend codes.
 		 */
 		'21': () => LocalizedString
 		/**
-		 * Your name change has been approved!
+		 * A moderator has set your primary friend code.
 		 */
 		'22': () => LocalizedString
 		/**
-		 * Your name change has been denied.
+		 * Your name change has been approved!
 		 */
 		'23': () => LocalizedString
 		/**
-		 * You have been given the role $0!
+		 * Your name change has been denied.
 		 */
 		'24': () => LocalizedString
 		/**
-		 * Your $0 role has been removed.
+		 * You have been given the $0 role!
 		 */
 		'25': () => LocalizedString
 		/**
-		 * You have been given the role $0 for $1.
+		 * Your $0 role has been removed.
 		 */
 		'26': () => LocalizedString
 		/**
-		 * Your $0 role for $1 has been removed.
+		 * You have been given the $0 role for $1.
 		 */
 		'27': () => LocalizedString
 		/**
-		 * You have been given the role $0 for $1.
+		 * Your $0 role for $1 has been removed.
 		 */
 		'28': () => LocalizedString
 		/**
-		 * Your $0 role for $1 has been removed
+		 * You have been given the $0 role for $1.
 		 */
 		'29': () => LocalizedString
 		/**
-		 * You have been given the role $0 for $1.
+		 * Your $0 role for $1 has been removed.
 		 */
 		'30': () => LocalizedString
 		/**
-		 * Your $0 role for $1 has been removed
+		 * You have been given the $0 role for $1.
 		 */
 		'31': () => LocalizedString
 		/**
-		 * Your roster $0 has been approved!
+		 * Your $0 role for $1 has been removed.
 		 */
 		'32': () => LocalizedString
 		/**
-		 * Your roster $0 has been denied
+		 * Your roster $0 has been approved!
 		 */
 		'33': () => LocalizedString
 		/**
-		 * $0 declined their invite to $1.
+		 * Your roster $0 has been denied.
 		 */
 		'34': () => LocalizedString
 	}

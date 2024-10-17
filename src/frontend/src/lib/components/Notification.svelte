@@ -8,7 +8,7 @@
   import LL from '$i18n/i18n-svelte';
   import { goto } from '$app/navigation';
   import NotificationContent from './common/NotificationContent.svelte';
-  import { DropdownDivider } from 'flowbite-svelte';
+  import { DropdownDivider, DropdownHeader } from 'flowbite-svelte';
 
   let dropdown: DropdownMenu;
   export function toggleNotificationMenu() {
@@ -19,15 +19,29 @@
   $: {
     have_unread_notification.set(notifications.filter((n) => !n.is_read).length);
   }
+  $: hasUnread = notifications.some(n => !n.is_read);
 
-  onMount(async () => {
+  let isInitialLoad = true;
+  have_unread_notification.subscribe(() => {
+    // This is to sync the notifications whenever the user is on the /notifications
+    // page and decides to mark a notification as read/unread
+    if (!isInitialLoad)
+      fetchUnreadNotifications();
+    isInitialLoad = false;
+  })
+
+  onMount(() => {
+    fetchUnreadNotifications();
+  });
+  
+  async function fetchUnreadNotifications() {
     const res = await fetch('/api/notifications/list?is_read=0');
     if (res.status !== 200) {
       return;
     }
     const body = (await res.json()) as Notification[];
     notifications = body;
-  });
+  }
 
   async function makeNotificationAsRead(id: number) {
     const res = await fetch(`/api/notifications/edit/read_status/${id}`, {
@@ -39,8 +53,6 @@
     }
     const body = await res.json();
     if (body.count > 0) {
-      // change target notification.is_read to true
-      // TODO: ...or delete depending on requirements.
       notifications = notifications.map((n) => ({
         ...n,
         is_read: n.id === id ? true : n.is_read,
@@ -58,8 +70,6 @@
     }
     const body = await res.json();
     if (body.update_count > 0) {
-      // change all notification.is_read to true
-      // TODO: ...or delete depending on requirements.
       notifications = notifications.map((n) => ({
         ...n,
         is_read: true,
@@ -74,19 +84,26 @@
 </script>
 
 <Dropdown>
-  {#each notifications as { id, type, content_id, content_args, link, created_date, is_read}}
-    <DropdownItem on:click={() => handleClick(id, link)}>
-      <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
-    </DropdownItem>
-    <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
-  {/each}
-  <DropdownItem>
-    <button class="mark-as-read" on:click={makeAllNotificationsAsRead}>{$LL.NAVBAR.MARK_ALL_READ()}</button>
-  </DropdownItem>
+  <div class="wrapper">
+    {#if notifications.length === 0}
+      <DropdownHeader divClass="py-2 px-4 text-white">{$LL.NOTIFICATION.NO_UNREAD()}</DropdownHeader>
+    {/if}
+    {#each notifications as { id, type, content_id, content_args, link, created_date, is_read}}
+      <DropdownItem on:click={(e) => {console.log(e.target); handleClick(id, link)}}>
+        <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
+      </DropdownItem>
+      <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
+    {/each}
+    <DropdownItem href="/notifications">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</DropdownItem>
+    {#if hasUnread}
+      <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
+      <DropdownItem on:click={makeAllNotificationsAsRead}>{$LL.NOTIFICATION.MARK_ALL_READ()}</DropdownItem>
+    {/if}
+  </div>
 </Dropdown>
 
 <style>
-  .mark-as-read {
-    width: inherit;
+  .wrapper {
+    max-width: 400px;
   }
 </style>
