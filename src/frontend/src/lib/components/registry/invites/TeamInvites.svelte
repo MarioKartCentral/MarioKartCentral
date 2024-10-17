@@ -70,7 +70,7 @@
         const result = await res.json();
         if (res.status < 300) {
         alert(
-            `Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}`,
+            `Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}! Your transfer must be processed by staff members before being completed.`,
         );
         window.location.reload();
         } else {

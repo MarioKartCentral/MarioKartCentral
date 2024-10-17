@@ -14,8 +14,6 @@
   <col class="tag" />
   <col class="name" />
   <col class="game" />
-  <!-- <col class="recruiting" />
-  <col class="mode" /> -->
   <thead>
     <tr>
       <th>{$LL.TEAM_LIST.TAG()}</th>
@@ -27,7 +25,7 @@
     {#each team.rosters as roster, i}
       <tr class="row-{i % 2}">
         <td>
-          <TagBadge tag={team.tag} color={team.color} />
+          <TagBadge tag={roster.tag} color={roster.color} />
         </td>
         <td>
           {roster.name}

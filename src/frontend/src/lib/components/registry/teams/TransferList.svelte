@@ -108,7 +108,7 @@
 
 <form on:submit|preventDefault={fetchData}>
     <div class="flex">
-        <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline/>
+        <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
         <Button type="submit">Filter</Button>
     </div>
 </form>

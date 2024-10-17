@@ -60,7 +60,7 @@
         <form method="POST" on:submit|preventDefault={requestNameChange}>
             <div class="option">
                 <label for="name">Name</label>
-                <input name="name" value={player.name} required/>
+                <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
             </div>
             <Button type="submit">Request Name Change</Button>
         </form>
@@ -76,7 +76,7 @@
     <form method="POST" on:submit|preventDefault={forceEditPlayer}>
         <div class="option">
             <label for="name">Display Name</label>
-            <input name="name" value={player.name} required/>
+            <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
         </div>
         <div class="option">
             <label for="country">Country</label>

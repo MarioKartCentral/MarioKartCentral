@@ -16,7 +16,7 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
     banned_by_id = request.state.user.id
     expires_on = None if body.is_indefinite else body.expiration_date
 
-    await handle(GrantRoleCommand(banned_by_id, player_id, BANNED, expires_on))
+    await handle(GrantRoleCommand(banned_by_id, player_id, BANNED, expires_on, True))
     player_ban = await handle(BanPlayerCommand(player_id, banned_by_id, body))
     return JSONResponse(player_ban, status_code=200)
 
@@ -25,7 +25,7 @@ async def unban_player(request: Request) -> Response:
     player_id = request.path_params['id']
     unbanned_by_id = request.state.user.id
 
-    await handle(RemoveRoleCommand(unbanned_by_id, player_id, BANNED))
+    await handle(RemoveRoleCommand(unbanned_by_id, player_id, BANNED, True))
     player_unban = await handle(UnbanPlayerCommand(player_id, unbanned_by_id))
     return JSONResponse(player_unban, status_code=200)
 

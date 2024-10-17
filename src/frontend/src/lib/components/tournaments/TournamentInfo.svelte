@@ -67,6 +67,9 @@
         {#if registration_deadline}
           <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
         {/if}
+        {#if tournament.location}
+          <li><b>Location: </b> {tournament.location}</li>
+        {/if}
         <li><b>Game:</b> {valid_games[tournament.game]}</li>
         <li><b>Mode:</b> {mode_names[tournament.mode]}</li>
         <li><b>Registration Format:</b> {tournament_type}</li>

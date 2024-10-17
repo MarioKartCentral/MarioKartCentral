@@ -401,10 +401,10 @@
 <Dialog bind:this={force_edit_dialog} header="Edit Roster">
   <form method="post" on:submit|preventDefault={forceEditRoster}>
     <label for="name">Roster Name</label>
-    <input name="name" type="text" value={roster.name} required />
+    <input name="name" type="text" value={roster.name} required pattern="^\S.*\S$|^\S$"/>
     <br />
     <label for="tag">Roster Tag</label>
-    <input name="tag" type="text" value={roster.tag} required />
+    <input name="tag" type="text" value={roster.tag} required pattern="^\S.*\S$|^\S$"/>
     <label for="recruiting">Recruitment Status</label>
     <select name="recruiting">
       <option value="true">Recruiting</option>
