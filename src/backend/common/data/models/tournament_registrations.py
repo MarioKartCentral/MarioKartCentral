@@ -8,8 +8,21 @@ class RegisterPlayerRequestData:
     can_host: bool
     selected_fc_id: int | None
 
+# @dataclass
+# class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
+#     player_id: int
+#     squad_id: int | None = None
+#     is_squad_captain: bool = False
+#     is_invite: bool = False
+#     is_checked_in: bool = False
+#     is_representative: bool = False
+#     is_bagger_clause: bool = False
+#     is_approved: bool = False
 @dataclass
-class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
+class ForceRegisterPlayerRequestData():
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
     player_id: int
     squad_id: int | None = None
     is_squad_captain: bool = False

@@ -544,9 +544,6 @@
   input.tournament_name {
     width: 90%;
   }
-  input.number {
-    width: 5%;
-  }
   textarea {
     width: 50%;
   }

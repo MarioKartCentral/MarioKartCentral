@@ -56,6 +56,9 @@
       <img class="w-32 h-32" src={LogoMKTC} alt="MKTC Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
+          <Button size="lg" href="http://www.mariokarttour.net/"><LinkSolid class="mr-2" />Website</Button>
+        </div>
+        <div class="mb-2 mx-2">
           <Button size="lg" color="blue" href="https://discord.gg/vYr3bQQHFY">
             <DiscordSolid class="mr-2" />Discord Invite</Button
           >
@@ -74,7 +77,7 @@
           <Button size="lg" href="https://mkwlounge.gg"><LinkSolid class="mr-2" />Website</Button>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">
+          <Button size="lg" color="blue" href="https://discord.gg/mkw">
             <DiscordSolid class="mr-2" />Discord Invite</Button
           >
         </div>

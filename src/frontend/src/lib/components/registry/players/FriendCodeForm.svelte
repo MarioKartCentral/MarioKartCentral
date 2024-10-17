@@ -25,7 +25,7 @@
     async function addFC(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
         const payload = {
-            fc: data.get('fc')?.toString(),
+            fc: data.get('fc')?.toString().replaceAll(" ", "-"),
             game: data.get('game')?.toString(),
             is_primary: data.get('is_primary') ? true : false,
             description: data.get('description')?.toString(),
@@ -50,7 +50,7 @@
         const data = new FormData(event.currentTarget);
         const payload = {
             player_id: player?.id,
-            fc: data.get('fc')?.toString(),
+            fc: data.get('fc')?.toString().replaceAll(" ", "-"),
             game: data.get('game')?.toString(),
             is_primary: data.get('is_primary') ? true : false,
             description: data.get('description')?.toString(),

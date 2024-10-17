@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { valid_modes, mode_names } from '$lib/util/util';
+  import { valid_modes, valid_team_modes, mode_names } from '$lib/util/util';
   import { createEventDispatcher } from 'svelte';
   import GameSelect from './GameSelect.svelte';
 
@@ -11,6 +11,7 @@
   export let all_option = false;
   export let hide_labels = false;
   export let inline = false;
+  export let is_team = false;
 
   const dispatch = createEventDispatcher();
 </script>
@@ -25,7 +26,7 @@
         mode = null;
       }
       dispatch('change');
-    }} {disabled} {flex} {required} {all_option} {hide_labels}/>
+    }} {disabled} {flex} {required} {all_option} {hide_labels} {is_team}/>
   </div>
   
   <div class="option {flex ? 'flex' : ''}">
@@ -42,7 +43,7 @@
           <option value={null} disabled selected>Select a mode...</option>
         {/if}
         {#if game}
-          {#each valid_modes[game] as mode}
+          {#each is_team ? valid_team_modes[game] : valid_modes[game] as mode}
             <option value={mode}>{mode_names[mode]}</option>
           {/each}
         {/if}
