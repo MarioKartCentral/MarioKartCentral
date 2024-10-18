@@ -89,4 +89,6 @@
     {/if}
 
   <PlayerProfile {player} />
+{:else if !player_found}
+    Player not found
 {/if}

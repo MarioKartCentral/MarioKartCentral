@@ -13,6 +13,7 @@
 
   let id = 0;
   let team: Team;
+  let not_found = false;
   $: team_name = team ? team.name : 'Registry';
 
   let user_info: UserInfo;
@@ -25,6 +26,7 @@
     id = Number(param_id);
     const res = await fetch(`/api/registry/teams/${id}`);
     if (res.status != 200) {
+      not_found = true;
       return;
     }
     const body: Team = await res.json();
@@ -37,40 +39,46 @@
 </svelte:head>
 
 {#if team}
-  {#if check_permission(user_info, permissions.manage_teams)}
-    <Section header={$LL.NAVBAR.MODERATOR()}>
-      <div slot="header_content">
-        <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
-          >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
-        >
-        <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
-          >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
-        >
-      </div>
-    </Section>
-  {/if}
-  <Section header={$LL.TEAM_PROFILE.TEAM_PROFILE()}>
-    <div slot="header_content">
-      {#if team.approval_status === 'approved' && !team.is_historical}
-        {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
-          <Button href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
+  {#if team.approval_status === "approved" || check_team_permission(user_info, team_permissions.edit_team_info, team.id)}
+    {#if check_permission(user_info, permissions.manage_teams)}
+      <Section header={$LL.NAVBAR.MODERATOR()}>
+        <div slot="header_content">
+          <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
             >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
           >
-        {/if}
-        {#if check_team_permission(user_info, team_permissions.edit_team_info, id)}
-          <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
+          <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
+            >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
-        {/if}
-      {/if}
-    </div>
-    {#if team.approval_status === 'pending'}
-      This team is pending approval from MKCentral Staff.
+        </div>
+      </Section>
     {/if}
-    <TeamProfile {team} />
-  </Section>
-  <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
-    {#each team.rosters.filter((r) => r.approval_status === 'approved') as roster}
-      <TeamRoster {roster} />
-    {/each}
-  </Section>
+    <Section header={$LL.TEAM_PROFILE.TEAM_PROFILE()}>
+      <div slot="header_content">
+        {#if team.approval_status === 'approved' && !team.is_historical}
+          {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
+            <Button href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
+              >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
+            >
+          {/if}
+          {#if check_team_permission(user_info, team_permissions.edit_team_info, id)}
+            <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
+            >
+          {/if}
+        {/if}
+      </div>
+      {#if team.approval_status === 'pending'}
+        This team is pending approval from MKCentral Staff.
+      {/if}
+      <TeamProfile {team} />
+    </Section>
+    <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
+      {#each team.rosters.filter((r) => r.approval_status === 'approved') as roster}
+        <TeamRoster {roster} />
+      {/each}
+    </Section>
+  {:else}
+    You do not have permission to view this page.
+  {/if}
+{:else if not_found}
+    Team not found.
 {/if}

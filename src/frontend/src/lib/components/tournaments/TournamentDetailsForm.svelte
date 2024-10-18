@@ -415,7 +415,9 @@
     </div>
     <div>Description Preview</div>
     <div class="preview">
-      <MarkdownBox content={series && data.use_series_description ? series.description : data.description} />
+      {#key data.description}
+        <MarkdownBox content={series && data.use_series_description ? series.description : data.description} />
+      {/key}
     </div>
   </div>
   {#if series}
@@ -443,9 +445,13 @@
       {/if}
     </div>
     <div>Ruleset Preview</div>
+    
     <div class="preview">
-      <MarkdownBox content={series && data.use_series_ruleset ? series.ruleset : data.ruleset} />
+      {#key data.ruleset}
+        <MarkdownBox content={series && data.use_series_ruleset ? series.ruleset : data.ruleset} />
+      {/key}
     </div>
+    
   </div>
 </Section>
 <Section header="Tournament Registration">
@@ -545,9 +551,12 @@
     width: 90%;
   }
   textarea {
-    width: 50%;
+    min-width: 50%;
+    width: 100%;
+    height: 300px;
   }
   div.preview {
-    border: 1px;
+    border: 1px solid white;
+    padding: 10px;
   }
 </style>
