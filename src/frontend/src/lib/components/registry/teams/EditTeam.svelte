@@ -182,8 +182,6 @@
           </form>
         {/if}
     {/if}
-    
-    
   {/if}
   
 <style>
@@ -193,5 +191,9 @@
     }
     :global(select, input, textarea) {
         width: 200px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
     }
 </style>

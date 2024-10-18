@@ -61,11 +61,15 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 400px;
+    width: 90%;
     min-height: 200px;
-    margin-left: -200px;
-    margin-top: -100px;
+    transform: translate(-50%, -50%);
     background-color: rgba(64, 64, 64, 0.9);
+  }
+  @media (min-width: 600px) {
+    .container {
+      width: 400px;
+    }
   }
   .header {
     display: grid;

@@ -14,6 +14,7 @@
   let id = 0;
 
   let tournament: Tournament;
+  let not_found = false;
   $: tournament_name = tournament ? `${tournament.name}` : 'Tournaments';
 
   onMount(async () => {
@@ -21,6 +22,7 @@
     id = Number(param_id);
     const res = await fetch(`/api/tournaments/${id}`);
     if (res.status !== 200) {
+      not_found = true;
       return;
     }
     const body: Tournament = await res.json();
@@ -51,4 +53,6 @@
   <Section header="Tournament Registrations">
     <TournamentRegistrations {tournament} />
   </Section>
+{:else if not_found}
+  Tournament not found
 {/if}
