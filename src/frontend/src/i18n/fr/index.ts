@@ -136,7 +136,7 @@ const fr: Translation = {
     SELECT_REASON: 'Select Reason',
     BAN_PLAYER: 'Ban Player',
     EDIT_BAN: 'Edit Ban',
-    VIEW_EDIT_BAN: 'View/Edit Ban',
+    VIEW_EDIT_BAN: 'View / Edit Ban',
     UNBAN: 'Unban',
     BAN_DETAILS: 'Ban Details',
     EDIT_BAN_DETAILS: 'Edit Ban Details',

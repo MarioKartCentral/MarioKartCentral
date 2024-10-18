@@ -12,6 +12,7 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
+  import { game_order } from '$lib/util/util';
 
   let user_info: UserInfo;
 
@@ -51,7 +52,7 @@
       {#if player.friend_codes.length > 0}
         <div class="item">
           <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
-          {#each player.friend_codes.filter((f) => f.is_active) as fc}
+          {#each player.friend_codes.filter((f) => f.is_active).toSorted((a, b) => game_order[a.game] - game_order[b.game]) as fc}
             <div>
               <GameBadge game={fc.game}/>
               {fc.fc}
@@ -113,10 +114,13 @@
     grid-column-start: 3;
     align-self: flex-start;
     justify-content: center;
+    max-width: 400px;
+    word-break: break-word;
     @media(min-width: 800px) {
       margin-left: auto;
       margin-right: auto;
     }
+    
   }
   div.avatar {
     min-width: 150px;

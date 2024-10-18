@@ -101,7 +101,6 @@
     position: relative;
   }
   input {
-    /* min-width: 350px; */
     width: 100%;
   }
   div.table-outer {

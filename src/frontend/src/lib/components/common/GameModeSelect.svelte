@@ -61,6 +61,7 @@
   .flex {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
   }
   select {
     width: 200px;

@@ -2,10 +2,10 @@ import type { Translation } from '../i18n-types';
 
 const es: Translation = {
   // TODO
-  WELCOME: 'Welcome to <strong>Mario Kart Central</strong>!',
+  WELCOME: 'Welcome to Mario Kart Central!',
   // TODO
   SUMMARY:
-    "We are the home of <strong>Mario Kart Tournaments</strong>, where you'll find <strong>tournaments</strong> for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for <strong>Mario Kart 8 Deluxe, Tour, and more</strong>, with a variety of matches happening weekly!",
+    "We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!",
   LANGUAGE: 'español',
   LOGOUT: 'Logout',
   EMAIL: 'Email',
@@ -136,7 +136,7 @@ const es: Translation = {
     SELECT_REASON: 'Select Reason',
     BAN_PLAYER: 'Ban Player',
     EDIT_BAN: 'Edit Ban',
-    VIEW_EDIT_BAN: 'View/Edit Ban',
+    VIEW_EDIT_BAN: 'View / Edit Ban',
     UNBAN: 'Unban',
     BAN_DETAILS: 'Ban Details',
     EDIT_BAN_DETAILS: 'Edit Ban Details',

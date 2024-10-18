@@ -6,6 +6,7 @@
 
   let id = 0;
   let series: TournamentSeries;
+  let not_found = false;
   $: series_name = series ? series.series_name : 'Tournament Series';
 
   onMount(async () => {
@@ -13,6 +14,7 @@
     id = Number(param_id);
     const res = await fetch(`/api/tournaments/series/${id}`);
     if (res.status !== 200) {
+      not_found = true;
       return;
     }
     const body: TournamentSeries = await res.json();
@@ -26,4 +28,6 @@
 
 {#if series}
   <SeriesInfo {series} />
+{:else if not_found}
+  Series not found
 {/if}

@@ -6,6 +6,7 @@
     import RoleInfo from "$lib/components/common/RoleInfo.svelte";
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
+    import { permissions, check_permission } from "$lib/util/permissions";
 
     let roles: Role[] = [];
     let selected_role: Role | null;
@@ -30,24 +31,29 @@
     });
 </script>
 
-<Section header="User Roles">
-    {#if roles.length}
-        <div class="select">
-            <select bind:value={selected_role}>
-                {#each roles as role}
-                    <option value={role}>{role.name}</option>
-                {/each}
-            </select>
-        </div>
-    {/if}
-    <div>
-        {#if selected_role}
-            {#key selected_role}
-                <RoleInfo role={selected_role} url={endpoint} user_position={get_highest_role_position(user_info)}/>
-            {/key}
+{#if check_permission(user_info, permissions.manage_user_roles)}
+    <Section header="User Roles">
+        {#if roles.length}
+            <div class="select">
+                <select bind:value={selected_role}>
+                    {#each roles as role}
+                        <option value={role}>{role.name}</option>
+                    {/each}
+                </select>
+            </div>
         {/if}
-    </div>
-</Section>
+        <div>
+            {#if selected_role}
+                {#key selected_role}
+                    <RoleInfo role={selected_role} url={endpoint} user_position={get_highest_role_position(user_info)}/>
+                {/key}
+            {/if}
+        </div>
+    </Section>
+{:else}
+    You do not have permission to view this page.
+{/if}
+
 
 <style>
     div.select {

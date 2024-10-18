@@ -32,8 +32,8 @@
     <col class="w5"/> <!-- flag -->
     <col class="w20"/> <!-- name -->
     <col class="w10 mobile-hide"/> <!-- ban date -->
-    <col class="w10"/> <!-- expiration date / unban date -->
-    <col class="w20"/> <!-- reason -->
+    <col class="w10 mobile-hide"/> <!-- expiration date / unban date -->
+    <col class="w15"/> <!-- reason -->
     <col class="w10 mobile-hide"/> <!-- banned by -->
     <col class="w10 mobile-hide"/> <!-- unbanned by -->
     <col class="w15"/> <!-- view details button -->
@@ -42,7 +42,7 @@
         <th></th>
         <th>{$LL.PLAYER_BAN.NAME()}</th>
         <th class="mobile-hide">{$LL.PLAYER_BAN.BANNED()}</th>
-        <th>{#if isHistorical} {$LL.PLAYER_BAN.UNBANNED()} {:else} {$LL.PLAYER_BAN.EXPIRES()} {/if}</th>
+        <th class="mobile-hide">{#if isHistorical} {$LL.PLAYER_BAN.UNBANNED()} {:else} {$LL.PLAYER_BAN.EXPIRES()} {/if}</th>
         <th>{$LL.PLAYER_BAN.REASON()}</th>
         <th class="mobile-hide">{$LL.PLAYER_BAN.BANNED_BY()}</th>
         <th class="mobile-hide">{isHistorical ? $LL.PLAYER_BAN.UNBANNED_BY() : ""}</th>
@@ -56,9 +56,9 @@
           <td><a href="/{$page.params.lang}/registry/players/profile?id={bid.player_id}">{bid.player_name}</a></td>
           <td class="mobile-hide">{datetimeToString(bid.ban_date)}</td>
           {#if isHistorical}
-            <td>{datetimeToString(bid.unban_date)}</td>
+            <td class="mobile-hide">{datetimeToString(bid.unban_date)}</td>
           {:else}
-            <td>{bid.is_indefinite ? $LL.PLAYER_BAN.INDEFINITE() : datetimeToString(bid.expiration_date)}</td>
+            <td class="mobile-hide">{bid.is_indefinite ? $LL.PLAYER_BAN.INDEFINITE() : datetimeToString(bid.expiration_date)}</td>
           {/if}
           <td>{bid.reason}</td>
           {#if bid.banned_by_pid}

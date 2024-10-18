@@ -72,48 +72,54 @@
     }
 </script>
 
-{#if name_requests.length && check_permission(user_info, permissions.edit_player)}
+{#if check_permission(user_info, permissions.edit_player)}
 <Section header="Pending Player Name Requests">
-    <Table>
-        <col class="country">
-        <col class="name">
-        <col class="date">
-        <col class="approve">
-        <thead>
-            <tr>
-                <th/>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Approve?</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each name_requests as r, i}
-                <tr class="row-{i % 2}">
-                    <td>
-                        <Flag country_code={r.player_country}/>
-                    </td>
-                    <td>
-                        <a href="/{$page.params.lang}/registry/players/profile?id={r.player_id}">
-                            <div class="flex">
-                                {r.player_name}
-                                <ArrowRight/>
-                                {r.request_name}
-                            </div>
-                        </a>
-                    </td>
-                    <td>
-                        {new Date(r.date * 1000).toLocaleString($locale, options)}
-                    </td>
-                    <td>
-                        <ConfirmButton on:click={() => approveNameRequest(r)}/>
-                        <CancelButton on:click={() => denyNameRequest(r)}/>
-                      </td>
+    {#if name_requests.length}
+        <Table>
+            <col class="country">
+            <col class="name">
+            <col class="date">
+            <col class="approve">
+            <thead>
+                <tr>
+                    <th/>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Approve?</th>
                 </tr>
-            {/each}
-        </tbody>
-    </Table>
+            </thead>
+            <tbody>
+                {#each name_requests as r, i}
+                    <tr class="row-{i % 2}">
+                        <td>
+                            <Flag country_code={r.player_country}/>
+                        </td>
+                        <td>
+                            <a href="/{$page.params.lang}/registry/players/profile?id={r.player_id}">
+                                <div class="flex">
+                                    {r.player_name}
+                                    <ArrowRight/>
+                                    {r.request_name}
+                                </div>
+                            </a>
+                        </td>
+                        <td>
+                            {new Date(r.date * 1000).toLocaleString($locale, options)}
+                        </td>
+                        <td>
+                            <ConfirmButton on:click={() => approveNameRequest(r)}/>
+                            <CancelButton on:click={() => denyNameRequest(r)}/>
+                        </td>
+                    </tr>
+                {/each}
+            </tbody>
+        </Table>
+    {:else}
+        No pending name requests.
+    {/if}
 </Section>
+{:else}
+    You do not have permission to view this page.
 {/if}
 
 <style>

@@ -122,4 +122,8 @@
   div.button {
     margin-top: 20px;
   }
+  textarea {
+    width: 100%;
+    height: 150px;
+  }
 </style>
