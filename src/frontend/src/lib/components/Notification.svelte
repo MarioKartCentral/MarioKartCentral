@@ -51,13 +51,6 @@
     if (res.status !== 200) {
       return;
     }
-    const body = await res.json();
-    if (body.count > 0) {
-      notifications = notifications.map((n) => ({
-        ...n,
-        is_read: n.id === id ? true : n.is_read,
-      }));
-    }
   }
 
   async function makeAllNotificationsAsRead() {
@@ -68,13 +61,7 @@
     if (res.status !== 200) {
       return;
     }
-    const body = await res.json();
-    if (body.update_count > 0) {
-      notifications = notifications.map((n) => ({
-        ...n,
-        is_read: true,
-      }));
-    }
+    notifications = []
   }
 
   async function handleClick(id: number, link: string) {

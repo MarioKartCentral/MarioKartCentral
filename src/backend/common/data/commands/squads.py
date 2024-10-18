@@ -90,7 +90,7 @@ class CreateSquadCommand(Command[None]):
 
 @save_to_command_log
 @dataclass
-class RegisterTeamTournamentCommand(Command[None]):
+class RegisterTeamTournamentCommand(Command[int | None]):
     tournament_id: int
     squad_name: str
     squad_tag: str
@@ -101,7 +101,7 @@ class RegisterTeamTournamentCommand(Command[None]):
     is_approved: bool
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper, s3_wrapper):
         if len(self.roster_ids) == 0:
             raise Problem("Must register at least one roster", status=400)
         if len(self.players) == 0:
@@ -223,7 +223,7 @@ class RegisterTeamTournamentCommand(Command[None]):
                                     is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
             await db.commit()
-                
+            return squad_id
 
 @save_to_command_log
 @dataclass

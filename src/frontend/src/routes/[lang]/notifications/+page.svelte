@@ -31,7 +31,7 @@
     isInitialLoad = false;
   })
 
-  $: pageCount = Math.floor(notifications.length / maxNotificationsPerPage)
+  $: pageCount = Math.ceil(notifications.length / maxNotificationsPerPage)
   $: notificationList = notifications.slice((currentPage-1)*maxNotificationsPerPage, currentPage*maxNotificationsPerPage)
   $: hasUnread = notifications.some(n => !n.is_read)
 
@@ -95,8 +95,6 @@
 {#if isLoaded}
   {#if !isLoggedIn}
     {$LL.NOTIFICATION.MUST_BE_LOGGED_IN()}
-  {:else if notifications.length === 0}
-    {$LL.NOTIFICATION.NO_NOTIFICATIONS()}
   {:else}
     <Section header={$LL.NAVBAR.NOTIFICATIONS()}>
       <div slot="header_content">
@@ -108,7 +106,9 @@
         <PageNavigation bind:currentPage={currentPage} bind:totalPages={pageCount} refresh_function={() => {}}/>
         {notifications.length} {$LL.NAVBAR.NOTIFICATIONS()}
       </div>
-      <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
+      {#if notifications.length}
+        <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
+      {/if}
       {#each notificationList as { id, type, content_id, content_args, link, created_date, is_read}}
         <button class="content-wrapper hover:bg-primary-700" on:click={() => handleClick(id, link)}>
           <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>

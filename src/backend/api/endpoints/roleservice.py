@@ -26,8 +26,8 @@ async def grant_role_to_player(request: Request, body: GrantRoleRequestData) -> 
     command = GrantRoleCommand(user_id, body.player_id, body.role_name, body.expires_on)
     await handle(command)
     if body.role_name != BANNED:
-        user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-        await handle(DispatchNotificationCommand([int(user_id)], notifications.ROLE_ADD, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.INFO))
+        user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        await handle(DispatchNotificationCommand([user_id], notifications.ROLE_ADD, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
     return JSONResponse({})
 
 @bind_request_body(RemoveRoleRequestData)
@@ -37,8 +37,8 @@ async def remove_role_from_player(request: Request, body: RemoveRoleRequestData)
     command = RemoveRoleCommand(user_id, body.player_id, body.role_name)
     await handle(command)
     if body.role_name != BANNED:
-        user_id = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-        await handle(DispatchNotificationCommand([int(user_id)], notifications.ROLE_REMOVE, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.WARNING))
+        user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        await handle(DispatchNotificationCommand([user_id], notifications.ROLE_REMOVE, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.WARNING))
     return JSONResponse({})
 
 async def list_team_roles(request: Request) -> JSONResponse:
@@ -59,9 +59,9 @@ async def grant_team_role_to_player(request: Request, body: GrantRoleRequestData
     team_id = request.path_params['team_id']
     command = GrantTeamRoleCommand(user_id, body.player_id, team_id, body.role_name, body.expires_on)
     await handle(command)
-    uid = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-    team_name = await handle(GetFieldFromTableCommand("SELECT name FROM teams WHERE id = ?", (team_id,)))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.TEAM_ROLE_ADD, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.INFO))
+    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    team_name = await handle(GetTeamNameFromIdCommand(team_id))
+    await handle(DispatchNotificationCommand([uid], notifications.TEAM_ROLE_ADD, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
     return JSONResponse({})
 
 @bind_request_body(RemoveRoleRequestData)
@@ -71,8 +71,8 @@ async def remove_team_role_from_player(request: Request, body: RemoveRoleRequest
     team_id = request.path_params['team_id']
     command = RemoveTeamRoleCommand(user_id, body.player_id, team_id, body.role_name)
     await handle(command)
-    uid = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-    team_name = await handle(GetFieldFromTableCommand("SELECT name FROM teams WHERE id = ?", (team_id,)))
+    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    team_name = await handle(GetTeamNameFromIdCommand(team_id))
     await handle(DispatchNotificationCommand([int(uid)], notifications.TEAM_ROLE_REMOVE, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
     return JSONResponse({})
 
@@ -94,9 +94,10 @@ async def grant_series_role_to_player(request: Request, body: GrantRoleRequestDa
     series_id = request.path_params['series_id']
     command = GrantSeriesRoleCommand(user_id, body.player_id, series_id, body.role_name, body.expires_on)
     await handle(command)
-    uid = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-    series_name, series_id = await handle(GetRowFromTableCommand("SELECT name, id FROM tournament_series WHERE id = ?", (series_id,)))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_ADD, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notifications.INFO))
+    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    series_name = await handle(GetSeriesNameFromIdCommand(series_id))
+    notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
+    await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_ADD, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notif_type))
     return JSONResponse({})
 
 @bind_request_body(RemoveRoleRequestData)
@@ -106,8 +107,8 @@ async def remove_series_role_from_player(request: Request, body: RemoveRoleReque
     series_id = request.path_params['series_id']
     command = RemoveSeriesRoleCommand(user_id, body.player_id, series_id, body.role_name)
     await handle(command)
-    uid = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-    series_name, series_id = await handle(GetRowFromTableCommand("SELECT name, id FROM tournament_series WHERE id = ?", (series_id,)))
+    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    series_name = await handle(GetSeriesNameFromIdCommand(series_id))
     await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_REMOVE, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notifications.WARNING))
     return JSONResponse({})
 
@@ -129,9 +130,10 @@ async def grant_tournament_role_to_player(request: Request, body: GrantRoleReque
     tournament_id = request.path_params['tournament_id']
     command = GrantTournamentRoleCommand(user_id, body.player_id, tournament_id, body.role_name, body.expires_on)
     await handle(command)
-    uid = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-    tournament_name = await handle(GetFieldFromTableCommand("SELECT name FROM tournaments WHERE id = ?", (tournament_id,)))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notifications.INFO))
+    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
+    notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
+    await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notif_type))
     return JSONResponse({})
 
 @bind_request_body(RemoveRoleRequestData)
@@ -141,26 +143,26 @@ async def remove_tournament_role_from_player(request: Request, body: RemoveRoleR
     tournament_id = request.path_params['tournament_id']
     command = RemoveTournamentRoleCommand(user_id, body.player_id, tournament_id, body.role_name)
     await handle(command)
-    uid = await handle(GetFieldFromTableCommand("SELECT id FROM users WHERE player_id = ?", (body.player_id,)))
-    tournament_name = await handle(GetFieldFromTableCommand("SELECT name FROM tournaments WHERE id = ?", (tournament_id,)))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
+    await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_REMOVE, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
     return JSONResponse({})
 
 routes = [
     Route('/api/roles', list_roles),
     Route('/api/roles/{role_id:int}', role_info),
-    Route('/api/roles/grant', grant_role_to_player, methods=['POST']),
-    Route('/api/roles/remove', remove_role_from_player, methods=['POST']),
+    Route('/api/roles/grant', grant_role_to_player, methods=['POST']), # dispatches notification
+    Route('/api/roles/remove', remove_role_from_player, methods=['POST']), # dispatches notification
     Route('/api/registry/teams/roles', list_team_roles),
     Route('/api/registry/teams/{team_id:int}/roles/{role_id:int}', team_role_info),
-    Route('/api/registry/teams/{team_id:int}/roles/grant', grant_team_role_to_player, methods=['POST']),
-    Route('/api/registry/teams/{team_id:int}/roles/remove', remove_team_role_from_player, methods=['POST']),
+    Route('/api/registry/teams/{team_id:int}/roles/grant', grant_team_role_to_player, methods=['POST']), # dispatches notification
+    Route('/api/registry/teams/{team_id:int}/roles/remove', remove_team_role_from_player, methods=['POST']), # dispatches notification
     Route('/api/tournaments/series/roles', list_series_roles),
     Route('/api/tournaments/series/{series_id:int}/roles/{role_id:int}', series_role_info),
-    Route('/api/tournaments/series/{series_id:int}/roles/grant', grant_series_role_to_player, methods=['POST']),
-    Route('/api/tournaments/series/{series_id:int}/roles/remove', remove_series_role_from_player, methods=['POST']),
+    Route('/api/tournaments/series/{series_id:int}/roles/grant', grant_series_role_to_player, methods=['POST']), # dispatches notification
+    Route('/api/tournaments/series/{series_id:int}/roles/remove', remove_series_role_from_player, methods=['POST']), # dispatches notification
     Route('/api/tournaments/roles', list_tournament_roles),
     Route('/api/tournaments/{tournament_id:int}/roles/{role_id:int}', tournament_role_info),
-    Route('/api/tournaments/{tournament_id:int}/roles/grant', grant_tournament_role_to_player, methods=['POST']),
-    Route('/api/tournaments/{tournament_id:int}/roles/remove', remove_tournament_role_from_player, methods=['POST'])
+    Route('/api/tournaments/{tournament_id:int}/roles/grant', grant_tournament_role_to_player, methods=['POST']), # dispatches notification
+    Route('/api/tournaments/{tournament_id:int}/roles/remove', remove_tournament_role_from_player, methods=['POST']) # dispatches notification
 ]

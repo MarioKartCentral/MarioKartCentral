@@ -128,32 +128,76 @@ class DispatchNotificationCommand(Command[int]):
             return count
         
 @dataclass
-class GetFieldFromTableCommand(Command[str]):
-    query: str
-    where_params: Any
+class GetPlayerNameCommand(Command[str]):
+    player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper) -> str:
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute(self.query, self.where_params) as cursor:
+            async with db.execute("SELECT name FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
-                    raise Problem("Failed to get field from table", status=500)
-
+                    raise Problem("Dispatching notification failed to query player name", status=500)
                 return row[0]
 
 @dataclass
-class GetRowFromTableCommand(Command[List[Any]]):
-    query: str
-    where_params: Any
+class GetUserIdFromPlayerIdCommand(Command[int]):
+    player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute(self.query, self.where_params) as cursor:
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
-                    raise Problem("Failed to get row from table", status=500)
+                    raise Problem("Dispatching notification failed to query user id", status=500)
+                return int(row[0])
+            
+@dataclass
+class GetTeamNameFromIdCommand(Command[str]):
+    team_id: int
 
-                return [i for i in row]
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT name FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query team", status=500)
+                return row[0]
+            
+@dataclass
+class GetSeriesNameFromIdCommand(Command[str]):
+    series_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT name FROM tournament_series WHERE id = ?", (self.series_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query series", status=500)
+                return row[0]
+            
+@dataclass
+class GetTournamentNameFromIdCommand(Command[str]):
+    tournament_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT name FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query tournament", status=500)
+                return row[0]
+            
+@dataclass
+class GetGameFromPlayerFCCommand(Command[str]):
+    fc_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):# -> Any:
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT game FROM friend_codes WHERE id = ?", (self.fc_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query fc game", status=500)
+                return row[0]
 
 @dataclass
 class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
@@ -162,8 +206,7 @@ class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             user_ids: List[int] = []
-            async with db.execute("""SELECT u.id FROM players p
-                JOIN users u ON u.player_id = p.id
+            async with db.execute("""SELECT u.id FROM users u
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
                 WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
@@ -171,3 +214,102 @@ class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
                 for row in rows:
                     user_ids.append(row[0])
             return user_ids
+
+@dataclass
+class GetNotificationSquadDataCommand(Command[NotificationDataTournamentSquad]):
+    tournament_id: int
+    squad_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            query = """SELECT s.name, t.name, u.id FROM tournament_players tp 
+                JOIN users u ON tp.player_id = u.player_id 
+                JOIN tournament_squads s ON s.id = tp.squad_id 
+                JOIN tournaments t ON t.id = tp.tournament_id 
+                WHERE t.id = ? AND tp.squad_id = ? AND tp.is_squad_captain = TRUE"""
+            async with db.execute(query, (self.tournament_id, self.squad_id)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query squad data", status=500)
+                return NotificationDataTournamentSquad(row[0], row[1], row[2])
+            
+@dataclass
+class GetNotificationDataFromNameChangeRequestCommand(Command[NotificationDataUser]):
+    request_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            query = """SELECT u.id, r.player_id FROM users u 
+                JOIN player_name_edit_requests r ON u.player_id = r.player_id 
+                WHERE r.id = ?"""
+            async with db.execute(query, (self.request_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query name edit data", status=500)
+                return NotificationDataUser(int(row[0]), int(row[1]))
+
+@dataclass
+class GetNotificationDataFromTeamTransfersCommand(Command[NotificationDataTeamTransfer]):
+    invite_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            query = """SELECT p.name, p.id, t.id, t.name, r.name FROM players p 
+                JOIN team_transfers tt ON p.id = tt.player_id 
+                JOIN team_rosters r ON tt.roster_id = r.id 
+                JOIN teams t ON t.id = r.team_id 
+                WHERE tt.id = ?"""
+            async with db.execute(query, (self.invite_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query team transfer data", status=500)
+                return NotificationDataTeamTransfer(row[0], int(row[1]), int(row[2]), row[3], row[4])
+            
+@dataclass
+class GetNotificationTeamDataFromEditRequestCommand(Command[NotificationDataTeam]):
+    edit_request_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            query = """SELECT t.id, t.name FROM teams t 
+                JOIN team_edit_requests r ON t.id = r.team_id 
+                WHERE r.id = ?"""
+            
+            async with db.execute(query, (self.edit_request_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query edit data", status=500)
+                return NotificationDataTeam(int(row[0]), row[1])
+            
+@dataclass
+class GetNotificationTeamRosterDataCommand(Command[NotificationDataTeamRoster]):
+    roster_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            query = """SELECT t.id, t.name, r.name FROM teams t 
+                JOIN team_rosters r ON t.id = r.team_id 
+                WHERE r.id = ?"""
+            
+            async with db.execute(query, (self.roster_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query roster data", status=500)
+                return NotificationDataTeamRoster(int(row[0]), row[1], row[2])
+                    
+@dataclass
+class GetNotificationTeamRosterDataFromRosterEditRequestCommand(Command[NotificationDataTeamRoster]):
+    edit_request_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            query = """SELECT t.id, t.name, r.name FROM teams t 
+                JOIN team_rosters tr ON tr.team_id = t.id 
+                JOIN roster_edit_requests r ON tr.id = r.roster_id 
+                WHERE r.id = ?"""
+            
+            async with db.execute(query, (self.edit_request_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Dispatching notification failed to query roster data", status=500)
+                return NotificationDataTeamRoster(int(row[0]), row[1], row[2])
