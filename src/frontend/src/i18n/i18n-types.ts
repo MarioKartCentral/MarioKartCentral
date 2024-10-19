@@ -500,6 +500,13 @@ type RootTranslation = {
 		 */
 		EDIT_BAN: string
 		/**
+<<<<<<< HEAD
+=======
+		 * V​i​e​w​ ​/​ ​E​d​i​t​ ​B​a​n
+		 */
+		VIEW_EDIT_BAN: string
+		/**
+>>>>>>> 3812b68 (blocking out player tournament and registration history components, remove accidental files from running node in wrong dir)
 		 * U​n​b​a​n
 		 */
 		UNBAN: string
@@ -618,6 +625,18 @@ type RootTranslation = {
 		 * U​n​b​a​n​ ​D​a​t​e
 		 */
 		UNBAN_DATE: string
+	}
+	PLAYER_TOURNAMENT_HISTORY: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 */
+		TOURNAMENT_HISTORY: string
+	}
+	PLAYER_REGISTRATION_HISTORY: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 */
+		TOURNAMENT_HISTORY: string
 	}
 	LANGUAGES: {
 		/**
@@ -2602,6 +2621,13 @@ export type TranslationFunctions = {
 		 */
 		EDIT_BAN: () => LocalizedString
 		/**
+<<<<<<< HEAD
+=======
+		 * View / Edit Ban
+		 */
+		VIEW_EDIT_BAN: () => LocalizedString
+		/**
+>>>>>>> 3812b68 (blocking out player tournament and registration history components, remove accidental files from running node in wrong dir)
 		 * Unban
 		 */
 		UNBAN: () => LocalizedString
@@ -2717,6 +2743,18 @@ export type TranslationFunctions = {
 		 * Unban Date
 		 */
 		UNBAN_DATE: () => LocalizedString
+	}
+	PLAYER_TOURNAMENT_HISTORY: {
+		/**
+		 * Tournament History
+		 */
+		TOURNAMENT_HISTORY: () => LocalizedString
+	}
+	PLAYER_REGISTRATION_HISTORY: {
+		/**
+		 * Tournament History
+		 */
+		TOURNAMENT_HISTORY: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**
