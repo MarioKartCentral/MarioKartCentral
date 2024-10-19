@@ -366,6 +366,7 @@ class GrantRoleCommand(Command[None]):
     target_player_id: int
     role: str
     expires_on: int | None = None
+    is_ban: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
@@ -392,26 +393,27 @@ class GrantRoleCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem(f"Player already has role {self.role}", status=400)
-        
-            # to have permission to grant a role, we should have a role which is both higher
-            # in the role hierarchy than the role we wish to grant, and has the MANAGE_USER_ROLES
-            # permission.
-            async with db.execute("""
-                SELECT EXISTS(
-                    SELECT 1 FROM roles r1
-                    JOIN user_roles ur ON ur.role_id = r1.id
-                    JOIN role_permissions rp ON ur.role_id = rp.role_id
-                    JOIN permissions p ON rp.permission_id = p.id
-                    JOIN roles r2
-                    WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
-                    AND rp.is_denied = 0 AND p.name = ?
-                )
-                """, (self.granter_user_id, self.role, permissions.MANAGE_USER_ROLES)) as cursor:
-                row = await cursor.fetchone()
-                can_grant = row is not None and bool(row[0])
+                
+            if not self.is_ban:
+                # to have permission to grant a role, we should have a role which is both higher
+                # in the role hierarchy than the role we wish to grant, and has the MANAGE_USER_ROLES
+                # permission.
+                async with db.execute("""
+                    SELECT EXISTS(
+                        SELECT 1 FROM roles r1
+                        JOIN user_roles ur ON ur.role_id = r1.id
+                        JOIN role_permissions rp ON ur.role_id = rp.role_id
+                        JOIN permissions p ON rp.permission_id = p.id
+                        JOIN roles r2
+                        WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
+                        AND rp.is_denied = 0 AND p.name = ?
+                    )
+                    """, (self.granter_user_id, self.role, permissions.MANAGE_USER_ROLES)) as cursor:
+                    row = await cursor.fetchone()
+                    can_grant = row is not None and bool(row[0])
 
-            if not can_grant:
-                raise Problem("Not authorized to grant role", status=401)
+                if not can_grant:
+                    raise Problem("Not authorized to grant role", status=401)
 
             try:
                 await db.execute("INSERT INTO user_roles(user_id, role_id, expires_on) VALUES (?, ?, ?)", (target_user_id, role_id, self.expires_on))
@@ -658,6 +660,7 @@ class RemoveRoleCommand(Command[None]):
     remover_user_id: int
     target_player_id: int
     role: str
+    is_ban: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
@@ -680,26 +683,26 @@ class RemoveRoleCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem(f"Player does not have role {self.role}", status=400)
-                
-            # to have permission to remove a role, we should have a role which is both higher
-            # in the role hierarchy than the role we wish to remove, and has the MANAGE_USER_ROLES
-            # permission.
-            async with db.execute("""
-                SELECT EXISTS(
-                    SELECT 1 FROM roles r1
-                    JOIN user_roles ur ON ur.role_id = r1.id
-                    JOIN role_permissions rp ON ur.role_id = rp.role_id
-                    JOIN permissions p ON rp.permission_id = p.id
-                    JOIN roles r2
-                    WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
-                    AND rp.is_denied = 0 AND p.name = ?
-                )
-                """, (self.remover_user_id, self.role, permissions.MANAGE_USER_ROLES)) as cursor:
-                row = await cursor.fetchone()
-                can_remove = row is not None and bool(row[0])
+            if not self.is_ban:
+                # to have permission to remove a role, we should have a role which is both higher
+                # in the role hierarchy than the role we wish to remove, and has the MANAGE_USER_ROLES
+                # permission.
+                async with db.execute("""
+                    SELECT EXISTS(
+                        SELECT 1 FROM roles r1
+                        JOIN user_roles ur ON ur.role_id = r1.id
+                        JOIN role_permissions rp ON ur.role_id = rp.role_id
+                        JOIN permissions p ON rp.permission_id = p.id
+                        JOIN roles r2
+                        WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
+                        AND rp.is_denied = 0 AND p.name = ?
+                    )
+                    """, (self.remover_user_id, self.role, permissions.MANAGE_USER_ROLES)) as cursor:
+                    row = await cursor.fetchone()
+                    can_remove = row is not None and bool(row[0])
 
-            if not can_remove:
-                raise Problem("Not authorized to remove role", status=401)
+                if not can_remove:
+                    raise Problem("Not authorized to remove role", status=401)
             
             try:
                 await db.execute("DELETE FROM user_roles WHERE user_id = ? AND role_id = ?", (target_user_id, role_id))

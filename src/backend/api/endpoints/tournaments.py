@@ -11,8 +11,8 @@ from common.data.models import *
 @require_series_permission(series_permissions.CREATE_TOURNAMENT)
 async def create_tournament(request: Request, body: CreateTournamentRequestData) -> JSONResponse:
     command = CreateTournamentCommand(body)
-    await handle(command)
-    return JSONResponse({})
+    tournament_id = await handle(command)
+    return JSONResponse({'id': tournament_id})
 
 @bind_request_body(EditTournamentRequestData)
 @require_tournament_permission(tournament_permissions.EDIT_TOURNAMENT)

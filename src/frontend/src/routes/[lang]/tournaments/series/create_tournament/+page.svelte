@@ -25,6 +25,8 @@
 
 {#if id}
   {#if check_series_permission(user_info, series_permissions.create_tournament, id)}
-    <CreateEditTournamentForm {template_id} series_restrict={true} />
+    <CreateEditTournamentForm {template_id} series_restrict={true} series_id={id}/>
+  {:else}
+    You do not have permission to access this page.
   {/if}
 {/if}

@@ -26,9 +26,8 @@
     ? new Date(tournament.registration_deadline * 1000)
     : null;
   const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+    dateStyle: 'medium',
+    timeStyle: 'short',
     hour12: true,
   };
 </script>
@@ -68,6 +67,9 @@
         {#if registration_deadline}
           <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
         {/if}
+        {#if tournament.location}
+          <li><b>Location: </b> {tournament.location}</li>
+        {/if}
         <li><b>Game:</b> {valid_games[tournament.game]}</li>
         <li><b>Mode:</b> {mode_names[tournament.mode]}</li>
         <li><b>Registration Format:</b> {tournament_type}</li>
@@ -80,7 +82,7 @@
           {/if}
         {/if}
         {#if tournament.series_name}
-          <li><b>Series:</b> {tournament.series_name}</li>
+          <li><b>Part of a Series:</b> <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">{tournament.series_name}</a></li>
         {/if}
       </ul>
     </div>

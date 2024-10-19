@@ -212,7 +212,7 @@ class ListPlayersCommand(Command[PlayerList]):
 
                 # check names and friend codes
                 if filter.name_or_fc:
-                    fc_where_clauses.append("(f.fc LIKE ? OR p.name LIKE ?)")
+                    fc_where_clauses.append("(f.fc LIKE ? OR p2.name LIKE ?)")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
 
@@ -221,7 +221,7 @@ class ListPlayersCommand(Command[PlayerList]):
                     variable_parameters.append(filter.game)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
-                where_clauses.append(f"p.id IN (SELECT player_id FROM friend_codes f WHERE {fc_where_clauses_str})")
+                where_clauses.append(f"p.id IN (SELECT p2.id FROM players p2 LEFT JOIN friend_codes f ON p2.id = f.player_id WHERE {fc_where_clauses_str})")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             players_query = f"""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned,
@@ -229,7 +229,7 @@ class ListPlayersCommand(Command[PlayerList]):
                                     FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    {player_where_clause} ORDER BY name LIMIT ? OFFSET ? """
+                                    {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ? """
 
             fc_where_clause = ""
             fc_where_clauses = []

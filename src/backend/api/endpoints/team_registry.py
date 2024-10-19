@@ -16,8 +16,8 @@ import common.data.notifications as notifications
 async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResponse:
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
         body.logo, body.approval_status, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
-    await handle(command)
-    return JSONResponse({})
+    team_id = await handle(command)
+    return JSONResponse({'id': team_id})
 
 @bind_request_body(RequestCreateTeamRequestData)
 @require_permission(permissions.CREATE_TEAM, check_denied_only=True)
@@ -25,8 +25,8 @@ async def request_create_team(request: Request, body: RequestCreateTeamRequestDa
     approval_status = "pending"
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
                                 body.logo, approval_status, False, body.game, body.mode, body.is_recruiting, True, False, user_id=request.state.user.id)
-    await handle(command)
-    return JSONResponse({})
+    team_id = await handle(command)
+    return JSONResponse({'id': team_id})
 
 async def view_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']

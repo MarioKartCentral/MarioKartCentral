@@ -2,11 +2,11 @@
   import Section from '$lib/components/common/Section.svelte';
   import type { CreateTournamentSeries } from '$lib/types/tournaments/series/create/create-tournament-series';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
-  import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
+  import MarkdownTextArea from '$lib/components/common/MarkdownTextArea.svelte';
 
   export let series_id: number | null = null;
   export let is_edit = false;
@@ -143,30 +143,14 @@
     {/if}
     <GameModeSelect bind:game={data.game} bind:mode={data.mode} />
   </Section>
-  <Section header="Description/Ruleset">
+  <Section header="Series Description">
     <div class="option">
-      <div>
-        <label for="description">Series Description</label>
-      </div>
-      <div>
-        <textarea name="description" bind:value={data.description} on:change={updateData} />
-      </div>
-      <div>Description Preview</div>
-      <div>
-        <MarkdownBox content={data.description} />
-      </div>
+      <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData}/>
     </div>
+  </Section>
+  <Section header="Series Ruleset">
     <div class="option">
-      <div>
-        <label for="ruleset">Series Ruleset</label>
-      </div>
-      <div>
-        <textarea name="ruleset" bind:value={data.ruleset} on:change={updateData} />
-      </div>
-      <div>Description Preview</div>
-      <div>
-        <MarkdownBox content={data.ruleset} />
-      </div>
+      <MarkdownTextArea name="ruleset" bind:value={data.ruleset} on:change={updateData}/>
     </div>
   </Section>
   <Section header="Visibility">

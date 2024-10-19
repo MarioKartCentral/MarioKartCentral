@@ -9,7 +9,7 @@ from common.auth import team_permissions, team_roles
 
 @save_to_command_log
 @dataclass
-class CreateTeamCommand(Command[None]):
+class CreateTeamCommand(Command[int | None]):
     name: str
     tag: str
     description: str
@@ -52,6 +52,7 @@ class CreateTeamCommand(Command[None]):
             if self.user_id is not None:
                 await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES (?, 0, ?)", (self.user_id, team_id))
             await db.commit()
+            return team_id
 
 @dataclass
 class GetTeamInfoCommand(Command[Team]):
@@ -1139,7 +1140,7 @@ class ListTeamsCommand(Command[List[Team]]):
                                 r.is_recruiting, r.is_active, r.approval_status
                                 FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
-                                ORDER BY t.name
+                                ORDER BY t.name COLLATE NOCASE
                                 """
             teams: dict[int, Team] = {}
             async with db.execute(teams_query, variable_parameters) as cursor:
@@ -1225,10 +1226,12 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         AND tr.approval_status = ? AND tr.is_active = ?
                         AND tr.id NOT IN (
                             SELECT roster_id
-                            FROM team_squad_registrations
-                            WHERE tournament_id = ?
+                            FROM team_squad_registrations tsr
+                            JOIN tournament_squads s ON tsr.squad_id = s.id
+                            WHERE tsr.tournament_id = ?
+                            AND s.is_registered = ?
                         )"""
-            variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id)
+            variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id, True)
             rosters: list[TeamRoster] = []
             roster_dict: dict[int, list[RosterPlayerInfo]] = {}
             async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,

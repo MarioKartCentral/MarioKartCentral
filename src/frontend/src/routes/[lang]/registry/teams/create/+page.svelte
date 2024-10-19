@@ -1,24 +1,12 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import { goto } from '$app/navigation';
-  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
-  import { colors } from '$lib/util/util';
-    import Button from '$lib/components/common/buttons/Button.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import { page } from '$app/stores';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+  import ColorSelect from '$lib/components/common/ColorSelect.svelte';
 
-  const valid_games: { [key: string]: string } = {
-    mk8dx: 'Mario Kart 8 Deluxe',
-    mkw: 'Mario Kart Wii',
-    mkt: 'Mario Kart Tour',
-  };
-  const valid_modes: { [key: string]: string[] } = { mk8dx: ['150cc', '200cc'], mkw: ['rt', 'ct'], mkt: ['vsrace'] };
-  const mode_names: { [key: string]: string } = {
-    '150cc': '150cc',
-    '200cc': '200cc',
-    rt: 'Regular Tracks',
-    ct: 'Custom Tracks',
-    vsrace: 'VS Race',
-  };
   const languages = [
     { value: 'de', getLang: 'DE' },
     { value: 'en-gb', getLang: 'EN_GB' },
@@ -27,9 +15,6 @@
     { value: 'es', getLang: 'ES' },
     { value: 'ja', getLang: 'JA' },
   ];
-  let game = 'mk8dx';
-  let mode = '150cc';
-  let color = { id: 1 };
   let tag = "";
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -57,7 +42,13 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/`);
+      let team_id = result['id'];
+      if(team_id) {
+        goto(`/${$page.params.lang}/registry/teams/profile?id=${team_id}`);
+      }
+      else {
+        goto(`/${$page.params.lang}/registry/teams`);
+      }
       alert('Your team has been sent to MKCentral staff for approval.');
     } else {
       alert(`Creating team failed: ${result['title']}`);
@@ -67,33 +58,19 @@
 
 <form method="post" on:submit|preventDefault={createTeam}>
   <Section header={$LL.TEAM_CREATE.GENERAL_INFO()}>
-    <label for="game">{$LL.TEAM_LIST.GAME()}</label>
-    <select name="game" bind:value={game} on:change={() => ([mode] = valid_modes[game])}>
-      {#each Object.keys(valid_games) as game}
-        <option value={game}>{valid_games[game]}</option>
-      {/each}
-    </select>
-    <label for="mode">{$LL.TEAM_LIST.MODE()}</label>
-    <select name="mode" bind:value={mode}>
-      {#each valid_modes[game] as mode}
-        <option value={mode}>{mode_names[mode]}</option>
-      {/each}
-    </select>
-    <br />
-    <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
-    <input name="name" type="text" required />
-    <br />
-    <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
-    <input name="tag" type="text" bind:value={tag} required maxlength=5/>
+    <GameModeSelect is_team flex/>
+    <div class="option">
+      <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
+      <input name="name" type="text" required pattern="^\S.*\S$|^\S$"/>
+    </div>
+    <div class="option">
+      <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
+      <input name="tag" type="text" bind:value={tag} required maxlength=5 pattern="^\S.*\S$|^\S$"/>
+    </div>    
   </Section>
   <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
     <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
-    <select name="color" bind:value={color.id}>
-      {#each colors as color, i}
-        <option value={i}>{$LL.COLORS[color.label]()}</option>
-      {/each}
-    </select>
-    <TagBadge tag={tag} color={color.id}/>
+    <ColorSelect tag={tag}/>
     <br />
     <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
     <input name="logo" type="text" />
@@ -120,3 +97,19 @@
     <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
   </Section>
 </form>
+
+<style>
+  :global(label) {
+    display: inline-block;
+    width: 150px;
+    margin-right: 10px;
+  }
+  input {
+    width: 200px;
+  }
+  .option {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+</style>

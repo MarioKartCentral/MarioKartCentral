@@ -4,8 +4,17 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import type { PlayerInfo } from '$lib/types/player-info';
+    import { user } from '$lib/stores/stores';
+    import type { UserInfo } from '$lib/types/user-info';
+    import { permissions, check_permission } from '$lib/util/permissions';
 
     let player: PlayerInfo;
+
+    let user_info: UserInfo;
+
+    user.subscribe((value) => {
+      user_info = value;
+    });
 
     onMount(async() => {
         let param_id = $page.url.searchParams.get('id');
@@ -23,7 +32,12 @@
     <title>{$LL.PLAYER_PROFILE.EDIT_PROFILE()} | Mario Kart Central</title>
   </svelte:head>
   
-  {#if player}
-    <PlayerProfileEdit {player}/>
+  {#if check_permission(user_info, permissions.edit_player)}
+    {#if player}
+      <PlayerProfileEdit {player}/>
+    {/if}
+  {:else}
+    You do not have permission to view this page.
   {/if}
+  
   

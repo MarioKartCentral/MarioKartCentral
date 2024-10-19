@@ -40,8 +40,9 @@
   }
   img {
     margin: auto;
-    max-width: 400px;
+    max-width: 300px;
     max-height: 200px;
+    width: 100%;
   }
   .flex {
     display: flex;

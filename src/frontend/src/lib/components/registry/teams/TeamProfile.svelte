@@ -38,7 +38,7 @@
     </div>
     <div>
       <b>{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</b>
-      {team.language}
+      {$LL.LANGUAGES[team.language.toUpperCase().replace("-", "_")]()}
     </div>
     <div>
       <b>{$LL.TEAM_PROFILE.MANAGERS()}</b>
@@ -84,6 +84,8 @@
     align-self: flex-start;
     grid-column-start: 3;
     justify-content: center;
+    max-width: 400px;
+    word-break: break-word;
     @media(min-width: 800px) {
       justify-content: left;
       margin-left: auto;

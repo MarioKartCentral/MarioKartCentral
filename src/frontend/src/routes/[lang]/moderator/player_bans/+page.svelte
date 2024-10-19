@@ -152,6 +152,8 @@
     </div>
     <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
   </Section>
+{:else}
+  You do not have permission to view this page.
 {/if}
 <style>
   hr {

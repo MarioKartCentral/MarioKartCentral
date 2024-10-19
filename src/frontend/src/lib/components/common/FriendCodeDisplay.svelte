@@ -2,6 +2,7 @@
     import type { FriendCode } from "$lib/types/friend-code";
     import { Popover } from "flowbite-svelte";
     import GameBadge from "../badges/GameBadge.svelte";
+    import { game_order } from "$lib/util/util";
 
     export let friend_codes: FriendCode[];
     export let selected_fc_id: number | null = null;
@@ -21,9 +22,9 @@
 
     function get_other_fcs() {
         if(!selected_fc_id) {
-            return friend_codes.filter((fc) => fc.is_active);
+            return friend_codes.filter((fc) => fc.is_active).toSorted((a, b) => game_order[a.game] - game_order[b.game]);
         }
-        return friend_codes.filter((fc) => fc !== display_fc && fc.is_active);
+        return friend_codes.filter((fc) => fc !== display_fc && fc.is_active).toSorted((a, b) => game_order[a.game] - game_order[b.game]);
     }
 
     let other_fcs = get_other_fcs();

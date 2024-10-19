@@ -30,13 +30,15 @@
     {/if}
   </div>
   <Table>
-    {#if !series_id}
-      <tr class="row-1">
-        <td class="left">
+    <tr class="row-1">
+      <td class="left">
+        {#if series_id}
+          <a href="/{$page.params.lang}/tournaments/series/create_tournament?id={series_id}">Start from scratch</a>
+        {:else}
           <a href="/{$page.params.lang}/tournaments/create">Start from scratch</a>
-        </td>
-      </tr>
-    {/if}
+        {/if}
+      </td>
+    </tr>
     {#each templates as template, i}
       <tr class="row-{i % 2}">
         <td class="left">

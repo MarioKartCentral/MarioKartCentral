@@ -238,6 +238,8 @@
     {/if}
     
   </Section>
+{:else}
+  You do not have permission to view this page.
 {/if}
 
 <style>

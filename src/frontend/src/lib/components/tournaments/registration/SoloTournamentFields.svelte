@@ -36,7 +36,7 @@
     <span class="item-label">
       <label for="mii_name">In-game/Mii Name</label>
     </span>
-    <input name="mii_name" maxlength={tournament.game === 'mkt' ? 12 : 10} value={mii_name} required />
+    <input name="mii_name" maxlength={tournament.game === 'mkt' ? 12 : 10} value={mii_name} required pattern="^\S.*\S$|^\S$"/>
   </div>
 {/if}
 {#if tournament.host_status_required}

@@ -46,7 +46,10 @@
         if (!user_info.player) {
             return [];
         }
-        let rosters = user_info.player.rosters.filter((r) => r.game === invite.game && r.mode === invite.mode && r.is_bagger_clause === invite.is_bagger_clause);
+        console.log(user_info.player.rosters);
+        console.log(invite);
+        let rosters = user_info.player.rosters.filter((r) => r.game === invite.game && r.mode === invite.mode && r.is_bagger_clause === Boolean(invite.is_bagger_clause));
+        console.log(rosters);
         return rosters;
     }
 
@@ -70,7 +73,7 @@
         const result = await res.json();
         if (res.status < 300) {
         alert(
-            `Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}`,
+            `Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}! Your transfer must be processed by staff members before being completed.`,
         );
         window.location.reload();
         } else {
@@ -144,19 +147,15 @@
 {/if}
 
 <Dialog bind:this={accept_dialog} header="Accept Team Invite">
-    Are you sure you would like to accept the invite to <b>{curr_invite?.team_name}</b>?
+    Are you sure you would like to accept the invite to <b>{curr_invite?.roster_name}</b>?
     <br /><br />
     {#if leaveable_rosters.length}
       Select a roster to leave:
       <select bind:value={leave_roster_id}>
         {#each leaveable_rosters as r}
-          <option value={r.roster_id}>{r.roster_name ? r.roster_name : r.team_name}</option>
+          <option value={r.roster_id}>{r.roster_name}</option>
         {/each}
-        <!-- <option value={null}>None</option> -->
       </select>
-      <!-- {#if !leave_roster_id}
-        <div><b>NOTE:</b> Selecting to not leave a roster may result in your transfer being denied.</div>
-      {/if} -->
     {/if}
     <div class="accept">
       <Button on:click={() => acceptInvite(curr_invite)}>Accept</Button>

@@ -142,7 +142,7 @@
           <form method="post" on:submit|preventDefault={forceEditTeam}>
             <Section header="Team Name/Tag">
               <label for="name">Team Name</label>
-              <input name="name" type="text" value={team.name} required />
+              <input name="name" type="text" value={team.name} pattern="^\S.*\S$|^\S$" required />
               <br />
               <label for="tag">Team Tag</label>
               <input name="tag" type="text" bind:value={team.tag} required />
@@ -182,8 +182,6 @@
           </form>
         {/if}
     {/if}
-    
-    
   {/if}
   
 <style>
@@ -193,5 +191,9 @@
     }
     :global(select, input, textarea) {
         width: 200px;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
     }
 </style>
