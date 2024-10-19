@@ -1008,6 +1008,14 @@ type RootTranslation = {
 		 */
 		'46': string
 		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​p​p​r​o​v​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​$​0​!
+		 */
+		'47': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'48': string
+		/**
 		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​a​ ​s​q​u​a​d​ ​f​o​r​ ​$​1​!
 		 */
 		'2b': string
@@ -3002,6 +3010,14 @@ export type TranslationFunctions = {
 		 * A moderator has updated your registration for $0.
 		 */
 		'46': () => LocalizedString
+		/**
+		 * A moderator has approved your team transfer to $0!
+		 */
+		'47': () => LocalizedString
+		/**
+		 * Your team transfer to $0 has been denied.
+		 */
+		'48': () => LocalizedString
 		/**
 		 * You have been invited to a squad for $1!
 		 */

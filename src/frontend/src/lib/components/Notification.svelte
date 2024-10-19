@@ -10,6 +10,7 @@
   import NotificationContent from './common/NotificationContent.svelte';
   import { DropdownDivider, DropdownHeader } from 'flowbite-svelte';
 
+  const maxBellNotifications = 5;
   let dropdown: DropdownMenu;
   export function toggleNotificationMenu() {
     dropdown.toggleDropdown();
@@ -40,7 +41,7 @@
       return;
     }
     const body = (await res.json()) as Notification[];
-    notifications = body;
+    notifications = body
   }
 
   async function makeNotificationAsRead(id: number) {
@@ -75,22 +76,40 @@
     {#if notifications.length === 0}
       <DropdownHeader divClass="py-2 px-4 text-white">{$LL.NOTIFICATION.NO_UNREAD()}</DropdownHeader>
     {/if}
-    {#each notifications as { id, type, content_id, content_args, link, created_date, is_read}}
-      <DropdownItem on:click={(e) => {console.log(e.target); handleClick(id, link)}}>
-        <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
-      </DropdownItem>
-      <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
+    {#each notifications as { id, type, content_id, content_args, link, created_date, is_read}, idx}
+      {#if idx < maxBellNotifications}
+        <DropdownItem on:click={(e) => {console.log(e.target); handleClick(id, link)}}>
+          <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
+        </DropdownItem>
+        {#if idx === maxBellNotifications - 1 && notifications.length > maxBellNotifications}
+          <p class="extra-count">
+            <DropdownDivider divClass="w-3/5 my-1 h-px bg-gray-500 dark:bg-gray-600"/>
+            +{notifications.length - maxBellNotifications} more
+          </p>
+        {/if}
+        <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
+      {/if}
     {/each}
-    <DropdownItem href="/notifications">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</DropdownItem>
+    <DropdownItem href="/notifications"><div class="text-center">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</div></DropdownItem>
     {#if hasUnread}
       <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
-      <DropdownItem on:click={makeAllNotificationsAsRead}>{$LL.NOTIFICATION.MARK_ALL_READ()}</DropdownItem>
+      <DropdownItem on:click={makeAllNotificationsAsRead}><div class="text-center">{$LL.NOTIFICATION.MARK_ALL_READ()}</div></DropdownItem>
     {/if}
   </div>
 </Dropdown>
 
 <style>
   .wrapper {
-    max-width: 400px;
+    width: min(400px, 100vw);
+  }
+  .extra-count {
+    display: flex;
+    font-size: small;
+    flex-direction: column;
+    align-items: center;
+    font-size: small;
+  }
+  .extra-count:hover {
+    cursor: default;
   }
 </style>

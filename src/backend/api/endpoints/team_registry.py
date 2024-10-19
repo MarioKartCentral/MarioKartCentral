@@ -234,7 +234,10 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
     user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
     command = ApproveTransferCommand(body.invite_id)
     await handle(command)
-    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
+
+    player_user_id = await handle(GetUserIdFromPlayerIdCommand(data.player_id))
+    await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_APPROVE_TRANSFER, [data.roster_name or data.team_name], f'/registry/teams/profile?id={data.player_id}', notifications.SUCCESS))
+    await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={data.team_id}', notifications.SUCCESS))
     return JSONResponse({})
 
 @bind_request_body(DenyTransferRequestData)
@@ -244,6 +247,9 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
     user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
     command = DenyTransferCommand(body.invite_id, body.send_back)
     await handle(command)
+
+    player_user_id = await handle(GetUserIdFromPlayerIdCommand(data.player_id))
+    await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_DENY_TRANSFER, [data.roster_name or data.team_name], f'/registry/teams/profile?id={data.player_id}', notifications.WARNING))
     await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_DENIED , [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
     return JSONResponse({})
 

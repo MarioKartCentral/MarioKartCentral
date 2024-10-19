@@ -272,6 +272,8 @@ const en_us: BaseTranslation & Translation = {
     '44': 'A moderator has created a squad with you as the captain for $0!',
     '45': 'A moderator has added $0 to your $1 squad!',
     '46': 'A moderator has updated your registration for $0.',
+    '47': 'A moderator has approved your team transfer to $0!',
+    '48': 'Your team transfer to $0 has been denied.',
   },
   COUNTRIES: {
     AF: 'Afghanistan',

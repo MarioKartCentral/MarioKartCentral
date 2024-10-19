@@ -1,4 +1,5 @@
 <script lang="ts">
+  import DOMPurify from 'dompurify';
   import { InfoCircleSolid } from 'flowbite-svelte-icons';
   import Caution from '../icons/Caution.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -11,7 +12,7 @@
   export let is_read: boolean;
 
   const options: Intl.DateTimeFormatOptions = {
-    dateStyle: 'short',
+    dateStyle: 'medium',
     timeStyle: 'short',
   };
 
@@ -32,7 +33,7 @@
         const timestamp = parseInt(arg.replace('DATE-', '')) * 1000;
         arg = new Date(timestamp).toLocaleString($locale, options);
       }
-      content = content.replace(`$${idx}`, `${arg}`);
+      content = content.replace(`$${idx}`, `<strong>${arg}</strong>`);
     }
 
     return content;
@@ -54,10 +55,11 @@
   <div class="unread-dot {!is_read ? 'unread-dot-show' : ''}"></div>
   <div class="content-wrapper">
     <div class="date">
-      {new Date(created_date * 1000).toLocaleString()}
+      {new Date(created_date * 1000).toLocaleString($locale, options)}
     </div>
     <p> 
-      {formatNotificationContent(content_id, content_args)}
+      <!-- eslint-disable-next-line -->
+      {@html DOMPurify.sanitize(formatNotificationContent(content_id, content_args), {ALLOWED_TAGS: ['strong']})}
     </p>
   </div>
 </div>

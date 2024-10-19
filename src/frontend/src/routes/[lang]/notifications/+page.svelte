@@ -131,7 +131,7 @@
     margin: 10px 0px;
   }
   .content-wrapper {
-    width: 95%;
+    width: calc(100% - 25px);
     padding: 10px;
   }
 </style>

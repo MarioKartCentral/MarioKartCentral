@@ -45,7 +45,8 @@ class GetNotificationsCommand(Command[list[Notification]]):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute(f"""
                 SELECT id, type, content_id, content_args, link, created_date, is_read FROM notifications
-                WHERE {' AND '.join(where_clauses)}""", tuple(where_params)) as cursor:
+                WHERE {' AND '.join(where_clauses)}
+                ORDER BY created_date DESC""", tuple(where_params)) as cursor:
 
                 return [Notification(row[0], row[1], int(row[2]), json.loads(row[3]), row[4], row[5], bool(row[6])) for row in await cursor.fetchall()]
 
