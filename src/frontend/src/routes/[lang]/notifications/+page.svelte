@@ -116,7 +116,7 @@
         <button>
           <DotsVerticalOutline class="hover:text-yellow-300"/>
           <Dropdown>
-            <DropdownItem on:click={() => changeReadStatus(id, !is_read)}>{is_read ? $LL.NOTIFICATION.MARK_UNREAD() : $LL.NOTIFICATION.MARK_UNREAD()}</DropdownItem>
+            <DropdownItem on:click={() => changeReadStatus(id, !is_read)}>{is_read ? $LL.NOTIFICATION.MARK_UNREAD() : $LL.NOTIFICATION.MARK_READ()}</DropdownItem>
           </Dropdown>
         </button>
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
