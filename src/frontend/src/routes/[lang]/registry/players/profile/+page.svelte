@@ -7,13 +7,15 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
   import Section from '$lib/components/common/Section.svelte';
-  import Button from "$lib/components/common/buttons/Button.svelte";
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import PlayerProfile from '$lib/components/registry/players/PlayerProfile.svelte';
   import PlayerProfileBan from '$lib/components/registry/players/PlayerProfileBan.svelte';
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
   import ViewEditBan from '$lib/components/moderator/ViewEditBan.svelte';
   import { check_permission, permissions } from '$lib/util/permissions';
+  import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
+  import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
@@ -47,8 +49,7 @@
       const res2 = await fetch(`/api/registry/players/bans?player_id=${player.id}`);
       if (res2.status === 200) {
         const data: BanListData = await res2.json();
-        if (data.ban_count === 1)
-          banInfo = data.ban_list[0];
+        if (data.ban_count === 1) banInfo = data.ban_list[0];
       }
     }
   });
@@ -79,16 +80,18 @@
       </div>
     </Section>
     <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-      <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()}/>
+      <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()} />
     </Dialog>
     <Dialog bind:this={editBanDialog} header={$LL.PLAYER_BAN.VIEW_EDIT_BAN()}>
       {#if banInfo}
-        <ViewEditBan {banInfo}/>
+        <ViewEditBan {banInfo} />
       {/if}
     </Dialog>
-    {/if}
+  {/if}
 
   <PlayerProfile {player} />
+  <PlayerTournamentHistory {player} />
+  <PlayerRegistrationHistory {player} />
 {:else if !player_found}
-    Player not found
+  Player not found
 {/if}

@@ -167,6 +167,12 @@ const ja: Translation = {
     EXPIRES_FROM: 'Expires From',
     SEARCH_BY_NAME: 'Search by Name',
   },
+  PLAYER_TOURNAMENT_HISTORY: {
+    TOURNAMENT_HISTORY: 'Tournament History',
+  },
+  PLAYER_REGISTRATION_HISTORY: {
+    REGISTRATION_HISTORY: 'Registration History',
+  },
   LANGUAGES: {
     EN_US: 'English (United States)',
     EN_GB: 'English (Great Britain)',

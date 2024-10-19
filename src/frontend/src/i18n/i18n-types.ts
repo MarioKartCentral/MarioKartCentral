@@ -484,7 +484,7 @@ type RootTranslation = {
 		 */
 		EDIT_BAN: string
 		/**
-		 * V​i​e​w​/​E​d​i​t​ ​B​a​n
+		 * V​i​e​w​ ​/​ ​E​d​i​t​ ​B​a​n
 		 */
 		VIEW_EDIT_BAN: string
 		/**
@@ -603,6 +603,18 @@ type RootTranslation = {
 		 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e
 		 */
 		SEARCH_BY_NAME: string
+	}
+	PLAYER_TOURNAMENT_HISTORY: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 */
+		TOURNAMENT_HISTORY: string
+	}
+	PLAYER_REGISTRATION_HISTORY: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 */
+		TOURNAMENT_HISTORY: string
 	}
 	LANGUAGES: {
 		/**
@@ -2259,7 +2271,7 @@ export type TranslationFunctions = {
 		 */
 		EDIT_BAN: () => LocalizedString
 		/**
-		 * View/Edit Ban
+		 * View / Edit Ban
 		 */
 		VIEW_EDIT_BAN: () => LocalizedString
 		/**
@@ -2378,6 +2390,18 @@ export type TranslationFunctions = {
 		 * Search by Name
 		 */
 		SEARCH_BY_NAME: () => LocalizedString
+	}
+	PLAYER_TOURNAMENT_HISTORY: {
+		/**
+		 * Tournament History
+		 */
+		TOURNAMENT_HISTORY: () => LocalizedString
+	}
+	PLAYER_REGISTRATION_HISTORY: {
+		/**
+		 * Tournament History
+		 */
+		TOURNAMENT_HISTORY: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**
