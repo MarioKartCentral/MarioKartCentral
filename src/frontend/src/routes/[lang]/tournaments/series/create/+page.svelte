@@ -12,4 +12,6 @@
 
 {#if check_permission(user_info, permissions.create_series)}
   <CreateEditTournamentSeriesForm />
+{:else}
+  You do not have permission to access this page.
 {/if}
