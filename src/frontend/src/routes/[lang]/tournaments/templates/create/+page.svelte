@@ -2,8 +2,16 @@
   import CreateEditTemplateForm from '$lib/components/tournaments/templates/CreateEditTemplateForm.svelte';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import { check_permission, series_permissions } from '$lib/util/permissions';
 
   let template_id: number | null;
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     let param_temp_id = $page.url.searchParams.get('template_id');
@@ -11,4 +19,8 @@
   });
 </script>
 
-<CreateEditTemplateForm {template_id} />
+{#if check_permission(user_info, series_permissions.create_tournament_template)}
+  {#key template_id}
+    <CreateEditTemplateForm {template_id} />
+  {/key}
+{/if}
