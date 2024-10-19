@@ -22,5 +22,7 @@
 {#if series_id}
   {#if check_series_permission(user_info, series_permissions.edit_series, series_id)}
     <CreateEditTournamentSeriesForm {series_id} is_edit={true} />
+  {:else}
+    You do not have permission to access this page.
   {/if}
 {/if}

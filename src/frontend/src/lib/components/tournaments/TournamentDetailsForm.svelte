@@ -4,7 +4,7 @@
   import Section from '../common/Section.svelte';
   import SeriesSearch from '../common/SeriesSearch.svelte';
   import GameModeSelect from '../common/GameModeSelect.svelte';
-  import MarkdownBox from '../common/MarkdownBox.svelte';
+  import MarkdownTextArea from '../common/MarkdownTextArea.svelte';
 
   export let data: CreateTournament;
   export let update_function: () => void; // function used to update data in the parent component
@@ -388,7 +388,7 @@
     </div>
   </div>
 </Section>
-<Section header="Tournament Info">
+<Section header="Tournament Description">
   {#if series}
     <div class="option">
       <div>
@@ -403,23 +403,14 @@
     </div>
   {/if}
   <div class="option">
-    <div>
-      <label for="description">Tournament Description</label>
-    </div>
-    <div>
-      {#if series && data.use_series_description}
-        <textarea name="description" value={series.description} disabled />
-      {:else}
-        <textarea name="description" bind:value={data.description} on:change={updateData} minlength="1" />
-      {/if}
-    </div>
-    <div>Description Preview</div>
-    <div class="preview">
-      {#key data.description}
-        <MarkdownBox content={series && data.use_series_description ? series.description : data.description} />
-      {/key}
-    </div>
+    {#if series && data.use_series_description}
+      <MarkdownTextArea name="description" value={series.description} disabled/>
+    {:else}
+      <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData}/>
+    {/if}
   </div>
+</Section>
+<Section header="Tournament Ruleset">
   {#if series}
     <div class="option">
       <div>
@@ -434,24 +425,11 @@
     </div>
   {/if}
   <div class="option">
-    <div>
-      <label for="ruleset">Tournament Ruleset</label>
-    </div>
-    <div>
-      {#if series && data.use_series_ruleset}
-        <textarea name="ruleset" value={series.ruleset} disabled />
-      {:else}
-        <textarea name="ruleset" bind:value={data.ruleset} minlength="1" />
-      {/if}
-    </div>
-    <div>Ruleset Preview</div>
-    
-    <div class="preview">
-      {#key data.ruleset}
-        <MarkdownBox content={series && data.use_series_ruleset ? series.ruleset : data.ruleset} />
-      {/key}
-    </div>
-    
+    {#if series && data.use_series_ruleset}
+      <MarkdownTextArea name="ruleset" value={series.ruleset} disabled/>
+    {:else}
+      <MarkdownTextArea name="ruleset" bind:value={data.ruleset} on:change={updateData}/>
+    {/if}
   </div>
 </Section>
 <Section header="Tournament Registration">
@@ -549,14 +527,5 @@
   }
   input.tournament_name {
     width: 90%;
-  }
-  textarea {
-    min-width: 50%;
-    width: 100%;
-    height: 300px;
-  }
-  div.preview {
-    border: 1px solid white;
-    padding: 10px;
   }
 </style>
