@@ -10,6 +10,11 @@
     let daysRemaining: string = '';
     let duration: number = 0;
 
+    const options: Intl.DateTimeFormatOptions = {
+        dateStyle: 'short',
+        timeStyle: 'short',
+    };
+
     onMount(async () => {
         const nowSeconds: number = Math.floor(Date.now() / 1000);
         const days: number = Math.max(-1, findNumberOfDaysBetweenDates(nowSeconds, banInfo.expiration_date));
@@ -20,7 +25,7 @@
 
     function unixTimestampToString(timestamp: number) {
         let date = new Date(timestamp * 1000);
-        return date.toLocaleString($page.params.lang);
+        return date.toLocaleString($page.params.lang, options);
     };
 </script>
 

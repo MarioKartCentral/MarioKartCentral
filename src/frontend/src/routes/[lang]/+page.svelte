@@ -2,7 +2,7 @@
   import LL from '$i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-    import Button from '$lib/components/common/buttons/Button.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   export let userId = 'Loading...';
   export let playerId = '';
   export let isLoggedIn = false;

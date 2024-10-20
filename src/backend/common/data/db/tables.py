@@ -732,17 +732,6 @@ class UserSettings(TableModel):
             color_scheme TEXT DEFAULT 'light' NOT NULL,
             timezone TEXT DEFAULT 'UTC' NOT NULL
             ) WITHOUT ROWID"""
-    
-@dataclass
-class NotificationContent(TableModel):
-    id: int
-    content: str
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS notification_content(
-            id INTEGER PRIMARY KEY,
-            content TEXT NOT NULL)"""
 
 @dataclass
 class Notifications(TableModel):
@@ -750,8 +739,9 @@ class Notifications(TableModel):
     user_id: int
     type: int
     content_id: int
+    content_args: str
+    link: str
     created_date: int
-    content_is_shared: int
     is_read: int
 
     @staticmethod
@@ -760,9 +750,10 @@ class Notifications(TableModel):
             id INTEGER PRIMARY KEY,
             user_id INTEGER NOT NULL REFERENCES users(id),
             type INTEGER DEFAULT 0 NOT NULL,
-            content_id INTEGER NOT NULL REFERENCES notification_content(id),
+            content_id INTEGER NOT NULL,
+            content_args TEXT NOT NULL,
+            link TEXT,
             created_date INTEGER NOT NULL,
-            content_is_shared INTEGER NOT NULL,
             is_read INTEGER DEFAULT 0 NOT NULL)"""
 
 @dataclass
@@ -855,5 +846,5 @@ all_tables : list[type[TableModel]] = [
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
+    UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
     PlayerNameEditRequest]

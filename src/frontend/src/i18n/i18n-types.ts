@@ -72,10 +72,6 @@ type RootTranslation = {
 		 */
 		TYPE: string
 		/**
-		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
-		 */
-		MARK_ALL_READ: string
-		/**
 		 * I​s​ ​R​e​a​d
 		 */
 		IS_READ: string
@@ -484,7 +480,7 @@ type RootTranslation = {
 		 */
 		EDIT_BAN: string
 		/**
-		 * V​i​e​w​/​E​d​i​t​ ​B​a​n
+		 * V​i​e​w​ ​/​ ​E​d​i​t​ ​B​a​n
 		 */
 		VIEW_EDIT_BAN: string
 		/**
@@ -791,6 +787,242 @@ type RootTranslation = {
 		 * B​l​a​c​k
 		 */
 		BLACK: string
+	}
+	NOTIFICATION: {
+		/**
+		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
+		 */
+		MARK_ALL_READ: string
+		/**
+		 * S​e​e​ ​A​l​l​ ​N​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		SEE_ALL_NOTIFICATIONS: string
+		/**
+		 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​u​n​r​e​a​d​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		NO_UNREAD: string
+		/**
+		 * Y​o​u​ ​m​u​s​t​ ​b​e​ ​l​o​g​g​e​d​ ​i​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+		 */
+		MUST_BE_LOGGED_IN: string
+		/**
+		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​a​n​y​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​.
+		 */
+		NO_NOTIFICATIONS: string
+		/**
+		 * M​a​r​k​ ​A​s​ ​R​e​a​d
+		 */
+		MARK_READ: string
+		/**
+		 * M​a​r​k​ ​A​s​ ​U​n​r​e​a​d
+		 */
+		MARK_UNREAD: string
+	}
+	NOTIFICATION_CONTENT: {
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​$​0​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​$​1​.
+		 */
+		'0': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​u​n​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​w​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.
+		 */
+		'1': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​t​h​e​ ​s​q​u​a​d​ ​$​0​ ​f​o​r​ ​$​1​!
+		 */
+		'2': string
+		/**
+		 * $​0​ ​a​c​c​e​p​t​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​y​o​u​r​ ​$​1​ ​s​q​u​a​d​!
+		 */
+		'3': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​$​0​.
+		 */
+		'4': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​o​r​ ​$​0​!
+		 */
+		'5': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​n​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​r​o​m​ ​$​0​.
+		 */
+		'6': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​a​d​d​e​d​ ​$​0​ ​t​o​ ​y​o​u​r​ ​$​1​ ​s​q​u​a​d​.
+		 */
+		'7': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​k​i​c​k​e​d​ ​$​0​ ​f​r​o​m​ ​y​o​u​r​ ​$​1​ ​s​q​u​a​d​.
+		 */
+		'8': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​$​0​!
+		 */
+		'9': string
+		/**
+		 * $​0​ ​a​c​c​e​p​t​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​$​1​.​ ​A​ ​m​o​d​e​r​a​t​o​r​ ​m​u​s​t​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​b​e​f​o​r​e​ ​t​h​e​y​ ​c​a​n​ ​p​l​a​y​ ​f​o​r​ ​y​o​u​r​ ​t​e​a​m​.
+		 */
+		'10': string
+		/**
+		 * $​0​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​$​1​.
+		 */
+		'11': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​$​0​.
+		 */
+		'12': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 */
+		'13': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'14': string
+		/**
+		 * $​0​ ​h​a​s​ ​j​o​i​n​e​d​ ​$​1​!
+		 */
+		'15': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​d​e​n​i​e​d​ ​$​0​ ​f​r​o​m​ ​j​o​i​n​i​n​g​ ​$​1​.
+		 */
+		'16': string
+		/**
+		 * $​0​ ​h​a​s​ ​l​e​f​t​ ​$​1​.
+		 */
+		'17': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 */
+		'18': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'19': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 */
+		'20': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'21': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​$​0​.
+		 */
+		'22': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​$​0​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 */
+		'23': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 */
+		'24': string
+		/**
+		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 */
+		'25': string
+		/**
+		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'26': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​!
+		 */
+		'27': string
+		/**
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 */
+		'28': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​t​e​a​m​ ​$​1​.
+		 */
+		'29': string
+		/**
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​t​e​a​m​ ​$​1​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 */
+		'30': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​$​1​ ​s​e​r​i​e​s​.
+		 */
+		'31': string
+		/**
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​$​1​ ​s​e​r​i​e​s​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 */
+		'32': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​$​1​ ​t​o​u​r​n​a​m​e​n​t​.
+		 */
+		'33': string
+		/**
+		 * Y​o​u​r​ ​$​0​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​$​1​ ​t​o​u​r​n​a​m​e​n​t​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 */
+		'34': string
+		/**
+		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 */
+		'35': string
+		/**
+		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'36': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​m​a​d​e​ ​t​h​e​ ​s​q​u​a​d​ ​c​a​p​t​a​i​n​ ​f​o​r​ ​$​0​!
+		 */
+		'37': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​m​a​d​e​ ​a​ ​t​e​a​m​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​ ​f​o​r​ ​$​0​!
+		 */
+		'38': string
+		/**
+		 * Y​o​u​ ​a​r​e​ ​n​o​ ​l​o​n​g​e​r​ ​a​ ​t​e​a​m​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​ ​f​o​r​ ​$​0​.
+		 */
+		'39': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​$​0​.
+		 */
+		'40': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​r​o​s​t​e​r​ ​$​0​.
+		 */
+		'41': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​f​o​r​ ​$​0​!
+		 */
+		'42': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​n​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​f​r​o​m​ ​$​0​.
+		 */
+		'43': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​c​r​e​a​t​e​d​ ​a​ ​s​q​u​a​d​ ​w​i​t​h​ ​y​o​u​ ​a​s​ ​t​h​e​ ​c​a​p​t​a​i​n​ ​f​o​r​ ​$​0​!
+		 */
+		'44': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​$​0​ ​t​o​ ​y​o​u​r​ ​$​1​ ​s​q​u​a​d​!
+		 */
+		'45': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​f​o​r​ ​$​0​.
+		 */
+		'46': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​p​p​r​o​v​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​$​0​!
+		 */
+		'47': string
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​$​0​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'48': string
+		/**
+		 * Y​o​u​r​ ​b​a​n​ ​d​u​r​a​t​i​o​n​ ​h​a​s​ ​b​e​e​n​ ​u​p​d​a​t​e​d​.​ ​U​n​b​a​n​ ​d​a​t​e​:​ ​$​0​.
+		 */
+		'49': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​a​ ​s​q​u​a​d​ ​f​o​r​ ​$​1​!
+		 */
+		'2b': string
 	}
 	COUNTRIES: {
 		/**
@@ -1847,10 +2079,6 @@ export type TranslationFunctions = {
 		 */
 		TYPE: () => LocalizedString
 		/**
-		 * Mark All as Read
-		 */
-		MARK_ALL_READ: () => LocalizedString
-		/**
 		 * Is Read
 		 */
 		IS_READ: () => LocalizedString
@@ -2259,7 +2487,7 @@ export type TranslationFunctions = {
 		 */
 		EDIT_BAN: () => LocalizedString
 		/**
-		 * View/Edit Ban
+		 * View / Edit Ban
 		 */
 		VIEW_EDIT_BAN: () => LocalizedString
 		/**
@@ -2566,6 +2794,242 @@ export type TranslationFunctions = {
 		 * Black
 		 */
 		BLACK: () => LocalizedString
+	}
+	NOTIFICATION: {
+		/**
+		 * Mark All as Read
+		 */
+		MARK_ALL_READ: () => LocalizedString
+		/**
+		 * See All Notifications
+		 */
+		SEE_ALL_NOTIFICATIONS: () => LocalizedString
+		/**
+		 * There are no unread notifications
+		 */
+		NO_UNREAD: () => LocalizedString
+		/**
+		 * You must be logged in to view this page.
+		 */
+		MUST_BE_LOGGED_IN: () => LocalizedString
+		/**
+		 * You do not have any notifications.
+		 */
+		NO_NOTIFICATIONS: () => LocalizedString
+		/**
+		 * Mark As Read
+		 */
+		MARK_READ: () => LocalizedString
+		/**
+		 * Mark As Unread
+		 */
+		MARK_UNREAD: () => LocalizedString
+	}
+	NOTIFICATION_CONTENT: {
+		/**
+		 * You have been banned and may not participate in MKCentral competitions. Reason: $0. Unban Date: $1.
+		 */
+		'0': () => LocalizedString
+		/**
+		 * You have been unbanned and may now participate in MKCentral competitions.
+		 */
+		'1': () => LocalizedString
+		/**
+		 * You have been invited to the squad $0 for $1!
+		 */
+		'2': () => LocalizedString
+		/**
+		 * $0 accepted their invitation to your $1 squad!
+		 */
+		'3': () => LocalizedString
+		/**
+		 * You have been kicked from $0.
+		 */
+		'4': () => LocalizedString
+		/**
+		 * A moderator has registered you for $0!
+		 */
+		'5': () => LocalizedString
+		/**
+		 * A moderator has unregistered you from $0.
+		 */
+		'6': () => LocalizedString
+		/**
+		 * A moderator added $0 to your $1 squad.
+		 */
+		'7': () => LocalizedString
+		/**
+		 * A moderator kicked $0 from your $1 squad.
+		 */
+		'8': () => LocalizedString
+		/**
+		 * You have been invited to $0!
+		 */
+		'9': () => LocalizedString
+		/**
+		 * $0 accepted their invitation to $1. A moderator must approve this before they can play for your team.
+		 */
+		'10': () => LocalizedString
+		/**
+		 * $0 declined their invitation to $1.
+		 */
+		'11': () => LocalizedString
+		/**
+		 * You have been kicked from $0.
+		 */
+		'12': () => LocalizedString
+		/**
+		 * Your team $0 has been approved!
+		 */
+		'13': () => LocalizedString
+		/**
+		 * Your team $0 has been denied.
+		 */
+		'14': () => LocalizedString
+		/**
+		 * $0 has joined $1!
+		 */
+		'15': () => LocalizedString
+		/**
+		 * A moderator has denied $0 from joining $1.
+		 */
+		'16': () => LocalizedString
+		/**
+		 * $0 has left $1.
+		 */
+		'17': () => LocalizedString
+		/**
+		 * Your team name/tag change for $0 has been approved!
+		 */
+		'18': () => LocalizedString
+		/**
+		 * Your team name/tag change for $0 has been denied.
+		 */
+		'19': () => LocalizedString
+		/**
+		 * Your team roster name/tag change for $0 has been approved!
+		 */
+		'20': () => LocalizedString
+		/**
+		 * Your team roster name/tag change for $0 has been denied.
+		 */
+		'21': () => LocalizedString
+		/**
+		 * A moderator has added a friend code to your profile. Game: $0.
+		 */
+		'22': () => LocalizedString
+		/**
+		 * A moderator has edited your $0 friend code.
+		 */
+		'23': () => LocalizedString
+		/**
+		 * A moderator has set your primary friend code.
+		 */
+		'24': () => LocalizedString
+		/**
+		 * Your name change has been approved!
+		 */
+		'25': () => LocalizedString
+		/**
+		 * Your name change has been denied.
+		 */
+		'26': () => LocalizedString
+		/**
+		 * You have been given the $0 role!
+		 */
+		'27': () => LocalizedString
+		/**
+		 * Your $0 role has been removed.
+		 */
+		'28': () => LocalizedString
+		/**
+		 * You have been given the $0 role for the team $1.
+		 */
+		'29': () => LocalizedString
+		/**
+		 * Your $0 role for the team $1 has been removed.
+		 */
+		'30': () => LocalizedString
+		/**
+		 * You have been given the $0 role for the $1 series.
+		 */
+		'31': () => LocalizedString
+		/**
+		 * Your $0 role for the $1 series has been removed.
+		 */
+		'32': () => LocalizedString
+		/**
+		 * You have been given the $0 role for the $1 tournament.
+		 */
+		'33': () => LocalizedString
+		/**
+		 * Your $0 role for the $1 tournament has been removed.
+		 */
+		'34': () => LocalizedString
+		/**
+		 * Your roster $0 has been approved!
+		 */
+		'35': () => LocalizedString
+		/**
+		 * Your roster $0 has been denied.
+		 */
+		'36': () => LocalizedString
+		/**
+		 * You have been made the squad captain for $0!
+		 */
+		'37': () => LocalizedString
+		/**
+		 * You have been made a team representative for $0!
+		 */
+		'38': () => LocalizedString
+		/**
+		 * You are no longer a team representative for $0.
+		 */
+		'39': () => LocalizedString
+		/**
+		 * A moderator has updated your team $0.
+		 */
+		'40': () => LocalizedString
+		/**
+		 * A moderator has updated your roster $0.
+		 */
+		'41': () => LocalizedString
+		/**
+		 * A moderator has registered your team for $0!
+		 */
+		'42': () => LocalizedString
+		/**
+		 * A moderator has unregistered your team from $0.
+		 */
+		'43': () => LocalizedString
+		/**
+		 * A moderator has created a squad with you as the captain for $0!
+		 */
+		'44': () => LocalizedString
+		/**
+		 * A moderator has added $0 to your $1 squad!
+		 */
+		'45': () => LocalizedString
+		/**
+		 * A moderator has updated your registration for $0.
+		 */
+		'46': () => LocalizedString
+		/**
+		 * A moderator has approved your team transfer to $0!
+		 */
+		'47': () => LocalizedString
+		/**
+		 * Your team transfer to $0 has been denied.
+		 */
+		'48': () => LocalizedString
+		/**
+		 * Your ban duration has been updated. Unban date: $0.
+		 */
+		'49': () => LocalizedString
+		/**
+		 * You have been invited to a squad for $1!
+		 */
+		'2b': () => LocalizedString
 	}
 	COUNTRIES: {
 		/**
