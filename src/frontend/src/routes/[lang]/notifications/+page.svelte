@@ -7,21 +7,19 @@
   import NotificationContent from "$lib/components/common/NotificationContent.svelte";
   import { goto } from "$app/navigation";
   import Button from "$lib/components/common/buttons/Button.svelte";
-  import { have_unread_notification } from "$lib/stores/stores";
+  import { have_unread_notification, user } from "$lib/stores/stores";
   import { DotsVerticalOutline } from "flowbite-svelte-icons";
   import Dropdown from "$lib/components/common/Dropdown.svelte";
   import DropdownItem from "$lib/components/common/DropdownItem.svelte";
+  import type { UserInfo } from "$lib/types/user-info";
 
   const maxNotificationsPerPage = 50;
   let notifications: Notification[] = [];
-  let isLoaded = false;
-  let isLoggedIn = true;
   let currentPage = 1;
   let isInitialLoad = true;
 
+  // subscribing to have_unread_notification syncs notifications with the navbar notifications
   have_unread_notification.subscribe((val) => {
-    // This is to sync the notifications whenever the user is on the /notifications
-    // page and clicks on the notifications bell icon to select "Mark All as Read"
     if (!isInitialLoad && val === 0) {
       notifications = notifications.map((n) => ({
         ...n,
@@ -31,20 +29,24 @@
     isInitialLoad = false;
   })
 
+  // subscribing to user store allows us to only fetch notifications if the user is logged in
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+      user_info = value;
+  });
+  $: user_info?.id !== null && fetchNotifications();
+
   $: pageCount = Math.ceil(notifications.length / maxNotificationsPerPage)
   $: notificationList = notifications.slice((currentPage-1)*maxNotificationsPerPage, currentPage*maxNotificationsPerPage)
   $: hasUnread = notifications.some(n => !n.is_read)
+  $: isLoggedIn = user_info.id !== null
 
-  onMount(async () => {
+  async function fetchNotifications() {
     const res = await fetch('/api/notifications/list');
-    if (res.status === 401) {
-      isLoggedIn = false;
-    }
-    else if (res.status === 200) {
+    if (res.status === 200) {
       notifications = await res.json();
     }
-    isLoaded = true
-  });
+  }
 
   async function changeReadStatus(id: number, isRead: boolean) {
     const res = await fetch(`/api/notifications/edit/read_status/${id}`, {
@@ -92,7 +94,7 @@
   <title>Notifications | Mario Kart Central</title>
 </svelte:head>
 
-{#if isLoaded}
+{#if user_info.is_checked}
   {#if !isLoggedIn}
     {$LL.NOTIFICATION.MUST_BE_LOGGED_IN()}
   {:else}

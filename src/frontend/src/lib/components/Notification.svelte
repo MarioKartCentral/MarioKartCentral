@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Notification } from '$lib/types/notification';
-  import { onMount } from 'svelte';
-  import { have_unread_notification } from '$lib/stores/stores';
+  import { have_unread_notification, user } from '$lib/stores/stores';
   import DropdownMenu from './DropdownMenu.svelte';
   import Dropdown from './common/Dropdown.svelte';
   import DropdownItem from './common/DropdownItem.svelte';
@@ -9,6 +8,7 @@
   import { goto } from '$app/navigation';
   import NotificationContent from './common/NotificationContent.svelte';
   import { DropdownDivider, DropdownHeader } from 'flowbite-svelte';
+  import type { UserInfo } from '$lib/types/user-info';
 
   const maxBellNotifications = 5;
   let dropdown: DropdownMenu;
@@ -22,26 +22,27 @@
   }
   $: hasUnread = notifications.some(n => !n.is_read);
 
-  let isInitialLoad = true;
+  // subscribing to have_unread_notification syncs with notifications in the /notifications page
+  let fetched = false;
   have_unread_notification.subscribe(() => {
-    // This is to sync the notifications whenever the user is on the /notifications
-    // page and decides to mark a notification as read/unread
-    if (!isInitialLoad)
+    if (fetched)
       fetchUnreadNotifications();
-    isInitialLoad = false;
+    fetched = true;
   })
 
-  onMount(() => {
-    fetchUnreadNotifications();
+  // subscribing to user allows us to only fetch notifications if the user is logged in
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+      user_info = value;
   });
+  $: user_info.id !== null && fetchUnreadNotifications();
   
   async function fetchUnreadNotifications() {
     const res = await fetch('/api/notifications/list?is_read=0');
     if (res.status !== 200) {
       return;
     }
-    const body = (await res.json()) as Notification[];
-    notifications = body
+    notifications = await res.json()
   }
 
   async function makeNotificationAsRead(id: number) {
@@ -74,11 +75,11 @@
 <Dropdown>
   <div class="wrapper">
     {#if notifications.length === 0}
-      <DropdownHeader divClass="py-2 px-4 text-white">{$LL.NOTIFICATION.NO_UNREAD()}</DropdownHeader>
+      <DropdownHeader divClass="py-2 px-4 text-white"><div class="text-center">{$LL.NOTIFICATION.NO_UNREAD()}</div></DropdownHeader>
     {/if}
     {#each notifications as { id, type, content_id, content_args, link, created_date, is_read}, idx}
       {#if idx < maxBellNotifications}
-        <DropdownItem on:click={(e) => {console.log(e.target); handleClick(id, link)}}>
+        <DropdownItem on:click={() => handleClick(id, link)}>
           <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
         </DropdownItem>
         {#if idx === maxBellNotifications - 1 && notifications.length > maxBellNotifications}
