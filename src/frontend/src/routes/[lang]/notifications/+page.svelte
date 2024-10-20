@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type { Notification } from '$lib/types/notification';
   import Section from "$lib/components/common/Section.svelte";
   import LL from '$i18n/i18n-svelte';
