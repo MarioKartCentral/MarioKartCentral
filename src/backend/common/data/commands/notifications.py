@@ -112,7 +112,7 @@ class GetUnreadNotificationsCountCommand(Command[int]):
 class DispatchNotificationCommand(Command[int]):
     user_ids: list[int]
     content_id: int
-    content_args: list[str]
+    content_args: dict[str, str]
     link: str | None
     notification_type: int = 0
 

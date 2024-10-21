@@ -7,7 +7,7 @@
 
   export let type: number;
   export let content_id: number;
-  export let content_args: string[];
+  export let content_args: { [key: string]: string };
   export let created_date: number;
   export let is_read: boolean;
 
@@ -15,29 +15,8 @@
     dateStyle: 'medium',
     timeStyle: 'short',
   };
-
-  function formatNotificationContent(contentId: number, contentArgs: (string | null)[]) {
-    const contentLookup: { [key: string]: () => string } = $LL.NOTIFICATION_CONTENT; // this makes the linter happy
-    let content = contentLookup[contentId.toString()]();
-
-    // special cases for when squad name is null
-    if (contentId === 2 && !contentArgs[0])
-      content = contentLookup['2b']();
-
-    for (let word of content.split(" ")) {
-      if (!word.startsWith('$'))
-        continue;
-      const idx = parseInt(word.substring(1));
-      let arg = contentArgs[idx] || "_";
-      if (arg.startsWith('DATE-')) {
-        const timestamp = parseInt(arg.replace('DATE-', '')) * 1000;
-        arg = new Date(timestamp).toLocaleString($locale, options);
-      }
-      content = content.replace(`$${idx}`, `<strong>${arg}</strong>`);
-    }
-
-    return content;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const notificationContent: any = $LL.NOTIFICATION_CONTENT;
 </script>
 
 <div class="container">
@@ -57,9 +36,9 @@
     <div class="date">
       {new Date(created_date * 1000).toLocaleString($locale, options)}
     </div>
-    <p> 
-      <!-- eslint-disable-next-line -->
-      {@html DOMPurify.sanitize(formatNotificationContent(content_id, content_args), {ALLOWED_TAGS: ['strong']})}
+    <p>
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      {@html DOMPurify.sanitize(notificationContent[content_id.toString()](content_args), {ALLOWED_TAGS: ['strong']})}
     </p>
   </div>
 </div>

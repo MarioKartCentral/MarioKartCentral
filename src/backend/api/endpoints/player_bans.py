@@ -17,7 +17,8 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
         unban_date_text = 'Indefinite' if body.is_indefinite else f'DATE-{body.expiration_date}'
-        await handle(DispatchNotificationCommand([user_id], notifications.BANNED , [body.reason, unban_date_text], f'/registry/players/profile?id={player_id}', notifications.CRITICAL))
+        content_args = {'reason': body.reason, 'date': unban_date_text}
+        await handle(DispatchNotificationCommand([user_id], notifications.BANNED , content_args, f'/registry/players/profile?id={player_id}', notifications.CRITICAL))
 
     player_id = request.path_params['id']
     banned_by_id = request.state.user.id
@@ -31,7 +32,7 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
 async def unban_player(request: Request) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.UNBANNED, [], f'/registry/players/profile?id={player_id}', notifications.INFO))
+        await handle(DispatchNotificationCommand([user_id], notifications.UNBANNED, {}, f'/registry/players/profile?id={player_id}', notifications.INFO))
 
     player_id = request.path_params['id']
     unbanned_by_id = request.state.user.id
@@ -49,7 +50,8 @@ async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Respo
             if cur_ban.reason != body.reason or cur_ban.is_indefinite != body.is_indefinite or cur_ban.expiration_date != body.expiration_date:
                 unban_date_text = 'Indefinite' if body.is_indefinite else f'DATE-{body.expiration_date}'
                 user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
-                await handle(DispatchNotificationCommand([user_id], notifications.BAN_CHANGE, [body.reason, unban_date_text], f'/registry/players/profile?id={player_id}', notifications.WARNING))
+                content_args = {'reason': body.reason, 'date': unban_date_text}
+                await handle(DispatchNotificationCommand([user_id], notifications.BAN_CHANGE, content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
 
     player_id = request.path_params['id']
     banned_by_id = request.state.user.id

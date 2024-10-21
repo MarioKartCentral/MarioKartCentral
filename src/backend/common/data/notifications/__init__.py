@@ -1,6 +1,6 @@
 
 # content_ids
-# the actual content is found in frontend/src/i18n/en-us (and other localizatiosn)
+# the actual content is found in frontend/src/i18n/en-us (and other localizations)
 BANNED = 0
 UNBANNED = 1
 TOURNAMENT_INVITE = 2
@@ -46,12 +46,11 @@ STAFF_ROSTER_EDIT = 41
 STAFF_REGISTER_TEAM = 42
 STAFF_UNREGISTER_TEAM = 43
 STAFF_CREATE_SQUAD = 44
-STAFF_REGISTER_PLAYER = 45
-STAFF_EDIT_PLAYER_REGISTRATION = 46
-STAFF_APPROVE_TRANSFER = 47
-STAFF_DENY_TRANSFER = 48
-BAN_CHANGE = 49
-STAFF_KICK_PLAYER = 50
+STAFF_EDIT_PLAYER_REGISTRATION = 45
+STAFF_APPROVE_TRANSFER = 46
+STAFF_DENY_TRANSFER = 47
+BAN_CHANGE = 48
+STAFF_KICK_PLAYER = 49
 
 # types
 INFO = 0 # blue rounded ℹ️ icon

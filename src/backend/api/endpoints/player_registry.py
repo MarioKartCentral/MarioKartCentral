@@ -54,7 +54,7 @@ async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSON
 async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.FORCE_ADD_FRIEND_CODE, [body.game], f'/registry/players/profile?id={body.player_id}', notifications.INFO))
+        await handle(DispatchNotificationCommand([user_id], notifications.FORCE_ADD_FRIEND_CODE, {'game': body.game}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = CreateFriendCodeCommand(body.player_id, body.fc, body.game, False, body.is_primary, True, body.description, True)
     await handle(command)
@@ -66,7 +66,7 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
     async def notify():
         game = await handle(GetGameFromPlayerFCCommand(body.id))
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.FORCE_EDIT_FRIEND_CODE, [game], f'/registry/players/profile?id={body.player_id}', notifications.INFO))
+        await handle(DispatchNotificationCommand([user_id], notifications.FORCE_EDIT_FRIEND_CODE, {'game': game}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = EditFriendCodeCommand(body.player_id, body.id, body.fc, body.is_primary, body.is_active, body.description)
     await handle(command)
@@ -92,7 +92,7 @@ async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestDat
 async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.FORCE_PRIMARY_FRIEND_CODE, [], f'/registry/players/profile?id={body.player_id}', notifications.INFO))
+        await handle(DispatchNotificationCommand([user_id], notifications.FORCE_PRIMARY_FRIEND_CODE, {}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = SetPrimaryFCCommand(body.id, body.player_id)
     await handle(command)
@@ -116,7 +116,7 @@ async def get_pending_player_name_requests(request: Request) -> JSONResponse:
 async def approve_player_name_request(request: Request, body: ApprovePlayerNameRequestData) -> JSONResponse:
     async def notify():
         data = await handle(GetNotificationDataFromNameChangeRequestCommand(body.request_id))
-        await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_APPROVED, [], f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
+        await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_APPROVED, {}, f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
 
     command = ApprovePlayerNameRequestCommand(body.request_id)
     await handle(command)
@@ -127,7 +127,7 @@ async def approve_player_name_request(request: Request, body: ApprovePlayerNameR
 async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequestData) -> JSONResponse:
     async def notify():
         data = await handle(GetNotificationDataFromNameChangeRequestCommand(body.request_id))
-        await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_DENIED, [], f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
+        await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_DENIED, {}, f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
 
     command = DenyPlayerNameRequestCommand(body.request_id)
     await handle(command)

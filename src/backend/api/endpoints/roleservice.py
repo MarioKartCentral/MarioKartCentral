@@ -26,7 +26,7 @@ async def grant_role_to_player(request: Request, body: GrantRoleRequestData) -> 
     async def notify():
         if body.role_name != BANNED:
             user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-            await handle(DispatchNotificationCommand([user_id], notifications.ROLE_ADD, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
+            await handle(DispatchNotificationCommand([user_id], notifications.ROLE_ADD, {'role': body.role_name}, f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
 
     user_id = request.state.user.id
     command = GrantRoleCommand(user_id, body.player_id, body.role_name, body.expires_on)
@@ -39,7 +39,7 @@ async def remove_role_from_player(request: Request, body: RemoveRoleRequestData)
     async def notify():
         if body.role_name != BANNED:
             user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-            await handle(DispatchNotificationCommand([user_id], notifications.ROLE_REMOVE, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.WARNING))
+            await handle(DispatchNotificationCommand([user_id], notifications.ROLE_REMOVE, {'role': body.role_name}, f'/registry/players/profile?id={body.player_id}', notifications.WARNING))
 
     user_id = request.state.user.id
     command = RemoveRoleCommand(user_id, body.player_id, body.role_name)
@@ -63,7 +63,8 @@ async def grant_team_role_to_player(request: Request, body: GrantRoleRequestData
     async def notify():
         uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         team_name = await handle(GetTeamNameFromIdCommand(team_id))
-        await handle(DispatchNotificationCommand([uid], notifications.TEAM_ROLE_ADD, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
+        content_args = {'role': body.role_name, 'team_name': team_name}
+        await handle(DispatchNotificationCommand([uid], notifications.TEAM_ROLE_ADD, content_args, f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
 
     user_id = request.state.user.id
     team_id = request.path_params['team_id']
@@ -77,7 +78,8 @@ async def remove_team_role_from_player(request: Request, body: RemoveRoleRequest
     async def notify():
         uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         team_name = await handle(GetTeamNameFromIdCommand(team_id))
-        await handle(DispatchNotificationCommand([int(uid)], notifications.TEAM_ROLE_REMOVE, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
+        content_args = {'role': body.role_name, 'team_name': team_name}
+        await handle(DispatchNotificationCommand([int(uid)], notifications.TEAM_ROLE_REMOVE, content_args, f'/registry/teams/profile?id={team_id}', notifications.WARNING))
 
     user_id = request.state.user.id
     team_id = request.path_params['team_id']
@@ -103,7 +105,8 @@ async def grant_series_role_to_player(request: Request, body: GrantRoleRequestDa
         uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         series_name = await handle(GetSeriesNameFromIdCommand(series_id))
         notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
-        await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_ADD, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notif_type))
+        content_args = {'role': body.role_name, 'series_name': series_name}
+        await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_ADD, content_args, f'/tournaments/series/details?id={series_id}', notif_type))
 
     user_id = request.state.user.id
     series_id = request.path_params['series_id']
@@ -117,7 +120,8 @@ async def remove_series_role_from_player(request: Request, body: RemoveRoleReque
     async def notify():
         uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         series_name = await handle(GetSeriesNameFromIdCommand(series_id))
-        await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_REMOVE, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notifications.WARNING))
+        content_args = {'role': body.role_name, 'series_name': series_name}
+        await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_REMOVE, content_args, f'/tournaments/series/details?id={series_id}', notifications.WARNING))
 
     user_id = request.state.user.id
     series_id = request.path_params['series_id']
@@ -143,7 +147,8 @@ async def grant_tournament_role_to_player(request: Request, body: GrantRoleReque
         uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
         notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
-        await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notif_type))
+        content_args = {'role': body.role_name, 'tournament_name': tournament_name}
+        await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, content_args, f'/tournaments/details?id={tournament_id}', notif_type))
 
     user_id = request.state.user.id
     tournament_id = request.path_params['tournament_id']
@@ -157,7 +162,8 @@ async def remove_tournament_role_from_player(request: Request, body: RemoveRoleR
     async def notify():
         uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
-        await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_REMOVE, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+        content_args = {'role': body.role_name, 'tournament_name': tournament_name}
+        await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_REMOVE, content_args, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     user_id = request.state.user.id
     tournament_id = request.path_params['tournament_id']

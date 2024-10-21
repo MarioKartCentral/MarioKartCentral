@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal, List
+from typing import Literal
 
 
 @dataclass
@@ -7,7 +7,7 @@ class Notification:
     id: int
     type: int
     content_id: int
-    content_args: List[str]
+    content_args: dict[str, str]
     link: str
     created_date: int
     is_read: bool

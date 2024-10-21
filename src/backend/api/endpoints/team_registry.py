@@ -41,7 +41,7 @@ async def view_team(request: Request) -> JSONResponse:
 async def edit_team(request: Request, body: EditTeamRequestData) -> JSONResponse:
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(body.team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.STAFF_TEAM_EDIT, [team_name], f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
+        await handle(DispatchNotificationCommand(user_ids, notifications.STAFF_TEAM_EDIT, {'team_name': team_name}, f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
 
     try: # get data before edit
         team_name = await handle(GetTeamNameFromIdCommand(body.team_id))
@@ -59,7 +59,7 @@ async def approve_team(request: Request) -> JSONResponse:
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
         team_name = await handle(GetTeamNameFromIdCommand(team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_APPROVED , [team_name], f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_APPROVED , {'team_name': team_name}, f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
 
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'approved')
@@ -71,7 +71,7 @@ async def deny_team(request: Request) -> JSONResponse:
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
         team_name = await handle(GetTeamNameFromIdCommand(team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_DENIED , [team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_DENIED , {'team_name': team_name}, f'/registry/teams/profile?id={team_id}', notifications.WARNING))
 
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'denied')
@@ -100,7 +100,7 @@ async def approve_team_edit_request(request: Request, body: ApproveTeamEditReque
     async def notify():
         data = await handle(GetNotificationTeamDataFromEditRequestCommand(body.request_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_ACCEPTED, [data.team_name], f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_ACCEPTED, {'team_name': data.team_name}, f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
 
     command = ApproveTeamEditCommand(body.request_id)
     await handle(command)
@@ -112,7 +112,7 @@ async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData
     async def notify():
         data = await handle(GetNotificationTeamDataFromEditRequestCommand(body.request_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_DENIED, [data.team_name], f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_DENIED, {'team_name': data.team_name}, f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
 
     command = DenyTeamEditCommand(body.request_id)
     await handle(command)
@@ -145,7 +145,8 @@ async def request_create_roster(request: Request, body: RequestCreateRosterReque
 async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResponse:
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(body.team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.STAFF_ROSTER_EDIT, [data.roster_name or data.team_name], f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.STAFF_ROSTER_EDIT, content_args, f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
 
     try: # get data before edit
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
@@ -175,7 +176,8 @@ async def request_edit_roster(request: Request, body: RequestEditRosterRequestDa
 @require_permission(permissions.MANAGE_TEAMS)
 async def approve_roster_edit_request(request: Request, body: EditRosterChangeRequestData) -> JSONResponse:
     async def notify():
-        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_ACCEPTED, [data.roster_name or data.team_name], f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_ACCEPTED, content_args, f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
 
     try: # get data before edit
         data = await handle(GetNotificationTeamRosterDataFromRosterEditRequestCommand(body.request_id)) # get data before edit
@@ -191,7 +193,8 @@ async def approve_roster_edit_request(request: Request, body: EditRosterChangeRe
 @require_permission(permissions.MANAGE_TEAMS)
 async def deny_roster_edit_request(request: Request, body: EditRosterChangeRequestData) -> JSONResponse:
     async def notify():
-        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_DENIED, [data.roster_name or data.team_name], f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_DENIED, content_args, f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
 
     try: # get data before edit
         data = await handle(GetNotificationTeamRosterDataFromRosterEditRequestCommand(body.request_id))
@@ -210,7 +213,8 @@ async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.TEAM_INVITE , [data.roster_name or data.team_name], '/registry/invites', notifications.SUCCESS))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.TEAM_INVITE , content_args, '/registry/invites', notifications.SUCCESS))
 
     command = InvitePlayerCommand(body.player_id, body.roster_id, body.team_id, body.is_bagger_clause)
     await handle(command)
@@ -234,7 +238,8 @@ async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> 
 @require_permission(permissions.JOIN_TEAM, check_denied_only=True)
 async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
     async def notify():
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_INVITE_ACCEPTED, [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={request.state.user.player_id}', notifications.SUCCESS))
+        content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_INVITE_ACCEPTED, content_args, f'/registry/players/profile?id={request.state.user.player_id}', notifications.SUCCESS))
 
     try: # get data before main command
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
@@ -250,7 +255,8 @@ async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -
 @require_logged_in
 async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> JSONResponse:
     async def notify():
-        await handle(DispatchNotificationCommand(user_ids, notifications.DECLINE_INVITE, [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={request.state.user.player_id}', notifications.WARNING))
+        content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.DECLINE_INVITE, content_args, f'/registry/players/profile?id={request.state.user.player_id}', notifications.WARNING))
 
     try: # get data before main command
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
@@ -270,7 +276,8 @@ async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResp
         player_name = await handle(GetPlayerNameCommand(player_id,))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_PLAYER_LEFT , [player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={player_id}', notifications.WARNING))
+        content_args = {'player_name': player_name, 'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_PLAYER_LEFT , content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
 
     command = LeaveRosterCommand(request.state.user.player_id, body.roster_id)
     await handle(command)
@@ -282,8 +289,10 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
         player_user_id = await handle(GetUserIdFromPlayerIdCommand(data.player_id))
-        await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_APPROVE_TRANSFER, [data.roster_name or data.team_name], f'/registry/teams/profile?id={data.player_id}', notifications.SUCCESS))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={data.team_id}', notifications.SUCCESS))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_APPROVE_TRANSFER, content_args, f'/registry/teams/profile?id={data.player_id}', notifications.SUCCESS))
+        content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , content_args, f'/registry/players/profile?id={data.team_id}', notifications.SUCCESS))
 
     try: # get data before main command
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
@@ -301,8 +310,10 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
         player_user_id = await handle(GetUserIdFromPlayerIdCommand(data.player_id))
-        await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_DENY_TRANSFER, [data.roster_name or data.team_name], f'/registry/teams/profile?id={data.player_id}', notifications.WARNING))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_DENIED , [data.player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_DENY_TRANSFER, content_args, f'/registry/teams/profile?id={data.player_id}', notifications.WARNING))
+        content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_DENIED , content_args, f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
 
     try: # get data before main command
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
@@ -346,7 +357,8 @@ async def force_transfer_player(request: Request, body: ForceTransferPlayerReque
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(body.team_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , [player_name, data.roster_name or data.team_name], f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
+        content_args = {'player_name': player_name, 'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , content_args, f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
 
     command = ForceTransferPlayerCommand(body.player_id, body.roster_id, body.team_id, body.roster_leave_id, body.is_bagger_clause)
     await handle(command)
@@ -365,7 +377,8 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.TEAM_KICKED , [data.roster_name or data.team_name], f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.TEAM_KICKED , content_args, f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
 
     timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp, None)
@@ -380,8 +393,10 @@ async def mod_kick_player(request: Request, body: KickPlayerRequestData) -> JSON
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
         team_leader_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(body.team_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.TEAM_KICKED , [data.roster_name or data.team_name], f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
-        await handle(DispatchNotificationCommand(team_leader_ids, notifications.STAFF_KICK_PLAYER, [player_name, data.team_name], f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.TEAM_KICKED , content_args, f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
+        content_args = {'player_name': player_name, 'team_name': data.team_name}
+        await handle(DispatchNotificationCommand(team_leader_ids, notifications.STAFF_KICK_PLAYER, content_args, f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
 
     timestamp = int(datetime.now(timezone.utc).timestamp())
     command = EditTeamMemberCommand(body.player_id, body.roster_id, body.team_id, None, timestamp, None)
@@ -412,7 +427,8 @@ async def approve_roster(request: Request) -> JSONResponse:
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
         data = await handle(GetNotificationTeamRosterDataCommand(roster_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_APPROVED , [data.roster_name or data.team_name], f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_APPROVED , content_args, f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
 
     team_id = request.path_params['team_id']
     roster_id = request.path_params['rosterId']
@@ -425,7 +441,8 @@ async def deny_roster(request: Request) -> JSONResponse:
     async def notify():
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(team_id))
         data = await handle(GetNotificationTeamRosterDataCommand(roster_id))
-        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_DENIED , [data.roster_name or data.team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
+        content_args = {'roster_name': data.roster_name or data.team_name}
+        await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_DENIED , content_args, f'/registry/teams/profile?id={team_id}', notifications.WARNING))
 
     team_id = request.path_params['team_id']
     roster_id = request.path_params['rosterId']

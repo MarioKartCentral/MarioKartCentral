@@ -41,7 +41,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
     async def notify():
         if squad_id:
             data = await handle(GetNotificationSquadDataCommand(tournament_id, squad_id))
-            await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_REGISTER_TEAM, [data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
+            await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_REGISTER_TEAM, {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
@@ -57,7 +57,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     async def notify():
         tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.STAFF_CREATE_SQUAD, [tournament_name], f'/tournaments/details?id={tournament_id}', notifications.INFO))
+        await handle(DispatchNotificationCommand([user_id], notifications.STAFF_CREATE_SQUAD, {'tournament_name': tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.INFO))
 
     tournament_id = request.path_params['tournament_id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, tournament_id, 
@@ -92,7 +92,8 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_INVITE , [data.squad_name or '', data.tournament_name], '/registry/invites', notifications.SUCCESS))
+        content_args = {'squad_name': data.squad_name or '', 'tournament_name': data.tournament_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_INVITE , content_args, '/registry/invites', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
@@ -125,8 +126,9 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         if body.squad_id:
             data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-            await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_STAFF_REGISTERED_CAPTAIN_NOTIF , [player_name, data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.INFO))
-            await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_STAFF_REGISTERED , [data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
+            content_args = {'player_name': player_name, 'tournament_name': data.tournament_name}
+            await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_STAFF_REGISTERED_CAPTAIN_NOTIF , content_args, f'/tournaments/details?id={tournament_id}', notifications.INFO))
+            await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_STAFF_REGISTERED , {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.squad_id, body.is_squad_captain, body.is_checked_in, 
@@ -140,7 +142,7 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     async def notify():
         tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.STAFF_EDIT_PLAYER_REGISTRATION , [tournament_name], f'/tournaments/details?id={tournament_id}', notifications.INFO))
+        await handle(DispatchNotificationCommand([user_id], notifications.STAFF_EDIT_PLAYER_REGISTRATION , {'tournament_name': tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.INFO))
 
     tournament_id = request.path_params['tournament_id']
     command = EditPlayerRegistrationCommand(tournament_id, body.squad_id, body.player_id, body.mii_name, body.can_host,
@@ -169,7 +171,8 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     async def notify():
         player_name = await handle(GetPlayerNameCommand(player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_INVITE_ACCEPTED , [player_name, data.tournament_name], f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
+        content_args = {'player_name': player_name, 'tournament_name': data.tournament_name}
+        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_INVITE_ACCEPTED , content_args, f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
@@ -189,7 +192,8 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
     async def notify():
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
         player_name = await handle(GetPlayerNameCommand(player_id))
-        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.DECLINE_INVITE , [player_name, data.squad_name or data.tournament_name], f'/registry/players/profile?id={player_id}', notifications.WARNING))
+        content_args = {'player_name': player_name, 'squad_name': data.squad_name or data.tournament_name}
+        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.DECLINE_INVITE , content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
@@ -204,7 +208,8 @@ async def remove_player_from_squad(request: Request, body: KickSquadPlayerReques
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_KICKED , [data.squad_name or data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+        content_args = {'squad_name': data.squad_name or data.tournament_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_KICKED , content_args, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
@@ -233,8 +238,9 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         if body.squad_id:
             data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-            await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_STAFF_UNREGISTERED_CAPTAIN_NOTIF , [player_name, data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
-            await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_STAFF_UNREGISTERED , [data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+            content_args = {'player_name': player_name, 'tournament_name': data.tournament_name}
+            await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_STAFF_UNREGISTERED_CAPTAIN_NOTIF , content_args, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+            await handle(DispatchNotificationCommand([user_id], notifications.TOURNAMENT_STAFF_UNREGISTERED , {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
     command = UnregisterPlayerCommand(tournament_id, body.squad_id, body.player_id, True)
@@ -247,7 +253,8 @@ async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.CHANGE_SQUAD_CAPTAIN, [data.squad_name or data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
+        content_args = {'squad_name': data.squad_name or data.tournament_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.CHANGE_SQUAD_CAPTAIN, content_args, f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
@@ -263,7 +270,8 @@ async def add_team_representative(request: Request, body: MakeCaptainRequestData
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.ADD_REPRESENTATIVE, [data.squad_name or data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
+        content_args = {'squad_name': data.squad_name or data.tournament_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.ADD_REPRESENTATIVE, content_args, f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
@@ -279,7 +287,8 @@ async def remove_team_representative(request: Request, body: MakeCaptainRequestD
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.REMOVE_REPRESENTATIVE, [data.squad_name or data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+        content_args = {'squad_name': data.squad_name or data.tournament_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.REMOVE_REPRESENTATIVE, content_args, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
@@ -304,7 +313,7 @@ async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
     async def notify():
-        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_UNREGISTER_TEAM, [data.tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_UNREGISTER_TEAM, {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
 
