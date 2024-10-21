@@ -820,7 +820,7 @@ type RootTranslation = {
 	}
 	NOTIFICATION_CONTENT: {
 		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​$​0​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​$​1​.
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​$​0​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​$​1
 		 */
 		'0': string
 		/**
@@ -1016,9 +1016,13 @@ type RootTranslation = {
 		 */
 		'48': string
 		/**
-		 * Y​o​u​r​ ​b​a​n​ ​d​u​r​a​t​i​o​n​ ​h​a​s​ ​b​e​e​n​ ​u​p​d​a​t​e​d​.​ ​U​n​b​a​n​ ​d​a​t​e​:​ ​$​0​.
+		 * Y​o​u​r​ ​b​a​n​ ​h​a​s​ ​b​e​e​n​ ​u​p​d​a​t​e​d​.​ ​R​e​a​s​o​n​:​ ​$​0​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​$​1
 		 */
 		'49': string
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​k​i​c​k​e​d​ ​$​0​ ​f​r​o​m​ ​y​o​u​r​ ​t​e​a​m​ ​$​1​.
+		 */
+		'50': string
 		/**
 		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​a​ ​s​q​u​a​d​ ​f​o​r​ ​$​1​!
 		 */
@@ -2827,7 +2831,7 @@ export type TranslationFunctions = {
 	}
 	NOTIFICATION_CONTENT: {
 		/**
-		 * You have been banned and may not participate in MKCentral competitions. Reason: $0. Unban Date: $1.
+		 * You have been banned and may not participate in MKCentral competitions. Reason: $0. Unban Date: $1
 		 */
 		'0': () => LocalizedString
 		/**
@@ -3023,9 +3027,13 @@ export type TranslationFunctions = {
 		 */
 		'48': () => LocalizedString
 		/**
-		 * Your ban duration has been updated. Unban date: $0.
+		 * Your ban has been updated. Reason: $0. Unban Date: $1
 		 */
 		'49': () => LocalizedString
+		/**
+		 * A moderator has kicked $0 from your team $1.
+		 */
+		'50': () => LocalizedString
 		/**
 		 * You have been invited to a squad for $1!
 		 */

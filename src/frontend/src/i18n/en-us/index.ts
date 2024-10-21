@@ -275,6 +275,7 @@ const en_us: BaseTranslation & Translation = {
     '47': 'A moderator has approved your team transfer to $0!',
     '48': 'Your team transfer to $0 has been denied.',
     '49': 'Your ban has been updated. Reason: $0. Unban Date: $1',
+    '50': 'A moderator has kicked $0 from your team $1.',
   },
   COUNTRIES: {
     AF: 'Afghanistan',

@@ -1,5 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
+from starlette.background import BackgroundTask
 from api.auth import require_permission, require_team_permission, require_series_permission, require_tournament_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
@@ -22,24 +23,28 @@ async def role_info(request: Request) -> JSONResponse:
 @bind_request_body(GrantRoleRequestData)
 @require_permission(permissions.MANAGE_USER_ROLES)
 async def grant_role_to_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
+    async def notify():
+        if body.role_name != BANNED:
+            user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+            await handle(DispatchNotificationCommand([user_id], notifications.ROLE_ADD, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
+
     user_id = request.state.user.id
     command = GrantRoleCommand(user_id, body.player_id, body.role_name, body.expires_on)
     await handle(command)
-    if body.role_name != BANNED:
-        user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.ROLE_ADD, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.SUCCESS))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(RemoveRoleRequestData)
 @require_permission(permissions.MANAGE_USER_ROLES)
 async def remove_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
+    async def notify():
+        if body.role_name != BANNED:
+            user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+            await handle(DispatchNotificationCommand([user_id], notifications.ROLE_REMOVE, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.WARNING))
+
     user_id = request.state.user.id
     command = RemoveRoleCommand(user_id, body.player_id, body.role_name)
     await handle(command)
-    if body.role_name != BANNED:
-        user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-        await handle(DispatchNotificationCommand([user_id], notifications.ROLE_REMOVE, [body.role_name], f'/registry/players/profile?id={body.player_id}', notifications.WARNING))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 async def list_team_roles(request: Request) -> JSONResponse:
     roles = await handle(ListTeamRolesCommand())
@@ -55,26 +60,30 @@ async def team_role_info(request: Request) -> JSONResponse:
 @bind_request_body(GrantRoleRequestData)
 @require_team_permission(team_permissions.MANAGE_TEAM_ROLES)
 async def grant_team_role_to_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
+    async def notify():
+        uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        team_name = await handle(GetTeamNameFromIdCommand(team_id))
+        await handle(DispatchNotificationCommand([uid], notifications.TEAM_ROLE_ADD, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
+
     user_id = request.state.user.id
     team_id = request.path_params['team_id']
     command = GrantTeamRoleCommand(user_id, body.player_id, team_id, body.role_name, body.expires_on)
     await handle(command)
-    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-    team_name = await handle(GetTeamNameFromIdCommand(team_id))
-    await handle(DispatchNotificationCommand([uid], notifications.TEAM_ROLE_ADD, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.SUCCESS))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(RemoveRoleRequestData)
 @require_team_permission(team_permissions.MANAGE_TEAM_ROLES)
 async def remove_team_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
+    async def notify():
+        uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        team_name = await handle(GetTeamNameFromIdCommand(team_id))
+        await handle(DispatchNotificationCommand([int(uid)], notifications.TEAM_ROLE_REMOVE, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
+
     user_id = request.state.user.id
     team_id = request.path_params['team_id']
     command = RemoveTeamRoleCommand(user_id, body.player_id, team_id, body.role_name)
     await handle(command)
-    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-    team_name = await handle(GetTeamNameFromIdCommand(team_id))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.TEAM_ROLE_REMOVE, [body.role_name, team_name], f'/registry/teams/profile?id={team_id}', notifications.WARNING))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 async def list_series_roles(request: Request) -> JSONResponse:
     roles = await handle(ListSeriesRolesCommand())
@@ -90,27 +99,31 @@ async def series_role_info(request: Request) -> JSONResponse:
 @bind_request_body(GrantRoleRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_ROLES)
 async def grant_series_role_to_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
+    async def notify():
+        uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        series_name = await handle(GetSeriesNameFromIdCommand(series_id))
+        notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
+        await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_ADD, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notif_type))
+
     user_id = request.state.user.id
     series_id = request.path_params['series_id']
     command = GrantSeriesRoleCommand(user_id, body.player_id, series_id, body.role_name, body.expires_on)
     await handle(command)
-    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-    series_name = await handle(GetSeriesNameFromIdCommand(series_id))
-    notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
-    await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_ADD, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notif_type))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(RemoveRoleRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_ROLES)
 async def remove_series_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
+    async def notify():
+        uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        series_name = await handle(GetSeriesNameFromIdCommand(series_id))
+        await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_REMOVE, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notifications.WARNING))
+
     user_id = request.state.user.id
     series_id = request.path_params['series_id']
     command = RemoveSeriesRoleCommand(user_id, body.player_id, series_id, body.role_name)
     await handle(command)
-    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-    series_name = await handle(GetSeriesNameFromIdCommand(series_id))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.SERIES_ROLE_REMOVE, [body.role_name, series_name], f'/tournaments/series/details?id={series_id}', notifications.WARNING))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 async def list_tournament_roles(request: Request) -> JSONResponse:
     roles = await handle(ListTournamentRolesCommand())
@@ -126,27 +139,31 @@ async def tournament_role_info(request: Request) -> JSONResponse:
 @bind_request_body(GrantRoleRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_ROLES)
 async def grant_tournament_role_to_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
+    async def notify():
+        uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
+        notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
+        await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notif_type))
+
     user_id = request.state.user.id
     tournament_id = request.path_params['tournament_id']
     command = GrantTournamentRoleCommand(user_id, body.player_id, tournament_id, body.role_name, body.expires_on)
     await handle(command)
-    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-    tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
-    notif_type = notifications.CRITICAL if "Ban" in body.role_name else notifications.SUCCESS
-    await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_ADD, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notif_type))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(RemoveRoleRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_ROLES)
 async def remove_tournament_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
+    async def notify():
+        uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
+        await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_REMOVE, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
+
     user_id = request.state.user.id
     tournament_id = request.path_params['tournament_id']
     command = RemoveTournamentRoleCommand(user_id, body.player_id, tournament_id, body.role_name)
     await handle(command)
-    uid = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
-    tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
-    await handle(DispatchNotificationCommand([int(uid)], notifications.TOURNAMENT_ROLE_REMOVE, [body.role_name, tournament_name], f'/tournaments/details?id={tournament_id}', notifications.WARNING))
-    return JSONResponse({})
+    return JSONResponse({}, background=BackgroundTask(notify))
 
 routes = [
     Route('/api/roles', list_roles),
