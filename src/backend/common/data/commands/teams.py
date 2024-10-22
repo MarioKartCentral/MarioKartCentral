@@ -1071,6 +1071,7 @@ class EditTeamMemberCommand(Command[None]):
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
                                     WHERE m.player_id = ? AND m.roster_id = ? AND t.id = ?
+                                    ORDER BY m.join_date DESC
                                     """, (self.player_id, self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
