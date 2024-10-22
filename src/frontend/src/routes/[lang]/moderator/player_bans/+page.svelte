@@ -139,7 +139,7 @@
     <BanListFilter bind:filter={banFilter} handleSubmit={() => updateBanList(false)}/>
     <div class="player-count">
       <PageNavigation bind:currentPage={currentBanPage} bind:totalPages={banListData.page_count} refresh_function={() => updateBanList(true)}/>
-      {banListData.ban_count} {banListData.ban_count === 1 ? $LL.PLAYER_BAN.PLAYER() : $LL.PLAYER_BAN.PLAYERS()}
+      {banListData.ban_count} {$LL.PLAYER_BAN.PLAYER(banListData.ban_count)}
     </div>
     <BanList banInfoDetailedArray={banListData.ban_list} />
   </Section>
@@ -148,7 +148,7 @@
     <BanListHistoricalFilter bind:filter={banHistoricalFilter} handleSubmit={() => updateHistoricalBanList(false)}/>
     <div class="player-count">
       <PageNavigation bind:currentPage={currentHistPage} bind:totalPages={historicalBanListData.page_count} refresh_function={() => updateHistoricalBanList(true)}/>
-      {historicalBanListData.ban_count} {historicalBanListData.ban_count === 1 ? $LL.PLAYER_BAN.PLAYER() : $LL.PLAYER_BAN.PLAYERS()}
+      {historicalBanListData.ban_count} {$LL.PLAYER_BAN.PLAYER(historicalBanListData.ban_count)}
     </div>
     <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
   </Section>
