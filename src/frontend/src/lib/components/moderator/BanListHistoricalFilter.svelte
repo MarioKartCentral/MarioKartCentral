@@ -17,7 +17,7 @@
 
 <form on:submit|preventDefault={handleSubmit}>
     <div>
-        <label for="player">{$LL.PLAYER_BAN.PLAYER()}</label> <br/>
+        <label for="player">{$LL.PLAYER_BAN.PLAYER(1)}</label> <br/>
         <input name='player' type='text' bind:value={filter.name} placeholder={$LL.PLAYER_BAN.SEARCH_BY_NAME()}/>
     </div>
     <div>

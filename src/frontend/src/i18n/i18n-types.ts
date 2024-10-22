@@ -480,21 +480,9 @@ type RootTranslation = {
 		 */
 		EDIT_BAN: string
 		/**
-		 * V​i​e​w​ ​/​ ​E​d​i​t​ ​B​a​n
-		 */
-		VIEW_EDIT_BAN: string
-		/**
 		 * U​n​b​a​n
 		 */
 		UNBAN: string
-		/**
-		 * B​a​n​ ​D​e​t​a​i​l​s
-		 */
-		BAN_DETAILS: string
-		/**
-		 * E​d​i​t​ ​B​a​n​ ​D​e​t​a​i​l​s
-		 */
-		EDIT_BAN_DETAILS: string
 		/**
 		 * B​a​n​n​e​d
 		 */
@@ -504,21 +492,30 @@ type RootTranslation = {
 		 */
 		UNBANNED: string
 		/**
+		 * V​i​e​w​ ​/​ ​E​d​i​t​ ​B​a​n
+		 */
+		VIEW_EDIT_BAN: string
+		/**
+		 * B​a​n​ ​D​e​t​a​i​l​s
+		 */
+		BAN_DETAILS: string
+		/**
+		 * E​d​i​t​ ​B​a​n​ ​D​e​t​a​i​l​s
+		 */
+		EDIT_BAN_DETAILS: string
+		/**
 		 * E​n​t​e​r​ ​r​e​a​s​o​n
 		 */
 		ENTER_REASON: string
 		/**
-		 * P​l​a​y​e​r
+		 * {​{​P​l​a​y​e​r​|​P​l​a​y​e​r​s​}​}
 		 */
 		PLAYER: string
 		/**
-		 * P​l​a​y​e​r​s
+		 * U​s​e​r​ ​{​u​s​e​r​I​d​}
+		 * @param {unknown} userId
 		 */
-		PLAYERS: string
-		/**
-		 * U​s​e​r
-		 */
-		USER: string
+		USER: RequiredParams<'userId'>
 		/**
 		 * T​h​e​ ​p​l​a​y​e​r​ ​i​s​ ​a​l​r​e​a​d​y​ ​b​a​n​n​e​d
 		 */
@@ -536,21 +533,15 @@ type RootTranslation = {
 		 */
 		LIST_OF_HISTORICAL_BANS: string
 		/**
-		 * d​a​y
+		 * {​c​o​u​n​t​}​ ​{​{​d​a​y​|​d​a​y​s​}​}
+		 * @param {string | number | boolean} count
 		 */
-		DAY: string
+		COUNT_DAYS: RequiredParams<'count'>
 		/**
-		 * d​a​y​s
+		 * (​I​n​ ​{​c​o​u​n​t​}​ ​{​{​d​a​y​|​d​a​y​s​}​}​)
+		 * @param {string | number | boolean} count
 		 */
-		DAYS: string
-		/**
-		 * I​n​ ​d​d​d​ ​d​a​y
-		 */
-		IN_DDD_DAY: string
-		/**
-		 * I​n​ ​d​d​d​ ​d​a​y​s
-		 */
-		IN_DDD_DAYS: string
+		IN_COUNT_DAYS: RequiredParams<'count'>
 		/**
 		 * Y​e​s
 		 */
@@ -2547,21 +2538,9 @@ export type TranslationFunctions = {
 		 */
 		EDIT_BAN: () => LocalizedString
 		/**
-		 * View / Edit Ban
-		 */
-		VIEW_EDIT_BAN: () => LocalizedString
-		/**
 		 * Unban
 		 */
 		UNBAN: () => LocalizedString
-		/**
-		 * Ban Details
-		 */
-		BAN_DETAILS: () => LocalizedString
-		/**
-		 * Edit Ban Details
-		 */
-		EDIT_BAN_DETAILS: () => LocalizedString
 		/**
 		 * Banned
 		 */
@@ -2571,21 +2550,29 @@ export type TranslationFunctions = {
 		 */
 		UNBANNED: () => LocalizedString
 		/**
+		 * View / Edit Ban
+		 */
+		VIEW_EDIT_BAN: () => LocalizedString
+		/**
+		 * Ban Details
+		 */
+		BAN_DETAILS: () => LocalizedString
+		/**
+		 * Edit Ban Details
+		 */
+		EDIT_BAN_DETAILS: () => LocalizedString
+		/**
 		 * Enter reason
 		 */
 		ENTER_REASON: () => LocalizedString
 		/**
-		 * Player
+		 * {{Player|Players}}
 		 */
-		PLAYER: () => LocalizedString
+		PLAYER: (arg0: number | string | boolean) => LocalizedString
 		/**
-		 * Players
+		 * User {userId}
 		 */
-		PLAYERS: () => LocalizedString
-		/**
-		 * User
-		 */
-		USER: () => LocalizedString
+		USER: (arg: { userId: unknown }) => LocalizedString
 		/**
 		 * The player is already banned
 		 */
@@ -2603,21 +2590,13 @@ export type TranslationFunctions = {
 		 */
 		LIST_OF_HISTORICAL_BANS: () => LocalizedString
 		/**
-		 * day
+		 * {count} {{day|days}}
 		 */
-		DAY: () => LocalizedString
+		COUNT_DAYS: (arg: { count: string | number | boolean }) => LocalizedString
 		/**
-		 * days
+		 * (In {count} {{day|days}})
 		 */
-		DAYS: () => LocalizedString
-		/**
-		 * In ddd day
-		 */
-		IN_DDD_DAY: () => LocalizedString
-		/**
-		 * In ddd days
-		 */
-		IN_DDD_DAYS: () => LocalizedString
+		IN_COUNT_DAYS: (arg: { count: string | number | boolean }) => LocalizedString
 		/**
 		 * Yes
 		 */
