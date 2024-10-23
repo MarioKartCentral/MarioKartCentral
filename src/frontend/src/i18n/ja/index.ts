@@ -241,7 +241,7 @@ const ja: Translation = {
     '8': 'A moderator kicked {player_name|bold} from your {tournament_name|bold} squad.',
     '9': 'You have been invited to {roster_name|bold}!',
     '10': '{player_name|bold} accepted their invitation to {roster_name|bold}. A moderator must approve this before they can play for your team.',
-    '11': '{player_name|bold} declined their invitation to {squad_name|bold}.',
+    '11': '{player_name|bold} declined their invitation to {roster_name|bold}.',
     '12': 'You have been kicked from {roster_name|bold}.',
     '13': 'Your team {team_name|bold} has been approved!',
     '14': 'Your team {team_name|bold} has been denied.',
@@ -280,6 +280,7 @@ const ja: Translation = {
     '47': 'Your team transfer to {roster_name|bold} has been denied.',
     '48': 'Your ban has been updated. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}',
     '49': 'A moderator has kicked {player_name|bold} from your team {team_name|bold}.',
+    '50': '{player_name|bold} declined their invitation to {squad_name|bold}.',
   },
   COUNTRIES: {
     AF: 'アフガニスタン',
