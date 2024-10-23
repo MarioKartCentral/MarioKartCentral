@@ -871,11 +871,11 @@ type RootTranslation = {
 		 */
 		'10': RequiredParams<'player_name|bold' | 'roster_name|bold'>
 		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
 		 * @param {unknown} player_name
-		 * @param {unknown} squad_name
+		 * @param {unknown} roster_name
 		 */
-		'11': RequiredParams<'player_name|bold' | 'squad_name|bold'>
+		'11': RequiredParams<'player_name|bold' | 'roster_name|bold'>
 		/**
 		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
 		 * @param {unknown} roster_name
@@ -1074,6 +1074,12 @@ type RootTranslation = {
 		 * @param {unknown} team_name
 		 */
 		'49': RequiredParams<'player_name|bold' | 'team_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} player_name
+		 * @param {unknown} squad_name
+		 */
+		'50': RequiredParams<'player_name|bold' | 'squad_name|bold'>
 	}
 	COUNTRIES: {
 		/**
@@ -2910,9 +2916,9 @@ export type TranslationFunctions = {
 		 */
 		'10': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
 		/**
-		 * {player_name|bold} declined their invitation to {squad_name|bold}.
+		 * {player_name|bold} declined their invitation to {roster_name|bold}.
 		 */
-		'11': (arg: { player_name: unknown, squad_name: unknown }) => LocalizedString
+		'11': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
 		/**
 		 * You have been kicked from {roster_name|bold}.
 		 */
@@ -3065,6 +3071,10 @@ export type TranslationFunctions = {
 		 * A moderator has kicked {player_name|bold} from your team {team_name|bold}.
 		 */
 		'49': (arg: { player_name: unknown, team_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} declined their invitation to {squad_name|bold}.
+		 */
+		'50': (arg: { player_name: unknown, squad_name: unknown }) => LocalizedString
 	}
 	COUNTRIES: {
 		/**

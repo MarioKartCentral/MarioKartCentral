@@ -115,6 +115,7 @@ const de: Translation = {
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
   },
+  // TODO
   PLAYER_BAN: {
     PLAYER_ID: 'Player ID',
     BANNED_BY: 'Banned By',
@@ -135,24 +136,21 @@ const de: Translation = {
     SELECT_REASON: 'Select Reason',
     BAN_PLAYER: 'Ban Player',
     EDIT_BAN: 'Edit Ban',
-    VIEW_EDIT_BAN: 'View / Edit Ban',
     UNBAN: 'Unban',
-    BAN_DETAILS: 'Ban Details',
-    EDIT_BAN_DETAILS: 'Edit Ban Details',
     BANNED: 'Banned',
     UNBANNED: 'Unbanned',
+    VIEW_EDIT_BAN: 'View / Edit Ban',
+    BAN_DETAILS: 'Ban Details',
+    EDIT_BAN_DETAILS: 'Edit Ban Details',
     ENTER_REASON: 'Enter reason',
-    PLAYER: 'Player',
-    PLAYERS: 'Players',
-    USER: 'User',
+    PLAYER: '{{Player|Players}}', // TODO: update "Player" and "Players"
+    USER: 'User {userId}',
     THE_PLAYER_IS_ALREADY_BANNED: 'The player is already banned',
     FROM_INITIAL_BAN_DATE: 'From initial ban date',
     LIST_OF_BANNED_PLAYERS: 'List of Banned Players',
     LIST_OF_HISTORICAL_BANS: 'List of Historical Bans',
-    DAY: 'day',
-    DAYS: 'days',
-    IN_DDD_DAY: 'In ddd day',
-    IN_DDD_DAYS: 'In ddd days',
+    COUNT_DAYS: '{count} {{day|days}}', // TODO: update words EXCEPT "count"
+    IN_COUNT_DAYS: '(In {count} {{day|days}})', // TODO: update words EXCEPT "count". Example usage: "In 5 days"
     YES: 'Yes',
     NO: 'No',
     STAFF: 'STAFF',
@@ -225,10 +223,15 @@ const de: Translation = {
     MARK_READ: 'Mark As Read',
     MARK_UNREAD: 'Mark As Unread',
   },
+  // TODO
+  // Unless there is a TODO comment on a specific line, you shouldn't have to edit anything inside {}
+  // since they are variables used by i18n and are not part of the sentence translation.
+  // For example, if a line contains "Reason: {reason|bold}", you would only translate the
+  // word "Reason" and you shouldn't change "{reason|bold}"
   NOTIFICATION_CONTENT: {
     '0': 'You have been banned and may not participate in MKCentral competitions. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}',
     '1': 'You have been unbanned and may now participate in MKCentral competitions.',
-    '2': 'You have been invited to {squad_name|{: a, *: the}} squad {squad_name|bold} for {tournament_name|bold}!',
+    '2': 'You have been invited to {squad_name|{: a, *: the}} squad {squad_name|bold} for {tournament_name|bold}!', // TODO: in "{: a, *: the}", update "a" and "the". Context: "You have been invited to a squad" or "You have been invited to the squad"
     '3': '{player_name|bold} accepted their invitation to your {tournament_name|bold} squad!',
     '4': 'You have been kicked from {squad_name|bold}.',
     '5': 'A moderator has registered you for {tournament_name|bold}!',
@@ -237,7 +240,7 @@ const de: Translation = {
     '8': 'A moderator kicked {player_name|bold} from your {tournament_name|bold} squad.',
     '9': 'You have been invited to {roster_name|bold}!',
     '10': '{player_name|bold} accepted their invitation to {roster_name|bold}. A moderator must approve this before they can play for your team.',
-    '11': '{player_name|bold} declined their invitation to {squad_name|bold}.',
+    '11': '{player_name|bold} declined their invitation to {roster_name|bold}.',
     '12': 'You have been kicked from {roster_name|bold}.',
     '13': 'Your team {team_name|bold} has been approved!',
     '14': 'Your team {team_name|bold} has been denied.',
@@ -276,6 +279,7 @@ const de: Translation = {
     '47': 'Your team transfer to {roster_name|bold} has been denied.',
     '48': 'Your ban has been updated. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}',
     '49': 'A moderator has kicked {player_name|bold} from your team {team_name|bold}.',
+    '50': '{player_name|bold} declined their invitation to {squad_name|bold}.',
   },
   COUNTRIES: {
     AF: 'Afghanistan',
