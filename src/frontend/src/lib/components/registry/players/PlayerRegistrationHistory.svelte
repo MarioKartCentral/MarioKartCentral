@@ -30,6 +30,7 @@
 </script>
 
 <Section header={$LL.PLAYER_REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
+  <!-- Team history -->
   <div>
     Game + Mode ?
     <div>
