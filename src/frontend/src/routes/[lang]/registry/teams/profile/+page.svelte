@@ -10,6 +10,8 @@
   import LL from '$i18n/i18n-svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import TeamTransferList from '$lib/components/registry/teams/TeamTransferList.svelte';
+  import { sortFilterRosters } from '$lib/util/util';
 
   let id = 0;
   let team: Team;
@@ -72,10 +74,11 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
-      {#each team.rosters.filter((r) => r.approval_status === 'approved') as roster}
+      {#each sortFilterRosters(team.rosters, false, true) as roster}
         <TeamRoster {roster} />
       {/each}
     </Section>
+    <TeamTransferList {team}/>
   {:else}
     You do not have permission to view this page.
   {/if}

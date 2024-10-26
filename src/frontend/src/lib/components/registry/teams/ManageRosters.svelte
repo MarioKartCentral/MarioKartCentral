@@ -10,6 +10,7 @@
     import { user } from '$lib/stores/stores';
     import type { UserInfo } from '$lib/types/user-info';
     import { check_team_permission, team_permissions } from '$lib/util/permissions';
+    import { sortFilterRosters } from '$lib/util/util';
 
     export let is_mod = false;
   
@@ -75,7 +76,7 @@
       </div>
     </Section>
     {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
-      {#each team.rosters.filter((r) => r.approval_status !== 'denied') as roster}
+      {#each sortFilterRosters(team.rosters, true) as roster}
         <TeamRosterManage {roster} {is_mod}/>
       {/each}
     {/if}

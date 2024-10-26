@@ -2,6 +2,7 @@
 import type { Color } from '$lib/types/colors';
 import type { Tournament } from '$lib/types/tournament';
 import type { PlacementOrganizer } from '$lib/types/placement-organizer';
+import type { TeamRoster } from '$lib/types/team-roster';
 
 export function check_registrations_open(tournament: Tournament) {
   if (!tournament.registrations_open) {
@@ -36,6 +37,14 @@ export function sort_placement_list(a: PlacementOrganizer, b: PlacementOrganizer
 export function findNumberOfDaysBetweenDates(start: number, end: number, isMs: boolean = false) {
   const timeInDay = isMs ? 86400000 : 86400; // js/ts uses milliseconds while Python uses seconds
   return Math.floor((end - start) / timeInDay);
+}
+
+export function sortFilterRosters(rosters: TeamRoster[], show_pending: boolean = false, has_players: boolean = false) {
+  const sort_filtered = rosters.filter((r) => 
+    (r.approval_status === 'approved' || (show_pending && r.approval_status === 'pending')) && // show approved, and pending if specified
+    (!has_players || r.players.length > 0) // if has_players is false, don't check for # of players
+    ).sort((a, b) => game_order[a.game] - game_order[b.game]); // sort rosters in game order
+  return sort_filtered;
 }
 
 export const valid_games: { [key: string]: string } = {

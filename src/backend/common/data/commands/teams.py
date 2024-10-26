@@ -666,7 +666,6 @@ class ViewTransfersCommand(Command[TransferList]):
     filter: TransferFilter
     approval_status: Approval = "pending"
     
-
     async def handle(self, db_wrapper, s3_wrapper):
         transfers: list[TeamTransfer] = []
 
@@ -686,6 +685,18 @@ class ViewTransfersCommand(Command[TransferList]):
         if filter.mode is not None:
             where_clauses.append("(r1.mode = ? OR r2.mode = ?)")
             variable_parameters.extend([filter.mode, filter.mode])
+        if filter.team_id is not None:
+            where_clauses.append("(t1.id = ? OR t2.id = ?)")
+            variable_parameters.extend([filter.team_id, filter.team_id])
+        if filter.roster_id is not None:
+            where_clauses.append("(r1.id = ? OR r2.id = ?)")
+            variable_parameters.extend([filter.roster_id, filter.roster_id])
+        if filter.from_date is not None:
+            where_clauses.append("i.date >= ?")
+            variable_parameters.append(filter.from_date)
+        if filter.to_date is not None:
+            where_clauses.append("i.date < ?")
+            variable_parameters.append(filter.to_date)
         
         where_clause_str = ""
         if len(where_clauses) > 0:

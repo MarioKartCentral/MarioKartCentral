@@ -6,6 +6,7 @@
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import { sortFilterRosters } from '$lib/util/util';
 
   export let teams: Team[];
 
@@ -46,7 +47,7 @@
           <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
         </td>
         <td>
-          {team.rosters.length}
+          {sortFilterRosters(team.rosters).length}
           <button class="show-hide" on:click={() => toggle_show_rosters(team.id)}>
             ({show_rosters[team.id] ? $LL.TEAM_LIST.HIDE() : $LL.TEAM_LIST.SHOW()})
           </button>

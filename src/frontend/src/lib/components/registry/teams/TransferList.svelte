@@ -18,6 +18,8 @@
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
 
     export let approval_status: "approved" | "pending" | "denied";
+    export let team_id: number | null = null;
+    export let roster_id: number | null = null;
 
     let transfers: TeamTransfer[] = [];
     let deny_dialog: Dialog;
@@ -34,6 +36,15 @@
     }
     let game: string | null = null;
     let mode: string | null = null;
+    let from: string | null = null;
+    let to: string | null = null;
+
+    $: {
+        if(roster_id) {
+            game = null;
+            mode = null;
+        }
+    }
     
     async function fetchData() {
         let url = `/api/registry/teams/transfers/${approval_status}?page=${page_number}`;
@@ -42,6 +53,18 @@
         }
         if(mode !== null) {
             url += `&mode=${mode}`;
+        }
+        if(team_id !== null) {
+            url += `&team_id=${team_id}`;
+        }
+        if(roster_id !== null) {
+            url += `&roster_id=${roster_id}`;
+        }
+        if(from) {
+            url += `&from_date=${new Date(from).getTime()/1000}`;
+        }
+        if(to) {
+            url += `&to_date=${new Date(to).getTime()/1000}`;
         }
         const res = await fetch(url);
         if (res.status !== 200) {
@@ -106,12 +129,27 @@
   }
 </script>
 
+
 <form on:submit|preventDefault={fetchData}>
     <div class="flex">
-        <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
-        <Button type="submit">Filter</Button>
+        {#if !team_id}
+            <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
+        {/if}
+        <div class="option">
+            <label for="from">From</label>
+            <input name="from" type="datetime-local" bind:value={from}/>
+        </div>
+        <div class="option">
+            <label for="to">To</label>
+            <input name="to" type="datetime-local" bind:value={to}/>
+        </div>
+        <div class="option">
+            <Button type="submit">Filter</Button>
+        </div>
+        
     </div>
 </form>
+
 {#if transfers.length}
     <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
     <Table>
@@ -185,6 +223,7 @@
         {/each}
         </tbody>
     </Table>
+    <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
 {:else}
     No transfers.
 {/if}
@@ -206,6 +245,10 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
+        gap: 5px;
+    }
+    div.option {
+        margin-bottom: 10px;
     }
     col.country {
         width: 15%;

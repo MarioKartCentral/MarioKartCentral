@@ -330,6 +330,10 @@ class TeamTransfer():
 class TransferFilter():
     game: Game | None = None
     mode: GameMode | None = None
+    team_id: int | None = None
+    roster_id: int | None = None
+    from_date: int | None = None
+    to_date: int | None = None
     page: int | None = None
 
 @dataclass
