@@ -49,11 +49,17 @@
       totalPages = body['page_count'];
     }
   }
+
+  async function search() {
+    currentPage = 1;
+    fetchData();
+  }
+
   onMount(fetchData);
 </script>
 
 <Section header={$LL.PLAYER_LIST.PLAYER_LISTING()}>
-  <form on:submit|preventDefault={fetchData}>
+  <form on:submit|preventDefault={search}>
     <div class="flex">
       <GameSelect all_option hide_labels bind:game={filters.game}/>
       <CountrySelect bind:value={filters.country} is_filter={true}/>

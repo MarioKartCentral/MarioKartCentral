@@ -75,6 +75,11 @@
         total_pages = body.page_count;
     }
 
+    async function search() {
+        page_number = 1;
+        fetchData();
+    }
+
     onMount(fetchData);
 
     const options: Intl.DateTimeFormatOptions = {
@@ -130,7 +135,7 @@
 </script>
 
 
-<form on:submit|preventDefault={fetchData}>
+<form on:submit|preventDefault={search}>
     <div class="flex">
         {#if !team_id}
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>

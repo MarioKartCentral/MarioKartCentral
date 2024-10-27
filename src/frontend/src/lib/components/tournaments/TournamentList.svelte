@@ -60,6 +60,11 @@
         }
     }
 
+    async function search() {
+        currentPage = 1;
+        fetchData();
+    }
+
     onMount(fetchData);
 </script>
 
@@ -69,7 +74,7 @@
             <Button href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</Button>
         {/if}
     </div>
-    <form on:submit|preventDefault={fetchData}>
+    <form on:submit|preventDefault={search}>
         <div class="flex">
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
             <div class="option">

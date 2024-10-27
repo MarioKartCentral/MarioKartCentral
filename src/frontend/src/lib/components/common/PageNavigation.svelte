@@ -7,7 +7,6 @@
 
     $: input_number = currentPage;
     
-
     function decreasePage() {
         if(currentPage > 1) {
             currentPage -= 1;
