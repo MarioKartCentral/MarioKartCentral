@@ -71,18 +71,30 @@
     </div>
     <form on:submit|preventDefault={fetchData}>
         <div class="flex">
-            <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
+            <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
             <div class="option">
-                <label for="name">Name</label>
-                <input name="name" bind:value={name} placeholder="Search for tournaments..."/>
+                <div>
+                    <label for="name">Name</label>
+                </div>
+                <div>
+                    <input name="name" bind:value={name} placeholder="Search for tournaments..."/>
+                </div>     
             </div>
             <div class="option">
-                <label for="from">From</label>
-                <input name="from" type="datetime-local" bind:value={from}/>
+                <div>
+                    <label for="from">From</label>
+                </div>
+                <div>
+                    <input name="from" type="datetime-local" bind:value={from}/>
+                </div>
             </div>
             <div class="option">
-                <label for="to">To</label>
-                <input name="to" type="datetime-local" bind:value={to}/>
+                <div>
+                    <label for="to">To</label>
+                </div>
+                <div>
+                    <input name="to" type="datetime-local" bind:value={to}/>
+                </div>
             </div>
             
             
@@ -119,15 +131,18 @@
         gap: 5px;
     }
     div.option {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
         margin-bottom: 10px;
     }
     input {
         width: 200px;
     }
-    label {
-        margin-left: 10px;
-        margin-right: 5px;
+    :global(label) {
+        margin-left: 5px;
+        margin-right: 10px;
         display: inline-block;
-        width: 40px;
+        width: 50px;
     }
 </style>
