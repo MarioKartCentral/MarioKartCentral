@@ -5,6 +5,7 @@ from api.data import handle
 from api.utils.responses import ProblemResponse
 from common.data.commands import *
 from common.data.models import Problem
+from common.auth import tournament_permissions
 
 def get_user_info[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
@@ -162,3 +163,38 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool 
                 raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
         return wrapper
     return has_permission_decorator
+
+def check_tournament_visiblity[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+        tournament_id = request.path_params.get("tournament_id", None)
+        if tournament_id is None:
+            tournament_id = request.query_params.get("tournament_id", None)
+        if tournament_id is None and request.method == "POST":
+            body = await request.json()
+            tournament_id = body.get("tournament_id", None)
+
+        if tournament_id is None:
+            raise Problem("No tournament ID specified", status=400)
+        
+        is_viewable = await handle(CheckTournamentVisibilityCommand(int(tournament_id)))
+        # if the tournament is viewable, everyone should be able to view it
+        if is_viewable:
+            return await handle_request(request, *args, **kwargs)
+
+        session_id = request.cookies.get("session", None)
+        if session_id is None:
+            raise Problem("Not logged in", status=401)
+        
+        user = await handle(GetUserIdFromSessionCommand(session_id))
+        if user is None:
+            resp = ProblemResponse(Problem("Not logged in", status=401))
+            resp.delete_cookie("session")
+            return resp
+        
+        user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, tournament_permissions.VIEW_HIDDEN_TOURNAMENT, tournament_id=int(tournament_id)))
+
+        if user_has_permission:
+            return await handle_request(request, *args, **kwargs)
+        else:
+            raise Problem("Insufficient permission", f"User does not have required permission \'{tournament_permissions.VIEW_HIDDEN_TOURNAMENT}\'", status=401)
+    return wrapper

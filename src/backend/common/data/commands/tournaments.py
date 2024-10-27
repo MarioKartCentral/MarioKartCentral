@@ -335,3 +335,16 @@ class CheckIfSquadTournament(Command[bool]):
                     raise Problem("Tournament not found", status=404)
                 is_squad = row[0]
                 return bool(is_squad)
+            
+@dataclass
+class CheckTournamentVisibilityCommand(Command[bool]):
+    tournament_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT is_viewable FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Tournament not found", status=404)
+                is_viewable = row[0]
+                return bool(is_viewable)
