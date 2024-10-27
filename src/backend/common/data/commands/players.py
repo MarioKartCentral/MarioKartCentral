@@ -252,8 +252,8 @@ class ListPlayersCommand(Command[PlayerList]):
                 SELECT p.id FROM players p
                 LEFT JOIN users u ON u.player_id = p.id
                 LEFT JOIN user_discords d ON u.id = d.user_id
-                {player_where_clause} {fc_where_clause} LIMIT ? OFFSET ?
-            )"""
+                {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?
+            ) {fc_where_clause}"""
 
             count_query = f"""SELECT COUNT (*) FROM (SELECT p.id FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
@@ -263,7 +263,6 @@ class ListPlayersCommand(Command[PlayerList]):
             players: List[PlayerDetailed] = []
             friend_codes: dict[int, list[FriendCode]] = {}
 
-            # print(players_query)
             async with db.execute(players_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
