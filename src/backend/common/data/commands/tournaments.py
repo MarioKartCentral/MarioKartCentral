@@ -4,6 +4,7 @@ import msgspec
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+from common.auth import tournament_permissions
 import common.data.s3 as s3
 from aiosqlite import Row
 
@@ -218,6 +219,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
 @dataclass
 class GetTournamentListCommand(Command[TournamentList]):
     filter: TournamentFilter
+    user: User | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
@@ -240,15 +242,57 @@ class GetTournamentListCommand(Command[TournamentList]):
                 where_clauses.append(f"t.name LIKE ?")
                 variable_parameters.append(f"%{filter.name}%")
 
+            # if we are searching for tournaments which aren't public or viewable,
+            # we need to perform permission checks on each tournament to see which ones
+            # are viewable. so, we check tournament permissions, then series permissions,
+            # then global permissions.
+            if (not filter.is_public or not filter.is_viewable) and self.user:
+                tournament_check = f"""
+                    t.id IN (
+                        SELECT DISTINCT ur.tournament_id
+                        FROM tournament_roles r
+                        JOIN user_tournament_roles ur ON ur.role_id = r.id
+                        JOIN tournament_role_permissions rp ON rp.role_id = r.id
+                        JOIN tournament_permissions p on rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ?
+                    )"""
+                series_check = f"""
+                    t.series_id IN (
+                        SELECT DISTINCT ur.series_id
+                        FROM series_roles r
+                        JOIN user_series_roles ur ON ur.role_id = r.id
+                        JOIN series_role_permissions rp ON rp.role_id = r.id
+                        JOIN series_permissions p on rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ?
+                    )"""
+                global_check = f"""
+                    0 IN (
+                        SELECT DISTINCT rp.is_denied
+                        FROM roles r
+                        JOIN user_roles ur ON ur.role_id = r.id
+                        JOIN role_permissions rp ON rp.role_id = r.id
+                        JOIN permissions p on rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ?
+                    )"""
+                final_check = f"(t.is_public = 1 OR {tournament_check} OR {series_check} OR {global_check})"
+                where_clauses.append(final_check)
+                for _ in range(3):
+                    variable_parameters.extend([self.user.id, tournament_permissions.VIEW_HIDDEN_TOURNAMENT])
+            # we should only be searching for public and viewable tournaments if the first condition isn't met
+            else:
+                where_clauses.append("t.is_viewable = 1")
+                where_clauses.append("t.is_public = 1")
+
             append_equal_filter(filter.game, "t.game")
             append_equal_filter(filter.mode, "t.mode")
             append_equal_filter(filter.series_id, "t.series_id")
-            append_equal_filter(filter.is_public, "t.is_public")
             append_equal_filter(filter.is_viewable, "t.is_viewable")
+            append_equal_filter(filter.is_public, "t.is_public")
+            
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             tournaments_query = f"""SELECT t.id, t.name, t.game, t.mode, t.date_start, t.date_end, t.is_squad, t.registrations_open, 
-                                        t.teams_allowed, t.description, t.logo, t.use_series_logo,
+                                        t.teams_allowed, t.description, t.logo, t.use_series_logo, t.is_viewable, t.is_public,
                                         s.id, s.name, s.url, s.description, s.logo
                                         FROM tournaments t
                                         LEFT JOIN tournament_series s ON t.series_id = s.id
@@ -260,12 +304,12 @@ class GetTournamentListCommand(Command[TournamentList]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (tournament_id, name, game, mode, date_start, date_end, is_squad, registrations_open,
-                      teams_allowed, description, logo, use_series_logo,
+                      teams_allowed, description, logo, use_series_logo, is_viewable, is_public,
                       series_id, series_name, series_url, series_description, series_logo) = row
                     if bool(use_series_logo):
                         logo = series_logo
                     tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_description,
-                        bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo)))
+                        bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo), bool(is_viewable), bool(is_public)))
 
             count_query = f"SELECT COUNT(*) FROM tournaments t {where_clause}"
             page_count: int = 0

@@ -48,7 +48,8 @@ permissions_by_id: dict[int, str] = {
     29: JOIN_TEAM,
     30: INVITE_TO_TEAM,
     31: EDIT_PROFILE,
-    32: LINK_DISCORD
+    32: LINK_DISCORD,
+    33: tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

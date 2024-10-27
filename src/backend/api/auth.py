@@ -6,6 +6,17 @@ from api.utils.responses import ProblemResponse
 from common.data.commands import *
 from common.data.models import Problem
 
+def get_user_info[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+        session_id = request.cookies.get("session", None)
+        if session_id is None:
+            request.state.user = None
+            return await handle_request(request, *args, **kwargs)
+        
+        user = await handle(GetUserIdFromSessionCommand(session_id))
+        request.state.user = user
+        return await handle_request(request, *args, **kwargs)
+    return wrapper
 
 def require_logged_in[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):

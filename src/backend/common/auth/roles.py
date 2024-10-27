@@ -47,7 +47,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     ADMINISTRATOR: [
         permissions.CREATE_USER_ROLES, 
@@ -76,7 +77,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     SITE_MODERATOR: [
         permissions.EDIT_PLAYER,
@@ -102,7 +104,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     SUPPORT_STAFF: [
         permissions.EDIT_PLAYER,

@@ -166,6 +166,8 @@ class TournamentDataBasic(TournamentDataMinimal):
     description: str
     logo: str | None
     use_series_logo: bool
+    is_viewable: bool
+    is_public: bool
 
 @dataclass
 class TournamentList:

@@ -187,6 +187,7 @@ export const tournament_permissions = {
   register_host: 'tournament_register_host',
   manage_placements: 'tournament_placements_manage',
   manage_tournament_roles: 'tournament_roles_manage',
+  view_hidden_tournament: 'tournament_view_hidden',
 };
 
 export const mod_panel_permissions = [

@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission, require_tournament_permission, require_series_permission
+from api.auth import require_permission, require_tournament_permission, require_series_permission, get_user_info
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions, series_permissions, tournament_permissions
@@ -29,8 +29,9 @@ async def tournament_info(request: Request) -> JSONResponse:
     return JSONResponse(tournament)
 
 @bind_request_query(TournamentFilter)
+@get_user_info
 async def tournament_list(request: Request, filter: TournamentFilter) -> JSONResponse:
-    command = GetTournamentListCommand(filter)
+    command = GetTournamentListCommand(filter, request.state.user)
     tournaments = await handle(command)
     return JSONResponse(tournaments)
 
