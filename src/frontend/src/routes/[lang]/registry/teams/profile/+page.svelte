@@ -51,6 +51,7 @@
           <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
             >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
+          <Button href="/{$page.params.lang}/registry/teams/manage_roles?id={id}">Manage Roles</Button>
         </div>
       </Section>
     {/if}
