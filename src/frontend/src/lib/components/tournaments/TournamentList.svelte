@@ -100,6 +100,9 @@
             
             {#if check_permission(user_info, tournament_permissions.view_hidden_tournament)}
                 <div class="option">
+                    <div>
+                        <label for="show_hidden"/>
+                    </div>
                     <select bind:value={show_hidden}>
                         <option value={null}>Show hidden/private tournaments</option>
                         <option value={true}>Public tournaments only</option>
@@ -107,9 +110,9 @@
                     </select>
                 </div>
             {/if}
-            <div class="option">
-                <Button type="submit">Filter</Button>
-            </div>
+        </div>
+        <div class="centered">
+            <Button type="submit">Filter</Button>
         </div>
     </form>
     <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
@@ -138,6 +141,10 @@
     }
     input {
         width: 200px;
+    }
+    div.centered {
+        text-align: center;
+        margin: auto auto 10px auto;
     }
     :global(label) {
         margin-left: 5px;
