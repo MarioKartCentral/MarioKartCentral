@@ -66,6 +66,7 @@
     {$LL.PLAYER_LIST.PLAYERS()}
     <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
     <PlayerList {players}/>
+    <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
   </div>
   
 </Section>

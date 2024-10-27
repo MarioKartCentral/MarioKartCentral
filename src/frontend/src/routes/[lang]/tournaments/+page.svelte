@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import TournamentPageItem from '$lib/components/tournaments/TournamentPageItem.svelte';
+  import type { TournamentList } from '$lib/types/tournament-list';
   import type { TournamentListItem } from '$lib/types/tournament-list-item';
   import Section from '$lib/components/common/Section.svelte';
   import { user } from '$lib/stores/stores';
@@ -9,24 +10,32 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
     user_info = value;
   });
 
+  let totalTournaments = 0;
+  let totalPages = 0;
+  let currentPage = 1;
+
   let tournaments: TournamentListItem[] = [];
 
-  onMount(async () => {
-    const res = await fetch('/api/tournaments/list');
+  async function fetchData() {
+    let url = '/api/tournaments/list';
+    url += '?page=' + currentPage;
+    const res = await fetch(url);
     if (res.status === 200) {
-      const body = await res.json();
-      for (let t of body) {
-        tournaments.push(t);
-      }
-      tournaments = tournaments;
+      const body: TournamentList = await res.json();
+      tournaments = body.tournaments;
+      totalTournaments = body.tournament_count;
+      totalPages = body.page_count;
     }
-  });
+  }
+
+  onMount(fetchData);
 </script>
 
 <Section header={$LL.NAVBAR.TOURNAMENTS()}>
@@ -35,7 +44,14 @@
       <Button href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</Button>
     {/if}
   </div>
-  {#each tournaments as tournament}
-    <TournamentPageItem {tournament} />
-  {/each}
+  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+  <div>
+    {totalTournaments} Tournaments
+  </div>
+  {#key tournaments}
+    {#each tournaments as tournament}
+      <TournamentPageItem {tournament} />
+    {/each}
+  {/key}
+  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
 </Section>

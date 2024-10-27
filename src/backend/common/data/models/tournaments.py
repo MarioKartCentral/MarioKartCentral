@@ -168,6 +168,12 @@ class TournamentDataBasic(TournamentDataMinimal):
     use_series_logo: bool
 
 @dataclass
+class TournamentList:
+    tournaments: list[TournamentDataBasic]
+    tournament_count: int
+    page_count: int
+
+@dataclass
 class TournamentFilter():
     name: str | None = None
     game: Game | None = None
@@ -175,6 +181,7 @@ class TournamentFilter():
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
+    page: int | None = None
 
 @dataclass
 class TournamentInvite():

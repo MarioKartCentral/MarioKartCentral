@@ -216,7 +216,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         return tournament_data
 
 @dataclass
-class GetTournamentListCommand(Command[list[TournamentDataBasic]]):
+class GetTournamentListCommand(Command[TournamentList]):
     filter: TournamentFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -224,6 +224,12 @@ class GetTournamentListCommand(Command[list[TournamentDataBasic]]):
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []
             variable_parameters: list[Any] = []
+            
+            limit:int = 10
+            offset:int = 0
+
+            if filter.page is not None:
+                offset = (filter.page - 1) * limit
 
             def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
@@ -231,49 +237,47 @@ class GetTournamentListCommand(Command[list[TournamentDataBasic]]):
                     variable_parameters.append(filter_value)
 
             if filter.name is not None:
-                where_clauses.append(f"name LIKE ?")
+                where_clauses.append(f"t.name LIKE ?")
                 variable_parameters.append(f"%{filter.name}%")
 
-            append_equal_filter(filter.game, "game")
-            append_equal_filter(filter.mode, "mode")
-            append_equal_filter(filter.series_id, "series_id")
-            append_equal_filter(filter.is_public, "is_public")
-            append_equal_filter(filter.is_viewable, "is_viewable")
+            append_equal_filter(filter.game, "t.game")
+            append_equal_filter(filter.mode, "t.mode")
+            append_equal_filter(filter.series_id, "t.series_id")
+            append_equal_filter(filter.is_public, "t.is_public")
+            append_equal_filter(filter.is_viewable, "t.is_viewable")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            tournaments_query = f"""SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo
-                                        FROM tournaments
-                                        {where_clause}"""
+            tournaments_query = f"""SELECT t.id, t.name, t.game, t.mode, t.date_start, t.date_end, t.is_squad, t.registrations_open, 
+                                        t.teams_allowed, t.description, t.logo, t.use_series_logo,
+                                        s.id, s.name, s.url, s.description, s.logo
+                                        FROM tournaments t
+                                        LEFT JOIN tournament_series s ON t.series_id = s.id
+                                        {where_clause}
+                                        ORDER BY date_start DESC, date_end ASC LIMIT ? OFFSET ?"""
             
             tournaments: list[TournamentDataBasic] = []
-            series_ids: list[int] = []
-            series_info = {}
-            async with db.execute(tournaments_query, variable_parameters) as cursor:
+            async with db.execute(tournaments_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
-                    tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, None, None, None,
+                    (tournament_id, name, game, mode, date_start, date_end, is_squad, registrations_open,
+                      teams_allowed, description, logo, use_series_logo,
+                      series_id, series_name, series_url, series_description, series_logo) = row
+                    if bool(use_series_logo):
+                        logo = series_logo
+                    tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_description,
                         bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo)))
-                    if series_id is not None:
-                        series_ids.append(series_id)
-            # get relevant info about tournament series for all tournaments part of one
-            if len(series_ids) > 0:
-                series_set = set(series_ids)
-                series_query = f"({','.join([str(s) for s in series_set])})"
-                async with db.execute(f"SELECT id, name, url, description, logo FROM tournament_series WHERE id IN {series_query}") as cursor:
-                    rows = await cursor.fetchall()
-                    for row in rows:
-                        series_id, name, url, description, logo = row
-                        series_info[series_id] = {'name': name, 'url': url, 'description': description, 'logo': logo}
-                for tournament in tournaments:
-                    if tournament.series_id is None:
-                        continue
-                    if tournament.use_series_logo:
-                        tournament.logo = series_info[tournament.series_id]['logo']
-                    tournament.series_name = series_info[tournament.series_id]['name']
-                    tournament.series_url = series_info[tournament.series_id]['url']
-                    tournament.series_description = series_info[tournament.series_id]['description']
-            return tournaments
+
+            count_query = f"SELECT COUNT(*) FROM tournaments t {where_clause}"
+            page_count: int = 0
+            tournament_count: int = 0
+            async with db.execute(count_query, variable_parameters) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                tournament_count = row[0]
+
+            page_count = int(tournament_count / limit) + (1 if tournament_count % limit else 0)
+
+            return TournamentList(tournaments, tournament_count, page_count)
 
 @dataclass
 class CheckIfSquadTournament(Command[bool]):
