@@ -283,6 +283,13 @@ class GetTournamentListCommand(Command[TournamentList]):
                 where_clauses.append("t.is_viewable = 1")
                 where_clauses.append("t.is_public = 1")
 
+            if filter.from_date:
+                where_clauses.append("t.date_start >= ?")
+                variable_parameters.append(filter.from_date)
+            if filter.to_date:
+                where_clauses.append("t.date_end < ?")
+                variable_parameters.append(filter.to_date)
+
             append_equal_filter(filter.game, "t.game")
             append_equal_filter(filter.mode, "t.mode")
             append_equal_filter(filter.series_id, "t.series_id")

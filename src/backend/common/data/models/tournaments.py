@@ -183,6 +183,8 @@ class TournamentFilter():
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
+    from_date: int | None = None
+    to_date: int | None = None
     page: int | None = None
 
 @dataclass
