@@ -216,12 +216,11 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         return tournament_data
 
 @dataclass
-class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
+class GetTournamentListCommand(Command[list[TournamentDataBasic]]):
     filter: TournamentFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
-        is_minimal = filter.is_minimal
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []
             variable_parameters: list[Any] = []
@@ -242,26 +241,21 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
             append_equal_filter(filter.is_viewable, "is_viewable")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            if is_minimal:
-                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end FROM tournaments{where_clause}"
-            else:
-                tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments{where_clause}"
+            tournaments_query = f"""SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo
+                                        FROM tournaments
+                                        {where_clause}"""
             
-            tournaments: list[TournamentDataMinimal | TournamentDataBasic] = []
+            tournaments: list[TournamentDataBasic] = []
             series_ids: list[int] = []
             series_info = {}
             async with db.execute(tournaments_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    if is_minimal:
-                        tournament_id, name, game, mode, date_start, date_end = row
-                        tournaments.append(TournamentDataMinimal(tournament_id, name, game, mode, date_start, date_end))
-                    else:
-                        tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
-                        tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, None, None, None,
-                            bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo)))
-                        if series_id is not None:
-                            series_ids.append(series_id)
+                    tournament_id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
+                    tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, None, None, None,
+                        bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo)))
+                    if series_id is not None:
+                        series_ids.append(series_id)
             # get relevant info about tournament series for all tournaments part of one
             if len(series_ids) > 0:
                 series_set = set(series_ids)
@@ -272,7 +266,7 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
                         series_id, name, url, description, logo = row
                         series_info[series_id] = {'name': name, 'url': url, 'description': description, 'logo': logo}
                 for tournament in tournaments:
-                    if not isinstance(tournament, TournamentDataBasic) or tournament.series_id is None:
+                    if tournament.series_id is None:
                         continue
                     if tournament.use_series_logo:
                         tournament.logo = series_info[tournament.series_id]['logo']
@@ -280,7 +274,7 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
                     tournament.series_url = series_info[tournament.series_id]['url']
                     tournament.series_description = series_info[tournament.series_id]['description']
             return tournaments
-        
+
 @dataclass
 class CheckIfSquadTournament(Command[bool]):
     tournament_id: int

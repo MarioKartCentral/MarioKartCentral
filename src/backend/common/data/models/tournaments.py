@@ -169,7 +169,6 @@ class TournamentDataBasic(TournamentDataMinimal):
 
 @dataclass
 class TournamentFilter():
-    is_minimal: bool = False
     name: str | None = None
     game: Game | None = None
     mode: GameMode | None = None
