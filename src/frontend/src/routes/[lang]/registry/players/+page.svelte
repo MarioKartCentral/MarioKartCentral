@@ -14,7 +14,6 @@
   let totalPlayers = 0;
   let totalPages = 0;
   let currentPage = 1;
-  let oldPage = 1;
   let filters: PlayerFilter = {
     game: null,
     name: null,
@@ -48,13 +47,6 @@
       players = players;
       totalPlayers = body['player_count'];
       totalPages = body['page_count'];
-    }
-  }
-
-  $: {
-    if (currentPage != oldPage) {
-      oldPage = currentPage;
-      fetchData();
     }
   }
   onMount(fetchData);

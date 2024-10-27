@@ -24,11 +24,11 @@
 
     function updatePageFromInput() {
         if(input_number < 1) {
-            input_number = 1;
+            input_number = currentPage;
             return;
         }
         if(input_number > totalPages) {
-            input_number = totalPages;
+            input_number = currentPage;
             return;
         }
         currentPage = input_number;
