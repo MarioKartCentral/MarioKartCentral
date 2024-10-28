@@ -169,6 +169,8 @@ const es: Translation = {
     EXPIRES_TO: 'Expires To',
     EXPIRES_FROM: 'Expires From',
     SEARCH_BY_NAME: 'Search by Name',
+    THIS_PLAYER_IS_BANNED: 'This player is <strong>banned</strong> and may not participate in MKCentral competitions.',
+    UNBAN_DATE: 'Unban Date',
   },
   LANGUAGES: {
     EN_US: 'English (United States)',

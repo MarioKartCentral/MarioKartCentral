@@ -28,6 +28,8 @@ class PlayerBanHistorical:
 class PlayerBanBasic:
     player_id: int
     reason: str
+    unban_date: int | None
+    is_indefinite: bool | None
 
 @dataclass
 class PlayerBanDetailed:

@@ -29,15 +29,17 @@ async def edit_player(request: Request, body: EditPlayerRequestData) -> Response
     return JSONResponse({}, status_code=200)
 
 async def view_player(request: Request) -> Response:
-    # only include notes if the viewer is a mod
-    include_notes = False
+    include_notes = False # only include notes if the viewer is a mod
+    include_unban_date = False # only include unban info if viewer is a mod or the same player
     session_id = request.cookies.get("session", None)
     if session_id is not None:
         user = await handle(GetUserIdFromSessionCommand(session_id))
         if user:
             include_notes = await handle(CheckUserHasPermissionCommand(user.id, permissions.EDIT_PLAYER))
+            can_ban = await handle(CheckUserHasPermissionCommand(user.id, permissions.BAN_PLAYER))
+            include_unban_date = can_ban or user.player_id == request.path_params['id']
 
-    command = GetPlayerDetailedCommand(request.path_params['id'], include_notes)
+    command = GetPlayerDetailedCommand(request.path_params['id'], include_notes, include_unban_date)
     player_detailed = await handle(command)
     if player_detailed is None:
         raise Problem("Player not found", status=404)

@@ -91,6 +91,7 @@ class UpdatePlayerCommand(Command[bool]):
 class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
     id: int
     include_notes: bool = False
+    include_unban_date: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
@@ -129,10 +130,12 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 
             ban_info = None
             if is_banned:
-                ban_query = """SELECT reason FROM player_bans WHERE player_id = ?"""
+                ban_query = """SELECT reason, expiration_date, is_indefinite FROM player_bans WHERE player_id = ?"""
                 async with db.execute(ban_query, (self.id,)) as cursor:
                     ban_row = await cursor.fetchone()
-                ban_info = None if ban_row is None else PlayerBanBasic(self.id, ban_row[0])
+                unban_date = ban_row[1] if ban_row and self.include_unban_date else None
+                is_indefinite = ban_row[2] if ban_row and self.include_unban_date else None
+                ban_info = None if ban_row is None else PlayerBanBasic(self.id, ban_row[0], unban_date, is_indefinite)
 
             user_settings = None
             if user:

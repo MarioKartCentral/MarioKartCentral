@@ -610,6 +610,14 @@ type RootTranslation = {
 		 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e
 		 */
 		SEARCH_BY_NAME: string
+		/**
+		 * T​h​i​s​ ​p​l​a​y​e​r​ ​i​s​ ​<​s​t​r​o​n​g​>​b​a​n​n​e​d​<​/​s​t​r​o​n​g​>​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.
+		 */
+		THIS_PLAYER_IS_BANNED: string
+		/**
+		 * U​n​b​a​n​ ​D​a​t​e
+		 */
+		UNBAN_DATE: string
 	}
 	LANGUAGES: {
 		/**
@@ -2691,6 +2699,14 @@ export type TranslationFunctions = {
 		 * Search by Name
 		 */
 		SEARCH_BY_NAME: () => LocalizedString
+		/**
+		 * This player is <strong>banned</strong> and may not participate in MKCentral competitions.
+		 */
+		THIS_PLAYER_IS_BANNED: () => LocalizedString
+		/**
+		 * Unban Date
+		 */
+		UNBAN_DATE: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**
