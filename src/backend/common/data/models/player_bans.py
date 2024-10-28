@@ -10,6 +10,10 @@ class PlayerBan:
     reason: str
     comment: str
 
+@dataclass
+class PlayerBanWithUserId(PlayerBan):
+    user_id: int
+
 # @dataclass
 # class PlayerBanHistorical(PlayerBan):
 #     unbanned_by: int | None = None

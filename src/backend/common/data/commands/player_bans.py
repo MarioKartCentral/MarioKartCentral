@@ -233,15 +233,18 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             return PlayerBanList(ban_list, ban_count, page_count)
 
 @dataclass
-class GetPlayersToUnbanCommand(Command[List[PlayerBan]]):
+class GetPlayersToUnbanCommand(Command[List[PlayerBanWithUserId]]):
     async def handle(self, db_wrapper, s3_wrapper):
         now = int(datetime.now(timezone.utc).timestamp())
 
         async with db_wrapper.connect(readonly=True) as db:
-            ban_list: list[PlayerBan] = []
-            async with db.execute("SELECT player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment FROM player_bans WHERE is_indefinite = FALSE AND expiration_date < ?", (now,)) as cursor:
+            ban_list: list[PlayerBanWithUserId] = []
+            query = """SELECT p.player_id, p.banned_by, p.is_indefinite, p.ban_date, p.expiration_date, p.reason, p.comment, u.id FROM player_bans p 
+                JOIN users u ON u.player_id = p.player_id
+                WHERE is_indefinite = FALSE AND expiration_date < ?"""
+            async with db.execute(query, (now,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    ban_list.append(PlayerBan(*row))
+                    ban_list.append(PlayerBanWithUserId(*row))
 
                 return ban_list
