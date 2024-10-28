@@ -90,6 +90,7 @@ class UpdatePlayerCommand(Command[bool]):
 @dataclass
 class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
     id: int
+    include_notes: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
@@ -156,7 +157,24 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     request_id, request_name, request_date, request_approval = row
                     name_changes.append(PlayerNameChange(request_id, request_name, request_date, request_approval))
 
-            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), discord, friend_codes, rosters, ban_info, user_settings, name_changes)
+            notes = None
+            if self.include_notes:
+                async with db.execute("SELECT notes, edited_by, date FROM player_notes WHERE player_id = ?", (self.id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        player_notes, edited_by, date = row
+                        query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned FROM players p 
+                            JOIN users u ON u.player_id = p.id
+                            WHERE u.id = ?"""
+                        async with db.execute(query, (edited_by,)) as cursor:
+                            player_row = await cursor.fetchone()
+                            edited_by =  None
+                            if player_row:
+                                id, name, country_code, is_hidden, is_shadow, is_banned = player_row
+                                edited_by = Player(id, name, country_code, is_hidden, is_shadow, is_banned, None)
+                            notes = PlayerNotes(player_notes, edited_by, date)
+
+            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), discord, friend_codes, rosters, ban_info, user_settings, name_changes, notes)
         
 @dataclass
 class ListPlayersCommand(Command[PlayerList]):
@@ -272,7 +290,7 @@ class ListPlayersCommand(Command[PlayerList]):
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, player_discord, [], [], None, None, [])
+                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, player_discord, [], [], None, None, [], None)
                     players.append(player)
                     friend_codes[player.id] = player.friend_codes
 
@@ -363,4 +381,28 @@ class DenyPlayerNameRequestCommand(Command[None]):
                 rowcount = cursor.rowcount
                 if rowcount == 0:
                     raise Problem("Name edit request not found", status=404)
+                await db.commit()
+
+@save_to_command_log
+@dataclass
+class UpdatePlayerNotesCommand(Command[None]):
+    player_id: int
+    notes: str
+    edited_by: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            date = int(datetime.now(timezone.utc).timestamp())
+            query = """INSERT INTO player_notes (player_id, notes, edited_by, date) VALUES (?, ?, ?, ?) 
+                ON CONFLICT (player_id) DO 
+                UPDATE SET notes = excluded.notes, edited_by = excluded.edited_by, date = excluded.date"""
+            params = (self.player_id, self.notes, self.edited_by, date)
+            if not self.notes:
+                query = "DELETE FROM player_notes WHERE player_id = ?"
+                params = (self.player_id,)
+
+            async with db.execute(query, params) as cursor:
+                rowcount = cursor.rowcount
+                if rowcount == 0:
+                    raise Problem("Player not found", status=404)
                 await db.commit()

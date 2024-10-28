@@ -29,7 +29,15 @@ async def edit_player(request: Request, body: EditPlayerRequestData) -> Response
     return JSONResponse({}, status_code=200)
 
 async def view_player(request: Request) -> Response:
-    command = GetPlayerDetailedCommand(request.path_params['id'])
+    # only include notes if the viewer is a mod
+    include_notes = False
+    session_id = request.cookies.get("session", None)
+    if session_id is not None:
+        user = await handle(GetUserIdFromSessionCommand(session_id))
+        if user:
+            include_notes = await handle(CheckUserHasPermissionCommand(user.id, permissions.EDIT_PLAYER))
+
+    command = GetPlayerDetailedCommand(request.path_params['id'], include_notes)
     player_detailed = await handle(command)
     if player_detailed is None:
         raise Problem("Player not found", status=404)
@@ -133,10 +141,17 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
+@bind_request_body(UpdatePlayerNotesRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def update_player_notes(request: Request, body: UpdatePlayerNotesRequestData) -> JSONResponse:
+    await handle(UpdatePlayerNotesCommand(request.path_params['id'], body.notes, request.state.user.id))
+    return JSONResponse({})
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
+    Route('/api/registry/players/{id:int}/notes', update_player_notes, methods=['POST']),
     Route('/api/registry/players', list_players),
     Route('/api/registry/addFriendCode', create_fc, methods=['POST']),
     Route('/api/registry/forceAddFriendCode', force_create_fc, methods=['POST']), # dispatches notification

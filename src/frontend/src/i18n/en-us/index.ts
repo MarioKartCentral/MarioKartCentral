@@ -112,6 +112,11 @@ const en_us: BaseTranslation & Translation = {
     THEME: 'Theme',
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
+    PLAYER_NOTES: 'Player Notes',
+    EDIT_PLAYER_NOTES: 'Edit Player Notes',
+    CANCEL: 'Cancel',
+    CLEAR: 'Clear',
+    NONE: 'None',
   },
   PLAYER_BAN: {
     PLAYER_ID: 'Player ID',

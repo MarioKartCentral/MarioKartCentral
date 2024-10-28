@@ -14,10 +14,13 @@
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
   import ViewEditBan from '$lib/components/moderator/ViewEditBan.svelte';
   import { check_permission, permissions } from '$lib/util/permissions';
+  import PlayerNotes from '$lib/components/registry/players/PlayerNotes.svelte';
+  import EditPlayerNotes from '$lib/components/registry/players/EditPlayerNotes.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
+  let playerNotesDialog: Dialog;
 
   user.subscribe((value) => {
     user_info = value;
@@ -28,6 +31,7 @@
   let player_found = true;
   let player: PlayerInfo;
   let banInfo: BanInfoDetailed | null = null;
+  let resetPlayerNotes = false;
 
   $: player_name = player ? player.name : 'Registry';
 
@@ -52,6 +56,15 @@
       }
     }
   });
+
+  function openEditPlayerNotesDialog() {
+    resetPlayerNotes = !resetPlayerNotes
+    playerNotesDialog.open()
+  }
+  function closeEditPlayerNotesDialog() {
+    resetPlayerNotes = !resetPlayerNotes
+    playerNotesDialog.close()
+  }
 </script>
 
 <svelte:head>
@@ -75,8 +88,10 @@
         {/if}
         {#if check_permission(user_info, permissions.edit_player)}
           <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">Edit Player</Button>
+          <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}</Button>
         {/if}
       </div>
+      <PlayerNotes notes={player.notes}/>
     </Section>
     <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
       <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()}/>
@@ -86,7 +101,12 @@
         <ViewEditBan {banInfo}/>
       {/if}
     </Dialog>
-    {/if}
+    <Dialog bind:this={playerNotesDialog} on:close={() => resetPlayerNotes = !resetPlayerNotes} header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}>
+      {#key resetPlayerNotes}
+        <EditPlayerNotes playerId={player.id} notes={player.notes?.notes || ""} on:cancel={closeEditPlayerNotesDialog}/>
+      {/key}
+    </Dialog>
+  {/if}
 
   <PlayerProfile {player} />
 {:else if !player_found}

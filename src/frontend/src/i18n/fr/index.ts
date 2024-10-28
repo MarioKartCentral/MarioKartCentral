@@ -114,6 +114,11 @@ const fr: Translation = {
     THEME: 'Thème',
     TIMEZONE: 'Fuseau Horaire',
     SAVE: 'Enregistrer',
+    PLAYER_NOTES: 'Player Notes', // TODO
+    EDIT_PLAYER_NOTES: 'Edit Player Notes',
+    CANCEL: 'Cancel',
+    CLEAR: 'Clear',
+    NONE: 'None',
   },
   // TODO
   PLAYER_BAN: {

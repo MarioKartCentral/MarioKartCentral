@@ -98,6 +98,7 @@ const de: Translation = {
       NOT_RECRUITING: 'Not Recruiting',
     },
   },
+  // TODO
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Player Profile',
     INVITES: 'Invites',
@@ -114,6 +115,11 @@ const de: Translation = {
     THEME: 'Theme',
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
+    PLAYER_NOTES: 'Player Notes',
+    EDIT_PLAYER_NOTES: 'Edit Player Notes',
+    CANCEL: 'Cancel',
+    CLEAR: 'Clear',
+    NONE: 'None',
   },
   // TODO
   PLAYER_BAN: {

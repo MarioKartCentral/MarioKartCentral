@@ -401,6 +401,26 @@ type RootTranslation = {
 		 * S​a​v​e
 		 */
 		SAVE: string
+		/**
+		 * P​l​a​y​e​r​ ​N​o​t​e​s
+		 */
+		PLAYER_NOTES: string
+		/**
+		 * E​d​i​t​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+		 */
+		EDIT_PLAYER_NOTES: string
+		/**
+		 * C​a​n​c​e​l
+		 */
+		CANCEL: string
+		/**
+		 * C​l​e​a​r
+		 */
+		CLEAR: string
+		/**
+		 * N​o​n​e
+		 */
+		NONE: string
 	}
 	PLAYER_BAN: {
 		/**
@@ -2465,6 +2485,26 @@ export type TranslationFunctions = {
 		 * Save
 		 */
 		SAVE: () => LocalizedString
+		/**
+		 * Player Notes
+		 */
+		PLAYER_NOTES: () => LocalizedString
+		/**
+		 * Edit Player Notes
+		 */
+		EDIT_PLAYER_NOTES: () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		CANCEL: () => LocalizedString
+		/**
+		 * Clear
+		 */
+		CLEAR: () => LocalizedString
+		/**
+		 * None
+		 */
+		NONE: () => LocalizedString
 	}
 	PLAYER_BAN: {
 		/**
