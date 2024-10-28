@@ -26,9 +26,9 @@
 <div class="container">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {@html DOMPurify.sanitize($LL.PLAYER_BAN.THIS_PLAYER_IS_BANNED(), {ALLOWED_TAGS: ['strong']})} <br />
-  <strong>{$LL.PLAYER_BAN.REASON()}</strong> {`: ${ban_info.reason}`} <br />
+  <strong>{$LL.PLAYER_BAN.REASON()}</strong>{`: ${ban_info.reason}`} <br />
   {#if unbanText }
-    <strong>{$LL.PLAYER_BAN.UNBAN_DATE()}</strong> {`: ${unbanText}`}
+    <strong>{$LL.PLAYER_BAN.UNBAN_DATE()}</strong>{`: ${unbanText}`}
   {/if}
 </div>
 
