@@ -170,8 +170,8 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                             player_row = await cursor.fetchone()
                             edited_by =  None
                             if player_row:
-                                id, name, country_code, is_hidden, is_shadow, is_banned = player_row
-                                edited_by = Player(id, name, country_code, is_hidden, is_shadow, is_banned, None)
+                                p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned = player_row
+                                edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, None)
                             notes = PlayerNotes(player_notes, edited_by, date)
 
             return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), discord, friend_codes, rosters, ban_info, user_settings, name_changes, notes)
