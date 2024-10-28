@@ -8,7 +8,8 @@
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import RosterPlayerName from './RosterPlayerName.svelte';
-    import Button from '$lib/components/common/buttons/Button.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
 
   export let roster: TeamRoster;
 
@@ -49,6 +50,7 @@
 
 <div class="roster-container">
   <div class="roster-name">
+    <TagBadge tag={roster.tag} color={roster.color} />
     {roster.name}
   </div>
   <div class="badges">

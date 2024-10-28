@@ -20,6 +20,7 @@
   import { check_permission, check_team_permission, team_permissions, get_highest_team_role_position, permissions } from '$lib/util/permissions';
   import RosterPlayerName from './RosterPlayerName.svelte';
   import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -237,6 +238,7 @@
 
 <Section header="{roster.name}">
   <div slot="header_content">
+    <TagBadge tag={roster.tag} color={roster.color} />
     <GameBadge game={roster.game}/>
     {#if roster.approval_status === 'approved'}
       <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAM_EDIT.EDIT_ROSTER()}</Button>

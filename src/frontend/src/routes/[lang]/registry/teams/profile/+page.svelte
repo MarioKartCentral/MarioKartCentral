@@ -12,6 +12,7 @@
   import { user } from '$lib/stores/stores';
   import TeamTransferList from '$lib/components/registry/teams/TeamTransferList.svelte';
   import { sortFilterRosters } from '$lib/util/util';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
 
   let id = 0;
   let team: Team;
@@ -34,6 +35,15 @@
     const body: Team = await res.json();
     team = body;
   });
+
+  let game: string | null = null;
+  let mode: string | null = null;
+
+  function filter_team_page_rosters(t: Team) {
+    let filtered = sortFilterRosters(t.rosters, false, true).filter(
+      (r) => (!game || r.game === game) && (!mode || r.mode === mode));
+    return filtered;
+  }
 </script>
 
 <svelte:head>
@@ -75,9 +85,16 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
-      {#each sortFilterRosters(team.rosters, false, true) as roster}
-        <TeamRoster {roster} />
-      {/each}
+      <GameModeSelect bind:game={game} bind:mode={mode} is_team flex inline hide_labels all_option/>
+      {#key game}
+        {#key mode}
+          {#each filter_team_page_rosters(team) as roster}
+            <TeamRoster {roster} />
+          {:else}
+            No rosters.
+          {/each}
+        {/key}
+      {/key}
     </Section>
     <TeamTransferList {team}/>
   {:else}
