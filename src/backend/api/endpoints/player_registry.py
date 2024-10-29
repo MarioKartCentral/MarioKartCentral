@@ -140,6 +140,39 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
+@bind_request_body(ClaimPlayerRequestData)
+@require_logged_in
+async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONResponse:
+    command = ClaimPlayerCommand(request.state.user.player_id, body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ApproveDenyPlayerClaimRequestData)
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def approve_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+    command = ApprovePlayerClaimCommand(body.claim_id)
+    player_id, user_id, claimed_player_name = await handle(command)
+    async def notify():
+        content_args = {"player_name": claimed_player_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_APPROVED, content_args, f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
+    return JSONResponse({}, background=BackgroundTask(notify))
+
+@bind_request_body(ApproveDenyPlayerClaimRequestData)
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def deny_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+    command = DenyPlayerClaimCommand(body.claim_id)
+    player_id, user_id, claimed_player_name = await handle(command)
+    async def notify():
+        content_args = {"player_name": claimed_player_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_DENIED, content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
+    return JSONResponse({}, background=BackgroundTask(notify))
+
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def list_player_claims(request: Request) -> JSONResponse:
+    command = ListPlayerClaimsCommand()
+    claims = await handle(command)
+    return JSONResponse(claims)
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/createShadowPlayer', create_shadow_player, methods=['POST']),
@@ -155,5 +188,9 @@ routes = [
     Route('/api/registry/players/requestName', request_edit_player_name, methods=['POST']),
     Route('/api/registry/players/pendingNameChanges', get_pending_player_name_requests),
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']), # dispatches notification
-    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']) # dispatches notification
+    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']), # dispatches notification
+    Route('/api/registry/players/claim', claim_player, methods=['POST']),
+    Route('/api/registry/players/approveClaim', approve_player_claim, methods=['POST']),
+    Route('/api/registry/players/denyClaim', deny_player_claim, methods=['POST']),
+    Route('/api/registry/players/claims', list_player_claims),
 ]

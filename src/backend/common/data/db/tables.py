@@ -837,6 +837,25 @@ class PlayerNameEditRequest(TableModel):
             date INTEGER NOT NULL,
             approval_status TEXT NOT NULL
             )"""
+
+@dataclass
+class PlayerClaim(TableModel):
+    id: int
+    player_id: int
+    claimed_player_id: int
+    date: int
+    approval_status: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_claims(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            claimed_player_id INTEGER NOT NULL REFERENCES players(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
+        )"""
+
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
@@ -847,4 +866,4 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     RosterInvite, TeamEditRequest, RosterEditRequest,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest]
+    PlayerNameEditRequest, PlayerClaim]

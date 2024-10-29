@@ -17,7 +17,7 @@
     user_info = value;
     let mod_notifs = value.mod_notifications
     if(mod_notifs) {
-      unread_count = mod_notifs.pending_teams + mod_notifs.pending_team_edits + mod_notifs.pending_transfers + mod_notifs.pending_player_name_changes;
+      unread_count = Object.values(mod_notifs).reduce((sum, a) => sum + a, 0);
     }
   });
 
@@ -83,6 +83,12 @@
   {#if check_permission(user_info, permissions.manage_shadow_players)}
     <DropdownItem href="/{$page.params.lang}/moderator/shadow_players">
       Shadow Players
+    </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/moderator/player_claims">
+      Player Claims
+      {#if user_info.mod_notifications?.pending_player_claims}
+        <AlertCount count={user_info.mod_notifications.pending_player_claims}/>
+      {/if}
     </DropdownItem>
   {/if}
 </Dropdown>

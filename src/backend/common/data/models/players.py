@@ -16,6 +16,12 @@ class Player:
     is_shadow: bool
     is_banned: bool
     discord: Discord | None
+
+@dataclass
+class PlayerBasic:
+    id: int
+    name: str
+    country_code: CountryCode
     
 @dataclass
 class PlayerAndFriendCodes(Player):
@@ -106,3 +112,19 @@ class PlayerNameRequest:
 @dataclass
 class ApprovePlayerNameRequestData:
     request_id: int
+
+@dataclass
+class ClaimPlayerRequestData:
+    player_id: int
+
+@dataclass
+class ApproveDenyPlayerClaimRequestData:
+    claim_id: int
+
+@dataclass
+class PlayerClaim:
+    id: int
+    date: int
+    approval_status: Approval
+    player: PlayerBasic
+    claimed_player: PlayerBasic
