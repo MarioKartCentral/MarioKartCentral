@@ -13,6 +13,7 @@
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
   import { game_order } from '$lib/util/util';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
 
   let user_info: UserInfo;
 
@@ -22,41 +23,42 @@
 
   export let player: PlayerInfo;
 
+  let mode: string | null = null;
+  let game: string | null = null;
+  let from: string | null = null;
+  let to: string | null = null;
+
   let avatar_url = logo;
   if (player.user_settings && player.user_settings.avatar) {
     avatar_url = player.user_settings.avatar;
   }
 
   onMount(async () => {
-    // Somehow get all tournaments, where player.id exists
-    // FFA tournaments and Team tournaments are different objects
-
-
-    // let param_id = $page.url.searchParams.get('id');
-    // id = Number(param_id);
-    // const res = await fetch(`/api/registry/players/${id}`);
-    // if (res.status != 200) {
-    //   player_found = false;
-    //   return;
-    // }
-    // const body: PlayerInfo = await res.json();
-    // player = body;
-
-    // if (player.ban_info) {
-    //   // fetch detailed ban info. api will only return successfully if the user is a mod
-    //   const res2 = await fetch(`/api/registry/players/bans?player_id=${player.id}`);
-    //   if (res2.status === 200) {
-    //     const data: BanListData = await res2.json();
-    //     if (data.ban_count === 1) banInfo = data.ban_list[0];
-    //   }
-    // }
   });
+
+    async function fetchData() {
+        // let url = `/api/registry/teams/transfers/${approval_status}?page=${page_number}`;
+        let url = `/api/my_api_endpoint_lol`
+        if(mode !== null) {
+            url += `&mode=${mode}`;
+        }
+        if(from) {
+            url += `&from_date=${new Date(from).getTime()/1000}`;
+        }
+        if(to) {
+            url += `&to_date=${new Date(to).getTime()/1000}`;
+        }
+        const res = await fetch(url);
+        if (res.status !== 200) {
+            return;
+  }
 
   // Function to filter data for specific game
   // Function to filter data for specific mode
   // Function to sort data by tournament date
   // Function to sort data by tournament name
   // Function to sort data by result
+
   console.log(player);
 </script>
 
@@ -67,6 +69,23 @@
       <div>Mode</div>
       <div>Sort</div>
       <div>___</div>
+      <form on:submit|preventDefault={fetchData}>
+        <div class="flex">
+          <GameModeSelect bind:game bind:mode flex all_option hide_labels inline is_team />
+          <Button type="submit">Filter</Button>
+          <div class="option">
+            <label for="from">From</label>
+            <input name="from" type="datetime-local" bind:value={from} />
+          </div>
+          <div class="option">
+            <label for="to">To</label>
+            <input name="to" type="datetime-local" bind:value={to} />
+          </div>
+          <div class="option">
+            <Button type="submit">Filter</Button>
+          </div>
+        </div>
+      </form>
       <div>FFA Tournaments</div>
       <div>Tournament Name | Result</div>
       <div>table...</div>

@@ -120,6 +120,7 @@ class PlayerNameRequest:
 class ApprovePlayerNameRequestData:
     request_id: int
 
+<<<<<<< HEAD
 @dataclass
 class UpdatePlayerNotesRequestData:
     notes: str
@@ -144,3 +145,5 @@ class PlayerClaim:
 class MergePlayersRequestData:
     from_player_id: int
     to_player_id: int
+=======
+>>>>>>> 31ea3e1 (intermediate push)
