@@ -8,11 +8,12 @@
   import Button from "$lib/components/common/buttons/Button.svelte";
   import { have_unread_notification, user } from "$lib/stores/stores";
   import { DotsVerticalOutline } from "flowbite-svelte-icons";
-  import Dropdown from "$lib/components/common/Dropdown.svelte";
+  import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from "$lib/components/common/DropdownItem.svelte";
   import type { UserInfo } from "$lib/types/user-info";
 
   const maxNotificationsPerPage = 50;
+  const dropdownOpenStatus: { [key: string]: boolean } = {};
   let notifications: Notification[] = [];
   let currentPage = 1;
   let isInitialLoad = true;
@@ -83,6 +84,11 @@
     have_unread_notification.set(0);
   }
 
+  function handleChangeStatus(id: number, is_read: boolean) {
+    changeReadStatus(id, !is_read)
+    dropdownOpenStatus[id] = false
+  }
+
   async function handleClick(id: number, link: string) {
     await changeReadStatus(id, true)
     goto(link)
@@ -116,8 +122,8 @@
         </button>
         <button>
           <DotsVerticalOutline class="hover:text-yellow-300"/>
-          <Dropdown>
-            <DropdownItem on:click={() => changeReadStatus(id, !is_read)}>{is_read ? $LL.NOTIFICATION.MARK_UNREAD() : $LL.NOTIFICATION.MARK_READ()}</DropdownItem>
+          <Dropdown bind:open={dropdownOpenStatus[id]}>
+            <DropdownItem on:click={() => handleChangeStatus(id, is_read)}>{is_read ? $LL.NOTIFICATION.MARK_UNREAD() : $LL.NOTIFICATION.MARK_READ()}</DropdownItem>
           </Dropdown>
         </button>
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
