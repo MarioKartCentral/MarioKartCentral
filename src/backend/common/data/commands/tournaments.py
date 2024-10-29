@@ -32,7 +32,7 @@ class CreateTournamentCommand(Command[int | None]):
 
         # store minimal data about each tournament in the SQLite DB
         async with db_wrapper.connect() as db:
-            
+
             cursor = await db.execute(
                 """INSERT INTO tournaments(
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
@@ -52,7 +52,7 @@ class CreateTournamentCommand(Command[int | None]):
         s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
         return tournament_id
-            
+
 @save_to_command_log
 @dataclass
 class EditTournamentCommand(Command[None]):
@@ -61,7 +61,7 @@ class EditTournamentCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         b = self.body
-        
+
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT is_squad, game FROM tournaments WHERE id = ?", (self.id,)) as cursor:
                 row = await cursor.fetchone()
@@ -246,7 +246,7 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
                 tournaments_query = f"SELECT id, name, game, mode, date_start, date_end FROM tournaments{where_clause}"
             else:
                 tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments{where_clause}"
-            
+
             tournaments: list[TournamentDataMinimal | TournamentDataBasic] = []
             series_ids: list[int] = []
             series_info = {}
@@ -280,7 +280,7 @@ class GetTournamentListCommand(Command[list[TournamentDataMinimal]]):
                     tournament.series_url = series_info[tournament.series_id]['url']
                     tournament.series_description = series_info[tournament.series_id]['description']
             return tournaments
-        
+
 @dataclass
 class CheckIfSquadTournament(Command[bool]):
     tournament_id: int
@@ -293,3 +293,29 @@ class CheckIfSquadTournament(Command[bool]):
                     raise Problem("Tournament not found", status=404)
                 is_squad = row[0]
                 return bool(is_squad)
+
+@dataclass
+class GetPlayerSoloTournamentPlacements(Command[dict]):
+    """Get all solo tournament placements for a particular player"""
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT t.id, t.name, t.date_end, tsp.placement, tsp.is_disqualified FROM tournament_solo_placements as tsp JOIN tournaments as t ON tsp.id = t.id WHERE tsp.player_id = ? AND t.show_on_profiles = 1", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                if rows is None:
+                    raise Problem("No tournaments found for this player", status=404)
+                return rows
+
+@dataclass
+class GetPlayerSquadTournamentPlacements(Command[dict]):
+    """Get all solo tournament placements for a particular player"""
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT t.id, t.name, t.date_end, tsp.placement, tsp.is_disqualified FROM tournament_solo_placements as tsp JOIN tournaments as t ON tsp.id = t.id WHERE tsp.player_id = ? AND t.show_on_profiles = 1", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                if rows is None:
+                    raise Problem("No tournaments found for this player", status=404)
+                return rows

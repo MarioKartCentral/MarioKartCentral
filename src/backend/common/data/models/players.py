@@ -105,3 +105,4 @@ class PlayerNameRequest:
 @dataclass
 class ApprovePlayerNameRequestData:
     request_id: int
+
