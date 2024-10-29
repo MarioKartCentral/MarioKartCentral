@@ -238,9 +238,12 @@
 
 <Section header="{roster.name}">
   <div slot="header_content">
+    {#if !roster.is_active}
+      (Inactive)
+    {/if}
     <TagBadge tag={roster.tag} color={roster.color} />
     <GameBadge game={roster.game}/>
-    {#if roster.approval_status === 'approved'}
+    {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
       <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAM_EDIT.EDIT_ROSTER()}</Button>
     {/if}
   </div>
@@ -310,7 +313,7 @@
       </Table>
     </div>
   {/if}
-  {#if roster.approval_status === 'approved' || is_mod}
+  {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
     {#if roster.invites.length}
       <div class="section">
         <h3>{$LL.TEAM_EDIT.INVITATIONS()}</h3>
@@ -373,8 +376,10 @@
       </div>
     {/if}
     
-  {:else}
-    Roster is pending approval from MKCentral staff.
+  {:else if roster.approval_status === "pending"}
+    <div>
+      Roster is pending approval from MKCentral staff.
+    </div>
   {/if}
 </Section>
 

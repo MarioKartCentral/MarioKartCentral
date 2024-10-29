@@ -28,6 +28,10 @@
   const dispatch = createEventDispatcher();
 
   async function get_results() {
+    if(!query) {
+      results = [];
+      return;
+    }
     const name_var = query ? `&name_or_fc=${query}` : ``;
     const game_var = game ? `&game=${game}` : ``;
     const squad_var = squad_id ? `&squad_id=${squad_id}` : ``;

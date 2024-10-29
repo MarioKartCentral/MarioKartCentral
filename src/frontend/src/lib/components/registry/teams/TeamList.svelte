@@ -7,8 +7,11 @@
   import LL from '$i18n/i18n-svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import { sortFilterRosters } from '$lib/util/util';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import { onMount } from 'svelte';
 
-  export let teams: Team[];
+  let teams: Team[] = [];
 
   let show_rosters: { [id: number]: boolean } = {};
 
@@ -22,8 +25,73 @@
   function toggle_show_rosters(team_id: number) {
     show_rosters[team_id] = !show_rosters[team_id];
   }
+
+  type TeamFilter = {
+    game: string | null;
+    mode: string | null;
+    name: string | null;
+    is_historical: boolean;
+    is_active: boolean | null;
+  }
+
+  let filters: TeamFilter = {
+    game: null,
+    mode: null,
+    name: null,
+    is_historical: false,
+    is_active: null,
+  }
+
+  async function fetchData() {
+    teams = [];
+    let url = '/api/registry/teams?';
+    let filter_strings = [];
+    if(filters.is_historical) {
+      filters.is_active = null;
+    }
+    else {
+      filters.is_active = true;
+    }
+    for(const [key, value] of Object.entries(filters)) {
+      if(value !== null) {
+        filter_strings.push(`${key}=${value}`);
+      }
+    }
+    url += filter_strings.join("&");
+    const res = await fetch(url);
+    if (res.status === 200) {
+      const body = await res.json();
+      for (let t of body) {
+        teams.push(t);
+      }
+      teams = teams;
+    }
+  }
+
+  onMount(async () => {
+    fetchData();
+  });
 </script>
 
+<form on:submit|preventDefault={fetchData}>
+  <div class="flex">
+    <GameModeSelect all_option hide_labels inline bind:game={filters.game} bind:mode={filters.mode}/>
+    <div class="option">
+      <input class="search" bind:value={filters.name} type="text" placeholder="Search by team or roster name..."/>
+    </div>
+    <div class="option">
+      <select bind:value={filters.is_historical}>
+        <option value={false}>Active Teams</option>
+        <option value={true}>Historical Teams</option>
+      </select>
+    </div>
+    <div class="option">
+      <Button type="submit">Search</Button>
+    </div>
+  </div>
+</form>
+{teams.length}
+{$LL.TEAM_LIST.TEAMS()}
 <Table>
   <col class="tag" />
   <col class="name" />
@@ -85,5 +153,18 @@
     border: none;
     color: white;
     cursor: pointer;
+  }
+  .flex {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .option {
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+  input {
+    width: 250px;
   }
 </style>

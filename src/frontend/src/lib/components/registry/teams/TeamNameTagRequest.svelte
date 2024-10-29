@@ -83,7 +83,9 @@
         <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
         <input name="tag" type="text" value={team.tag} required disabled={days_until_change > 0}/>
     </div>
-    <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+    <div class="submit">
+        <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+    </div>
     {/if}
     
 </form>
@@ -92,5 +94,8 @@
     label {
         display: inline-block;
         width: 100px;
+    }
+    .submit {
+        margin-top: 10px;
     }
 </style>

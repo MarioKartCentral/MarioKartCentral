@@ -286,6 +286,7 @@ class TeamFilter():
     language: str | None = None
     is_recruiting: bool | None = None
     is_historical: bool | None = None
+    is_active: bool | None = None
 
 @dataclass
 class TeamInvite():

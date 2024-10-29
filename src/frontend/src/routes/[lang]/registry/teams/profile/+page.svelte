@@ -40,8 +40,10 @@
   let mode: string | null = null;
 
   function filter_team_page_rosters(t: Team) {
-    let filtered = sortFilterRosters(t.rosters, false, true).filter(
-      (r) => (!game || r.game === game) && (!mode || r.mode === mode));
+    // if we can manage rosters for our team we should be able to see the ones with 0 players on the team profile page
+    let show_zero_player_rosters = check_team_permission(user_info, team_permissions.manage_rosters, t.id);
+    let filtered = sortFilterRosters(t.rosters, false, show_zero_player_rosters).filter(
+      (r) => (!game || r.game === game) && (!mode || r.mode === mode) && r.is_active);
     return filtered;
   }
 </script>
@@ -91,7 +93,7 @@
           {#each filter_team_page_rosters(team) as roster}
             <TeamRoster {roster} />
           {:else}
-            No rosters.
+            No active rosters.
           {/each}
         {/key}
       {/key}

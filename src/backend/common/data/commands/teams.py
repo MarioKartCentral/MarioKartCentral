@@ -1133,17 +1133,15 @@ class ListTeamsCommand(Command[List[Team]]):
             append_equal_filter(filter.mode, "r.mode")
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
-            if filter.is_historical:
-                append_equal_filter(filter.is_historical, "t.is_historical")
-            else:
-                append_equal_filter(False, "t.is_historical")
+            append_equal_filter(filter.is_historical, "t.is_historical")
+            append_equal_filter(filter.is_active, "r.is_active")
+
             if self.approved:
                 append_equal_filter("approved", "t.approval_status")
                 append_equal_filter("approved", "r.approval_status")
             else:
                 append_not_equal_filter("approved", "t.approval_status")
                 append_not_equal_filter("approved", "r.approval_status")
-            append_equal_filter(True, "r.is_active")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             teams_query = f"""  SELECT t.id, t.name, t.tag, t.description, t.creation_date, t.language, t.color, t.logo,

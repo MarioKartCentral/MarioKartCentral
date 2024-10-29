@@ -40,14 +40,16 @@
       <b>{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</b>
       {$LL.LANGUAGES[team.language.toUpperCase().replace("-", "_")]()}
     </div>
-    <div>
-      <b>{$LL.TEAM_PROFILE.MANAGERS()}</b>
-      {#each team.managers as m, i}
-        <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
-          {i == team.managers.length - 1 ? m.name : `${m.name}, `}
-        </a>
-      {/each}
-    </div>
+    {#if team.managers.length}
+      <div>
+        <b>{$LL.TEAM_PROFILE.MANAGERS()}</b>
+        {#each team.managers as m, i}
+          <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
+            {i == team.managers.length - 1 ? m.name : `${m.name}, `}
+          </a>
+        {/each}
+      </div>
+    {/if}
   </div>
   <div class="about_me">
     {team.description}
