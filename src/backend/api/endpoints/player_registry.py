@@ -14,7 +14,14 @@ import common.data.notifications as notifications
 @bind_request_body(CreatePlayerRequestData)
 @require_logged_in
 async def create_player(request: Request, body: CreatePlayerRequestData) -> Response:
-    command = CreatePlayerCommand(request.state.user.id, body)
+    command = CreatePlayerCommand(request.state.user.id, body.name, body.country_code, body.friend_codes, False, False)
+    player = await handle(command)
+    return JSONResponse(player, status_code=201)
+
+@bind_request_body(CreatePlayerRequestData)
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def create_shadow_player(request: Request, body: CreatePlayerRequestData) -> JSONResponse:
+    command = CreatePlayerCommand(None, body.name, body.country_code, body.friend_codes, body.is_hidden, True)
     player = await handle(command)
     return JSONResponse(player, status_code=201)
 
@@ -135,6 +142,7 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
 
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
+    Route('/api/registry/players/createShadowPlayer', create_shadow_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
     Route('/api/registry/players', list_players),

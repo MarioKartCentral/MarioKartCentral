@@ -80,4 +80,9 @@
       {/if}
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.manage_shadow_players)}
+    <DropdownItem href="/{$page.params.lang}/moderator/shadow_players">
+      Shadow Players
+    </DropdownItem>
+  {/if}
 </Dropdown>

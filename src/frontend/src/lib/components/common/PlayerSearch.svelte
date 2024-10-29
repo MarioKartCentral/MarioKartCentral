@@ -10,6 +10,8 @@
   export let player: PlayerInfo | null = null;
   export let game: string | null = null;
   export let squad_id: number | null = null;
+  export let is_shadow: boolean | null = false;
+  export let include_shadow_players = false;
 
   let query = '';
   let results: PlayerInfo[] = [];
@@ -29,7 +31,9 @@
     const name_var = query ? `&name_or_fc=${query}` : ``;
     const game_var = game ? `&game=${game}` : ``;
     const squad_var = squad_id ? `&squad_id=${squad_id}` : ``;
-    const url = `/api/registry/players?detailed=true&matching_fcs_only=true${name_var}${game_var}${squad_var}`;
+    const shadow_var = is_shadow !== null ? `&is_shadow=${is_shadow}` : ``;
+    const include_shadow_var = `&include_shadow_players=${include_shadow_players}`;
+    const url = `/api/registry/players?detailed=true&matching_fcs_only=true${name_var}${game_var}${squad_var}${shadow_var}${include_shadow_var}`;
     console.log(url);
     const res = await fetch(url);
     if (res.status === 200) {

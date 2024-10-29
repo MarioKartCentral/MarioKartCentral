@@ -11,10 +11,13 @@ from datetime import datetime, timedelta, timezone
 @dataclass
 class CreatePlayerCommand(Command[Player]):
     user_id: int | None
-    data: CreatePlayerRequestData
+    name: str
+    country_code: CountryCode
+    friend_codes: list[CreateFriendCodeRequestData]
+    is_hidden: bool = False
+    is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
-        data = self.data
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
                 async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
@@ -26,7 +29,7 @@ class CreatePlayerCommand(Command[Player]):
                 VALUES (?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
                 command, 
-                (data.name, data.country_code, data.is_hidden, data.is_shadow, False))
+                (self.name, self.country_code, self.is_hidden, self.is_shadow, False))
             
             # TODO: Run queries to determine why it errored
             if player_row is None:
@@ -40,16 +43,16 @@ class CreatePlayerCommand(Command[Player]):
                     if cursor.rowcount != 1:
                         raise Problem("Invalid User ID", status=404)
                     
-            fc_set = set([friend_code.fc for friend_code in data.friend_codes])
-            if len(fc_set) < len(data.friend_codes):
+            fc_set = set([friend_code.fc for friend_code in self.friend_codes])
+            if len(fc_set) < len(self.friend_codes):
                 raise Problem("Cannot have duplicate FCs", status=400)
             fc_limits = {"mk8dx": 1, "mkt": 1, "mkw": 4, "mk7": 1, "mk8": 1}
             for game in fc_limits.keys():
-                game_fcs = [fc for fc in data.friend_codes if fc.game == game]
+                game_fcs = [fc for fc in self.friend_codes if fc.game == game]
                 if len(game_fcs) > fc_limits[game]:
                     raise Problem(f"Too many friend codes were provided for the game {game} (limit {fc_limits[game]})", status=400)
                     
-            for friend_code in data.friend_codes:
+            for friend_code in self.friend_codes:
                 match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
                 if friend_code.game != "mk8" and not match:
                     raise Problem(f"FC {friend_code.fc} for game {friend_code.game} is in incorrect format", status=400)
@@ -60,11 +63,12 @@ class CreatePlayerCommand(Command[Player]):
                     if row:
                         raise Problem("Another player is currently using this friend code for this game", status=400)
                     
-            friend_code_tuples = [(player_id, friend_code.game, friend_code.fc, False, friend_code.is_primary, True, friend_code.description) for friend_code in data.friend_codes]
+            friend_code_tuples = [(player_id, friend_code.game, friend_code.fc, False, friend_code.is_primary, True, friend_code.description)
+                                  for friend_code in self.friend_codes]
             await db.executemany("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
-            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, None)
+            return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, None)
 
 @save_to_command_log
 @dataclass
@@ -217,7 +221,13 @@ class ListPlayersCommand(Command[PlayerList]):
                     variable_parameters.append(f"%{filter.name_or_fc}%")
 
                 if filter.game is not None:
-                    fc_where_clauses.append("f.game = ?")
+                    # used when manually registering players for a tournament,
+                    # includes shadow players in the results even if they don't have an
+                    # FC for the game in the filter
+                    if filter.include_shadow_players:
+                        fc_where_clauses.append("(f.game = ? OR p2.is_shadow = 1)")
+                    else:
+                        fc_where_clauses.append("f.game = ?")
                     variable_parameters.append(filter.game)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
@@ -285,7 +295,7 @@ class ListPlayersCommand(Command[PlayerList]):
             page_count = int(player_count / limit) + (1 if player_count % limit else 0)
 
             if filter.detailed is not None:
-                async with db.execute(friend_codes_query, (*(variable_parameters + fc_variable_parameters), limit, offset)) as cursor:
+                async with db.execute(friend_codes_query, (*variable_parameters, limit, offset, *fc_variable_parameters)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         id, fc, game, player_id, is_verified, is_primary, description, is_active = row

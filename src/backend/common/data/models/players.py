@@ -87,6 +87,7 @@ class PlayerFilter:
     page: int | None = None
     squad_id: int | None = None
     matching_fcs_only: bool = False
+    include_shadow_players: bool = False
 
 @dataclass
 class PlayerRequestNameRequestData:

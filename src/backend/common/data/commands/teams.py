@@ -36,7 +36,7 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
             if not self.is_privileged:
-                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
+                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ? AND is_active = 0", (self.name, self.tag)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:

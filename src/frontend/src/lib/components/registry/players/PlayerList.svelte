@@ -12,6 +12,8 @@
   import GameSelect from '$lib/components/common/GameSelect.svelte';
   import CountrySelect from '$lib/components/common/CountrySelect.svelte';
 
+  export let is_shadow: boolean | null = false;
+
   let players: PlayerInfo[] = [];
   let totalPlayers = 0;
   let totalPages = 0;
@@ -35,6 +37,9 @@
     }
     if (filters.country != null && filters.country != '') {
       url += '&country=' + filters.country;
+    }
+    if(is_shadow !== null) {
+      url += `&is_shadow=${is_shadow}`;
     }
     url += '&page=' + currentPage;
     console.log(url);
@@ -72,6 +77,7 @@
   {totalPlayers}
   {$LL.PLAYER_LIST.PLAYERS()}
   <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+  {#if totalPlayers}
     <Table>
       <col class="country_code" />
       <col class="name" />
@@ -97,6 +103,7 @@
         {/each}
       </tbody>
     </Table>
+  {/if}
   <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
 </div>
 
