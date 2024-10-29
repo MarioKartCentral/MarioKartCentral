@@ -76,49 +76,51 @@
 {#if check_permission(user_info, permissions.manage_shadow_players)}
     <Section header="Unapproved Player Claims">
         {#if claims.length}
-        <Table>
-            <col class="country"/>
-            <col class="player"/>
-            <col class="country"/>
-            <col class="claimed"/>
-            <col class="date mobile-hide"/>
-            <col class="approve"/>
-            <thead>
-                <tr>
-                    <th/>
-                    <th>Player</th>
-                    <th/>
-                    <th>Claimed Player</th>
-                    <th class="mobile-hide">Date</th>
-                    <th>Approve?</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each claims as claim, i}
-                    <tr class="row-{i % 2}">
-                        <td><Flag country_code={claim.player.country_code}/></td>
-                        <td>
-                            <a href="{$page.params.lang}/registry/players/profile?id={claim.player.id}">
-                                {claim.player.name}
-                            </a>
-                        </td>
-                        <td><Flag country_code={claim.claimed_player.country_code}/></td>
-                        <td>
-                            <a href="{$page.params.lang}/registry/players/profile?id={claim.claimed_player.id}">
-                                {claim.claimed_player.name}
-                            </a>
-                        </td>
-                        <td class="mobile-hide">
-                            {new Date(claim.date * 1000).toLocaleString($locale, options)}
-                        </td>
-                        <td>
-                            <ConfirmButton on:click={() => approveClaim(claim)}/>
-                            <CancelButton on:click={() => denyClaim(claim)}/>
-                        </td>
+            <Table>
+                <col class="country"/>
+                <col class="player"/>
+                <col class="country"/>
+                <col class="claimed"/>
+                <col class="date mobile-hide"/>
+                <col class="approve"/>
+                <thead>
+                    <tr>
+                        <th/>
+                        <th>Player</th>
+                        <th/>
+                        <th>Claimed Player</th>
+                        <th class="mobile-hide">Date</th>
+                        <th>Approve?</th>
                     </tr>
-                {/each}
-            </tbody>
-        </Table>
+                </thead>
+                <tbody>
+                    {#each claims as claim, i}
+                        <tr class="row-{i % 2}">
+                            <td><Flag country_code={claim.player.country_code}/></td>
+                            <td>
+                                <a href="{$page.params.lang}/registry/players/profile?id={claim.player.id}">
+                                    {claim.player.name}
+                                </a>
+                            </td>
+                            <td><Flag country_code={claim.claimed_player.country_code}/></td>
+                            <td>
+                                <a href="{$page.params.lang}/registry/players/profile?id={claim.claimed_player.id}">
+                                    {claim.claimed_player.name}
+                                </a>
+                            </td>
+                            <td class="mobile-hide">
+                                {new Date(claim.date * 1000).toLocaleString($locale, options)}
+                            </td>
+                            <td>
+                                <ConfirmButton on:click={() => approveClaim(claim)}/>
+                                <CancelButton on:click={() => denyClaim(claim)}/>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </Table>
+        {:else}
+            No player claims.
         {/if}
     </Section>
 {:else}

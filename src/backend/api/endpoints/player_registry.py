@@ -190,7 +190,7 @@ routes = [
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']), # dispatches notification
     Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']), # dispatches notification
     Route('/api/registry/players/claim', claim_player, methods=['POST']),
-    Route('/api/registry/players/approveClaim', approve_player_claim, methods=['POST']),
-    Route('/api/registry/players/denyClaim', deny_player_claim, methods=['POST']),
+    Route('/api/registry/players/approveClaim', approve_player_claim, methods=['POST']), # dispatches notification
+    Route('/api/registry/players/denyClaim', deny_player_claim, methods=['POST']), # dispatches notification
     Route('/api/registry/players/claims', list_player_claims),
 ]
