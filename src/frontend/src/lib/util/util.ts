@@ -40,10 +40,13 @@ export function findNumberOfDaysBetweenDates(start: number, end: number, isMs: b
 }
 
 export function sortFilterRosters(rosters: TeamRoster[], show_pending: boolean = false, has_players: boolean = false) {
-  const sort_filtered = rosters.filter((r) => 
-    (r.approval_status === 'approved' || (show_pending && r.approval_status === 'pending')) && // show approved, and pending if specified
-    (!has_players || r.players.length > 0) // if has_players is false, don't check for # of players
-    ).sort((a, b) => game_order[a.game] - game_order[b.game]); // sort rosters in game order
+  const sort_filtered = rosters
+    .filter(
+      (r) =>
+        (r.approval_status === 'approved' || (show_pending && r.approval_status === 'pending')) && // show approved, and pending if specified
+        (!has_players || r.players.length > 0), // if has_players is false, don't check for # of players
+    )
+    .sort((a, b) => game_order[a.game] - game_order[b.game]); // sort rosters in game order
   return sort_filtered;
 }
 

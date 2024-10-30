@@ -160,7 +160,7 @@ export const permissions = {
   link_discord: 'discord_link',
   manage_shadow_players: 'shadow_players_manage',
   merge_players: 'player_merge',
-  merge_teams: 'team_merge'
+  merge_teams: 'team_merge',
 };
 
 export const team_permissions = {
@@ -202,5 +202,5 @@ export const mod_panel_permissions = [
   permissions.edit_player,
   permissions.manage_shadow_players,
   permissions.merge_players,
-  permissions.merge_teams
+  permissions.merge_teams,
 ];
