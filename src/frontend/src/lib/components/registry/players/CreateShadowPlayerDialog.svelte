@@ -37,7 +37,7 @@
     <form method="POST" on:submit|preventDefault={createPlayer}>
         <div class="option">
             <label for="shadow_name">Name</label>
-            <input name="shadow_name" pattern="^\S.*\S$|^\S$" required/>
+            <input name="shadow_name" required/>
         </div>
         <div class="option">
             <label for="country">Country</label>
