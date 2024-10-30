@@ -11,10 +11,13 @@ from datetime import datetime, timedelta, timezone
 @dataclass
 class CreatePlayerCommand(Command[Player]):
     user_id: int | None
-    data: CreatePlayerRequestData
+    name: str
+    country_code: CountryCode
+    friend_codes: list[CreateFriendCodeRequestData]
+    is_hidden: bool = False
+    is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
-        data = self.data
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
                 async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
@@ -26,7 +29,7 @@ class CreatePlayerCommand(Command[Player]):
                 VALUES (?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
                 command, 
-                (data.name, data.country_code, data.is_hidden, data.is_shadow, False))
+                (self.name, self.country_code, self.is_hidden, self.is_shadow, False))
             
             # TODO: Run queries to determine why it errored
             if player_row is None:
@@ -40,16 +43,16 @@ class CreatePlayerCommand(Command[Player]):
                     if cursor.rowcount != 1:
                         raise Problem("Invalid User ID", status=404)
                     
-            fc_set = set([friend_code.fc for friend_code in data.friend_codes])
-            if len(fc_set) < len(data.friend_codes):
+            fc_set = set([friend_code.fc for friend_code in self.friend_codes])
+            if len(fc_set) < len(self.friend_codes):
                 raise Problem("Cannot have duplicate FCs", status=400)
             fc_limits = {"mk8dx": 1, "mkt": 1, "mkw": 4, "mk7": 1, "mk8": 1}
             for game in fc_limits.keys():
-                game_fcs = [fc for fc in data.friend_codes if fc.game == game]
+                game_fcs = [fc for fc in self.friend_codes if fc.game == game]
                 if len(game_fcs) > fc_limits[game]:
                     raise Problem(f"Too many friend codes were provided for the game {game} (limit {fc_limits[game]})", status=400)
                     
-            for friend_code in data.friend_codes:
+            for friend_code in self.friend_codes:
                 match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
                 if friend_code.game != "mk8" and not match:
                     raise Problem(f"FC {friend_code.fc} for game {friend_code.game} is in incorrect format", status=400)
@@ -60,11 +63,12 @@ class CreatePlayerCommand(Command[Player]):
                     if row:
                         raise Problem("Another player is currently using this friend code for this game", status=400)
                     
-            friend_code_tuples = [(player_id, friend_code.game, friend_code.fc, False, friend_code.is_primary, True, friend_code.description) for friend_code in data.friend_codes]
+            friend_code_tuples = [(player_id, friend_code.game, friend_code.fc, False, friend_code.is_primary, True, friend_code.description)
+                                  for friend_code in self.friend_codes]
             await db.executemany("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
-            return Player(int(player_id), data.name, data.country_code, data.is_hidden, data.is_shadow, False, None)
+            return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, None)
 
 @save_to_command_log
 @dataclass
@@ -162,7 +166,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 class ListPlayersCommand(Command[PlayerList]):
     filter: PlayerFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper, s3_wrapper) -> PlayerList:
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
 
@@ -217,7 +221,13 @@ class ListPlayersCommand(Command[PlayerList]):
                     variable_parameters.append(f"%{filter.name_or_fc}%")
 
                 if filter.game is not None:
-                    fc_where_clauses.append("f.game = ?")
+                    # used when manually registering players for a tournament,
+                    # includes shadow players in the results even if they don't have an
+                    # FC for the game in the filter
+                    if filter.include_shadow_players:
+                        fc_where_clauses.append("(f.game = ? OR p2.is_shadow = 1)")
+                    else:
+                        fc_where_clauses.append("f.game = ?")
                     variable_parameters.append(filter.game)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
@@ -252,8 +262,8 @@ class ListPlayersCommand(Command[PlayerList]):
                 SELECT p.id FROM players p
                 LEFT JOIN users u ON u.player_id = p.id
                 LEFT JOIN user_discords d ON u.id = d.user_id
-                {player_where_clause} {fc_where_clause} LIMIT ? OFFSET ?
-            )"""
+                {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?
+            ) {fc_where_clause}"""
 
             count_query = f"""SELECT COUNT (*) FROM (SELECT p.id FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
@@ -263,7 +273,6 @@ class ListPlayersCommand(Command[PlayerList]):
             players: List[PlayerDetailed] = []
             friend_codes: dict[int, list[FriendCode]] = {}
 
-            # print(players_query)
             async with db.execute(players_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -286,7 +295,7 @@ class ListPlayersCommand(Command[PlayerList]):
             page_count = int(player_count / limit) + (1 if player_count % limit else 0)
 
             if filter.detailed is not None:
-                async with db.execute(friend_codes_query, (*(variable_parameters + fc_variable_parameters), limit, offset)) as cursor:
+                async with db.execute(friend_codes_query, (*variable_parameters, limit, offset, *fc_variable_parameters)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         id, fc, game, player_id, is_verified, is_primary, description, is_active = row
@@ -364,3 +373,135 @@ class DenyPlayerNameRequestCommand(Command[None]):
                 if rowcount == 0:
                     raise Problem("Name edit request not found", status=404)
                 await db.commit()
+
+@save_to_command_log
+@dataclass
+class ClaimPlayerCommand(Command[None]):
+    player_id: int
+    claimed_player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Claiming player not found", status=404)
+            async with db.execute("SELECT is_shadow FROM players WHERE id = ?", (self.claimed_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Claimed player not found", status=404)
+                is_shadow = bool(row[0])
+                if not is_shadow:
+                    raise Problem("Cannot claim a non-shadow player", status=400)
+            async with db.execute("SELECT id FROM player_claims WHERE player_id = ? AND claimed_player_id = ? AND approval_status = ?",
+                                  (self.player_id, self.claimed_player_id, "pending")) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem("You already have a pending claim for this player", status=400)
+            date = int(datetime.now(timezone.utc).timestamp())
+            await db.execute("INSERT INTO player_claims(player_id, claimed_player_id, date, approval_status) VALUES(?, ?, ?, ?)",
+                             (self.player_id, self.claimed_player_id, date, "pending"))
+            await db.commit()
+
+@save_to_command_log
+@dataclass
+class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
+    claim_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            # get the user id of requesting user as well as claimed player's info for notifications
+            async with db.execute("""SELECT c.player_id, u.id, c.claimed_player_id, p.name
+                                    FROM player_claims c
+                                    LEFT JOIN users u ON u.player_id = c.player_id
+                                    JOIN players p ON c.claimed_player_id = p.id
+                                    WHERE c.id = ?""", (self.claim_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player claim not found", status=404)
+                player_id, user_id, claimed_player_id, claimed_player_name = row
+
+            # merge the claimed player's info into the new player
+            await db.execute("UPDATE friend_codes SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
+            await db.execute("UPDATE tournament_players SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
+            await db.execute("UPDATE team_members SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
+            await db.execute("UPDATE team_transfers SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
+            # delete the player claim
+            await db.execute("DELETE FROM player_claims WHERE id = ?", (self.claim_id,))
+            # delete the claimed player after merging their data in
+            await db.execute("DELETE FROM players WHERE id = ?", (claimed_player_id,))
+            await db.commit()
+            return player_id, user_id, claimed_player_name
+        
+@save_to_command_log
+@dataclass
+class MergePlayersCommand(Command[None]):
+    from_player_id: int
+    to_player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        if self.from_player_id == self.to_player_id:
+            raise Problem("Player IDs are equal", status=400)
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id FROM players WHERE id = ?", (self.from_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem(f"Player with ID {self.from_player_id} not found", status=404)
+            async with db.execute("SELECT id FROM players WHERE id = ?", (self.to_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem(f"Player with ID {self.to_player_id} not found", status=404)
+                
+            # merge the old player's info into the new player
+            await db.execute("UPDATE friend_codes SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE tournament_players SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE team_members SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE team_transfers SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE player_bans SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE player_bans_historical SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE player_name_edit_requests SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE users SET player_id = ? WHERE player_id = ?", (None, self.from_player_id))
+            await db.execute("DELETE FROM players WHERE id = ?", (self.from_player_id,))
+            await db.commit()
+        
+@save_to_command_log
+@dataclass
+class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
+    claim_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            # get the user id of requesting user as well as claimed player's info for notifications
+            async with db.execute("""SELECT c.player_id, u.id, p.name
+                                    FROM player_claims c
+                                    LEFT JOIN users u ON u.player_id = c.player_id
+                                    JOIN players p ON c.claimed_player_id = p.id
+                                    WHERE c.id = ?""", (self.claim_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player claim not found", status=404)
+                player_id, user_id, claimed_player_name = row
+            await db.execute("UPDATE player_claims SET approval_status = ?", ("denied",))
+            await db.commit()
+            return player_id, user_id, claimed_player_name
+
+@dataclass
+class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT c.id, c.date, c.approval_status,
+                                  c.player_id, p1.name, p1.country_code, 
+                                  c.claimed_player_id, p2.name, p2.country_code
+                                  FROM player_claims c
+                                  JOIN players p1 ON c.player_id = p1.id
+                                  JOIN players p2 ON c.claimed_player_id = p2.id
+                                  """) as cursor:
+                claims: list[PlayerClaim] = []
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (claim_id, date, approval_status, player_id, player_name, player_country, 
+                     claim_player_id, claim_player_name, claim_player_country) = row
+                    player = PlayerBasic(player_id, player_name, player_country)
+                    claimed_player = PlayerBasic(claim_player_id, claim_player_name, claim_player_country)
+                    claims.append(PlayerClaim(claim_id, date, approval_status, player, claimed_player))
+        return claims

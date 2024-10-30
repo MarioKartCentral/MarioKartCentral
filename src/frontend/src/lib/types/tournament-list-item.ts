@@ -15,4 +15,6 @@ export type TournamentListItem = {
   use_series_logo: boolean;
   description: string;
   logo: string | null;
+  is_viewable: boolean;
+  is_public: boolean;
 };

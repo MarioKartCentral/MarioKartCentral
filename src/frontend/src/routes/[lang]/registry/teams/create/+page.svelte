@@ -6,15 +6,16 @@
   import { page } from '$app/stores';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import ColorSelect from '$lib/components/common/ColorSelect.svelte';
+  import LanguageSelect from '$lib/components/common/LanguageSelect.svelte';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { permissions, check_permission } from '$lib/util/permissions';
 
-  const languages = [
-    { value: 'de', getLang: 'DE' },
-    { value: 'en-gb', getLang: 'EN_GB' },
-    { value: 'en-us', getLang: 'EN_US' },
-    { value: 'fr', getLang: 'FR' },
-    { value: 'es', getLang: 'ES' },
-    { value: 'ja', getLang: 'JA' },
-  ];
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
+
   let tag = "";
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -22,6 +23,7 @@
     function getOptionalValue(name: string) {
       return data.get(name) ? data.get(name)?.toString() : '';
     }
+    const is_historical = getOptionalValue('is_historical') === 'true';
     const payload = {
       game: data.get('game')?.toString(),
       mode: data.get('mode')?.toString(),
@@ -31,10 +33,17 @@
       logo: getOptionalValue('logo'),
       language: data.get('language')?.toString(),
       description: getOptionalValue('description'),
-      is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
+      is_recruiting: getOptionalValue('recruiting') === 'true',
+      approval_status: getOptionalValue('approval_status'),
+      is_historical: is_historical,
+      is_active: !is_historical,
     };
     console.log(payload);
-    const endpoint = '/api/registry/teams/request';
+    let endpoint = '/api/registry/teams/request';
+    if(check_permission(user_info, permissions.manage_teams)) {
+      endpoint = '/api/registry/teams/create';
+    }
+    window.confirm(endpoint);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -69,30 +78,54 @@
     </div>    
   </Section>
   <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
-    <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
-    <ColorSelect tag={tag}/>
-    <br />
-    <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
-    <input name="logo" type="text" />
+    <div class="option">
+      <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
+      <ColorSelect tag={tag}/>
+    </div>
+    <div class="option">
+      <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
+      <input name="logo" type="text" />
+    </div>
+    
   </Section>
   <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
-    <label for="language">{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</label>
-    <select name="language" value="en-us">
-      {#each languages as language}
-        <option value={language.value}>{$LL.LANGUAGES[language.getLang]()}</option>
-      {/each}
-    </select>
-    <br />
-    <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
-    <br />
-    <textarea name="description" />
-    <br />
-    <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
-    <select name="recruiting">
-      <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-      <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
-    </select>
+    <div class="option">
+      <label for="language">{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</label>
+      <LanguageSelect/>
+    </div>
+    <div class="option">
+      <div>
+        <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
+      </div>
+      <textarea name="description" />
+    </div>
+    <div class="option">
+      <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
+      <select name="recruiting">
+        <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+        <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+      </select>
+    </div>
   </Section>
+  {#if check_permission(user_info, permissions.manage_teams)}
+    <Section header="Moderator">
+      <div class="option">
+        <label for="approval_status">Approval Status</label>
+        <select name="approval_status">
+          <option value="approved">Approved</option>
+          <option value="pending">Pending</option>
+          <option value="denied">Denied</option>
+        </select>
+      </div>
+      <div class="option">
+        <label for="is_historical">Active/Historical</label>
+        <select name="is_historical">
+          <option value={false}>Active</option>
+          <option value={true}>Historical</option>
+        </select>
+      </div>
+    </Section>
+  {/if}
   <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
     <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
   </Section>

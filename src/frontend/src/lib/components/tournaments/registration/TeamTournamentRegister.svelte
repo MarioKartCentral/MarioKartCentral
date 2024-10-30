@@ -39,7 +39,7 @@
   $: unselected_players = all_players.filter((p) => !players.some((p2) => p2.player_id === p.player_id));
   $: num_captains = players.filter((p) => p.is_captain).length;
   $: num_reps = players.filter((p) => p.is_captain || p.is_representative).length;
-  $: can_register = (num_captains === 1 && !(tournament.min_representatives && num_reps !== tournament.min_representatives) 
+  $: can_register = ((!tournament.min_squad_size || num_captains === 1) && !(tournament.min_representatives && num_reps !== tournament.min_representatives) 
     && (!tournament.min_squad_size || players.length >= tournament.min_squad_size) && (!tournament.max_squad_size || players.length <= tournament.max_squad_size));
 
   onMount(async () => {
@@ -180,7 +180,7 @@
       </b>
     </div>
     {#if is_privileged}
-      <RosterSearch bind:roster={selected_roster} game={tournament.game} on:change={() => selectRosterFromSearch(selected_roster)}/>
+      <RosterSearch bind:roster={selected_roster} game={tournament.game} is_active={is_privileged ? null : true} is_historical={null} on:change={() => selectRosterFromSearch(selected_roster)}/>
     {:else if unselected_rosters.length}
       <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>
         <option value={null}>Select a team</option>
@@ -211,52 +211,54 @@
         <div>Squad Color</div>
         <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
       </div>
-      <div class="section">
-        <b>Players:</b>
-        <Table>
-          <col class="country"/>
-          <col class="name"/>
-          <col class="friend-codes mobile-hide" />
-          <col class="actions"/>
-          <thead>
-            <tr>
-              <th />
-              <th>Name</th>
-              <th class="mobile-hide">Friend Codes</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each players as player, i}
-              <tr class="row-{i % 2}">
-                <td>
-                  <Flag country_code={player.country_code}/>
-                </td>
-                <td>
-                  <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
-                  is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause}/>
-                </td>
-                <td class="mobile-hide">
-                  <FriendCodeDisplay friend_codes={player.friend_codes}/>
-                </td>
-                <td>
-                  <ChevronDownSolid class="cursor-pointer"/>
-                  <Dropdown>
-                    <DropdownItem on:click={() => toggleCaptain(player)}>Toggle Captain</DropdownItem>
-                    {#if !player.is_captain}
-                      <DropdownItem on:click={() => toggleRep(player)}>Toggle Representative</DropdownItem>
-                    {/if}
-                    {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
-                      <DropdownItem on:click={() => toggleBagger(player)}>Toggle Bagger</DropdownItem>
-                    {/if}
-                    <DropdownItem on:click={() => removePlayer(player)}>Remove</DropdownItem>
-                  </Dropdown>
-                </td>
+      {#if players.length}
+        <div class="section">
+          <b>Players:</b>
+          <Table>
+            <col class="country"/>
+            <col class="name"/>
+            <col class="friend-codes mobile-hide" />
+            <col class="actions"/>
+            <thead>
+              <tr>
+                <th />
+                <th>Name</th>
+                <th class="mobile-hide">Friend Codes</th>
+                <th>Actions</th>
               </tr>
-            {/each}
-          </tbody>
-        </Table>
-      </div>
+            </thead>
+            <tbody>
+              {#each players as player, i}
+                <tr class="row-{i % 2}">
+                  <td>
+                    <Flag country_code={player.country_code}/>
+                  </td>
+                  <td>
+                    <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
+                    is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause}/>
+                  </td>
+                  <td class="mobile-hide">
+                    <FriendCodeDisplay friend_codes={player.friend_codes}/>
+                  </td>
+                  <td>
+                    <ChevronDownSolid class="cursor-pointer"/>
+                    <Dropdown>
+                      <DropdownItem on:click={() => toggleCaptain(player)}>Toggle Captain</DropdownItem>
+                      {#if !player.is_captain}
+                        <DropdownItem on:click={() => toggleRep(player)}>Toggle Representative</DropdownItem>
+                      {/if}
+                      {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
+                        <DropdownItem on:click={() => toggleBagger(player)}>Toggle Bagger</DropdownItem>
+                      {/if}
+                      <DropdownItem on:click={() => removePlayer(player)}>Remove</DropdownItem>
+                    </Dropdown>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </Table>
+        </div>
+      {/if}
       {#if unselected_players.length}
         <div class="section">
           <select bind:value={selected_player} on:change={() => addPlayer(selected_player)}>
@@ -269,7 +271,7 @@
         </div>
       {/if}
       <div class="section">
-        {#if num_captains !== 1}
+        {#if tournament.min_squad_size && num_captains !== 1}
           <div>
             Please select exactly one captain
           </div>

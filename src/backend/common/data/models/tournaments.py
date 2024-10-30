@@ -166,6 +166,14 @@ class TournamentDataBasic(TournamentDataMinimal):
     description: str
     logo: str | None
     use_series_logo: bool
+    is_viewable: bool
+    is_public: bool
+
+@dataclass
+class TournamentList:
+    tournaments: list[TournamentDataBasic]
+    tournament_count: int
+    page_count: int
 
 @dataclass
 class TournamentWithPlacements(TournamentDataBasic):
@@ -173,13 +181,15 @@ class TournamentWithPlacements(TournamentDataBasic):
 
 @dataclass
 class TournamentFilter():
-    is_minimal: bool = False
     name: str | None = None
     game: Game | None = None
     mode: GameMode | None = None
     series_id: int | None = None
     is_viewable: bool | None = None
     is_public: bool | None = None
+    from_date: int | None = None
+    to_date: int | None = None
+    page: int | None = None
 
 @dataclass
 class TournamentInvite():

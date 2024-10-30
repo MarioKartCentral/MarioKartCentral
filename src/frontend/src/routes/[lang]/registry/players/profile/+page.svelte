@@ -14,6 +14,7 @@
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
   import ViewEditBan from '$lib/components/moderator/ViewEditBan.svelte';
   import { check_permission, permissions } from '$lib/util/permissions';
+  import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
@@ -87,8 +88,10 @@
       {/if}
     </Dialog>
     {/if}
-
   <PlayerProfile {player} />
+  {#if user_info.player && player.is_shadow}
+    <ClaimPlayer {player}/>
+  {/if}
 {:else if !player_found}
     Player not found
 {/if}

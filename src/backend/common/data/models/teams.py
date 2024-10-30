@@ -286,6 +286,7 @@ class TeamFilter():
     language: str | None = None
     is_recruiting: bool | None = None
     is_historical: bool | None = None
+    is_active: bool | None = None
 
 @dataclass
 class TeamInvite():
@@ -330,6 +331,10 @@ class TeamTransfer():
 class TransferFilter():
     game: Game | None = None
     mode: GameMode | None = None
+    team_id: int | None = None
+    roster_id: int | None = None
+    from_date: int | None = None
+    to_date: int | None = None
     page: int | None = None
 
 @dataclass
@@ -360,3 +365,8 @@ class RegisterableRostersRequestData():
     tournament_id: int
     game: Game
     mode: GameMode
+
+@dataclass
+class MergeTeamsRequestData():
+    from_team_id: int
+    to_team_id: int

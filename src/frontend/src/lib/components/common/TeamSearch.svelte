@@ -1,20 +1,18 @@
 <script lang="ts">
     import type { Team } from "$lib/types/team";
-    import type { TeamRoster } from "$lib/types/team-roster";
     import { createEventDispatcher } from "svelte";
     import Table from "./Table.svelte";
     import TagBadge from "../badges/TagBadge.svelte";
     import { UserAddSolid } from "flowbite-svelte-icons";
     import CancelButton from "./buttons/CancelButton.svelte";
-    import GameBadge from "../badges/GameBadge.svelte";
 
-    export let roster: TeamRoster | null = null;
+    export let team: Team | null = null;
     export let game: string | null = null;
     export let is_active: boolean | null = true;
     export let is_historical: boolean | null = false;
 
     let query = "";
-    let results: TeamRoster[] = [];
+    let results: Team[] = [];
     let show_results = false;
     let timeout: number;
 
@@ -40,8 +38,7 @@
         const res = await fetch(url);
         if (res.status === 200) {
             const body = await res.json();
-            let team_list: Team[] = body;
-            results = team_list.flatMap((t) => t.rosters);
+            results = body;
         }
     }
 
@@ -50,14 +47,14 @@
         setTimeout(() => (show_results = !show_results), show_results ? 100 : 0);
     }
 
-    function set_option(option: TeamRoster | null) {
-        roster = option;
+    function set_option(option: Team | null) {
+        team = option;
         dispatch('change'); // do this so we can run an on:change handler in parent component
     }
 </script>
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
-    {#if !roster}
+    {#if !team}
         <input type="search" placeholder="Search for rosters..." bind:value={query} on:input={handle_search} />
         {#if show_results}
             <div class="table-outer">
@@ -65,7 +62,6 @@
                     <Table show_padding={false}>
                         <col class="tag"/>
                         <col class="name"/>
-                        <col class="game"/>
                         <col class="select"/>
                         <tbody>
                             {#each results as result}
@@ -75,9 +71,6 @@
                                     </td>
                                     <td>
                                         {result.name}
-                                    </td>
-                                    <td>
-                                        <GameBadge game={result.game}/>
                                     </td>
                                     <td>
                                         <UserAddSolid size="lg"/>
@@ -91,8 +84,8 @@
         {/if}
     {:else}
         <div>
-            <TagBadge tag={roster.tag} color={roster.color}/>
-            {roster.name}
+            <TagBadge tag={team.tag} color={team.color}/>
+            {team.name}
             <CancelButton on:click={() => set_option(null)}/>
         </div>
     {/if}
@@ -120,13 +113,10 @@
       cursor: pointer;
     }
     col.tag {
-        width: 20%;
+        width: 30%;
     }
     col.name {
-      width: 40%;
-    }
-    col.game {
-        width: 20%;
+      width: 50%;
     }
     col.select {
       width: 20%;

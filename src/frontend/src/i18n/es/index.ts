@@ -281,6 +281,8 @@ const es: Translation = {
     '48': 'Your ban has been updated. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}',
     '49': 'A moderator has kicked {player_name|bold} from your team {team_name|bold}.',
     '50': '{player_name|bold} declined their invitation to {squad_name|bold}.',
+    '51': 'Your claim of shadow player {player_name|bold} has been accepted!',
+    '52': 'Your claim of shadow player {player_name|bold} has been denied.',
   },
   COUNTRIES: {
     AF: 'Afganistán',
