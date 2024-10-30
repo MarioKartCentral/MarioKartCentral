@@ -1080,6 +1080,16 @@ type RootTranslation = {
 		 * @param {unknown} squad_name
 		 */
 		'50': RequiredParams<'player_name|bold' | 'squad_name|bold'>
+		/**
+		 * Y​o​u​r​ ​c​l​a​i​m​ ​o​f​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​c​c​e​p​t​e​d​!
+		 * @param {unknown} player_name
+		 */
+		'51': RequiredParams<'player_name|bold'>
+		/**
+		 * Y​o​u​r​ ​c​l​a​i​m​ ​o​f​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} player_name
+		 */
+		'52': RequiredParams<'player_name|bold'>
 	}
 	COUNTRIES: {
 		/**
@@ -3075,6 +3085,14 @@ export type TranslationFunctions = {
 		 * {player_name|bold} declined their invitation to {squad_name|bold}.
 		 */
 		'50': (arg: { player_name: unknown, squad_name: unknown }) => LocalizedString
+		/**
+		 * Your claim of shadow player {player_name|bold} has been accepted!
+		 */
+		'51': (arg: { player_name: unknown }) => LocalizedString
+		/**
+		 * Your claim of shadow player {player_name|bold} has been denied.
+		 */
+		'52': (arg: { player_name: unknown }) => LocalizedString
 	}
 	COUNTRIES: {
 		/**

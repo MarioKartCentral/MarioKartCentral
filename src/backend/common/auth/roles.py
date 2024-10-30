@@ -30,6 +30,9 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.MANAGE_REGISTRATION_HISTORY,
         permissions.MANAGE_TRANSFERS,
         permissions.CREATE_SERIES,
+        permissions.MANAGE_SHADOW_PLAYERS,
+        permissions.MERGE_PLAYERS,
+        permissions.MERGE_TEAMS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -47,7 +50,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     ADMINISTRATOR: [
         permissions.CREATE_USER_ROLES, 
@@ -59,6 +63,9 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.MANAGE_REGISTRATION_HISTORY,
         permissions.MANAGE_TRANSFERS,
         permissions.CREATE_SERIES,
+        permissions.MANAGE_SHADOW_PLAYERS,
+        permissions.MERGE_PLAYERS,
+        permissions.MERGE_TEAMS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -76,7 +83,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     SITE_MODERATOR: [
         permissions.EDIT_PLAYER,
@@ -85,6 +93,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.MANAGE_REGISTRATION_HISTORY,
         permissions.MANAGE_TRANSFERS,
         permissions.CREATE_SERIES,
+        permissions.MANAGE_SHADOW_PLAYERS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -102,7 +111,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     SUPPORT_STAFF: [
         permissions.EDIT_PLAYER,

@@ -158,6 +158,9 @@ export const permissions = {
   invite_to_team: 'team_invite',
   edit_profile: 'profile_edit',
   link_discord: 'discord_link',
+  manage_shadow_players: 'shadow_players_manage',
+  merge_players: 'player_merge',
+  merge_teams: 'team_merge',
 };
 
 export const team_permissions = {
@@ -187,6 +190,7 @@ export const tournament_permissions = {
   register_host: 'tournament_register_host',
   manage_placements: 'tournament_placements_manage',
   manage_tournament_roles: 'tournament_roles_manage',
+  view_hidden_tournament: 'tournament_view_hidden',
 };
 
 export const mod_panel_permissions = [
@@ -196,4 +200,7 @@ export const mod_panel_permissions = [
   permissions.ban_player,
   permissions.manage_user_roles,
   permissions.edit_player,
+  permissions.manage_shadow_players,
+  permissions.merge_players,
+  permissions.merge_teams,
 ];

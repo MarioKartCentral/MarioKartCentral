@@ -275,11 +275,11 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT game, verification_required, checkins_enabled, min_players_checkin FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT game, verification_required, checkins_enabled, min_players_checkin, min_squad_size FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=400)
-                game, verification_required, checkins_enabled, min_players_checkin = row
+                game, verification_required, checkins_enabled, min_players_checkin, min_squad_size = row
             where_clauses = ["tournament_id = ?"]
             variable_parameters = [self.tournament_id]
             # get only squads which have not withdrawn from the tournament
@@ -287,7 +287,8 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 where_clauses.append("is_registered = 1")
             # get only squads which have the minimum number of players
             if self.eligible_only:
-                where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0)")
+                if min_squad_size:
+                    where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0)")
                 if bool(checkins_enabled) and min_players_checkin is not None:
                     where_clauses.append("? <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
                     variable_parameters.append(min_players_checkin)

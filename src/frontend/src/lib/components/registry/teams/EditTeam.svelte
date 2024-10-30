@@ -77,7 +77,7 @@
         language: data.get('language')?.toString(),
         description: getOptionalValue('description'),
         approval_status: data.get('approval_status'),
-        is_historical: getOptionalValue('is_historical') === 'true' ? true : false,
+        is_historical: getOptionalValue('is_historical') === 'true',
       };
       console.log(payload);
       const endpoint = '/api/registry/teams/forceEdit';
@@ -171,7 +171,7 @@
               </select>
               <br />
               <label for="is_historical">Active/Historical</label>
-              <select name="historical" value={team.is_historical ? 'true' : 'false'}>
+              <select name="is_historical" value={team.is_historical ? 'true' : 'false'}>
                 <option value="false">Active</option>
                 <option value="true">Historical</option>
               </select>

@@ -5,6 +5,8 @@
     export let totalPages: number;
     export let refresh_function: () => void;
 
+    $: input_number = currentPage;
+    
     function decreasePage() {
         if(currentPage > 1) {
             currentPage -= 1;
@@ -18,6 +20,19 @@
             refresh_function();
         }
     }
+
+    function updatePageFromInput() {
+        if(input_number < 1) {
+            input_number = currentPage;
+            return;
+        }
+        if(input_number > totalPages) {
+            input_number = currentPage;
+            return;
+        }
+        currentPage = input_number;
+        refresh_function();
+    }
 </script>
 
 {#if totalPages > 1}
@@ -30,7 +45,8 @@
         
         
         <div class="pages">
-            {currentPage} / {totalPages}
+            <input type="number" min=1 max={totalPages} bind:value={input_number} on:blur={updatePageFromInput}/>
+            / {totalPages}
         </div>
         
         {#if currentPage < totalPages}
@@ -51,7 +67,13 @@
         margin: auto;
     }
     div.pages {
+        display: flex;
+        align-items: center;
         margin: 10px;
         font-weight: bold;
+        gap: 10px;
+    }
+    input[type=number] {
+        width: 50px;
     }
 </style>
