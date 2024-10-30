@@ -365,3 +365,8 @@ class RegisterableRostersRequestData():
     tournament_id: int
     game: Game
     mode: GameMode
+
+@dataclass
+class MergeTeamsRequestData():
+    from_team_id: int
+    to_team_id: int

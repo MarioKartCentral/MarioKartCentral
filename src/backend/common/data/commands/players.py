@@ -425,12 +425,44 @@ class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
             await db.execute("UPDATE friend_codes SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
             await db.execute("UPDATE tournament_players SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
             await db.execute("UPDATE team_members SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
+            await db.execute("UPDATE team_transfers SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
             # delete the player claim
             await db.execute("DELETE FROM player_claims WHERE id = ?", (self.claim_id,))
             # delete the claimed player after merging their data in
             await db.execute("DELETE FROM players WHERE id = ?", (claimed_player_id,))
             await db.commit()
             return player_id, user_id, claimed_player_name
+        
+@save_to_command_log
+@dataclass
+class MergePlayersCommand(Command[None]):
+    from_player_id: int
+    to_player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        if self.from_player_id == self.to_player_id:
+            raise Problem("Player IDs are equal", status=400)
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id FROM players WHERE id = ?", (self.from_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem(f"Player with ID {self.from_player_id} not found", status=404)
+            async with db.execute("SELECT id FROM players WHERE id = ?", (self.to_player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem(f"Player with ID {self.to_player_id} not found", status=404)
+                
+            # merge the old player's info into the new player
+            await db.execute("UPDATE friend_codes SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE tournament_players SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE team_members SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE team_transfers SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE player_bans SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE player_bans_historical SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE player_name_edit_requests SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
+            await db.execute("UPDATE users SET player_id = ? WHERE player_id = ?", (None, self.from_player_id))
+            await db.execute("DELETE FROM players WHERE id = ?", (self.from_player_id,))
+            await db.commit()
         
 @save_to_command_log
 @dataclass

@@ -654,7 +654,7 @@ class UserTournamentRole(TableModel):
             """
 
 @dataclass
-class RosterInvite(TableModel):
+class TeamTransfer(TableModel):
     id: int
     player_id: int
     roster_id: int
@@ -864,6 +864,6 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
-    RosterInvite, TeamEditRequest, RosterEditRequest,
+    TeamTransfer, TeamEditRequest, RosterEditRequest,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
     PlayerNameEditRequest, PlayerClaim]

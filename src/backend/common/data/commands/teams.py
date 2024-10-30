@@ -1323,3 +1323,32 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     fc_id, player_id, game, fc, is_verified, is_primary, is_active = row
                     fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
             return rosters
+        
+@save_to_command_log
+@dataclass
+class MergeTeamsCommand(Command[None]):
+    from_team_id: int
+    to_team_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        if self.from_team_id == self.to_team_id:
+            raise Problem("Team IDs are equal", status=400)
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.from_team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem(f"Team ID {self.from_team_id} not found", status=404)
+                old_name, old_tag = row
+            async with db.execute("SELECT id FROM teams WHERE id = ?", (self.to_team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem(f"Team ID {self.to_team_id} not found", status=404)
+            # don't want to change the name/tag of a roster to the new team's name if it's the default value
+            await db.execute("UPDATE team_rosters SET name = ? WHERE team_id = ? AND name IS NULL", (old_name, self.from_team_id))
+            await db.execute("UPDATE team_rosters SET tag = ? WHERE team_id = ? AND tag IS NULL", (old_tag, self.from_team_id))
+
+            await db.execute("UPDATE team_rosters SET team_id = ? WHERE team_id = ?", (self.to_team_id, self.from_team_id))
+            await db.execute("DELETE FROM user_team_roles WHERE team_id = ?", (self.from_team_id,))
+            await db.execute("DELETE FROM team_edit_requests WHERE team_id = ?", (self.from_team_id,))
+            await db.execute("DELETE FROM teams WHERE id = ?", (self.from_team_id,))
+            await db.commit()

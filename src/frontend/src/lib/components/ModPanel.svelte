@@ -91,4 +91,15 @@
       {/if}
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.merge_players)}
+    <DropdownItem href="/{$page.params.lang}/moderator/merge_players">
+      Merge Players
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.merge_teams)}
+    <DropdownItem href="/{$page.params.lang}/moderator/merge_teams">
+      Merge Teams
+    </DropdownItem>
+  {/if}
+  
 </Dropdown>

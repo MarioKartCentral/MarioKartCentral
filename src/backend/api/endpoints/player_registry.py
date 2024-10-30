@@ -173,6 +173,12 @@ async def list_player_claims(request: Request) -> JSONResponse:
     claims = await handle(command)
     return JSONResponse(claims)
 
+@bind_request_body(MergePlayersRequestData)
+@require_permission(permissions.MERGE_PLAYERS)
+async def merge_players(request: Request, body: MergePlayersRequestData) -> JSONResponse:
+    await handle(MergePlayersCommand(body.from_player_id, body.to_player_id))
+    return JSONResponse({})
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/createShadowPlayer', create_shadow_player, methods=['POST']),
@@ -193,4 +199,5 @@ routes = [
     Route('/api/registry/players/approveClaim', approve_player_claim, methods=['POST']), # dispatches notification
     Route('/api/registry/players/denyClaim', deny_player_claim, methods=['POST']), # dispatches notification
     Route('/api/registry/players/claims', list_player_claims),
+    Route('/api/registry/players/merge', merge_players, methods=['POST']),
 ]

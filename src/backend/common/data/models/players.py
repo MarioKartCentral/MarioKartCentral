@@ -128,3 +128,8 @@ class PlayerClaim:
     approval_status: Approval
     player: PlayerBasic
     claimed_player: PlayerBasic
+
+@dataclass
+class MergePlayersRequestData:
+    from_player_id: int
+    to_player_id: int

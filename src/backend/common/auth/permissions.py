@@ -15,6 +15,8 @@ INVITE_TO_TEAM = "team_invite"
 EDIT_PROFILE = "profile_edit"
 LINK_DISCORD = "discord_link"
 MANAGE_SHADOW_PLAYERS = "shadow_players_manage"
+MERGE_PLAYERS = "player_merge"
+MERGE_TEAMS = "team_merge"
 
 permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
@@ -51,7 +53,9 @@ permissions_by_id: dict[int, str] = {
     31: EDIT_PROFILE,
     32: LINK_DISCORD,
     33: tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
-    34: MANAGE_SHADOW_PLAYERS
+    34: MANAGE_SHADOW_PLAYERS,
+    35: MERGE_PLAYERS,
+    36: MERGE_TEAMS
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }
