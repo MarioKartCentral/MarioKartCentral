@@ -12,7 +12,7 @@
     async function createPlayer(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
         const payload = {
-            name: data.get('name')!.toString(),
+            name: data.get('shadow_name')!.toString(),
             country_code: data.get('country')!.toString(),
             friend_codes: [],
         }
@@ -36,8 +36,8 @@
 <Dialog bind:this={player_dialog} header="Create Shadow Player">
     <form method="POST" on:submit|preventDefault={createPlayer}>
         <div class="option">
-            <label for="name">Name</label>
-            <input name="name" pattern="^\S.*\S$|^\S$" required/>
+            <label for="shadow_name">Name</label>
+            <input name="shadow_name" pattern="^\S.*\S$|^\S$" required/>
         </div>
         <div class="option">
             <label for="country">Country</label>
