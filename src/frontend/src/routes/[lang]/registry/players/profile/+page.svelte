@@ -16,6 +16,7 @@
   import { check_permission, permissions } from '$lib/util/permissions';
   import PlayerNotes from '$lib/components/registry/players/PlayerNotes.svelte';
   import EditPlayerNotes from '$lib/components/registry/players/EditPlayerNotes.svelte';
+  import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
@@ -107,8 +108,10 @@
       {/key}
     </Dialog>
   {/if}
-
   <PlayerProfile {player} />
+  {#if user_info.player && player.is_shadow}
+    <ClaimPlayer {player}/>
+  {/if}
 {:else if !player_found}
     Player not found
 {/if}

@@ -14,7 +14,14 @@ import common.data.notifications as notifications
 @bind_request_body(CreatePlayerRequestData)
 @require_logged_in
 async def create_player(request: Request, body: CreatePlayerRequestData) -> Response:
-    command = CreatePlayerCommand(request.state.user.id, body)
+    command = CreatePlayerCommand(request.state.user.id, body.name, body.country_code, body.friend_codes, False, False)
+    player = await handle(command)
+    return JSONResponse(player, status_code=201)
+
+@bind_request_body(CreatePlayerRequestData)
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def create_shadow_player(request: Request, body: CreatePlayerRequestData) -> JSONResponse:
+    command = CreatePlayerCommand(None, body.name, body.country_code, body.friend_codes, body.is_hidden, True)
     player = await handle(command)
     return JSONResponse(player, status_code=201)
 
@@ -149,8 +156,48 @@ async def update_player_notes(request: Request, body: UpdatePlayerNotesRequestDa
     await handle(UpdatePlayerNotesCommand(request.path_params['id'], body.notes, request.state.user.id))
     return JSONResponse({})
 
+@bind_request_body(ClaimPlayerRequestData)
+@require_logged_in
+async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONResponse:
+    command = ClaimPlayerCommand(request.state.user.player_id, body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ApproveDenyPlayerClaimRequestData)
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def approve_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+    command = ApprovePlayerClaimCommand(body.claim_id)
+    player_id, user_id, claimed_player_name = await handle(command)
+    async def notify():
+        content_args = {"player_name": claimed_player_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_APPROVED, content_args, f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
+    return JSONResponse({}, background=BackgroundTask(notify))
+
+@bind_request_body(ApproveDenyPlayerClaimRequestData)
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def deny_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+    command = DenyPlayerClaimCommand(body.claim_id)
+    player_id, user_id, claimed_player_name = await handle(command)
+    async def notify():
+        content_args = {"player_name": claimed_player_name}
+        await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_DENIED, content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
+    return JSONResponse({}, background=BackgroundTask(notify))
+
+@require_permission(permissions.MANAGE_SHADOW_PLAYERS)
+async def list_player_claims(request: Request) -> JSONResponse:
+    command = ListPlayerClaimsCommand()
+    claims = await handle(command)
+    return JSONResponse(claims)
+
+@bind_request_body(MergePlayersRequestData)
+@require_permission(permissions.MERGE_PLAYERS)
+async def merge_players(request: Request, body: MergePlayersRequestData) -> JSONResponse:
+    await handle(MergePlayersCommand(body.from_player_id, body.to_player_id))
+    return JSONResponse({})
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
+    Route('/api/registry/players/createShadowPlayer', create_shadow_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
     Route('/api/registry/players/{id:int}/notes', update_player_notes, methods=['POST']),
@@ -164,5 +211,10 @@ routes = [
     Route('/api/registry/players/requestName', request_edit_player_name, methods=['POST']),
     Route('/api/registry/players/pendingNameChanges', get_pending_player_name_requests),
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']), # dispatches notification
-    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']) # dispatches notification
+    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']), # dispatches notification
+    Route('/api/registry/players/claim', claim_player, methods=['POST']),
+    Route('/api/registry/players/approveClaim', approve_player_claim, methods=['POST']), # dispatches notification
+    Route('/api/registry/players/denyClaim', deny_player_claim, methods=['POST']), # dispatches notification
+    Route('/api/registry/players/claims', list_player_claims),
+    Route('/api/registry/players/merge', merge_players, methods=['POST']),
 ]

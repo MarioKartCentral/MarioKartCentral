@@ -1,7 +1,7 @@
 from starlette.requests import Request
 from starlette.routing import Route
 from starlette.background import BackgroundTask
-from api.auth import require_logged_in, require_tournament_permission
+from api.auth import require_logged_in, require_tournament_permission, check_tournament_visiblity
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import tournament_permissions
@@ -334,6 +334,7 @@ async def view_squad(request: Request) -> JSONResponse:
     return JSONResponse(squad)
 
 @bind_request_query(TournamentRegistrationFilter)
+@check_tournament_visiblity
 async def list_registrations(request: Request, body: TournamentRegistrationFilter) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     command = CheckIfSquadTournament(tournament_id)

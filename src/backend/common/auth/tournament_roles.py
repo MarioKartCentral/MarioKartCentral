@@ -17,7 +17,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
     ORGANIZER: [
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
-        tournament_permissions.MANAGE_TOURNAMENT_ROLES
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
     HOST_BANNED: [],
     BANNED: []

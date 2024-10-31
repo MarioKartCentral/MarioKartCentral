@@ -10,6 +10,9 @@
   import LL from '$i18n/i18n-svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import TeamTransferList from '$lib/components/registry/teams/TeamTransferList.svelte';
+  import { sortFilterRosters } from '$lib/util/util';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
 
   let id = 0;
   let team: Team;
@@ -32,6 +35,17 @@
     const body: Team = await res.json();
     team = body;
   });
+
+  let game: string | null = null;
+  let mode: string | null = null;
+
+  function filter_team_page_rosters(t: Team) {
+    // if we can manage rosters for our team we should be able to see the ones with 0 players on the team profile page
+    let show_zero_player_rosters = check_team_permission(user_info, team_permissions.manage_rosters, t.id);
+    let filtered = sortFilterRosters(t.rosters, false, show_zero_player_rosters).filter(
+      (r) => (!game || r.game === game) && (!mode || r.mode === mode) && r.is_active);
+    return filtered;
+  }
 </script>
 
 <svelte:head>
@@ -49,6 +63,7 @@
           <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
             >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
+          <Button href="/{$page.params.lang}/registry/teams/manage_roles?id={id}">Manage Roles</Button>
         </div>
       </Section>
     {/if}
@@ -72,10 +87,18 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
-      {#each team.rosters.filter((r) => r.approval_status === 'approved') as roster}
-        <TeamRoster {roster} />
-      {/each}
+      <GameModeSelect bind:game={game} bind:mode={mode} is_team flex inline hide_labels all_option/>
+      {#key game}
+        {#key mode}
+          {#each filter_team_page_rosters(team) as roster}
+            <TeamRoster {roster} />
+          {:else}
+            No active rosters.
+          {/each}
+        {/key}
+      {/key}
     </Section>
+    <TeamTransferList {team}/>
   {:else}
     You do not have permission to view this page.
   {/if}

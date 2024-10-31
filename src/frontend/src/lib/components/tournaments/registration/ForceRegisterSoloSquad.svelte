@@ -6,9 +6,20 @@
     import PlayerSearch from "$lib/components/common/PlayerSearch.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import TournamentStaffFields from "./TournamentStaffFields.svelte";
+    import CreateShadowPlayerDialog from "$lib/components/registry/players/CreateShadowPlayerDialog.svelte";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { check_permission, permissions } from "$lib/util/permissions";
 
     export let tournament: Tournament;
     let player: PlayerInfo | null;
+
+    let shadow_dialog: CreateShadowPlayerDialog;
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     async function registerSolo(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         if(!player) return;
@@ -83,8 +94,13 @@
 </script>
 
 <div class="manual-register">
-    <div>Manually Register {tournament.is_squad ? "Squad" : "Player"}</div>
-    <PlayerSearch bind:player={player} game={tournament.game}/>
+    <div class="register_player_text">
+        Manually Register {tournament.is_squad ? "Squad" : "Player"}
+        {#if check_permission(user_info, permissions.manage_shadow_players)}
+            <Button on:click={shadow_dialog.open}>Create Shadow Player</Button>
+        {/if}
+    </div>
+    <PlayerSearch bind:player={player} game={tournament.game} is_shadow={null} include_shadow_players={true}/>
     {#if player}
         <form method="POST" on:submit|preventDefault={tournament.is_squad ? registerSquad : registerSolo}>
             <SquadTournamentFields {tournament}/>
@@ -95,9 +111,15 @@
     {/if}
 </div>
 
+<CreateShadowPlayerDialog bind:this={shadow_dialog}/>
+
 <style>
     .manual-register {
         margin-top: 20px;
+    }
+    .register_player_text {
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
   </style>
   

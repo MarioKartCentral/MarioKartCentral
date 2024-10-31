@@ -4,6 +4,7 @@ REGISTER_TOURNAMENT = "tournament_register"
 REGISTER_HOST = "tournament_register_host"
 MANAGE_PLACEMENTS = "tournament_placements_manage"
 MANAGE_TOURNAMENT_ROLES = "tournament_roles_manage"
+VIEW_HIDDEN_TOURNAMENT = "tournament_view_hidden"
 
 permissions_by_id = {
     0: EDIT_TOURNAMENT,
@@ -11,7 +12,8 @@ permissions_by_id = {
     2: REGISTER_TOURNAMENT,
     3: REGISTER_HOST,
     4: MANAGE_PLACEMENTS,
-    5: MANAGE_TOURNAMENT_ROLES
+    5: MANAGE_TOURNAMENT_ROLES,
+    6: VIEW_HIDDEN_TOURNAMENT
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

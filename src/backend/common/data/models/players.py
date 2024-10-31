@@ -16,6 +16,12 @@ class Player:
     is_shadow: bool
     is_banned: bool
     discord: Discord | None
+
+@dataclass
+class PlayerBasic:
+    id: int
+    name: str
+    country_code: CountryCode
     
 @dataclass
 class PlayerAndFriendCodes(Player):
@@ -94,6 +100,7 @@ class PlayerFilter:
     page: int | None = None
     squad_id: int | None = None
     matching_fcs_only: bool = False
+    include_shadow_players: bool = False
 
 @dataclass
 class PlayerRequestNameRequestData:
@@ -116,3 +123,24 @@ class ApprovePlayerNameRequestData:
 @dataclass
 class UpdatePlayerNotesRequestData:
     notes: str
+
+@dataclass
+class ClaimPlayerRequestData:
+    player_id: int
+
+@dataclass
+class ApproveDenyPlayerClaimRequestData:
+    claim_id: int
+
+@dataclass
+class PlayerClaim:
+    id: int
+    date: int
+    approval_status: Approval
+    player: PlayerBasic
+    claimed_player: PlayerBasic
+
+@dataclass
+class MergePlayersRequestData:
+    from_player_id: int
+    to_player_id: int

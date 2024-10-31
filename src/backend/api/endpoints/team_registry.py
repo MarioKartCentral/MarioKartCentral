@@ -450,7 +450,12 @@ async def roster_edit_history(request: Request) -> JSONResponse:
     edits = await handle(command)
     return JSONResponse(edits)
 
-#todo: endpoints for giving team roles
+@bind_request_body(MergeTeamsRequestData)
+@require_permission(permissions.MERGE_TEAMS)
+async def merge_teams(request: Request, body: MergeTeamsRequestData) -> JSONResponse:
+    await handle(MergeTeamsCommand(body.from_team_id, body.to_team_id))
+    return JSONResponse({})
+
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
@@ -494,5 +499,6 @@ routes: list[Route] = [
     Route('/api/registry/teams/{team_id:int}/denyRoster/{rosterId:int}', deny_roster, methods=['POST']), # dispatches notification
     Route('/api/registry/teams/getRegisterable', list_registerable_rosters),
     Route('/api/registry/teams/{team_id:int}/editRequests', team_edit_history),
-    Route('/api/registry/teams/{team_id:int}/rosterEditRequests/{rosterId:int}', roster_edit_history)
+    Route('/api/registry/teams/{team_id:int}/rosterEditRequests/{rosterId:int}', roster_edit_history),
+    Route('/api/registry/teams/merge', merge_teams, methods=['POST']),
 ]
