@@ -634,9 +634,9 @@ type RootTranslation = {
 	}
 	PLAYER_REGISTRATION_HISTORY: {
 		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​H​i​s​t​o​r​y
 		 */
-		TOURNAMENT_HISTORY: string
+		REGISTRATION_HISTORY: string
 	}
 	LANGUAGES: {
 		/**
@@ -2752,9 +2752,9 @@ export type TranslationFunctions = {
 	}
 	PLAYER_REGISTRATION_HISTORY: {
 		/**
-		 * Tournament History
+		 * Registration History
 		 */
-		TOURNAMENT_HISTORY: () => LocalizedString
+		REGISTRATION_HISTORY: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**

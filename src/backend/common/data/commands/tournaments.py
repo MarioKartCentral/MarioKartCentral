@@ -399,6 +399,7 @@ class CheckTournamentVisibilityCommand(Command[bool]):
                 return bool(is_viewable)
 =======
 
+<<<<<<< HEAD
 @dataclass
 class GetPlayerSoloTournamentPlacements(Command[dict]):
     """Get all solo tournament placements for a particular player"""
@@ -425,3 +426,5 @@ class GetPlayerSquadTournamentPlacements(Command[dict]):
                     raise Problem("No tournaments found for this player", status=404)
                 return rows
 >>>>>>> 31ea3e1 (intermediate push)
+=======
+>>>>>>> 9e2dc17 (get all player tournament placements api functional)
