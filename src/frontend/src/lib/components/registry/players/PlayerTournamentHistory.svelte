@@ -1,17 +1,16 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { user } from '$lib/stores/stores';
+  import { onMount } from 'svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
   import logo from '$lib/assets/logo.png';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
-  import Flag from '$lib/components/common/Flag.svelte';
-  import { Avatar } from 'flowbite-svelte';
+  import type { PlayerTournamentPlacementList } from '$lib/types/tournament-placement';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
-  import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
   import { game_order } from '$lib/util/util';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
 
@@ -27,38 +26,37 @@
   let game: string | null = null;
   let from: string | null = null;
   let to: string | null = null;
+  let player_placements: PlayerTournamentPlacementList;
 
   let avatar_url = logo;
   if (player.user_settings && player.user_settings.avatar) {
     avatar_url = player.user_settings.avatar;
   }
 
-  onMount(async () => {
-  });
-
-    async function fetchData() {
-        // let url = `/api/registry/teams/transfers/${approval_status}?page=${page_number}`;
-        let url = `/api/my_api_endpoint_lol`
-        if(mode !== null) {
-            url += `&mode=${mode}`;
-        }
-        if(from) {
-            url += `&from_date=${new Date(from).getTime()/1000}`;
-        }
-        if(to) {
-            url += `&to_date=${new Date(to).getTime()/1000}`;
-        }
-        const res = await fetch(url);
-        if (res.status !== 200) {
-            return;
+  async function fetchData() {
+    let url = `/api/tournaments/players/placements/${player.id}`;
+    // if (game !== null) {
+    //   url += `&game=${game}`;
+    // }
+    // if (mode !== null) {
+    //   url += `&mode=${mode}`;
+    // }
+    // if (from) {
+    //   url += `&from_date=${new Date(from).getTime() / 1000}`;
+    // }
+    // if (to) {
+    //   url += `&to_date=${new Date(to).getTime() / 1000}`;
+    // }
+    const res = await fetch(url);
+    if (res.status !== 200) {
+      return;
+    }
+    let placements_body: PlayerTournamentPlacementList = await res.json();
+    player_placements = placements_body;
+    console.log(player_placements);
   }
 
-  // Function to filter data for specific game
-  // Function to filter data for specific mode
-  // Function to sort data by tournament date
-  // Function to sort data by tournament name
-  // Function to sort data by result
-
+  onMount(fetchData);
   console.log(player);
 </script>
 

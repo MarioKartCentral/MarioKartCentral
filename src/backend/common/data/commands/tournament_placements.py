@@ -101,3 +101,61 @@ class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
                 unplaced_squads = [TournamentPlacementDetailed(squad.id, None, None, None, False, None, squad) for squad in self.squads if squad.id not in placed_ids]
                 return TournamentPlacementList(self.tournament_id, True, placed_squads, unplaced_squads)
 
+
+@dataclass
+class GetPlayerTournamentPlacements(Command[list[PlayerTournamentPlacementList]]):
+    """Get all tournament placements for a particular player (solo and squad)"""
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("""
+                WITH squad_ids AS
+                (SELECT tp.squad_id
+                 FROM tournament_players as tp
+                 WHERE tp.player_id = ?)
+
+                SELECT 
+                t.id as "tournament_id", 
+                tp.squad_id, 
+                t.name, 
+                t.date_end, 
+                tsp.placement, 
+                tsp.is_disqualified, 
+                NULL as 'partners'
+                FROM tournament_players as tp 
+                INNER JOIN tournament_solo_placements as tsp 
+                ON tp.id = tsp.player_id
+                INNER JOIN tournaments as t
+                ON tsp.tournament_id = t.id 
+                WHERE tp.player_id = ?
+                AND t.show_on_profiles = 1
+
+                UNION
+
+                SELECT 
+                tsp.tournament_id,
+                tsp.squad_id, 
+                t.name, 
+                t.date_end,  
+                tsp.placement, 
+                tsp.is_disqualified, 
+                GROUP_CONCAT(p.id || ',' || p.name) as 'partners'
+                FROM tournament_squad_placements as tsp
+                INNER JOIN tournaments as t -- need for tournament details
+                ON tsp.tournament_id = t.id 
+                INNER JOIN tournament_players as tp -- need for mates
+                ON tp.squad_id = tsp.squad_id
+                INNER JOIN players as p -- need, to get names of mates
+                ON p.id = tp.player_id
+                WHERE tsp.squad_id IN (SELECT squad_id FROM squad_ids)
+                AND t.show_on_profiles = 1
+                GROUP BY tsp.tournament_id, tsp.squad_id;""", 
+                (self.player_id,self.player_id)) as cursor:
+                rows = await cursor.fetchall()
+                if rows is None:
+                    raise Problem("No tournaments found for this player", status=404)
+                tournament_results = [PlayerTournamentPlacementList(tournament_id, squad_id, name, date_end, placement, is_disqualified, partners)
+                                      for tournament_id, squad_id, name, date_end, placement, is_disqualified, partners in rows]
+                return tournament_results
+

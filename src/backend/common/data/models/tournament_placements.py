@@ -20,3 +20,14 @@ class TournamentPlacementList():
     is_squad: bool
     placements: list[TournamentPlacementDetailed]
     unplaced: list[TournamentPlacementDetailed]
+
+@dataclass
+class PlayerTournamentPlacementList():
+    tournament_id: int
+    squad_id: int | None
+    name: str
+    date_end: int
+    placement: int
+    is_disqualified: bool
+    partners: str | None
+

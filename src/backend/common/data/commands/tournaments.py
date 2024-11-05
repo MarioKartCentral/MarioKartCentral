@@ -294,28 +294,3 @@ class CheckIfSquadTournament(Command[bool]):
                 is_squad = row[0]
                 return bool(is_squad)
 
-@dataclass
-class GetPlayerSoloTournamentPlacements(Command[dict]):
-    """Get all solo tournament placements for a particular player"""
-    player_id: int
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT t.id, t.name, t.date_end, tsp.placement, tsp.is_disqualified FROM tournament_solo_placements as tsp JOIN tournaments as t ON tsp.id = t.id WHERE tsp.player_id = ? AND t.show_on_profiles = 1", (self.player_id,)) as cursor:
-                rows = await cursor.fetchall()
-                if rows is None:
-                    raise Problem("No tournaments found for this player", status=404)
-                return rows
-
-@dataclass
-class GetPlayerSquadTournamentPlacements(Command[dict]):
-    """Get all solo tournament placements for a particular player"""
-    player_id: int
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT t.id, t.name, t.date_end, tsp.placement, tsp.is_disqualified FROM tournament_solo_placements as tsp JOIN tournaments as t ON tsp.id = t.id WHERE tsp.player_id = ? AND t.show_on_profiles = 1", (self.player_id,)) as cursor:
-                rows = await cursor.fetchall()
-                if rows is None:
-                    raise Problem("No tournaments found for this player", status=404)
-                return rows

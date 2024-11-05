@@ -26,7 +26,7 @@
   if (player.user_settings && player.user_settings.avatar) {
     avatar_url = player.user_settings.avatar;
   }
-  console.log(player);
+  // console.log(player);
 </script>
 
 <Section header={$LL.PLAYER_REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>

@@ -45,7 +45,7 @@ async def get_placements(request: Request) -> JSONResponse:
 
 async def get_player_placements(request: Request) -> JSONResponse:
     player_id = int(request.path_params['player_id'])
-    placements_command = GetPlayerSoloTournamentPlacements(player_id)
+    placements_command = GetPlayerTournamentPlacements(player_id)
     placements = await handle(placements_command)
     return JSONResponse(placements)
 
@@ -53,5 +53,5 @@ async def get_player_placements(request: Request) -> JSONResponse:
 routes = [
     Route('/api/tournaments/{tournament_id:int}/placements/set', set_placements, methods=["POST"]),
     Route('/api/tournaments/{tournament_id:int}/placements', get_placements),
-    Route('/api/tournaments/{player_id:int}/placements', get_player_placements)
+    Route('/api/tournaments/players/placements/{player_id:int}', get_player_placements)
 ]

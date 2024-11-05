@@ -20,3 +20,13 @@ export type TournamentPlacementList = {
   placements: TournamentPlacement[];
   unplaced: TournamentPlacement[];
 };
+
+export type PlayerTournamentPlacementList = {
+  tournament_id: number;
+  squad_id: number | null;
+  name: string;
+  date_end: number;
+  placement: number;
+  is_disqualified: boolean;
+  partners: string | null;
+};
