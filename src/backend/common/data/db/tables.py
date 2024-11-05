@@ -857,6 +857,22 @@ class PlayerClaim(TableModel):
         )"""
 
     
+@dataclass
+class PlayerNotes(TableModel):
+    player_id: int
+    notes: str
+    edited_by: int
+    date: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_notes (
+            player_id INTEGER PRIMARY KEY REFERENCES players(id),
+            notes TEXT NOT NULL,
+            edited_by INTEGER NOT NULL REFERENCES users(id),
+            date INTEGER NOT NULL
+            )"""
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -866,4 +882,4 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEditRequest, RosterEditRequest,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest, PlayerClaim]
+    PlayerNameEditRequest, PlayerNotes, PlayerClaim]

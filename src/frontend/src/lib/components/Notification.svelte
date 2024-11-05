@@ -23,11 +23,11 @@
   $: hasUnread = notifications.some(n => !n.is_read);
 
   // subscribing to have_unread_notification syncs with notifications in the /notifications page
-  let fetched = false;
+  let fetchCount = 0;
   have_unread_notification.subscribe(() => {
-    if (fetched)
+    if (fetchCount > 1) // ignore initial sub and initial user_info sub
       fetchUnreadNotifications();
-    fetched = true;
+    fetchCount++;
   })
 
   // subscribing to user allows us to only fetch notifications if the user is logged in
@@ -43,6 +43,8 @@
       return;
     }
     notifications = await res.json()
+    if (notifications.length === 0)
+      fetchCount++; // increment since have_unread_notification.subscribe won't trigger if 0 notifs
   }
 
   async function makeNotificationAsRead(id: number) {

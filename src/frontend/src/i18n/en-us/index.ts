@@ -112,6 +112,11 @@ const en_us: BaseTranslation & Translation = {
     THEME: 'Theme',
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
+    PLAYER_NOTES: 'Player Notes',
+    EDIT_PLAYER_NOTES: 'Edit Player Notes',
+    CANCEL: 'Cancel',
+    CLEAR: 'Clear',
+    NONE: 'None',
   },
   PLAYER_BAN: {
     PLAYER_ID: 'Player ID',
@@ -160,6 +165,8 @@ const en_us: BaseTranslation & Translation = {
     EXPIRES_TO: 'Expires To',
     EXPIRES_FROM: 'Expires From',
     SEARCH_BY_NAME: 'Search by Name',
+    THIS_PLAYER_IS_BANNED: 'This player is <strong>banned</strong> and may not participate in MKCentral competitions.',
+    UNBAN_DATE: 'Unban Date',
   },
   LANGUAGES: {
     EN_US: 'English (United States)',

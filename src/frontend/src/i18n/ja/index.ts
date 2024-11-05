@@ -98,6 +98,7 @@ const ja: Translation = {
       NOT_RECRUITING: 'Not Recruiting',
     },
   },
+  // TODO
   PLAYER_PROFILE: {
     PLAYER_PROFILE: 'Player Profile',
     INVITES: 'Invites',
@@ -114,6 +115,11 @@ const ja: Translation = {
     THEME: 'Theme',
     TIMEZONE: 'Timezone',
     SAVE: 'Save',
+    PLAYER_NOTES: 'Player Notes',
+    EDIT_PLAYER_NOTES: 'Edit Player Notes',
+    CANCEL: 'Cancel',
+    CLEAR: 'Clear',
+    NONE: 'None',
   },
   // TODO
   PLAYER_BAN: {
@@ -163,6 +169,8 @@ const ja: Translation = {
     EXPIRES_TO: 'Expires To',
     EXPIRES_FROM: 'Expires From',
     SEARCH_BY_NAME: 'Search by Name',
+    THIS_PLAYER_IS_BANNED: 'This player is <strong>banned</strong> and may not participate in MKCentral competitions.',
+    UNBAN_DATE: 'Unban Date',
   },
   LANGUAGES: {
     EN_US: 'English (United States)',
