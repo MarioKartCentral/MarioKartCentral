@@ -1,5 +1,6 @@
 from datetime import timedelta
-from common.data.commands import GetPlayersToUnbanCommand, UnbanPlayerCommand
+from common.data.commands import GetPlayersToUnbanCommand, UnbanPlayerCommand, DispatchNotificationCommand
+import common.data.notifications as notifications
 from worker.data import handle
 from worker.jobs import Job
 
@@ -17,6 +18,7 @@ class UnbanPlayersCheckerJob(Job):
         if players_to_unban:
             for player in players_to_unban:
                 await handle(UnbanPlayerCommand(player.player_id))
+                await handle(DispatchNotificationCommand([player.user_id], notifications.UNBANNED, {}, f'/registry/players/profile?id={player.player_id}', notifications.INFO))
 
 _jobs: list[Job] = []
 

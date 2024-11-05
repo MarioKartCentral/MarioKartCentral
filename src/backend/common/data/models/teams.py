@@ -17,23 +17,8 @@ class RequestCreateTeamRequestData():
     mode: GameMode
     is_recruiting: bool
 
-# @dataclass
-# class CreateTeamRequestData(RequestCreateTeamRequestData):
-#     approval_status: Approval
-#     is_historical: bool
-#     is_active: bool
-
 @dataclass
-class CreateTeamRequestData:
-    name: str
-    tag: str
-    description: str
-    language: str
-    color: int
-    logo: str | None
-    game: Game
-    mode: GameMode
-    is_recruiting: bool
+class CreateTeamRequestData(RequestCreateTeamRequestData):
     approval_status: Approval
     is_historical: bool
     is_active: bool
@@ -198,15 +183,8 @@ class DeleteInviteRequestData():
     player_id: int
     roster_id: int
 
-# @dataclass
-# class InviteRosterPlayerRequestData(DeleteInviteRequestData):
-#     is_bagger_clause: bool
-
 @dataclass
-class InviteRosterPlayerRequestData():
-    team_id: int
-    player_id: int
-    roster_id: int
+class InviteRosterPlayerRequestData(DeleteInviteRequestData):
     is_bagger_clause: bool
 
 @dataclass

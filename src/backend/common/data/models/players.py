@@ -49,11 +49,18 @@ class PlayerNameChange:
     approval_status: Approval
 
 @dataclass
+class PlayerNotes:
+    notes: str
+    edited_by: Player | None
+    date: int
+
+@dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
     ban_info: PlayerBanBasic | None
     user_settings: UserSettings | None
     name_changes: list[PlayerNameChange]
+    notes: PlayerNotes | None
 
 @dataclass
 class PlayerList:
@@ -112,6 +119,10 @@ class PlayerNameRequest:
 @dataclass
 class ApprovePlayerNameRequestData:
     request_id: int
+
+@dataclass
+class UpdatePlayerNotesRequestData:
+    notes: str
 
 @dataclass
 class ClaimPlayerRequestData:

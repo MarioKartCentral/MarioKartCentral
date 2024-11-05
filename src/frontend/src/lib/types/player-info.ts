@@ -3,12 +3,19 @@ import type { BanInfoBasic } from '$lib/types/ban-info';
 import type { UserSettings } from '$lib/types/user-settings';
 import type { PlayerRoster } from './player-roster';
 import type { Discord } from './discord';
+import type { Player } from './player';
 
 type PlayerNameChange = {
   id: number;
   name: string;
   date: number;
   approval_status: string;
+};
+
+export type PlayerNotes = {
+  notes: string;
+  edited_by: Player | null;
+  date: number;
 };
 
 export type PlayerInfo = {
@@ -24,4 +31,5 @@ export type PlayerInfo = {
   ban_info: BanInfoBasic | null;
   user_settings: UserSettings | null;
   name_changes: PlayerNameChange[];
+  notes: PlayerNotes | null;
 };

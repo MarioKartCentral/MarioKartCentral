@@ -4,7 +4,8 @@ from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 from common.auth.roles import BANNED
 from datetime import datetime, timezone
-
+import json
+import common.data.notifications as notifications
 from common.data.models.roles import TeamRoleInfo
 
 @dataclass
@@ -987,9 +988,66 @@ class UpdateRoleExpirationCommand(Command[None]):
 class RemoveExpiredRolesCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         timestamp = int(datetime.now(timezone.utc).timestamp())
+        notif_rows: list[tuple[int, int, int, str, str, int]] = []
+        
         async with db_wrapper.connect() as db:
+            # user_roles, ignore banned role notif since user is already notified when unbanned
+            query = """SELECT ur.user_id, r.name, u.player_id FROM user_roles ur
+                JOIN users u ON u.id = ur.user_id
+                JOIN roles r ON r.id = ur.role_id
+                WHERE ur.expires_on < ? AND r.id != 5"""
+            async with db.execute(query, (timestamp,)) as cursor:
+                rows = await cursor.fetchall()
+                for user_id, role_name, player_id in rows:
+                    content_args = json.dumps({'role': role_name})
+                    notif_rows.append((user_id, notifications.WARNING, notifications.ROLE_REMOVE, content_args, f'/registry/players/profile?id={player_id}', timestamp))
             await db.execute("DELETE FROM user_roles WHERE expires_on < ?", (timestamp,))
-            await db.execute("DELETE FROM user_team_roles WHERE expires_on < ?", (timestamp,))
-            await db.execute("DELETE FROM user_series_roles WHERE expires_on < ?", (timestamp,))
-            await db.execute("DELETE FROM user_tournament_roles WHERE expires_on < ?", (timestamp,))
+
+            # user_team_roles
+            query = """SELECT utr.user_id, r.name, u.player_id, t.id, t.name FROM user_team_roles utr
+                JOIN users u ON u.id = utr.user_id
+                JOIN team_roles r ON r.id = utr.role_id
+                JOIN teams t ON t.id = utr.team_id
+                WHERE utr.expires_on < ?"""
+            async with db.execute(query, (timestamp,)) as cursor:
+                rows = await cursor.fetchall()
+                for user_id, role_name, player_id, team_id, team_name in rows:
+                    content_args = json.dumps({'role': role_name, 'team_name': team_name})
+                    notif_rows.append((user_id, notifications.WARNING, notifications.TEAM_ROLE_REMOVE, content_args, f'/registry/teams/profile?id={team_id}', timestamp))
+                if rows:
+                    await db.execute("DELETE FROM user_team_roles WHERE expires_on < ?", (timestamp,))
+
+            # user_series_roles
+            query = """SELECT usr.user_id, r.name, u.player_id, s.id, s.name FROM user_series_roles usr
+                JOIN users u ON u.id = usr.user_id
+                JOIN series_roles r ON r.id = usr.role_id
+                JOIN tournament_series s ON s.id = usr.series_id
+                WHERE usr.expires_on < ?"""
+            async with db.execute(query, (timestamp,)) as cursor:
+                rows = await cursor.fetchall()
+                for user_id, role_name, player_id, series_id, series_name in rows:
+                    content_args = json.dumps({'role': role_name, 'series_name': series_name})
+                    notif_rows.append((user_id, notifications.WARNING, notifications.SERIES_ROLE_REMOVE, content_args, f'/tournaments/series/details?id={series_id}', timestamp))
+                if rows:
+                    await db.execute("DELETE FROM user_series_roles WHERE expires_on < ?", (timestamp,))
+
+
+            # user_tournament_roles
+            query = """SELECT utr.user_id, r.name, u.player_id, t.id, t.name FROM user_tournament_roles utr
+                JOIN users u ON u.id = utr.user_id
+                JOIN tournament_roles r ON r.id = utr.role_id
+                JOIN tournaments t ON t.id = utr.tournament_id
+                WHERE utr.expires_on < ?"""
+            async with db.execute(query, (timestamp,)) as cursor:
+                rows = await cursor.fetchall()
+                for user_id, role_name, player_id, tournament_id, tournament_name in rows:
+                    content_args = json.dumps({'role': role_name, 'tournament_name': tournament_name})
+                    notif_rows.append((user_id, notifications.WARNING, notifications.TOURNAMENT_ROLE_REMOVE, content_args, f'/tournaments/details?id={tournament_id}', timestamp))
+                if rows:
+                    await db.execute("DELETE FROM user_tournament_roles WHERE expires_on < ?", (timestamp,))
+
+            # add notifications if there are any
+            if notif_rows:
+                await db.executemany("INSERT INTO notifications(user_id, type, content_id, content_args, link, created_date) VALUES (?, ?, ?, ?, ?, ?)", notif_rows)
+            
             await db.commit()

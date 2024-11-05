@@ -401,6 +401,26 @@ type RootTranslation = {
 		 * S​a​v​e
 		 */
 		SAVE: string
+		/**
+		 * P​l​a​y​e​r​ ​N​o​t​e​s
+		 */
+		PLAYER_NOTES: string
+		/**
+		 * E​d​i​t​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+		 */
+		EDIT_PLAYER_NOTES: string
+		/**
+		 * C​a​n​c​e​l
+		 */
+		CANCEL: string
+		/**
+		 * C​l​e​a​r
+		 */
+		CLEAR: string
+		/**
+		 * N​o​n​e
+		 */
+		NONE: string
 	}
 	PLAYER_BAN: {
 		/**
@@ -590,6 +610,14 @@ type RootTranslation = {
 		 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e
 		 */
 		SEARCH_BY_NAME: string
+		/**
+		 * T​h​i​s​ ​p​l​a​y​e​r​ ​i​s​ ​<​s​t​r​o​n​g​>​b​a​n​n​e​d​<​/​s​t​r​o​n​g​>​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.
+		 */
+		THIS_PLAYER_IS_BANNED: string
+		/**
+		 * U​n​b​a​n​ ​D​a​t​e
+		 */
+		UNBAN_DATE: string
 	}
 	LANGUAGES: {
 		/**
@@ -2475,6 +2503,26 @@ export type TranslationFunctions = {
 		 * Save
 		 */
 		SAVE: () => LocalizedString
+		/**
+		 * Player Notes
+		 */
+		PLAYER_NOTES: () => LocalizedString
+		/**
+		 * Edit Player Notes
+		 */
+		EDIT_PLAYER_NOTES: () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		CANCEL: () => LocalizedString
+		/**
+		 * Clear
+		 */
+		CLEAR: () => LocalizedString
+		/**
+		 * None
+		 */
+		NONE: () => LocalizedString
 	}
 	PLAYER_BAN: {
 		/**
@@ -2661,6 +2709,14 @@ export type TranslationFunctions = {
 		 * Search by Name
 		 */
 		SEARCH_BY_NAME: () => LocalizedString
+		/**
+		 * This player is <strong>banned</strong> and may not participate in MKCentral competitions.
+		 */
+		THIS_PLAYER_IS_BANNED: () => LocalizedString
+		/**
+		 * Unban Date
+		 */
+		UNBAN_DATE: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**
