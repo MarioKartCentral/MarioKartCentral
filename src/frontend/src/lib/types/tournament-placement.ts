@@ -21,7 +21,7 @@ export type TournamentPlacementList = {
   unplaced: TournamentPlacement[];
 };
 
-export type PlayerTournamentPlacementList = {
+export type PlayerTournamentPlacement = {
   tournament_id: number;
   squad_id: number | null;
   name: string;

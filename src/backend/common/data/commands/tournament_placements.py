@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+from json import dumps as jason_dumps
 
 @save_to_command_log
 @dataclass
@@ -103,7 +104,7 @@ class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
 
 
 @dataclass
-class GetPlayerTournamentPlacements(Command[list[PlayerTournamentPlacementList]]):
+class GetPlayerTournamentPlacements(Command[list[PlayerTournamentPlacement]]):
     """Get all tournament placements for a particular player (solo and squad)"""
     player_id: int
 
@@ -148,14 +149,30 @@ class GetPlayerTournamentPlacements(Command[list[PlayerTournamentPlacementList]]
                 ON tp.squad_id = tsp.squad_id
                 INNER JOIN players as p -- need, to get names of mates
                 ON p.id = tp.player_id
-                WHERE tsp.squad_id IN (SELECT squad_id FROM squad_ids)
+                WHERE p.id <> ?
+                AND tsp.squad_id IN (SELECT squad_id FROM squad_ids)
                 AND t.show_on_profiles = 1
                 GROUP BY tsp.tournament_id, tsp.squad_id;""", 
-                (self.player_id,self.player_id)) as cursor:
+                (self.player_id,self.player_id,self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 if rows is None:
-                    raise Problem("No tournaments found for this player", status=404)
-                tournament_results = [PlayerTournamentPlacementList(tournament_id, squad_id, name, date_end, placement, is_disqualified, partners)
+                    raise Problem("No tournaments found for this player", status=520)
+                tournament_results = [PlayerTournamentPlacement(tournament_id, squad_id, name, date_end, placement, is_disqualified, partners)
                                       for tournament_id, squad_id, name, date_end, placement, is_disqualified, partners in rows]
+                for i, result in enumerate(tournament_results):
+                    if result.partners is not None:
+                        # Solo results will have partners = NULL
+                        if not isinstance(result.partners, str):
+                            # Partners starts as a csv string
+                            raise Problem('Partners were not loaded as csv from db', status=521)
+                        partners = result.partners.split(',')
+                        if len(partners) % 2 != 0:
+                            # Partners should always be an even number length
+                            raise Problem("Partners of even length were unable to be loaded", status=522)
+                        pairs = list(zip(partners[::2], partners[1::2]))
+                        results = [dict(player_id=int(value[0]), name=value[1]) for value in pairs]
+                        # Partners turns into a list of dictionaries, then dumped to json string
+                        tournament_results[i].partners = jason_dumps(results)
+
                 return tournament_results
 
