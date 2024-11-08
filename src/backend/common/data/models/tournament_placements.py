@@ -22,12 +22,12 @@ class TournamentPlacementList():
     unplaced: list[TournamentPlacementDetailed]
 
 @dataclass
-class PlayerTournamentPlacementList():
+class PlayerTournamentPlacement():
     tournament_id: int
     squad_id: int | None
     name: str
     date_end: int
     placement: int
     is_disqualified: bool
-    partners: str | None
+    partners: str | list | None
 
