@@ -110,6 +110,7 @@ class TournamentSquadDetails():
     is_approved: bool
     players: list[SquadPlayerDetails]
 
+
 @dataclass
 class MyTournamentRegistrationDetails():
     player_id: int

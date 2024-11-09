@@ -6,6 +6,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import type { PlayerTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
+  import Table from '$lib/components/common/Table.svelte';
   import logo from '$lib/assets/logo.png';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -14,6 +15,7 @@
   import { game_order } from '$lib/util/util';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
+  import SoloTournamentFields from '$lib/components/tournaments/registration/SoloTournamentFields.svelte';
 
   let user_info: UserInfo;
 
@@ -28,6 +30,9 @@
   let from: string | null = null;
   let to: string | null = null;
   let player_placements: PlayerTournamentPlacement[] = [];
+  let solo_placements: PlayerTournamentPlacement[] = [];
+  let squad_placements: PlayerTournamentPlacement[] = [];
+  let team_placements: PlayerTournamentPlacement[] = [];
 
   let avatar_url = logo;
   if (player.user_settings && player.user_settings.avatar) {
@@ -54,8 +59,9 @@
       return;
     }
     let body = await res.json();
-    player_placements = body;
-    console.log(player_placements);
+    solo_placements = body.tournament_solo_placements;
+    squad_placements = body.tournament_squad_placements;
+    team_placements = body.tournament_team_placements;
   }
 
   onMount(fetchData);
@@ -83,38 +89,40 @@
         </div>
       </form>
       <div>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th class="mobile-hide">Date</th>
-            <th class="mobile-hide">Partners</th>
-            <th>Placement</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each player_placements as placement}
-            <tr class="row-{placement.tournament_id}">
-              <td> {placement.name} </td>
-              <td> {placement.date_end}</td>
-              {#if placement.partners != null}
-                <td>
-                  {#each JSON.parse(placement.partners) as partner}
-                    <!-- heyyy -->
-                    <!-- {console.log('partner:' + partner.player_id + partner.name)} -->
-                    <div class="flex flex-row">
-                      <div class="hover:text-emerald-400">
-                        <PlayerName player_id={partner.player_id} name={partner.name} />
-                      </div>
-                    </div>
-                  {/each}
-                </td>
-              {:else}
-                <td></td>
-              {/if}
-              <td> {placement.placement}</td>
+        <Table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th class="mobile-hide">Date</th>
+              <th class="mobile-hide">Partners</th>
+              <th>Placement</th>
             </tr>
-          {/each}
-        </tbody>
+          </thead>
+          <tbody>
+            {#each solo_placements as placement, i}
+              <tr class="row-{i % 2}">
+                <td> {placement.name} </td>
+                <td> {placement.date_end}</td>
+                {#if placement.partners != null}
+                  <td>
+                    {#each JSON.parse(placement.partners) as partner}
+                      <!-- heyyy -->
+                      <!-- {console.log('partner:' + partner.player_id + partner.name)} -->
+                      <div class="flex flex-row">
+                        <div class="hover:text-emerald-400">
+                          <PlayerName player_id={partner.player_id} name={partner.name} />
+                        </div>
+                      </div>
+                    {/each}
+                  </td>
+                {:else}
+                  <td></td>
+                {/if}
+                <td> {placement.placement}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </Table>
       </div>
     </div>
   </div></Section

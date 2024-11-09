@@ -63,6 +63,12 @@ class EditPlayerRegistrationRequestData:
     is_approved: bool | None
 
 @dataclass
+class TournamentPlayerDetailsShort():
+    player_id: int
+    player_name: str
+    squad_id: int
+
+@dataclass
 class TournamentPlayerDetails():
     id: int
     player_id: int
