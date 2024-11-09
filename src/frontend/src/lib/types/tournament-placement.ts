@@ -1,4 +1,5 @@
-import type { TournamentPlayer } from './tournament-player';
+import type { list } from 'postcss';
+import type { TournamentPlayer, TournamentPlayerDetailsShort } from './tournament-player';
 import type { TournamentSquad } from './tournament-squad';
 
 export type TournamentPlacementSimple = {
@@ -23,10 +24,15 @@ export type TournamentPlacementList = {
 
 export type PlayerTournamentPlacement = {
   tournament_id: number;
+  tournament_name: string;
+  game: string;
+  mode: string;
   squad_id: number | null;
-  name: string;
+  squad_name: string | null;
+  date_string: number;
   date_end: number;
-  placement: number;
+  placement: number | null;
+  placement_description: string | null;
   is_disqualified: boolean;
-  partners: string | null;
+  partners: TournamentPlayerDetailsShort[] | null;
 };
