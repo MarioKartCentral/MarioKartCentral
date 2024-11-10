@@ -30,6 +30,7 @@ class PlayerTournamentPlacement():
     mode: str
     squad_id: int | None
     squad_name: str | None
+    team_id: int | None
     date_start: int
     date_end: int
     placement: int | None
@@ -39,6 +40,5 @@ class PlayerTournamentPlacement():
 
 @dataclass
 class PlayerTournamentResults():
-    tournament_solo_placements: list[PlayerTournamentPlacement]
-    tournament_squad_placements: list[PlayerTournamentPlacement]
+    tournament_solo_and_squad_placements: list[PlayerTournamentPlacement]
     tournament_team_placements: list[PlayerTournamentPlacement]

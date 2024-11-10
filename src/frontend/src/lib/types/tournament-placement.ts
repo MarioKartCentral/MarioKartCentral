@@ -29,7 +29,8 @@ export type PlayerTournamentPlacement = {
   mode: string;
   squad_id: number | null;
   squad_name: string | null;
-  date_string: number;
+  team_id: number | null;
+  date_start: number;
   date_end: number;
   placement: number | null;
   placement_description: string | null;
