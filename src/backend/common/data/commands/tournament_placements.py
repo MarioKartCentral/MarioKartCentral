@@ -118,7 +118,7 @@ class GetPlayerTournamentPlacements(Command[PlayerTournamentResults]):
         async with db_wrapper.connect(readonly=True) as db:
             # Solo placements
             async with db.execute("""
-                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, tp.squad_id, NULL as "squad_name", NULL as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
                 FROM tournament_players as tp 
                 INNER JOIN tournaments as t
                 ON tp.tournament_id = t.id 
@@ -130,10 +130,14 @@ class GetPlayerTournamentPlacements(Command[PlayerTournamentResults]):
                 AND tp.player_id = ?
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
-                tournament_solo_and_squad_results = [PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified, []) for tournament_id, tournament_name, game, mode, squad_id, squad_name,  team_id, date_start, date_end, placement, placement_description, is_disqualified in rows]
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_solo_and_squad_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, None, None, None, date_start, date_end, placement, placement_description, is_disqualified, []))
+
             # Squad placements
+            squad_dict: dict[int, PlayerTournamentPlacement] = {}
             async with db.execute("""
-                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, tsp.squad_id, NULL as "squad_name", NULL as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, tsp.squad_id, t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
                 FROM tournament_players as tp 
                 INNER JOIN tournaments as t
                 ON tp.tournament_id = t.id 
@@ -145,34 +149,34 @@ class GetPlayerTournamentPlacements(Command[PlayerTournamentResults]):
                 AND tp.player_id = ?
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
-                if rows is not None:
-                    # Get partner information, only if squad results exist
-                    async with db.execute("""
-                        SELECT tp.player_id, p.name as "player_name", tp.squad_id
-                        FROM tournament_players as tp
-                        INNER JOIN tournament_squad_placements as tsp
-                        ON tp.squad_id = tsp.squad_id
-                        INNER JOIN tournament_squads as ts
-                        ON tsp.squad_id = ts.id
-                        INNER JOIN players as p
-                        ON p.id = tp.player_id
-                        WHERE tsp.squad_id 
-                        IN (SELECT squad_id FROM tournament_players WHERE player_id = ?)
-                        AND tsp.squad_id NOT IN (SELECT squad_id FROM team_squad_registrations)
-                        AND tp.player_id <> ?;
-                        """, (self.player_id,self.player_id)) as cursor:
-                        players = await cursor.fetchall()
-                        # Combine squad results with partner information
-                        squad_detail_dict: dict[int, list[TournamentPlayerDetailsShort]] = {}
-                        for player in players:
-                            (player_id, player_name, squad_id) = player
-                            try:
-                                squad_detail_dict[squad_id].append(TournamentPlayerDetailsShort(player_id, player_name, squad_id))
-                            except KeyError:
-                                squad_detail_dict[squad_id] = [TournamentPlayerDetailsShort(player_id, player_name, squad_id)]
-                        for row in rows:
-                            (tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified) = row
-                            tournament_solo_and_squad_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified, squad_detail_dict[squad_id]))
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, squad_id, date_start, date_end, placement, placement_description, is_disqualified = row
+                    squad_placement = PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, None, None, date_start, date_end, placement, placement_description, is_disqualified, [])
+                    squad_dict[squad_id] = squad_placement
+                    tournament_solo_and_squad_results.append(squad_placement)
+
+            # Get partner information
+            async with db.execute("""
+                SELECT tp.player_id, p.name, tp.squad_id
+                FROM tournament_players as tp
+                INNER JOIN tournament_squad_placements as tsp
+                ON tp.squad_id = tsp.squad_id
+                INNER JOIN tournament_squads as ts
+                ON tsp.squad_id = ts.id
+                INNER JOIN players as p
+                ON p.id = tp.player_id
+                WHERE tsp.squad_id 
+                IN (SELECT squad_id FROM tournament_players WHERE player_id = ?)
+                AND tsp.squad_id NOT IN (SELECT squad_id FROM team_squad_registrations)
+                AND tp.player_id <> ?;
+                """, (self.player_id,self.player_id)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, player_name, squad_id = row
+                    if squad_id in squad_dict:
+                        partner_details = TournamentPlayerDetailsShort(player_id, player_name, squad_id)
+                        squad_dict[squad_id].partners.append(partner_details)
+
             # Team placements
             async with db.execute("""
                 SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, tsp.squad_id, teams.name as "squad_name", teams.id as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
@@ -194,10 +198,9 @@ class GetPlayerTournamentPlacements(Command[PlayerTournamentResults]):
                 ORDER BY t.date_start DESC;
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
-                tournament_team_results = [PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified, []) for tournament_id, tournament_name, game, mode, squad_id, squad_name,  team_id, date_start, date_end, placement, placement_description, is_disqualified in rows]
-
-                if not tournament_solo_and_squad_results  and tournament_team_results:
-                    raise Problem('No tournaments found for player', status=520)
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_team_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified, []))
                 results = PlayerTournamentResults(tournament_solo_and_squad_results, tournament_team_results)
                 return results
 
