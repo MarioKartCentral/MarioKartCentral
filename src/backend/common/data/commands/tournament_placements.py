@@ -105,7 +105,7 @@ class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
 
 
 @dataclass
-class GetPlayerTournamentPlacements(Command[PlayerTournamentResults]):
+class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
     """
     Get all tournament placement data for a particular player
     - Solo, Squad, & Team

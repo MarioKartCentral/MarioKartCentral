@@ -195,6 +195,13 @@ async def merge_players(request: Request, body: MergePlayersRequestData) -> JSON
     await handle(MergePlayersCommand(body.from_player_id, body.to_player_id))
     return JSONResponse({})
 
+
+async def get_player_transfer_history(request: Request) -> JSONResponse:
+    player_id = int(request.path_params['player_id'])
+    command = GetPlayerTransferHistoryCommand(player_id)
+    results = await handle(command)
+    return JSONResponse(results)
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/createShadowPlayer', create_shadow_player, methods=['POST']),
@@ -210,6 +217,7 @@ routes = [
     Route('/api/registry/forcePrimaryFriendCode', force_primary_fc, methods=['POST']), # dispatches notification
     Route('/api/registry/players/requestName', request_edit_player_name, methods=['POST']),
     Route('/api/registry/players/pendingNameChanges', get_pending_player_name_requests),
+<<<<<<< HEAD
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']), # dispatches notification
     Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']), # dispatches notification
     Route('/api/registry/players/claim', claim_player, methods=['POST']),
@@ -218,3 +226,9 @@ routes = [
     Route('/api/registry/players/claims', list_player_claims),
     Route('/api/registry/players/merge', merge_players, methods=['POST']),
 ]
+=======
+    Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']),
+    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']),
+    Route('/api/registry/players/{player_id:int}/getPlayerTransferHistory', get_player_transfer_history)
+]
+>>>>>>> 6b82979 (player registration history functional)
