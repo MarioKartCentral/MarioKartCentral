@@ -10,9 +10,6 @@
   import logo from '$lib/assets/logo.png';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
-  import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
-  import { game_order } from '$lib/util/util';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
 
@@ -32,7 +29,8 @@
   let team_placements: PlayerTournamentPlacement[] = [];
   let filtered_solo_placements: PlayerTournamentPlacement[] = [];
   let filtered_team_placements: PlayerTournamentPlacement[] = [];
-  let podium_style: { [key: number]: string } = { 1: 'bg-amber-400/60', 2: 'bg-slate-400/60', 3: 'bg-amber-700/60' };
+  // Default 'silver' from PlacementsDisplay.svelte is less readable than I'd like
+  let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'bg-slate-400/60', 3: 'bronze' };
 
   let avatar_url = logo;
   if (player.user_settings && player.user_settings.avatar) {
@@ -42,8 +40,6 @@
   function toDate(unix_timestamp: number) {
     return new Date(unix_timestamp * 1000).toLocaleDateString();
   }
-
-  async function applySort() {}
 
   async function fetchData() {
     // API
@@ -95,17 +91,14 @@
 <Section header={$LL.PLAYER_TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
   <div>
     <form on:submit|preventDefault={fetchData}>
-      <div class="filters flex">
+      <div class="filters flex items-start">
         <GameModeSelect bind:game bind:mode flex all_option hide_labels inline is_team />
         <div class="filters flex">
-          <div class="option">
-            <input name="from" type="datetime-local" bind:value={from} />
+          <div>
+            <input name="from" type="date" bind:value={from} />
           </div>
-          <div class="text-xl font-bold mx-1">
-            {'-'}
-          </div>
-          <div class="option">
-            <input name="to" type="datetime-local" bind:value={to} />
+          <div>
+            <input name="to" type="date" bind:value={to} />
           </div>
         </div>
       </div>
@@ -154,8 +147,12 @@
                 <td></td>
               {/if}
               <td>
-                {placement.placement ? placement.placement : '-'}
-                {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                {#if placement.is_disqualified}
+                  Disqualified
+                {:else}
+                  {placement.placement ? placement.placement : '-'}
+                  {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                {/if}
               </td>
             </tr>
           {/each}
@@ -203,8 +200,12 @@
                 <td></td>
               {/if}
               <td>
-                {placement.placement ? placement.placement : '-'}
-                {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                {#if placement.is_disqualified}
+                  Disqualified
+                {:else}
+                  {placement.placement ? placement.placement : '-'}
+                  {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                {/if}
               </td>
             </tr>
           {/each}
@@ -219,5 +220,14 @@
     .filters {
       flex-direction: column;
     }
+  }
+  .gold {
+    background-color: rgba(250, 209, 5, 0.6);
+  }
+  .silver {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .bronze {
+    background-color: rgba(255, 136, 0, 0.5);
   }
 </style>

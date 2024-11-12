@@ -36,7 +36,7 @@ class PlayerTournamentPlacement():
     placement: int | None
     placement_description: str | None
     is_disqualified: bool
-    partners: list[TournamentPlayerDetailsShort] | None
+    partners: list[TournamentPlayerDetailsShort]
 
 @dataclass
 class PlayerTournamentResults():
