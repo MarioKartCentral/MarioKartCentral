@@ -110,6 +110,13 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
     await handle(command)
     return JSONResponse({})
 
+
+async def get_player_transfer_history(request: Request) -> JSONResponse:
+    player_id = int(request.path_params['player_id'])
+    command = GetPlayerTransferHistoryCommand(player_id)
+    results = await handle(command)
+    return JSONResponse(results)
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
@@ -124,5 +131,6 @@ routes = [
     Route('/api/registry/players/requestName', request_edit_player_name, methods=['POST']),
     Route('/api/registry/players/pendingNameChanges', get_pending_player_name_requests),
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']),
-    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST'])
+    Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']),
+    Route('/api/registry/players/{player_id:int}/getPlayerTransferHistory', get_player_transfer_history)
 ]

@@ -364,3 +364,29 @@ class DenyPlayerNameRequestCommand(Command[None]):
                 if rowcount == 0:
                     raise Problem("Name edit request not found", status=404)
                 await db.commit()
+
+@dataclass
+class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        history: list = []
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute('''SELECT 
+                t.id, t.name as "team_name", tt.roster_id, tr.name as "roster_name", tt.roster_leave_id, tt.date, tt.is_accepted, tt.is_bagger_clause
+                FROM team_transfers as tt
+                JOIN team_rosters as tr
+                ON tt.roster_id = tr.id
+                JOIN teams as t
+                ON t.id = tr.team_id
+                WHERE player_id = ?''',
+                (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                # TODO: how do i match join_date of roster_leave_id with the appropriaate previous roster_id,
+                # while considering transfers to the same teams happen...
+                for row in rows:
+                    team_id, team_name, roster_id, roster_name, roster_leave_id, join_date, is_accepted, is_bagger_clause = row
+                    history.append(PlayerTransferItem(team_id, team_name, roster_id, roster_name, roster_leave_id, join_date, is_accepted, is_bagger_clause))
+                results = PlayerTransferHistory(history) 
+                return results
+
