@@ -120,7 +120,7 @@
         </thead>
         <tbody>
           {#each filtered_solo_placements as placement, i}
-            <tr class={placement.placement ? podium_style[placement.placement] : `row-{i % 2}`}>
+            <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
               <td>
                 <a
                   class="hover:text-emerald-400"
@@ -174,7 +174,7 @@
         </thead>
         <tbody>
           {#each filtered_team_placements as placement, i}
-            <tr class={placement.placement ? podium_style[placement.placement] : `row-{i % 2}`}>
+            <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
               <td>
                 <a
                   class="hover:text-emerald-400"
