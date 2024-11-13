@@ -6,15 +6,7 @@
   import type { PlayerTransferItem } from '$lib/types/player-transfer';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
-  import logo from '$lib/assets/logo.png';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
-  import Flag from '$lib/components/common/Flag.svelte';
-  import { Avatar } from 'flowbite-svelte';
-  import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
-  import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
-  import { game_order } from '$lib/util/util';
   import { onMount } from 'svelte';
   let history: PlayerTransferItem[] = [];
   let user_info: UserInfo;
