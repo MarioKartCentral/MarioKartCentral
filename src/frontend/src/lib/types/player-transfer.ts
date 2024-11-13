@@ -5,6 +5,7 @@ export type PlayerTransferItem = {
   roster_name: string | null;
   roster_lead_id: number | null;
   join_date: number;
+  leave_date: number | null;
   is_accepted: boolean;
   is_bagger_clause: boolean;
 }

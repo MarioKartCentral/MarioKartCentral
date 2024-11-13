@@ -559,6 +559,8 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     async def handle(self, db_wrapper, s3_wrapper):
         history: list = []
         async with db_wrapper.connect(readonly=True) as db:
+            # Unique composite key to identify joining team x at time t
+            transfer_record_dict: dict[tuple[int, int], PlayerTransferItem] = {}
             async with db.execute('''SELECT 
                 t.id, t.name as "team_name", tt.roster_id, tr.name as "roster_name", tt.roster_leave_id, tt.date, tt.is_accepted, tt.is_bagger_clause
                 FROM team_transfers as tt
@@ -566,15 +568,34 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                 ON tt.roster_id = tr.id
                 JOIN teams as t
                 ON t.id = tr.team_id
-                WHERE player_id = ?''',
+                WHERE player_id = ?
+                ORDER BY tt.date DESC;''',
                 (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
-                # TODO: how do i match join_date of roster_leave_id with the appropriaate previous roster_id,
-                # while considering transfers to the same teams happen...
                 for row in rows:
                     team_id, team_name, roster_id, roster_name, roster_leave_id, join_date, is_accepted, is_bagger_clause = row
-                    history.append(PlayerTransferItem(team_id, team_name, roster_id, roster_name, roster_leave_id, join_date, is_accepted, is_bagger_clause))
-                results = PlayerTransferHistory(history) 
+                    transfer_record_dict[(roster_id, join_date)] = PlayerTransferItem(team_id, team_name, roster_id, roster_name, roster_leave_id, join_date, None, is_accepted, is_bagger_clause)
+
+                    # NOTE: maybe I can move the finding leave date up here?
+                    # if i sort in descending date order, we always have a transfer from the next record
+                    # unless someone left a team, waited a year, then joined a new team... hmm
+
+                for key, record in transfer_record_dict.items():
+                    # don't care if we never left the team
+                    # add the record and go next
+                    if record.roster_leave_id is None:
+                        history.append(record)
+                        continue
+                    # if we abandoned this team to join another, try to get the leave date
+                    unique_transfer: tuple[int, int] = (record.roster_leave_id, record.join_date)
+
+                    # if the abandoned team exists in the dict, update the leave date with the new team join date
+                    # NOTE: but date is a timestamp, so how do i solve this....
+                    if (unique_transfer) in transfer_record_dict.keys():
+                        curr = transfer_record_dict[unique_transfer]
+                        history.append(PlayerTransferItem(curr.team_id, curr.team_name, curr.roster_id, curr.roster_name, curr.roster_leave_id, curr.join_date, record.join_date, curr.is_accepted, curr.is_bagger_clause))
+
+                results = PlayerTransferHistory(history)
                 return results
 
 >>>>>>> 6b82979 (player registration history functional)
