@@ -39,13 +39,9 @@ class PlayerRoster:
 class PlayerTransferItem:
     team_id: int
     team_name: str
-    roster_id: int
-    roster_name: str
-    roster_leave_id: int | None
     join_date: int
     leave_date: int | None
-    is_accepted: bool
-    is_bagger_clause: bool
+    roster_name: str
 
 @dataclass
 class PlayerTransferHistory:

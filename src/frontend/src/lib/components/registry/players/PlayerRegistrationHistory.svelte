@@ -27,16 +27,13 @@
       return;
     }
     let body = await res.json();
-    console.log(body);
     history = body.history;
-    console.log(history);
   }
 
   onMount(fetchData);
 </script>
 
 <Section header={$LL.PLAYER_REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
-  <!-- Team history -->
   <div>
     <div>
       <Table>
@@ -58,7 +55,7 @@
                 </a>
               </td>
               <td>
-                {toDate(record.join_date)}
+                {toDate(record.join_date)} - {record.leave_date ? toDate(record.leave_date) : 'Present'}
               </td>
             </tr>
           {/each}
