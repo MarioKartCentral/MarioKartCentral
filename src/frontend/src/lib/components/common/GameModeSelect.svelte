@@ -68,7 +68,7 @@
   }
   select {
     width: 200px;
-    margin-right: 10px;
+    /* margin-right: 10px; */
   }
   .gap {
     gap: 5px;
