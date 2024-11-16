@@ -89,21 +89,21 @@
 </script>
 
 <Section header={$LL.PLAYER_TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
-  <div>
+  <div class="w-full m-auto">
     <form on:submit|preventDefault={fetchData}>
-      <div class="filters flex items-start">
-        <GameModeSelect bind:game bind:mode flex all_option hide_labels inline is_team />
-        <div class="filters flex">
-          <div>
-            <input name="from" type="date" bind:value={from} />
+      <div class="flex flex-row flex-wrap items-center justify-center">
+        <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
+        <div class="flex flex-col">
+          <div class="ml-1">
+            <input class="w-44" name="from" type="date" bind:value={from} />
           </div>
-          <div>
-            <input name="to" type="date" bind:value={to} />
+          <div class="ml-1">
+            <input class="w-44" name="to" type="date" bind:value={to} />
           </div>
         </div>
-      </div>
-      <div class="option my-2">
-        <Button type="submit">Filter</Button>
+        <div class="ml-1 my-2">
+          <Button type="submit">Filter</Button>
+        </div>
       </div>
     </form>
     <!-- Solo Tournaments -->
@@ -216,11 +216,6 @@
 </Section>
 
 <style>
-  @media screen and (max-width: 768px) {
-    .filters {
-      flex-direction: column;
-    }
-  }
   .gold {
     background-color: rgba(250, 209, 5, 0.6);
   }
