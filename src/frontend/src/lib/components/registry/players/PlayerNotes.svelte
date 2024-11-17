@@ -18,7 +18,7 @@
         <div>{notes.notes}</div>
         <div class="text-sm text-slate-300 pt-1.5">
             {#if notes.edited_by}
-                <a href="{$page.params.lang}/registry/players/profile?id={notes.edited_by.id}" class="hover:text-yellow-300">{notes.edited_by.name}</a>
+                <a href="/{$page.params.lang}/registry/players/profile?id={notes.edited_by.id}" class="hover:text-yellow-300">{notes.edited_by.name}</a>
             {/if}
             {" - "}
             <span>{new Date(notes.date * 1000).toLocaleString($page.params.lang, options)}</span>
