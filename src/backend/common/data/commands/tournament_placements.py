@@ -204,3 +204,37 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 results = PlayerTournamentResults(tournament_solo_and_squad_results, tournament_team_results)
                 return results
 
+
+@dataclass
+class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
+    """
+    Get all tournament placement data for a particular player
+    - Solo, Squad, & Team
+    """
+    team_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        tournament_team_results = []
+        async with db_wrapper.connect(readonly=True) as db:
+            # Team placements
+            async with db.execute("""
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, teams.id as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                FROM tournaments as t
+                LEFT JOIN tournament_squad_placements as tsp 
+                ON t.id = tsp.tournament_id
+                INNER JOIN team_squad_registrations as tsr
+                ON tsp.squad_id = tsr.squad_id
+                INNER JOIN team_rosters as tr ON
+                tsr.roster_id = tr.id
+                INNER JOIN teams
+                ON tr.team_id = teams.id
+                WHERE t.show_on_profiles = 1
+                AND teams.id = ?
+                ORDER BY t.date_start DESC;
+                """, (self.team_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, team_id, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_team_results.append(TeamTournamentPlacement(tournament_id, tournament_name, game, mode, team_id, date_start, date_end, placement, placement_description, is_disqualified))
+                results = TeamTournamentResults(tournament_team_results)
+                return results

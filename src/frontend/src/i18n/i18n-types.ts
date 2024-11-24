@@ -626,13 +626,21 @@ type RootTranslation = {
 		 */
 		UNBAN_DATE: string
 	}
-	PLAYER_TOURNAMENT_HISTORY: {
+	TOURNAMENT_HISTORY: {
 		/**
 		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
 		 */
 		TOURNAMENT_HISTORY: string
+		/**
+		 * S​o​l​o​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		SOLO_TOURNAMENTS: string
+		/**
+		 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		TEAM_TOURNAMENTS: string
 	}
-	PLAYER_REGISTRATION_HISTORY: {
+	REGISTRATION_HISTORY: {
 		/**
 		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​H​i​s​t​o​r​y
 		 */
@@ -2744,13 +2752,21 @@ export type TranslationFunctions = {
 		 */
 		UNBAN_DATE: () => LocalizedString
 	}
-	PLAYER_TOURNAMENT_HISTORY: {
+	TOURNAMENT_HISTORY: {
 		/**
 		 * Tournament History
 		 */
 		TOURNAMENT_HISTORY: () => LocalizedString
+		/**
+		 * Solo Tournaments
+		 */
+		SOLO_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Team Tournaments
+		 */
+		TEAM_TOURNAMENTS: () => LocalizedString
 	}
-	PLAYER_REGISTRATION_HISTORY: {
+	REGISTRATION_HISTORY: {
 		/**
 		 * Registration History
 		 */
