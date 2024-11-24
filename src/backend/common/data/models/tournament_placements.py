@@ -42,3 +42,20 @@ class PlayerTournamentPlacement():
 class PlayerTournamentResults():
     tournament_solo_and_squad_placements: list[PlayerTournamentPlacement]
     tournament_team_placements: list[PlayerTournamentPlacement]
+
+@dataclass
+class TeamTournamentPlacement():
+    tournament_id: int
+    tournament_name: str
+    game: str
+    mode: str
+    team_id: int | None
+    date_start: int
+    date_end: int
+    placement: int | None
+    placement_description: str | None
+    is_disqualified: bool
+
+@dataclass
+class TeamTournamentResults():
+    tournament_team_placements: list[TeamTournamentPlacement]

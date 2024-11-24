@@ -165,10 +165,12 @@ const en_us: BaseTranslation & Translation = {
     EXPIRES_FROM: 'Expires From',
     SEARCH_BY_NAME: 'Search by Name',
   },
-  PLAYER_TOURNAMENT_HISTORY: {
+  TOURNAMENT_HISTORY: {
     TOURNAMENT_HISTORY: 'Tournament History',
+    SOLO_TOURNAMENTS: 'Solo Tournaments',
+    TEAM_TOURNAMENTS: 'Team Tournaments',
   },
-  PLAYER_REGISTRATION_HISTORY: {
+  REGISTRATION_HISTORY: {
     REGISTRATION_HISTORY: 'Registration History',
   },
   LANGUAGES: {

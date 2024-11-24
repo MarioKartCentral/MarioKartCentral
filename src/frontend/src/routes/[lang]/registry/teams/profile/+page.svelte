@@ -5,11 +5,12 @@
   import Section from '$lib/components/common/Section.svelte';
   import TeamProfile from '$lib/components/registry/teams/TeamProfile.svelte';
   import TeamRoster from '$lib/components/registry/teams/TeamRoster.svelte';
-  import Button from "$lib/components/common/buttons/Button.svelte";
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { check_team_permission, team_permissions, check_permission, permissions } from '$lib/util/permissions';
   import LL from '$i18n/i18n-svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import TeamTournamentHistory from '$lib/components/registry/teams/TeamTournamentHistory.svelte';
 
   let id = 0;
   let team: Team;
@@ -39,16 +40,14 @@
 </svelte:head>
 
 {#if team}
-  {#if team.approval_status === "approved" || check_team_permission(user_info, team_permissions.edit_team_info, team.id)}
+  {#if team.approval_status === 'approved' || check_team_permission(user_info, team_permissions.edit_team_info, team.id)}
     {#if check_permission(user_info, permissions.manage_teams)}
       <Section header={$LL.NAVBAR.MODERATOR()}>
         <div slot="header_content">
           <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
             >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
           >
-          <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
-            >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
-          >
+          <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button>
         </div>
       </Section>
     {/if}
@@ -61,8 +60,7 @@
             >
           {/if}
           {#if check_team_permission(user_info, team_permissions.edit_team_info, id)}
-            <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
-            >
+            <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button>
           {/if}
         {/if}
       </div>
@@ -76,9 +74,10 @@
         <TeamRoster {roster} />
       {/each}
     </Section>
+    <TeamTournamentHistory {team} />
   {:else}
     You do not have permission to view this page.
   {/if}
 {:else if not_found}
-    Team not found.
+  Team not found.
 {/if}
