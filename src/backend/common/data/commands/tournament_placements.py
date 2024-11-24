@@ -208,7 +208,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
 @dataclass
 class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
     """
-    Get all tournament placement data for a particular player
+    Get all tournament placement data for a particular team
     - Solo, Squad, & Team
     """
     team_id: int
