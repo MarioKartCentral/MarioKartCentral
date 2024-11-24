@@ -33,7 +33,7 @@
   onMount(fetchData);
 </script>
 
-<Section header={$LL.PLAYER_REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
+<Section header={$LL.REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
   <div>
     <div>
       <Table>
