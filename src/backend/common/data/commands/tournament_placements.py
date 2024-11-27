@@ -219,10 +219,10 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
             async with db.execute("""
                 SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, teams.id as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
                 FROM tournaments as t
-                LEFT JOIN tournament_squad_placements as tsp 
-                ON t.id = tsp.tournament_id
                 INNER JOIN team_squad_registrations as tsr
-                ON tsp.squad_id = tsr.squad_id
+                ON tsr.tournament_id = t.id
+                LEFT JOIN tournament_squad_placements as tsp 
+                ON tsr.squad_id = tsp.squad_id
                 INNER JOIN team_rosters as tr ON
                 tsr.roster_id = tr.id
                 INNER JOIN teams
