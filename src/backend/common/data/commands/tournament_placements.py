@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 
 from common.data.commands import Command, save_to_command_log
-from common.data.db.tables import TournamentPlayer
 from common.data.models import *
-from json import dumps as jason_dumps
 
 @save_to_command_log
 @dataclass

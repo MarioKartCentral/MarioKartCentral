@@ -1,23 +1,14 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { user } from '$lib/stores/stores';
   import { onMount } from 'svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import type { UserInfo } from '$lib/types/user-info';
   import type { PlayerTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
-  import logo from '$lib/assets/logo.png';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
-
-  let user_info: UserInfo;
-
-  user.subscribe((value) => {
-    user_info = value;
-  });
 
   export let player: PlayerInfo;
 
@@ -31,11 +22,6 @@
   let filtered_team_placements: PlayerTournamentPlacement[] = [];
   // Default 'silver' from PlacementsDisplay.svelte is less readable than I'd like
   let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'bg-slate-400/60', 3: 'bronze' };
-
-  let avatar_url = logo;
-  if (player.user_settings && player.user_settings.avatar) {
-    avatar_url = player.user_settings.avatar;
-  }
 
   function toDate(unix_timestamp: number) {
     return new Date(unix_timestamp * 1000).toLocaleDateString();
@@ -130,7 +116,7 @@
       <Table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Tournament</th>
             <th class="mobile-hide">Date</th>
             <th class="mobile-hide">Partners</th>
             <th>Placement</th>
