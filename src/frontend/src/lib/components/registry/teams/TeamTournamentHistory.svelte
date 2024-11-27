@@ -43,7 +43,9 @@
     }
     let body = await res.json();
     team_placements = body.tournament_team_placements;
+  }
 
+  function filterData() {
     // Filtering
     filtered_team_placements = [...team_placements];
 
@@ -69,7 +71,7 @@
 
 <Section header={$LL.TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
   <div class="w-full m-auto">
-    <form on:submit|preventDefault={fetchData}>
+    <form on:submit|preventDefault={filterData}>
       <div class="flex flex-row flex-wrap items-center justify-center">
         <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
         <div class="flex flex-col">
