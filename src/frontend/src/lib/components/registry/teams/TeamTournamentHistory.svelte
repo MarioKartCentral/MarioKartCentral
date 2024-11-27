@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import type { Team } from '$lib/types/team';
   import type { UserInfo } from '$lib/types/user-info';
-  import type { ProfileTournamentPlacement } from '$lib/types/tournament-placement';
+  import type { TeamTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import logo from '$lib/assets/logo.png';
@@ -25,8 +25,8 @@
   let game: string | null = null;
   let from: string | null = null;
   let to: string | null = null;
-  let team_placements: ProfileTournamentPlacement[] = [];
-  let filtered_team_placements: ProfileTournamentPlacement[] = [];
+  let team_placements: TeamTournamentPlacement[] = [];
+  let filtered_team_placements: TeamTournamentPlacement[] = [];
   // Default 'silver' from PlacementsDisplay.svelte is less readable than I'd like
   let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'bg-slate-400/60', 3: 'bronze' };
 
@@ -110,9 +110,9 @@
       <Table>
         <thead>
           <tr>
-            <th>Name</th>
-            <th class="mobile-hide">Date</th>
+            <th>Tournament</th>
             <th class="mobile-hide">Team</th>
+            <th class="mobile-hide">Date</th>
             <th>Placement</th>
           </tr>
         </thead>
@@ -127,10 +127,6 @@
                   {placement.tournament_name}
                 </a>
               </td>
-              <td class="mobile-hide">
-                {toDate(placement.date_start)}
-                {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
-              </td>
               {#if placement.squad_id != null && placement.squad_name != null}
                 <td class="mobile-hide">
                   <a
@@ -143,6 +139,10 @@
               {:else}
                 <td></td>
               {/if}
+              <td class="mobile-hide">
+                {toDate(placement.date_start)}
+                {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
+              </td>
               <td>
                 {#if placement.is_disqualified}
                   Disqualified
