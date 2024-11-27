@@ -34,6 +34,21 @@
     return new Date(unix_timestamp * 1000).toLocaleDateString();
   }
 
+  function toOrdinalSuffix(i: number) {
+    let j = i % 10;
+    let k = i % 100;
+    if (j === 1 && k !== 11) {
+      return i + 'st';
+    }
+    if (j === 2 && k !== 12) {
+      return i + 'nd';
+    }
+    if (j === 3 && k !== 13) {
+      return i + 'rd';
+    }
+    return i + 'th';
+  }
+
   async function fetchData() {
     // API
     let url = `/api/tournaments/teams/placements/${team.id}`;
@@ -43,6 +58,7 @@
     }
     let body = await res.json();
     team_placements = body.tournament_team_placements;
+    filterData();
   }
 
   function filterData() {
@@ -131,7 +147,7 @@
                 {#if placement.is_disqualified}
                   Disqualified
                 {:else}
-                  {placement.placement ? placement.placement : '-'}
+                  {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
                   {placement.placement_description ? ' - ' + placement.placement_description : ''}
                 {/if}
               </td>
