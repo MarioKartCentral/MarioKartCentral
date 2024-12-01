@@ -619,6 +619,86 @@ type RootTranslation = {
 		 */
 		UNBAN_DATE: string
 	}
+	GAMES: {
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e
+		 */
+		MK8DX: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​8
+		 */
+		MK8: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​W​i​i
+		 */
+		MKW: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r
+		 */
+		MKT: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​7
+		 */
+		MK7: string
+		/**
+		 * S​u​p​e​r​ ​M​a​r​i​o​ ​K​a​r​t
+		 */
+		SMK: string
+	}
+	MODES: {
+		/**
+		 * 1​5​0​c​c
+		 */
+		'150CC': string
+		/**
+		 * 2​0​0​c​c
+		 */
+		'200CC': string
+		/**
+		 * B​a​t​t​l​e​ ​(​M​i​x​e​d​)
+		 */
+		MIXED_BATTLE: string
+		/**
+		 * B​a​l​l​o​o​n​ ​B​a​t​t​l​e
+		 */
+		BALLOON_BATTLE: string
+		/**
+		 * S​h​i​n​e​ ​T​h​i​e​f
+		 */
+		SHINE_THIEF: string
+		/**
+		 * B​o​b​-​o​m​b​ ​B​l​a​s​t
+		 */
+		BOBOMB_BLAST: string
+		/**
+		 * C​o​i​n​ ​R​u​n​n​e​r​s
+		 */
+		COIN_RUNNERS: string
+		/**
+		 * R​e​n​e​g​a​d​e​ ​R​o​u​n​d​u​p
+		 */
+		RENEGADE_ROUNDUP: string
+		/**
+		 * M​a​t​c​h​ ​R​a​c​e
+		 */
+		MATCH_RACE: string
+		/**
+		 * M​i​x​e​d​ ​F​o​r​m​a​t
+		 */
+		MIXED: string
+		/**
+		 * R​e​g​u​l​a​r​ ​T​r​a​c​k​s
+		 */
+		RT: string
+		/**
+		 * C​u​s​t​o​m​ ​T​r​a​c​k​s
+		 */
+		CT: string
+		/**
+		 * V​S​ ​R​a​c​e
+		 */
+		VSRACE: string
+	}
 	LANGUAGES: {
 		/**
 		 * E​n​g​l​i​s​h​ ​(​U​n​i​t​e​d​ ​S​t​a​t​e​s​)
@@ -2717,6 +2797,86 @@ export type TranslationFunctions = {
 		 * Unban Date
 		 */
 		UNBAN_DATE: () => LocalizedString
+	}
+	GAMES: {
+		/**
+		 * Mario Kart 8 Deluxe
+		 */
+		MK8DX: () => LocalizedString
+		/**
+		 * Mario Kart 8
+		 */
+		MK8: () => LocalizedString
+		/**
+		 * Mario Kart Wii
+		 */
+		MKW: () => LocalizedString
+		/**
+		 * Mario Kart Tour
+		 */
+		MKT: () => LocalizedString
+		/**
+		 * Mario Kart 7
+		 */
+		MK7: () => LocalizedString
+		/**
+		 * Super Mario Kart
+		 */
+		SMK: () => LocalizedString
+	}
+	MODES: {
+		/**
+		 * 150cc
+		 */
+		'150CC': () => LocalizedString
+		/**
+		 * 200cc
+		 */
+		'200CC': () => LocalizedString
+		/**
+		 * Battle (Mixed)
+		 */
+		MIXED_BATTLE: () => LocalizedString
+		/**
+		 * Balloon Battle
+		 */
+		BALLOON_BATTLE: () => LocalizedString
+		/**
+		 * Shine Thief
+		 */
+		SHINE_THIEF: () => LocalizedString
+		/**
+		 * Bob-omb Blast
+		 */
+		BOBOMB_BLAST: () => LocalizedString
+		/**
+		 * Coin Runners
+		 */
+		COIN_RUNNERS: () => LocalizedString
+		/**
+		 * Renegade Roundup
+		 */
+		RENEGADE_ROUNDUP: () => LocalizedString
+		/**
+		 * Match Race
+		 */
+		MATCH_RACE: () => LocalizedString
+		/**
+		 * Mixed Format
+		 */
+		MIXED: () => LocalizedString
+		/**
+		 * Regular Tracks
+		 */
+		RT: () => LocalizedString
+		/**
+		 * Custom Tracks
+		 */
+		CT: () => LocalizedString
+		/**
+		 * VS Race
+		 */
+		VSRACE: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**

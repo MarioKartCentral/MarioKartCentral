@@ -11,10 +11,13 @@
       { value: 'es', getLang: 'ES' },
       { value: 'ja', getLang: 'JA' },
     ];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const language_strings: any = $LL.LANGUAGES;
 </script>
 
 <select name="language" value={language}>
     {#each languages as l}
-      <option value={l.value}>{$LL.LANGUAGES[l.getLang]()}</option>
+      <option value={l.value}>{language_strings[l.getLang]()}</option>
     {/each}
 </select>

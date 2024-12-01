@@ -13,11 +13,14 @@
 
     let countries: Country[] = [];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const country_strings: any = $LL.COUNTRIES;
+
     for(let country_code of country_codes) {
         countries.push(
             {
                 country_code: country_code,
-                translated_name: $LL.COUNTRIES[country_code]()
+                translated_name: country_strings[country_code]()
             }
         );
     }

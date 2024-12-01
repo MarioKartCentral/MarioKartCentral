@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { valid_modes, valid_team_modes, mode_names } from '$lib/util/util';
+  import { valid_modes, valid_team_modes } from '$lib/util/util';
   import { createEventDispatcher } from 'svelte';
   import GameSelect from './GameSelect.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let game: string | null = null;
   export let mode: string | null = null;
@@ -14,6 +15,9 @@
   export let is_team = false;
 
   const dispatch = createEventDispatcher();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mode_strings: any = $LL.MODES;
 </script>
 
 <div class={inline ? "flex gap" : ""}>
@@ -44,7 +48,7 @@
         {/if}
         {#if game}
           {#each is_team ? valid_team_modes[game] : valid_modes[game] as mode}
-            <option value={mode}>{mode_names[mode]}</option>
+            <option value={mode}>{mode_strings[mode.toUpperCase()]()}</option>
           {/each}
         {/if}
         

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { valid_games, valid_team_games } from "$lib/util/util";
+    import LL from "$i18n/i18n-svelte";
 
     export let game: string | null = null;
     export let disabled = false;
@@ -9,6 +10,9 @@
     export let hide_labels = false;
     export let is_team = false;
     export let disabled_games: string[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const game_strings: any = $LL.GAMES;
 </script>
 
 <div class={flex ? 'flex' : ''}>
@@ -29,8 +33,10 @@
             {:else}
                 <option value={null} disabled selected>Select a game...</option>
             {/if}
-            {#each is_team ? Object.keys(valid_team_games) : Object.keys(valid_games) as game}
-                <option value={disabled_games.includes(game) ? null : game} disabled={disabled_games.includes(game)}>{valid_games[game]}</option>
+            {#each is_team ? valid_team_games : valid_games as game}
+                <option value={disabled_games.includes(game) ? null : game} disabled={disabled_games.includes(game)}>
+                    {game_strings[game.toUpperCase()]()}
+                </option>
             {/each}
         </select>
     </div>

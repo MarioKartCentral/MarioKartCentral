@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 
 from common.data.models.tournaments import CreateTournamentRequestData
-from common.data.models.common import Game, GameMode
-
 
 @dataclass
 class TournamentTemplateRequestData(CreateTournamentRequestData):

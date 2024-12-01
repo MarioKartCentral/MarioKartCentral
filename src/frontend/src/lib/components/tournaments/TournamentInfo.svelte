@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import { locale } from '$i18n/i18n-svelte';
-  import { valid_games, mode_names } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import Section from '../common/Section.svelte';
   import Button from '../common/buttons/Button.svelte';
@@ -11,6 +10,7 @@
   import ModeBadge from '../badges/ModeBadge.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
 
@@ -30,6 +30,11 @@
     timeStyle: 'short',
     hour12: true,
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const game_strings: any = $LL.GAMES;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mode_strings: any = $LL.MODES;
 </script>
 
 <Section header="Tournament Info">
@@ -70,8 +75,8 @@
         {#if tournament.location}
           <li><b>Location: </b> {tournament.location}</li>
         {/if}
-        <li><b>Game:</b> {valid_games[tournament.game]}</li>
-        <li><b>Mode:</b> {mode_names[tournament.mode]}</li>
+        <li><b>Game:</b> {game_strings[tournament.game.toUpperCase()]()}</li>
+        <li><b>Mode:</b> {mode_strings[tournament.mode.toUpperCase()]()}</li>
         <li><b>Registration Format:</b> {tournament_type}</li>
         {#if tournament.is_squad}
           {#if tournament.min_squad_size}
