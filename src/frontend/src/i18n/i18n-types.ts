@@ -46,6 +46,402 @@ type RootTranslation = {
 	 * M​K​C​e​n​t​r​a​l​ ​R​e​g​i​s​t​r​y
 	 */
 	MKC_REGISTRY: string
+	/**
+	 * G​a​m​e
+	 */
+	GAME: string
+	/**
+	 * M​o​d​e
+	 */
+	MODE: string
+	/**
+	 * G​a​m​e​/​M​o​d​e
+	 */
+	GAME_MODE: string
+	/**
+	 * N​a​m​e
+	 */
+	NAME: string
+	/**
+	 * P​l​a​y​e​r
+	 */
+	PLAYER: string
+	/**
+	 * D​a​t​e
+	 */
+	DATE: string
+	/**
+	 * C​o​u​n​t​r​y
+	 */
+	COUNTRY: string
+	/**
+	 * T​a​g
+	 */
+	TAG: string
+	/**
+	 * F​r​o​m
+	 */
+	FROM: string
+	/**
+	 * T​o
+	 */
+	TO: string
+	/**
+	 * Y​e​s
+	 */
+	YES: string
+	/**
+	 * N​o
+	 */
+	NO: string
+	/**
+	 * F​i​l​t​e​r
+	 */
+	FILTER: string
+	/**
+	 * B​a​g​g​e​r
+	 */
+	BAGGER: string
+	/**
+	 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+	 */
+	NO_PERMISSION: string
+	DISCORD: {
+		/**
+		 * D​i​s​c​o​r​d
+		 */
+		DISCORD: string
+		/**
+		 * S​i​g​n​ ​i​n​ ​o​r​ ​R​e​g​i​s​t​e​r​ ​t​o​ ​l​i​n​k​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​a​c​c​o​u​n​t
+		 */
+		SIGN_IN_REGISTER_TO_LINK: string
+		/**
+		 * L​i​n​k​ ​D​i​s​c​o​r​d​ ​A​c​c​o​u​n​t
+		 */
+		LINK_DISCORD: string
+		/**
+		 * R​e​l​i​n​k​ ​A​c​c​o​u​n​t
+		 */
+		RELINK_DISCORD: string
+		/**
+		 * U​n​l​i​n​k​ ​A​c​c​o​u​n​t
+		 */
+		UNLINK_DISCORD: string
+		/**
+		 * R​e​f​r​e​s​h
+		 */
+		REFRESH: string
+		/**
+		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​r​e​f​r​e​s​h​i​n​g​ ​D​i​s​c​o​r​d​ ​d​a​t​a
+		 */
+		REFRESH_ERROR: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​l​e​t​e​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​d​a​t​a​?
+		 */
+		DELETE_DATA_CONFIRM: string
+		/**
+		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​d​e​l​e​t​i​n​g​ ​D​i​s​c​o​r​d​ ​d​a​t​a
+		 */
+		DELETE_DATA_ERROR: string
+	}
+	LOUNGE: {
+		/**
+		 * L​o​u​n​g​e
+		 */
+		LOUNGE: string
+		/**
+		 * W​e​b​s​i​t​e
+		 */
+		WEBSITE: string
+		/**
+		 * D​i​s​c​o​r​d​ ​I​n​v​i​t​e
+		 */
+		DISCORD_INVITE: string
+	}
+	MODERATOR: {
+		/**
+		 * M​o​d​e​r​a​t​o​r
+		 */
+		MODERATOR: string
+		/**
+		 * P​e​n​d​i​n​g​ ​P​l​a​y​e​r​ ​N​a​m​e​ ​R​e​q​u​e​s​t​s
+		 */
+		PENDING_NAME_REQUESTS: string
+		/**
+		 * A​p​p​r​o​v​e​?
+		 */
+		APPROVE: string
+		/**
+		 * D​e​n​y
+		 */
+		DENY: string
+		/**
+		 * C​a​n​c​e​l
+		 */
+		CANCEL: string
+		/**
+		 * N​o​ ​p​e​n​d​i​n​g​ ​n​a​m​e​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_PENDING_NAME_REQUESTS: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​r​e​q​u​e​s​t​?
+		 */
+		APPROVE_NAME_REQUEST_CONFIRM: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​d​e​n​y​ ​t​h​i​s​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​r​e​q​u​e​s​t​?
+		 */
+		DENY_NAME_REQUEST_CONFIRM: string
+		/**
+		 * A​p​p​r​o​v​i​n​g​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​r​e​q​u​e​s​t​ ​f​a​i​l​e​d
+		 */
+		APPROVE_NAME_REQUEST_FAILED: string
+		/**
+		 * D​e​n​y​i​n​g​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​r​e​q​u​e​s​t​ ​f​a​i​l​e​d
+		 */
+		DENY_NAME_REQUEST_FAILED: string
+		/**
+		 * P​e​n​d​i​n​g​ ​T​e​a​m​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
+		 */
+		PENDING_TEAM_EDIT_REQUESTS: string
+		/**
+		 * N​o​ ​p​e​n​d​i​n​g​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_PENDING_TEAM_EDIT_REQUESTS: string
+		/**
+		 * P​e​n​d​i​n​g​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
+		 */
+		PENDING_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * N​o​ ​p​e​n​d​i​n​g​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_PENDING_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​?
+		 */
+		APPROVE_TEAM_EDIT_CONFIRM: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​d​e​n​y​ ​t​h​i​s​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​?
+		 */
+		DENY_TEAM_EDIT_CONFIRM: string
+		/**
+		 * A​p​p​r​o​v​i​n​g​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​ ​f​a​i​l​e​d
+		 */
+		APPROVE_TEAM_EDIT_FAILED: string
+		/**
+		 * D​e​n​y​i​n​g​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​ ​f​a​i​l​e​d
+		 */
+		DENY_TEAM_EDIT_FAILED: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​?
+		 */
+		APPROVE_ROSTER_EDIT_CONFIRM: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​d​e​n​y​ ​t​h​i​s​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​?
+		 */
+		DENY_ROSTER_EDIT_CONFIRM: string
+		/**
+		 * A​p​p​r​o​v​i​n​g​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​ ​f​a​i​l​e​d
+		 */
+		APPROVE_ROSTER_EDIT_FAILED: string
+		/**
+		 * D​e​n​y​i​n​g​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​ ​f​a​i​l​e​d
+		 */
+		DENY_ROSTER_EDIT_FAILED: string
+		/**
+		 * P​e​n​d​i​n​g​ ​T​e​a​m​s
+		 */
+		PENDING_TEAMS: string
+		/**
+		 * P​e​n​d​i​n​g​ ​R​o​s​t​e​r​s
+		 */
+		PENDING_ROSTERS: string
+		/**
+		 * N​o​ ​p​e​n​d​i​n​g​ ​t​e​a​m​s​.
+		 */
+		NO_PENDING_TEAMS: string
+		/**
+		 * N​o​ ​p​e​n​d​i​n​g​ ​r​o​s​t​e​r​s​.
+		 */
+		NO_PENDING_ROSTERS: string
+		/**
+		 * D​e​n​i​e​d​ ​T​e​a​m​s
+		 */
+		DENIED_TEAMS: string
+		/**
+		 * D​e​n​i​e​d​ ​R​o​s​t​e​r​s
+		 */
+		DENIED_ROSTERS: string
+		/**
+		 * N​o​ ​d​e​n​i​e​d​ ​t​e​a​m​s​.
+		 */
+		NO_DENIED_TEAMS: string
+		/**
+		 * N​o​ ​d​e​n​i​e​d​ ​r​o​s​t​e​r​s​.
+		 */
+		NO_DENIED_ROSTERS: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​t​e​a​m​?
+		 */
+		APPROVE_TEAM_CONFIRM: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​n​y​ ​t​h​i​s​ ​t​e​a​m​?
+		 */
+		DENY_TEAM_CONFIRM: string
+		/**
+		 * A​p​p​r​o​v​i​n​g​ ​t​e​a​m​ ​f​a​i​l​e​d
+		 */
+		APPROVE_TEAM_FAILED: string
+		/**
+		 * D​e​n​y​i​n​g​ ​t​e​a​m​ ​f​a​i​l​e​d
+		 */
+		DENY_TEAM_FAILED: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​r​o​s​t​e​r​?
+		 */
+		APPROVE_ROSTER_CONFIRM: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​n​y​ ​t​h​i​s​ ​r​o​s​t​e​r​?
+		 */
+		DENY_ROSTER_CONFIRM: string
+		/**
+		 * A​p​p​r​o​v​i​n​g​ ​r​o​s​t​e​r​ ​f​a​i​l​e​d
+		 */
+		APPROVE_ROSTER_FAILED: string
+		/**
+		 * D​e​n​y​i​n​g​ ​r​o​s​t​e​r​ ​f​a​i​l​e​d
+		 */
+		DENY_ROSTER_FAILED: string
+		/**
+		 * P​e​n​d​i​n​g​ ​T​r​a​n​s​f​e​r​s
+		 */
+		PENDING_TRANSFERS: string
+		/**
+		 * M​a​n​u​a​l​l​y​ ​T​r​a​n​s​f​e​r​ ​P​l​a​y​e​r
+		 */
+		MANUALLY_TRANSFER_PLAYER: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​t​r​a​n​s​f​e​r​?
+		 */
+		APPROVE_TRANSFER_CONFIRM: string
+		/**
+		 * A​p​p​r​o​v​i​n​g​ ​t​r​a​n​s​f​e​r​ ​f​a​i​l​e​d
+		 */
+		APPROVE_TRANSFER_FAILED: string
+		/**
+		 * D​e​n​y​i​n​g​ ​t​r​a​n​s​f​e​r​ ​f​a​i​l​e​d
+		 */
+		DENY_TRANSFER_FAILED: string
+		/**
+		 * D​e​n​y​ ​T​r​a​n​s​f​e​r
+		 */
+		DENY_TRANSFER: string
+		/**
+		 * S​e​n​d​ ​t​r​a​n​s​f​e​r​ ​b​a​c​k​ ​t​o​ ​t​h​e​ ​p​l​a​y​e​r​?
+		 */
+		SEND_TRANSFER_BACK: string
+		/**
+		 * O​l​d​ ​R​o​s​t​e​r
+		 */
+		OLD_ROSTER: string
+		/**
+		 * N​e​w​ ​R​o​s​t​e​r
+		 */
+		NEW_ROSTER: string
+		/**
+		 * T​r​a​n​s​f​e​r​ ​P​l​a​y​e​r
+		 */
+		TRANSFER_PLAYER: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​t​r​a​n​s​f​e​r​r​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}
+		 * @param {unknown} player_name
+		 * @param {unknown} roster_name
+		 */
+		FORCE_TRANSFER_SUCCESS: RequiredParams<'player_name' | 'roster_name'>
+		/**
+		 * T​r​a​n​s​f​e​r​r​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
+		 */
+		FORCE_TRANSFER_FAILED: string
+		/**
+		 * O​l​d​ ​P​l​a​y​e​r
+		 */
+		OLD_PLAYER: string
+		/**
+		 * N​e​w​ ​P​l​a​y​e​r
+		 */
+		NEW_PLAYER: string
+		/**
+		 * M​e​r​g​e​ ​P​l​a​y​e​r​s
+		 */
+		MERGE_PLAYERS: string
+		/**
+		 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​t​w​o​ ​d​i​f​f​e​r​e​n​t​ ​p​l​a​y​e​r​s
+		 */
+		SELECT_UNIQUE_PLAYERS: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​m​e​r​g​e​ ​a​l​l​ ​o​f​ ​{​o​l​d​_​p​l​a​y​e​r​}​'​s​ ​d​a​t​a​ ​i​n​t​o​ ​{​n​e​w​_​p​l​a​y​e​r​}​?​ ​T​h​i​s​ ​w​i​l​l​ ​D​E​L​E​T​E​ ​{​o​l​d​_​p​l​a​y​e​r​}​ ​c​o​m​p​l​e​t​e​l​y​.
+		 * @param {unknown} new_player
+		 * @param {unknown} old_player
+		 */
+		MERGE_PLAYERS_CONFIRM: RequiredParams<'new_player' | 'old_player' | 'old_player'>
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​m​e​r​g​e​d​ ​p​l​a​y​e​r​s​!
+		 */
+		MERGE_PLAYERS_SUCCESS: string
+		/**
+		 * M​e​r​g​i​n​g​ ​p​l​a​y​e​r​s​ ​f​a​i​l​e​d
+		 */
+		MERGE_PLAYERS_FAILED: string
+		/**
+		 * M​e​r​g​e​ ​T​e​a​m​s
+		 */
+		MERGE_TEAMS: string
+		/**
+		 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​t​w​o​ ​d​i​f​f​e​r​e​n​t​ ​t​e​a​m​s
+		 */
+		SELECT_UNIQUE_TEAMS: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​m​e​r​g​e​ ​a​l​l​ ​o​f​ ​{​o​l​d​_​t​e​a​m​}​'​s​ ​d​a​t​a​ ​i​n​t​o​ ​{​n​e​w​_​t​e​a​m​}​?​ ​T​h​i​s​ ​w​i​l​l​ ​D​E​L​E​T​E​ ​{​o​l​d​_​t​e​a​m​}​ ​c​o​m​p​l​e​t​e​l​y​.
+		 * @param {unknown} new_team
+		 * @param {unknown} old_team
+		 */
+		MERGE_TEAMS_CONFIRM: RequiredParams<'new_team' | 'old_team' | 'old_team'>
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​m​e​r​g​e​d​ ​t​e​a​m​s​!
+		 */
+		MERGE_TEAMS_SUCCESS: string
+		/**
+		 * M​e​r​g​i​n​g​ ​t​e​a​m​s​ ​f​a​i​l​e​d
+		 */
+		MERGE_TEAMS_FAILED: string
+		/**
+		 * O​l​d​ ​T​e​a​m
+		 */
+		OLD_TEAM: string
+		/**
+		 * N​e​w​ ​T​e​a​m
+		 */
+		NEW_TEAM: string
+		/**
+		 * U​n​a​p​p​r​o​v​e​d​ ​P​l​a​y​e​r​ ​C​l​a​i​m​s
+		 */
+		UNAPPROVED_PLAYER_CLAIMS: string
+		/**
+		 * C​l​a​i​m​e​d​ ​P​l​a​y​e​r
+		 */
+		CLAIMED_PLAYER: string
+		/**
+		 * N​o​ ​p​l​a​y​e​r​ ​c​l​a​i​m​s
+		 */
+		NO_PLAYER_CLAIMS: string
+		/**
+		 * S​h​a​d​o​w​ ​P​l​a​y​e​r​s
+		 */
+		SHADOW_PLAYERS: string
+		/**
+		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
+		 */
+		CREATE_SHADOW_PLAYER: string
+	}
 	NAVBAR: {
 		/**
 		 * T​o​u​r​n​a​m​e​n​t​s
@@ -153,6 +549,47 @@ type RootTranslation = {
 			 */
 			NAME: string
 		}
+	}
+	ROLES: {
+		/**
+		 * U​s​e​r​ ​R​o​l​e​s
+		 */
+		USER_ROLES: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​a​d​d​ ​r​o​l​e
+		 */
+		ADD_ROLE_FAILED: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​l​e
+		 */
+		REMOVE_ROLE_FAILED: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​r​o​l​e​ ​{​r​o​l​e​_​n​a​m​e​}​ ​f​r​o​m​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
+		 * @param {unknown} player_name
+		 * @param {unknown} role_name
+		 */
+		REMOVE_ROLE_CONFIRM: RequiredParams<'player_name' | 'role_name'>
+		/**
+		 * A​d​d​ ​P​l​a​y​e​r
+		 */
+		ADD_PLAYER: string
+		/**
+		 * U​n​t​i​l
+		 */
+		UNTIL: string
+		/**
+		 * A​d​d
+		 */
+		ADD_ROLE: string
+		/**
+		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​e​d​i​t​ ​t​h​i​s​ ​r​o​l​e​.
+		 */
+		NO_EDIT_PERMISSION: string
+		/**
+		 * E​x​p​i​r​e​s​ ​{​d​a​t​e​}
+		 * @param {unknown} date
+		 */
+		ROLE_EXPIRES_ON: RequiredParams<'date'>
 	}
 	TEAM_LIST: {
 		/**
@@ -339,6 +776,16 @@ type RootTranslation = {
 			 */
 			NOT_RECRUITING: string
 		}
+	}
+	TRANSFERS: {
+		/**
+		 * N​o​ ​t​e​a​m
+		 */
+		NO_TEAM: string
+		/**
+		 * N​o​ ​t​r​a​n​s​f​e​r​s
+		 */
+		NO_TRANSFERS: string
 	}
 	PLAYER_PROFILE: {
 		/**
@@ -619,7 +1066,57 @@ type RootTranslation = {
 		 */
 		UNBAN_DATE: string
 	}
+	PLAYER_SIGNUP: {
+		/**
+		 * P​l​a​y​e​r​ ​S​i​g​n​u​p
+		 */
+		PLAYER_SIGNUP: string
+		/**
+		 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​r​e​g​i​s​t​e​r​e​d​.
+		 */
+		ALREADY_REGISTERED: string
+		/**
+		 * S​w​i​t​c​h​ ​F​C
+		 */
+		SWITCH_FC: string
+		/**
+		 * M​K​T​ ​F​C
+		 */
+		MKT_FC: string
+		/**
+		 * M​K​W​ ​F​C
+		 */
+		MKW_FC: string
+		/**
+		 * 3​D​S​ ​F​C
+		 */
+		'3DS_FC': string
+		/**
+		 * N​i​n​t​e​n​d​o​ ​N​e​t​w​o​r​k​ ​I​D
+		 */
+		NNID: string
+		/**
+		 * R​e​g​i​s​t​e​r
+		 */
+		REGISTER: string
+		/**
+		 * R​e​g​i​s​t​e​r​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​!
+		 */
+		REGISTER_SUCCESS: string
+		/**
+		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​f​a​i​l​e​d
+		 */
+		REGISTER_FAILED: string
+	}
 	GAMES: {
+		/**
+		 * A​l​l​ ​G​a​m​e​s
+		 */
+		ALL: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​g​a​m​e​.​.​.
+		 */
+		SELECT: string
 		/**
 		 * M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e
 		 */
@@ -646,6 +1143,14 @@ type RootTranslation = {
 		SMK: string
 	}
 	MODES: {
+		/**
+		 * A​l​l​ ​M​o​d​e​s
+		 */
+		ALL: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​m​o​d​e​.​.​.
+		 */
+		SELECT: string
 		/**
 		 * 1​5​0​c​c
 		 */
@@ -724,6 +1229,12 @@ type RootTranslation = {
 		 * J​a​p​a​n​e​s​e
 		 */
 		JA: string
+	}
+	TIME_TRIALS: {
+		/**
+		 * T​h​i​s​ ​p​a​g​e​ ​i​s​ ​c​u​r​r​e​n​t​l​y​ ​a​ ​w​o​r​k​ ​i​n​ ​p​r​o​g​r​e​s​s​,​ ​b​u​t​ ​i​t​ ​w​i​l​l​ ​e​v​e​n​t​u​a​l​l​y​ ​b​e​ ​t​h​e​ ​h​u​b​ ​f​o​r​ ​e​v​e​r​y​t​h​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​s​.​ ​F​o​r​ ​n​o​w​,​ ​p​l​a​y​e​r​s​ ​c​a​n​ ​f​i​n​d​ ​l​e​a​d​e​r​b​o​a​r​d​s​ ​o​n​ ​s​e​v​e​r​a​l​ ​o​t​h​e​r​ ​s​i​t​e​s​.​ ​T​h​i​s​ ​i​s​ ​t​h​e​ ​h​u​b​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​i​m​e​ ​T​r​i​a​l​s​.​ ​H​e​r​e​,​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​h​e​ ​m​o​s​t​ ​u​p​-​t​o​-​d​a​t​e​ ​r​a​n​k​i​n​g​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​7​,​ ​a​n​d​ ​M​a​r​i​o​ ​K​a​r​t​ ​W​i​i​,​ ​w​i​t​h​ ​e​v​e​r​y​ ​c​a​t​e​g​o​r​y​ ​i​m​a​g​i​n​a​b​l​e​.​ ​S​u​b​m​i​t​ ​y​o​u​r​ ​t​i​m​e​s​ ​t​o​ ​s​e​e​ ​w​h​e​r​e​ ​y​o​u​ ​s​t​a​c​k​ ​u​p​!
+		 */
+		DESCRIPTION: string
 	}
 	COLORS: {
 		/**
@@ -2228,6 +2739,396 @@ export type TranslationFunctions = {
 	 * MKCentral Registry
 	 */
 	MKC_REGISTRY: () => LocalizedString
+	/**
+	 * Game
+	 */
+	GAME: () => LocalizedString
+	/**
+	 * Mode
+	 */
+	MODE: () => LocalizedString
+	/**
+	 * Game/Mode
+	 */
+	GAME_MODE: () => LocalizedString
+	/**
+	 * Name
+	 */
+	NAME: () => LocalizedString
+	/**
+	 * Player
+	 */
+	PLAYER: () => LocalizedString
+	/**
+	 * Date
+	 */
+	DATE: () => LocalizedString
+	/**
+	 * Country
+	 */
+	COUNTRY: () => LocalizedString
+	/**
+	 * Tag
+	 */
+	TAG: () => LocalizedString
+	/**
+	 * From
+	 */
+	FROM: () => LocalizedString
+	/**
+	 * To
+	 */
+	TO: () => LocalizedString
+	/**
+	 * Yes
+	 */
+	YES: () => LocalizedString
+	/**
+	 * No
+	 */
+	NO: () => LocalizedString
+	/**
+	 * Filter
+	 */
+	FILTER: () => LocalizedString
+	/**
+	 * Bagger
+	 */
+	BAGGER: () => LocalizedString
+	/**
+	 * You do not have permission to view this page.
+	 */
+	NO_PERMISSION: () => LocalizedString
+	DISCORD: {
+		/**
+		 * Discord
+		 */
+		DISCORD: () => LocalizedString
+		/**
+		 * Sign in or Register to link your Discord account
+		 */
+		SIGN_IN_REGISTER_TO_LINK: () => LocalizedString
+		/**
+		 * Link Discord Account
+		 */
+		LINK_DISCORD: () => LocalizedString
+		/**
+		 * Relink Account
+		 */
+		RELINK_DISCORD: () => LocalizedString
+		/**
+		 * Unlink Account
+		 */
+		UNLINK_DISCORD: () => LocalizedString
+		/**
+		 * Refresh
+		 */
+		REFRESH: () => LocalizedString
+		/**
+		 * An error occurred while refreshing Discord data
+		 */
+		REFRESH_ERROR: () => LocalizedString
+		/**
+		 * Are you sure you would like to delete your Discord data?
+		 */
+		DELETE_DATA_CONFIRM: () => LocalizedString
+		/**
+		 * An error occurred while deleting Discord data
+		 */
+		DELETE_DATA_ERROR: () => LocalizedString
+	}
+	LOUNGE: {
+		/**
+		 * Lounge
+		 */
+		LOUNGE: () => LocalizedString
+		/**
+		 * Website
+		 */
+		WEBSITE: () => LocalizedString
+		/**
+		 * Discord Invite
+		 */
+		DISCORD_INVITE: () => LocalizedString
+	}
+	MODERATOR: {
+		/**
+		 * Moderator
+		 */
+		MODERATOR: () => LocalizedString
+		/**
+		 * Pending Player Name Requests
+		 */
+		PENDING_NAME_REQUESTS: () => LocalizedString
+		/**
+		 * Approve?
+		 */
+		APPROVE: () => LocalizedString
+		/**
+		 * Deny
+		 */
+		DENY: () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		CANCEL: () => LocalizedString
+		/**
+		 * No pending name requests.
+		 */
+		NO_PENDING_NAME_REQUESTS: () => LocalizedString
+		/**
+		 * Are you sure you wish to approve this name change request?
+		 */
+		APPROVE_NAME_REQUEST_CONFIRM: () => LocalizedString
+		/**
+		 * Are you sure you wish to deny this name change request?
+		 */
+		DENY_NAME_REQUEST_CONFIRM: () => LocalizedString
+		/**
+		 * Approving name change request failed
+		 */
+		APPROVE_NAME_REQUEST_FAILED: () => LocalizedString
+		/**
+		 * Denying name change request failed
+		 */
+		DENY_NAME_REQUEST_FAILED: () => LocalizedString
+		/**
+		 * Pending Team Edit Requests
+		 */
+		PENDING_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * No pending team edit requests.
+		 */
+		NO_PENDING_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * Pending Roster Edit Requests
+		 */
+		PENDING_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * No pending roster edit requests.
+		 */
+		NO_PENDING_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * Are you sure you wish to approve this team edit request?
+		 */
+		APPROVE_TEAM_EDIT_CONFIRM: () => LocalizedString
+		/**
+		 * Are you sure you wish to deny this team edit request?
+		 */
+		DENY_TEAM_EDIT_CONFIRM: () => LocalizedString
+		/**
+		 * Approving team edit request failed
+		 */
+		APPROVE_TEAM_EDIT_FAILED: () => LocalizedString
+		/**
+		 * Denying team edit request failed
+		 */
+		DENY_TEAM_EDIT_FAILED: () => LocalizedString
+		/**
+		 * Are you sure you wish to approve this roster edit request?
+		 */
+		APPROVE_ROSTER_EDIT_CONFIRM: () => LocalizedString
+		/**
+		 * Are you sure you wish to deny this roster edit request?
+		 */
+		DENY_ROSTER_EDIT_CONFIRM: () => LocalizedString
+		/**
+		 * Approving roster edit request failed
+		 */
+		APPROVE_ROSTER_EDIT_FAILED: () => LocalizedString
+		/**
+		 * Denying roster edit request failed
+		 */
+		DENY_ROSTER_EDIT_FAILED: () => LocalizedString
+		/**
+		 * Pending Teams
+		 */
+		PENDING_TEAMS: () => LocalizedString
+		/**
+		 * Pending Rosters
+		 */
+		PENDING_ROSTERS: () => LocalizedString
+		/**
+		 * No pending teams.
+		 */
+		NO_PENDING_TEAMS: () => LocalizedString
+		/**
+		 * No pending rosters.
+		 */
+		NO_PENDING_ROSTERS: () => LocalizedString
+		/**
+		 * Denied Teams
+		 */
+		DENIED_TEAMS: () => LocalizedString
+		/**
+		 * Denied Rosters
+		 */
+		DENIED_ROSTERS: () => LocalizedString
+		/**
+		 * No denied teams.
+		 */
+		NO_DENIED_TEAMS: () => LocalizedString
+		/**
+		 * No denied rosters.
+		 */
+		NO_DENIED_ROSTERS: () => LocalizedString
+		/**
+		 * Are you sure you would like to approve this team?
+		 */
+		APPROVE_TEAM_CONFIRM: () => LocalizedString
+		/**
+		 * Are you sure you would like to deny this team?
+		 */
+		DENY_TEAM_CONFIRM: () => LocalizedString
+		/**
+		 * Approving team failed
+		 */
+		APPROVE_TEAM_FAILED: () => LocalizedString
+		/**
+		 * Denying team failed
+		 */
+		DENY_TEAM_FAILED: () => LocalizedString
+		/**
+		 * Are you sure you would like to approve this roster?
+		 */
+		APPROVE_ROSTER_CONFIRM: () => LocalizedString
+		/**
+		 * Are you sure you would like to deny this roster?
+		 */
+		DENY_ROSTER_CONFIRM: () => LocalizedString
+		/**
+		 * Approving roster failed
+		 */
+		APPROVE_ROSTER_FAILED: () => LocalizedString
+		/**
+		 * Denying roster failed
+		 */
+		DENY_ROSTER_FAILED: () => LocalizedString
+		/**
+		 * Pending Transfers
+		 */
+		PENDING_TRANSFERS: () => LocalizedString
+		/**
+		 * Manually Transfer Player
+		 */
+		MANUALLY_TRANSFER_PLAYER: () => LocalizedString
+		/**
+		 * Are you sure you want to approve this transfer?
+		 */
+		APPROVE_TRANSFER_CONFIRM: () => LocalizedString
+		/**
+		 * Approving transfer failed
+		 */
+		APPROVE_TRANSFER_FAILED: () => LocalizedString
+		/**
+		 * Denying transfer failed
+		 */
+		DENY_TRANSFER_FAILED: () => LocalizedString
+		/**
+		 * Deny Transfer
+		 */
+		DENY_TRANSFER: () => LocalizedString
+		/**
+		 * Send transfer back to the player?
+		 */
+		SEND_TRANSFER_BACK: () => LocalizedString
+		/**
+		 * Old Roster
+		 */
+		OLD_ROSTER: () => LocalizedString
+		/**
+		 * New Roster
+		 */
+		NEW_ROSTER: () => LocalizedString
+		/**
+		 * Transfer Player
+		 */
+		TRANSFER_PLAYER: () => LocalizedString
+		/**
+		 * Successfully transferred {player_name} to {roster_name}
+		 */
+		FORCE_TRANSFER_SUCCESS: (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
+		/**
+		 * Transferring player failed
+		 */
+		FORCE_TRANSFER_FAILED: () => LocalizedString
+		/**
+		 * Old Player
+		 */
+		OLD_PLAYER: () => LocalizedString
+		/**
+		 * New Player
+		 */
+		NEW_PLAYER: () => LocalizedString
+		/**
+		 * Merge Players
+		 */
+		MERGE_PLAYERS: () => LocalizedString
+		/**
+		 * Please select two different players
+		 */
+		SELECT_UNIQUE_PLAYERS: () => LocalizedString
+		/**
+		 * Are you sure you want to merge all of {old_player}'s data into {new_player}? This will DELETE {old_player} completely.
+		 */
+		MERGE_PLAYERS_CONFIRM: (arg: { new_player: unknown, old_player: unknown }) => LocalizedString
+		/**
+		 * Successfully merged players!
+		 */
+		MERGE_PLAYERS_SUCCESS: () => LocalizedString
+		/**
+		 * Merging players failed
+		 */
+		MERGE_PLAYERS_FAILED: () => LocalizedString
+		/**
+		 * Merge Teams
+		 */
+		MERGE_TEAMS: () => LocalizedString
+		/**
+		 * Please select two different teams
+		 */
+		SELECT_UNIQUE_TEAMS: () => LocalizedString
+		/**
+		 * Are you sure you want to merge all of {old_team}'s data into {new_team}? This will DELETE {old_team} completely.
+		 */
+		MERGE_TEAMS_CONFIRM: (arg: { new_team: unknown, old_team: unknown }) => LocalizedString
+		/**
+		 * Successfully merged teams!
+		 */
+		MERGE_TEAMS_SUCCESS: () => LocalizedString
+		/**
+		 * Merging teams failed
+		 */
+		MERGE_TEAMS_FAILED: () => LocalizedString
+		/**
+		 * Old Team
+		 */
+		OLD_TEAM: () => LocalizedString
+		/**
+		 * New Team
+		 */
+		NEW_TEAM: () => LocalizedString
+		/**
+		 * Unapproved Player Claims
+		 */
+		UNAPPROVED_PLAYER_CLAIMS: () => LocalizedString
+		/**
+		 * Claimed Player
+		 */
+		CLAIMED_PLAYER: () => LocalizedString
+		/**
+		 * No player claims
+		 */
+		NO_PLAYER_CLAIMS: () => LocalizedString
+		/**
+		 * Shadow Players
+		 */
+		SHADOW_PLAYERS: () => LocalizedString
+		/**
+		 * Create Shadow Player
+		 */
+		CREATE_SHADOW_PLAYER: () => LocalizedString
+	}
 	NAVBAR: {
 		/**
 		 * Tournaments
@@ -2335,6 +3236,44 @@ export type TranslationFunctions = {
 			 */
 			NAME: () => LocalizedString
 		}
+	}
+	ROLES: {
+		/**
+		 * User Roles
+		 */
+		USER_ROLES: () => LocalizedString
+		/**
+		 * Failed to add role
+		 */
+		ADD_ROLE_FAILED: () => LocalizedString
+		/**
+		 * Failed to remove role
+		 */
+		REMOVE_ROLE_FAILED: () => LocalizedString
+		/**
+		 * Are you sure you want to remove the role {role_name} from {player_name}?
+		 */
+		REMOVE_ROLE_CONFIRM: (arg: { player_name: unknown, role_name: unknown }) => LocalizedString
+		/**
+		 * Add Player
+		 */
+		ADD_PLAYER: () => LocalizedString
+		/**
+		 * Until
+		 */
+		UNTIL: () => LocalizedString
+		/**
+		 * Add
+		 */
+		ADD_ROLE: () => LocalizedString
+		/**
+		 * You do not have permission to edit this role.
+		 */
+		NO_EDIT_PERMISSION: () => LocalizedString
+		/**
+		 * Expires {date}
+		 */
+		ROLE_EXPIRES_ON: (arg: { date: unknown }) => LocalizedString
 	}
 	TEAM_LIST: {
 		/**
@@ -2521,6 +3460,16 @@ export type TranslationFunctions = {
 			 */
 			NOT_RECRUITING: () => LocalizedString
 		}
+	}
+	TRANSFERS: {
+		/**
+		 * No team
+		 */
+		NO_TEAM: () => LocalizedString
+		/**
+		 * No transfers
+		 */
+		NO_TRANSFERS: () => LocalizedString
 	}
 	PLAYER_PROFILE: {
 		/**
@@ -2798,7 +3747,57 @@ export type TranslationFunctions = {
 		 */
 		UNBAN_DATE: () => LocalizedString
 	}
+	PLAYER_SIGNUP: {
+		/**
+		 * Player Signup
+		 */
+		PLAYER_SIGNUP: () => LocalizedString
+		/**
+		 * You are already registered.
+		 */
+		ALREADY_REGISTERED: () => LocalizedString
+		/**
+		 * Switch FC
+		 */
+		SWITCH_FC: () => LocalizedString
+		/**
+		 * MKT FC
+		 */
+		MKT_FC: () => LocalizedString
+		/**
+		 * MKW FC
+		 */
+		MKW_FC: () => LocalizedString
+		/**
+		 * 3DS FC
+		 */
+		'3DS_FC': () => LocalizedString
+		/**
+		 * Nintendo Network ID
+		 */
+		NNID: () => LocalizedString
+		/**
+		 * Register
+		 */
+		REGISTER: () => LocalizedString
+		/**
+		 * Registered successfully!
+		 */
+		REGISTER_SUCCESS: () => LocalizedString
+		/**
+		 * Registration failed
+		 */
+		REGISTER_FAILED: () => LocalizedString
+	}
 	GAMES: {
+		/**
+		 * All Games
+		 */
+		ALL: () => LocalizedString
+		/**
+		 * Select a game...
+		 */
+		SELECT: () => LocalizedString
 		/**
 		 * Mario Kart 8 Deluxe
 		 */
@@ -2825,6 +3824,14 @@ export type TranslationFunctions = {
 		SMK: () => LocalizedString
 	}
 	MODES: {
+		/**
+		 * All Modes
+		 */
+		ALL: () => LocalizedString
+		/**
+		 * Select a mode...
+		 */
+		SELECT: () => LocalizedString
 		/**
 		 * 150cc
 		 */
@@ -2903,6 +3910,12 @@ export type TranslationFunctions = {
 		 * Japanese
 		 */
 		JA: () => LocalizedString
+	}
+	TIME_TRIALS: {
+		/**
+		 * This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!
+		 */
+		DESCRIPTION: () => LocalizedString
 	}
 	COLORS: {
 		/**

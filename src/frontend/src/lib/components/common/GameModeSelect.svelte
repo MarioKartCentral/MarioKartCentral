@@ -36,15 +36,15 @@
   <div class="option {flex ? 'flex' : ''}">
     {#if !hide_labels}
       <div>
-        <label for="mode">Mode</label>
+        <label for="mode">{$LL.MODE()}</label>
       </div>
     {/if}
     <div>
       <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled} {required}>
         {#if all_option}
-          <option value={null} selected>All Modes</option>
+          <option value={null} selected>{$LL.MODES.ALL()}</option>
         {:else}
-          <option value={null} disabled selected>Select a mode...</option>
+          <option value={null} disabled selected>{$LL.MODES.SELECT()}</option>
         {/if}
         {#if game}
           {#each is_team ? valid_team_modes[game] : valid_modes[game] as mode}

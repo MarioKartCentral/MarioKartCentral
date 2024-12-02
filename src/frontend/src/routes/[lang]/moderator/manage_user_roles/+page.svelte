@@ -7,6 +7,7 @@
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
     import { permissions, check_permission } from "$lib/util/permissions";
+    import LL from "$i18n/i18n-svelte";
 
     let roles: Role[] = [];
     let selected_role: Role | null;
@@ -32,7 +33,7 @@
 </script>
 
 {#if check_permission(user_info, permissions.manage_user_roles)}
-    <Section header="User Roles">
+    <Section header={$LL.ROLES.USER_ROLES()}>
         {#if roles.length}
             <div class="select">
                 <select bind:value={selected_role}>
@@ -51,7 +52,7 @@
         </div>
     </Section>
 {:else}
-    You do not have permission to view this page.
+    {$LL.NO_PERMISSION()}
 {/if}
 
 

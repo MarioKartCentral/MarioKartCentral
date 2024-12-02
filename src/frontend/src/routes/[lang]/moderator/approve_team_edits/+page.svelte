@@ -13,6 +13,7 @@
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   let team_requests: TeamEditRequest[] = [];
   let roster_requests: RosterEditRequest[] = [];
@@ -42,7 +43,7 @@
   };
 
   async function approveTeamRequest(request: TeamEditRequest) {
-    let conf = window.confirm("Are you sure you wish to approve this team edit request?");
+    let conf = window.confirm($LL.MODERATOR.APPROVE_TEAM_EDIT_CONFIRM());
     if(!conf) return;
     const payload = {
       request_id: request.id,
@@ -56,12 +57,12 @@
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`Team edit failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.APPROVE_TEAM_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function denyTeamRequest(request: TeamEditRequest) {
-    let conf = window.confirm("Are you sure you wish to deny this team edit request?");
+    let conf = window.confirm($LL.MODERATOR.DENY_TEAM_EDIT_CONFIRM());
     if(!conf) return;
     const payload = {
       request_id: request.id,
@@ -75,12 +76,12 @@
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`Failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_TEAM_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function approveRosterRequest(request: RosterEditRequest) {
-    let conf = window.confirm("Are you sure you wish to approve this roster edit request?");
+    let conf = window.confirm($LL.MODERATOR.APPROVE_ROSTER_EDIT_CONFIRM());
     if(!conf) return;
     const payload = {
       request_id: request.id,
@@ -92,15 +93,14 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully approved roster profile change');
       window.location.reload();
     } else {
-      alert(`Team edit failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.APPROVE_ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function denyRosterRequest(request: RosterEditRequest) {
-    let conf = window.confirm("Are you sure you wish to deny this roster edit request?");
+    let conf = window.confirm($LL.MODERATOR.DENY_ROSTER_EDIT_CONFIRM());
     if(!conf) return;
     const payload = {
       request_id: request.id,
@@ -112,16 +112,15 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully denied roster profile change');
       window.location.reload();
     } else {
-      alert(`Failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
 {#if check_permission(user_info, permissions.manage_teams)}
-  <Section header="Pending Team Edit Requests">
+  <Section header="{$LL.MODERATOR.PENDING_TEAM_EDIT_REQUESTS()}">
     {#if team_requests.length}
     <Table>
       <col class="tag"/>
@@ -131,16 +130,16 @@
       <thead>
         <tr>
           <th>
-            Tag
+            {$LL.TAG()}
           </th>
           <th>
-            Name
+            {$LL.NAME()}
           </th>
           <th class="mobile-hide">
-            Date
+            {$LL.DATE()}
           </th>
           <th>
-            Approve?
+            {$LL.MODERATOR.APPROVE()}
           </th>
         </tr>
       </thead>
@@ -179,12 +178,12 @@
       </tbody>
     </Table>
     {:else}
-      No pending team edit requests.
+      {$LL.MODERATOR.NO_PENDING_TEAM_EDIT_REQUESTS()}
     {/if}
     
   </Section>
 
-  <Section header="Pending Roster Edit Requests">
+  <Section header={$LL.MODERATOR.PENDING_ROSTER_EDIT_REQUESTS()}>
     {#if roster_requests.length}
       <Table>
         <col class="tag"/>
@@ -193,10 +192,10 @@
         <col class="approve"/>
         <thead>
           <tr>
-            <th>Tag</th>
-            <th>Name</th>
-            <th class="mobile-hide">Date</th>
-            <th>Approve?</th>
+            <th>{$LL.TAG()}</th>
+            <th>{$LL.NAME()}</th>
+            <th class="mobile-hide">{$LL.DATE()}</th>
+            <th>{$LL.MODERATOR.APPROVE()}</th>
           </tr>
         </thead>
         <tbody>
@@ -234,12 +233,12 @@
         </tbody>
       </Table>
     {:else}
-      No pending roster edit requests.
+      {$LL.MODERATOR.NO_PENDING_ROSTER_EDIT_REQUESTS()}
     {/if}
     
   </Section>
 {:else}
-  You do not have permission to view this page.
+  {$LL.NO_PERMISSION()}
 {/if}
 
 <style>

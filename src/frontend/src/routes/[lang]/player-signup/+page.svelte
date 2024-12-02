@@ -7,6 +7,7 @@
   import CountrySelect from '$lib/components/common/CountrySelect.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
 
@@ -45,64 +46,64 @@
 
     if (response.status < 300) {
       goto('/');
-      alert('Registered successfully!');
+      alert($LL.PLAYER_SIGNUP.REGISTER_SUCCESS());
     } else {
-      alert(`Registration failed: ${result['title']}`);
+      alert(`${$LL.PLAYER_SIGNUP.REGISTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
 {#if user_info.player_id !== null}
-  Already registered
+  {$LL.PLAYER_SIGNUP.ALREADY_REGISTERED()}
 {:else}
-  <Section header="Discord">
+  <Section header={$LL.DISCORD.DISCORD()}>
     <LinkDiscord/>
   </Section>
-  <Section header="Player Signup">
+  <Section header={$LL.PLAYER_SIGNUP.PLAYER_SIGNUP()}>
     <form method="post" on:submit|preventDefault={register}>
       <div class="field">
         <span class="item-label">
-          <label for="name">Name</label>
+          <label for="name">{$LL.NAME()}</label>
         </span>
         <input name="name" type="name" minlength="2" pattern="^\S.*\S$|^\S$" />
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="country">Country</label>
+          <label for="country">{$LL.COUNTRY()}</label>
         </span>
         <CountrySelect is_required={true}/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="switch_fc">Switch FC</label>
+          <label for="switch_fc">{$LL.PLAYER_SIGNUP.SWITCH_FC()}</label>
         </span>
         <input name="switch_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="mkt_fc">MKT FC</label>
+          <label for="mkt_fc">{$LL.PLAYER_SIGNUP.MKT_FC()}</label>
         </span>
         <input name="mkt_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="mkw_fc">MKW FC</label>
+          <label for="mkw_fc">{$LL.PLAYER_SIGNUP.MKW_FC()}</label>
         </span>
         <input name="mkw_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="3ds_fc">3DS FC</label>
+          <label for="3ds_fc">{$LL.PLAYER_SIGNUP['3DS_FC']()}</label>
         </span>
         <input name="3ds_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="nnid">Nintendo Network ID</label>
+          <label for="nnid">{$LL.PLAYER_SIGNUP.NNID()}</label>
         </span>
         <input name="nnid" placeholder='NNID'/>
       </div>
-      <Button type="submit">Register</Button>
+      <Button type="submit">{$LL.PLAYER_SIGNUP.REGISTER()}</Button>
     </form>
   </Section>
 {/if}

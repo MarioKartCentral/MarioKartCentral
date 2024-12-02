@@ -5,6 +5,7 @@
     import RosterSearch from "$lib/components/common/RosterSearch.svelte";
     import type { TeamRoster } from "$lib/types/team-roster";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let player: PlayerInfo | null = null;
     let from_roster: PlayerRoster | null = null;
@@ -59,10 +60,10 @@
         console.log(payload);
         const result = await res.json();
         if (res.status < 300) {
-            alert(`Successfully transferred ${player.name} to ${to_roster.name}`);
+            alert($LL.MODERATOR.FORCE_TRANSFER_SUCCESS({player_name: player.name, roster_name: to_roster.name}));
             window.location.reload();
         } else {
-            alert(`Transferring player failed: ${result['title']}`);
+            alert(`${$LL.MODERATOR.FORCE_TRANSFER_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -71,7 +72,7 @@
 {#if player}
     <div class="transfer">
         <div class="item">
-            <div>Old Roster</div>
+            <div>{$LL.MODERATOR.OLD_ROSTER()}</div>
             <div>
                 <select bind:value={from_roster} name="from" on:change={updateRosters}>
                     <option value={null}>
@@ -82,7 +83,7 @@
                             {roster.roster_name}
                             ({roster.game.toUpperCase()})
                             {#if roster.is_bagger_clause}
-                                (Bagger)
+                                ({$LL.BAGGER()})
                             {/if}
                         </option>
                     {/each}
@@ -90,27 +91,26 @@
             </div>
         </div>
         <div class="item">
-            <div>New Roster</div>
+            <div>{$LL.MODERATOR.NEW_ROSTER()}</div>
             {#key from_roster}
                 <RosterSearch bind:roster={to_roster} game={from_roster?.game}/>
             {/key}
         </div>
         {#if !from_roster && to_roster?.game === "mkw"}
             <div class="item">
-                <div>Bagger?</div>
+                <div>{$LL.BAGGER()}?</div>
                 <div>
                     <select bind:value={is_bagger}>
-                        <option value={false} selected>No</option>
-                        <option value={true}>Yes</option>
+                        <option value={false} selected>{$LL.NO()}</option>
+                        <option value={true}>{$LL.YES()}</option>
                     </select>
                 </div>
             </div>
         {/if}
         {#if to_roster}
-            <Button on:click={transferPlayer}>Transfer</Button>
+            <Button on:click={transferPlayer}>{$LL.MODERATOR.TRANSFER_PLAYER()}</Button>
         {/if}
     </div>
-    
 {/if}
 
 <style>

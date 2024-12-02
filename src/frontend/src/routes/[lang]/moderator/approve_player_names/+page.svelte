@@ -12,6 +12,7 @@
     import { locale } from "$i18n/i18n-svelte";
     import ConfirmButton from "$lib/components/common/buttons/ConfirmButton.svelte";
     import CancelButton from "$lib/components/common/buttons/CancelButton.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let name_requests: PlayerNameChangeRequest[] = [];
 
@@ -34,7 +35,7 @@
     };
 
     async function approveNameRequest(request: PlayerNameChangeRequest) {
-        let conf = window.confirm("Are you sure you wish to approve this name change request?");
+        let conf = window.confirm($LL.MODERATOR.APPROVE_NAME_REQUEST_CONFIRM());
         if(!conf) return;
         const payload = {
             request_id: request.id,
@@ -48,12 +49,12 @@
         if (res.status < 300) {
             window.location.reload();
         } else {
-            alert(`Name edit failed: ${result['title']}`);
+            alert(`${$LL.MODERATOR.APPROVE_NAME_REQUEST_FAILED()}: ${result['title']}`);
         }
     }
 
     async function denyNameRequest(request: PlayerNameChangeRequest) {
-        let conf = window.confirm("Are you sure you wish to deny this name change request?");
+        let conf = window.confirm($LL.MODERATOR.DENY_NAME_REQUEST_CONFIRM());
         if(!conf) return;
         const payload = {
             request_id: request.id,
@@ -67,13 +68,13 @@
         if (res.status < 300) {
             window.location.reload();
         } else {
-            alert(`Denying name edit failed: ${result['title']}`);
+            alert(`${$LL.MODERATOR.DENY_NAME_REQUEST_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
 {#if check_permission(user_info, permissions.edit_player)}
-<Section header="Pending Player Name Requests">
+<Section header={$LL.MODERATOR.PENDING_NAME_REQUESTS()}>
     {#if name_requests.length}
         <Table>
             <col class="country">
@@ -83,9 +84,9 @@
             <thead>
                 <tr>
                     <th/>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Approve?</th>
+                    <th>{$LL.NAME()}</th>
+                    <th>{$LL.DATE()}</th>
+                    <th>{$LL.MODERATOR.APPROVE()}</th>
                 </tr>
             </thead>
             <tbody>
@@ -115,11 +116,11 @@
             </tbody>
         </Table>
     {:else}
-        No pending name requests.
+        {$LL.MODERATOR.NO_PENDING_NAME_REQUESTS()}
     {/if}
 </Section>
 {:else}
-    You do not have permission to view this page.
+    {$LL.NO_PERMISSION()}
 {/if}
 
 <style>

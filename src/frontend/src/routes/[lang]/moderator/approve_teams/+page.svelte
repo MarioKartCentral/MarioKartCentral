@@ -14,6 +14,7 @@
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   let teams: Team[] = [];
   let rosters: TeamRoster[] = [];
@@ -48,7 +49,7 @@
   };
 
   async function approveTeam(team: Team) {
-    let conf = window.confirm("Are you sure you would like to approve this team?");
+    let conf = window.confirm($LL.MODERATOR.APPROVE_TEAM_CONFIRM());
     if(!conf) {
       return;
     }
@@ -58,15 +59,14 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully approved team');
       window.location.reload();
     } else {
-      alert(`Approving team failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.APPROVE_TEAM_FAILED()}: ${result['title']}`);
     }
   }
 
   async function denyTeam(team: Team) {
-    let conf = window.confirm("Are you sure you would like to deny this team?");
+    let conf = window.confirm($LL.MODERATOR.DENY_TEAM_CONFIRM());
     if(!conf) {
       return;
     }
@@ -76,15 +76,14 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully denied team');
       window.location.reload();
     } else {
-      alert(`Denying team failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_TEAM_FAILED()}: ${result['title']}`);
     }
   }
 
   async function approveRoster(roster: TeamRoster) {
-    let conf = window.confirm("Are you sure you would like to approve this roster?");
+    let conf = window.confirm($LL.MODERATOR.APPROVE_ROSTER_CONFIRM());
     if(!conf) {
       return;
     }
@@ -94,15 +93,14 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully approved roster');
       window.location.reload();
     } else {
-      alert(`Approving roster failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.APPROVE_ROSTER_FAILED()}: ${result['title']}`);
     }
   }
 
   async function denyRoster(roster: TeamRoster) {
-    let conf = window.confirm("Are you sure you would like to deny this roster?");
+    let conf = window.confirm($LL.MODERATOR.DENY_ROSTER_CONFIRM());
     if(!conf) {
       return;
     }
@@ -112,16 +110,15 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully denied roster');
       window.location.reload();
     } else {
-      alert(`Denying roster failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_ROSTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
 {#if check_permission(user_info, permissions.manage_teams)}
-  <Section header="Pending Teams">
+  <Section header={$LL.MODERATOR.PENDING_TEAMS()}>
     {#if pending_teams.length}
     <Table>
       <col class="tag" />
@@ -131,11 +128,11 @@
       <col class="approve" />
       <thead>
         <tr>
-          <th>Tag</th>
-          <th>Name</th>
-          <th>Game/Mode</th>
-          <th class="mobile-hide">Date</th>
-          <th>Approve?</th>
+          <th>{$LL.TAG()}</th>
+          <th>{$LL.NAME()}</th>
+          <th>{$LL.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.DATE()}</th>
+          <th>{$LL.MODERATOR.APPROVE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -159,11 +156,11 @@
       </tbody>
     </Table>
     {:else}
-      No pending teams.
+      {$LL.MODERATOR.NO_PENDING_TEAMS()}
     {/if}
     
   </Section>
-  <Section header="Pending Rosters">
+  <Section header={$LL.MODERATOR.PENDING_ROSTERS()}>
     {#if pending_rosters.length}
     <Table>
       <col class="tag" />
@@ -173,11 +170,11 @@
       <col class="approve" />
       <thead>
         <tr>
-          <th>Tag</th>
-          <th>Name</th>
-          <th>Game/Mode</th>
-          <th class="mobile-hide">Date</th>
-          <th>Approve?</th>
+          <th>{$LL.TAG()}</th>
+          <th>{$LL.NAME()}</th>
+          <th>{$LL.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.DATE()}</th>
+          <th>{$LL.MODERATOR.APPROVE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -201,11 +198,11 @@
       </tbody>
     </Table>
     {:else}
-    No pending rosters.
+      {$LL.MODERATOR.NO_PENDING_ROSTERS()}
     {/if}
     
   </Section>
-  <Section header="Denied Teams">
+  <Section header={$LL.MODERATOR.DENIED_TEAMS()}>
     {#if denied_teams.length}
     <Table>
       <col class="tag" />
@@ -214,10 +211,10 @@
       <col class="date mobile-hide" />
       <thead>
         <tr>
-          <th>Tag</th>
-          <th>Name</th>
-          <th>Game/Mode</th>
-          <th class="mobile-hide">Date</th>
+          <th>{$LL.TAG()}</th>
+          <th>{$LL.NAME()}</th>
+          <th>{$LL.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.DATE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -237,11 +234,11 @@
       </tbody>
     </Table>
     {:else}
-    No denied teams.
+      {$LL.MODERATOR.NO_DENIED_TEAMS()}
     {/if}
     
   </Section>
-  <Section header="Denied Rosters">
+  <Section header={$LL.MODERATOR.DENIED_ROSTERS()}>
     {#if denied_rosters.length}
     <Table>
       <col class="tag" />
@@ -250,10 +247,10 @@
       <col class="date mobile-hide" />
       <thead>
         <tr>
-          <th>Tag</th>
-          <th>Name</th>
-          <th>Game/Mode</th>
-          <th class="mobile-hide">Date</th>
+          <th>{$LL.TAG()}</th>
+          <th>{$LL.NAME()}</th>
+          <th>{$LL.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.DATE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -273,12 +270,12 @@
       </tbody>
     </Table>
     {:else}
-    No denied rosters.
+      {$LL.MODERATOR.NO_DENIED_ROSTERS()}
     {/if}
     
   </Section>
 {:else}
-  You do not have permission to view this page.
+  {$LL.NO_PERMISSION()}
 {/if}
 
 <style>

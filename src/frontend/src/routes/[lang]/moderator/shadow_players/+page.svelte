@@ -6,6 +6,7 @@
     import type { UserInfo } from '$lib/types/user-info';
     import Button from "$lib/components/common/buttons/Button.svelte";
     import CreateShadowPlayerDialog from "$lib/components/registry/players/CreateShadowPlayerDialog.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let dialog: CreateShadowPlayerDialog;
 
@@ -15,10 +16,10 @@
     });
 </script>
 
-<Section header="Shadow Players">
+<Section header={$LL.MODERATOR.SHADOW_PLAYERS()}>
     <div slot="header_content">
         {#if check_permission(user_info, permissions.manage_shadow_players)}
-            <Button on:click={dialog.open}>Create Shadow Player</Button>
+            <Button on:click={dialog.open}>{$LL.MODERATOR.CREATE_SHADOW_PLAYER()}</Button>
         {/if}
     </div>
     

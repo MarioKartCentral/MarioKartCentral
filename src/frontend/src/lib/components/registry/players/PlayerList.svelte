@@ -86,7 +86,7 @@
         <tr>
           <th></th>
           <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-          <th class="mobile-hide">Friend Codes</th>
+          <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODES()}</th>
         </tr>
       </thead>
       <tbody>
