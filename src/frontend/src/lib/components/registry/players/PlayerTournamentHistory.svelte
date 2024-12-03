@@ -1,7 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { user } from '$lib/stores/stores';
   import { onMount } from 'svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
+  import type { UserInfo } from '$lib/types/user-info';
   import type { PlayerTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
@@ -9,7 +11,10 @@
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
-
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
   export let player: PlayerInfo;
 
   let mode: string | null = null;
@@ -52,6 +57,9 @@
     let body = await res.json();
     team_placements = body.tournament_team_placements;
     solo_placements = body.tournament_solo_and_squad_placements;
+    if (team_placements.length == 0 && solo_placements.length == 0) {
+      return;
+    }
     filterData();
   }
 
@@ -92,132 +100,140 @@
   onMount(fetchData);
 </script>
 
-<Section header={$LL.TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
-  <div class="w-full m-auto">
-    <form on:submit|preventDefault={filterData}>
-      <div class="flex flex-row flex-wrap items-center justify-center">
-        <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
-        <div class="flex flex-col">
-          <div class="ml-1">
-            <input class="w-44" name="from" type="date" bind:value={from} />
+{#if team_placements.length <= 0 && solo_placements.length <= 0}
+  <div class="hidden"></div>
+{:else}
+  <Section header={$LL.TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
+    <div class="w-full m-auto">
+      <form on:submit|preventDefault={filterData}>
+        <div class="flex flex-row flex-wrap items-center justify-center">
+          <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
+          <div class="flex flex-col">
+            <div class="ml-1">
+              <input class="w-44" name="from" type="date" bind:value={from} />
+            </div>
+            <div class="ml-1">
+              <input class="w-44" name="to" type="date" bind:value={to} />
+            </div>
           </div>
-          <div class="ml-1">
-            <input class="w-44" name="to" type="date" bind:value={to} />
+          <div class="ml-1 my-2">
+            <Button type="submit">Filter</Button>
           </div>
         </div>
-        <div class="ml-1 my-2">
-          <Button type="submit">Filter</Button>
+      </form>
+      <!-- Solo Tournaments -->
+      {#if solo_placements.length > 0}
+        <h2 class="text-xl font-bold">{$LL.TOURNAMENT_HISTORY.SOLO_TOURNAMENTS()}</h2>
+        <div>
+          <Table>
+            <thead>
+              <tr>
+                <th>Tournament</th>
+                <th class="mobile-hide">Date</th>
+                <th class="mobile-hide">Partners</th>
+                <th>Placement</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each filtered_solo_placements as placement, i}
+                <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
+                  <td>
+                    <a
+                      class="hover:text-emerald-400"
+                      href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
+                    >
+                      {placement.tournament_name}
+                    </a>
+                  </td>
+                  <td class="mobile-hide">
+                    {toDate(placement.date_start)}
+                    {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
+                  </td>
+                  {#if placement.partners != null}
+                    <td class="mobile-hide">
+                      {#each placement.partners as partner}
+                        <div class="flex flex-row">
+                          <div class="hover:text-emerald-400">
+                            <PlayerName player_id={partner.player_id} name={partner.player_name} />
+                          </div>
+                        </div>
+                      {/each}
+                    </td>
+                  {:else}
+                    <td></td>
+                  {/if}
+                  <td>
+                    {#if placement.is_disqualified}
+                      Disqualified
+                    {:else}
+                      {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
+                      {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                    {/if}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </Table>
         </div>
-      </div>
-    </form>
-    <!-- Solo Tournaments -->
-    <h2 class="text-2xl font-bold">{$LL.TOURNAMENT_HISTORY.SOLO_TOURNAMENTS()}</h2>
-    <div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Tournament</th>
-            <th class="mobile-hide">Date</th>
-            <th class="mobile-hide">Partners</th>
-            <th>Placement</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each filtered_solo_placements as placement, i}
-            <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
-              <td>
-                <a
-                  class="hover:text-emerald-400"
-                  href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
-                >
-                  {placement.tournament_name}
-                </a>
-              </td>
-              <td class="mobile-hide">
-                {toDate(placement.date_start)}
-                {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
-              </td>
-              {#if placement.partners != null}
-                <td class="mobile-hide">
-                  {#each placement.partners as partner}
-                    <div class="flex flex-row">
-                      <div class="hover:text-emerald-400">
-                        <PlayerName player_id={partner.player_id} name={partner.player_name} />
-                      </div>
-                    </div>
-                  {/each}
-                </td>
-              {:else}
-                <td></td>
-              {/if}
-              <td>
-                {#if placement.is_disqualified}
-                  Disqualified
-                {:else}
-                  {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
-                  {placement.placement_description ? ' - ' + placement.placement_description : ''}
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table>
-    </div>
+      {/if}
 
-    <!-- Team Tournaments -->
-    <h2 class="text-2xl font-bold">{$LL.TOURNAMENT_HISTORY.TEAM_TOURNAMENTS()}</h2>
-    <div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th class="mobile-hide">Date</th>
-            <th class="mobile-hide">Team</th>
-            <th>Placement</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each filtered_team_placements as placement, i}
-            <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
-              <td>
-                <a
-                  class="hover:text-emerald-400"
-                  href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
-                >
-                  {placement.tournament_name}
-                </a>
-              </td>
-              <td class="mobile-hide">
-                {toDate(placement.date_start)}
-                {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
-              </td>
-              {#if placement.squad_id != null && placement.squad_name != null}
-                <td class="mobile-hide">
-                  <a
-                    class="hover:text-emerald-400"
-                    href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
-                  >
-                    {placement.squad_name}
-                  </a>
-                </td>
-              {:else}
-                <td></td>
-              {/if}
-              <td>
-                {#if placement.is_disqualified}
-                  Disqualified
-                {:else}
-                  {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
-                  {placement.placement_description ? ' - ' + placement.placement_description : ''}
-                {/if}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </Table>
+      <!-- Team Tournaments -->
+      {#if team_placements.length > 0}
+        <h2 class="text-2xl font-bold">{$LL.TOURNAMENT_HISTORY.TEAM_TOURNAMENTS()}</h2>
+        <div>
+          <Table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th class="mobile-hide">Date</th>
+                <th class="mobile-hide">Team</th>
+                <th>Placement</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each filtered_team_placements as placement, i}
+                <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
+                  <td>
+                    <a
+                      class="hover:text-emerald-400"
+                      href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
+                    >
+                      {placement.tournament_name}
+                    </a>
+                  </td>
+                  <td class="mobile-hide">
+                    {toDate(placement.date_start)}
+                    {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
+                  </td>
+                  {#if placement.squad_id != null && placement.squad_name != null}
+                    <td class="mobile-hide">
+                      <a
+                        class="hover:text-emerald-400"
+                        href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
+                      >
+                        {placement.squad_name}
+                      </a>
+                    </td>
+                  {:else}
+                    <td></td>
+                  {/if}
+                  <td>
+                    {#if placement.is_disqualified}
+                      Disqualified
+                    {:else}
+                      {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
+                      {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                    {/if}
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </Table>
+        </div>
+      {/if}
     </div>
-  </div>
-</Section>
+  </Section>
+{/if}
 
 <style>
   .gold {
