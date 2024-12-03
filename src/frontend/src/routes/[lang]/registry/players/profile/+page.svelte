@@ -18,10 +18,16 @@
   import PlayerNotes from '$lib/components/registry/players/PlayerNotes.svelte';
   import EditPlayerNotes from '$lib/components/registry/players/EditPlayerNotes.svelte';
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
+<<<<<<< HEAD
 =======
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
 >>>>>>> 3812b68 (blocking out player tournament and registration history components, remove accidental files from running node in wrong dir)
+=======
+  import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
+  import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
+  import EditPlayerRegistration from '$lib/components/tournaments/registration/EditPlayerRegistration.svelte';
+>>>>>>> 24fce64 (merge fixes)
 
   let user_info: UserInfo;
   let banDialog: Dialog;
@@ -63,12 +69,12 @@
   });
 
   function openEditPlayerNotesDialog() {
-    resetPlayerNotes = !resetPlayerNotes
-    playerNotesDialog.open()
+    resetPlayerNotes = !resetPlayerNotes;
+    playerNotesDialog.open();
   }
   function closeEditPlayerNotesDialog() {
-    resetPlayerNotes = !resetPlayerNotes
-    playerNotesDialog.close()
+    resetPlayerNotes = !resetPlayerNotes;
+    playerNotesDialog.close();
   }
 </script>
 
@@ -96,7 +102,7 @@
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}</Button>
         {/if}
       </div>
-      <PlayerNotes notes={player.notes}/>
+      <PlayerNotes notes={player.notes} />
     </Section>
     <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
       <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()} />
@@ -107,15 +113,29 @@
       {/if}
     </Dialog>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <Dialog bind:this={playerNotesDialog} on:close={() => resetPlayerNotes = !resetPlayerNotes} header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}>
+=======
+    <Dialog
+      bind:this={playerNotesDialog}
+      on:close={() => (resetPlayerNotes = !resetPlayerNotes)}
+      header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}
+    >
+>>>>>>> 24fce64 (merge fixes)
       {#key resetPlayerNotes}
-        <EditPlayerNotes playerId={player.id} notes={player.notes?.notes || ""} on:cancel={closeEditPlayerNotesDialog}/>
+        <EditPlayerNotes
+          playerId={player.id}
+          notes={player.notes?.notes || ''}
+          on:cancel={closeEditPlayerNotesDialog}
+        />
       {/key}
     </Dialog>
   {/if}
   <PlayerProfile {player} />
+  <PlayerTournamentHistory {player} />
+  <PlayerRegistrationHistory {player} />
   {#if user_info.player && player.is_shadow}
-    <ClaimPlayer {player}/>
+    <ClaimPlayer {player} />
   {/if}
 =======
   {/if}

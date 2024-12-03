@@ -179,7 +179,7 @@
 
       <!-- Team Tournaments -->
       {#if team_placements.length > 0}
-        <h2 class="text-2xl font-bold">{$LL.TOURNAMENT_HISTORY.TEAM_TOURNAMENTS()}</h2>
+        <h2 class="text-xl font-bold">{$LL.TOURNAMENT_HISTORY.TEAM_TOURNAMENTS()}</h2>
         <div>
           <Table>
             <thead>

@@ -14,9 +14,13 @@
   import TeamTransferList from '$lib/components/registry/teams/TeamTransferList.svelte';
   import { sortFilterRosters } from '$lib/util/util';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+<<<<<<< HEAD
 =======
   import TeamTournamentHistory from '$lib/components/registry/teams/TeamTournamentHistory.svelte';
 >>>>>>> 73b7d8a (team tournament history)
+=======
+  import TeamTournamentHistory from '$lib/components/registry/teams/TeamTournamentHistory.svelte';
+>>>>>>> 24fce64 (merge fixes)
 
   let id = 0;
   let team: Team;
@@ -47,7 +51,8 @@
     // if we can manage rosters for our team we should be able to see the ones with 0 players on the team profile page
     let show_zero_player_rosters = check_team_permission(user_info, team_permissions.manage_rosters, t.id);
     let filtered = sortFilterRosters(t.rosters, false, show_zero_player_rosters).filter(
-      (r) => (!game || r.game === game) && (!mode || r.mode === mode) && r.is_active);
+      (r) => (!game || r.game === game) && (!mode || r.mode === mode) && r.is_active,
+    );
     return filtered;
   }
 </script>
@@ -94,7 +99,7 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
-      <GameModeSelect bind:game={game} bind:mode={mode} is_team flex inline hide_labels all_option/>
+      <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
       {#key game}
         {#key mode}
           {#each filter_team_page_rosters(team) as roster}
@@ -106,10 +111,15 @@
       {/key}
     </Section>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TeamTransferList {team}/>
 =======
     <TeamTournamentHistory {team} />
 >>>>>>> 73b7d8a (team tournament history)
+=======
+    <TeamTournamentHistory {team} />
+    <TeamTransferList {team} />
+>>>>>>> 24fce64 (merge fixes)
   {:else}
     You do not have permission to view this page.
   {/if}
