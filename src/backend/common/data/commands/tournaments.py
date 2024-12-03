@@ -223,7 +223,6 @@ class GetTournamentListCommand(Command[TournamentList]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
-        is_minimal = filter.is_minimal
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []
             variable_parameters: list[Any] = []

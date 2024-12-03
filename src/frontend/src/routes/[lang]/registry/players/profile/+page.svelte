@@ -7,7 +7,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
   import Section from '$lib/components/common/Section.svelte';
-  import Button from "$lib/components/common/buttons/Button.svelte";
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import PlayerProfile from '$lib/components/registry/players/PlayerProfile.svelte';
   import PlayerProfileBan from '$lib/components/registry/players/PlayerProfileBan.svelte';
@@ -17,12 +17,14 @@
   import PlayerNotes from '$lib/components/registry/players/PlayerNotes.svelte';
   import EditPlayerNotes from '$lib/components/registry/players/EditPlayerNotes.svelte';
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
-import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
+  import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
+  import EditPlayerRegistration from '$lib/components/tournaments/registration/EditPlayerRegistration.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
+  let playerNotesDialog: Dialog;
 
   user.subscribe((value) => {
     user_info = value;
@@ -53,19 +55,18 @@ import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTour
       const res2 = await fetch(`/api/registry/players/bans?player_id=${player.id}`);
       if (res2.status === 200) {
         const data: BanListData = await res2.json();
-        if (data.ban_count === 1)
-          banInfo = data.ban_list[0];
+        if (data.ban_count === 1) banInfo = data.ban_list[0];
       }
     }
   });
 
   function openEditPlayerNotesDialog() {
-    resetPlayerNotes = !resetPlayerNotes
-    playerNotesDialog.open()
+    resetPlayerNotes = !resetPlayerNotes;
+    playerNotesDialog.open();
   }
   function closeEditPlayerNotesDialog() {
-    resetPlayerNotes = !resetPlayerNotes
-    playerNotesDialog.close()
+    resetPlayerNotes = !resetPlayerNotes;
+    playerNotesDialog.close();
   }
 </script>
 
@@ -93,26 +94,36 @@ import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTour
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}</Button>
         {/if}
       </div>
-      <PlayerNotes notes={player.notes}/>
+      <PlayerNotes notes={player.notes} />
     </Section>
     <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-      <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()}/>
+      <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()} />
     </Dialog>
     <Dialog bind:this={editBanDialog} header={$LL.PLAYER_BAN.VIEW_EDIT_BAN()}>
       {#if banInfo}
-        <ViewEditBan {banInfo}/>
+        <ViewEditBan {banInfo} />
       {/if}
     </Dialog>
-    <Dialog bind:this={playerNotesDialog} on:close={() => resetPlayerNotes = !resetPlayerNotes} header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}>
+    <Dialog
+      bind:this={playerNotesDialog}
+      on:close={() => (resetPlayerNotes = !resetPlayerNotes)}
+      header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}
+    >
       {#key resetPlayerNotes}
-        <EditPlayerNotes playerId={player.id} notes={player.notes?.notes || ""} on:cancel={closeEditPlayerNotesDialog}/>
+        <EditPlayerNotes
+          playerId={player.id}
+          notes={player.notes?.notes || ''}
+          on:cancel={closeEditPlayerNotesDialog}
+        />
       {/key}
     </Dialog>
   {/if}
   <PlayerProfile {player} />
+  <PlayerTournamentHistory {player} />
+  <PlayerRegistrationHistory {player} />
   {#if user_info.player && player.is_shadow}
-    <ClaimPlayer {player}/>
+    <ClaimPlayer {player} />
   {/if}
 {:else if !player_found}
-    Player not found
+  Player not found
 {/if}
