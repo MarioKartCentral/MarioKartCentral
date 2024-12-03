@@ -18,6 +18,7 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
+        data = self.data
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
                 async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
@@ -544,9 +545,30 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
                 claims: list[PlayerClaim] = []
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (claim_id, date, approval_status, player_id, player_name, player_country, 
-                     claim_player_id, claim_player_name, claim_player_country) = row
-                    player = PlayerBasic(player_id, player_name, player_country)
-                    claimed_player = PlayerBasic(claim_player_id, claim_player_name, claim_player_country)
-                    claims.append(PlayerClaim(claim_id, date, approval_status, player, claimed_player))
-        return claims
+                    team_id, team_name, join_date, leave_date, roster_name = row
+                    history.append(PlayerTransferItem(team_id, team_name, join_date, leave_date, roster_name))
+                results = PlayerTransferHistory(history)
+                return results
+
+@dataclass
+class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        history: list = []
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute('''SELECT t.id, t.name as "team_name", tm.join_date, tm.leave_date, tr.name as "roster_name"
+                FROM team_members as tm
+                JOIN team_rosters as tr
+                ON tm.roster_id = tr.id
+                JOIN teams as t
+                ON t.id = tr.team_id
+                WHERE player_id = ?
+                ORDER BY tm.join_date ASC;''',
+                (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    team_id, team_name, join_date, leave_date, roster_name = row
+                    history.append(PlayerTransferItem(team_id, team_name, join_date, leave_date, roster_name))
+                results = PlayerTransferHistory(history)
+                return results

@@ -171,6 +171,12 @@ const fr: Translation = {
     THIS_PLAYER_IS_BANNED: 'This player is <strong>banned</strong> and may not participate in MKCentral competitions.',
     UNBAN_DATE: 'Unban Date',
   },
+  PLAYER_TOURNAMENT_HISTORY: {
+    TOURNAMENT_HISTORY: 'Tournament History',
+  },
+  PLAYER_REGISTRATION_HISTORY: {
+    REGISTRATION_HISTORY: 'Registration History',
+  },
   LANGUAGES: {
     EN_US: 'Anglais (États-Unis)',
     EN_GB: 'Anglais (Royaume-Uni)',

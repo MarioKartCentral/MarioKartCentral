@@ -42,6 +42,18 @@ class PlayerRoster:
     is_bagger_clause: bool
 
 @dataclass
+class PlayerTransferItem:
+    team_id: int
+    team_name: str
+    join_date: int
+    leave_date: int | None
+    roster_name: str
+
+@dataclass
+class PlayerTransferHistory:
+    history: list[PlayerTransferItem]
+
+@dataclass
 class PlayerNameChange:
     id: int
     name: str

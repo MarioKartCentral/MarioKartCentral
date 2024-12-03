@@ -72,6 +72,10 @@ type RootTranslation = {
 		 */
 		TYPE: string
 		/**
+		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
+		 */
+		MARK_ALL_READ: string
+		/**
 		 * I​s​ ​R​e​a​d
 		 */
 		IS_READ: string
@@ -500,6 +504,10 @@ type RootTranslation = {
 		 */
 		EDIT_BAN: string
 		/**
+		 * V​i​e​w​/​E​d​i​t​ ​B​a​n
+		 */
+		VIEW_EDIT_BAN: string
+		/**
 		 * U​n​b​a​n
 		 */
 		UNBAN: string
@@ -523,6 +531,14 @@ type RootTranslation = {
 		 * E​d​i​t​ ​B​a​n​ ​D​e​t​a​i​l​s
 		 */
 		EDIT_BAN_DETAILS: string
+		/**
+		 * B​a​n​n​e​d
+		 */
+		BANNED: string
+		/**
+		 * U​n​b​a​n​n​e​d
+		 */
+		UNBANNED: string
 		/**
 		 * E​n​t​e​r​ ​r​e​a​s​o​n
 		 */
@@ -618,6 +634,26 @@ type RootTranslation = {
 		 * U​n​b​a​n​ ​D​a​t​e
 		 */
 		UNBAN_DATE: string
+	}
+	TOURNAMENT_HISTORY: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 */
+		TOURNAMENT_HISTORY: string
+		/**
+		 * S​o​l​o​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		SOLO_TOURNAMENTS: string
+		/**
+		 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		TEAM_TOURNAMENTS: string
+	}
+	REGISTRATION_HISTORY: {
+		/**
+		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​H​i​s​t​o​r​y
+		 */
+		REGISTRATION_HISTORY: string
 	}
 	LANGUAGES: {
 		/**
@@ -2174,6 +2210,10 @@ export type TranslationFunctions = {
 		 */
 		TYPE: () => LocalizedString
 		/**
+		 * Mark All as Read
+		 */
+		MARK_ALL_READ: () => LocalizedString
+		/**
 		 * Is Read
 		 */
 		IS_READ: () => LocalizedString
@@ -2602,6 +2642,10 @@ export type TranslationFunctions = {
 		 */
 		EDIT_BAN: () => LocalizedString
 		/**
+		 * View/Edit Ban
+		 */
+		VIEW_EDIT_BAN: () => LocalizedString
+		/**
 		 * Unban
 		 */
 		UNBAN: () => LocalizedString
@@ -2625,6 +2669,14 @@ export type TranslationFunctions = {
 		 * Edit Ban Details
 		 */
 		EDIT_BAN_DETAILS: () => LocalizedString
+		/**
+		 * Banned
+		 */
+		BANNED: () => LocalizedString
+		/**
+		 * Unbanned
+		 */
+		UNBANNED: () => LocalizedString
 		/**
 		 * Enter reason
 		 */
@@ -2717,6 +2769,26 @@ export type TranslationFunctions = {
 		 * Unban Date
 		 */
 		UNBAN_DATE: () => LocalizedString
+	}
+	TOURNAMENT_HISTORY: {
+		/**
+		 * Tournament History
+		 */
+		TOURNAMENT_HISTORY: () => LocalizedString
+		/**
+		 * Solo Tournaments
+		 */
+		SOLO_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Team Tournaments
+		 */
+		TEAM_TOURNAMENTS: () => LocalizedString
+	}
+	REGISTRATION_HISTORY: {
+		/**
+		 * Registration History
+		 */
+		REGISTRATION_HISTORY: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**
