@@ -10,6 +10,8 @@
 
     export let roster: TeamRoster | null = null;
     export let game: string | null = null;
+    export let is_active: boolean | null = true;
+    export let is_historical: boolean | null = false;
 
     let query = "";
     let results: TeamRoster[] = [];
@@ -26,9 +28,15 @@
     }
 
     async function get_results() {
+        if(!query) {
+            results = [];
+            return;
+        }
         const name_var = query ? `name=${query}` : ``;
         const game_var = game ? `&game=${game}` : ``;
-        const url = `/api/registry/teams?${name_var}${game_var}`;
+        const active_var = is_active !== null ? `&is_active=${is_active}` : ``;
+        const historical_var = is_historical !== null ? `&is_historical=${is_historical}` : ``;
+        const url = `/api/registry/teams?${name_var}${game_var}${active_var}${historical_var}`;
         const res = await fetch(url);
         if (res.status === 200) {
             const body = await res.json();

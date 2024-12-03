@@ -21,12 +21,8 @@ class CreateFriendCodeRequestData:
     description: str | None
 
 @dataclass
-class ForceCreateFriendCodeRequestData:
+class ForceCreateFriendCodeRequestData(CreateFriendCodeRequestData):
     player_id: int
-    fc: str
-    game: Game
-    is_primary: bool
-    description: str | None
 
 @dataclass
 class EditMyFriendCodeRequestData:
@@ -35,22 +31,15 @@ class EditMyFriendCodeRequestData:
     description: str | None
 
 @dataclass
-class ForceEditFriendCodeRequestData:
+class ForceEditFriendCodeRequestData(EditMyFriendCodeRequestData):
     player_id: int
-    id: int
     fc: str
-    is_primary: bool
     is_active: bool
-    description: str | None
 
 @dataclass
 class EditPrimaryFriendCodeRequestData:
     id: int
 
-# @dataclass
-# class ModEditPrimaryFriendCodeRequestData(EditPrimaryFriendCodeRequestData):
-#     player_id: int
 @dataclass
-class ModEditPrimaryFriendCodeRequestData:
-    id: int
+class ModEditPrimaryFriendCodeRequestData(EditPrimaryFriendCodeRequestData):
     player_id: int

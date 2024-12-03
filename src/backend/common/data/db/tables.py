@@ -654,7 +654,7 @@ class UserTournamentRole(TableModel):
             """
 
 @dataclass
-class RosterInvite(TableModel):
+class TeamTransfer(TableModel):
     id: int
     player_id: int
     roster_id: int
@@ -732,17 +732,6 @@ class UserSettings(TableModel):
             color_scheme TEXT DEFAULT 'light' NOT NULL,
             timezone TEXT DEFAULT 'UTC' NOT NULL
             ) WITHOUT ROWID"""
-    
-@dataclass
-class NotificationContent(TableModel):
-    id: int
-    content: str
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS notification_content(
-            id INTEGER PRIMARY KEY,
-            content TEXT NOT NULL)"""
 
 @dataclass
 class Notifications(TableModel):
@@ -750,8 +739,9 @@ class Notifications(TableModel):
     user_id: int
     type: int
     content_id: int
+    content_args: str
+    link: str
     created_date: int
-    content_is_shared: int
     is_read: int
 
     @staticmethod
@@ -760,9 +750,10 @@ class Notifications(TableModel):
             id INTEGER PRIMARY KEY,
             user_id INTEGER NOT NULL REFERENCES users(id),
             type INTEGER DEFAULT 0 NOT NULL,
-            content_id INTEGER NOT NULL REFERENCES notification_content(id),
+            content_id INTEGER NOT NULL,
+            content_args TEXT NOT NULL,
+            link TEXT,
             created_date INTEGER NOT NULL,
-            content_is_shared INTEGER NOT NULL,
             is_read INTEGER DEFAULT 0 NOT NULL)"""
 
 @dataclass
@@ -846,6 +837,41 @@ class PlayerNameEditRequest(TableModel):
             date INTEGER NOT NULL,
             approval_status TEXT NOT NULL
             )"""
+
+@dataclass
+class PlayerClaim(TableModel):
+    id: int
+    player_id: int
+    claimed_player_id: int
+    date: int
+    approval_status: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_claims(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            claimed_player_id INTEGER NOT NULL REFERENCES players(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
+        )"""
+
+    
+@dataclass
+class PlayerNotes(TableModel):
+    player_id: int
+    notes: str
+    edited_by: int
+    date: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_notes (
+            player_id INTEGER PRIMARY KEY REFERENCES players(id),
+            notes TEXT NOT NULL,
+            edited_by INTEGER NOT NULL REFERENCES users(id),
+            date INTEGER NOT NULL
+            )"""
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
@@ -854,6 +880,6 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
-    RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest]
+    TeamTransfer, TeamEditRequest, RosterEditRequest,
+    UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
+    PlayerNameEditRequest, PlayerNotes, PlayerClaim]

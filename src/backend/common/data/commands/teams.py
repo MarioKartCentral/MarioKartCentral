@@ -36,7 +36,7 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
             if not self.is_privileged:
-                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ?", (self.name, self.tag)) as cursor:
+                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ? AND is_active = 0", (self.name, self.tag)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
@@ -666,7 +666,6 @@ class ViewTransfersCommand(Command[TransferList]):
     filter: TransferFilter
     approval_status: Approval = "pending"
     
-
     async def handle(self, db_wrapper, s3_wrapper):
         transfers: list[TeamTransfer] = []
 
@@ -686,6 +685,18 @@ class ViewTransfersCommand(Command[TransferList]):
         if filter.mode is not None:
             where_clauses.append("(r1.mode = ? OR r2.mode = ?)")
             variable_parameters.extend([filter.mode, filter.mode])
+        if filter.team_id is not None:
+            where_clauses.append("(t1.id = ? OR t2.id = ?)")
+            variable_parameters.extend([filter.team_id, filter.team_id])
+        if filter.roster_id is not None:
+            where_clauses.append("(r1.id = ? OR r2.id = ?)")
+            variable_parameters.extend([filter.roster_id, filter.roster_id])
+        if filter.from_date is not None:
+            where_clauses.append("i.date >= ?")
+            variable_parameters.append(filter.from_date)
+        if filter.to_date is not None:
+            where_clauses.append("i.date < ?")
+            variable_parameters.append(filter.to_date)
         
         where_clause_str = ""
         if len(where_clauses) > 0:
@@ -1071,6 +1082,7 @@ class EditTeamMemberCommand(Command[None]):
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
                                     WHERE m.player_id = ? AND m.roster_id = ? AND t.id = ?
+                                    ORDER BY m.join_date DESC
                                     """, (self.player_id, self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -1121,17 +1133,15 @@ class ListTeamsCommand(Command[List[Team]]):
             append_equal_filter(filter.mode, "r.mode")
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
-            if filter.is_historical:
-                append_equal_filter(filter.is_historical, "t.is_historical")
-            else:
-                append_equal_filter(False, "t.is_historical")
+            append_equal_filter(filter.is_historical, "t.is_historical")
+            append_equal_filter(filter.is_active, "r.is_active")
+
             if self.approved:
                 append_equal_filter("approved", "t.approval_status")
                 append_equal_filter("approved", "r.approval_status")
             else:
                 append_not_equal_filter("approved", "t.approval_status")
                 append_not_equal_filter("approved", "r.approval_status")
-            append_equal_filter(True, "r.is_active")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             teams_query = f"""  SELECT t.id, t.name, t.tag, t.description, t.creation_date, t.language, t.color, t.logo,
@@ -1313,3 +1323,32 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                     fc_id, player_id, game, fc, is_verified, is_primary, is_active = row
                     fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
             return rosters
+        
+@save_to_command_log
+@dataclass
+class MergeTeamsCommand(Command[None]):
+    from_team_id: int
+    to_team_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        if self.from_team_id == self.to_team_id:
+            raise Problem("Team IDs are equal", status=400)
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.from_team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem(f"Team ID {self.from_team_id} not found", status=404)
+                old_name, old_tag = row
+            async with db.execute("SELECT id FROM teams WHERE id = ?", (self.to_team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem(f"Team ID {self.to_team_id} not found", status=404)
+            # don't want to change the name/tag of a roster to the new team's name if it's the default value
+            await db.execute("UPDATE team_rosters SET name = ? WHERE team_id = ? AND name IS NULL", (old_name, self.from_team_id))
+            await db.execute("UPDATE team_rosters SET tag = ? WHERE team_id = ? AND tag IS NULL", (old_tag, self.from_team_id))
+
+            await db.execute("UPDATE team_rosters SET team_id = ? WHERE team_id = ?", (self.to_team_id, self.from_team_id))
+            await db.execute("DELETE FROM user_team_roles WHERE team_id = ?", (self.from_team_id,))
+            await db.execute("DELETE FROM team_edit_requests WHERE team_id = ?", (self.from_team_id,))
+            await db.execute("DELETE FROM teams WHERE id = ?", (self.from_team_id,))
+            await db.commit()

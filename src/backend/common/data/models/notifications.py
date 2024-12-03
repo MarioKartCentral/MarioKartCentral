@@ -6,7 +6,9 @@ from typing import Literal
 class Notification:
     id: int
     type: int
-    content: str
+    content_id: int
+    content_args: dict[str, str]
+    link: str
     created_date: int
     is_read: bool
 
@@ -20,3 +22,33 @@ class NotificationFilter:
 @dataclass
 class MarkAsReadRequestData:
     is_read: bool
+
+@dataclass
+class NotificationDataTournamentSquad:
+    squad_name: str | None
+    tournament_name: str
+    captain_user_id: int
+
+@dataclass
+class NotificationDataUser:
+    user_id: int
+    player_id: int
+
+@dataclass
+class NotificationDataTeam:
+    team_id: int
+    team_name: str
+
+@dataclass
+class NotificationDataTeamRoster:
+    team_id: int
+    team_name: str
+    roster_name: str | None
+
+@dataclass
+class NotificationDataTeamTransfer:
+    player_name: str
+    player_id: int
+    team_id: int
+    team_name: str
+    roster_name: str

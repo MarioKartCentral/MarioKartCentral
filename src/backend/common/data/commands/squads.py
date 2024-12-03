@@ -90,7 +90,7 @@ class CreateSquadCommand(Command[None]):
 
 @save_to_command_log
 @dataclass
-class RegisterTeamTournamentCommand(Command[None]):
+class RegisterTeamTournamentCommand(Command[int | None]):
     tournament_id: int
     squad_name: str
     squad_tag: str
@@ -101,10 +101,10 @@ class RegisterTeamTournamentCommand(Command[None]):
     is_approved: bool
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper, s3_wrapper) -> int | None:
         if len(self.roster_ids) == 0:
             raise Problem("Must register at least one roster", status=400)
-        if len(self.players) == 0:
+        if not self.is_privileged and len(self.players) == 0:
             raise Problem("Must register at least one player", status=400)
         if len(set(self.roster_ids)) < len(self.roster_ids):
             raise Problem('Duplicate roster IDs detected', status=400)
@@ -120,7 +120,7 @@ class RegisterTeamTournamentCommand(Command[None]):
                 if self.is_privileged is False and not bool(registrations_open):
                     raise Problem('Tournament registrations are closed', status=400)
                 captains = [p.player_id for p in self.players if p.is_captain]
-                if len(captains) != 1:
+                if len(self.players) and len(captains) != 1:
                     raise Problem(f"Exactly one player must be selected as a captain, but you have selected {len(captains)} captains", status=400)
                 representatives = [p.player_id for p in self.players if p.is_captain or p.is_representative]
                 if len(representatives) < min_representatives:
@@ -223,7 +223,7 @@ class RegisterTeamTournamentCommand(Command[None]):
                                     is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
             await db.commit()
-                
+            return squad_id
 
 @save_to_command_log
 @dataclass

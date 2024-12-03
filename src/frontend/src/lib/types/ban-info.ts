@@ -11,6 +11,8 @@ export type BanInfo = {
 export type BanInfoBasic = {
   player_id: number;
   reason: string;
+  unban_date: number | null;
+  is_indefinite: boolean | null;
 };
 
 export type BanInfoDetailed = {

@@ -17,23 +17,8 @@ class RequestCreateTeamRequestData():
     mode: GameMode
     is_recruiting: bool
 
-# @dataclass
-# class CreateTeamRequestData(RequestCreateTeamRequestData):
-#     approval_status: Approval
-#     is_historical: bool
-#     is_active: bool
-
 @dataclass
-class CreateTeamRequestData:
-    name: str
-    tag: str
-    description: str
-    language: str
-    color: int
-    logo: str | None
-    game: Game
-    mode: GameMode
-    is_recruiting: bool
+class CreateTeamRequestData(RequestCreateTeamRequestData):
     approval_status: Approval
     is_historical: bool
     is_active: bool
@@ -198,15 +183,8 @@ class DeleteInviteRequestData():
     player_id: int
     roster_id: int
 
-# @dataclass
-# class InviteRosterPlayerRequestData(DeleteInviteRequestData):
-#     is_bagger_clause: bool
-
 @dataclass
-class InviteRosterPlayerRequestData():
-    team_id: int
-    player_id: int
-    roster_id: int
+class InviteRosterPlayerRequestData(DeleteInviteRequestData):
     is_bagger_clause: bool
 
 @dataclass
@@ -286,6 +264,7 @@ class TeamFilter():
     language: str | None = None
     is_recruiting: bool | None = None
     is_historical: bool | None = None
+    is_active: bool | None = None
 
 @dataclass
 class TeamInvite():
@@ -330,6 +309,10 @@ class TeamTransfer():
 class TransferFilter():
     game: Game | None = None
     mode: GameMode | None = None
+    team_id: int | None = None
+    roster_id: int | None = None
+    from_date: int | None = None
+    to_date: int | None = None
     page: int | None = None
 
 @dataclass
@@ -360,3 +343,8 @@ class RegisterableRostersRequestData():
     tournament_id: int
     game: Game
     mode: GameMode
+
+@dataclass
+class MergeTeamsRequestData():
+    from_team_id: int
+    to_team_id: int

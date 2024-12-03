@@ -84,7 +84,7 @@
     </tbody>
   </Table>
 
-  <Dialog bind:this={dialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
+  <Dialog bind:this={dialog} header={$LL.PLAYER_BAN.BAN_PLAYER()} on:close={() => selectedBanInfo = null}>
     {#if selectedBanInfo}
       {#if isHistorical}
         <BanDetails banInfo={selectedBanInfo} />

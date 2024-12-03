@@ -25,7 +25,7 @@ async def set_placements(request: Request, body: list[TournamentPlacement]) -> J
 
     return JSONResponse({})
 
-
+@check_tournament_visiblity
 async def get_placements(request: Request) -> JSONResponse:
     tournament_id = int(request.path_params['tournament_id'])
     command = CheckIfSquadTournament(tournament_id)
@@ -40,7 +40,7 @@ async def get_placements(request: Request) -> JSONResponse:
         players = await handle(reg_command)
         placements_command = GetSoloPlacementsCommand(tournament_id, players)
         placements = await handle(placements_command)
-
+    
     return JSONResponse(placements)
 
 async def get_player_placements(request: Request) -> JSONResponse:

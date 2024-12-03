@@ -16,10 +16,17 @@
   const zeroPad = (num: number) => String(num).padStart(2, '0');
 </script>
 
-<div class="container">
+<div class="container {!tournament.is_viewable || !tournament.is_public ? 'tournament-hidden' : ''}">
   <div class="grid-container">
     <!-- Informational Section -->
     <div class="information flex flex-col align-middle items-center justify-center text-center">
+      <div class="italic">
+        {#if !tournament.is_viewable}
+          Unpublished
+        {:else if !tournament.is_public}
+          Hidden from tournament page
+        {/if}
+      </div>
       <div class="name">
         <h3>
           <a
@@ -99,6 +106,9 @@
 </div>
 
 <style>
+  .tournament-hidden {
+    opacity: 0.5;
+  }
   .container {
     background-color: rgba(29, 33, 33, 0.8);
     padding-top: 10px;
