@@ -50,6 +50,7 @@ export type TeamTournamentPlacement = {
   game: string;
   mode: string;
   team_id: number | null;
+  team_name: string | null;
   date_start: number;
   date_end: number;
   placement: number | null;

@@ -33,34 +33,38 @@
   onMount(fetchData);
 </script>
 
-<Section header={$LL.REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
-  <div>
+{#if history.length <= 0}
+  <div></div>
+{:else}
+  <Section header={$LL.REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
     <div>
-      <Table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>Registration Period</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each history as record, i}
-            <tr class="row-{i % 2}">
-              <td>
-                <a
-                  class="hover:text-emerald-400"
-                  href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}"
-                >
-                  {record.roster_name ? record.roster_name : record.team_name}
-                </a>
-              </td>
-              <td>
-                {toDate(record.join_date)} - {record.leave_date ? toDate(record.leave_date) : 'Present'}
-              </td>
+      <div>
+        <Table>
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>Registration Period</th>
             </tr>
-          {/each}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {#each history as record, i}
+              <tr class="row-{i % 2}">
+                <td>
+                  <a
+                    class="hover:text-emerald-400"
+                    href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}"
+                  >
+                    {record.roster_name ? record.roster_name : record.team_name}
+                  </a>
+                </td>
+                <td>
+                  {toDate(record.join_date)} - {record.leave_date ? toDate(record.leave_date) : 'Present'}
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </Table>
+      </div>
     </div>
-  </div></Section
->
+  </Section>
+{/if}

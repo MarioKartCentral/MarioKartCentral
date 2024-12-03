@@ -50,6 +50,7 @@ class TeamTournamentPlacement():
     game: str
     mode: str
     team_id: int | None
+    team_name: str | None
     date_start: int
     date_end: int
     placement: int | None

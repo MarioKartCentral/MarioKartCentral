@@ -215,7 +215,7 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
         async with db_wrapper.connect(readonly=True) as db:
             # Team placements
             async with db.execute("""
-                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, teams.id as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, teams.id as "team_id", teams.name as "team_name", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
                 FROM tournaments as t
                 INNER JOIN team_squad_registrations as tsr
                 ON tsr.tournament_id = t.id
@@ -231,7 +231,7 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
                 """, (self.team_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    tournament_id, tournament_name, game, mode, team_id, date_start, date_end, placement, placement_description, is_disqualified = row
-                    tournament_team_results.append(TeamTournamentPlacement(tournament_id, tournament_name, game, mode, team_id, date_start, date_end, placement, placement_description, is_disqualified))
+                    tournament_id, tournament_name, game, mode, team_id, team_name, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_team_results.append(TeamTournamentPlacement(tournament_id, tournament_name, game, mode, team_id, team_name, date_start, date_end, placement, placement_description, is_disqualified))
                 results = TeamTournamentResults(tournament_team_results)
                 return results
