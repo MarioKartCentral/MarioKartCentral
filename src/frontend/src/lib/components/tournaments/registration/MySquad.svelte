@@ -134,7 +134,7 @@
   <!-- If registrations are open and our squad is not full and we are the squad captain -->
   {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
     (!tournament.max_squad_size || squad.players.length < tournament.max_squad_size)}
-    <div class="section">
+    <div>
       <div><b>Invite players</b></div>
       <PlayerSearch
         bind:player={invite_player}

@@ -51,7 +51,7 @@
       {#if tournament.teams_allowed}
         <TeamTournamentRegister {tournament}/>
       {/if}
-      {#if !registration.player}
+      {#if !registration.registrations.some((r) => !r.player.is_invite)}
         {#if !check_registrations_open(tournament)}
           <div>
             Registrations for this tournament are closed.
