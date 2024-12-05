@@ -591,6 +591,79 @@ type RootTranslation = {
 		 */
 		ROLE_EXPIRES_ON: RequiredParams<'date'>
 	}
+	INVITES: {
+		/**
+		 * T​e​a​m​ ​I​n​v​i​t​e​s
+		 */
+		TEAM_INVITES: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​I​n​v​i​t​e​s
+		 */
+		TOURNAMENT_INVITES: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​r​o​s​t​e​r​ ​t​o​ ​l​e​a​v​e​:
+		 */
+		SELECT_LEAVE_ROSTER: string
+		/**
+		 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​a​ ​r​o​s​t​e​r​ ​t​o​ ​l​e​a​v​e
+		 */
+		SELECT_LEAVE_ROSTER_ERROR: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​a​c​c​e​p​t​e​d​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​!​ ​Y​o​u​r​ ​t​r​a​n​s​f​e​r​ ​m​u​s​t​ ​b​e​ ​p​r​o​c​e​s​s​e​d​ ​b​y​ ​s​t​a​f​f​ ​m​e​m​b​e​r​s​ ​b​e​f​o​r​e​ ​b​e​i​n​g​ ​c​o​m​p​l​e​t​e​d​.
+		 * @param {string} roster_name
+		 */
+		ACCEPT_TEAM_INVITE_SUCCESS: RequiredParams<'roster_name'>
+		/**
+		 * A​c​c​e​p​t​i​n​g​ ​t​e​a​m​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
+		 */
+		ACCEPT_TEAM_INVITE_FAILED: string
+		/**
+		 * D​e​c​l​i​n​i​n​g​ ​t​e​a​m​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
+		 */
+		DECLINE_TEAM_INVITE_FAILED: string
+		/**
+		 * A​c​c​e​p​t
+		 */
+		ACCEPT: string
+		/**
+		 * D​e​c​l​i​n​e
+		 */
+		DECLINE: string
+		/**
+		 * C​a​n​c​e​l
+		 */
+		CANCEL: string
+		/**
+		 * N​o​ ​i​n​v​i​t​e​s​.
+		 */
+		NO_INVITES: string
+		/**
+		 * A​c​c​e​p​t​ ​T​e​a​m​ ​I​n​v​i​t​e
+		 */
+		ACCEPT_TEAM_INVITE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​a​c​c​e​p​t​ ​t​h​e​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
+		 * @param {string} roster_name
+		 */
+		ACCEPT_TEAM_INVITE_CONFIRM: RequiredParams<'roster_name'>
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​c​l​i​n​e​ ​t​h​e​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
+		 * @param {string} roster_name
+		 */
+		DECLINE_TEAM_INVITE_CONFIRM: RequiredParams<'roster_name'>
+		/**
+		 * T​o​u​r​n​a​m​e​n​t
+		 */
+		TOURNAMENT: string
+		/**
+		 * S​q​u​a​d
+		 */
+		SQUAD: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​P​a​g​e
+		 */
+		TOURNAMENT_PAGE: string
+	}
 	TEAM_LIST: {
 		/**
 		 * T​a​g
@@ -3274,6 +3347,76 @@ export type TranslationFunctions = {
 		 * Expires {date}
 		 */
 		ROLE_EXPIRES_ON: (arg: { date: unknown }) => LocalizedString
+	}
+	INVITES: {
+		/**
+		 * Team Invites
+		 */
+		TEAM_INVITES: () => LocalizedString
+		/**
+		 * Tournament Invites
+		 */
+		TOURNAMENT_INVITES: () => LocalizedString
+		/**
+		 * Select a roster to leave:
+		 */
+		SELECT_LEAVE_ROSTER: () => LocalizedString
+		/**
+		 * Please select a roster to leave
+		 */
+		SELECT_LEAVE_ROSTER_ERROR: () => LocalizedString
+		/**
+		 * Successfully accepted invite to {roster_name}! Your transfer must be processed by staff members before being completed.
+		 */
+		ACCEPT_TEAM_INVITE_SUCCESS: (arg: { roster_name: string }) => LocalizedString
+		/**
+		 * Accepting team invite failed
+		 */
+		ACCEPT_TEAM_INVITE_FAILED: () => LocalizedString
+		/**
+		 * Declining team invite failed
+		 */
+		DECLINE_TEAM_INVITE_FAILED: () => LocalizedString
+		/**
+		 * Accept
+		 */
+		ACCEPT: () => LocalizedString
+		/**
+		 * Decline
+		 */
+		DECLINE: () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		CANCEL: () => LocalizedString
+		/**
+		 * No invites.
+		 */
+		NO_INVITES: () => LocalizedString
+		/**
+		 * Accept Team Invite
+		 */
+		ACCEPT_TEAM_INVITE: () => LocalizedString
+		/**
+		 * Are you sure you would like to accept the invite to {roster_name}?
+		 */
+		ACCEPT_TEAM_INVITE_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+		/**
+		 * Are you sure you would like to decline the invite to {roster_name}?
+		 */
+		DECLINE_TEAM_INVITE_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+		/**
+		 * Tournament
+		 */
+		TOURNAMENT: () => LocalizedString
+		/**
+		 * Squad
+		 */
+		SQUAD: () => LocalizedString
+		/**
+		 * Tournament Page
+		 */
+		TOURNAMENT_PAGE: () => LocalizedString
 	}
 	TEAM_LIST: {
 		/**

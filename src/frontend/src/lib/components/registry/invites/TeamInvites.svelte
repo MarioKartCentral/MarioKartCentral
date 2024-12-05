@@ -13,6 +13,7 @@
     import Button from "$lib/components/common/buttons/Button.svelte";
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
     import { check_permission, permissions } from "$lib/util/permissions";
+    import LL from "$i18n/i18n-svelte";
 
     export let invites: TeamInvite[];
 
@@ -57,7 +58,7 @@
 
     async function acceptInvite(invite: TeamInvite) {
         if(leaveable_rosters.length && !leave_roster_id) {
-            alert("Please select a roster to leave");
+            alert($LL.INVITES.SELECT_LEAVE_ROSTER_ERROR());
             return;
         }
         accept_dialog.close();
@@ -72,12 +73,10 @@
         });
         const result = await res.json();
         if (res.status < 300) {
-        alert(
-            `Successfully accepted invite to ${curr_invite.roster_name ? curr_invite.roster_name : curr_invite.team_name}! Your transfer must be processed by staff members before being completed.`,
-        );
-        window.location.reload();
+            alert($LL.INVITES.ACCEPT_TEAM_INVITE_SUCCESS({roster_name: invite.roster_name}));
+            window.location.reload();
         } else {
-            alert(`Accepting invite failed: ${result['title']}`);
+            alert(`${$LL.INVITES.ACCEPT_TEAM_INVITE_FAILED()}: ${result['title']}`);
         }
     }
     async function declineInvite(invite: TeamInvite) {
@@ -94,7 +93,7 @@
         if (res.status < 300) {
             window.location.reload();
         } else {
-            alert(`Declining invite failed: ${result['title']}`);
+            alert(`${$LL.INVITES.DECLINE_TEAM_INVITE_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -108,11 +107,11 @@
     <col class="accept" />
     <thead>
         <tr>
-        <th>Tag</th>
-        <th>Name</th>
-        <th class="mode mobile-hide">Mode</th>
-        <th class="mode mobile-hide">Date</th>
-        <th>Accept?</th>
+        <th>{$LL.TAG()}</th>
+        <th>{$LL.NAME()}</th>
+        <th class="mode mobile-hide">{$LL.MODE()}</th>
+        <th class="mode mobile-hide">{$LL.DATE()}</th>
+        <th>{$LL.INVITES.ACCEPT()}?</th>
         </tr>
     </thead>
     <tbody>
@@ -122,7 +121,7 @@
                 <TagBadge tag={invite.roster_tag ? invite.roster_tag : invite.team_tag} color={invite.team_color}/>
             </td>
             <td>
-                {invite.roster_name ? invite.roster_name : invite.team_name}
+                {invite.roster_name}
                 {#if invite.is_bagger_clause}
                     <BaggerBadge/>
                 {/if}
@@ -143,14 +142,14 @@
     </tbody>
     </Table>
 {:else}
-    No invites.
+    {$LL.INVITES.NO_INVITES()}
 {/if}
 
-<Dialog bind:this={accept_dialog} header="Accept Team Invite">
-    Are you sure you would like to accept the invite to <b>{curr_invite?.roster_name}</b>?
+<Dialog bind:this={accept_dialog} header={$LL.INVITES.ACCEPT_TEAM_INVITE()}>
+    {$LL.INVITES.ACCEPT_TEAM_INVITE_CONFIRM({roster_name: curr_invite?.roster_name})}
     <br /><br />
     {#if leaveable_rosters.length}
-      Select a roster to leave:
+      {$LL.INVITES.SELECT_LEAVE_ROSTER()}
       <select bind:value={leave_roster_id}>
         {#each leaveable_rosters as r}
           <option value={r.roster_id}>{r.roster_name}</option>
@@ -158,17 +157,17 @@
       </select>
     {/if}
     <div class="accept">
-      <Button on:click={() => acceptInvite(curr_invite)}>Accept</Button>
+      <Button on:click={() => acceptInvite(curr_invite)}>{$LL.INVITES.ACCEPT()}</Button>
       <Button on:click={accept_dialog.close}>Cancel</Button>
     </div>
   </Dialog>
   
   <Dialog bind:this={decline_dialog} header="Decline Team Invite">
-    Are you sure you would like to decline the invite to {curr_invite?.team_name}?
+    {$LL.INVITES.DECLINE_TEAM_INVITE_CONFIRM({roster_name: curr_invite?.roster_name})}
     <br /><br />
     <div class="accept">
-      <Button on:click={() => declineInvite(curr_invite)}>Decline</Button>
-      <Button on:click={decline_dialog.close}>Cancel</Button>
+      <Button on:click={() => declineInvite(curr_invite)}>{$LL.INVITES.DECLINE()}</Button>
+      <Button on:click={decline_dialog.close}>{$LL.INVITES.CANCEL()}</Button>
     </div>
   </Dialog>
 

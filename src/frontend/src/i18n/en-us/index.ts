@@ -1,6 +1,6 @@
-import type { BaseTranslation, Translation } from '../i18n-types';
+import type { BaseTranslation } from '../i18n-types';
 
-const en_us: BaseTranslation & Translation = {
+const en_us: BaseTranslation = {
   WELCOME: 'Welcome to Mario Kart Central!',
   SUMMARY:
     "We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!",
@@ -154,6 +154,25 @@ const en_us: BaseTranslation & Translation = {
     ADD_ROLE: 'Add',
     NO_EDIT_PERMISSION: 'You do not have permission to edit this role.',
     ROLE_EXPIRES_ON: 'Expires {date}',
+  },
+  INVITES: {
+    TEAM_INVITES: 'Team Invites',
+    TOURNAMENT_INVITES: 'Tournament Invites',
+    SELECT_LEAVE_ROSTER: 'Select a roster to leave:',
+    SELECT_LEAVE_ROSTER_ERROR: 'Please select a roster to leave',
+    ACCEPT_TEAM_INVITE_SUCCESS: 'Successfully accepted invite to {roster_name:string}! Your transfer must be processed by staff members before being completed.',
+    ACCEPT_TEAM_INVITE_FAILED: 'Accepting team invite failed',
+    DECLINE_TEAM_INVITE_FAILED: 'Declining team invite failed',
+    ACCEPT: 'Accept',
+    DECLINE: 'Decline',
+    CANCEL: 'Cancel',
+    NO_INVITES: 'No invites.',
+    ACCEPT_TEAM_INVITE: 'Accept Team Invite',
+    ACCEPT_TEAM_INVITE_CONFIRM: 'Are you sure you would like to accept the invite to {roster_name:string}?',
+    DECLINE_TEAM_INVITE_CONFIRM: 'Are you sure you would like to decline the invite to {roster_name:string}?',
+    TOURNAMENT: 'Tournament',
+    SQUAD: 'Squad',
+    TOURNAMENT_PAGE: 'Tournament Page',
   },
   TEAM_LIST: {
     TAG: 'Tag',
@@ -334,7 +353,6 @@ const en_us: BaseTranslation & Translation = {
   },
   TIME_TRIALS: {
     DESCRIPTION: 'This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you\'ll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!',
-
   },
   COLORS: {
     RED_1: 'Red 1',
