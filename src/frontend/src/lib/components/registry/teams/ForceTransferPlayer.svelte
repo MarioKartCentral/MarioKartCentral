@@ -76,7 +76,7 @@
             <div>
                 <select bind:value={from_roster} name="from" on:change={updateRosters}>
                     <option value={null}>
-                        None
+                        {$LL.NONE()}
                     </option>
                     {#each player.rosters as roster}
                         <option value={roster}>

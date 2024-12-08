@@ -2,6 +2,7 @@
     import Dialog from "$lib/components/common/Dialog.svelte";
     import CountrySelect from "$lib/components/common/CountrySelect.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let player_dialog: Dialog;
 
@@ -24,27 +25,27 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert("Successfully added new shadow player");
+            alert($LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_SUCCESS());
             window.location.reload();
         }
         else {
-            alert(`Adding new shadow player failed: ${result['title']}`);
+            alert(`${$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
 
-<Dialog bind:this={player_dialog} header="Create Shadow Player">
+<Dialog bind:this={player_dialog} header={$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}>
     <form method="POST" on:submit|preventDefault={createPlayer}>
         <div class="option">
-            <label for="shadow_name">Name</label>
+            <label for="shadow_name">{$LL.NAME()}</label>
             <input name="shadow_name" required/>
         </div>
         <div class="option">
-            <label for="country">Country</label>
+            <label for="country">{$LL.COUNTRY()}</label>
             <CountrySelect is_required/>
         </div>
         <div class="option">
-            <Button type="submit">Create Player</Button>
+            <Button type="submit">{$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
         </div>
     </form>
 </Dialog>

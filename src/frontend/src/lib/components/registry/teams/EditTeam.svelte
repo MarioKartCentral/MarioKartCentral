@@ -17,7 +17,7 @@
     let id = 0;
     let team: Team;
   
-    $: team_name = team ? team.name : 'Registry';
+    $: team_name = team ? team.name : $LL.NAVBAR.REGISTRY();
 
     let user_info: UserInfo;
     user.subscribe((value) => {
@@ -57,9 +57,9 @@
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
-        alert('Successfully edited team');
+        alert($LL.TEAM_EDIT.EDIT_TEAM_SUCCESS());
       } else {
-        alert(`Editing team failed: ${result['title']}`);
+        alert(`${$LL.TEAM_EDIT.EDIT_TEAM_FAILURE()}: ${result['title']}`);
       }
     }
 
@@ -89,9 +89,9 @@
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
-        alert('Successfully edited team');
+        alert($LL.TEAM_EDIT.EDIT_TEAM_SUCCESS());
       } else {
-        alert(`Editing team failed: ${result['title']}`);
+        alert(`${$LL.TEAM_EDIT.EDIT_TEAM_FAILURE()}: ${result['title']}`);
       }
     }
   </script>
@@ -110,7 +110,7 @@
     </Section>
     {#if !is_mod}
          {#if check_team_permission(user_info, team_permissions.edit_team_name_tag, id)}
-          <Section header="Team Name/Tag">
+          <Section header={$LL.TEAM_EDIT.TEAM_NAME_TAG()}>
             <TeamNameTagRequest {team}/>
           </Section>
          {/if}
@@ -140,44 +140,44 @@
     {:else}
         {#if check_permission(user_info, permissions.manage_teams)}
           <form method="post" on:submit|preventDefault={forceEditTeam}>
-            <Section header="Team Name/Tag">
-              <label for="name">Team Name</label>
+            <Section header={$LL.TEAM_EDIT.TEAM_NAME_TAG()}>
+              <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
               <input name="name" type="text" value={team.name} pattern="^\S.*\S$|^\S$" required />
               <br />
-              <label for="tag">Team Tag</label>
+              <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
               <input name="tag" type="text" bind:value={team.tag} required />
             </Section>
-            <Section header="Customization">
-              <label for="color">Team Color</label>
+            <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
+              <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
               <ColorSelect bind:color={team.color} tag={team.tag} name="color"/>
               <br />
-              <label for="logo">Team Logo</label>
+              <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
               <input name="logo" type="text" value={team.logo} />
             </Section>
-            <Section header="Misc. Info">
-              <label for="language">Language</label>
+            <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
+              <label for="language">{$LL.LANGUAGE()}</label>
               <LanguageSelect bind:language={team.language}/>
               <br />
-              <label for="description">Team Description</label>
+              <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
               <textarea name="description" value={team.description} />
               <br />
             </Section>
             <Section header="Team Status">
-              <label for="approval_status">Approval Status</label>
+              <label for="approval_status">{$LL.TEAM_PROFILE.APPROVAL_STATUS.STATUS()}</label>
               <select name="approval_status" value={team.approval_status}>
-                <option value="approved">Approved</option>
-                <option value="denied">Denied</option>
-                <option value="pending">Pending</option>
+                <option value="approved">{$LL.TEAM_PROFILE.APPROVAL_STATUS.APPROVED()}</option>
+                <option value="denied">{$LL.TEAM_PROFILE.APPROVAL_STATUS.DENIED()}</option>
+                <option value="pending">{$LL.TEAM_PROFILE.APPROVAL_STATUS.PENDING()}</option>
               </select>
               <br />
-              <label for="is_historical">Active/Historical</label>
+              <label for="is_historical">{$LL.TEAM_PROFILE.ACTIVE_HISTORICAL()}</label>
               <select name="is_historical" value={team.is_historical ? 'true' : 'false'}>
-                <option value="false">Active</option>
-                <option value="true">Historical</option>
+                <option value="false">{$LL.TEAM_PROFILE.ACTIVE()}</option>
+                <option value="true">{$LL.TEAM_PROFILE.HISTORICAL()}</option>
               </select>
             </Section>
             <Section header="Submit">
-              <Button type="submit">Submit</Button>
+              <Button type="submit">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button>
             </Section>
           </form>
         {/if}

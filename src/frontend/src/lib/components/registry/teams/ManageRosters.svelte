@@ -72,7 +72,7 @@
   {#if team}
     <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
       <div slot="header_content">
-        <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">Back to Team</Button>
+        <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{$LL.TEAM_EDIT.BACK_TO_TEAM()}</Button>
       </div>
     </Section>
     {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}

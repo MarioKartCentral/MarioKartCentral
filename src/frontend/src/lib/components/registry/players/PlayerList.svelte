@@ -70,7 +70,7 @@
     <GameSelect all_option hide_labels bind:game={filters.game}/>
     <CountrySelect bind:value={filters.country} is_filter={true}/>
     <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} />
-    <Button type="submit">{$LL.PLAYER_LIST.SEARCH()}</Button>
+    <Button type="submit">{$LL.SEARCH()}</Button>
   </div>
 </form>
 <div class="player_list">
@@ -86,7 +86,7 @@
         <tr>
           <th></th>
           <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-          <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODES()}</th>
+          <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
         </tr>
       </thead>
       <tbody>

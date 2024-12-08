@@ -24,6 +24,6 @@
             <span>{new Date(notes.date * 1000).toLocaleString($page.params.lang, options)}</span>
         </div>
     {:else}
-        {$LL.PLAYER_PROFILE.NONE()}
+        {$LL.NONE()}
     {/if}
 </div>

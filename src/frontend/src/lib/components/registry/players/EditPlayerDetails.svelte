@@ -2,6 +2,7 @@
     import Button from "$lib/components/common/buttons/Button.svelte";
     import CountrySelect from "$lib/components/common/CountrySelect.svelte";
     import type { PlayerInfo } from "$lib/types/player-info";
+    import LL from "$i18n/i18n-svelte";
 
     export let player: PlayerInfo;
     export let is_privileged = false;
@@ -25,7 +26,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Requesting name change failed: ${result['title']}`);
+            alert(`${$LL.PLAYER_PROFILE.REQUEST_NAME_CHANGE_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -50,7 +51,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing player failed: ${result['title']}`);
+            alert(`${$LL.PLAYER_PROFILE.EDIT_PLAYER_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -59,14 +60,14 @@
     {#if !pending_change}
         <form method="POST" on:submit|preventDefault={requestNameChange}>
             <div class="option">
-                <label for="name">Name</label>
+                <label for="name">{$LL.PLAYER_PROFILE.DISPLAY_NAME()}</label>
                 <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
             </div>
-            <Button type="submit">Request Name Change</Button>
+            <Button type="submit">{$LL.PLAYER_PROFILE.REQUEST_NAME_CHANGE()}</Button>
         </form>
     {:else}
         <div class="bold">
-            Pending name change
+            {$LL.PLAYER_PROFILE.PENDING_NAME_CHANGE()}
         </div>
         <div>
             {player.name} -&gt; {pending_change.name}
@@ -75,21 +76,21 @@
 {:else}
     <form method="POST" on:submit|preventDefault={forceEditPlayer}>
         <div class="option">
-            <label for="name">Display Name</label>
+            <label for="name">{$LL.PLAYER_PROFILE.DISPLAY_NAME()}</label>
             <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
         </div>
         <div class="option">
-            <label for="country">Country</label>
+            <label for="country">{$LL.COUNTRY()}</label>
             <CountrySelect value={player.country_code} is_required={true}/>
         </div>
         <div class="option">
-            <label for="is_hidden">Show on player list?</label>
+            <label for="is_hidden">{$LL.PLAYER_PROFILE.SHOW_ON_PLAYER_LIST()}</label>
             <select name="is_hidden" value={player.is_hidden} required>
-                <option value={false}>Show</option>
-                <option value={true}>Hide</option>
+                <option value={false}>{$LL.SHOW()}</option>
+                <option value={true}>{$LL.HIDE()}</option>
             </select>
         </div>
-        <Button type="submit">Edit</Button>
+        <Button type="submit">{$LL.EDIT()}</Button>
     </form>
 {/if}
 

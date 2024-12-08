@@ -119,7 +119,7 @@
         <br/>
         <Button type="submit">{$LL.PLAYER_BAN.SUBMIT()}</Button>
         {#if handleCancel}
-            <Button color='red' on:click={handleCancel}>{$LL.PLAYER_BAN.CANCEL()}</Button>
+            <Button color='red' on:click={handleCancel}>{$LL.CANCEL()}</Button>
         {/if}
     </form>
 </div>

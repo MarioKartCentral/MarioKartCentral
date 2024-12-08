@@ -16,7 +16,6 @@
     let selected_fc: FriendCode;
 
     let friend_codes = is_privileged ? player.friend_codes : player.friend_codes.filter((f) => f.is_active);
-    // let friend_codes = player.friend_codes;
 
     function open_edit_dialog(fc: FriendCode) {
         selected_fc = fc;
@@ -47,7 +46,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing friend code failed: ${result['title']}`);
+            alert(`${$LL.FRIEND_CODES.FRIEND_CODE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -70,7 +69,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing friend code failed: ${result['title']}`);
+            alert(`${$LL.FRIEND_CODES.FRIEND_CODE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -80,26 +79,26 @@
         <GameBadge game={fc.game}/>
         {fc.fc}
         {#if !fc.is_active}
-            (inactive)
+            ({$LL.FRIEND_CODES.INACTIVE()})
         {/if}
         <EditSolid on:click={() => open_edit_dialog(fc)}/>
     </div>
 {/each}
 <div class="button">
-    <Button on:click={add_fc_dialog.open}>{$LL.PLAYER_PROFILE.ADD_FRIEND_CODE()}</Button>
+    <Button on:click={add_fc_dialog.open}>{$LL.FRIEND_CODES.ADD_FRIEND_CODE()}</Button>
 </div>
 
-<Dialog bind:this={add_fc_dialog} header={$LL.PLAYER_PROFILE.ADD_FRIEND_CODE()}>
+<Dialog bind:this={add_fc_dialog} header={$LL.FRIEND_CODES.ADD_FRIEND_CODE()}>
     <FriendCodeForm {player} {is_privileged}/>
 </Dialog>
 
-<Dialog bind:this={edit_fc_dialog} header="Edit Friend Code">
+<Dialog bind:this={edit_fc_dialog} header={$LL.FRIEND_CODES.EDIT_FRIEND_CODE()}>
     {#if selected_fc}
         <form method="post" on:submit|preventDefault={is_privileged ? edit_fc_privileged : edit_fc}>
             <div>
                 <div class="option">
                     <div>
-                        <label for="fc">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</label>
+                        <label for="fc">{$LL.FRIEND_CODES.FRIEND_CODE()}</label>
                     </div>
                     <div>
                         <input name="fc" placeholder={selected_fc.game !== 'mk8' ? '0000-0000-0000' : 'NNID'} 
@@ -109,7 +108,7 @@
                 </div>
                 <div class="option">
                     <div>
-                        <label for="is_primary">{$LL.PLAYER_PROFILE.PRIMARY()}</label>
+                        <label for="is_primary">{$LL.FRIEND_CODES.PRIMARY()}</label>
                     </div>
                     <div>
                         <input name="is_primary" type="checkbox" checked={selected_fc.is_primary}/>
@@ -117,23 +116,23 @@
                 </div>
                 <div class="option">
                     <div>
-                        <label for="description">{$LL.PLAYER_PROFILE.DESCRIPTION()}</label>
+                        <label for="description">{$LL.FRIEND_CODES.DESCRIPTION()}</label>
                     </div>
                     <div>
-                        <input name="description" placeholder={$LL.PLAYER_PROFILE.DESCRIPTION()} value={selected_fc.description}/>
+                        <input name="description" placeholder={$LL.FRIEND_CODES.DESCRIPTION()} value={selected_fc.description}/>
                     </div>
                 </div>
                 {#if is_privileged}
                     <div class="option">
                         <div>
-                            <label for="is_active">Active?</label>
+                            <label for="is_active">{$LL.FRIEND_CODES.ACTIVE()}</label>
                         </div>
                         <div>
                             <input name="is_active" type="checkbox" checked={selected_fc.is_active}/>
                         </div>
                     </div>
                 {/if}
-                <Button type="submit">Edit</Button>
+                <Button type="submit">{$LL.EDIT()}</Button>
             </div>
         </form>
     {/if}

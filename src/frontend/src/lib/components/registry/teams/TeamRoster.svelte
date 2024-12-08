@@ -27,7 +27,7 @@
   };
 
   async function leaveRoster() {
-    let conf = window.confirm(`Are you sure you want to leave the roster ${roster.name}?`);
+    let conf = window.confirm($LL.TEAM_PROFILE.LEAVE_ROSTER_CONFIRM({roster_name: roster.name}));
     if(!conf) return;
     const payload = {
       roster_id: roster.id
@@ -41,9 +41,9 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert('Successfully left roster');
+      alert($LL.TEAM_PROFILE.LEAVE_ROSTER_SUCCESS());
     } else {
-      alert(`Leaving roster failed: ${result['title']}`);
+      alert(`${$LL.TEAM_PROFILE.LEAVE_ROSTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -69,7 +69,7 @@
         <tr>
           <th></th>
           <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-          <th class="mobile-hide">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</th>
+          <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
           <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
         </tr>
       </thead>
@@ -88,7 +88,7 @@
     </Table>
   {/if}
   {#if roster.players.find((r) => r.player_id === user_info.player_id)}
-    <Button on:click={leaveRoster}>Leave Roster</Button>
+    <Button on:click={leaveRoster}>{$LL.TEAM_PROFILE.LEAVE_ROSTER()}</Button>
   {/if}
 </div>
 

@@ -57,7 +57,7 @@
         <input name='comment' type='text' bind:value={filter.comment} placeholder={$LL.PLAYER_BAN.COMMENT_INCLUDES()}/>
     </div>
     <div>
-        <Button type='submit'>{$LL.PLAYER_BAN.SEARCH()}</Button>
+        <Button type='submit'>{$LL.SEARCH()}</Button>
     </div>
 </form>
 

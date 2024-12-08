@@ -48,13 +48,7 @@
   col.name {
     width: 45%;
   }
-  /* col.recruiting {
-    width: 25%;
-  } */
   col.game {
     width: 40%;
   }
-  /* col.mode {
-    width: 15%;
-  } */
 </style>

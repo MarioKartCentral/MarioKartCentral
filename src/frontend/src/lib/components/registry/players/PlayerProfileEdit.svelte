@@ -39,9 +39,9 @@
 
         if (response.status < 300) {
             window.location.reload();
-            alert('Edited profile successfully');
+            alert($LL.PLAYER_PROFILE.PROFILE_EDIT_SUCCESS());
         } else {
-            alert(`Editing profile failed: ${result['title']}`);
+            alert(`${$LL.PLAYER_PROFILE.PROFILE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -65,35 +65,35 @@
 
         if (response.status < 300) {
             window.location.reload();
-            alert('Edited profile successfully');
+            alert($LL.PLAYER_PROFILE.PROFILE_EDIT_SUCCESS());
         } else {
-            alert(`Editing profile failed: ${result['title']}`);
+            alert(`${$LL.PLAYER_PROFILE.PROFILE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
 <Section header={$LL.PLAYER_PROFILE.PLAYER_PROFILE()}>
     <div slot="header_content">
-        <Button href="/{$page.params.lang}/registry/players/profile?id={player.id}">Back to Profile</Button>
+        <Button href="/{$page.params.lang}/registry/players/profile?id={player.id}">{$LL.PLAYER_PROFILE.BACK_TO_PROFILE()}</Button>
     </div>
 </Section>
 
 {#if check_permission(user_info, permissions.edit_profile, true)}
-    <Section header="Player Details">
+    <Section header={$LL.PLAYER_PROFILE.PLAYER_DETAILS()}>
         <EditPlayerDetails {player} is_privileged={check_permission(user_info, permissions.edit_player)}/>
     </Section>
-    <Section header={$LL.PLAYER_PROFILE.FRIEND_CODES()}>
+    <Section header={$LL.FRIEND_CODES.FRIEND_CODES()}>
         <EditFriendCodes {player} is_privileged={check_permission(user_info, permissions.edit_player)}/>
     </Section>
 {/if}
 
 {#if player.id === user_info.player?.id}
-    <Section header="Discord">
+    <Section header={$LL.DISCORD.DISCORD()}>
         <LinkDiscord/>
     </Section>
 {/if}
 
-<Section header="Edit Profile">
+<Section header={$LL.PLAYER_PROFILE.EDIT_PROFILE()}>
   {#if player.user_settings}
     <form method="post" on:submit|preventDefault={user_info.player?.id === player.id ? editProfile : forceEditProfile}>
       <div>

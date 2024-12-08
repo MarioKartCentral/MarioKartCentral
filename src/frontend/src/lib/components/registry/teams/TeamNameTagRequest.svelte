@@ -47,9 +47,9 @@
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
-        alert(`Your request to change your team's name/tag has been sent to MKCentral staff for approval.`);
+        alert($LL.TEAM_EDIT.NAME_TAG_CHANGE_SUCCESS());
       } else {
-        alert(`Editing team failed: ${result['title']}`);
+        alert(`${$LL.TEAM_EDIT.NAME_TAG_CHANGE_FAILURE()}: ${result['title']}`);
       }
     }
 </script>
@@ -57,13 +57,13 @@
 <form method="post" on:submit|preventDefault={editNameTag}>
     {#if days_until_change > 0}
         <div>
-            You can request a name/tag change in {days_until_change} days.
+            {$LL.TEAM_EDIT.REQUEST_CHANGE_IN({days: days_until_change})}
         </div>
     {/if}
     {#if pending_requests.length}
         {#each pending_requests as r}
             <div>
-                Name/Tag change pending approval from MKC Staff:
+                {$LL.TEAM_EDIT.NAME_TAG_CHANGE_PENDING()}
             </div>
             <div>
                 <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>

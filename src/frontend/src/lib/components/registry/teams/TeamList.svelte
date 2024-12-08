@@ -77,21 +77,20 @@
   <div class="flex">
     <GameModeSelect all_option hide_labels inline bind:game={filters.game} bind:mode={filters.mode}/>
     <div class="option">
-      <input class="search" bind:value={filters.name} type="text" placeholder="Search by team or roster name..."/>
+      <input class="search" bind:value={filters.name} type="text" placeholder={$LL.TEAM_LIST.SEARCH_BY()}/>
     </div>
     <div class="option">
       <select bind:value={filters.is_historical}>
-        <option value={false}>Active Teams</option>
-        <option value={true}>Historical Teams</option>
+        <option value={false}>{$LL.TEAM_LIST.ACTIVE_TEAMS()}</option>
+        <option value={true}>{$LL.TEAM_LIST.HISTORICAL_TEAMS()}</option>
       </select>
     </div>
     <div class="option">
-      <Button type="submit">Search</Button>
+      <Button type="submit">{$LL.SEARCH()}</Button>
     </div>
   </div>
 </form>
-{teams.length}
-{$LL.TEAM_LIST.TEAMS()}
+{$LL.TEAM_LIST.TEAM_COUNT({count: teams.length})}
 <Table>
   <col class="tag" />
   <col class="name" />

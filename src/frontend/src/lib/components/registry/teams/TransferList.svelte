@@ -242,7 +242,7 @@
     <br /><br />
     <div>
         <Button on:click={() => denyTransfer(curr_transfer)}>{$LL.MODERATOR.DENY()}</Button>
-        <Button on:click={deny_dialog.close}>{$LL.MODERATOR.CANCEL()}</Button>
+        <Button on:click={deny_dialog.close}>{$LL.CANCEL()}</Button>
     </div>
 </Dialog>
 

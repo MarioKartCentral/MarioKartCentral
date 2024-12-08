@@ -167,7 +167,7 @@
     <br /><br />
     <div class="accept">
       <Button on:click={() => declineInvite(curr_invite)}>{$LL.INVITES.DECLINE()}</Button>
-      <Button on:click={decline_dialog.close}>{$LL.INVITES.CANCEL()}</Button>
+      <Button on:click={decline_dialog.close}>{$LL.CANCEL()}</Button>
     </div>
   </Dialog>
 

@@ -88,7 +88,7 @@
           {/if}
         {/if}
         {#if check_permission(user_info, permissions.edit_player)}
-          <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">Edit Player</Button>
+          <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">{$LL.PLAYER_PROFILE.EDIT_PROFILE()}</Button>
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}</Button>
         {/if}
       </div>
@@ -113,5 +113,5 @@
     <ClaimPlayer {player}/>
   {/if}
 {:else if !player_found}
-    Player not found
+    {$LL.PLAYER_PROFILE.PLAYER_NOT_FOUND()}
 {/if}

@@ -42,7 +42,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Adding friend code failed: ${result['title']}`);
+            alert(`${$LL.FRIEND_CODES.FRIEND_CODE_ADD_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -67,7 +67,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Adding friend code failed: ${result['title']}`);
+            alert(`${$LL.FRIEND_CODES.FRIEND_CODE_ADD_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -80,7 +80,7 @@
             </div>
             <div class="option">
                 <div>
-                    <label for="fc">{$LL.PLAYER_PROFILE.FRIEND_CODE()}</label>
+                    <label for="fc">{$LL.FRIEND_CODES.FRIEND_CODE()}</label>
                 </div>
                 <div>
                     <input name="fc" placeholder={selected_game !== 'mk8' ? '0000-0000-0000' : 'NNID'} 
@@ -90,7 +90,7 @@
             </div>
             <div class="option">
                 <div>
-                    <label for="is_primary">{$LL.PLAYER_PROFILE.PRIMARY()}</label>
+                    <label for="is_primary">{$LL.FRIEND_CODES.PRIMARY()}</label>
                 </div>
                 <div>
                     <input name="is_primary" type="checkbox" />
@@ -98,10 +98,10 @@
             </div>
             <div class="option">
                 <div>
-                    <label for="description">{$LL.PLAYER_PROFILE.DESCRIPTION()}</label>
+                    <label for="description">{$LL.FRIEND_CODES.DESCRIPTION()}</label>
                 </div>
                 <div>
-                    <input name="description" placeholder={$LL.PLAYER_PROFILE.DESCRIPTION()} />
+                    <input name="description" placeholder={$LL.FRIEND_CODES.DESCRIPTION()} />
                 </div>
             </div>
             <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>

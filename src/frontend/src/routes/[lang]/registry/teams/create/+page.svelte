@@ -110,18 +110,18 @@
   {#if check_permission(user_info, permissions.manage_teams)}
     <Section header="Moderator">
       <div class="option">
-        <label for="approval_status">Approval Status</label>
+        <label for="approval_status">{$LL.TEAM_PROFILE.APPROVAL_STATUS.STATUS()}</label>
         <select name="approval_status">
-          <option value="approved">Approved</option>
-          <option value="pending">Pending</option>
-          <option value="denied">Denied</option>
+          <option value="approved">{$LL.TEAM_PROFILE.APPROVAL_STATUS.APPROVED()}</option>
+          <option value="pending">{$LL.TEAM_PROFILE.APPROVAL_STATUS.PENDING()}</option>
+          <option value="denied">{$LL.TEAM_PROFILE.APPROVAL_STATUS.DENIED()}</option>
         </select>
       </div>
       <div class="option">
-        <label for="is_historical">Active/Historical</label>
+        <label for="is_historical">{$LL.TEAM_PROFILE.ACTIVE_HISTORICAL()}</label>
         <select name="is_historical">
-          <option value={false}>Active</option>
-          <option value={true}>Historical</option>
+          <option value={false}>{$LL.TEAM_PROFILE.ACTIVE()}</option>
+          <option value={true}>{$LL.TEAM_PROFILE.HISTORICAL()}</option>
         </select>
       </div>
     </Section>

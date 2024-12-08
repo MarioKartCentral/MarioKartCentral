@@ -19,6 +19,9 @@
     day: 'numeric',
     hour12: true,
   };
+  
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const language_strings: any = $LL.LANGUAGES;
 </script>
 
 <div class="wrapper">
@@ -38,7 +41,7 @@
     </div>
     <div>
       <b>{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</b>
-      {$LL.LANGUAGES[team.language.toUpperCase().replace("-", "_")]()}
+      {language_strings[team.language.toUpperCase().replace("-", "_")]()}
     </div>
     {#if team.managers.length}
       <div>

@@ -37,7 +37,7 @@
       <PlayerProfileEdit {player}/>
     {/if}
   {:else}
-    You do not have permission to view this page.
+    {$LL.NO_PERMISSION()}
   {/if}
   
   

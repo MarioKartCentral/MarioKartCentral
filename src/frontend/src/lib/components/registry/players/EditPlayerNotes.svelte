@@ -44,6 +44,6 @@
     </div>
     <br/>
     <Button type="submit" disabled={newNotes.trim() === notes}>{$LL.PLAYER_PROFILE.SAVE()}</Button>
-    <Button color='red' on:click={handleCancel}>{$LL.PLAYER_PROFILE.CANCEL()}</Button>
+    <Button color='red' on:click={handleCancel}>{$LL.CANCEL()}</Button>
     <Button color='dark' extra_classes="float-right" on:click={() => newNotes = ""}>{$LL.PLAYER_PROFILE.CLEAR()}</Button>
 </form>

@@ -63,7 +63,7 @@
           <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
             >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
-          <Button href="/{$page.params.lang}/registry/teams/manage_roles?id={id}">Manage Roles</Button>
+          <Button href="/{$page.params.lang}/registry/teams/manage_roles?id={id}">{$LL.ROLES.MANAGE_ROLES()}</Button>
         </div>
       </Section>
     {/if}
@@ -82,7 +82,7 @@
         {/if}
       </div>
       {#if team.approval_status === 'pending'}
-        This team is pending approval from MKCentral Staff.
+        {$LL.TEAM_PROFILE.PENDING_APPROVAL()}
       {/if}
       <TeamProfile {team} />
     </Section>
@@ -93,15 +93,15 @@
           {#each filter_team_page_rosters(team) as roster}
             <TeamRoster {roster} />
           {:else}
-            No active rosters.
+            {$LL.TEAM_PROFILE.NO_ACTIVE_ROSTERS()}
           {/each}
         {/key}
       {/key}
     </Section>
     <TeamTransferList {team}/>
   {:else}
-    You do not have permission to view this page.
+    {$LL.NO_PERMISSION()}
   {/if}
 {:else if not_found}
-    Team not found.
+    {$LL.TEAM_PROFILE.TEAM_NOT_FOUND()}
 {/if}
