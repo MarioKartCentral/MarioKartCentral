@@ -95,8 +95,13 @@ class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT squad_id, placement, placement_description, placement_lower_bound, is_disqualified FROM tournament_squad_placements WHERE tournament_id = ?", (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
-                placed_squads = [TournamentPlacementDetailed(reg_id, placement, placement_description, placement_lower_bound, is_dq, None, squad_dict[reg_id]) 
-                                 for reg_id, placement, placement_description, placement_lower_bound, is_dq in rows]
+                placed_squads: list[TournamentPlacementDetailed] = []
+                for row in rows:
+                    reg_id, placement, placement_description, placement_lower_bound, is_dq = row
+                    squad = squad_dict.get(reg_id, None)
+                    if not squad:
+                        continue
+                    placed_squads.append(TournamentPlacementDetailed(reg_id, placement, placement_description, placement_lower_bound, is_dq, None, squad))
                 placed_ids = [p.registration_id for p in placed_squads]
                 unplaced_squads = [TournamentPlacementDetailed(squad.id, None, None, None, False, None, squad) for squad in self.squads if squad.id not in placed_ids]
                 return TournamentPlacementList(self.tournament_id, True, placed_squads, unplaced_squads)
