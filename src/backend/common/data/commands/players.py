@@ -559,7 +559,7 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     mode: str
 
     async def handle(self, db_wrapper, s3_wrapper):
-        history: list = []
+        history: list[PlayerTransferItem] = []
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.join_date, tm.leave_date, tr.name as "roster_name"
                 FROM team_members as tm

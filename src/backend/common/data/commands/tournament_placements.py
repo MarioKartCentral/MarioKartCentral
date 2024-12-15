@@ -111,8 +111,8 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        tournament_solo_and_squad_results = []
-        tournament_team_results = []
+        tournament_solo_and_squad_results: list[PlayerTournamentPlacement] = []
+        tournament_team_results: list[PlayerTournamentPlacement] = []
         async with db_wrapper.connect(readonly=True) as db:
             # Solo placements
             async with db.execute("""
@@ -211,7 +211,7 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
     team_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        tournament_team_results = []
+        tournament_team_results: list[TeamTournamentPlacement] = []
         async with db_wrapper.connect(readonly=True) as db:
             # Team placements
             async with db.execute("""
