@@ -5,6 +5,7 @@
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let series: TournamentSeries;
 </script>
@@ -29,7 +30,7 @@
     <div class="description">
       <MarkdownBox content={series.description} />
       <hr />
-      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}"> More Details </a>
+      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
     </div>
   </div>
 </Section>

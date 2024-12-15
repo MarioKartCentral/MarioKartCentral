@@ -6,6 +6,7 @@
   import TournamentPlayerList from '../TournamentPlayerList.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { BadgeCheckSolid } from 'flowbite-svelte-icons';
+  import LL from '$i18n/i18n-svelte';
 
   export let registration: MyTournamentRegistration;
   export let tournament: Tournament;
@@ -32,14 +33,16 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Failed to check in/out: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_OUT_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
 {#if tournament.is_squad}
   {#if getInvitedSquads().length}
-    <div>My invites</div>
+    <div>
+      {$LL.TOURNAMENTS.REGISTRATIONS.MY_INVITES()}
+    </div>
     <TournamentInviteList {tournament} squads={getInvitedSquads()}/>
   {/if}
 {/if}
@@ -49,15 +52,15 @@
         <div class="section">
           {#if tournament.checkins_open}
             {#if !reg.player.is_checked_in}
-              <Button on:click={() => toggleCheckin(reg)}>Check In Now!</Button>
+              <Button on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
               <div>
-                Make sure to check in before the tournament starts!
+                {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
               </div>
             {:else}
               <div class="flex">
                 <BadgeCheckSolid/>
                 <div>
-                  CHECKED IN
+                  {$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}
                 </div>
                 {#if reg.squad}
                   <div>
@@ -66,26 +69,26 @@
                 {/if}
               </div>
               <div>
-                <Button size="xs" on:click={() => toggleCheckin(reg)}>Check Out</Button>
+                <Button size="xs" on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
               </div>
             {/if}
           {:else}
-            Make sure to check in during the check-in window!
+            {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_CLOSED()}
           {/if}
         </div>
       {/if}
       {#if tournament.verification_required && ((reg.squad && !reg.squad.is_approved) || (!reg.squad && !reg.player.is_approved))}
         <div class="section">
           <div class="pending">
-            Pending Approval
+            {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
           </div>
-          Your registration must be approved before you can play.
+          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
         </div>
       {/if}
       {#if reg.squad}
         <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
       {:else}
-        <div>My Registration</div>
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
         <TournamentPlayerList {tournament} players={[reg.player]} my_player={reg.player}/>
       {/if}
     </div>

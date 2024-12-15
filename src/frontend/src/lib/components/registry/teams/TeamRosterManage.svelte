@@ -401,7 +401,7 @@
       <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
     </select>
     <br />
-    <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
+    <Button type="submit">{$LL.SUBMIT()}</Button>
   </form>
 </Dialog>
 

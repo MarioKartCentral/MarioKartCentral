@@ -5,6 +5,7 @@
     import PlacementItem from "./PlacementItem.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import { sort_placement_list } from "$lib/util/util";
+    import LL from "$i18n/i18n-svelte";
 
     export let tournament_id: number;
     export let is_squad: boolean;
@@ -12,8 +13,6 @@
     export let is_placements = true;
 
     let placement_list: PlacementOrganizer[] = [];
-
-    
 
     for(let placement of placements) {
         placement_list.push({id: placement.registration_id, placement: placement.placement,
@@ -57,7 +56,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing placements failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.PLACEMENTS.SAVE_PLACEMENTS_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -173,7 +172,7 @@
 </section>
 
 {#if is_placements}
-    <Button on:click={savePlacements}>Save</Button>
+    <Button on:click={savePlacements}>{$LL.SAVE()}</Button>
 {/if}
 
 <style>

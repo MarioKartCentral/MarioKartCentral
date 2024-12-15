@@ -5,6 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import { check_permission, series_permissions } from '$lib/util/permissions';
+  import LL from '$i18n/i18n-svelte';
 
   let template_id: number | null;
 
@@ -23,4 +24,6 @@
   {#key template_id}
     <CreateEditTemplateForm {template_id} />
   {/key}
+{:else}
+  {$LL.NO_PERMISSION()}
 {/if}

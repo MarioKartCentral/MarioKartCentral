@@ -6,11 +6,11 @@
   import GameBadge from '../badges/GameBadge.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   export let tournament: TournamentListItem;
+  import LL from '$i18n/i18n-svelte';
 
   let date_start = new Date(tournament.date_start * 1000);
   let date_end = new Date(tournament.date_end * 1000);
 
-  $: tournament_type = tournament.is_squad ? (tournament.teams_allowed ? 'Team' : 'Squad') : 'Solo';
   let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   // Appends leading 0 to single digit numbers
   const zeroPad = (num: number) => String(num).padStart(2, '0');
@@ -22,9 +22,9 @@
     <div class="information flex flex-col align-middle items-center justify-center text-center">
       <div class="italic">
         {#if !tournament.is_viewable}
-          Unpublished
+          {$LL.TOURNAMENTS.UNPUBLISHED()}
         {:else if !tournament.is_public}
-          Hidden from tournament page
+          {$LL.TOURNAMENTS.HIDDEN_FROM_TOURNAMENT_PAGE()}
         {/if}
       </div>
       <div class="name">
@@ -60,7 +60,7 @@
         <div class="badges flex flex-col p-1">
           <GameBadge game={tournament.game} />
           <ModeBadge mode={tournament.mode} />
-          <TypeBadge type={tournament_type} />
+          <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
         </div>
       </div>
     </div>
@@ -91,13 +91,13 @@
       {#if tournament.registrations_open}
         <div class="register-button p-1">
           <Button size="sm" color="yellow" href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
-            <b>Register now!</b>
+            <b>{$LL.TOURNAMENTS.REGISTER_NOW()}</b>
           </Button>
         </div>
       {:else}
         <div class="view-tournament-button p-1">
           <Button size="sm" href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
-            ><b>View Tournament</b></Button
+            ><b>{$LL.TOURNAMENTS.VIEW_TOURNAMENT()}</b></Button
           >
         </div>
       {/if}

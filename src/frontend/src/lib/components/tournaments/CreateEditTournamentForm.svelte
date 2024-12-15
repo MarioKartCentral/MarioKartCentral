@@ -7,6 +7,7 @@
   import type { CreateTournament } from '$lib/types/tournaments/create/create-tournament';
   import TournamentDetailsForm from './TournamentDetailsForm.svelte';
   import Button from '../common/buttons/Button.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament_id: number | null = null;
   export let template_id: number | null = null;
@@ -91,7 +92,7 @@
     let date_end: number | null = getDate('date_end');
     let registration_deadline: number | null = getDate('registration_deadline');
     if (date_start && date_end && date_start > date_end) {
-      alert('Starting date must be after ending date');
+      alert($LL.TOURNAMENTS.MANAGE.START_BEFORE_END_DATE());
       return;
     }
     data.date_start = Number(date_start);
@@ -110,9 +111,9 @@
     if (response.status < 300) {
       let new_id = result["id"];
       goto(`/${$page.params.lang}/tournaments/details?id=${new_id}`);
-      alert('Successfully created tournament!');
+      alert($LL.TOURNAMENTS.MANAGE.CREATE_TOURNAMENT_SUCCESS());
     } else {
-      alert(`Creating tournament failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.MANAGE.CREATE_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -134,7 +135,7 @@
     let date_end: number | null = getDate('date_end');
     let registration_deadline: number | null = getDate('registration_deadline');
     if (date_start && date_end && date_start > date_end) {
-      alert('Starting date must be after ending date');
+      alert($LL.TOURNAMENTS.MANAGE.START_BEFORE_END_DATE());
       return;
     }
     data.date_start = Number(date_start);
@@ -152,19 +153,19 @@
     const result = await response.json();
     if (response.status < 300) {
       goto(`/${$page.params.lang}/tournaments/details?id=${tournament_id}`);
-      alert('Successfully edited tournament!');
+      alert($LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT_SUCCESS());
     } else {
-      alert(`Editing tournament failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
 {#if data_retrieved}
   <form method="POST" on:submit|preventDefault={is_edit ? editTournament : createTournament}>
-    <Section header={is_edit ? 'Edit Tournament' : 'Create Tournament'} />
+    <Section header={is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()} />
     <TournamentDetailsForm {data} update_function={updateData} {is_edit} {series_restrict} />
     <Section header="Submit">
-      <Button type="submit">{is_edit ? 'Edit Tournament' : 'Create Tournament'}</Button>
+      <Button type="submit">{is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()}</Button>
     </Section>
   </form>
 {/if}

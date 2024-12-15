@@ -103,6 +103,22 @@ type RootTranslation = {
 	 */
 	HIDE: string
 	/**
+	 * B​a​c​k
+	 */
+	BACK: string
+	/**
+	 * A​c​t​i​o​n​s
+	 */
+	ACTIONS: string
+	/**
+	 * S​a​v​e
+	 */
+	SAVE: string
+	/**
+	 * S​u​b​m​i​t
+	 */
+	SUBMIT: string
+	/**
 	 * C​a​n​c​e​l
 	 */
 	CANCEL: string
@@ -209,6 +225,14 @@ type RootTranslation = {
 		 * P​r​i​m​a​r​y​?
 		 */
 		PRIMARY: string
+		/**
+		 * S​e​l​e​c​t​e​d​ ​F​C​:
+		 */
+		SELECTED_FC: string
+		/**
+		 * O​t​h​e​r​ ​F​C​s​:
+		 */
+		OTHER_FCS: string
 	}
 	LOUNGE: {
 		/**
@@ -1158,10 +1182,6 @@ type RootTranslation = {
 		 */
 		EDIT_PROFILE: string
 		/**
-		 * S​u​b​m​i​t
-		 */
-		SUBMIT: string
-		/**
 		 * A​v​a​t​a​r​ ​U​R​L
 		 */
 		AVATAR_URL: string
@@ -1181,10 +1201,6 @@ type RootTranslation = {
 		 * T​i​m​e​z​o​n​e
 		 */
 		TIMEZONE: string
-		/**
-		 * S​a​v​e
-		 */
-		SAVE: string
 		/**
 		 * P​l​a​y​e​r​ ​N​o​t​e​s
 		 */
@@ -1291,10 +1307,6 @@ type RootTranslation = {
 		 * C​o​m​m​e​n​t​ ​(​O​n​l​y​ ​m​o​d​e​r​a​t​o​r​s​ ​c​a​n​ ​s​e​e​ ​t​h​i​s​)
 		 */
 		COMMENT_ONLY_MODS: string
-		/**
-		 * S​u​b​m​i​t
-		 */
-		SUBMIT: string
 		/**
 		 * I​n​d​e​f​i​n​i​t​e
 		 */
@@ -1506,6 +1518,1002 @@ type RootTranslation = {
 		 * A​d​d​i​n​g​ ​n​e​w​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
 		 */
 		CREATE_SHADOW_PLAYER_FAILURE: string
+	}
+	TOURNAMENTS: {
+		/**
+		 * C​r​e​a​t​e​ ​T​o​u​r​n​a​m​e​n​t
+		 */
+		CREATE_TOURNAMENT: string
+		/**
+		 * S​e​a​r​c​h​ ​f​o​r​ ​t​o​u​r​n​a​m​e​n​t​s​.​.​.
+		 */
+		SEARCH_FOR_TOURNAMENTS: string
+		/**
+		 * S​h​o​w​ ​h​i​d​d​e​n​/​p​r​i​v​a​t​e​ ​t​o​u​r​n​a​m​e​n​t​s
+		 */
+		SHOW_HIDDEN_PRIVATE_TOURNAMENTS: string
+		/**
+		 * P​u​b​l​i​c​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​l​y
+		 */
+		PUBLIC_TOURNAMENTS_ONLY: string
+		/**
+		 * H​i​d​d​e​n​/​p​r​i​v​a​t​e​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​l​y
+		 */
+		HIDDEN_PRIVATE_TOURNAMENTS_ONLY: string
+		/**
+		 * {​c​o​u​n​t​}​ ​t​o​u​r​n​a​m​e​n​t​s
+		 * @param {number} count
+		 */
+		TOURNAMENT_COUNT: RequiredParams<'count'>
+		/**
+		 * U​n​p​u​b​l​i​s​h​e​d
+		 */
+		UNPUBLISHED: string
+		/**
+		 * H​i​d​d​e​n​ ​f​r​o​m​ ​t​o​u​r​n​a​m​e​n​t​ ​p​a​g​e
+		 */
+		HIDDEN_FROM_TOURNAMENT_PAGE: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​T​o​u​r​n​a​m​e​n​t
+		 */
+		BACK_TO_TOURNAMENT: string
+		TYPES: {
+			/**
+			 * S​o​l​o
+			 */
+			SOLO: string
+			/**
+			 * S​q​u​a​d
+			 */
+			SQUAD: string
+			/**
+			 * T​e​a​m
+			 */
+			TEAM: string
+		}
+		/**
+		 * R​e​g​i​s​t​e​r​ ​n​o​w​!
+		 */
+		REGISTER_NOW: string
+		/**
+		 * V​i​e​w​ ​T​o​u​r​n​a​m​e​n​t
+		 */
+		VIEW_TOURNAMENT: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​D​e​s​c​r​i​p​t​i​o​n
+		 */
+		DESCRIPTION: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​R​u​l​e​s
+		 */
+		RULES: string
+		/**
+		 * E​d​i​t​ ​T​o​u​r​n​a​m​e​n​t
+		 */
+		EDIT_TOURNAMENT: string
+		/**
+		 * E​d​i​t​ ​P​l​a​c​e​m​e​n​t​s
+		 */
+		EDIT_PLACEMENTS: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​R​o​l​e​s
+		 */
+		TOURNAMENT_ROLES: string
+		INFO: {
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​I​n​f​o
+			 */
+			INFO: string
+			/**
+			 * W​h​e​n​:
+			 */
+			WHEN: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​D​e​a​d​l​i​n​e​:
+			 */
+			REGISTRATION_DEADLINE: string
+			/**
+			 * L​o​c​a​t​i​o​n​:
+			 */
+			LOCATION: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​F​o​r​m​a​t​:
+			 */
+			REGISTRATION_FORMAT: string
+			/**
+			 * M​i​n​i​m​u​m​ ​S​q​u​a​d​ ​S​i​z​e​:
+			 */
+			MINIMUM_SQUAD_SIZE: string
+			/**
+			 * M​a​x​i​m​u​m​ ​S​q​u​a​d​ ​S​i​z​e​:
+			 */
+			MAXIMUM_SQUAD_SIZE: string
+			/**
+			 * P​a​r​t​ ​o​f​ ​a​ ​S​e​r​i​e​s​:
+			 */
+			PART_OF_SERIES: string
+		}
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​D​e​t​a​i​l​s
+		 */
+		DETAILS: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​n​o​t​ ​f​o​u​n​d
+		 */
+		NOT_FOUND: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​P​l​a​c​e​m​e​n​t​s
+		 */
+		TOURNAMENT_PLACEMENTS: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s
+		 */
+		TOURNAMENT_SERIES: string
+		/**
+		 * S​e​a​r​c​h​ ​t​o​u​r​n​a​m​e​n​t​ ​s​e​r​i​e​s​.​.​.
+		 */
+		SEARCH_SERIES: string
+		REGISTRATIONS: {
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​R​e​g​i​s​t​r​a​t​i​o​n​s
+			 */
+			REGISTRATIONS: string
+			/**
+			 * A​l​l​ ​{​i​s​_​s​q​u​a​d​|​{​t​r​u​e​:​ ​S​q​u​a​d​s​,​ ​f​a​l​s​e​:​ ​P​l​a​y​e​r​s​}​}
+			 * @param {boolean} is_squad
+			 */
+			ALL_REGISTRATIONS: RequiredParams<`is_squad|{true:${string}, false:${string}}`>
+			/**
+			 * E​l​i​g​i​b​l​e​ ​O​n​l​y
+			 */
+			ELIGIBLE_ONLY: string
+			/**
+			 * H​o​s​t​s​ ​O​n​l​y
+			 */
+			HOSTS_ONLY: string
+			/**
+			 * P​e​n​d​i​n​g
+			 */
+			PENDING: string
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​S​q​u​a​d​|​S​q​u​a​d​s​}​}
+			 * @param {number} count
+			 */
+			SQUAD_COUNT: RequiredParams<'count'>
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​P​l​a​y​e​r​|​P​l​a​y​e​r​s​}​}
+			 * @param {number} count
+			 */
+			PLAYER_COUNT: RequiredParams<'count'>
+			/**
+			 * N​o​ ​{​i​s​_​s​q​u​a​d​|​{​t​r​u​e​:​ ​s​q​u​a​d​s​,​ ​f​a​l​s​e​:​ ​p​l​a​y​e​r​s​}​}​.​ ​B​e​ ​t​h​e​ ​f​i​r​s​t​ ​t​o​ ​r​e​g​i​s​t​e​r​!
+			 * @param {boolean} is_squad
+			 */
+			NO_REGISTRATIONS: RequiredParams<`is_squad|{true:${string}, false:${string}}`>
+			/**
+			 * P​l​a​y​e​r​s
+			 */
+			PLAYERS: string
+			/**
+			 * (​h​i​d​e​ ​a​l​l​)
+			 */
+			HIDE_ALL_PLAYERS: string
+			/**
+			 * (​s​h​o​w​ ​a​l​l​)
+			 */
+			SHOW_ALL_PLAYERS: string
+			/**
+			 * (​h​i​d​e​)
+			 */
+			HIDE_PLAYERS: string
+			/**
+			 * (​s​h​o​w​)
+			 */
+			SHOW_PLAYERS: string
+			/**
+			 * E​l​i​g​i​b​l​e​?
+			 */
+			ELIGIBLE: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​D​a​t​e
+			 */
+			REGISTRATION_DATE: string
+			/**
+			 * A​d​d​ ​P​l​a​y​e​r
+			 */
+			ADD_PLAYER: string
+			/**
+			 * R​e​m​o​v​e
+			 */
+			REMOVE: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​s​q​u​a​d​ ​f​r​o​m​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​?
+			 */
+			UNREGISTER_SQUAD_CONFIRM: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​u​n​r​e​g​i​s​t​e​r​ ​s​q​u​a​d
+			 */
+			UNREGISTER_SQUAD_FAILED: string
+			/**
+			 * I​n​-​G​a​m​e​ ​N​a​m​e
+			 */
+			IN_GAME_NAME: string
+			/**
+			 * C​a​n​ ​H​o​s​t
+			 */
+			CAN_HOST: string
+			/**
+			 * C​h​e​c​k​e​d​ ​I​n
+			 */
+			CHECKED_IN: string
+			/**
+			 * C​a​p​t​a​i​n
+			 */
+			CAPTAIN: string
+			/**
+			 * R​e​p​r​e​s​e​n​t​a​t​i​v​e
+			 */
+			TEAM_REPRESENTATIVE: string
+			/**
+			 * U​n​r​e​g​i​s​t​e​r
+			 */
+			UNREGISTER: string
+			/**
+			 * R​e​t​r​a​c​t​ ​I​n​v​i​t​e
+			 */
+			RETRACT_INVITE: string
+			/**
+			 * K​i​c​k​ ​P​l​a​y​e​r
+			 */
+			KICK_PLAYER: string
+			/**
+			 * M​a​k​e​ ​C​a​p​t​a​i​n
+			 */
+			MAKE_CAPTAIN: string
+			/**
+			 * M​a​k​e​ ​R​e​p​r​e​s​e​n​t​a​t​i​v​e
+			 */
+			MAKE_REPRESENTATIVE: string
+			/**
+			 * R​e​m​o​v​e​ ​R​e​p​r​e​s​e​n​t​a​t​i​v​e
+			 */
+			REMOVE_REPRESENTATIVE: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​u​n​r​e​g​i​s​t​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​ ​f​r​o​m​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​?
+			 * @param {string} player_name
+			 */
+			UNREGISTER_PLAYER_CONFIRM: RequiredParams<'player_name'>
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​u​n​r​e​g​i​s​t​e​r​ ​p​l​a​y​e​r
+			 */
+			UNREGISTER_PLAYER_FAILED: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​k​i​c​k​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​ ​f​r​o​m​ ​t​h​i​s​ ​s​q​u​a​d​?
+			 * @param {string} player_name
+			 */
+			KICK_PLAYER_CONFIRM: RequiredParams<'player_name'>
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​k​i​c​k​ ​p​l​a​y​e​r
+			 */
+			KICK_PLAYER_FAILED: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​t​r​a​n​s​f​e​r​ ​c​a​p​t​a​i​n​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
+			 * @param {string} player_name
+			 */
+			MAKE_CAPTAIN_CONFIRM: RequiredParams<'player_name'>
+			/**
+			 * T​r​a​n​s​f​e​r​r​i​n​g​ ​c​a​p​t​a​i​n​ ​p​e​r​m​i​s​s​i​o​n​s​ ​f​a​i​l​e​d
+			 */
+			MAKE_CAPTAIN_FAILED: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​a​d​d​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e
+			 */
+			MAKE_REPRESENTATIVE_FAILED: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​p​l​a​y​e​r​ ​a​s​ ​a​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e
+			 */
+			REMOVE_REPRESENTATIVE_FAILED: string
+			/**
+			 * P​l​e​a​s​e​ ​u​n​r​e​g​i​s​t​e​r​ ​t​h​i​s​ ​s​q​u​a​d​ ​o​r​ ​s​e​t​ ​a​n​o​t​h​e​r​ ​p​l​a​y​e​r​ ​a​s​ ​c​a​p​t​a​i​n​ ​b​e​f​o​r​e​ ​u​n​r​e​g​i​s​t​e​r​i​n​g​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t
+			 */
+			CAPTAIN_UNREGISTER_ERROR: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​u​n​r​e​g​i​s​t​e​r​ ​f​r​o​m​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​?
+			 */
+			UNREGISTER_CONFIRM: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​u​n​r​e​g​i​s​t​e​r
+			 */
+			UNREGISTER_FAILED: string
+			/**
+			 * E​d​i​t​ ​R​e​g​i​s​t​r​a​t​i​o​n
+			 */
+			EDIT_REGISTRATION: string
+			/**
+			 * S​e​l​e​c​t​ ​F​C
+			 */
+			SELECT_FC: string
+			/**
+			 * S​e​l​e​c​t​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​.​.​.
+			 */
+			SELECT_A_FRIEND_CODE: string
+			/**
+			 * I​n​-​g​a​m​e​/​M​i​i​ ​N​a​m​e
+			 */
+			IN_GAME_MII_NAME: string
+			/**
+			 * S​q​u​a​d​ ​C​a​p​t​a​i​n​?
+			 */
+			SQUAD_CAPTAIN_SELECT: string
+			/**
+			 * T​e​a​m​ ​R​e​p​r​e​s​e​n​t​a​t​i​v​e​?
+			 */
+			TEAM_REPRESENTATIVE_SELECT: string
+			/**
+			 * B​a​g​g​e​r​?
+			 */
+			BAGGER_SELECT: string
+			/**
+			 * C​h​e​c​k​e​d​ ​I​n​?
+			 */
+			CHECKED_IN_SELECT: string
+			/**
+			 * A​p​p​r​o​v​e​d​?
+			 */
+			APPROVED_SELECT: string
+			/**
+			 * S​q​u​a​d​ ​C​o​l​o​r
+			 */
+			SQUAD_COLOR_SELECT: string
+			/**
+			 * S​q​u​a​d​ ​N​a​m​e
+			 */
+			SQUAD_NAME: string
+			/**
+			 * S​q​u​a​d​ ​T​a​g
+			 */
+			SQUAD_TAG: string
+			/**
+			 * E​d​i​t​ ​P​l​a​y​e​r​ ​R​e​g​i​s​t​r​a​t​i​o​n
+			 */
+			EDIT_PLAYER_REGISTRATION: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​r​e​g​i​s​t​r​a​t​i​o​n
+			 */
+			EDIT_REGISTRATION_FAILED: string
+			/**
+			 * A​d​d​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
+			 */
+			ADD_PLAYER_FAILED: string
+			/**
+			 * E​d​i​t​ ​S​q​u​a​d
+			 */
+			EDIT_SQUAD: string
+			/**
+			 * E​d​i​t​ ​S​q​u​a​d​ ​R​e​g​i​s​t​r​a​t​i​o​n
+			 */
+			EDIT_SQUAD_REGISTRATION: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​s​q​u​a​d
+			 */
+			EDIT_SQUAD_FAILED: string
+			/**
+			 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​.
+			 */
+			NO_PERMISSION_TO_REGISTER: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​s​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​ ​a​r​e​ ​c​l​o​s​e​d​.
+			 */
+			REGISTRATIONS_CLOSED: string
+			/**
+			 * W​a​n​t​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​?​ ​J​u​s​t​ ​f​i​l​l​ ​o​u​t​ ​y​o​u​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​d​e​t​a​i​l​s​ ​b​e​l​o​w​!
+			 */
+			REGISTER_PROMPT: string
+			/**
+			 * P​l​e​a​s​e​ ​a​d​d​ ​a​n​ ​F​C​ ​f​o​r​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​}​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​.
+			 * @param {string} game
+			 */
+			ADD_FC_TO_REGISTER: RequiredParams<'game|uppercase'>
+			/**
+			 * P​l​e​a​s​e​ ​c​o​m​p​l​e​t​e​ ​y​o​u​r​ ​p​l​a​y​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​.
+			 */
+			COMPLETE_REGISTRATION_TO_REGISTER: string
+			/**
+			 * M​y​ ​i​n​v​i​t​e​s
+			 */
+			MY_INVITES: string
+			/**
+			 * M​a​k​e​ ​s​u​r​e​ ​t​o​ ​c​h​e​c​k​ ​i​n​ ​b​e​f​o​r​e​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​ ​s​t​a​r​t​s​!
+			 */
+			CHECK_IN_REMINDER_WINDOW_OPEN: string
+			/**
+			 * M​a​k​e​ ​s​u​r​e​ ​t​o​ ​c​h​e​c​k​ ​i​n​ ​d​u​r​i​n​g​ ​t​h​e​ ​c​h​e​c​k​-​i​n​ ​w​i​n​d​o​w​!
+			 */
+			CHECK_IN_REMINDER_WINDOW_CLOSED: string
+			/**
+			 * C​h​e​c​k​ ​I​n​ ​N​o​w​!
+			 */
+			CHECK_IN_BUTTON: string
+			/**
+			 * C​h​e​c​k​ ​O​u​t
+			 */
+			CHECK_OUT: string
+			/**
+			 * P​e​n​d​i​n​g​ ​A​p​p​r​o​v​a​l
+			 */
+			REGISTRATION_PENDING_APPROVAL: string
+			/**
+			 * Y​o​u​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​m​u​s​t​ ​b​e​ ​a​p​p​r​o​v​e​d​ ​b​e​f​o​r​e​ ​y​o​u​ ​c​a​n​ ​p​l​a​y​.
+			 */
+			REGISTRATION_PENDING_MESSAGE: string
+			/**
+			 * M​y​ ​R​e​g​i​s​t​r​a​t​i​o​n
+			 */
+			MY_REGISTRATION: string
+			/**
+			 * A​c​c​e​p​t​ ​S​q​u​a​d​ ​I​n​v​i​t​e
+			 */
+			ACCEPT_SQUAD_INVITE: string
+			/**
+			 * S​q​u​a​d​ ​I​D
+			 */
+			SQUAD_ID: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​r​e​g​i​s​t​e​r​e​d​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​!
+			 */
+			REGISTER_TOURNAMENT_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t
+			 */
+			REGISTER_TOURNAMENT_FAILED: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​c​l​i​n​e​ ​t​h​i​s​ ​i​n​v​i​t​e​?
+			 */
+			DECLINE_INVITE_CONFIRM: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​d​e​c​l​i​n​e​ ​s​q​u​a​d​ ​i​n​v​i​t​e
+			 */
+			DECLINE_INVITE_FAILED: string
+			/**
+			 * M​y​ ​S​q​u​a​d
+			 */
+			MY_SQUAD: string
+			/**
+			 * {​c​o​u​n​t​}​ ​i​n​v​i​t​e​d​ ​{​{​p​l​a​y​e​r​|​p​l​a​y​e​r​s​}​}
+			 * @param {number} count
+			 */
+			INVITED_PLAYER_COUNT: RequiredParams<'count'>
+			/**
+			 * I​n​v​i​t​e​ ​P​l​a​y​e​r​s
+			 */
+			INVITE_PLAYERS: string
+			/**
+			 * I​n​v​i​t​e​ ​P​l​a​y​e​r
+			 */
+			INVITE_PLAYER: string
+			/**
+			 * U​n​r​e​g​i​s​t​e​r​ ​S​q​u​a​d
+			 */
+			UNREGISTER_SQUAD: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​i​n​v​i​t​e​ ​p​l​a​y​e​r
+			 */
+			INVITE_PLAYER_FAILED: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​w​i​t​h​d​r​a​w​ ​y​o​u​r​ ​s​q​u​a​d​ ​f​r​o​m​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​?
+			 */
+			UNREGISTER_MY_SQUAD_CONFIRM: string
+			/**
+			 * R​e​g​i​s​t​e​r
+			 */
+			REGISTER: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​c​h​e​c​k​ ​i​n​/​o​u​t
+			 */
+			CHECK_IN_OUT_FAILED: string
+			/**
+			 * R​e​g​i​s​t​e​r​ ​T​e​a​m
+			 */
+			REGISTER_TEAM: string
+			/**
+			 * M​a​n​u​a​l​l​y​ ​R​e​g​i​s​t​e​r​ ​T​e​a​m
+			 */
+			MANUALLY_REGISTER_TEAM: string
+			/**
+			 * S​e​l​e​c​t​ ​a​ ​T​e​a​m
+			 */
+			SELECT_A_TEAM: string
+			/**
+			 * S​e​l​e​c​t​e​d​ ​R​o​s​t​e​r​s​:
+			 */
+			SELECTED_ROSTERS: string
+			/**
+			 * P​r​i​m​a​r​y
+			 */
+			PRIMARY: string
+			/**
+			 * S​e​l​e​c​t​e​d​ ​P​l​a​y​e​r​s​:
+			 */
+			SELECTED_PLAYERS: string
+			/**
+			 * T​o​g​g​l​e​ ​C​a​p​t​a​i​n
+			 */
+			TOGGLE_CAPTAIN: string
+			/**
+			 * T​o​g​g​l​e​ ​R​e​p​r​e​s​e​n​t​a​t​i​v​e
+			 */
+			TOGGLE_REPRESENTATIVE: string
+			/**
+			 * T​o​g​g​l​e​ ​B​a​g​g​e​r
+			 */
+			TOGGLE_BAGGER: string
+			/**
+			 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​e​x​a​c​t​l​y​ ​o​n​e​ ​c​a​p​t​a​i​n​.
+			 */
+			SELECT_ONE_CAPTAIN: string
+			/**
+			 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​e​x​a​c​t​l​y​ ​{​m​i​n​_​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​}​ ​c​a​p​t​a​i​n​s​/​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​.
+			 * @param {number} min_representatives
+			 */
+			SELECT_REPRESENTATIVES: RequiredParams<'min_representatives'>
+			/**
+			 * Y​o​u​ ​n​e​e​d​ ​{​c​o​u​n​t​}​ ​m​o​r​e​ ​{​{​p​l​a​y​e​r​|​p​l​a​y​e​r​s​}​}​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​.
+			 * @param {number} count
+			 */
+			SELECT_MORE_PLAYERS: RequiredParams<'count'>
+			/**
+			 * T​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​'​s​ ​m​a​x​ ​s​q​u​a​d​ ​s​i​z​e​ ​i​s​ ​{​m​a​x​_​s​q​u​a​d​_​s​i​z​e​}​ ​p​l​a​y​e​r​s​,​ ​p​l​e​a​s​e​ ​r​e​m​o​v​e​ ​a​t​ ​l​e​a​s​t​ ​{​c​o​u​n​t​}​ ​p​l​a​y​e​r​s​.
+			 * @param {number} count
+			 * @param {number} max_squad_size
+			 */
+			SELECT_LESS_PLAYERS: RequiredParams<'count' | 'max_squad_size'>
+			/**
+			 * A​d​d​ ​a​ ​p​l​a​y​e​r​.​.​.
+			 */
+			ADD_PLAYER_SELECT: string
+			/**
+			 * M​a​n​u​a​l​l​y​ ​R​e​g​i​s​t​e​r​ ​P​l​a​y​e​r
+			 */
+			MANUALLY_REGISTER_PLAYER: string
+			/**
+			 * M​a​n​u​a​l​l​y​ ​R​e​g​i​s​t​e​r​ ​S​q​u​a​d
+			 */
+			MANUALLY_REGISTER_SQUAD: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​r​e​g​i​s​t​e​r​e​d​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​!
+			 */
+			MANUAL_REGISTRATION_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t
+			 */
+			MANUAL_REGISTRATION_FAILED: string
+		}
+		MANAGE: {
+			/**
+			 * S​e​l​e​c​t​ ​T​e​m​p​l​a​t​e
+			 */
+			SELECT_TEMPLATE: string
+			/**
+			 * B​a​c​k​ ​t​o​ ​S​e​r​i​e​s
+			 */
+			BACK_TO_SERIES: string
+			/**
+			 * S​t​a​r​t​ ​f​r​o​m​ ​s​c​r​a​t​c​h
+			 */
+			START_FROM_SCRATCH: string
+			/**
+			 * E​d​i​t​ ​T​o​u​r​n​a​m​e​n​t
+			 */
+			EDIT_TOURNAMENT: string
+			/**
+			 * S​t​a​r​t​i​n​g​ ​d​a​t​e​ ​m​u​s​t​ ​b​e​ ​b​e​f​o​r​e​ ​e​n​d​i​n​g​ ​d​a​t​e
+			 */
+			START_BEFORE_END_DATE: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​c​r​e​a​t​e​d​ ​t​o​u​r​n​a​m​e​n​t​!
+			 */
+			CREATE_TOURNAMENT_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​ ​t​o​u​r​n​a​m​e​n​t
+			 */
+			CREATE_TOURNAMENT_FAILED: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​t​o​u​r​n​a​m​e​n​t​!
+			 */
+			EDIT_TOURNAMENT_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​t​o​u​r​n​a​m​e​n​t
+			 */
+			EDIT_TOURNAMENT_FAILED: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​N​a​m​e​ ​(​r​e​q​u​i​r​e​d​)
+			 */
+			TOURNAMENT_NAME_REQUIRED: string
+			/**
+			 * S​t​a​r​t​ ​D​a​t​e
+			 */
+			START_DATE: string
+			/**
+			 * E​n​d​ ​D​a​t​e
+			 */
+			END_DATE: string
+			/**
+			 * U​s​e​ ​s​e​r​i​e​s​ ​l​o​g​o​?
+			 */
+			USE_SERIES_LOGO: string
+			/**
+			 * L​o​g​o
+			 */
+			LOGO: string
+			/**
+			 * O​r​g​a​n​i​z​e​d​ ​b​y
+			 */
+			ORGANIZED_BY: string
+			/**
+			 * M​K​C​e​n​t​r​a​l
+			 */
+			ORGANIZED_BY_MKCENTRAL: string
+			/**
+			 * A​f​f​i​l​i​a​t​e
+			 */
+			ORGANIZED_BY_AFFILIATE: string
+			/**
+			 * L​A​N
+			 */
+			ORGANIZED_BY_LAN: string
+			/**
+			 * L​o​c​a​t​i​o​n
+			 */
+			LOCATION: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​F​o​r​m​a​t​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			REGISTRATION_FORMAT: string
+			/**
+			 * S​o​l​o
+			 */
+			REGISTRATION_FORMAT_SOLO: string
+			/**
+			 * S​q​u​a​d​/​T​e​a​m
+			 */
+			REGISTRATION_FORMAT_SQUAD: string
+			/**
+			 * M​i​n​i​m​u​m​ ​P​l​a​y​e​r​s​ ​p​e​r​ ​S​q​u​a​d
+			 */
+			MINIMUM_PLAYERS: string
+			/**
+			 * M​a​x​i​m​u​m​ ​P​l​a​y​e​r​s​ ​p​e​r​ ​S​q​u​a​d
+			 */
+			MAXIMUM_PLAYERS: string
+			/**
+			 * S​q​u​a​d​ ​T​a​g​ ​r​e​q​u​i​r​e​d​ ​f​o​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			SQUAD_TAG_REQUIRED: string
+			/**
+			 * S​q​u​a​d​ ​N​a​m​e​ ​r​e​q​u​i​r​e​d​ ​f​o​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			SQUAD_NAME_REQUIRED: string
+			/**
+			 * E​n​a​b​l​e​ ​B​a​g​g​e​r​ ​C​l​a​u​s​e​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			BAGGER_CLAUSE_ENABLED: string
+			/**
+			 * T​e​a​m​s​ ​a​l​l​o​w​e​d​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			TEAMS_ALLOWED: string
+			/**
+			 * T​e​a​m​s​ ​o​n​l​y​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			TEAMS_ONLY: string
+			/**
+			 * T​e​a​m​ ​m​e​m​b​e​r​s​ ​o​n​l​y​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			TEAM_MEMBERS_ONLY: string
+			/**
+			 * #​ ​o​f​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​ ​r​e​q​u​i​r​e​d
+			 */
+			MIN_REPRESENTATIVES: string
+			/**
+			 * C​a​n​/​c​a​n​'​t​ ​h​o​s​t​ ​r​e​q​u​i​r​e​d​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			HOST_STATUS_REQUIRED: string
+			/**
+			 * I​n​-​G​a​m​e​/​M​i​i​ ​N​a​m​e​ ​r​e​q​u​i​r​e​d​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			MII_NAME_REQUIRED: string
+			/**
+			 * R​e​q​u​i​r​e​ ​p​a​r​t​i​c​i​p​a​n​t​s​ ​t​o​ ​s​e​l​e​c​t​ ​o​n​e​ ​F​C​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​?​ ​(​t​h​i​s​ ​c​a​n​n​o​t​ ​b​e​ ​c​h​a​n​g​e​d​)
+			 */
+			REQUIRE_SINGLE_FC: string
+			/**
+			 * C​h​e​c​k​-​i​n​s​ ​e​n​a​b​l​e​d
+			 */
+			CHECKINS_ENABLED: string
+			/**
+			 * C​h​e​c​k​-​i​n​s​ ​o​p​e​n​?
+			 */
+			CHECKINS_OPEN: string
+			/**
+			 * M​i​n​i​m​u​m​ ​C​h​e​c​k​-​i​n​s​ ​p​e​r​ ​S​q​u​a​d
+			 */
+			MIN_PLAYERS_CHECKIN: string
+			/**
+			 * V​e​r​i​f​i​c​a​t​i​o​n​ ​r​e​q​u​i​r​e​d
+			 */
+			VERIFICATION_REQUIRED: string
+			/**
+			 * U​s​e​ ​s​e​r​i​e​s​ ​d​e​s​c​r​i​p​t​i​o​n​?
+			 */
+			USE_SERIES_DESCRIPTION: string
+			/**
+			 * U​s​e​ ​s​e​r​i​e​s​ ​r​u​l​e​s​e​t​?
+			 */
+			USE_SERIES_RULESET: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​s​ ​o​p​e​n​?
+			 */
+			REGISTRATIONS_OPEN: string
+			/**
+			 * O​p​e​n
+			 */
+			OPEN: string
+			/**
+			 * C​l​o​s​e​d
+			 */
+			CLOSED: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​D​e​a​d​l​i​n​e​ ​(​o​p​t​i​o​n​a​l​)
+			 */
+			REGISTRATION_DEADLINE: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​C​a​p​ ​(​o​p​t​i​o​n​a​l​)
+			 */
+			REGISTRATION_CAP: string
+			/**
+			 * H​a​v​e​ ​t​o​u​r​n​a​m​e​n​t​ ​p​u​b​l​i​c​l​y​ ​a​c​c​e​s​s​i​b​l​e​ ​w​i​t​h​ ​l​i​n​k​?
+			 */
+			IS_VIEWABLE: string
+			/**
+			 * S​h​o​w​ ​o​n​ ​t​o​u​r​n​a​m​e​n​t​ ​l​i​s​t​i​n​g​?
+			 */
+			IS_PUBLIC: string
+			/**
+			 * S​h​o​w​ ​r​e​s​u​l​t​s​ ​o​n​ ​p​l​a​y​e​r​ ​p​r​o​f​i​l​e​s​?
+			 */
+			SHOW_ON_PROFILES: string
+			/**
+			 * I​n​c​l​u​d​e​ ​t​o​u​r​n​a​m​e​n​t​ ​i​n​ ​s​e​r​i​e​s​ ​s​t​a​t​s​?
+			 */
+			SERIES_STATS_INCLUDE: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​D​e​t​a​i​l​s
+			 */
+			TOURNAMENT_DETAILS: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​F​o​r​m​a​t
+			 */
+			TOURNAMENT_FORMAT: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​D​e​s​c​r​i​p​t​i​o​n
+			 */
+			TOURNAMENT_DESCRIPTION: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​R​u​l​e​s​e​t
+			 */
+			TOURNAMENT_RULESET: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​R​e​g​i​s​t​r​a​t​i​o​n
+			 */
+			TOURNAMENT_REGISTRATION: string
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​S​t​a​t​u​s
+			 */
+			TOURNAMENT_STATUS: string
+		}
+		PLACEMENTS: {
+			/**
+			 * E​d​i​t​ ​P​l​a​c​e​m​e​n​t​s
+			 */
+			EDIT_PLACEMENTS: string
+			/**
+			 * U​n​p​l​a​c​e​d​ ​{​i​s​_​s​q​u​a​d​|​{​t​r​u​e​:​ ​S​q​u​a​d​s​,​ ​f​a​l​s​e​:​ ​P​l​a​y​e​r​s​}​}
+			 * @param {boolean} is_squad
+			 */
+			UNPLACED: RequiredParams<`is_squad|{true:${string}, false:${string}}`>
+			/**
+			 * S​w​i​t​c​h​ ​t​o​ ​r​a​w​ ​i​n​p​u​t
+			 */
+			SWITCH_TO_RAW_INPUT: string
+			/**
+			 * T​i​e​?
+			 */
+			TIE: string
+			/**
+			 * L​o​w​e​r​ ​b​o​u​n​d​?
+			 */
+			LOWER_BOUND: string
+			/**
+			 * T​o​g​g​l​e​ ​D​Q​?
+			 */
+			TOGGLE_DQ: string
+			/**
+			 * P​l​a​c​e​m​e​n​t​ ​T​i​t​l​e
+			 */
+			PLACEMENT_TITLE: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​s​a​v​e​ ​p​l​a​c​e​m​e​n​t​s
+			 */
+			SAVE_PLACEMENTS_FAILED: string
+			/**
+			 * P​l​a​c​e​m​e​n​t​ ​{​l​i​n​e​}​ ​i​s​ ​i​n​ ​i​n​c​o​r​r​e​c​t​ ​f​o​r​m​a​t
+			 * @param {string} line
+			 */
+			PLACEMENT_LINE_INCORRECT: RequiredParams<'line'>
+			/**
+			 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​p​a​r​s​i​n​g​ ​t​e​x​t
+			 */
+			PARSE_TEXT_ERROR: string
+			/**
+			 * S​w​i​t​c​h​ ​t​o​ ​i​n​t​e​r​a​c​t​i​v​e​ ​i​n​p​u​t
+			 */
+			SWITCH_TO_INTERACTIVE_INPUT: string
+			/**
+			 * O​n​ ​e​a​c​h​ ​l​i​n​e​,​ ​e​n​t​e​r​ ​t​h​e​ ​I​D​ ​o​f​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​ ​r​e​g​i​s​t​r​a​t​i​o​n​,​ ​f​o​l​l​o​w​e​d​ ​b​y​ ​t​h​e​i​r​ ​r​a​n​k​,​ ​s​e​p​a​r​a​t​e​d​ ​b​y​ ​a​ ​s​p​a​c​e​.​ ​F​o​r​ ​d​i​s​q​u​a​l​i​f​i​e​d​ ​p​a​r​t​i​c​i​p​a​n​t​s​,​ ​e​n​t​e​r​ ​D​Q​ ​i​n​ ​p​l​a​c​e​ ​o​f​ ​t​h​e​ ​r​a​n​k​.​ ​Y​o​u​ ​m​a​y​ ​e​n​t​e​r​ ​a​n​ ​o​p​t​i​o​n​a​l​ ​t​i​t​l​e​ ​a​f​t​e​r​ ​t​h​e​ ​r​a​n​k​.
+			 */
+			RAW_INPUT_INSTRUCTIONS: string
+		}
+		SERIES: {
+			/**
+			 * C​r​e​a​t​e​ ​S​e​r​i​e​s
+			 */
+			CREATE: string
+			/**
+			 * E​d​i​t​ ​S​e​r​i​e​s
+			 */
+			EDIT: string
+			/**
+			 * M​o​r​e​ ​D​e​t​a​i​l​s
+			 */
+			MORE_DETAILS: string
+			/**
+			 * C​r​e​a​t​e​ ​T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s
+			 */
+			CREATE_TOURNAMENT_SERIES: string
+			/**
+			 * E​d​i​t​ ​T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s
+			 */
+			EDIT_TOURNAMENT_SERIES: string
+			/**
+			 * B​a​c​k​ ​t​o​ ​S​e​r​i​e​s
+			 */
+			BACK_TO_SERIES: string
+			/**
+			 * S​e​r​i​e​s​ ​N​a​m​e
+			 */
+			SERIES_NAME: string
+			/**
+			 * S​e​r​i​e​s​ ​U​R​L
+			 */
+			SERIES_URL: string
+			/**
+			 * D​i​s​p​l​a​y​ ​O​r​d​e​r
+			 */
+			DISPLAY_ORDER: string
+			/**
+			 * S​e​r​i​e​s​ ​L​o​g​o
+			 */
+			SERIES_LOGO: string
+			/**
+			 * S​e​r​i​e​s​ ​D​e​s​c​r​i​p​t​i​o​n
+			 */
+			SERIES_DESCRIPTION: string
+			/**
+			 * S​e​r​i​e​s​ ​R​u​l​e​s​e​t
+			 */
+			SERIES_RULESET: string
+			/**
+			 * E​v​e​n​t​ ​D​e​f​a​u​l​t​s
+			 */
+			EVENT_DEFAULTS: string
+			/**
+			 * V​i​s​i​b​i​l​i​t​y
+			 */
+			VISIBILITY: string
+			/**
+			 * S​h​o​w​ ​o​n​ ​T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s​ ​l​i​s​t​i​n​g​?
+			 */
+			SHOW_ON_SERIES_LISTING: string
+			/**
+			 * A​c​t​i​v​e​/​H​i​s​t​o​r​i​c​a​l
+			 */
+			ACTIVE_HISTORICAL: string
+			/**
+			 * A​c​t​i​v​e
+			 */
+			ACTIVE: string
+			/**
+			 * H​i​s​t​o​r​i​c​a​l
+			 */
+			HISTORICAL: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​c​r​e​a​t​e​d​ ​s​e​r​i​e​s​!
+			 */
+			CREATE_SERIES_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​ ​s​e​r​i​e​s
+			 */
+			CREATE_SERIES_FAILED: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​s​e​r​i​e​s​!
+			 */
+			EDIT_SERIES_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​s​e​r​i​e​s
+			 */
+			EDIT_SERIES_FAILED: string
+			/**
+			 * S​e​r​i​e​s​ ​n​o​t​ ​f​o​u​n​d
+			 */
+			NOT_FOUND: string
+			/**
+			 * S​e​r​i​e​s​ ​I​n​f​o
+			 */
+			SERIES_INFO: string
+			/**
+			 * B​a​c​k​ ​t​o​ ​S​e​r​i​e​s​ ​L​i​s​t​i​n​g
+			 */
+			BACK_TO_SERIES_LISTING: string
+			/**
+			 * M​a​n​a​g​e​ ​T​e​m​p​l​a​t​e​s
+			 */
+			MANAGE_TEMPLATES: string
+			/**
+			 * S​e​r​i​e​s​ ​R​o​l​e​s
+			 */
+			SERIES_ROLES: string
+		}
+		TEMPLATES: {
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​T​e​m​p​l​a​t​e​s
+			 */
+			TOURNAMENT_TEMPLATES: string
+			/**
+			 * T​e​m​p​l​a​t​e​ ​D​e​t​a​i​l​s
+			 */
+			TEMPLATE_DETAILS: string
+			/**
+			 * T​e​m​p​l​a​t​e​ ​N​a​m​e
+			 */
+			TEMPLATE_NAME: string
+			/**
+			 * C​r​e​a​t​e​ ​T​e​m​p​l​a​t​e
+			 */
+			CREATE_TEMPLATE: string
+			/**
+			 * E​d​i​t​ ​T​e​m​p​l​a​t​e
+			 */
+			EDIT_TEMPLATE: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​c​r​e​a​t​e​d​ ​t​o​u​r​n​a​m​e​n​t​ ​t​e​m​p​l​a​t​e​!
+			 */
+			CREATE_TEMPLATE_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​ ​t​o​u​r​n​a​m​e​n​t​ ​t​e​m​p​l​a​t​e
+			 */
+			CREATE_TEMPLATE_FAILED: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​t​o​u​r​n​a​m​e​n​t​ ​t​e​m​p​l​a​t​e​!
+			 */
+			EDIT_TEMPLATE_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​t​o​u​r​n​a​m​e​n​t​ ​t​e​m​p​l​a​t​e
+			 */
+			EDIT_TEMPLATE_FAILED: string
+			/**
+			 * D​u​p​l​i​c​a​t​e
+			 */
+			DUPLICATE: string
+		}
 	}
 	GAMES: {
 		/**
@@ -3195,6 +4203,22 @@ export type TranslationFunctions = {
 	 */
 	HIDE: () => LocalizedString
 	/**
+	 * Back
+	 */
+	BACK: () => LocalizedString
+	/**
+	 * Actions
+	 */
+	ACTIONS: () => LocalizedString
+	/**
+	 * Save
+	 */
+	SAVE: () => LocalizedString
+	/**
+	 * Submit
+	 */
+	SUBMIT: () => LocalizedString
+	/**
 	 * Cancel
 	 */
 	CANCEL: () => LocalizedString
@@ -3301,6 +4325,14 @@ export type TranslationFunctions = {
 		 * Primary?
 		 */
 		PRIMARY: () => LocalizedString
+		/**
+		 * Selected FC:
+		 */
+		SELECTED_FC: () => LocalizedString
+		/**
+		 * Other FCs:
+		 */
+		OTHER_FCS: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
@@ -4230,10 +5262,6 @@ export type TranslationFunctions = {
 		 */
 		EDIT_PROFILE: () => LocalizedString
 		/**
-		 * Submit
-		 */
-		SUBMIT: () => LocalizedString
-		/**
 		 * Avatar URL
 		 */
 		AVATAR_URL: () => LocalizedString
@@ -4253,10 +5281,6 @@ export type TranslationFunctions = {
 		 * Timezone
 		 */
 		TIMEZONE: () => LocalizedString
-		/**
-		 * Save
-		 */
-		SAVE: () => LocalizedString
 		/**
 		 * Player Notes
 		 */
@@ -4363,10 +5387,6 @@ export type TranslationFunctions = {
 		 * Comment (Only moderators can see this)
 		 */
 		COMMENT_ONLY_MODS: () => LocalizedString
-		/**
-		 * Submit
-		 */
-		SUBMIT: () => LocalizedString
 		/**
 		 * Indefinite
 		 */
@@ -4575,6 +5595,986 @@ export type TranslationFunctions = {
 		 * Adding new shadow player failed
 		 */
 		CREATE_SHADOW_PLAYER_FAILURE: () => LocalizedString
+	}
+	TOURNAMENTS: {
+		/**
+		 * Create Tournament
+		 */
+		CREATE_TOURNAMENT: () => LocalizedString
+		/**
+		 * Search for tournaments...
+		 */
+		SEARCH_FOR_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Show hidden/private tournaments
+		 */
+		SHOW_HIDDEN_PRIVATE_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Public tournaments only
+		 */
+		PUBLIC_TOURNAMENTS_ONLY: () => LocalizedString
+		/**
+		 * Hidden/private tournaments only
+		 */
+		HIDDEN_PRIVATE_TOURNAMENTS_ONLY: () => LocalizedString
+		/**
+		 * {count} tournaments
+		 */
+		TOURNAMENT_COUNT: (arg: { count: number }) => LocalizedString
+		/**
+		 * Unpublished
+		 */
+		UNPUBLISHED: () => LocalizedString
+		/**
+		 * Hidden from tournament page
+		 */
+		HIDDEN_FROM_TOURNAMENT_PAGE: () => LocalizedString
+		/**
+		 * Back to Tournament
+		 */
+		BACK_TO_TOURNAMENT: () => LocalizedString
+		TYPES: {
+			/**
+			 * Solo
+			 */
+			SOLO: () => LocalizedString
+			/**
+			 * Squad
+			 */
+			SQUAD: () => LocalizedString
+			/**
+			 * Team
+			 */
+			TEAM: () => LocalizedString
+		}
+		/**
+		 * Register now!
+		 */
+		REGISTER_NOW: () => LocalizedString
+		/**
+		 * View Tournament
+		 */
+		VIEW_TOURNAMENT: () => LocalizedString
+		/**
+		 * Tournament Description
+		 */
+		DESCRIPTION: () => LocalizedString
+		/**
+		 * Tournament Rules
+		 */
+		RULES: () => LocalizedString
+		/**
+		 * Edit Tournament
+		 */
+		EDIT_TOURNAMENT: () => LocalizedString
+		/**
+		 * Edit Placements
+		 */
+		EDIT_PLACEMENTS: () => LocalizedString
+		/**
+		 * Tournament Roles
+		 */
+		TOURNAMENT_ROLES: () => LocalizedString
+		INFO: {
+			/**
+			 * Tournament Info
+			 */
+			INFO: () => LocalizedString
+			/**
+			 * When:
+			 */
+			WHEN: () => LocalizedString
+			/**
+			 * Registration Deadline:
+			 */
+			REGISTRATION_DEADLINE: () => LocalizedString
+			/**
+			 * Location:
+			 */
+			LOCATION: () => LocalizedString
+			/**
+			 * Registration Format:
+			 */
+			REGISTRATION_FORMAT: () => LocalizedString
+			/**
+			 * Minimum Squad Size:
+			 */
+			MINIMUM_SQUAD_SIZE: () => LocalizedString
+			/**
+			 * Maximum Squad Size:
+			 */
+			MAXIMUM_SQUAD_SIZE: () => LocalizedString
+			/**
+			 * Part of a Series:
+			 */
+			PART_OF_SERIES: () => LocalizedString
+		}
+		/**
+		 * Tournament Details
+		 */
+		DETAILS: () => LocalizedString
+		/**
+		 * Tournament not found
+		 */
+		NOT_FOUND: () => LocalizedString
+		/**
+		 * Tournament Placements
+		 */
+		TOURNAMENT_PLACEMENTS: () => LocalizedString
+		/**
+		 * Tournament Series
+		 */
+		TOURNAMENT_SERIES: () => LocalizedString
+		/**
+		 * Search tournament series...
+		 */
+		SEARCH_SERIES: () => LocalizedString
+		REGISTRATIONS: {
+			/**
+			 * Tournament Registrations
+			 */
+			REGISTRATIONS: () => LocalizedString
+			/**
+			 * All {is_squad|{true: Squads, false: Players}}
+			 */
+			ALL_REGISTRATIONS: (arg: { is_squad: boolean }) => LocalizedString
+			/**
+			 * Eligible Only
+			 */
+			ELIGIBLE_ONLY: () => LocalizedString
+			/**
+			 * Hosts Only
+			 */
+			HOSTS_ONLY: () => LocalizedString
+			/**
+			 * Pending
+			 */
+			PENDING: () => LocalizedString
+			/**
+			 * {count} {{Squad|Squads}}
+			 */
+			SQUAD_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * {count} {{Player|Players}}
+			 */
+			PLAYER_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * No {is_squad|{true: squads, false: players}}. Be the first to register!
+			 */
+			NO_REGISTRATIONS: (arg: { is_squad: boolean }) => LocalizedString
+			/**
+			 * Players
+			 */
+			PLAYERS: () => LocalizedString
+			/**
+			 * (hide all)
+			 */
+			HIDE_ALL_PLAYERS: () => LocalizedString
+			/**
+			 * (show all)
+			 */
+			SHOW_ALL_PLAYERS: () => LocalizedString
+			/**
+			 * (hide)
+			 */
+			HIDE_PLAYERS: () => LocalizedString
+			/**
+			 * (show)
+			 */
+			SHOW_PLAYERS: () => LocalizedString
+			/**
+			 * Eligible?
+			 */
+			ELIGIBLE: () => LocalizedString
+			/**
+			 * Registration Date
+			 */
+			REGISTRATION_DATE: () => LocalizedString
+			/**
+			 * Add Player
+			 */
+			ADD_PLAYER: () => LocalizedString
+			/**
+			 * Remove
+			 */
+			REMOVE: () => LocalizedString
+			/**
+			 * Are you sure you would like to remove this squad from this tournament?
+			 */
+			UNREGISTER_SQUAD_CONFIRM: () => LocalizedString
+			/**
+			 * Failed to unregister squad
+			 */
+			UNREGISTER_SQUAD_FAILED: () => LocalizedString
+			/**
+			 * In-Game Name
+			 */
+			IN_GAME_NAME: () => LocalizedString
+			/**
+			 * Can Host
+			 */
+			CAN_HOST: () => LocalizedString
+			/**
+			 * Checked In
+			 */
+			CHECKED_IN: () => LocalizedString
+			/**
+			 * Captain
+			 */
+			CAPTAIN: () => LocalizedString
+			/**
+			 * Representative
+			 */
+			TEAM_REPRESENTATIVE: () => LocalizedString
+			/**
+			 * Unregister
+			 */
+			UNREGISTER: () => LocalizedString
+			/**
+			 * Retract Invite
+			 */
+			RETRACT_INVITE: () => LocalizedString
+			/**
+			 * Kick Player
+			 */
+			KICK_PLAYER: () => LocalizedString
+			/**
+			 * Make Captain
+			 */
+			MAKE_CAPTAIN: () => LocalizedString
+			/**
+			 * Make Representative
+			 */
+			MAKE_REPRESENTATIVE: () => LocalizedString
+			/**
+			 * Remove Representative
+			 */
+			REMOVE_REPRESENTATIVE: () => LocalizedString
+			/**
+			 * Are you sure you would like to unregister {player_name} from this tournament?
+			 */
+			UNREGISTER_PLAYER_CONFIRM: (arg: { player_name: string }) => LocalizedString
+			/**
+			 * Failed to unregister player
+			 */
+			UNREGISTER_PLAYER_FAILED: () => LocalizedString
+			/**
+			 * Are you sure you would like to kick {player_name} from this squad?
+			 */
+			KICK_PLAYER_CONFIRM: (arg: { player_name: string }) => LocalizedString
+			/**
+			 * Failed to kick player
+			 */
+			KICK_PLAYER_FAILED: () => LocalizedString
+			/**
+			 * Are you sure you would like to transfer captain permissions to {player_name}?
+			 */
+			MAKE_CAPTAIN_CONFIRM: (arg: { player_name: string }) => LocalizedString
+			/**
+			 * Transferring captain permissions failed
+			 */
+			MAKE_CAPTAIN_FAILED: () => LocalizedString
+			/**
+			 * Failed to add representative
+			 */
+			MAKE_REPRESENTATIVE_FAILED: () => LocalizedString
+			/**
+			 * Failed to remove player as a representative
+			 */
+			REMOVE_REPRESENTATIVE_FAILED: () => LocalizedString
+			/**
+			 * Please unregister this squad or set another player as captain before unregistering for this tournament
+			 */
+			CAPTAIN_UNREGISTER_ERROR: () => LocalizedString
+			/**
+			 * Are you sure you would like to unregister from this tournament?
+			 */
+			UNREGISTER_CONFIRM: () => LocalizedString
+			/**
+			 * Failed to unregister
+			 */
+			UNREGISTER_FAILED: () => LocalizedString
+			/**
+			 * Edit Registration
+			 */
+			EDIT_REGISTRATION: () => LocalizedString
+			/**
+			 * Select FC
+			 */
+			SELECT_FC: () => LocalizedString
+			/**
+			 * Select a friend code...
+			 */
+			SELECT_A_FRIEND_CODE: () => LocalizedString
+			/**
+			 * In-game/Mii Name
+			 */
+			IN_GAME_MII_NAME: () => LocalizedString
+			/**
+			 * Squad Captain?
+			 */
+			SQUAD_CAPTAIN_SELECT: () => LocalizedString
+			/**
+			 * Team Representative?
+			 */
+			TEAM_REPRESENTATIVE_SELECT: () => LocalizedString
+			/**
+			 * Bagger?
+			 */
+			BAGGER_SELECT: () => LocalizedString
+			/**
+			 * Checked In?
+			 */
+			CHECKED_IN_SELECT: () => LocalizedString
+			/**
+			 * Approved?
+			 */
+			APPROVED_SELECT: () => LocalizedString
+			/**
+			 * Squad Color
+			 */
+			SQUAD_COLOR_SELECT: () => LocalizedString
+			/**
+			 * Squad Name
+			 */
+			SQUAD_NAME: () => LocalizedString
+			/**
+			 * Squad Tag
+			 */
+			SQUAD_TAG: () => LocalizedString
+			/**
+			 * Edit Player Registration
+			 */
+			EDIT_PLAYER_REGISTRATION: () => LocalizedString
+			/**
+			 * Failed to edit registration
+			 */
+			EDIT_REGISTRATION_FAILED: () => LocalizedString
+			/**
+			 * Adding player failed
+			 */
+			ADD_PLAYER_FAILED: () => LocalizedString
+			/**
+			 * Edit Squad
+			 */
+			EDIT_SQUAD: () => LocalizedString
+			/**
+			 * Edit Squad Registration
+			 */
+			EDIT_SQUAD_REGISTRATION: () => LocalizedString
+			/**
+			 * Failed to edit squad
+			 */
+			EDIT_SQUAD_FAILED: () => LocalizedString
+			/**
+			 * You do not have permission to register for this tournament.
+			 */
+			NO_PERMISSION_TO_REGISTER: () => LocalizedString
+			/**
+			 * Registrations for this tournament are closed.
+			 */
+			REGISTRATIONS_CLOSED: () => LocalizedString
+			/**
+			 * Want to register for this tournament? Just fill out your registration details below!
+			 */
+			REGISTER_PROMPT: () => LocalizedString
+			/**
+			 * Please add an FC for {game|uppercase} to register for this tournament.
+			 */
+			ADD_FC_TO_REGISTER: (arg: { game: string }) => LocalizedString
+			/**
+			 * Please complete your player registration to register for this tournament.
+			 */
+			COMPLETE_REGISTRATION_TO_REGISTER: () => LocalizedString
+			/**
+			 * My invites
+			 */
+			MY_INVITES: () => LocalizedString
+			/**
+			 * Make sure to check in before the tournament starts!
+			 */
+			CHECK_IN_REMINDER_WINDOW_OPEN: () => LocalizedString
+			/**
+			 * Make sure to check in during the check-in window!
+			 */
+			CHECK_IN_REMINDER_WINDOW_CLOSED: () => LocalizedString
+			/**
+			 * Check In Now!
+			 */
+			CHECK_IN_BUTTON: () => LocalizedString
+			/**
+			 * Check Out
+			 */
+			CHECK_OUT: () => LocalizedString
+			/**
+			 * Pending Approval
+			 */
+			REGISTRATION_PENDING_APPROVAL: () => LocalizedString
+			/**
+			 * Your registration must be approved before you can play.
+			 */
+			REGISTRATION_PENDING_MESSAGE: () => LocalizedString
+			/**
+			 * My Registration
+			 */
+			MY_REGISTRATION: () => LocalizedString
+			/**
+			 * Accept Squad Invite
+			 */
+			ACCEPT_SQUAD_INVITE: () => LocalizedString
+			/**
+			 * Squad ID
+			 */
+			SQUAD_ID: () => LocalizedString
+			/**
+			 * Successfully registered for the tournament!
+			 */
+			REGISTER_TOURNAMENT_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to register for the tournament
+			 */
+			REGISTER_TOURNAMENT_FAILED: () => LocalizedString
+			/**
+			 * Are you sure you would like to decline this invite?
+			 */
+			DECLINE_INVITE_CONFIRM: () => LocalizedString
+			/**
+			 * Failed to decline squad invite
+			 */
+			DECLINE_INVITE_FAILED: () => LocalizedString
+			/**
+			 * My Squad
+			 */
+			MY_SQUAD: () => LocalizedString
+			/**
+			 * {count} invited {{player|players}}
+			 */
+			INVITED_PLAYER_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Invite Players
+			 */
+			INVITE_PLAYERS: () => LocalizedString
+			/**
+			 * Invite Player
+			 */
+			INVITE_PLAYER: () => LocalizedString
+			/**
+			 * Unregister Squad
+			 */
+			UNREGISTER_SQUAD: () => LocalizedString
+			/**
+			 * Failed to invite player
+			 */
+			INVITE_PLAYER_FAILED: () => LocalizedString
+			/**
+			 * Are you sure you would like to withdraw your squad from this tournament?
+			 */
+			UNREGISTER_MY_SQUAD_CONFIRM: () => LocalizedString
+			/**
+			 * Register
+			 */
+			REGISTER: () => LocalizedString
+			/**
+			 * Failed to check in/out
+			 */
+			CHECK_IN_OUT_FAILED: () => LocalizedString
+			/**
+			 * Register Team
+			 */
+			REGISTER_TEAM: () => LocalizedString
+			/**
+			 * Manually Register Team
+			 */
+			MANUALLY_REGISTER_TEAM: () => LocalizedString
+			/**
+			 * Select a Team
+			 */
+			SELECT_A_TEAM: () => LocalizedString
+			/**
+			 * Selected Rosters:
+			 */
+			SELECTED_ROSTERS: () => LocalizedString
+			/**
+			 * Primary
+			 */
+			PRIMARY: () => LocalizedString
+			/**
+			 * Selected Players:
+			 */
+			SELECTED_PLAYERS: () => LocalizedString
+			/**
+			 * Toggle Captain
+			 */
+			TOGGLE_CAPTAIN: () => LocalizedString
+			/**
+			 * Toggle Representative
+			 */
+			TOGGLE_REPRESENTATIVE: () => LocalizedString
+			/**
+			 * Toggle Bagger
+			 */
+			TOGGLE_BAGGER: () => LocalizedString
+			/**
+			 * Please select exactly one captain.
+			 */
+			SELECT_ONE_CAPTAIN: () => LocalizedString
+			/**
+			 * Please select exactly {min_representatives} captains/representatives.
+			 */
+			SELECT_REPRESENTATIVES: (arg: { min_representatives: number }) => LocalizedString
+			/**
+			 * You need {count} more {{player|players}} to register for this tournament.
+			 */
+			SELECT_MORE_PLAYERS: (arg: { count: number }) => LocalizedString
+			/**
+			 * This tournament's max squad size is {max_squad_size} players, please remove at least {count} players.
+			 */
+			SELECT_LESS_PLAYERS: (arg: { count: number, max_squad_size: number }) => LocalizedString
+			/**
+			 * Add a player...
+			 */
+			ADD_PLAYER_SELECT: () => LocalizedString
+			/**
+			 * Manually Register Player
+			 */
+			MANUALLY_REGISTER_PLAYER: () => LocalizedString
+			/**
+			 * Manually Register Squad
+			 */
+			MANUALLY_REGISTER_SQUAD: () => LocalizedString
+			/**
+			 * Successfully registered this player for the tournament!
+			 */
+			MANUAL_REGISTRATION_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to register this player for the tournament
+			 */
+			MANUAL_REGISTRATION_FAILED: () => LocalizedString
+		}
+		MANAGE: {
+			/**
+			 * Select Template
+			 */
+			SELECT_TEMPLATE: () => LocalizedString
+			/**
+			 * Back to Series
+			 */
+			BACK_TO_SERIES: () => LocalizedString
+			/**
+			 * Start from scratch
+			 */
+			START_FROM_SCRATCH: () => LocalizedString
+			/**
+			 * Edit Tournament
+			 */
+			EDIT_TOURNAMENT: () => LocalizedString
+			/**
+			 * Starting date must be before ending date
+			 */
+			START_BEFORE_END_DATE: () => LocalizedString
+			/**
+			 * Successfully created tournament!
+			 */
+			CREATE_TOURNAMENT_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to create tournament
+			 */
+			CREATE_TOURNAMENT_FAILED: () => LocalizedString
+			/**
+			 * Successfully edited tournament!
+			 */
+			EDIT_TOURNAMENT_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to edit tournament
+			 */
+			EDIT_TOURNAMENT_FAILED: () => LocalizedString
+			/**
+			 * Tournament Name (required)
+			 */
+			TOURNAMENT_NAME_REQUIRED: () => LocalizedString
+			/**
+			 * Start Date
+			 */
+			START_DATE: () => LocalizedString
+			/**
+			 * End Date
+			 */
+			END_DATE: () => LocalizedString
+			/**
+			 * Use series logo?
+			 */
+			USE_SERIES_LOGO: () => LocalizedString
+			/**
+			 * Logo
+			 */
+			LOGO: () => LocalizedString
+			/**
+			 * Organized by
+			 */
+			ORGANIZED_BY: () => LocalizedString
+			/**
+			 * MKCentral
+			 */
+			ORGANIZED_BY_MKCENTRAL: () => LocalizedString
+			/**
+			 * Affiliate
+			 */
+			ORGANIZED_BY_AFFILIATE: () => LocalizedString
+			/**
+			 * LAN
+			 */
+			ORGANIZED_BY_LAN: () => LocalizedString
+			/**
+			 * Location
+			 */
+			LOCATION: () => LocalizedString
+			/**
+			 * Registration Format (this cannot be changed)
+			 */
+			REGISTRATION_FORMAT: () => LocalizedString
+			/**
+			 * Solo
+			 */
+			REGISTRATION_FORMAT_SOLO: () => LocalizedString
+			/**
+			 * Squad/Team
+			 */
+			REGISTRATION_FORMAT_SQUAD: () => LocalizedString
+			/**
+			 * Minimum Players per Squad
+			 */
+			MINIMUM_PLAYERS: () => LocalizedString
+			/**
+			 * Maximum Players per Squad
+			 */
+			MAXIMUM_PLAYERS: () => LocalizedString
+			/**
+			 * Squad Tag required for registration (this cannot be changed)
+			 */
+			SQUAD_TAG_REQUIRED: () => LocalizedString
+			/**
+			 * Squad Name required for registration (this cannot be changed)
+			 */
+			SQUAD_NAME_REQUIRED: () => LocalizedString
+			/**
+			 * Enable Bagger Clause? (this cannot be changed)
+			 */
+			BAGGER_CLAUSE_ENABLED: () => LocalizedString
+			/**
+			 * Teams allowed? (this cannot be changed)
+			 */
+			TEAMS_ALLOWED: () => LocalizedString
+			/**
+			 * Teams only? (this cannot be changed)
+			 */
+			TEAMS_ONLY: () => LocalizedString
+			/**
+			 * Team members only? (this cannot be changed)
+			 */
+			TEAM_MEMBERS_ONLY: () => LocalizedString
+			/**
+			 * # of representatives required
+			 */
+			MIN_REPRESENTATIVES: () => LocalizedString
+			/**
+			 * Can/can't host required? (this cannot be changed)
+			 */
+			HOST_STATUS_REQUIRED: () => LocalizedString
+			/**
+			 * In-Game/Mii Name required? (this cannot be changed)
+			 */
+			MII_NAME_REQUIRED: () => LocalizedString
+			/**
+			 * Require participants to select one FC for the tournament? (this cannot be changed)
+			 */
+			REQUIRE_SINGLE_FC: () => LocalizedString
+			/**
+			 * Check-ins enabled
+			 */
+			CHECKINS_ENABLED: () => LocalizedString
+			/**
+			 * Check-ins open?
+			 */
+			CHECKINS_OPEN: () => LocalizedString
+			/**
+			 * Minimum Check-ins per Squad
+			 */
+			MIN_PLAYERS_CHECKIN: () => LocalizedString
+			/**
+			 * Verification required
+			 */
+			VERIFICATION_REQUIRED: () => LocalizedString
+			/**
+			 * Use series description?
+			 */
+			USE_SERIES_DESCRIPTION: () => LocalizedString
+			/**
+			 * Use series ruleset?
+			 */
+			USE_SERIES_RULESET: () => LocalizedString
+			/**
+			 * Registrations open?
+			 */
+			REGISTRATIONS_OPEN: () => LocalizedString
+			/**
+			 * Open
+			 */
+			OPEN: () => LocalizedString
+			/**
+			 * Closed
+			 */
+			CLOSED: () => LocalizedString
+			/**
+			 * Registration Deadline (optional)
+			 */
+			REGISTRATION_DEADLINE: () => LocalizedString
+			/**
+			 * Registration Cap (optional)
+			 */
+			REGISTRATION_CAP: () => LocalizedString
+			/**
+			 * Have tournament publicly accessible with link?
+			 */
+			IS_VIEWABLE: () => LocalizedString
+			/**
+			 * Show on tournament listing?
+			 */
+			IS_PUBLIC: () => LocalizedString
+			/**
+			 * Show results on player profiles?
+			 */
+			SHOW_ON_PROFILES: () => LocalizedString
+			/**
+			 * Include tournament in series stats?
+			 */
+			SERIES_STATS_INCLUDE: () => LocalizedString
+			/**
+			 * Tournament Details
+			 */
+			TOURNAMENT_DETAILS: () => LocalizedString
+			/**
+			 * Tournament Format
+			 */
+			TOURNAMENT_FORMAT: () => LocalizedString
+			/**
+			 * Tournament Description
+			 */
+			TOURNAMENT_DESCRIPTION: () => LocalizedString
+			/**
+			 * Tournament Ruleset
+			 */
+			TOURNAMENT_RULESET: () => LocalizedString
+			/**
+			 * Tournament Registration
+			 */
+			TOURNAMENT_REGISTRATION: () => LocalizedString
+			/**
+			 * Tournament Status
+			 */
+			TOURNAMENT_STATUS: () => LocalizedString
+		}
+		PLACEMENTS: {
+			/**
+			 * Edit Placements
+			 */
+			EDIT_PLACEMENTS: () => LocalizedString
+			/**
+			 * Unplaced {is_squad|{true: Squads, false: Players}}
+			 */
+			UNPLACED: (arg: { is_squad: boolean }) => LocalizedString
+			/**
+			 * Switch to raw input
+			 */
+			SWITCH_TO_RAW_INPUT: () => LocalizedString
+			/**
+			 * Tie?
+			 */
+			TIE: () => LocalizedString
+			/**
+			 * Lower bound?
+			 */
+			LOWER_BOUND: () => LocalizedString
+			/**
+			 * Toggle DQ?
+			 */
+			TOGGLE_DQ: () => LocalizedString
+			/**
+			 * Placement Title
+			 */
+			PLACEMENT_TITLE: () => LocalizedString
+			/**
+			 * Failed to save placements
+			 */
+			SAVE_PLACEMENTS_FAILED: () => LocalizedString
+			/**
+			 * Placement {line} is in incorrect format
+			 */
+			PLACEMENT_LINE_INCORRECT: (arg: { line: string }) => LocalizedString
+			/**
+			 * An error occurred parsing text
+			 */
+			PARSE_TEXT_ERROR: () => LocalizedString
+			/**
+			 * Switch to interactive input
+			 */
+			SWITCH_TO_INTERACTIVE_INPUT: () => LocalizedString
+			/**
+			 * On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.
+			 */
+			RAW_INPUT_INSTRUCTIONS: () => LocalizedString
+		}
+		SERIES: {
+			/**
+			 * Create Series
+			 */
+			CREATE: () => LocalizedString
+			/**
+			 * Edit Series
+			 */
+			EDIT: () => LocalizedString
+			/**
+			 * More Details
+			 */
+			MORE_DETAILS: () => LocalizedString
+			/**
+			 * Create Tournament Series
+			 */
+			CREATE_TOURNAMENT_SERIES: () => LocalizedString
+			/**
+			 * Edit Tournament Series
+			 */
+			EDIT_TOURNAMENT_SERIES: () => LocalizedString
+			/**
+			 * Back to Series
+			 */
+			BACK_TO_SERIES: () => LocalizedString
+			/**
+			 * Series Name
+			 */
+			SERIES_NAME: () => LocalizedString
+			/**
+			 * Series URL
+			 */
+			SERIES_URL: () => LocalizedString
+			/**
+			 * Display Order
+			 */
+			DISPLAY_ORDER: () => LocalizedString
+			/**
+			 * Series Logo
+			 */
+			SERIES_LOGO: () => LocalizedString
+			/**
+			 * Series Description
+			 */
+			SERIES_DESCRIPTION: () => LocalizedString
+			/**
+			 * Series Ruleset
+			 */
+			SERIES_RULESET: () => LocalizedString
+			/**
+			 * Event Defaults
+			 */
+			EVENT_DEFAULTS: () => LocalizedString
+			/**
+			 * Visibility
+			 */
+			VISIBILITY: () => LocalizedString
+			/**
+			 * Show on Tournament Series listing?
+			 */
+			SHOW_ON_SERIES_LISTING: () => LocalizedString
+			/**
+			 * Active/Historical
+			 */
+			ACTIVE_HISTORICAL: () => LocalizedString
+			/**
+			 * Active
+			 */
+			ACTIVE: () => LocalizedString
+			/**
+			 * Historical
+			 */
+			HISTORICAL: () => LocalizedString
+			/**
+			 * Successfully created series!
+			 */
+			CREATE_SERIES_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to create series
+			 */
+			CREATE_SERIES_FAILED: () => LocalizedString
+			/**
+			 * Successfully edited series!
+			 */
+			EDIT_SERIES_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to edit series
+			 */
+			EDIT_SERIES_FAILED: () => LocalizedString
+			/**
+			 * Series not found
+			 */
+			NOT_FOUND: () => LocalizedString
+			/**
+			 * Series Info
+			 */
+			SERIES_INFO: () => LocalizedString
+			/**
+			 * Back to Series Listing
+			 */
+			BACK_TO_SERIES_LISTING: () => LocalizedString
+			/**
+			 * Manage Templates
+			 */
+			MANAGE_TEMPLATES: () => LocalizedString
+			/**
+			 * Series Roles
+			 */
+			SERIES_ROLES: () => LocalizedString
+		}
+		TEMPLATES: {
+			/**
+			 * Tournament Templates
+			 */
+			TOURNAMENT_TEMPLATES: () => LocalizedString
+			/**
+			 * Template Details
+			 */
+			TEMPLATE_DETAILS: () => LocalizedString
+			/**
+			 * Template Name
+			 */
+			TEMPLATE_NAME: () => LocalizedString
+			/**
+			 * Create Template
+			 */
+			CREATE_TEMPLATE: () => LocalizedString
+			/**
+			 * Edit Template
+			 */
+			EDIT_TEMPLATE: () => LocalizedString
+			/**
+			 * Successfully created tournament template!
+			 */
+			CREATE_TEMPLATE_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to create tournament template
+			 */
+			CREATE_TEMPLATE_FAILED: () => LocalizedString
+			/**
+			 * Successfully edited tournament template!
+			 */
+			EDIT_TEMPLATE_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to edit tournament template
+			 */
+			EDIT_TEMPLATE_FAILED: () => LocalizedString
+			/**
+			 * Duplicate
+			 */
+			DUPLICATE: () => LocalizedString
+		}
 	}
 	GAMES: {
 		/**
@@ -6113,5 +8113,5 @@ export type TranslationFunctions = {
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
 	parsedate: (value: unknown) => unknown
-	uppercase: (value: unknown) => unknown
+	uppercase: (value: string | unknown) => unknown
 }

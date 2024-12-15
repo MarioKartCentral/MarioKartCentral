@@ -43,7 +43,7 @@
         <textarea name='notes' class="w-full h-28" bind:value={newNotes}></textarea>
     </div>
     <br/>
-    <Button type="submit" disabled={newNotes.trim() === notes}>{$LL.PLAYER_PROFILE.SAVE()}</Button>
+    <Button type="submit" disabled={newNotes.trim() === notes}>{$LL.SAVE()}</Button>
     <Button color='red' on:click={handleCancel}>{$LL.CANCEL()}</Button>
     <Button color='dark' extra_classes="float-right" on:click={() => newNotes = ""}>{$LL.PLAYER_PROFILE.CLEAR()}</Button>
 </form>

@@ -19,6 +19,7 @@
   import PlayerName from './PlayerName.svelte';
   import RosterSearch from '$lib/components/common/RosterSearch.svelte';
   import type { Team } from '$lib/types/team';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   export let is_privileged = false;
@@ -164,9 +165,9 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert('Successfully registered for the tournament!');
+      alert($LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_SUCCESS());
     } else {
-      alert(`Registration failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -176,14 +177,14 @@
   <div class="team_register">
     <div>
       <b>
-        {is_privileged ? "Manually Register Team" : "Register Team"}
+        {is_privileged ? $LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_TEAM() : $LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TEAM()}
       </b>
     </div>
     {#if is_privileged}
       <RosterSearch bind:roster={selected_roster} game={tournament.game} is_active={is_privileged ? null : true} is_historical={null} on:change={() => selectRosterFromSearch(selected_roster)}/>
     {:else if unselected_rosters.length}
       <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>
-        <option value={null}>Select a team</option>
+        <option value={null}>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_TEAM()}</option>
         {#each unselected_rosters as roster}
           <option value={roster}>
             {roster.name}
@@ -194,7 +195,7 @@
     {#if selected_rosters.length}
       <div class="section">
         <div>
-          <b>Selected Rosters:</b>
+          <b>{$LL.TOURNAMENTS.REGISTRATIONS.SELECTED_ROSTERS()}</b>
         </div>
         {#each selected_rosters as roster, i}
           <div>
@@ -208,12 +209,12 @@
         {/each}
       </div>
       <div class="section">
-        <div>Squad Color</div>
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_COLOR_SELECT()}</div>
         <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
       </div>
       {#if players.length}
         <div class="section">
-          <b>Players:</b>
+          <b>{$LL.TOURNAMENTS.REGISTRATIONS.SELECTED_PLAYERS()}</b>
           <Table>
             <col class="country"/>
             <col class="name"/>
@@ -222,9 +223,9 @@
             <thead>
               <tr>
                 <th />
-                <th>Name</th>
-                <th class="mobile-hide">Friend Codes</th>
-                <th>Actions</th>
+                <th>{$LL.NAME()}</th>
+                <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
+                <th>{$LL.ACTIONS()}</th>
               </tr>
             </thead>
             <tbody>
@@ -243,14 +244,14 @@
                   <td>
                     <ChevronDownSolid class="cursor-pointer"/>
                     <Dropdown>
-                      <DropdownItem on:click={() => toggleCaptain(player)}>Toggle Captain</DropdownItem>
+                      <DropdownItem on:click={() => toggleCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_CAPTAIN()}</DropdownItem>
                       {#if !player.is_captain}
-                        <DropdownItem on:click={() => toggleRep(player)}>Toggle Representative</DropdownItem>
+                        <DropdownItem on:click={() => toggleRep(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_REPRESENTATIVE()}</DropdownItem>
                       {/if}
                       {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
-                        <DropdownItem on:click={() => toggleBagger(player)}>Toggle Bagger</DropdownItem>
+                        <DropdownItem on:click={() => toggleBagger(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_BAGGER()}</DropdownItem>
                       {/if}
-                      <DropdownItem on:click={() => removePlayer(player)}>Remove</DropdownItem>
+                      <DropdownItem on:click={() => removePlayer(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
                     </Dropdown>
                   </td>
                 </tr>
@@ -262,6 +263,9 @@
       {#if unselected_players.length}
         <div class="section">
           <select bind:value={selected_player} on:change={() => addPlayer(selected_player)}>
+            <option value={null} disabled>
+              {$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_SELECT()}
+            </option>
             {#each unselected_players as player}
               <option value={player}>
                 {player.name}
@@ -273,25 +277,25 @@
       <div class="section">
         {#if tournament.min_squad_size && num_captains !== 1}
           <div>
-            Please select exactly one captain
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_ONE_CAPTAIN()}
           </div>
         {/if}
         {#if tournament.min_representatives && num_reps !== tournament.min_representatives}
           <div>
-            Please select exactly {tournament.min_representatives} captains/representatives
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_REPRESENTATIVES({min_representatives: tournament.min_representatives})}
           </div>
         {/if}
         {#if tournament.min_squad_size && players.length < tournament.min_squad_size}
           <div>
-            Please add {tournament.min_squad_size - players.length} more players
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_MORE_PLAYERS({count: tournament.min_squad_size - players.length})}
           </div>
         {/if}
         {#if tournament.max_squad_size && players.length > tournament.max_squad_size}
           <div>
-            This tournament's max squad size is {tournament.max_squad_size}, please remove at least {tournament.max_squad_size - players.length} players
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_LESS_PLAYERS({max_squad_size: tournament.max_squad_size, count: tournament.max_squad_size - players.length})}
           </div>
         {/if}
-        <Button on:click={register} disabled={!can_register}>Register</Button>
+        <Button on:click={register} disabled={!can_register}>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
       </div>
     {/if}
   </div>

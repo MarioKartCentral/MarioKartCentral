@@ -112,7 +112,7 @@
               </div>
             </div>
           <div>
-            <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
+            <Button type="submit">{$LL.SUBMIT()}</Button>
           </div>
         </form>
       </Section>

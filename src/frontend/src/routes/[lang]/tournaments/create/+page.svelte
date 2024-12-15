@@ -5,6 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import { onMount } from 'svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -22,5 +23,5 @@
 {#if check_permission(user_info, series_permissions.create_tournament)}
   <CreateEditTournamentForm {template_id} />
 {:else}
-  You do not have permission to access this page.
+  {$LL.NO_PERMISSION()}
 {/if}

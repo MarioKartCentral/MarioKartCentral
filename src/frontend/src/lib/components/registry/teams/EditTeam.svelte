@@ -132,8 +132,8 @@
                 <textarea name="description" value={team.description} />
                 <br />
             </Section>
-            <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
-                <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
+            <Section header={$LL.SUBMIT()}>
+                <Button type="submit">{$LL.SUBMIT()}</Button>
             </Section>
             </form>
          {/if}

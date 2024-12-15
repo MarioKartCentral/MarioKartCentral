@@ -112,7 +112,7 @@
         <LanguageSelect bind:language={player.user_settings.language}/>
       </div>
       <div class="button">
-        <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.PLAYER_PROFILE.SAVE()}</Button>
+        <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.SAVE()}</Button>
       </div>
     </form>
   {/if}

@@ -3,6 +3,7 @@
     import { Popover } from "flowbite-svelte";
     import GameBadge from "../badges/GameBadge.svelte";
     import { game_order } from "$lib/util/util";
+    import LL from "$i18n/i18n-svelte";
 
     export let friend_codes: FriendCode[];
     export let selected_fc_id: number | null = null;
@@ -36,14 +37,14 @@
     </div>
     <Popover class="bg-gray-600 text-white">
         {#if selected_fc_id}
-            <div class="selected">Selected FC:</div>
+            <div class="selected">{$LL.FRIEND_CODES.SELECTED_FC()}</div>
             <div>
                 <GameBadge game={display_fc.game}/>
                 {display_fc.fc}
             </div>
         {/if}
         {#if selected_fc_id && other_fcs.length}
-            <div class="selected">Other FCs:</div>
+            <div class="selected">{$LL.FRIEND_CODES.OTHER_FCS()}</div>
         {/if}
         {#each other_fcs as fc}
             <div>

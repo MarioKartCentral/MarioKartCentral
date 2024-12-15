@@ -10,6 +10,7 @@
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
     import { check_permission, permissions } from "$lib/util/permissions";
+    import LL from "$i18n/i18n-svelte";
 
     export let tournament: Tournament;
     let player: PlayerInfo | null;
@@ -47,9 +48,9 @@
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
-            alert('Successfully registered this player for the tournament!');
+            alert($LL.TOURNAMENTS.REGISTRATIONS.MANUAL_REGISTRATION_SUCCESS());
         } else {
-            alert(`Registration failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MANUAL_REGISTRATION_FAILED()}: ${result['title']}`);
         }
     }
     async function registerSquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -86,18 +87,22 @@
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
-            alert('Successfully registered this player for the tournament!');
+            alert($LL.TOURNAMENTS.REGISTRATIONS.MANUAL_REGISTRATION_SUCCESS());
         } else {
-            alert(`Registration failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MANUAL_REGISTRATION_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
 <div class="manual-register">
     <div class="register_player_text">
-        Manually Register {tournament.is_squad ? "Squad" : "Player"}
+        {#if tournament.is_squad}
+            {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_SQUAD()}
+        {:else}
+            {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_PLAYER()}
+        {/if}
         {#if check_permission(user_info, permissions.manage_shadow_players)}
-            <Button on:click={shadow_dialog.open}>Create Shadow Player</Button>
+            <Button on:click={shadow_dialog.open}>{$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
         {/if}
     </div>
     <PlayerSearch bind:player={player} game={tournament.game} is_shadow={null} include_shadow_players={true}/>
@@ -106,7 +111,7 @@
             <SquadTournamentFields {tournament}/>
             <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>
             <TournamentStaffFields {tournament}/>
-            <Button type="submit">Register</Button>
+            <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
         </form>
     {/if}
 </div>

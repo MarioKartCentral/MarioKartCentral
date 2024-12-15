@@ -13,6 +13,7 @@
   import { check_registrations_open } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
 
@@ -38,14 +39,14 @@
   });
 </script>
 
-<Section header="Register">
+<Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}>
   {#if registration}
     {#if user_info.player}
       <MyRegistration {registration} {tournament}/>
     {/if}
     {#if !check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
       <div>
-        You do not have permission to register for this tournament.
+        {$LL.TOURNAMENTS.REGISTRATIONS.NO_PERMISSION_TO_REGISTER()}
       </div>
     {:else}
       {#if tournament.teams_allowed}
@@ -54,24 +55,24 @@
       {#if !registration.registrations.some((r) => !r.player.is_invite)}
         {#if !check_registrations_open(tournament)}
           <div>
-            Registrations for this tournament are closed.
+            {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS_CLOSED()}
           </div>
         {:else if user_info.player}
           {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
             {#if !tournament.teams_only}
-              <div>Want to register for this tournament? Just fill out your registration details below!</div>
+              <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
               <SoloSquadTournamentRegister
                 {tournament}
                 friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
               />
             {/if}
           {:else}
-            <div>Please add an FC for {tournament.game} to register for this tournament.</div>
+            {$LL.TOURNAMENTS.REGISTRATIONS.ADD_FC_TO_REGISTER({game: tournament.game})}
           {/if}
         {:else}
           <div>
             <a href="/{$page.params.lang}/player-signup"
-              >Please complete your player registration to register for this tournament.</a
+              >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
             >
           </div>
         {/if}
