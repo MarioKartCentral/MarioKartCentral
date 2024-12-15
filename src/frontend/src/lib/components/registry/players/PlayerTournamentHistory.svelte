@@ -109,11 +109,13 @@
         <div class="flex flex-row flex-wrap items-center justify-center">
           <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
           <div class="flex flex-col">
-            <div class="ml-1">
-              <input class="w-44" name="from" type="date" bind:value={from} />
+            <div class="flex flex-row items-center">
+              <div class="w-12 mx-2">From:</div>
+              <input class="w-48" name="from" type="date" bind:value={from} />
             </div>
-            <div class="ml-1">
-              <input class="w-44" name="to" type="date" bind:value={to} />
+            <div class="flex flex-row items-center">
+              <div class="w-12 mx-2">To:</div>
+              <input class="w-48" name="to" type="date" bind:value={to} />
             </div>
           </div>
           <div class="ml-1 my-2">

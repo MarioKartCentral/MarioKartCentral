@@ -67,7 +67,7 @@
     flex-wrap: wrap;
   }
   select {
-    width: 200px;
+    width: 192px;
     /* margin-right: 10px; */
   }
   .gap {
