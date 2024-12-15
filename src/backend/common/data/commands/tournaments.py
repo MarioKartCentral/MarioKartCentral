@@ -397,6 +397,7 @@ class CheckTournamentVisibilityCommand(Command[bool]):
                     raise Problem("Tournament not found", status=404)
                 is_viewable = row[0]
                 return bool(is_viewable)
+<<<<<<< HEAD
 =======
 
 <<<<<<< HEAD
@@ -428,3 +429,5 @@ class GetPlayerSquadTournamentPlacements(Command[dict]):
 >>>>>>> 31ea3e1 (intermediate push)
 =======
 >>>>>>> 9e2dc17 (get all player tournament placements api functional)
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090

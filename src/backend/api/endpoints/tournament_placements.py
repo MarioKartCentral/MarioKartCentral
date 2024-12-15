@@ -44,7 +44,10 @@ async def get_placements(request: Request) -> JSONResponse:
     return JSONResponse(placements)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 async def get_player_placements(request: Request) -> JSONResponse:
     player_id = int(request.path_params['player_id'])
     placements_command = GetPlayerTournamentPlacementsCommand(player_id)
@@ -58,7 +61,10 @@ async def get_team_placements(request: Request) -> JSONResponse:
     return JSONResponse(placements)
 
 
+<<<<<<< HEAD
 >>>>>>> 31ea3e1 (intermediate push)
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 routes = [
     Route('/api/tournaments/{tournament_id:int}/placements/set', set_placements, methods=["POST"]),
     Route('/api/tournaments/{tournament_id:int}/placements', get_placements),

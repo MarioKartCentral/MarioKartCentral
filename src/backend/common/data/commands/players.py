@@ -18,6 +18,7 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
+        data = self.data
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
                 async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
@@ -545,6 +546,7 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
                 claims: list[PlayerClaim] = []
                 rows = await cursor.fetchall()
                 for row in rows:
+<<<<<<< HEAD
                     (claim_id, date, approval_status, player_id, player_name, player_country, 
                      claim_player_id, claim_player_name, claim_player_country) = row
                     player = PlayerBasic(player_id, player_name, player_country)
@@ -552,6 +554,13 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
                     claims.append(PlayerClaim(claim_id, date, approval_status, player, claimed_player))
         return claims
 =======
+=======
+                    team_id, team_name, join_date, leave_date, roster_name = row
+                    history.append(PlayerTransferItem(team_id, team_name, join_date, leave_date, roster_name))
+                results = PlayerTransferHistory(history)
+                return results
+
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 @dataclass
 class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     player_id: int
@@ -574,5 +583,8 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                     history.append(PlayerTransferItem(team_id, team_name, join_date, leave_date, roster_name))
                 results = PlayerTransferHistory(history)
                 return results
+<<<<<<< HEAD
 
 >>>>>>> 6b82979 (player registration history functional)
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090

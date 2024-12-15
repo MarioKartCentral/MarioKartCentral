@@ -157,5 +157,8 @@ class PlayerClaim:
 class MergePlayersRequestData:
     from_player_id: int
     to_player_id: int
+<<<<<<< HEAD
 =======
 >>>>>>> 31ea3e1 (intermediate push)
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090

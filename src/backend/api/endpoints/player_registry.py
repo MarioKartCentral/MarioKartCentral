@@ -226,9 +226,12 @@ routes = [
     Route('/api/registry/players/claims', list_player_claims),
     Route('/api/registry/players/merge', merge_players, methods=['POST']),
 ]
+<<<<<<< HEAD
 =======
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']),
     Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']),
     Route('/api/registry/players/{player_id:int}/getPlayerTransferHistory', get_player_transfer_history)
 ]
 >>>>>>> 6b82979 (player registration history functional)
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090

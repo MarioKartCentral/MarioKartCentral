@@ -15,12 +15,16 @@
   import { sortFilterRosters } from '$lib/util/util';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   import TeamTournamentHistory from '$lib/components/registry/teams/TeamTournamentHistory.svelte';
 >>>>>>> 73b7d8a (team tournament history)
 =======
   import TeamTournamentHistory from '$lib/components/registry/teams/TeamTournamentHistory.svelte';
 >>>>>>> 24fce64 (merge fixes)
+=======
+  import TeamTournamentHistory from '$lib/components/registry/teams/TeamTournamentHistory.svelte';
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 
   let id = 0;
   let team: Team;
@@ -70,6 +74,7 @@
             >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
           >
 <<<<<<< HEAD
+<<<<<<< HEAD
           <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
             >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
           >
@@ -77,6 +82,9 @@
 =======
           <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button>
 >>>>>>> 73b7d8a (team tournament history)
+=======
+          <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button>
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
         </div>
       </Section>
     {/if}
@@ -112,6 +120,7 @@
     </Section>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <TeamTransferList {team}/>
 =======
     <TeamTournamentHistory {team} />
@@ -120,6 +129,10 @@
     <TeamTournamentHistory {team} />
     <TeamTransferList {team} />
 >>>>>>> 24fce64 (merge fixes)
+=======
+    <TeamTournamentHistory {team} />
+    <TeamTransferList {team} />
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
   {:else}
     You do not have permission to view this page.
   {/if}

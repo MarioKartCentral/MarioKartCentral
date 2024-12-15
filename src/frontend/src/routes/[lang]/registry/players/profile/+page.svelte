@@ -19,6 +19,7 @@
   import EditPlayerNotes from '$lib/components/registry/players/EditPlayerNotes.svelte';
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
@@ -28,6 +29,11 @@
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
   import EditPlayerRegistration from '$lib/components/tournaments/registration/EditPlayerRegistration.svelte';
 >>>>>>> 24fce64 (merge fixes)
+=======
+  import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
+  import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
+  import EditPlayerRegistration from '$lib/components/tournaments/registration/EditPlayerRegistration.svelte';
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 
   let user_info: UserInfo;
   let banDialog: Dialog;
@@ -114,14 +120,20 @@
     </Dialog>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <Dialog bind:this={playerNotesDialog} on:close={() => resetPlayerNotes = !resetPlayerNotes} header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}>
 =======
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
     <Dialog
       bind:this={playerNotesDialog}
       on:close={() => (resetPlayerNotes = !resetPlayerNotes)}
       header={$LL.PLAYER_PROFILE.EDIT_PLAYER_NOTES()}
     >
+<<<<<<< HEAD
 >>>>>>> 24fce64 (merge fixes)
+=======
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
       {#key resetPlayerNotes}
         <EditPlayerNotes
           playerId={player.id}

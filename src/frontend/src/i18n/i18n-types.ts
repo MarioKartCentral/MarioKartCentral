@@ -72,6 +72,10 @@ type RootTranslation = {
 		 */
 		TYPE: string
 		/**
+		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
+		 */
+		MARK_ALL_READ: string
+		/**
 		 * I​s​ ​R​e​a​d
 		 */
 		IS_READ: string
@@ -501,12 +505,19 @@ type RootTranslation = {
 		EDIT_BAN: string
 		/**
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		 * V​i​e​w​ ​/​ ​E​d​i​t​ ​B​a​n
 		 */
 		VIEW_EDIT_BAN: string
 		/**
 >>>>>>> 3812b68 (blocking out player tournament and registration history components, remove accidental files from running node in wrong dir)
+=======
+		 * V​i​e​w​/​E​d​i​t​ ​B​a​n
+		 */
+		VIEW_EDIT_BAN: string
+		/**
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 		 * U​n​b​a​n
 		 */
 		UNBAN: string
@@ -530,6 +541,14 @@ type RootTranslation = {
 		 * E​d​i​t​ ​B​a​n​ ​D​e​t​a​i​l​s
 		 */
 		EDIT_BAN_DETAILS: string
+		/**
+		 * B​a​n​n​e​d
+		 */
+		BANNED: string
+		/**
+		 * U​n​b​a​n​n​e​d
+		 */
+		UNBANNED: string
 		/**
 		 * E​n​t​e​r​ ​r​e​a​s​o​n
 		 */
@@ -2201,6 +2220,10 @@ export type TranslationFunctions = {
 		 */
 		TYPE: () => LocalizedString
 		/**
+		 * Mark All as Read
+		 */
+		MARK_ALL_READ: () => LocalizedString
+		/**
 		 * Is Read
 		 */
 		IS_READ: () => LocalizedString
@@ -2630,12 +2653,19 @@ export type TranslationFunctions = {
 		EDIT_BAN: () => LocalizedString
 		/**
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 		 * View / Edit Ban
 		 */
 		VIEW_EDIT_BAN: () => LocalizedString
 		/**
 >>>>>>> 3812b68 (blocking out player tournament and registration history components, remove accidental files from running node in wrong dir)
+=======
+		 * View/Edit Ban
+		 */
+		VIEW_EDIT_BAN: () => LocalizedString
+		/**
+>>>>>>> 24fce649a92f23cd2ce182d6f51d67c1c8e0b090
 		 * Unban
 		 */
 		UNBAN: () => LocalizedString
@@ -2659,6 +2689,14 @@ export type TranslationFunctions = {
 		 * Edit Ban Details
 		 */
 		EDIT_BAN_DETAILS: () => LocalizedString
+		/**
+		 * Banned
+		 */
+		BANNED: () => LocalizedString
+		/**
+		 * Unbanned
+		 */
+		UNBANNED: () => LocalizedString
 		/**
 		 * Enter reason
 		 */
