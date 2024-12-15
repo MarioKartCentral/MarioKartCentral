@@ -26,7 +26,7 @@
 
   async function fetchData() {
     // API
-    let url = `/api/registry/players/${player.id}/${game}/${mode}/getPlayerTransferHistory`;
+    let url = `/api/registry/players/${player.id}/getPlayerTransferHistory`;
     const res = await fetch(url);
     if (res.status !== 200) {
       return;
@@ -50,7 +50,7 @@
   onMount(fetchData);
 </script>
 
-{#if filtered_history.length <= 0}
+{#if history.length <= 0}
   <div></div>
 {:else}
   <Section header={$LL.REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
@@ -72,7 +72,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each history as record, i}
+            {#each filtered_history as record, i}
               <tr class="row-{i % 2}">
                 <td>
                   <a

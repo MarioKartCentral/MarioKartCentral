@@ -555,8 +555,6 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
 @dataclass
 class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     player_id: int
-    game: str
-    mode: str
 
     async def handle(self, db_wrapper, s3_wrapper):
         history: list[PlayerTransferItem] = []
@@ -568,10 +566,8 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                 JOIN teams as t
                 ON t.id = tr.team_id
                 WHERE player_id = ?
-                AND tr.game = ?
-                AND tr.mode = ?
                 ORDER BY tm.join_date ASC;''',
-                (self.player_id, self.game, self.mode)) as cursor:
+                (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     team_id, team_name, game, mode, join_date, leave_date, roster_name = row

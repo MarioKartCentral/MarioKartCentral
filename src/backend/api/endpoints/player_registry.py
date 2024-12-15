@@ -158,9 +158,7 @@ async def update_player_notes(request: Request, body: UpdatePlayerNotesRequestDa
 
 async def get_player_transfer_history(request: Request) -> JSONResponse:
     player_id = int(request.path_params['player_id'])
-    game = str(request.path_params['game'])
-    mode = str(request.path_params['mode'])
-    command = GetPlayerTransferHistoryCommand(player_id, game, mode)
+    command = GetPlayerTransferHistoryCommand(player_id)
     result = await handle(command)
     return JSONResponse(result)
 
@@ -209,7 +207,7 @@ routes = [
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
     Route('/api/registry/players/{id:int}/notes', update_player_notes, methods=['POST']),
-    Route('/api/registry/players/{player_id:int}/{game:str}/{mode:str}/getPlayerTransferHistory', get_player_transfer_history),
+    Route('/api/registry/players/{player_id:int}/getPlayerTransferHistory', get_player_transfer_history),
     Route('/api/registry/players', list_players),
     Route('/api/registry/addFriendCode', create_fc, methods=['POST']),
     Route('/api/registry/forceAddFriendCode', force_create_fc, methods=['POST']), # dispatches notification
