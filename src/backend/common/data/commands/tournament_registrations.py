@@ -291,8 +291,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 if min_squad_size:
                     where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0)")
                 if bool(checkins_enabled) and min_players_checkin is not None:
-                    where_clauses.append("? <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
-                    variable_parameters.append(min_players_checkin)
+                    where_clauses.append("t.min_players_checkin <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
             if self.hosts_only:
                 where_clauses.append("EXISTS (SELECT p.id FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.can_host = 1)")
             if self.is_approved is not None and bool(verification_required):
