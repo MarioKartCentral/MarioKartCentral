@@ -21,7 +21,6 @@ export type TournamentPlayer = {
   is_bagger_clause: boolean;
 };
 
-
 export type TournamentPlayerDetailsShort = {
   player_id: number;
   player_name: string;

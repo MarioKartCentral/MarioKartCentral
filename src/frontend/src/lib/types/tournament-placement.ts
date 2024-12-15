@@ -38,7 +38,6 @@ export type PlayerTournamentPlacement = {
   partners: TournamentPlayerDetailsShort[] | null;
 };
 
-
 export type PlayerTournamentResults = {
   tournament_solo_and_squad_placements: PlayerTournamentPlacement[];
   tournament_team_placements: PlayerTournamentPlacement[];
@@ -60,4 +59,4 @@ export type TeamTournamentPlacement = {
 
 export type TeamTournamentResults = {
   tournament_team_placements: TeamTournamentPlacement[];
-}
+};
