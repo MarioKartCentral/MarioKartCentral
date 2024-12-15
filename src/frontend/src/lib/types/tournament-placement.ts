@@ -1,4 +1,3 @@
-import type { list } from 'postcss';
 import type { TournamentPlayer, TournamentPlayerDetailsShort } from './tournament-player';
 import type { TournamentSquad } from './tournament-squad';
 

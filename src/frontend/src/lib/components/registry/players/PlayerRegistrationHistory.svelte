@@ -1,9 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { user } from '$lib/stores/stores';
-  import { valid_team_games, valid_team_modes } from '$lib/util/util';
+  import { valid_team_modes } from '$lib/util/util';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import type { UserInfo } from '$lib/types/user-info';
   import type { PlayerTransferItem } from '$lib/types/player-transfer';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
@@ -19,11 +17,7 @@
   mode = valid_team_modes[game][0];
   let history: PlayerTransferItem[] = [];
   let filtered_history: PlayerTransferItem[] = [];
-  let user_info: UserInfo;
 
-  user.subscribe((value) => {
-    user_info = value;
-  });
   export let player: PlayerInfo;
 
   function toDate(unix_timestamp: number) {

@@ -1,20 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { user } from '$lib/stores/stores';
   import { onMount } from 'svelte';
   import type { Team } from '$lib/types/team';
-  import type { UserInfo } from '$lib/types/user-info';
   import type { TeamTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
-
-  let user_info: UserInfo;
-  user.subscribe((value) => {
-    user_info = value;
-  });
 
   export let team: Team;
 

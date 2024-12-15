@@ -1,9 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { user } from '$lib/stores/stores';
   import { onMount } from 'svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import type { UserInfo } from '$lib/types/user-info';
   import type { PlayerTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
@@ -11,10 +9,6 @@
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
-  let user_info: UserInfo;
-  user.subscribe((value) => {
-    user_info = value;
-  });
   export let player: PlayerInfo;
 
   let mode: string | null = null;

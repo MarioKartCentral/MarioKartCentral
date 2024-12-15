@@ -19,7 +19,6 @@
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
-  import EditPlayerRegistration from '$lib/components/tournaments/registration/EditPlayerRegistration.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
