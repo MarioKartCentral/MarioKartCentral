@@ -87,6 +87,7 @@ class TournamentSquadDetails():
     is_approved: bool
     players: list[SquadPlayerDetails]
 
+
 @dataclass
 class MyTournamentRegistration():
     squad: TournamentSquadDetails | None

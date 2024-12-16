@@ -20,19 +20,27 @@
   const mode_strings: any = $LL.MODES;
 </script>
 
-<div class={inline ? "flex gap" : ""}>
+<div class={inline ? 'flex gap' : ''}>
   <div class="option">
-    <GameSelect bind:game={game} on:change={() => {
-      if(game) {
-        [mode] = valid_modes[game];
-      }
-      else {
-        mode = null;
-      }
-      dispatch('change');
-    }} {disabled} {flex} {required} {all_option} {hide_labels} {is_team}/>
+    <GameSelect
+      bind:game
+      on:change={() => {
+        if (game) {
+          [mode] = valid_modes[game];
+        } else {
+          mode = null;
+        }
+        dispatch('change');
+      }}
+      {disabled}
+      {flex}
+      {required}
+      {all_option}
+      {hide_labels}
+      {is_team}
+    />
   </div>
-  
+
   <div class="option {flex ? 'flex' : ''}">
     {#if !hide_labels}
       <div>
@@ -51,25 +59,20 @@
             <option value={mode}>{mode_strings[mode.toUpperCase()]()}</option>
           {/each}
         {/if}
-        
       </select>
     </div>
   </div>
 </div>
 
-
 <style>
-  .option {
-    margin-bottom: 10px;
-  }
   .flex {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
   }
   select {
-    width: 200px;
-    margin-right: 10px;
+    width: 192px;
+    /* margin-right: 10px; */
   }
   .gap {
     gap: 5px;

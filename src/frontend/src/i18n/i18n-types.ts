@@ -2611,6 +2611,26 @@ type RootTranslation = {
 		 */
 		VSRACE: string
 	}
+	TOURNAMENT_HISTORY: {
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+		 */
+		TOURNAMENT_HISTORY: string
+		/**
+		 * S​o​l​o​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		SOLO_TOURNAMENTS: string
+		/**
+		 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		TEAM_TOURNAMENTS: string
+	}
+	REGISTRATION_HISTORY: {
+		/**
+		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​H​i​s​t​o​r​y
+		 */
+		REGISTRATION_HISTORY: string
+	}
 	LANGUAGES: {
 		/**
 		 * E​n​g​l​i​s​h​ ​(​U​n​i​t​e​d​ ​S​t​a​t​e​s​)
@@ -6671,6 +6691,26 @@ export type TranslationFunctions = {
 		 * VS Race
 		 */
 		VSRACE: () => LocalizedString
+	}
+	TOURNAMENT_HISTORY: {
+		/**
+		 * Tournament History
+		 */
+		TOURNAMENT_HISTORY: () => LocalizedString
+		/**
+		 * Solo Tournaments
+		 */
+		SOLO_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Team Tournaments
+		 */
+		TEAM_TOURNAMENTS: () => LocalizedString
+	}
+	REGISTRATION_HISTORY: {
+		/**
+		 * Registration History
+		 */
+		REGISTRATION_HISTORY: () => LocalizedString
 	}
 	LANGUAGES: {
 		/**

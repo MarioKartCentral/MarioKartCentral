@@ -42,13 +42,13 @@
     </div>
 </div>
 
-
 <style>
-    select {
-        width: 200px;
-    }
-    .flex {
-        display: flex;
-        align-items: center;
-    }
+  select {
+    width: 192px;
+  }
+  .flex {
+    display: flex;
+    align-items: center;
+  }
 </style>
+
