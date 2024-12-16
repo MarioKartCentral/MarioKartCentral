@@ -4,7 +4,7 @@ import type { TournamentPlayer } from '../tournament-player';
 export type RegistrationDetails = {
   squad: TournamentSquad | null;
   player: TournamentPlayer;
-}
+};
 
 export type MyTournamentRegistration = {
   player_id: number;

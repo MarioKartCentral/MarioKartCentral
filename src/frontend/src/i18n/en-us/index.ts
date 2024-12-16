@@ -119,7 +119,8 @@ const en_us: BaseTranslation = {
     TOURNAMENT_INVITES: 'Tournament Invites',
     SELECT_LEAVE_ROSTER: 'Select a roster to leave:',
     SELECT_LEAVE_ROSTER_ERROR: 'Please select a roster to leave',
-    ACCEPT_TEAM_INVITE_SUCCESS: 'Successfully accepted invite to {roster_name:string}! Your transfer must be processed by staff members before being completed.',
+    ACCEPT_TEAM_INVITE_SUCCESS:
+      'Successfully accepted invite to {roster_name:string}! Your transfer must be processed by staff members before being completed.',
     ACCEPT_TEAM_INVITE_FAILED: 'Accepting team invite failed',
     DECLINE_TEAM_INVITE_FAILED: 'Declining team invite failed',
     ACCEPT: 'Accept',
@@ -140,7 +141,7 @@ const en_us: BaseTranslation = {
     FR: 'French',
     JA: 'Japanese',
   },
-  LOGIN: {  
+  LOGIN: {
     LOGOUT: 'Logout',
     EMAIL: 'Email',
     PASSWORD: 'Password',
@@ -207,12 +208,14 @@ const en_us: BaseTranslation = {
     NEW_PLAYER: 'New Player',
     MERGE_PLAYERS: 'Merge Players',
     SELECT_UNIQUE_PLAYERS: 'Please select two different players',
-    MERGE_PLAYERS_CONFIRM: 'Are you sure you want to merge all of {old_player}\'s data into {new_player}? This will DELETE {old_player} completely.',
+    MERGE_PLAYERS_CONFIRM:
+      "Are you sure you want to merge all of {old_player}'s data into {new_player}? This will DELETE {old_player} completely.",
     MERGE_PLAYERS_SUCCESS: 'Successfully merged players!',
     MERGE_PLAYERS_FAILED: 'Merging players failed',
     MERGE_TEAMS: 'Merge Teams',
     SELECT_UNIQUE_TEAMS: 'Please select two different teams',
-    MERGE_TEAMS_CONFIRM: 'Are you sure you want to merge all of {old_team}\'s data into {new_team}? This will DELETE {old_team} completely.',
+    MERGE_TEAMS_CONFIRM:
+      "Are you sure you want to merge all of {old_team}'s data into {new_team}? This will DELETE {old_team} completely.",
     MERGE_TEAMS_SUCCESS: 'Successfully merged teams!',
     MERGE_TEAMS_FAILED: 'Merging teams failed',
     OLD_TEAM: 'Old Team',
@@ -342,7 +345,7 @@ const en_us: BaseTranslation = {
       SWITCH_FC: 'Switch FC',
       MKT_FC: 'MKT FC',
       MKW_FC: 'MKW FC',
-      "3DS_FC": '3DS FC',
+      '3DS_FC': '3DS FC',
       NNID: 'Nintendo Network ID',
       REGISTER: 'Register',
       REGISTER_SUCCESS: 'Registered successfully!',
@@ -373,7 +376,8 @@ const en_us: BaseTranslation = {
       PLAYER_NOT_FOUND: 'Player not found',
     },
     SHADOW_PLAYERS: {
-      UNCLAIMED_PLAYER_DESCRIPTION: 'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.',
+      UNCLAIMED_PLAYER_DESCRIPTION:
+        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.',
       CLAIM_PLAYER: 'Claim Player',
       CLAIM_PLAYER_SUCCESS: 'Successfully sent a claim for this player to staff!',
       CLAIM_PLAYER_FAILED: 'Claiming player failed',
@@ -467,7 +471,8 @@ const en_us: BaseTranslation = {
       ROSTER_TAG: 'Roster Tag',
       REQUEST_CHANGE_IN: 'You can request a name/tag change in {days:number} days.',
       NAME_TAG_CHANGE_PENDING: 'Name/Tag change pending approval from MKC Staff:',
-      NAME_TAG_CHANGE_SUCCESS: 'Your request to change your team\'s name/tag has been sent to MKCentral staff for approval.',
+      NAME_TAG_CHANGE_SUCCESS:
+        "Your request to change your team's name/tag has been sent to MKCentral staff for approval.",
       NAME_TAG_CHANGE_FAILURE: 'Requesting team name/tag change failed',
       EDIT_TEAM_SUCCESS: 'Successfully edited team',
       EDIT_TEAM_FAILURE: 'Failed to edit team',
@@ -488,9 +493,11 @@ const en_us: BaseTranslation = {
       ROSTER_EDIT_FAILED: 'Editing roster failed',
       TEAM_ROLE_ADD_CONFIRM: 'Are you sure you want to give the {team_role:string} role to {player_name:string}?',
       TEAM_ROLE_ADD_FAILED: 'Failed to grant team role',
-      TEAM_ROLE_REMOVE_CONFIRM: 'Are you sure you want to remove the {team_role:string} role from {player_name:string}?',
+      TEAM_ROLE_REMOVE_CONFIRM:
+        'Are you sure you want to remove the {team_role:string} role from {player_name:string}?',
       TEAM_ROLE_REMOVE_FAILED: 'Failed to remove team role',
-      ROSTER_NAME_TAG_CHANGE_SUCCESS: 'Your request to change your roster\'s name/tag has been sent to MKCentral staff for approval.',
+      ROSTER_NAME_TAG_CHANGE_SUCCESS:
+        "Your request to change your roster's name/tag has been sent to MKCentral staff for approval.",
       ROSTER_NAME_TAG_CHANGE_FAILURE: 'Requesting roster name/tag change failed',
     },
     LIST: {
@@ -525,7 +532,7 @@ const en_us: BaseTranslation = {
         STATUS: 'Approval Status',
         APPROVED: 'Approved',
         PENDING: 'Pending',
-        DENIED: 'Denied'
+        DENIED: 'Denied',
       },
       ACTIVE_HISTORICAL: 'Active/Historical',
       ACTIVE: 'Active',
@@ -550,7 +557,8 @@ const en_us: BaseTranslation = {
     },
   },
   TIME_TRIALS: {
-    DESCRIPTION: 'This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you\'ll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!',
+    DESCRIPTION:
+      "This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!",
   },
   TOURNAMENTS: {
     CREATE_TOURNAMENT: 'Create Tournament',
@@ -561,7 +569,7 @@ const en_us: BaseTranslation = {
     TOURNAMENT_COUNT: '{count:number} tournaments',
     UNPUBLISHED: 'Unpublished',
     HIDDEN_FROM_TOURNAMENT_PAGE: 'Hidden from tournament page',
-    BACK_TO_TOURNAMENT: 'Back to Tournament',    
+    BACK_TO_TOURNAMENT: 'Back to Tournament',
     REGISTER_NOW: 'Register now!',
     VIEW_TOURNAMENT: 'View Tournament',
     DESCRIPTION: 'Tournament Description',
@@ -626,7 +634,8 @@ const en_us: BaseTranslation = {
       MAKE_CAPTAIN_FAILED: 'Transferring captain permissions failed',
       MAKE_REPRESENTATIVE_FAILED: 'Failed to add representative',
       REMOVE_REPRESENTATIVE_FAILED: 'Failed to remove player as a representative',
-      CAPTAIN_UNREGISTER_ERROR: 'Please unregister this squad or set another player as captain before unregistering for this tournament',
+      CAPTAIN_UNREGISTER_ERROR:
+        'Please unregister this squad or set another player as captain before unregistering for this tournament',
       UNREGISTER_CONFIRM: 'Are you sure you would like to unregister from this tournament?',
       UNREGISTER_FAILED: 'Failed to unregister',
       EDIT_REGISTRATION: 'Edit Registration',
@@ -687,7 +696,8 @@ const en_us: BaseTranslation = {
       SELECT_ONE_CAPTAIN: 'Please select exactly one captain.',
       SELECT_REPRESENTATIVES: 'Please select exactly {min_representatives:number} captains/representatives.',
       SELECT_MORE_PLAYERS: 'You need {count:number} more {{player|players}} to register for this tournament.',
-      SELECT_LESS_PLAYERS: 'This tournament\'s max squad size is {max_squad_size:number} players, please remove at least {count:number} players.',
+      SELECT_LESS_PLAYERS:
+        "This tournament's max squad size is {max_squad_size:number} players, please remove at least {count:number} players.",
       ADD_PLAYER_SELECT: 'Add a player...',
       MANUALLY_REGISTER_PLAYER: 'Manually Register Player',
       MANUALLY_REGISTER_SQUAD: 'Manually Register Squad',
@@ -726,7 +736,7 @@ const en_us: BaseTranslation = {
       TEAMS_ONLY: 'Teams only? (this cannot be changed)',
       TEAM_MEMBERS_ONLY: 'Team members only? (this cannot be changed)',
       MIN_REPRESENTATIVES: '# of representatives required',
-      HOST_STATUS_REQUIRED: 'Can/can\'t host required? (this cannot be changed)',
+      HOST_STATUS_REQUIRED: "Can/can't host required? (this cannot be changed)",
       MII_NAME_REQUIRED: 'In-Game/Mii Name required? (this cannot be changed)',
       REQUIRE_SINGLE_FC: 'Require participants to select one FC for the tournament? (this cannot be changed)',
       CHECKINS_ENABLED: 'Check-ins enabled',
@@ -763,7 +773,8 @@ const en_us: BaseTranslation = {
       PLACEMENT_LINE_INCORRECT: 'Placement {line:string} is in incorrect format',
       PARSE_TEXT_ERROR: 'An error occurred parsing text',
       SWITCH_TO_INTERACTIVE_INPUT: 'Switch to interactive input',
-      RAW_INPUT_INSTRUCTIONS: 'On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.',
+      RAW_INPUT_INSTRUCTIONS:
+        'On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.',
     },
     SERIES: {
       CREATE: 'Create Series',
