@@ -59,7 +59,7 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
     {#if !roster}
-        <input type="search" placeholder={$LL.TEAM_PROFILE.SEARCH_FOR_ROSTERS()} bind:value={query} on:input={handle_search} />
+        <input type="search" placeholder={$LL.TEAMS.PROFILE.SEARCH_FOR_ROSTERS()} bind:value={query} on:input={handle_search} />
         {#if show_results}
             <div class="table-outer">
                 <div class="table-inner">

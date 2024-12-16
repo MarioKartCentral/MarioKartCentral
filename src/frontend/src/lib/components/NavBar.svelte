@@ -81,7 +81,7 @@
           <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">{$LL.NAVBAR.PROFILE()}</DropdownItem>
           <DropdownItem href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</DropdownItem>
           <DropdownItem href="/{$page.params.lang}/registry/invites">Invites</DropdownItem>
-          <DropdownItem on:click={logout}><span class="logout">{$LL.LOGOUT()}</span></DropdownItem>
+          <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
         <Button size="sm" href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</Button>

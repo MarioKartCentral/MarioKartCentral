@@ -15,10 +15,10 @@
   });
 </script>
 
-<Section header={$LL.TEAM_LIST.TEAM_LISTING()}>
+<Section header={$LL.TEAMS.LIST.TEAM_LISTING()}>
   <div slot="header_content">
     {#if user_info.player_id && check_permission(user_info, permissions.create_team, true)}
-      <Button href="/{$page.params.lang}/registry/teams/create">{$LL.TEAM_LIST.CREATE_TEAM()}</Button>
+      <Button href="/{$page.params.lang}/registry/teams/create">{$LL.TEAMS.LIST.CREATE_TEAM()}</Button>
     {/if}
   </div>
   <TeamList />

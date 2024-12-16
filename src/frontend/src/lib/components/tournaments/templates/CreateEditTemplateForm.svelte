@@ -142,7 +142,7 @@
         </div>
       </Section>
       <TournamentDetailsForm {data} update_function={updateData} is_template={true} {series_restrict} />
-      <Section header={$LL.SUBMIT()}>
+      <Section header={$LL.COMMON.SUBMIT()}>
         <Button type="submit">
           {is_edit ? $LL.TOURNAMENTS.TEMPLATES.EDIT_TEMPLATE() : $LL.TOURNAMENTS.TEMPLATES.CREATE_TEMPLATE()}
         </Button>

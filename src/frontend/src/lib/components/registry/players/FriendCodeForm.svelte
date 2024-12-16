@@ -104,7 +104,7 @@
                     <input name="description" placeholder={$LL.FRIEND_CODES.DESCRIPTION()} />
                 </div>
             </div>
-            <Button type="submit">{$LL.SUBMIT()}</Button>
+            <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
         </div>
     </form>
 {/if}

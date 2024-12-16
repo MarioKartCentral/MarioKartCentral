@@ -107,10 +107,10 @@
     <col class="accept" />
     <thead>
         <tr>
-        <th>{$LL.TAG()}</th>
-        <th>{$LL.NAME()}</th>
-        <th class="mode mobile-hide">{$LL.MODE()}</th>
-        <th class="mode mobile-hide">{$LL.DATE()}</th>
+        <th>{$LL.COMMON.TAG()}</th>
+        <th>{$LL.COMMON.NAME()}</th>
+        <th class="mode mobile-hide">{$LL.COMMON.MODE()}</th>
+        <th class="mode mobile-hide">{$LL.COMMON.DATE()}</th>
         <th>{$LL.INVITES.ACCEPT()}?</th>
         </tr>
     </thead>
@@ -167,7 +167,7 @@
     <br /><br />
     <div class="accept">
       <Button on:click={() => declineInvite(curr_invite)}>{$LL.INVITES.DECLINE()}</Button>
-      <Button on:click={decline_dialog.close}>{$LL.CANCEL()}</Button>
+      <Button on:click={decline_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </Dialog>
 

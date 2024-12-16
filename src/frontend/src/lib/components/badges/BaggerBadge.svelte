@@ -3,4 +3,4 @@
     import LL from "$i18n/i18n-svelte";
 </script>
 
-<Badge badgeClass="bagger_badge">{$LL.BAGGER()}</Badge>
+<Badge badgeClass="bagger_badge">{$LL.COMMON.BAGGER()}</Badge>

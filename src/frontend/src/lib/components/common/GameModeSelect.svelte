@@ -44,7 +44,7 @@
   <div class="option {flex ? 'flex' : ''}">
     {#if !hide_labels}
       <div>
-        <label for="mode">{$LL.MODE()}</label>
+        <label for="mode">{$LL.COMMON.MODE()}</label>
       </div>
     {/if}
     <div>

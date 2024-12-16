@@ -130,13 +130,13 @@
       <thead>
         <tr>
           <th>
-            {$LL.TAG()}
+            {$LL.COMMON.TAG()}
           </th>
           <th>
-            {$LL.NAME()}
+            {$LL.COMMON.NAME()}
           </th>
           <th class="mobile-hide">
-            {$LL.DATE()}
+            {$LL.COMMON.DATE()}
           </th>
           <th>
             {$LL.MODERATOR.APPROVE()}
@@ -192,9 +192,9 @@
         <col class="approve"/>
         <thead>
           <tr>
-            <th>{$LL.TAG()}</th>
-            <th>{$LL.NAME()}</th>
-            <th class="mobile-hide">{$LL.DATE()}</th>
+            <th>{$LL.COMMON.TAG()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
             <th>{$LL.MODERATOR.APPROVE()}</th>
           </tr>
         </thead>
@@ -238,7 +238,7 @@
     
   </Section>
 {:else}
-  {$LL.NO_PERMISSION()}
+  {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 <style>

@@ -3,4 +3,4 @@
     import LL from "$i18n/i18n-svelte";
 </script>
 
-<Badge badgeClass='team_manager_badge'>{$LL.TEAM_PROFILE.MANAGER()}</Badge>
+<Badge badgeClass='team_manager_badge'>{$LL.TEAMS.PROFILE.MANAGER()}</Badge>

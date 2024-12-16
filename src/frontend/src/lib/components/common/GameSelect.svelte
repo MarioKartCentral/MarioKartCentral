@@ -18,7 +18,7 @@
 <div class={flex ? 'flex' : ''}>
     {#if !hide_labels}
         <div>
-            <label for="game">{$LL.GAME()}</label>
+            <label for="game">{$LL.COMMON.GAME()}</label>
         </div>
     {/if}
     <div>

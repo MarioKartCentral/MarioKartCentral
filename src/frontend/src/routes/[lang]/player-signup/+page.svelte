@@ -46,64 +46,64 @@
 
     if (response.status < 300) {
       goto('/');
-      alert($LL.PLAYER_SIGNUP.REGISTER_SUCCESS());
+      alert($LL.PLAYERS.PLAYER_SIGNUP.REGISTER_SUCCESS());
     } else {
-      alert(`${$LL.PLAYER_SIGNUP.REGISTER_FAILED()}: ${result['title']}`);
+      alert(`${$LL.PLAYERS.PLAYER_SIGNUP.REGISTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
 {#if user_info.player_id !== null}
-  {$LL.PLAYER_SIGNUP.ALREADY_REGISTERED()}
+  {$LL.PLAYERS.PLAYER_SIGNUP.ALREADY_REGISTERED()}
 {:else}
   <Section header={$LL.DISCORD.DISCORD()}>
     <LinkDiscord/>
   </Section>
-  <Section header={$LL.PLAYER_SIGNUP.PLAYER_SIGNUP()}>
+  <Section header={$LL.PLAYERS.PLAYER_SIGNUP.PLAYER_SIGNUP()}>
     <form method="post" on:submit|preventDefault={register}>
       <div class="field">
         <span class="item-label">
-          <label for="name">{$LL.NAME()}</label>
+          <label for="name">{$LL.COMMON.NAME()}</label>
         </span>
         <input name="name" type="name" minlength="2" pattern="^\S.*\S$|^\S$" />
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="country">{$LL.COUNTRY()}</label>
+          <label for="country">{$LL.COMMON.COUNTRY()}</label>
         </span>
         <CountrySelect is_required={true}/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="switch_fc">{$LL.PLAYER_SIGNUP.SWITCH_FC()}</label>
+          <label for="switch_fc">{$LL.PLAYERS.PLAYER_SIGNUP.SWITCH_FC()}</label>
         </span>
         <input name="switch_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="mkt_fc">{$LL.PLAYER_SIGNUP.MKT_FC()}</label>
+          <label for="mkt_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKT_FC()}</label>
         </span>
         <input name="mkt_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="mkw_fc">{$LL.PLAYER_SIGNUP.MKW_FC()}</label>
+          <label for="mkw_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKW_FC()}</label>
         </span>
         <input name="mkw_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="3ds_fc">{$LL.PLAYER_SIGNUP['3DS_FC']()}</label>
+          <label for="3ds_fc">{$LL.PLAYERS.PLAYER_SIGNUP['3DS_FC']()}</label>
         </span>
         <input name="3ds_fc" placeholder='0000-0000-0000'/>
       </div>
       <div class="field">
         <span class="item-label">
-          <label for="nnid">{$LL.PLAYER_SIGNUP.NNID()}</label>
+          <label for="nnid">{$LL.PLAYERS.PLAYER_SIGNUP.NNID()}</label>
         </span>
         <input name="nnid" placeholder='NNID'/>
       </div>
-      <Button type="submit">{$LL.PLAYER_SIGNUP.REGISTER()}</Button>
+      <Button type="submit">{$LL.PLAYERS.PLAYER_SIGNUP.REGISTER()}</Button>
     </form>
   </Section>
 {/if}

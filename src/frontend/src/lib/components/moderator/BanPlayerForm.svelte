@@ -117,9 +117,9 @@
             <textarea name='comment' bind:value={comment}></textarea>
         </div>
         <br/>
-        <Button type="submit">{$LL.SUBMIT()}</Button>
+        <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
         {#if handleCancel}
-            <Button color='red' on:click={handleCancel}>{$LL.CANCEL()}</Button>
+            <Button color='red' on:click={handleCancel}>{$LL.COMMON.CANCEL()}</Button>
         {/if}
     </form>
 </div>

@@ -154,8 +154,8 @@
             {$LL.TOURNAMENTS.REGISTRATIONS.BAGGER_SELECT()}
           </label>
           <select name="invite_as_bagger" bind:value={invite_as_bagger}>
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
           </select>
         </div>
       {/if}
@@ -179,7 +179,7 @@
     <br />
     <div>
       <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
-      <Button type="button" on:click={edit_squad_dialog.close}>{$LL.CANCEL()}</Button>
+      <Button type="button" on:click={edit_squad_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </form>
 </Dialog>

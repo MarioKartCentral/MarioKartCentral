@@ -24,6 +24,6 @@
   {#if check_series_permission(user_info, series_permissions.edit_series, series_id)}
     <CreateEditTournamentSeriesForm {series_id} is_edit={true} />
   {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/if}

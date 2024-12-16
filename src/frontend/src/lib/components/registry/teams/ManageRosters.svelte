@@ -70,9 +70,9 @@
   </svelte:head>
   
   {#if team}
-    <Section header={$LL.TEAM_EDIT.TEAM_PAGE()}>
+    <Section header={$LL.TEAMS.EDIT.TEAM_PAGE()}>
       <div slot="header_content">
-        <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{$LL.TEAM_EDIT.BACK_TO_TEAM()}</Button>
+        <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{$LL.TEAMS.EDIT.BACK_TO_TEAM()}</Button>
       </div>
     </Section>
     {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
@@ -81,12 +81,12 @@
       {/each}
     {/if}
     {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
-      <Section header={$LL.TEAM_EDIT.NEW_ROSTER()}>
+      <Section header={$LL.TEAMS.EDIT.NEW_ROSTER()}>
         <form method="post" on:submit|preventDefault={createRoster}>
             <GameModeSelect flex required is_team/>
             <div class="option">
               <div>
-                <label for="name">{$LL.TEAM_EDIT.ROSTER_NAME()}</label>
+                <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
               </div>
               <div>
                 <input name="name" type="text" pattern="^\S.*\S$|^\S$" required />
@@ -94,7 +94,7 @@
             </div>
             <div class="option">
               <div>
-                <label for="tag">{$LL.TEAM_EDIT.ROSTER_TAG()}</label>
+                <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
               </div>
               <div>
                 <input name="tag" type="text" required />
@@ -102,17 +102,17 @@
             </div>
             <div class="option">
               <div>
-                <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
+                <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
               </div>
               <div>
                 <select name="recruiting">
-                  <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-                  <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+                  <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+                  <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
                 </select>
               </div>
             </div>
           <div>
-            <Button type="submit">{$LL.SUBMIT()}</Button>
+            <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
           </div>
         </form>
       </Section>

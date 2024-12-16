@@ -60,41 +60,41 @@
       <Section header={$LL.NAVBAR.MODERATOR()}>
         <div slot="header_content">
           <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
-            >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
+            >{$LL.TEAMS.PROFILE.MANAGE_ROSTERS()}</Button
           >
           <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
-            >{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button
+            >{$LL.TEAMS.PROFILE.EDIT_TEAM()}</Button
           >
           <Button href="/{$page.params.lang}/registry/teams/manage_roles?id={id}">{$LL.ROLES.MANAGE_ROLES()}</Button>
         </div>
       </Section>
     {/if}
-    <Section header={$LL.TEAM_PROFILE.TEAM_PROFILE()}>
+    <Section header={$LL.TEAMS.PROFILE.TEAM_PROFILE()}>
       <div slot="header_content">
         {#if team.approval_status === 'approved' && !team.is_historical}
           {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
             <Button href="/{$page.params.lang}/registry/teams/manage_rosters?id={id}"
-              >{$LL.TEAM_PROFILE.MANAGE_ROSTERS()}</Button
+              >{$LL.TEAMS.PROFILE.MANAGE_ROSTERS()}</Button
             >
           {/if}
           {#if check_team_permission(user_info, team_permissions.edit_team_info, id)}
-            <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAM_PROFILE.EDIT_TEAM()}</Button>
+            <Button href="/{$page.params.lang}/registry/teams/edit?id={id}">{$LL.TEAMS.PROFILE.EDIT_TEAM()}</Button>
           {/if}
         {/if}
       </div>
       {#if team.approval_status === 'pending'}
-        {$LL.TEAM_PROFILE.PENDING_APPROVAL()}
+        {$LL.TEAMS.PROFILE.PENDING_APPROVAL()}
       {/if}
       <TeamProfile {team} />
     </Section>
-    <Section header={$LL.TEAM_PROFILE.ROSTERS()}>
+    <Section header={$LL.TEAMS.PROFILE.ROSTERS()}>
       <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
       {#key game}
         {#key mode}
           {#each filter_team_page_rosters(team) as roster}
             <TeamRoster {roster} />
           {:else}
-            {$LL.TEAM_PROFILE.NO_ACTIVE_ROSTERS()}
+            {$LL.TEAMS.PROFILE.NO_ACTIVE_ROSTERS()}
           {/each}
         {/key}
       {/key}
@@ -102,8 +102,8 @@
     <TeamTournamentHistory {team} />
     <TeamTransferList {team} />
   {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {:else if not_found}
-    {$LL.TEAM_PROFILE.TEAM_NOT_FOUND()}
+    {$LL.TEAMS.PROFILE.TEAM_NOT_FOUND()}
 {/if}

@@ -41,7 +41,7 @@
 </script>
 
 {#if check_permission(user_info, team_permissions.manage_team_roles)}
-    <Section header={$LL.TEAM_EDIT.TEAM_ROLES()}>
+    <Section header={$LL.TEAMS.EDIT.TEAM_ROLES()}>
         <div slot="header_content">
             <Button href="/{$page.params.lang}/registry/teams/profile?id={team_id}">Back to Team</Button>
         </div>
@@ -63,7 +63,7 @@
         </div>
     </Section>
 {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 

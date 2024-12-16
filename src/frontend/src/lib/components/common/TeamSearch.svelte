@@ -56,7 +56,7 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
     {#if !team}
-        <input type="search" placeholder={$LL.TEAM_PROFILE.SEARCH_FOR_TEAMS()} bind:value={query} on:input={handle_search} />
+        <input type="search" placeholder={$LL.TEAMS.PROFILE.SEARCH_FOR_TEAMS()} bind:value={query} on:input={handle_search} />
         {#if show_results}
             <div class="table-outer">
                 <div class="table-inner">

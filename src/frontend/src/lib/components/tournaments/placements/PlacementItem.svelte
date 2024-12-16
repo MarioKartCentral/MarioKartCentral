@@ -86,7 +86,7 @@
     </div>
     {#if is_edit}
         <div class="actions">
-            {$LL.ACTIONS()}
+            {$LL.COMMON.ACTIONS()}
             <ChevronDownSolid/>
         </div>
         <Dropdown>

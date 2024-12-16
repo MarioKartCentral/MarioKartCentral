@@ -153,7 +153,7 @@
     <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
   </Section>
 {:else}
-  {$LL.NO_PERMISSION()}
+  {$LL.COMMON.NO_PERMISSION()}
 {/if}
 <style>
   hr {

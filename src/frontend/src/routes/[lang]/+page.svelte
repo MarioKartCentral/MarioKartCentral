@@ -38,15 +38,15 @@
   <title>Mario Kart Central</title>
 </svelte:head>
 
-<h1>{$LL.WELCOME()}</h1>
-<p>{$LL.SUMMARY()}</p>
-<p>{$LL.PLAYER_PROFILE.LANGUAGE()}: {$LL.LANGUAGE()}</p>
+<h1>{$LL.HOMEPAGE.WELCOME()}</h1>
+<p>{$LL.HOMEPAGE.SUMMARY()}</p>
+<p>{$LL.COMMON.LANGUAGE()}: {$LL.LANGUAGE()}</p>
 
 <p>User ID: {userId}</p>
 <p>Player ID: {playerId}</p>
 {#if isLoggedIn}
   <form method="post" on:submit|preventDefault={logout}>
-    <Button type="submit">{$LL.LOGOUT()}</Button>
+    <Button type="submit">{$LL.LOGIN.LOGOUT()}</Button>
   </form>
 {:else}
   <LoginRegister/>

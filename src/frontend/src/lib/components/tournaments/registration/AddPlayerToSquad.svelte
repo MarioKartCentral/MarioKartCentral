@@ -69,7 +69,7 @@
                 <TournamentStaffFields {tournament} squad_exists={true}/>
                 <div class="confirm">
                     <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</Button>
-                    <Button type="button" on:click={add_player_dialog.close}>{$LL.CANCEL()}</Button>
+                    <Button type="button" on:click={add_player_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
                 </div>
             </form>
         {/if}

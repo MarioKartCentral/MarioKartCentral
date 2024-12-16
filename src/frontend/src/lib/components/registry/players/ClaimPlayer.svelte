@@ -18,21 +18,21 @@
         });
         const result = await response.json();
         if (response.status < 300) {
-            alert($LL.SHADOW_PLAYERS.CLAIM_PLAYER_SUCCESS());
+            alert($LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER_SUCCESS());
             window.location.reload();
         }
         else {
-            alert(`${$LL.SHADOW_PLAYERS.CLAIM_PLAYER_FAILED()}: ${result['title']}`);
+            alert(`${$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
-<Section header={$LL.SHADOW_PLAYERS.CLAIM_PLAYER()}>
+<Section header={$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER()}>
     <div>
-        {$LL.SHADOW_PLAYERS.UNCLAIMED_PLAYER_DESCRIPTION()}
+        {$LL.PLAYERS.SHADOW_PLAYERS.UNCLAIMED_PLAYER_DESCRIPTION()}
     </div>
     <div class="claim-button">
-        <Button on:click={claimPlayer}>{$LL.SHADOW_PLAYERS.CLAIM_PLAYER()}</Button>
+        <Button on:click={claimPlayer}>{$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER()}</Button>
     </div>
     
 </Section>

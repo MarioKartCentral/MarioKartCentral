@@ -76,14 +76,14 @@
             <div>
                 <select bind:value={from_roster} name="from" on:change={updateRosters}>
                     <option value={null}>
-                        {$LL.NONE()}
+                        {$LL.COMMON.NONE()}
                     </option>
                     {#each player.rosters as roster}
                         <option value={roster}>
                             {roster.roster_name}
                             ({roster.game.toUpperCase()})
                             {#if roster.is_bagger_clause}
-                                ({$LL.BAGGER()})
+                                ({$LL.COMMON.BAGGER()})
                             {/if}
                         </option>
                     {/each}
@@ -98,11 +98,11 @@
         </div>
         {#if !from_roster && to_roster?.game === "mkw"}
             <div class="item">
-                <div>{$LL.BAGGER()}?</div>
+                <div>{$LL.COMMON.BAGGER()}?</div>
                 <div>
                     <select bind:value={is_bagger}>
-                        <option value={false} selected>{$LL.NO()}</option>
-                        <option value={true}>{$LL.YES()}</option>
+                        <option value={false} selected>{$LL.COMMON.NO()}</option>
+                        <option value={true}>{$LL.COMMON.YES()}</option>
                     </select>
                 </div>
             </div>

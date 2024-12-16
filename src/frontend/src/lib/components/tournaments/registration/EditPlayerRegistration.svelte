@@ -99,7 +99,7 @@
             {/if}
             <div class="confirm">
                 <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_REGISTRATION()}</Button>
-                <Button type="button" on:click={edit_reg_dialog.close}>{$LL.CANCEL()}</Button>
+                <Button type="button" on:click={edit_reg_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
             </div>
         </form>
     {/if}

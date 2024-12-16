@@ -223,9 +223,9 @@
             <thead>
               <tr>
                 <th />
-                <th>{$LL.NAME()}</th>
+                <th>{$LL.COMMON.NAME()}</th>
                 <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
-                <th>{$LL.ACTIONS()}</th>
+                <th>{$LL.COMMON.ACTIONS()}</th>
               </tr>
             </thead>
             <tbody>

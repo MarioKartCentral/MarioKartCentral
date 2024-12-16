@@ -80,14 +80,14 @@
                         <label for="is_approved">{$LL.TOURNAMENTS.REGISTRATIONS.APPROVED_SELECT()}</label>
                     </span>
                     <select name="is_approved" value={Boolean(squad.is_approved)} required>
-                        <option value={false}>{$LL.NO()}</option>
-                        <option value={true}>{$LL.YES()}</option>
+                        <option value={false}>{$LL.COMMON.NO()}</option>
+                        <option value={true}>{$LL.COMMON.YES()}</option>
                     </select>
                 </div>
             {/if}
             <div>
                 <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
-                <Button type="button" on:click={edit_squad_dialog.close}>{$LL.CANCEL()}</Button>
+                <Button type="button" on:click={edit_squad_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
             </div>
         </form>
     {/if}

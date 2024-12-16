@@ -59,7 +59,7 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
   {#if !player}
-    <input type="search" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} bind:value={query} on:input={handle_search} />
+    <input type="search" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} bind:value={query} on:input={handle_search} />
     {#if show_results}
       <div class="table-outer">
         <div class="table-inner">

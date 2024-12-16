@@ -27,7 +27,7 @@
   };
 
   async function leaveRoster() {
-    let conf = window.confirm($LL.TEAM_PROFILE.LEAVE_ROSTER_CONFIRM({roster_name: roster.name}));
+    let conf = window.confirm($LL.TEAMS.PROFILE.LEAVE_ROSTER_CONFIRM({roster_name: roster.name}));
     if(!conf) return;
     const payload = {
       roster_id: roster.id
@@ -41,9 +41,9 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert($LL.TEAM_PROFILE.LEAVE_ROSTER_SUCCESS());
+      alert($LL.TEAMS.PROFILE.LEAVE_ROSTER_SUCCESS());
     } else {
-      alert(`${$LL.TEAM_PROFILE.LEAVE_ROSTER_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.PROFILE.LEAVE_ROSTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -58,7 +58,7 @@
     <ModeBadge mode={roster.mode}/>
   </div>
   {roster.players.length}
-  {roster.players.length !== 1 ? $LL.TEAM_PROFILE.PLAYERS() : $LL.TEAM_PROFILE.PLAYER()}
+  {roster.players.length !== 1 ? $LL.TEAMS.PROFILE.PLAYERS() : $LL.TEAMS.PROFILE.PLAYER()}
   {#if roster.players.length}
     <Table>
       <col class="country" />
@@ -68,9 +68,9 @@
       <thead>
         <tr>
           <th></th>
-          <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
+          <th>{$LL.COMMON.NAME()}</th>
           <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
-          <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
+          <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -88,7 +88,7 @@
     </Table>
   {/if}
   {#if roster.players.find((r) => r.player_id === user_info.player_id)}
-    <Button on:click={leaveRoster}>{$LL.TEAM_PROFILE.LEAVE_ROSTER()}</Button>
+    <Button on:click={leaveRoster}>{$LL.TEAMS.PROFILE.LEAVE_ROSTER()}</Button>
   {/if}
 </div>
 

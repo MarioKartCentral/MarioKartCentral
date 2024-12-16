@@ -47,9 +47,9 @@
     </span>
     
     <select name="can_host" value={Boolean(can_host)} required>
-      <option value={false}>{$LL.NO()}</option>
+      <option value={false}>{$LL.COMMON.NO()}</option>
       <option value={true} disabled={!check_tournament_permission(user_info, tournament_permissions.register_host, tournament.id, 
-      tournament.series_id, true)}>{$LL.YES()}</option>
+      tournament.series_id, true)}>{$LL.COMMON.YES()}</option>
     </select>
   </div>
 {/if}

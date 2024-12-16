@@ -161,8 +161,8 @@
       </div>
       <div>
         <select name="is_public" bind:value={data.is_public}>
-          <option value={true}>{$LL.SHOW()}</option>
-          <option value={false}>{$LL.HIDE()}</option>
+          <option value={true}>{$LL.COMMON.SHOW()}</option>
+          <option value={false}>{$LL.COMMON.HIDE()}</option>
         </select>
       </div>
     </div>
@@ -178,7 +178,7 @@
       </div>
     </div>
   </Section>
-  <Section header={$LL.SUBMIT()}>
+  <Section header={$LL.COMMON.SUBMIT()}>
     <Button type="submit">{is_edit ? $LL.TOURNAMENTS.SERIES.EDIT() : $LL.TOURNAMENTS.SERIES.CREATE()}</Button>
   </Section>
 </form>

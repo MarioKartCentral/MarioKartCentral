@@ -172,7 +172,7 @@
 </section>
 
 {#if is_placements}
-    <Button on:click={savePlacements}>{$LL.SAVE()}</Button>
+    <Button on:click={savePlacements}>{$LL.COMMON.SAVE()}</Button>
 {/if}
 
 <style>

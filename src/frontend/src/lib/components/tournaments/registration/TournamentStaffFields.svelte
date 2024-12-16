@@ -15,8 +15,8 @@
                 <label for="is_squad_captain">{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_CAPTAIN_SELECT()}</label>
             </span>
             <select name="is_squad_captain" value={Boolean(player?.is_squad_captain)} required>
-                <option value={false}>{$LL.NO()}</option>
-                <option value={true}>{$LL.YES()}</option>
+                <option value={false}>{$LL.COMMON.NO()}</option>
+                <option value={true}>{$LL.COMMON.YES()}</option>
             </select>
         </div>
         {#if tournament.teams_only}
@@ -25,8 +25,8 @@
                     <label for="is_representative">{$LL.TOURNAMENTS.REGISTRATIONS.TEAM_REPRESENTATIVE_SELECT()}</label>
                 </span>
                 <select name="is_representative" value={Boolean(player?.is_representative)} required>
-                    <option value={false}>{$LL.NO()}</option>
-                    <option value={true}>{$LL.YES()}</option>
+                    <option value={false}>{$LL.COMMON.NO()}</option>
+                    <option value={true}>{$LL.COMMON.YES()}</option>
                 </select>
             </div>
         {/if}
@@ -37,8 +37,8 @@
                 <label for="is_bagger_clause">{$LL.TOURNAMENTS.REGISTRATIONS.BAGGER_SELECT()}</label>
             </span>
             <select name="is_bagger_clause" value={Boolean(player?.is_bagger_clause)} required>
-                <option value={false}>{$LL.NO()}</option>
-                <option value={true}>{$LL.YES()}</option>
+                <option value={false}>{$LL.COMMON.NO()}</option>
+                <option value={true}>{$LL.COMMON.YES()}</option>
             </select>
         </div>
     {/if}
@@ -49,8 +49,8 @@
             <label for="is_checked_in">{$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN_SELECT()}</label>
         </span>
         <select name="is_checked_in" value={Boolean(player?.is_checked_in)} required>
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
     </div>
 {/if}
@@ -60,8 +60,8 @@
             <label for="is_approved">{$LL.TOURNAMENTS.REGISTRATIONS.APPROVED_SELECT()}</label>
         </span>
         <select name="is_approved" value={Boolean(player?.is_approved)} required>
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
     </div>
 {/if}

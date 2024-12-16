@@ -142,15 +142,15 @@
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
         {/if}
         <div class="option">
-            <label for="from">{$LL.FROM()}</label>
+            <label for="from">{$LL.COMMON.FROM()}</label>
             <input name="from" type="datetime-local" bind:value={from}/>
         </div>
         <div class="option">
-            <label for="to">{$LL.TO()}</label>
+            <label for="to">{$LL.COMMON.TO()}</label>
             <input name="to" type="datetime-local" bind:value={to}/>
         </div>
         <div class="option">
-            <Button type="submit">{$LL.FILTER()}</Button>
+            <Button type="submit">{$LL.COMMON.FILTER()}</Button>
         </div>
         
     </div>
@@ -170,10 +170,10 @@
         <thead>
         <tr>
             <th></th>
-            <th>{$LL.PLAYER()}</th>
-            <th class="mobile-hide">{$LL.GAME_MODE()}</th>
+            <th>{$LL.COMMON.PLAYER()}</th>
+            <th class="mobile-hide">{$LL.COMMON.GAME_MODE()}</th>
             <th></th>
-            <th class="mobile-hide">{$LL.DATE()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
             {#if approval_status === "pending"}
                 <th>{$LL.MODERATOR.APPROVE()}</th>
             {/if}
@@ -205,7 +205,7 @@
                         </a>
                         
                     {:else}
-                        {$LL.TRANSFERS.NO_TEAM()}
+                        {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                     <ArrowRight/>
                     {#if transfer.roster_join}
@@ -213,7 +213,7 @@
                             <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color}/>
                         </a>
                     {:else}
-                        {$LL.TRANSFERS.NO_TEAM()}
+                        {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                 </div>
                 
@@ -231,7 +231,7 @@
     </Table>
     <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
 {:else}
-    {$LL.TRANSFERS.NO_TRANSFERS()}
+    {$LL.TEAMS.TRANSFERS.NO_TRANSFERS()}
 {/if}
 
 <Dialog bind:this={deny_dialog} header={$LL.MODERATOR.DENY_TRANSFER()}>
@@ -242,7 +242,7 @@
     <br /><br />
     <div>
         <Button on:click={() => denyTransfer(curr_transfer)}>{$LL.MODERATOR.DENY()}</Button>
-        <Button on:click={deny_dialog.close}>{$LL.CANCEL()}</Button>
+        <Button on:click={deny_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
 </Dialog>
 

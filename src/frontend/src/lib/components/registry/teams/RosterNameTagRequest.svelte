@@ -48,9 +48,9 @@
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
-            alert($LL.TEAM_EDIT.ROSTER_NAME_TAG_CHANGE_SUCCESS());
+            alert($LL.TEAMS.EDIT.ROSTER_NAME_TAG_CHANGE_SUCCESS());
         } else {
-            alert(`${$LL.TEAM_EDIT.ROSTER_NAME_TAG_CHANGE_FAILURE()}: ${result['title']}`);
+            alert(`${$LL.TEAMS.EDIT.ROSTER_NAME_TAG_CHANGE_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
@@ -58,33 +58,33 @@
 <form method="post" on:submit|preventDefault={editNameTag}>
     {#if days_until_change > 0}
         <div>
-            {$LL.TEAM_EDIT.REQUEST_CHANGE_IN({days: days_until_change})}
+            {$LL.TEAMS.EDIT.REQUEST_CHANGE_IN({days: days_until_change})}
         </div>
     {/if}
     {#if pending_requests.length}
         {#each pending_requests as r}
             <div>
-                {$LL.TEAM_EDIT.NAME_TAG_CHANGE_PENDING()}
+                {$LL.TEAMS.EDIT.NAME_TAG_CHANGE_PENDING()}
             </div>
             <div>
-                <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
+                <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
                 <input name="name" type="text" value={r.new_name} required disabled/>
             </div>
             <div>
-                <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
+                <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
                 <input name="tag" type="text" value={r.new_tag} required disabled/>
             </div>
         {/each}
     {:else}
     <div>
-        <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
+        <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
         <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
     </div>
     <div>
-        <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
+        <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
         <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
     </div>
-    <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+    <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}
     
 </form>

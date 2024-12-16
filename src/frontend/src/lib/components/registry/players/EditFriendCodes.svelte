@@ -132,7 +132,7 @@
                         </div>
                     </div>
                 {/if}
-                <Button type="submit">{$LL.EDIT()}</Button>
+                <Button type="submit">{$LL.COMMON.EDIT()}</Button>
             </div>
         </form>
     {/if}

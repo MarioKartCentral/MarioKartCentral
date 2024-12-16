@@ -57,7 +57,7 @@
         <td>
           <div class="settings">
             {#if check_series_permission(user_info, series_permissions.edit_tournament_template, series_id)}
-              <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">{$LL.EDIT()}</Button>
+              <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">{$LL.COMMON.EDIT()}</Button>
             {/if}
             {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
               {#if series_id}

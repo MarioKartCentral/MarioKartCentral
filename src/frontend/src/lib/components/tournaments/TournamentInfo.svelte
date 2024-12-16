@@ -75,8 +75,8 @@
         {#if tournament.location}
           <li><b>{$LL.TOURNAMENTS.INFO.LOCATION()}</b> {tournament.location}</li>
         {/if}
-        <li><b>{$LL.GAME()}:</b> {game_strings[tournament.game.toUpperCase()]()}</li>
-        <li><b>{$LL.MODE()}:</b> {mode_strings[tournament.mode.toUpperCase()]()}</li>
+        <li><b>{$LL.COMMON.GAME()}:</b> {game_strings[tournament.game.toUpperCase()]()}</li>
+        <li><b>{$LL.COMMON.MODE()}:</b> {mode_strings[tournament.mode.toUpperCase()]()}</li>
         <li><b>{$LL.TOURNAMENTS.INFO.REGISTRATION_FORMAT()}</b> {type}</li>
         {#if tournament.is_squad}
           {#if tournament.min_squad_size}

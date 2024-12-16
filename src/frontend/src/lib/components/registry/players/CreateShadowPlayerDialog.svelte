@@ -25,27 +25,27 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert($LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_SUCCESS());
+            alert($LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_SUCCESS());
             window.location.reload();
         }
         else {
-            alert(`${$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_FAILURE()}: ${result['title']}`);
+            alert(`${$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
 
-<Dialog bind:this={player_dialog} header={$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}>
+<Dialog bind:this={player_dialog} header={$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}>
     <form method="POST" on:submit|preventDefault={createPlayer}>
         <div class="option">
-            <label for="shadow_name">{$LL.NAME()}</label>
+            <label for="shadow_name">{$LL.COMMON.NAME()}</label>
             <input name="shadow_name" required/>
         </div>
         <div class="option">
-            <label for="country">{$LL.COUNTRY()}</label>
+            <label for="country">{$LL.COMMON.COUNTRY()}</label>
             <CountrySelect is_required/>
         </div>
         <div class="option">
-            <Button type="submit">{$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
+            <Button type="submit">{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
         </div>
     </form>
 </Dialog>

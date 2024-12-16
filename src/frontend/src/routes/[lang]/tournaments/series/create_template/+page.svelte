@@ -28,6 +28,6 @@
   {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
     <CreateEditTemplateForm {template_id} {series_id} series_restrict={true} />
   {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/key}

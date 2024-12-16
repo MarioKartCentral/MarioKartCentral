@@ -79,7 +79,7 @@
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
             <div class="option">
                 <div>
-                    <label for="name">{$LL.NAME()}</label>
+                    <label for="name">{$LL.COMMON.NAME()}</label>
                 </div>
                 <div>
                     <input name="name" bind:value={name} placeholder={$LL.TOURNAMENTS.SEARCH_FOR_TOURNAMENTS()}/>
@@ -87,7 +87,7 @@
             </div>
             <div class="option">
                 <div>
-                    <label for="from">{$LL.FROM()}</label>
+                    <label for="from">{$LL.COMMON.FROM()}</label>
                 </div>
                 <div>
                     <input name="from" type="datetime-local" bind:value={from}/>
@@ -95,7 +95,7 @@
             </div>
             <div class="option">
                 <div>
-                    <label for="to">{$LL.TO()}</label>
+                    <label for="to">{$LL.COMMON.TO()}</label>
                 </div>
                 <div>
                     <input name="to" type="datetime-local" bind:value={to}/>
@@ -117,7 +117,7 @@
             {/if}
         </div>
         <div class="centered">
-            <Button type="submit">{$LL.FILTER()}</Button>
+            <Button type="submit">{$LL.COMMON.FILTER()}</Button>
         </div>
     </form>
     <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>

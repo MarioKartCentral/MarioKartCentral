@@ -29,7 +29,7 @@
 
 <select class="country" name="country" bind:value={value} required={is_required}>
     {#if is_filter}
-        <option value={null}>{$LL.PLAYER_LIST.FILTERS.ALL_COUNTRIES()}</option>
+        <option value={null}>{$LL.COUNTRIES.ALL()}</option>
     {/if}
     {#each countries as country}
         <option value={country.country_code}>{country.translated_name}</option>

@@ -121,8 +121,8 @@
       </div>
       <div>
         <select name="use_series_logo" bind:value={data.use_series_logo} on:change={updateData}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -202,8 +202,8 @@
             on:change={updateData}
             disabled={is_edit || data.teams_allowed}
           >
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
           </select>
         </div>
       </div>
@@ -218,8 +218,8 @@
             on:change={updateData}
             disabled={is_edit || data.teams_allowed}
           >
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
           </select>
         </div>
       </div>
@@ -235,8 +235,8 @@
               on:change={updateData}
               disabled={is_edit}
             >
-              <option value={false}>{$LL.NO()}</option>
-              <option value={true}>{$LL.YES()}</option>
+              <option value={false}>{$LL.COMMON.NO()}</option>
+              <option value={true}>{$LL.COMMON.YES()}</option>
             </select>
           </div>
         </div>
@@ -247,8 +247,8 @@
         </div>
         <div>
           <select name="teams_allowed" bind:value={data.teams_allowed} on:change={updateData} disabled={is_edit}>
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
           </select>
         </div>
       </div>
@@ -260,8 +260,8 @@
             </div>
             <div>
               <select name="teams_only" bind:value={data.teams_only} on:change={updateData} disabled={is_edit}>
-                <option value={false}>{$LL.NO()}</option>
-                <option value={true}>{$LL.YES()}</option>
+                <option value={false}>{$LL.COMMON.NO()}</option>
+                <option value={true}>{$LL.COMMON.YES()}</option>
               </select>
             </div>
           </div>
@@ -272,8 +272,8 @@
               </div>
               <div>
                 <select name="team_members_only" bind:value={data.team_members_only} disabled={is_edit}>
-                  <option value={false}>{$LL.NO()}</option>
-                  <option value={true}>{$LL.YES()}</option>
+                  <option value={false}>{$LL.COMMON.NO()}</option>
+                  <option value={true}>{$LL.COMMON.YES()}</option>
                 </select>
               </div>
             </div>
@@ -305,8 +305,8 @@
       </div>
       <div>
         <select name="host_status_required" bind:value={data.host_status_required} disabled={is_edit}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -316,8 +316,8 @@
       </div>
       <div>
         <select name="mii_name_required" bind:value={data.mii_name_required} disabled={is_edit}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -329,8 +329,8 @@
       </div>
       <div>
         <select name="require_single_fc" bind:value={data.require_single_fc} disabled={is_edit}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -340,8 +340,8 @@
       </div>
       <div>
         <select name="checkins_enabled" bind:value={data.checkins_enabled} on:change={updateData}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -352,8 +352,8 @@
         </div>
         <div>
           <select name="checkins_open" bind:value={data.checkins_open} on:change={updateData}>
-            <option value={false}>{$LL.NO()}</option>
-            <option value={true}>{$LL.YES()}</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
           </select>
         </div>
       </div>
@@ -383,8 +383,8 @@
     </div>
     <div>
       <select name="verification_required" bind:value={data.verification_required}>
-        <option value={false}>{$LL.NO()}</option>
-        <option value={true}>{$LL.YES()}</option>
+        <option value={false}>{$LL.COMMON.NO()}</option>
+        <option value={true}>{$LL.COMMON.YES()}</option>
       </select>
     </div>
   </div>
@@ -397,8 +397,8 @@
       </div>
       <div>
         <select name="use_series_description" bind:value={data.use_series_description} on:change={updateData}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -419,8 +419,8 @@
       </div>
       <div>
         <select name="use_series_ruleset" bind:value={data.use_series_ruleset} on:change={updateData}>
-          <option value={false}>{$LL.NO()}</option>
-          <option value={true}>{$LL.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
         </select>
       </div>
     </div>
@@ -475,8 +475,8 @@
     </div>
     <div>
       <select name="is_viewable" bind:value={data.is_viewable} on:change={updateData}>
-        <option value={true}>{$LL.YES()}</option>
-        <option value={false}>{$LL.NO()}</option>
+        <option value={true}>{$LL.COMMON.YES()}</option>
+        <option value={false}>{$LL.COMMON.NO()}</option>
       </select>
     </div>
   </div>
@@ -487,8 +487,8 @@
       </div>
       <div>
         <select name="is_public" bind:value={data.is_public}>
-          <option value={true}>{$LL.SHOW()}</option>
-          <option value={false}>{$LL.HIDE()}</option>
+          <option value={true}>{$LL.COMMON.SHOW()}</option>
+          <option value={false}>{$LL.COMMON.HIDE()}</option>
         </select>
       </div>
     </div>
@@ -499,8 +499,8 @@
     </div>
     <div>
       <select name="show_on_profiles" bind:value={data.show_on_profiles}>
-        <option value={true}>{$LL.SHOW()}</option>
-        <option value={false}>{$LL.HIDE()}</option>
+        <option value={true}>{$LL.COMMON.SHOW()}</option>
+        <option value={false}>{$LL.COMMON.HIDE()}</option>
       </select>
     </div>
   </div>
@@ -511,8 +511,8 @@
       </div>
       <div>
         <select name="series_stats_include" bind:value={data.series_stats_include}>
-          <option value={true}>{$LL.YES()}</option>
-          <option value={false}>{$LL.NO()}</option>
+          <option value={true}>{$LL.COMMON.YES()}</option>
+          <option value={false}>{$LL.COMMON.NO()}</option>
         </select>
       </div>
     </div>

@@ -69,13 +69,13 @@
   <div class="flex">
     <GameSelect all_option hide_labels bind:game={filters.game}/>
     <CountrySelect bind:value={filters.country} is_filter={true}/>
-    <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} />
-    <Button type="submit">{$LL.SEARCH()}</Button>
+    <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} />
+    <Button type="submit">{$LL.COMMON.SEARCH()}</Button>
   </div>
 </form>
 <div class="player_list">
   {totalPlayers}
-  {$LL.PLAYER_LIST.PLAYERS()}
+  {$LL.PLAYERS.PLAYERS()}
   <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
   {#if totalPlayers}
     <Table>
@@ -85,7 +85,7 @@
       <thead>
         <tr>
           <th></th>
-          <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
+          <th>{$LL.COMMON.NAME()}</th>
           <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
         </tr>
       </thead>

@@ -84,8 +84,8 @@
             <thead>
                 <tr>
                     <th/>
-                    <th>{$LL.NAME()}</th>
-                    <th>{$LL.DATE()}</th>
+                    <th>{$LL.COMMON.NAME()}</th>
+                    <th>{$LL.COMMON.DATE()}</th>
                     <th>{$LL.MODERATOR.APPROVE()}</th>
                 </tr>
             </thead>
@@ -120,7 +120,7 @@
     {/if}
 </Section>
 {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 <style>

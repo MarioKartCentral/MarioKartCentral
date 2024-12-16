@@ -12,16 +12,16 @@
     let show = false;
 </script>
 
-<Section header={$LL.TEAM_PROFILE.TRANSFER_HISTORY()}>
+<Section header={$LL.TEAMS.PROFILE.TRANSFER_HISTORY()}>
     <div slot="header_content">
         <Button on:click={() => show = !show}>
-            {show ? $LL.HIDE() : $LL.SHOW()}
+            {show ? $LL.COMMON.HIDE() : $LL.COMMON.SHOW()}
         </Button>
     </div>
     {#if show}
         <div class="roster-select">
             <select bind:value={roster_id}>
-                <option value={null}>{$LL.TEAM_PROFILE.ALL_ROSTERS()}</option>
+                <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
                 {#each sortFilterRosters(team.rosters) as roster}
                     <option value={roster.id}>{roster.name} ({roster.game.toUpperCase()})</option>
                 {/each}

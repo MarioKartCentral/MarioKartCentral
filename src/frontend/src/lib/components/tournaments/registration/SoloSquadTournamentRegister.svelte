@@ -79,8 +79,8 @@
       </span>
       
       <select name="is_bagger_clause" required>
-        <option value={false}>{$LL.NO()}</option>
-        <option value={true}>{$LL.YES()}</option>
+        <option value={false}>{$LL.COMMON.NO()}</option>
+        <option value={true}>{$LL.COMMON.YES()}</option>
       </select>
     </div>
   {/if}

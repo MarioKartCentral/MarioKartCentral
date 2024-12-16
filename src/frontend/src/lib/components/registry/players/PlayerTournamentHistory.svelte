@@ -97,7 +97,7 @@
 {#if team_placements.length <= 0 && solo_placements.length <= 0}
   <div class="hidden"></div>
 {:else}
-  <Section header={$LL.TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
+  <Section header={$LL.TOURNAMENTS.HISTORY.TOURNAMENT_HISTORY()}>
     <div class="w-full m-auto">
       <form on:submit|preventDefault={filterData}>
         <div class="flex flex-row flex-wrap items-center justify-center">
@@ -119,7 +119,7 @@
       </form>
       <!-- Solo Tournaments -->
       {#if solo_placements.length > 0}
-        <h2 class="text-xl font-bold">{$LL.TOURNAMENT_HISTORY.SOLO_TOURNAMENTS()}</h2>
+        <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.SOLO_TOURNAMENTS()}</h2>
         <div>
           <Table>
             <thead>
@@ -175,7 +175,7 @@
 
       <!-- Team Tournaments -->
       {#if team_placements.length > 0}
-        <h2 class="text-xl font-bold">{$LL.TOURNAMENT_HISTORY.TEAM_TOURNAMENTS()}</h2>
+        <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2>
         <div>
           <Table>
             <thead>

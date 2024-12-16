@@ -27,7 +27,7 @@
             <tr>
                 <th>{$LL.INVITES.TOURNAMENT()}</th>
                 <th>{$LL.INVITES.SQUAD()}</th>
-                <th class="mobile-hide">{$LL.DATE()}</th>
+                <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
                 <th>{$LL.INVITES.ACCEPT()}?</th>
             </tr>
         </thead>

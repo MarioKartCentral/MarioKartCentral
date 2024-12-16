@@ -128,10 +128,10 @@
       <col class="approve" />
       <thead>
         <tr>
-          <th>{$LL.TAG()}</th>
-          <th>{$LL.NAME()}</th>
-          <th>{$LL.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.DATE()}</th>
+          <th>{$LL.COMMON.TAG()}</th>
+          <th>{$LL.COMMON.NAME()}</th>
+          <th>{$LL.COMMON.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
           <th>{$LL.MODERATOR.APPROVE()}</th>
         </tr>
       </thead>
@@ -170,10 +170,10 @@
       <col class="approve" />
       <thead>
         <tr>
-          <th>{$LL.TAG()}</th>
-          <th>{$LL.NAME()}</th>
-          <th>{$LL.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.DATE()}</th>
+          <th>{$LL.COMMON.TAG()}</th>
+          <th>{$LL.COMMON.NAME()}</th>
+          <th>{$LL.COMMON.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
           <th>{$LL.MODERATOR.APPROVE()}</th>
         </tr>
       </thead>
@@ -211,10 +211,10 @@
       <col class="date mobile-hide" />
       <thead>
         <tr>
-          <th>{$LL.TAG()}</th>
-          <th>{$LL.NAME()}</th>
-          <th>{$LL.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.DATE()}</th>
+          <th>{$LL.COMMON.TAG()}</th>
+          <th>{$LL.COMMON.NAME()}</th>
+          <th>{$LL.COMMON.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -247,10 +247,10 @@
       <col class="date mobile-hide" />
       <thead>
         <tr>
-          <th>{$LL.TAG()}</th>
-          <th>{$LL.NAME()}</th>
-          <th>{$LL.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.DATE()}</th>
+          <th>{$LL.COMMON.TAG()}</th>
+          <th>{$LL.COMMON.NAME()}</th>
+          <th>{$LL.COMMON.GAME_MODE()}</th>
+          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
         </tr>
       </thead>
       <tbody>
@@ -275,7 +275,7 @@
     
   </Section>
 {:else}
-  {$LL.NO_PERMISSION()}
+  {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 <style>

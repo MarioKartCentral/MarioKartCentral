@@ -23,5 +23,5 @@
 {#if check_permission(user_info, series_permissions.create_tournament)}
   <CreateEditTournamentForm {template_id} />
 {:else}
-  {$LL.NO_PERMISSION()}
+  {$LL.COMMON.NO_PERMISSION()}
 {/if}

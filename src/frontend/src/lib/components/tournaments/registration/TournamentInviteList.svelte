@@ -115,10 +115,10 @@
     <tr>
       <th>ID</th>
       {#if tournament.squad_tag_required}
-        <th>{$LL.TAG()}</th>
+        <th>{$LL.COMMON.TAG()}</th>
       {/if}
       {#if tournament.squad_name_required}
-        <th>{$LL.NAME()}</th>
+        <th>{$LL.COMMON.NAME()}</th>
       {/if}
       <th>
         {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
@@ -144,7 +144,7 @@
         <td
           >{squad.players.filter((p) => !p.is_invite).length}
           <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
-            {squad_data[squad.id].display_players ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_PLAYERS()}
+            {squad_data[squad.id].display_players ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
           </button></td
         >
         <td>
@@ -179,7 +179,7 @@
       <br />
       <div>
         <Button type="submit">{$LL.INVITES.ACCEPT()}</Button>
-        <Button type="button" on:click={accept_dialog.close}>{$LL.CANCEL()}</Button>
+        <Button type="button" on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
       </div>
     {/if}
     

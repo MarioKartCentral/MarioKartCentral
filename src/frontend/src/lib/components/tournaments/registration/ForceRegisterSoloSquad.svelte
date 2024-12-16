@@ -102,7 +102,7 @@
             {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_PLAYER()}
         {/if}
         {#if check_permission(user_info, permissions.manage_shadow_players)}
-            <Button on:click={shadow_dialog.open}>{$LL.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
+            <Button on:click={shadow_dialog.open}>{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
         {/if}
     </div>
     <PlayerSearch bind:player={player} game={tournament.game} is_shadow={null} include_shadow_players={true}/>

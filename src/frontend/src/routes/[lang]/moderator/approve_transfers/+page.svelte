@@ -21,6 +21,6 @@
     <ForceTransferPlayer/>
   </Section>
 {:else}
-  {$LL.NO_PERMISSION()}
+  {$LL.COMMON.NO_PERMISSION()}
 {/if}
 

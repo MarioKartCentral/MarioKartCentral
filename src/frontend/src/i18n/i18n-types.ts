@@ -19,133 +19,285 @@ export type Translations = RootTranslation
 
 type RootTranslation = {
 	/**
-	 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
-	 */
-	WELCOME: string
-	/**
-	 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
-	 */
-	SUMMARY: string
-	/**
 	 * A​m​e​r​i​c​a​n​ ​E​n​g​l​i​s​h
 	 */
 	LANGUAGE: string
-	/**
-	 * L​o​g​o​u​t
-	 */
-	LOGOUT: string
-	/**
-	 * E​m​a​i​l
-	 */
-	EMAIL: string
-	/**
-	 * P​a​s​s​w​o​r​d
-	 */
-	PASSWORD: string
-	/**
-	 * M​K​C​e​n​t​r​a​l​ ​R​e​g​i​s​t​r​y
-	 */
-	MKC_REGISTRY: string
-	/**
-	 * G​a​m​e
-	 */
-	GAME: string
-	/**
-	 * M​o​d​e
-	 */
-	MODE: string
-	/**
-	 * G​a​m​e​/​M​o​d​e
-	 */
-	GAME_MODE: string
-	/**
-	 * N​a​m​e
-	 */
-	NAME: string
-	/**
-	 * P​l​a​y​e​r
-	 */
-	PLAYER: string
-	/**
-	 * D​a​t​e
-	 */
-	DATE: string
-	/**
-	 * C​o​u​n​t​r​y
-	 */
-	COUNTRY: string
-	/**
-	 * T​a​g
-	 */
-	TAG: string
-	/**
-	 * F​r​o​m
-	 */
-	FROM: string
-	/**
-	 * T​o
-	 */
-	TO: string
-	/**
-	 * Y​e​s
-	 */
-	YES: string
-	/**
-	 * N​o
-	 */
-	NO: string
-	/**
-	 * S​h​o​w
-	 */
-	SHOW: string
-	/**
-	 * H​i​d​e
-	 */
-	HIDE: string
-	/**
-	 * B​a​c​k
-	 */
-	BACK: string
-	/**
-	 * A​c​t​i​o​n​s
-	 */
-	ACTIONS: string
-	/**
-	 * S​a​v​e
-	 */
-	SAVE: string
-	/**
-	 * S​u​b​m​i​t
-	 */
-	SUBMIT: string
-	/**
-	 * C​a​n​c​e​l
-	 */
-	CANCEL: string
-	/**
-	 * S​e​a​r​c​h
-	 */
-	SEARCH: string
-	/**
-	 * N​o​n​e
-	 */
-	NONE: string
-	/**
-	 * E​d​i​t
-	 */
-	EDIT: string
-	/**
-	 * F​i​l​t​e​r
-	 */
-	FILTER: string
-	/**
-	 * B​a​g​g​e​r
-	 */
-	BAGGER: string
-	/**
-	 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
-	 */
-	NO_PERMISSION: string
+	COLORS: {
+		/**
+		 * R​e​d​ ​1
+		 */
+		RED_1: string
+		/**
+		 * R​e​d​ ​2
+		 */
+		RED_2: string
+		/**
+		 * R​e​d​ ​3
+		 */
+		RED_3: string
+		/**
+		 * R​e​d​ ​4
+		 */
+		RED_4: string
+		/**
+		 * O​r​a​n​g​e​ ​1
+		 */
+		ORANGE_1: string
+		/**
+		 * O​r​a​n​g​e​ ​2
+		 */
+		ORANGE_2: string
+		/**
+		 * O​r​a​n​g​e​ ​3
+		 */
+		ORANGE_3: string
+		/**
+		 * O​r​a​n​g​e​ ​4
+		 */
+		ORANGE_4: string
+		/**
+		 * Y​e​l​l​o​w​ ​1
+		 */
+		YELLOW_1: string
+		/**
+		 * Y​e​l​l​o​w​ ​2
+		 */
+		YELLOW_2: string
+		/**
+		 * Y​e​l​l​o​w​ ​3
+		 */
+		YELLOW_3: string
+		/**
+		 * Y​e​l​l​o​w​ ​4
+		 */
+		YELLOW_4: string
+		/**
+		 * G​r​e​e​n​ ​1
+		 */
+		GREEN_1: string
+		/**
+		 * G​r​e​e​n​ ​2
+		 */
+		GREEN_2: string
+		/**
+		 * G​r​e​e​n​ ​3
+		 */
+		GREEN_3: string
+		/**
+		 * G​r​e​e​n​ ​4
+		 */
+		GREEN_4: string
+		/**
+		 * A​q​u​a​ ​1
+		 */
+		AQUA_1: string
+		/**
+		 * A​q​u​a​ ​2
+		 */
+		AQUA_2: string
+		/**
+		 * A​q​u​a​ ​3
+		 */
+		AQUA_3: string
+		/**
+		 * A​q​u​a​ ​4
+		 */
+		AQUA_4: string
+		/**
+		 * B​l​u​e​ ​1
+		 */
+		BLUE_1: string
+		/**
+		 * B​l​u​e​ ​2
+		 */
+		BLUE_2: string
+		/**
+		 * B​l​u​e​ ​3
+		 */
+		BLUE_3: string
+		/**
+		 * B​l​u​e​ ​4
+		 */
+		BLUE_4: string
+		/**
+		 * I​n​d​i​g​o​ ​1
+		 */
+		INDIGO_1: string
+		/**
+		 * I​n​d​i​g​o​ ​2
+		 */
+		INDIGO_2: string
+		/**
+		 * I​n​d​i​g​o​ ​3
+		 */
+		INDIGO_3: string
+		/**
+		 * I​n​d​i​g​o​ ​4
+		 */
+		INDIGO_4: string
+		/**
+		 * P​u​r​p​l​e​ ​1
+		 */
+		PURPLE_1: string
+		/**
+		 * P​u​r​p​l​e​ ​2
+		 */
+		PURPLE_2: string
+		/**
+		 * P​u​r​p​l​e​ ​3
+		 */
+		PURPLE_3: string
+		/**
+		 * P​u​r​p​l​e​ ​4
+		 */
+		PURPLE_4: string
+		/**
+		 * P​i​n​k​ ​1
+		 */
+		PINK_1: string
+		/**
+		 * P​i​n​k​ ​2
+		 */
+		PINK_2: string
+		/**
+		 * P​i​n​k​ ​3
+		 */
+		PINK_3: string
+		/**
+		 * P​i​n​k​ ​4
+		 */
+		PINK_4: string
+		/**
+		 * G​r​e​y​ ​1
+		 */
+		GREY_1: string
+		/**
+		 * G​r​e​y​ ​2
+		 */
+		GREY_2: string
+		/**
+		 * G​r​e​y​ ​3
+		 */
+		GREY_3: string
+		/**
+		 * B​l​a​c​k
+		 */
+		BLACK: string
+	}
+	COMMON: {
+		/**
+		 * G​a​m​e
+		 */
+		GAME: string
+		/**
+		 * M​o​d​e
+		 */
+		MODE: string
+		/**
+		 * G​a​m​e​/​M​o​d​e
+		 */
+		GAME_MODE: string
+		/**
+		 * N​a​m​e
+		 */
+		NAME: string
+		/**
+		 * P​l​a​y​e​r
+		 */
+		PLAYER: string
+		/**
+		 * T​a​g
+		 */
+		TAG: string
+		/**
+		 * D​a​t​e
+		 */
+		DATE: string
+		/**
+		 * C​o​u​n​t​r​y
+		 */
+		COUNTRY: string
+		/**
+		 * F​r​o​m
+		 */
+		FROM: string
+		/**
+		 * T​o
+		 */
+		TO: string
+		/**
+		 * Y​e​s
+		 */
+		YES: string
+		/**
+		 * N​o
+		 */
+		NO: string
+		/**
+		 * S​h​o​w
+		 */
+		SHOW: string
+		/**
+		 * H​i​d​e
+		 */
+		HIDE: string
+		/**
+		 * (​h​i​d​e​)
+		 */
+		HIDE_BUTTON: string
+		/**
+		 * (​s​h​o​w​)
+		 */
+		SHOW_BUTTON: string
+		/**
+		 * B​a​c​k
+		 */
+		BACK: string
+		/**
+		 * A​c​t​i​o​n​s
+		 */
+		ACTIONS: string
+		/**
+		 * S​a​v​e
+		 */
+		SAVE: string
+		/**
+		 * S​u​b​m​i​t
+		 */
+		SUBMIT: string
+		/**
+		 * C​a​n​c​e​l
+		 */
+		CANCEL: string
+		/**
+		 * S​e​a​r​c​h
+		 */
+		SEARCH: string
+		/**
+		 * N​o​n​e
+		 */
+		NONE: string
+		/**
+		 * E​d​i​t
+		 */
+		EDIT: string
+		/**
+		 * F​i​l​t​e​r
+		 */
+		FILTER: string
+		/**
+		 * B​a​g​g​e​r
+		 */
+		BAGGER: string
+		/**
+		 * L​a​n​g​u​a​g​e
+		 */
+		LANGUAGE: string
+		/**
+		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+		 */
+		NO_PERMISSION: string
+	}
 	DISCORD: {
 		/**
 		 * D​i​s​c​o​r​d
@@ -233,6 +385,159 @@ type RootTranslation = {
 		 * O​t​h​e​r​ ​F​C​s​:
 		 */
 		OTHER_FCS: string
+	}
+	GAMES: {
+		/**
+		 * A​l​l​ ​G​a​m​e​s
+		 */
+		ALL: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​g​a​m​e​.​.​.
+		 */
+		SELECT: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e
+		 */
+		MK8DX: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​8
+		 */
+		MK8: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​W​i​i
+		 */
+		MKW: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r
+		 */
+		MKT: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​7
+		 */
+		MK7: string
+		/**
+		 * S​u​p​e​r​ ​M​a​r​i​o​ ​K​a​r​t
+		 */
+		SMK: string
+	}
+	HOMEPAGE: {
+		/**
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 */
+		WELCOME: string
+		/**
+		 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
+		 */
+		SUMMARY: string
+	}
+	INVITES: {
+		/**
+		 * T​e​a​m​ ​I​n​v​i​t​e​s
+		 */
+		TEAM_INVITES: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​I​n​v​i​t​e​s
+		 */
+		TOURNAMENT_INVITES: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​r​o​s​t​e​r​ ​t​o​ ​l​e​a​v​e​:
+		 */
+		SELECT_LEAVE_ROSTER: string
+		/**
+		 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​a​ ​r​o​s​t​e​r​ ​t​o​ ​l​e​a​v​e
+		 */
+		SELECT_LEAVE_ROSTER_ERROR: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​a​c​c​e​p​t​e​d​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​!​ ​Y​o​u​r​ ​t​r​a​n​s​f​e​r​ ​m​u​s​t​ ​b​e​ ​p​r​o​c​e​s​s​e​d​ ​b​y​ ​s​t​a​f​f​ ​m​e​m​b​e​r​s​ ​b​e​f​o​r​e​ ​b​e​i​n​g​ ​c​o​m​p​l​e​t​e​d​.
+		 * @param {string} roster_name
+		 */
+		ACCEPT_TEAM_INVITE_SUCCESS: RequiredParams<'roster_name'>
+		/**
+		 * A​c​c​e​p​t​i​n​g​ ​t​e​a​m​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
+		 */
+		ACCEPT_TEAM_INVITE_FAILED: string
+		/**
+		 * D​e​c​l​i​n​i​n​g​ ​t​e​a​m​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
+		 */
+		DECLINE_TEAM_INVITE_FAILED: string
+		/**
+		 * A​c​c​e​p​t
+		 */
+		ACCEPT: string
+		/**
+		 * D​e​c​l​i​n​e
+		 */
+		DECLINE: string
+		/**
+		 * N​o​ ​i​n​v​i​t​e​s​.
+		 */
+		NO_INVITES: string
+		/**
+		 * A​c​c​e​p​t​ ​T​e​a​m​ ​I​n​v​i​t​e
+		 */
+		ACCEPT_TEAM_INVITE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​a​c​c​e​p​t​ ​t​h​e​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
+		 * @param {string} roster_name
+		 */
+		ACCEPT_TEAM_INVITE_CONFIRM: RequiredParams<'roster_name'>
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​c​l​i​n​e​ ​t​h​e​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
+		 * @param {string} roster_name
+		 */
+		DECLINE_TEAM_INVITE_CONFIRM: RequiredParams<'roster_name'>
+		/**
+		 * T​o​u​r​n​a​m​e​n​t
+		 */
+		TOURNAMENT: string
+		/**
+		 * S​q​u​a​d
+		 */
+		SQUAD: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​P​a​g​e
+		 */
+		TOURNAMENT_PAGE: string
+	}
+	LANGUAGES: {
+		/**
+		 * E​n​g​l​i​s​h​ ​(​U​n​i​t​e​d​ ​S​t​a​t​e​s​)
+		 */
+		EN_US: string
+		/**
+		 * E​n​g​l​i​s​h​ ​(​G​r​e​a​t​ ​B​r​i​t​a​i​n​)
+		 */
+		EN_GB: string
+		/**
+		 * G​e​r​m​a​n
+		 */
+		DE: string
+		/**
+		 * S​p​a​n​i​s​h
+		 */
+		ES: string
+		/**
+		 * F​r​e​n​c​h
+		 */
+		FR: string
+		/**
+		 * J​a​p​a​n​e​s​e
+		 */
+		JA: string
+	}
+	LOGIN: {
+		/**
+		 * L​o​g​o​u​t
+		 */
+		LOGOUT: string
+		/**
+		 * E​m​a​i​l
+		 */
+		EMAIL: string
+		/**
+		 * P​a​s​s​w​o​r​d
+		 */
+		PASSWORD: string
 	}
 	LOUNGE: {
 		/**
@@ -528,6 +833,68 @@ type RootTranslation = {
 		 */
 		CREATE_SHADOW_PLAYER: string
 	}
+	MODES: {
+		/**
+		 * A​l​l​ ​M​o​d​e​s
+		 */
+		ALL: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​m​o​d​e​.​.​.
+		 */
+		SELECT: string
+		/**
+		 * 1​5​0​c​c
+		 */
+		'150CC': string
+		/**
+		 * 2​0​0​c​c
+		 */
+		'200CC': string
+		/**
+		 * B​a​t​t​l​e​ ​(​M​i​x​e​d​)
+		 */
+		MIXED_BATTLE: string
+		/**
+		 * B​a​l​l​o​o​n​ ​B​a​t​t​l​e
+		 */
+		BALLOON_BATTLE: string
+		/**
+		 * S​h​i​n​e​ ​T​h​i​e​f
+		 */
+		SHINE_THIEF: string
+		/**
+		 * B​o​b​-​o​m​b​ ​B​l​a​s​t
+		 */
+		BOBOMB_BLAST: string
+		/**
+		 * C​o​i​n​ ​R​u​n​n​e​r​s
+		 */
+		COIN_RUNNERS: string
+		/**
+		 * R​e​n​e​g​a​d​e​ ​R​o​u​n​d​u​p
+		 */
+		RENEGADE_ROUNDUP: string
+		/**
+		 * M​a​t​c​h​ ​R​a​c​e
+		 */
+		MATCH_RACE: string
+		/**
+		 * M​i​x​e​d​ ​F​o​r​m​a​t
+		 */
+		MIXED: string
+		/**
+		 * R​e​g​u​l​a​r​ ​T​r​a​c​k​s
+		 */
+		RT: string
+		/**
+		 * C​u​s​t​o​m​ ​T​r​a​c​k​s
+		 */
+		CT: string
+		/**
+		 * V​S​ ​R​a​c​e
+		 */
+		VSRACE: string
+	}
 	NAVBAR: {
 		/**
 		 * T​o​u​r​n​a​m​e​n​t​s
@@ -594,669 +961,499 @@ type RootTranslation = {
 		 */
 		MODERATOR: string
 	}
-	PLAYER_LIST: {
+	NOTIFICATION: {
+		/**
+		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
+		 */
+		MARK_ALL_READ: string
+		/**
+		 * S​e​e​ ​A​l​l​ ​N​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		SEE_ALL_NOTIFICATIONS: string
+		/**
+		 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​u​n​r​e​a​d​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
+		 */
+		NO_UNREAD: string
+		/**
+		 * Y​o​u​ ​m​u​s​t​ ​b​e​ ​l​o​g​g​e​d​ ​i​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+		 */
+		MUST_BE_LOGGED_IN: string
+		/**
+		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​a​n​y​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​.
+		 */
+		NO_NOTIFICATIONS: string
+		/**
+		 * M​a​r​k​ ​A​s​ ​R​e​a​d
+		 */
+		MARK_READ: string
+		/**
+		 * M​a​r​k​ ​A​s​ ​U​n​r​e​a​d
+		 */
+		MARK_UNREAD: string
+	}
+	NOTIFICATION_CONTENT: {
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​{​r​e​a​s​o​n​|​b​o​l​d​}​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​{​d​a​t​e​|​p​a​r​s​e​d​a​t​e​|​b​o​l​d​}
+		 * @param {unknown} date
+		 * @param {unknown} reason
+		 */
+		'0': RequiredParams<'date|parsedate|bold' | 'reason|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​u​n​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​w​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.
+		 */
+		'1': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​{​s​q​u​a​d​_​n​a​m​e​|​{​:​ ​a​,​ ​*​:​ ​t​h​e​}​}​ ​s​q​u​a​d​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {'' | string} squad_name
+		 * @param {unknown} tournament_name
+		 */
+		'2': RequiredParams<`squad_name|{:${string}, *:${string}}` | 'squad_name|bold' | 'tournament_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​a​c​c​e​p​t​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​y​o​u​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​s​q​u​a​d​!
+		 * @param {unknown} player_name
+		 * @param {unknown} tournament_name
+		 */
+		'3': RequiredParams<'player_name|bold' | 'tournament_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} squad_name
+		 */
+		'4': RequiredParams<'squad_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} tournament_name
+		 */
+		'5': RequiredParams<'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​n​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​r​o​m​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} tournament_name
+		 */
+		'6': RequiredParams<'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​a​d​d​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​t​o​ ​y​o​u​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​s​q​u​a​d​.
+		 * @param {unknown} player_name
+		 * @param {unknown} tournament_name
+		 */
+		'7': RequiredParams<'player_name|bold' | 'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​k​i​c​k​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​f​r​o​m​ ​y​o​u​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​s​q​u​a​d​.
+		 * @param {unknown} player_name
+		 * @param {unknown} tournament_name
+		 */
+		'8': RequiredParams<'player_name|bold' | 'tournament_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} roster_name
+		 */
+		'9': RequiredParams<'roster_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​a​c​c​e​p​t​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.​ ​A​ ​m​o​d​e​r​a​t​o​r​ ​m​u​s​t​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​b​e​f​o​r​e​ ​t​h​e​y​ ​c​a​n​ ​p​l​a​y​ ​f​o​r​ ​y​o​u​r​ ​t​e​a​m​.
+		 * @param {unknown} player_name
+		 * @param {unknown} roster_name
+		 */
+		'10': RequiredParams<'player_name|bold' | 'roster_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} player_name
+		 * @param {unknown} roster_name
+		 */
+		'11': RequiredParams<'player_name|bold' | 'roster_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} roster_name
+		 */
+		'12': RequiredParams<'roster_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * @param {unknown} team_name
+		 */
+		'13': RequiredParams<'team_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} team_name
+		 */
+		'14': RequiredParams<'team_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​j​o​i​n​e​d​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} player_name
+		 * @param {unknown} roster_name
+		 */
+		'15': RequiredParams<'player_name|bold' | 'roster_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​d​e​n​i​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​f​r​o​m​ ​j​o​i​n​i​n​g​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} player_name
+		 * @param {unknown} roster_name
+		 */
+		'16': RequiredParams<'player_name|bold' | 'roster_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​l​e​f​t​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} player_name
+		 * @param {unknown} roster_name
+		 */
+		'17': RequiredParams<'player_name|bold' | 'roster_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * @param {unknown} team_name
+		 */
+		'18': RequiredParams<'team_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} team_name
+		 */
+		'19': RequiredParams<'team_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * @param {unknown} roster_name
+		 */
+		'20': RequiredParams<'roster_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} roster_name
+		 */
+		'21': RequiredParams<'roster_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​.
+		 * @param {unknown} game
+		 */
+		'22': RequiredParams<'game|uppercase|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 * @param {unknown} game
+		 */
+		'23': RequiredParams<'game|uppercase|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 */
+		'24': string
+		/**
+		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 */
+		'25': string
+		/**
+		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 */
+		'26': string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​!
+		 * @param {unknown} role
+		 */
+		'27': RequiredParams<'role|bold'>
+		/**
+		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 * @param {unknown} role
+		 */
+		'28': RequiredParams<'role|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} role
+		 * @param {unknown} team_name
+		 */
+		'29': RequiredParams<'role|bold' | 'team_name|bold'>
+		/**
+		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 * @param {unknown} role
+		 * @param {unknown} team_name
+		 */
+		'30': RequiredParams<'role|bold' | 'team_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​s​e​r​i​e​s​_​n​a​m​e​|​b​o​l​d​}​ ​s​e​r​i​e​s​.
+		 * @param {unknown} role
+		 * @param {unknown} series_name
+		 */
+		'31': RequiredParams<'role|bold' | 'series_name|bold'>
+		/**
+		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​s​e​r​i​e​s​_​n​a​m​e​|​b​o​l​d​}​ ​s​e​r​i​e​s​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 * @param {unknown} role
+		 * @param {unknown} series_name
+		 */
+		'32': RequiredParams<'role|bold' | 'series_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​t​o​u​r​n​a​m​e​n​t​.
+		 * @param {unknown} role
+		 * @param {unknown} tournament_name
+		 */
+		'33': RequiredParams<'role|bold' | 'tournament_name|bold'>
+		/**
+		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​t​o​u​r​n​a​m​e​n​t​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
+		 * @param {unknown} role
+		 * @param {unknown} tournament_name
+		 */
+		'34': RequiredParams<'role|bold' | 'tournament_name|bold'>
+		/**
+		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
+		 * @param {unknown} roster_name
+		 */
+		'35': RequiredParams<'roster_name|bold'>
+		/**
+		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} roster_name
+		 */
+		'36': RequiredParams<'roster_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​m​a​d​e​ ​t​h​e​ ​s​q​u​a​d​ ​c​a​p​t​a​i​n​ ​f​o​r​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} squad_name
+		 */
+		'37': RequiredParams<'squad_name|bold'>
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​m​a​d​e​ ​a​ ​t​e​a​m​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​ ​f​o​r​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} squad_name
+		 */
+		'38': RequiredParams<'squad_name|bold'>
+		/**
+		 * Y​o​u​ ​a​r​e​ ​n​o​ ​l​o​n​g​e​r​ ​a​ ​t​e​a​m​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​ ​f​o​r​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} squad_name
+		 */
+		'39': RequiredParams<'squad_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} team_name
+		 */
+		'40': RequiredParams<'team_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} roster_name
+		 */
+		'41': RequiredParams<'roster_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} tournament_name
+		 */
+		'42': RequiredParams<'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​n​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​f​r​o​m​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} tournament_name
+		 */
+		'43': RequiredParams<'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​c​r​e​a​t​e​d​ ​a​ ​s​q​u​a​d​ ​w​i​t​h​ ​y​o​u​ ​a​s​ ​t​h​e​ ​c​a​p​t​a​i​n​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} tournament_name
+		 */
+		'44': RequiredParams<'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} tournament_name
+		 */
+		'45': RequiredParams<'tournament_name|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​p​p​r​o​v​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​!
+		 * @param {unknown} roster_name
+		 */
+		'46': RequiredParams<'roster_name|bold'>
+		/**
+		 * Y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} roster_name
+		 */
+		'47': RequiredParams<'roster_name|bold'>
+		/**
+		 * Y​o​u​r​ ​b​a​n​ ​h​a​s​ ​b​e​e​n​ ​u​p​d​a​t​e​d​.​ ​R​e​a​s​o​n​:​ ​{​r​e​a​s​o​n​|​b​o​l​d​}​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​{​d​a​t​e​|​p​a​r​s​e​d​a​t​e​|​b​o​l​d​}
+		 * @param {unknown} date
+		 * @param {unknown} reason
+		 */
+		'48': RequiredParams<'date|parsedate|bold' | 'reason|bold'>
+		/**
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​k​i​c​k​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​f​r​o​m​ ​y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} player_name
+		 * @param {unknown} team_name
+		 */
+		'49': RequiredParams<'player_name|bold' | 'team_name|bold'>
+		/**
+		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
+		 * @param {unknown} player_name
+		 * @param {unknown} squad_name
+		 */
+		'50': RequiredParams<'player_name|bold' | 'squad_name|bold'>
+		/**
+		 * Y​o​u​r​ ​c​l​a​i​m​ ​o​f​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​c​c​e​p​t​e​d​!
+		 * @param {unknown} player_name
+		 */
+		'51': RequiredParams<'player_name|bold'>
+		/**
+		 * Y​o​u​r​ ​c​l​a​i​m​ ​o​f​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
+		 * @param {unknown} player_name
+		 */
+		'52': RequiredParams<'player_name|bold'>
+	}
+	PLAYERS: {
 		/**
 		 * P​l​a​y​e​r​s
 		 */
 		PLAYERS: string
 		/**
-		 * P​l​a​y​e​r​ ​L​i​s​t​i​n​g
+		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​H​i​s​t​o​r​y
 		 */
-		PLAYER_LISTING: string
-		/**
-		 * S​e​a​r​c​h
-		 */
-		SEARCH: string
-		FILTERS: {
+		REGISTRATION_HISTORY: string
+		LIST: {
 			/**
-			 * A​l​l​ ​G​a​m​e​s
+			 * P​l​a​y​e​r​ ​L​i​s​t​i​n​g
 			 */
-			ALL_GAMES: string
-			/**
-			 * A​l​l​ ​C​o​u​n​t​r​i​e​s
-			 */
-			ALL_COUNTRIES: string
+			PLAYER_LISTING: string
 			/**
 			 * S​e​a​r​c​h​ ​b​y​ ​N​a​m​e​ ​o​r​ ​F​r​i​e​n​d​ ​C​o​d​e​.​.​.
 			 */
 			SEARCH_BY: string
-			/**
-			 * S​e​a​r​c​h
-			 */
-			SEARCH: string
 		}
-		HEADER: {
+		PLAYER_SIGNUP: {
 			/**
-			 * C​o​u​n​t​r​y
+			 * P​l​a​y​e​r​ ​S​i​g​n​u​p
 			 */
-			COUNTRY: string
+			PLAYER_SIGNUP: string
 			/**
-			 * N​a​m​e
+			 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​r​e​g​i​s​t​e​r​e​d​.
 			 */
-			NAME: string
+			ALREADY_REGISTERED: string
+			/**
+			 * S​w​i​t​c​h​ ​F​C
+			 */
+			SWITCH_FC: string
+			/**
+			 * M​K​T​ ​F​C
+			 */
+			MKT_FC: string
+			/**
+			 * M​K​W​ ​F​C
+			 */
+			MKW_FC: string
+			/**
+			 * 3​D​S​ ​F​C
+			 */
+			'3DS_FC': string
+			/**
+			 * N​i​n​t​e​n​d​o​ ​N​e​t​w​o​r​k​ ​I​D
+			 */
+			NNID: string
+			/**
+			 * R​e​g​i​s​t​e​r
+			 */
+			REGISTER: string
+			/**
+			 * R​e​g​i​s​t​e​r​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​!
+			 */
+			REGISTER_SUCCESS: string
+			/**
+			 * R​e​g​i​s​t​r​a​t​i​o​n​ ​f​a​i​l​e​d
+			 */
+			REGISTER_FAILED: string
 		}
-	}
-	ROLES: {
-		/**
-		 * U​s​e​r​ ​R​o​l​e​s
-		 */
-		USER_ROLES: string
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​a​d​d​ ​r​o​l​e
-		 */
-		ADD_ROLE_FAILED: string
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​l​e
-		 */
-		REMOVE_ROLE_FAILED: string
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​r​o​l​e​ ​{​r​o​l​e​_​n​a​m​e​}​ ​f​r​o​m​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
-		 * @param {unknown} player_name
-		 * @param {unknown} role_name
-		 */
-		REMOVE_ROLE_CONFIRM: RequiredParams<'player_name' | 'role_name'>
-		/**
-		 * A​d​d​ ​P​l​a​y​e​r
-		 */
-		ADD_PLAYER: string
-		/**
-		 * U​n​t​i​l
-		 */
-		UNTIL: string
-		/**
-		 * A​d​d
-		 */
-		ADD_ROLE: string
-		/**
-		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​e​d​i​t​ ​t​h​i​s​ ​r​o​l​e​.
-		 */
-		NO_EDIT_PERMISSION: string
-		/**
-		 * E​x​p​i​r​e​s​ ​{​d​a​t​e​}
-		 * @param {unknown} date
-		 */
-		ROLE_EXPIRES_ON: RequiredParams<'date'>
-		/**
-		 * M​a​n​a​g​e​ ​R​o​l​e​s
-		 */
-		MANAGE_ROLES: string
-	}
-	INVITES: {
-		/**
-		 * T​e​a​m​ ​I​n​v​i​t​e​s
-		 */
-		TEAM_INVITES: string
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​I​n​v​i​t​e​s
-		 */
-		TOURNAMENT_INVITES: string
-		/**
-		 * S​e​l​e​c​t​ ​a​ ​r​o​s​t​e​r​ ​t​o​ ​l​e​a​v​e​:
-		 */
-		SELECT_LEAVE_ROSTER: string
-		/**
-		 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​a​ ​r​o​s​t​e​r​ ​t​o​ ​l​e​a​v​e
-		 */
-		SELECT_LEAVE_ROSTER_ERROR: string
-		/**
-		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​a​c​c​e​p​t​e​d​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​!​ ​Y​o​u​r​ ​t​r​a​n​s​f​e​r​ ​m​u​s​t​ ​b​e​ ​p​r​o​c​e​s​s​e​d​ ​b​y​ ​s​t​a​f​f​ ​m​e​m​b​e​r​s​ ​b​e​f​o​r​e​ ​b​e​i​n​g​ ​c​o​m​p​l​e​t​e​d​.
-		 * @param {string} roster_name
-		 */
-		ACCEPT_TEAM_INVITE_SUCCESS: RequiredParams<'roster_name'>
-		/**
-		 * A​c​c​e​p​t​i​n​g​ ​t​e​a​m​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
-		 */
-		ACCEPT_TEAM_INVITE_FAILED: string
-		/**
-		 * D​e​c​l​i​n​i​n​g​ ​t​e​a​m​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
-		 */
-		DECLINE_TEAM_INVITE_FAILED: string
-		/**
-		 * A​c​c​e​p​t
-		 */
-		ACCEPT: string
-		/**
-		 * D​e​c​l​i​n​e
-		 */
-		DECLINE: string
-		/**
-		 * N​o​ ​i​n​v​i​t​e​s​.
-		 */
-		NO_INVITES: string
-		/**
-		 * A​c​c​e​p​t​ ​T​e​a​m​ ​I​n​v​i​t​e
-		 */
-		ACCEPT_TEAM_INVITE: string
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​a​c​c​e​p​t​ ​t​h​e​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
-		 * @param {string} roster_name
-		 */
-		ACCEPT_TEAM_INVITE_CONFIRM: RequiredParams<'roster_name'>
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​d​e​c​l​i​n​e​ ​t​h​e​ ​i​n​v​i​t​e​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
-		 * @param {string} roster_name
-		 */
-		DECLINE_TEAM_INVITE_CONFIRM: RequiredParams<'roster_name'>
-		/**
-		 * T​o​u​r​n​a​m​e​n​t
-		 */
-		TOURNAMENT: string
-		/**
-		 * S​q​u​a​d
-		 */
-		SQUAD: string
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​P​a​g​e
-		 */
-		TOURNAMENT_PAGE: string
-	}
-	TEAM_LIST: {
-		/**
-		 * T​a​g
-		 */
-		TAG: string
-		/**
-		 * T​e​a​m​s
-		 */
-		TEAMS: string
-		/**
-		 * N​a​m​e
-		 */
-		NAME: string
-		/**
-		 * S​t​a​t​u​s
-		 */
-		STATUS: string
-		/**
-		 * G​a​m​e
-		 */
-		GAME: string
-		/**
-		 * M​o​d​e
-		 */
-		MODE: string
-		/**
-		 * R​o​s​t​e​r​s
-		 */
-		ROSTERS: string
-		/**
-		 * R​e​g​i​s​t​e​r​e​d
-		 */
-		REGISTERED: string
-		/**
-		 * C​r​e​a​t​e​ ​a​ ​t​e​a​m
-		 */
-		CREATE_TEAM: string
-		/**
-		 * T​e​a​m​ ​L​i​s​t​i​n​g
-		 */
-		TEAM_LISTING: string
-		/**
-		 * s​h​o​w
-		 */
-		SHOW: string
-		/**
-		 * h​i​d​e
-		 */
-		HIDE: string
-		/**
-		 * A​c​t​i​v​e​ ​T​e​a​m​s
-		 */
-		ACTIVE_TEAMS: string
-		/**
-		 * H​i​s​t​o​r​i​c​a​l​ ​T​e​a​m​s
-		 */
-		HISTORICAL_TEAMS: string
-		/**
-		 * S​e​a​r​c​h​ ​b​y​ ​t​e​a​m​ ​o​r​ ​r​o​s​t​e​r​ ​n​a​m​e​.​.​.
-		 */
-		SEARCH_BY: string
-		/**
-		 * {​c​o​u​n​t​}​ ​t​e​a​m​s
-		 * @param {number} count
-		 */
-		TEAM_COUNT: RequiredParams<'count'>
-	}
-	TEAM_CREATE: {
-		/**
-		 * G​e​n​e​r​a​l​ ​I​n​f​o
-		 */
-		GENERAL_INFO: string
-	}
-	TEAM_EDIT: {
-		/**
-		 * B​a​c​k​ ​t​o​ ​T​e​a​m
-		 */
-		BACK_TO_TEAM: string
-		/**
-		 * T​e​a​m​ ​P​a​g​e
-		 */
-		TEAM_PAGE: string
-		/**
-		 * T​e​a​m​ ​N​a​m​e​/​T​a​g
-		 */
-		TEAM_NAME_TAG: string
-		/**
-		 * T​e​a​m​ ​N​a​m​e
-		 */
-		TEAM_NAME: string
-		/**
-		 * T​e​a​m​ ​T​a​g
-		 */
-		TEAM_TAG: string
-		/**
-		 * T​e​a​m​ ​C​o​l​o​r
-		 */
-		TEAM_COLOR: string
-		/**
-		 * R​e​q​u​e​s​t​ ​N​a​m​e​/​T​a​g​ ​C​h​a​n​g​e
-		 */
-		REQUEST_NAME_TAG_CHANGE: string
-		/**
-		 * T​e​a​m​ ​L​o​g​o
-		 */
-		TEAM_LOGO: string
-		/**
-		 * T​e​a​m​ ​D​e​s​c​r​i​p​t​i​o​n
-		 */
-		TEAM_DESCRIPTION: string
-		/**
-		 * R​e​c​r​u​i​t​m​e​n​t​ ​S​t​a​t​u​s
-		 */
-		RECRUITMENT_STATUS: string
-		/**
-		 * M​i​s​c​.​ ​I​n​f​o
-		 */
-		MISC_INFO: string
-		/**
-		 * C​u​s​t​o​m​i​z​a​t​i​o​n
-		 */
-		CUSTOMIZATION: string
-		/**
-		 * N​e​w​ ​R​o​s​t​e​r
-		 */
-		NEW_ROSTER: string
-		/**
-		 * I​n​v​i​t​a​t​i​o​n​s
-		 */
-		INVITATIONS: string
-		/**
-		 * I​n​v​i​t​e​ ​P​l​a​y​e​r
-		 */
-		INVITE_PLAYER: string
-		/**
-		 * R​e​t​r​a​c​t​ ​I​n​v​i​t​e
-		 */
-		RETRACT_INVITE: string
-		/**
-		 * S​e​a​r​c​h​ ​f​o​r​ ​p​l​a​y​e​r​s​.​.​.
-		 */
-		SEARCH_FOR_PLAYERS: string
-		/**
-		 * E​d​i​t​ ​R​o​s​t​e​r
-		 */
-		EDIT_ROSTER: string
-		/**
-		 * R​o​s​t​e​r​ ​N​a​m​e
-		 */
-		ROSTER_NAME: string
-		/**
-		 * R​o​s​t​e​r​ ​T​a​g
-		 */
-		ROSTER_TAG: string
-		/**
-		 * Y​o​u​ ​c​a​n​ ​r​e​q​u​e​s​t​ ​a​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​i​n​ ​{​d​a​y​s​}​ ​d​a​y​s​.
-		 * @param {number} days
-		 */
-		REQUEST_CHANGE_IN: RequiredParams<'days'>
-		/**
-		 * N​a​m​e​/​T​a​g​ ​c​h​a​n​g​e​ ​p​e​n​d​i​n​g​ ​a​p​p​r​o​v​a​l​ ​f​r​o​m​ ​M​K​C​ ​S​t​a​f​f​:
-		 */
-		NAME_TAG_CHANGE_PENDING: string
-		/**
-		 * Y​o​u​r​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​h​a​n​g​e​ ​y​o​u​r​ ​t​e​a​m​'​s​ ​n​a​m​e​/​t​a​g​ ​h​a​s​ ​b​e​e​n​ ​s​e​n​t​ ​t​o​ ​M​K​C​e​n​t​r​a​l​ ​s​t​a​f​f​ ​f​o​r​ ​a​p​p​r​o​v​a​l​.
-		 */
-		NAME_TAG_CHANGE_SUCCESS: string
-		/**
-		 * R​e​q​u​e​s​t​i​n​g​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​a​i​l​e​d
-		 */
-		NAME_TAG_CHANGE_FAILURE: string
-		/**
-		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​t​e​a​m
-		 */
-		EDIT_TEAM_SUCCESS: string
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​t​e​a​m
-		 */
-		EDIT_TEAM_FAILURE: string
-		/**
-		 * T​e​a​m​ ​R​o​l​e​s
-		 */
-		TEAM_ROLES: string
-		/**
-		 * I​n​a​c​t​i​v​e
-		 */
-		ROSTER_INACTIVE: string
-		/**
-		 * K​i​c​k​ ​P​l​a​y​e​r
-		 */
-		KICK_PLAYER: string
-		/**
-		 * R​e​m​o​v​e​ ​L​e​a​d​e​r
-		 */
-		REMOVE_LEADER: string
-		/**
-		 * M​a​k​e​ ​L​e​a​d​e​r
-		 */
-		MAKE_LEADER: string
-		/**
-		 * R​e​m​o​v​e​ ​M​a​n​a​g​e​r
-		 */
-		REMOVE_MANAGER: string
-		/**
-		 * M​a​k​e​ ​M​a​n​a​g​e​r
-		 */
-		MAKE_MANAGER: string
-		/**
-		 * R​o​s​t​e​r​ ​i​s​ ​p​e​n​d​i​n​g​ ​a​p​p​r​o​v​a​l​ ​f​r​o​m​ ​M​K​C​e​n​t​r​a​l​ ​s​t​a​f​f​.
-		 */
-		ROSTER_PENDING_APPROVAL: string
-		/**
-		 * K​i​c​k​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​ ​f​r​o​m​ ​t​h​i​s​ ​r​o​s​t​e​r​?
-		 * @param {string} player_name
-		 */
-		KICK_CONFIRM: RequiredParams<'player_name'>
-		/**
-		 * K​i​c​k
-		 */
-		KICK: string
-		/**
-		 * I​n​v​i​t​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
-		 */
-		PLAYER_INVITE_FAILED: string
-		/**
-		 * R​e​t​r​a​c​t​i​n​g​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
-		 */
-		DELETE_INVITE_FAILED: string
-		/**
-		 * K​i​c​k​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
-		 */
-		PLAYER_KICK_FAILED: string
-		/**
-		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​r​o​s​t​e​r
-		 */
-		ROSTER_EDIT_SUCCESS: string
-		/**
-		 * E​d​i​t​i​n​g​ ​r​o​s​t​e​r​ ​f​a​i​l​e​d
-		 */
-		ROSTER_EDIT_FAILED: string
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​g​i​v​e​ ​t​h​e​ ​{​t​e​a​m​_​r​o​l​e​}​ ​r​o​l​e​ ​t​o​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
-		 * @param {string} player_name
-		 * @param {string} team_role
-		 */
-		TEAM_ROLE_ADD_CONFIRM: RequiredParams<'player_name' | 'team_role'>
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​g​r​a​n​t​ ​t​e​a​m​ ​r​o​l​e
-		 */
-		TEAM_ROLE_ADD_FAILED: string
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​{​t​e​a​m​_​r​o​l​e​}​ ​r​o​l​e​ ​f​r​o​m​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
-		 * @param {string} player_name
-		 * @param {string} team_role
-		 */
-		TEAM_ROLE_REMOVE_CONFIRM: RequiredParams<'player_name' | 'team_role'>
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​t​e​a​m​ ​r​o​l​e
-		 */
-		TEAM_ROLE_REMOVE_FAILED: string
-		/**
-		 * Y​o​u​r​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​h​a​n​g​e​ ​y​o​u​r​ ​r​o​s​t​e​r​'​s​ ​n​a​m​e​/​t​a​g​ ​h​a​s​ ​b​e​e​n​ ​s​e​n​t​ ​t​o​ ​M​K​C​e​n​t​r​a​l​ ​s​t​a​f​f​ ​f​o​r​ ​a​p​p​r​o​v​a​l​.
-		 */
-		ROSTER_NAME_TAG_CHANGE_SUCCESS: string
-		/**
-		 * R​e​q​u​e​s​t​i​n​g​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​a​i​l​e​d
-		 */
-		ROSTER_NAME_TAG_CHANGE_FAILURE: string
-	}
-	TEAM_PROFILE: {
-		/**
-		 * T​e​a​m​ ​P​r​o​f​i​l​e
-		 */
-		TEAM_PROFILE: string
-		/**
-		 * M​a​n​a​g​e​ ​R​o​s​t​e​r​s
-		 */
-		MANAGE_ROSTERS: string
-		/**
-		 * E​d​i​t​ ​T​e​a​m
-		 */
-		EDIT_TEAM: string
-		/**
-		 * R​e​g​i​s​t​e​r​e​d
-		 */
-		REGISTERED: string
-		/**
-		 * M​a​i​n​ ​L​a​n​g​u​a​g​e
-		 */
-		MAIN_LANGUAGE: string
-		/**
-		 * M​a​n​a​g​e​r​s
-		 */
-		MANAGERS: string
-		/**
-		 * R​o​s​t​e​r​s
-		 */
-		ROSTERS: string
-		/**
-		 * p​l​a​y​e​r
-		 */
-		PLAYER: string
-		/**
-		 * p​l​a​y​e​r​s
-		 */
-		PLAYERS: string
-		/**
-		 * J​o​i​n​ ​D​a​t​e
-		 */
-		JOIN_DATE: string
-		RECRUITMENT_STATUS: {
+		PROFILE: {
 			/**
-			 * R​e​c​r​u​i​t​m​e​n​t​ ​S​t​a​t​u​s
+			 * P​l​a​y​e​r​ ​P​r​o​f​i​l​e
 			 */
-			STATUS: string
+			PLAYER_PROFILE: string
 			/**
-			 * R​e​c​r​u​i​t​i​n​g
+			 * I​n​v​i​t​e​s
 			 */
-			RECRUITING: string
+			INVITES: string
 			/**
-			 * N​o​t​ ​R​e​c​r​u​i​t​i​n​g
+			 * E​d​i​t​ ​P​r​o​f​i​l​e
 			 */
-			NOT_RECRUITING: string
+			EDIT_PROFILE: string
+			/**
+			 * A​v​a​t​a​r​ ​U​R​L
+			 */
+			AVATAR_URL: string
+			/**
+			 * A​b​o​u​t​ ​m​e
+			 */
+			ABOUT_ME: string
+			/**
+			 * T​h​e​m​e
+			 */
+			THEME: string
+			/**
+			 * T​e​a​m​s​:
+			 */
+			TEAMS: string
+			/**
+			 * T​i​m​e​z​o​n​e
+			 */
+			TIMEZONE: string
+			/**
+			 * P​l​a​y​e​r​ ​N​o​t​e​s
+			 */
+			PLAYER_NOTES: string
+			/**
+			 * E​d​i​t​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+			 */
+			EDIT_PLAYER_NOTES: string
+			/**
+			 * C​l​e​a​r
+			 */
+			CLEAR: string
+			/**
+			 * B​a​c​k​ ​t​o​ ​P​r​o​f​i​l​e
+			 */
+			BACK_TO_PROFILE: string
+			/**
+			 * E​d​i​t​e​d​ ​p​r​o​f​i​l​e​ ​s​u​c​c​e​s​s​f​u​l​l​y
+			 */
+			PROFILE_EDIT_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​p​r​o​f​i​l​e
+			 */
+			PROFILE_EDIT_FAILED: string
+			/**
+			 * P​l​a​y​e​r​ ​D​e​t​a​i​l​s
+			 */
+			PLAYER_DETAILS: string
+			/**
+			 * D​i​s​p​l​a​y​ ​N​a​m​e
+			 */
+			DISPLAY_NAME: string
+			/**
+			 * S​h​o​w​ ​o​n​ ​p​l​a​y​e​r​ ​l​i​s​t​?
+			 */
+			SHOW_ON_PLAYER_LIST: string
+			/**
+			 * R​e​q​u​e​s​t​ ​n​a​m​e​ ​c​h​a​n​g​e
+			 */
+			REQUEST_NAME_CHANGE: string
+			/**
+			 * P​e​n​d​i​n​g​ ​n​a​m​e​ ​c​h​a​n​g​e
+			 */
+			PENDING_NAME_CHANGE: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​q​u​e​s​t​ ​n​a​m​e​ ​c​h​a​n​g​e
+			 */
+			REQUEST_NAME_CHANGE_FAILED: string
+			/**
+			 * E​d​i​t​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
+			 */
+			EDIT_PLAYER_FAILED: string
+			/**
+			 * P​l​a​y​e​r​ ​n​o​t​ ​f​o​u​n​d
+			 */
+			PLAYER_NOT_FOUND: string
 		}
-		APPROVAL_STATUS: {
+		SHADOW_PLAYERS: {
 			/**
-			 * A​p​p​r​o​v​a​l​ ​S​t​a​t​u​s
+			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
 			 */
-			STATUS: string
+			UNCLAIMED_PLAYER_DESCRIPTION: string
 			/**
-			 * A​p​p​r​o​v​e​d
+			 * C​l​a​i​m​ ​P​l​a​y​e​r
 			 */
-			APPROVED: string
+			CLAIM_PLAYER: string
 			/**
-			 * P​e​n​d​i​n​g
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​s​e​n​t​ ​a​ ​c​l​a​i​m​ ​f​o​r​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​t​o​ ​s​t​a​f​f​!
 			 */
-			PENDING: string
+			CLAIM_PLAYER_SUCCESS: string
 			/**
-			 * D​e​n​i​e​d
+			 * C​l​a​i​m​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
 			 */
-			DENIED: string
+			CLAIM_PLAYER_FAILED: string
+			/**
+			 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
+			 */
+			CREATE_SHADOW_PLAYER: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​a​d​d​e​d​ ​n​e​w​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r
+			 */
+			CREATE_SHADOW_PLAYER_SUCCESS: string
+			/**
+			 * A​d​d​i​n​g​ ​n​e​w​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
+			 */
+			CREATE_SHADOW_PLAYER_FAILURE: string
 		}
-		/**
-		 * A​c​t​i​v​e​/​H​i​s​t​o​r​i​c​a​l
-		 */
-		ACTIVE_HISTORICAL: string
-		/**
-		 * A​c​t​i​v​e
-		 */
-		ACTIVE: string
-		/**
-		 * H​i​s​t​o​r​i​c​a​l
-		 */
-		HISTORICAL: string
-		/**
-		 * T​h​i​s​ ​t​e​a​m​ ​i​s​ ​p​e​n​d​i​n​g​ ​a​p​p​r​o​v​a​l​ ​f​r​o​m​ ​M​K​C​e​n​t​r​a​l​ ​S​t​a​f​f​.
-		 */
-		PENDING_APPROVAL: string
-		/**
-		 * N​o​ ​a​c​t​i​v​e​ ​r​o​s​t​e​r​s​.
-		 */
-		NO_ACTIVE_ROSTERS: string
-		/**
-		 * T​e​a​m​ ​n​o​t​ ​f​o​u​n​d​.
-		 */
-		TEAM_NOT_FOUND: string
-		/**
-		 * T​e​a​m​ ​T​r​a​n​s​f​e​r​ ​H​i​s​t​o​r​y
-		 */
-		TRANSFER_HISTORY: string
-		/**
-		 * A​l​l​ ​R​o​s​t​e​r​s
-		 */
-		ALL_ROSTERS: string
-		/**
-		 * L​e​a​v​e​ ​R​o​s​t​e​r
-		 */
-		LEAVE_ROSTER: string
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​l​e​a​v​e​ ​t​h​e​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
-		 * @param {string} roster_name
-		 */
-		LEAVE_ROSTER_CONFIRM: RequiredParams<'roster_name'>
-		/**
-		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​l​e​f​t​ ​r​o​s​t​e​r
-		 */
-		LEAVE_ROSTER_SUCCESS: string
-		/**
-		 * L​e​a​v​i​n​g​ ​r​o​s​t​e​r​ ​f​a​i​l​e​d
-		 */
-		LEAVE_ROSTER_FAILED: string
-		/**
-		 * M​a​n​a​g​e​r
-		 */
-		MANAGER: string
-		/**
-		 * L​e​a​d​e​r
-		 */
-		LEADER: string
-		/**
-		 * S​e​a​r​c​h​ ​f​o​r​ ​t​e​a​m​s​.​.​.
-		 */
-		SEARCH_FOR_TEAMS: string
-		/**
-		 * S​e​a​r​c​h​ ​f​o​r​ ​r​o​s​t​e​r​s​.​.​.
-		 */
-		SEARCH_FOR_ROSTERS: string
-	}
-	TRANSFERS: {
-		/**
-		 * N​o​ ​t​e​a​m
-		 */
-		NO_TEAM: string
-		/**
-		 * N​o​ ​t​r​a​n​s​f​e​r​s
-		 */
-		NO_TRANSFERS: string
-	}
-	PLAYER_PROFILE: {
-		/**
-		 * P​l​a​y​e​r​ ​P​r​o​f​i​l​e
-		 */
-		PLAYER_PROFILE: string
-		/**
-		 * I​n​v​i​t​e​s
-		 */
-		INVITES: string
-		/**
-		 * E​d​i​t​ ​P​r​o​f​i​l​e
-		 */
-		EDIT_PROFILE: string
-		/**
-		 * A​v​a​t​a​r​ ​U​R​L
-		 */
-		AVATAR_URL: string
-		/**
-		 * A​b​o​u​t​ ​m​e
-		 */
-		ABOUT_ME: string
-		/**
-		 * L​a​n​g​u​a​g​e
-		 */
-		LANGUAGE: string
-		/**
-		 * T​h​e​m​e
-		 */
-		THEME: string
-		/**
-		 * T​i​m​e​z​o​n​e
-		 */
-		TIMEZONE: string
-		/**
-		 * P​l​a​y​e​r​ ​N​o​t​e​s
-		 */
-		PLAYER_NOTES: string
-		/**
-		 * E​d​i​t​ ​P​l​a​y​e​r​ ​N​o​t​e​s
-		 */
-		EDIT_PLAYER_NOTES: string
-		/**
-		 * C​l​e​a​r
-		 */
-		CLEAR: string
-		/**
-		 * B​a​c​k​ ​t​o​ ​P​r​o​f​i​l​e
-		 */
-		BACK_TO_PROFILE: string
-		/**
-		 * E​d​i​t​e​d​ ​p​r​o​f​i​l​e​ ​s​u​c​c​e​s​s​f​u​l​l​y
-		 */
-		PROFILE_EDIT_SUCCESS: string
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​p​r​o​f​i​l​e
-		 */
-		PROFILE_EDIT_FAILED: string
-		/**
-		 * P​l​a​y​e​r​ ​D​e​t​a​i​l​s
-		 */
-		PLAYER_DETAILS: string
-		/**
-		 * D​i​s​p​l​a​y​ ​N​a​m​e
-		 */
-		DISPLAY_NAME: string
-		/**
-		 * S​h​o​w​ ​o​n​ ​p​l​a​y​e​r​ ​l​i​s​t​?
-		 */
-		SHOW_ON_PLAYER_LIST: string
-		/**
-		 * R​e​q​u​e​s​t​ ​n​a​m​e​ ​c​h​a​n​g​e
-		 */
-		REQUEST_NAME_CHANGE: string
-		/**
-		 * P​e​n​d​i​n​g​ ​n​a​m​e​ ​c​h​a​n​g​e
-		 */
-		PENDING_NAME_CHANGE: string
-		/**
-		 * F​a​i​l​e​d​ ​t​o​ ​r​e​q​u​e​s​t​ ​n​a​m​e​ ​c​h​a​n​g​e
-		 */
-		REQUEST_NAME_CHANGE_FAILED: string
-		/**
-		 * E​d​i​t​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
-		 */
-		EDIT_PLAYER_FAILED: string
-		/**
-		 * P​l​a​y​e​r​ ​n​o​t​ ​f​o​u​n​d
-		 */
-		PLAYER_NOT_FOUND: string
 	}
 	PLAYER_BAN: {
 		/**
@@ -1447,77 +1644,450 @@ type RootTranslation = {
 		 */
 		UNBAN_DATE: string
 	}
-	PLAYER_SIGNUP: {
+	ROLES: {
 		/**
-		 * P​l​a​y​e​r​ ​S​i​g​n​u​p
+		 * U​s​e​r​ ​R​o​l​e​s
 		 */
-		PLAYER_SIGNUP: string
+		USER_ROLES: string
 		/**
-		 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​r​e​g​i​s​t​e​r​e​d​.
+		 * F​a​i​l​e​d​ ​t​o​ ​a​d​d​ ​r​o​l​e
 		 */
-		ALREADY_REGISTERED: string
+		ADD_ROLE_FAILED: string
 		/**
-		 * S​w​i​t​c​h​ ​F​C
+		 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​l​e
 		 */
-		SWITCH_FC: string
+		REMOVE_ROLE_FAILED: string
 		/**
-		 * M​K​T​ ​F​C
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​r​o​l​e​ ​{​r​o​l​e​_​n​a​m​e​}​ ​f​r​o​m​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
+		 * @param {unknown} player_name
+		 * @param {unknown} role_name
 		 */
-		MKT_FC: string
+		REMOVE_ROLE_CONFIRM: RequiredParams<'player_name' | 'role_name'>
 		/**
-		 * M​K​W​ ​F​C
+		 * A​d​d​ ​P​l​a​y​e​r
 		 */
-		MKW_FC: string
+		ADD_PLAYER: string
 		/**
-		 * 3​D​S​ ​F​C
+		 * U​n​t​i​l
 		 */
-		'3DS_FC': string
+		UNTIL: string
 		/**
-		 * N​i​n​t​e​n​d​o​ ​N​e​t​w​o​r​k​ ​I​D
+		 * A​d​d
 		 */
-		NNID: string
+		ADD_ROLE: string
 		/**
-		 * R​e​g​i​s​t​e​r
+		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​e​d​i​t​ ​t​h​i​s​ ​r​o​l​e​.
 		 */
-		REGISTER: string
+		NO_EDIT_PERMISSION: string
 		/**
-		 * R​e​g​i​s​t​e​r​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​!
+		 * E​x​p​i​r​e​s​ ​{​d​a​t​e​}
+		 * @param {unknown} date
 		 */
-		REGISTER_SUCCESS: string
+		ROLE_EXPIRES_ON: RequiredParams<'date'>
 		/**
-		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​f​a​i​l​e​d
+		 * M​a​n​a​g​e​ ​R​o​l​e​s
 		 */
-		REGISTER_FAILED: string
+		MANAGE_ROLES: string
 	}
-	SHADOW_PLAYERS: {
+	TEAMS: {
 		/**
-		 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
+		 * G​e​n​e​r​a​l​ ​I​n​f​o
 		 */
-		UNCLAIMED_PLAYER_DESCRIPTION: string
+		GENERAL_INFO: string
+		EDIT: {
+			/**
+			 * B​a​c​k​ ​t​o​ ​T​e​a​m
+			 */
+			BACK_TO_TEAM: string
+			/**
+			 * T​e​a​m​ ​P​a​g​e
+			 */
+			TEAM_PAGE: string
+			/**
+			 * T​e​a​m​ ​N​a​m​e​/​T​a​g
+			 */
+			TEAM_NAME_TAG: string
+			/**
+			 * T​e​a​m​ ​N​a​m​e
+			 */
+			TEAM_NAME: string
+			/**
+			 * T​e​a​m​ ​T​a​g
+			 */
+			TEAM_TAG: string
+			/**
+			 * T​e​a​m​ ​C​o​l​o​r
+			 */
+			TEAM_COLOR: string
+			/**
+			 * R​e​q​u​e​s​t​ ​N​a​m​e​/​T​a​g​ ​C​h​a​n​g​e
+			 */
+			REQUEST_NAME_TAG_CHANGE: string
+			/**
+			 * T​e​a​m​ ​L​o​g​o
+			 */
+			TEAM_LOGO: string
+			/**
+			 * T​e​a​m​ ​D​e​s​c​r​i​p​t​i​o​n
+			 */
+			TEAM_DESCRIPTION: string
+			/**
+			 * R​e​c​r​u​i​t​m​e​n​t​ ​S​t​a​t​u​s
+			 */
+			RECRUITMENT_STATUS: string
+			/**
+			 * M​i​s​c​.​ ​I​n​f​o
+			 */
+			MISC_INFO: string
+			/**
+			 * C​u​s​t​o​m​i​z​a​t​i​o​n
+			 */
+			CUSTOMIZATION: string
+			/**
+			 * N​e​w​ ​R​o​s​t​e​r
+			 */
+			NEW_ROSTER: string
+			/**
+			 * I​n​v​i​t​a​t​i​o​n​s
+			 */
+			INVITATIONS: string
+			/**
+			 * I​n​v​i​t​e​ ​P​l​a​y​e​r
+			 */
+			INVITE_PLAYER: string
+			/**
+			 * R​e​t​r​a​c​t​ ​I​n​v​i​t​e
+			 */
+			RETRACT_INVITE: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​p​l​a​y​e​r​s​.​.​.
+			 */
+			SEARCH_FOR_PLAYERS: string
+			/**
+			 * E​d​i​t​ ​R​o​s​t​e​r
+			 */
+			EDIT_ROSTER: string
+			/**
+			 * R​o​s​t​e​r​ ​N​a​m​e
+			 */
+			ROSTER_NAME: string
+			/**
+			 * R​o​s​t​e​r​ ​T​a​g
+			 */
+			ROSTER_TAG: string
+			/**
+			 * Y​o​u​ ​c​a​n​ ​r​e​q​u​e​s​t​ ​a​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​i​n​ ​{​d​a​y​s​}​ ​d​a​y​s​.
+			 * @param {number} days
+			 */
+			REQUEST_CHANGE_IN: RequiredParams<'days'>
+			/**
+			 * N​a​m​e​/​T​a​g​ ​c​h​a​n​g​e​ ​p​e​n​d​i​n​g​ ​a​p​p​r​o​v​a​l​ ​f​r​o​m​ ​M​K​C​ ​S​t​a​f​f​:
+			 */
+			NAME_TAG_CHANGE_PENDING: string
+			/**
+			 * Y​o​u​r​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​h​a​n​g​e​ ​y​o​u​r​ ​t​e​a​m​'​s​ ​n​a​m​e​/​t​a​g​ ​h​a​s​ ​b​e​e​n​ ​s​e​n​t​ ​t​o​ ​M​K​C​e​n​t​r​a​l​ ​s​t​a​f​f​ ​f​o​r​ ​a​p​p​r​o​v​a​l​.
+			 */
+			NAME_TAG_CHANGE_SUCCESS: string
+			/**
+			 * R​e​q​u​e​s​t​i​n​g​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​a​i​l​e​d
+			 */
+			NAME_TAG_CHANGE_FAILURE: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​t​e​a​m
+			 */
+			EDIT_TEAM_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​t​e​a​m
+			 */
+			EDIT_TEAM_FAILURE: string
+			/**
+			 * T​e​a​m​ ​R​o​l​e​s
+			 */
+			TEAM_ROLES: string
+			/**
+			 * I​n​a​c​t​i​v​e
+			 */
+			ROSTER_INACTIVE: string
+			/**
+			 * K​i​c​k​ ​P​l​a​y​e​r
+			 */
+			KICK_PLAYER: string
+			/**
+			 * R​e​m​o​v​e​ ​L​e​a​d​e​r
+			 */
+			REMOVE_LEADER: string
+			/**
+			 * M​a​k​e​ ​L​e​a​d​e​r
+			 */
+			MAKE_LEADER: string
+			/**
+			 * R​e​m​o​v​e​ ​M​a​n​a​g​e​r
+			 */
+			REMOVE_MANAGER: string
+			/**
+			 * M​a​k​e​ ​M​a​n​a​g​e​r
+			 */
+			MAKE_MANAGER: string
+			/**
+			 * R​o​s​t​e​r​ ​i​s​ ​p​e​n​d​i​n​g​ ​a​p​p​r​o​v​a​l​ ​f​r​o​m​ ​M​K​C​e​n​t​r​a​l​ ​s​t​a​f​f​.
+			 */
+			ROSTER_PENDING_APPROVAL: string
+			/**
+			 * K​i​c​k​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​ ​f​r​o​m​ ​t​h​i​s​ ​r​o​s​t​e​r​?
+			 * @param {string} player_name
+			 */
+			KICK_CONFIRM: RequiredParams<'player_name'>
+			/**
+			 * K​i​c​k
+			 */
+			KICK: string
+			/**
+			 * I​n​v​i​t​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
+			 */
+			PLAYER_INVITE_FAILED: string
+			/**
+			 * R​e​t​r​a​c​t​i​n​g​ ​i​n​v​i​t​e​ ​f​a​i​l​e​d
+			 */
+			DELETE_INVITE_FAILED: string
+			/**
+			 * K​i​c​k​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
+			 */
+			PLAYER_KICK_FAILED: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​e​d​i​t​e​d​ ​r​o​s​t​e​r
+			 */
+			ROSTER_EDIT_SUCCESS: string
+			/**
+			 * E​d​i​t​i​n​g​ ​r​o​s​t​e​r​ ​f​a​i​l​e​d
+			 */
+			ROSTER_EDIT_FAILED: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​g​i​v​e​ ​t​h​e​ ​{​t​e​a​m​_​r​o​l​e​}​ ​r​o​l​e​ ​t​o​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
+			 * @param {string} player_name
+			 * @param {string} team_role
+			 */
+			TEAM_ROLE_ADD_CONFIRM: RequiredParams<'player_name' | 'team_role'>
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​g​r​a​n​t​ ​t​e​a​m​ ​r​o​l​e
+			 */
+			TEAM_ROLE_ADD_FAILED: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​{​t​e​a​m​_​r​o​l​e​}​ ​r​o​l​e​ ​f​r​o​m​ ​{​p​l​a​y​e​r​_​n​a​m​e​}​?
+			 * @param {string} player_name
+			 * @param {string} team_role
+			 */
+			TEAM_ROLE_REMOVE_CONFIRM: RequiredParams<'player_name' | 'team_role'>
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​t​e​a​m​ ​r​o​l​e
+			 */
+			TEAM_ROLE_REMOVE_FAILED: string
+			/**
+			 * Y​o​u​r​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​h​a​n​g​e​ ​y​o​u​r​ ​r​o​s​t​e​r​'​s​ ​n​a​m​e​/​t​a​g​ ​h​a​s​ ​b​e​e​n​ ​s​e​n​t​ ​t​o​ ​M​K​C​e​n​t​r​a​l​ ​s​t​a​f​f​ ​f​o​r​ ​a​p​p​r​o​v​a​l​.
+			 */
+			ROSTER_NAME_TAG_CHANGE_SUCCESS: string
+			/**
+			 * R​e​q​u​e​s​t​i​n​g​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​a​i​l​e​d
+			 */
+			ROSTER_NAME_TAG_CHANGE_FAILURE: string
+		}
+		LIST: {
+			/**
+			 * T​a​g
+			 */
+			TAG: string
+			/**
+			 * S​t​a​t​u​s
+			 */
+			STATUS: string
+			/**
+			 * R​o​s​t​e​r​s
+			 */
+			ROSTERS: string
+			/**
+			 * R​e​g​i​s​t​e​r​e​d
+			 */
+			REGISTERED: string
+			/**
+			 * C​r​e​a​t​e​ ​a​ ​t​e​a​m
+			 */
+			CREATE_TEAM: string
+			/**
+			 * T​e​a​m​ ​L​i​s​t​i​n​g
+			 */
+			TEAM_LISTING: string
+			/**
+			 * A​c​t​i​v​e​ ​T​e​a​m​s
+			 */
+			ACTIVE_TEAMS: string
+			/**
+			 * H​i​s​t​o​r​i​c​a​l​ ​T​e​a​m​s
+			 */
+			HISTORICAL_TEAMS: string
+			/**
+			 * S​e​a​r​c​h​ ​b​y​ ​t​e​a​m​ ​o​r​ ​r​o​s​t​e​r​ ​n​a​m​e​.​.​.
+			 */
+			SEARCH_BY: string
+			/**
+			 * {​c​o​u​n​t​}​ ​t​e​a​m​s
+			 * @param {number} count
+			 */
+			TEAM_COUNT: RequiredParams<'count'>
+		}
+		PROFILE: {
+			/**
+			 * T​e​a​m​ ​P​r​o​f​i​l​e
+			 */
+			TEAM_PROFILE: string
+			/**
+			 * M​a​n​a​g​e​ ​R​o​s​t​e​r​s
+			 */
+			MANAGE_ROSTERS: string
+			/**
+			 * E​d​i​t​ ​T​e​a​m
+			 */
+			EDIT_TEAM: string
+			/**
+			 * R​e​g​i​s​t​e​r​e​d
+			 */
+			REGISTERED: string
+			/**
+			 * M​a​i​n​ ​L​a​n​g​u​a​g​e
+			 */
+			MAIN_LANGUAGE: string
+			/**
+			 * M​a​n​a​g​e​r​s
+			 */
+			MANAGERS: string
+			/**
+			 * R​o​s​t​e​r​s
+			 */
+			ROSTERS: string
+			/**
+			 * p​l​a​y​e​r
+			 */
+			PLAYER: string
+			/**
+			 * p​l​a​y​e​r​s
+			 */
+			PLAYERS: string
+			/**
+			 * J​o​i​n​ ​D​a​t​e
+			 */
+			JOIN_DATE: string
+			RECRUITMENT_STATUS: {
+				/**
+				 * R​e​c​r​u​i​t​m​e​n​t​ ​S​t​a​t​u​s
+				 */
+				STATUS: string
+				/**
+				 * R​e​c​r​u​i​t​i​n​g
+				 */
+				RECRUITING: string
+				/**
+				 * N​o​t​ ​R​e​c​r​u​i​t​i​n​g
+				 */
+				NOT_RECRUITING: string
+			}
+			APPROVAL_STATUS: {
+				/**
+				 * A​p​p​r​o​v​a​l​ ​S​t​a​t​u​s
+				 */
+				STATUS: string
+				/**
+				 * A​p​p​r​o​v​e​d
+				 */
+				APPROVED: string
+				/**
+				 * P​e​n​d​i​n​g
+				 */
+				PENDING: string
+				/**
+				 * D​e​n​i​e​d
+				 */
+				DENIED: string
+			}
+			/**
+			 * A​c​t​i​v​e​/​H​i​s​t​o​r​i​c​a​l
+			 */
+			ACTIVE_HISTORICAL: string
+			/**
+			 * A​c​t​i​v​e
+			 */
+			ACTIVE: string
+			/**
+			 * H​i​s​t​o​r​i​c​a​l
+			 */
+			HISTORICAL: string
+			/**
+			 * T​h​i​s​ ​t​e​a​m​ ​i​s​ ​p​e​n​d​i​n​g​ ​a​p​p​r​o​v​a​l​ ​f​r​o​m​ ​M​K​C​e​n​t​r​a​l​ ​S​t​a​f​f​.
+			 */
+			PENDING_APPROVAL: string
+			/**
+			 * N​o​ ​a​c​t​i​v​e​ ​r​o​s​t​e​r​s​.
+			 */
+			NO_ACTIVE_ROSTERS: string
+			/**
+			 * T​e​a​m​ ​n​o​t​ ​f​o​u​n​d​.
+			 */
+			TEAM_NOT_FOUND: string
+			/**
+			 * T​e​a​m​ ​T​r​a​n​s​f​e​r​ ​H​i​s​t​o​r​y
+			 */
+			TRANSFER_HISTORY: string
+			/**
+			 * A​l​l​ ​R​o​s​t​e​r​s
+			 */
+			ALL_ROSTERS: string
+			/**
+			 * L​e​a​v​e​ ​R​o​s​t​e​r
+			 */
+			LEAVE_ROSTER: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​l​e​a​v​e​ ​t​h​e​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​?
+			 * @param {string} roster_name
+			 */
+			LEAVE_ROSTER_CONFIRM: RequiredParams<'roster_name'>
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​l​e​f​t​ ​r​o​s​t​e​r
+			 */
+			LEAVE_ROSTER_SUCCESS: string
+			/**
+			 * L​e​a​v​i​n​g​ ​r​o​s​t​e​r​ ​f​a​i​l​e​d
+			 */
+			LEAVE_ROSTER_FAILED: string
+			/**
+			 * M​a​n​a​g​e​r
+			 */
+			MANAGER: string
+			/**
+			 * L​e​a​d​e​r
+			 */
+			LEADER: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​t​e​a​m​s​.​.​.
+			 */
+			SEARCH_FOR_TEAMS: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​r​o​s​t​e​r​s​.​.​.
+			 */
+			SEARCH_FOR_ROSTERS: string
+		}
+		TRANSFERS: {
+			/**
+			 * N​o​ ​t​e​a​m
+			 */
+			NO_TEAM: string
+			/**
+			 * N​o​ ​t​r​a​n​s​f​e​r​s
+			 */
+			NO_TRANSFERS: string
+		}
+	}
+	TIME_TRIALS: {
 		/**
-		 * C​l​a​i​m​ ​P​l​a​y​e​r
+		 * T​h​i​s​ ​p​a​g​e​ ​i​s​ ​c​u​r​r​e​n​t​l​y​ ​a​ ​w​o​r​k​ ​i​n​ ​p​r​o​g​r​e​s​s​,​ ​b​u​t​ ​i​t​ ​w​i​l​l​ ​e​v​e​n​t​u​a​l​l​y​ ​b​e​ ​t​h​e​ ​h​u​b​ ​f​o​r​ ​e​v​e​r​y​t​h​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​s​.​ ​F​o​r​ ​n​o​w​,​ ​p​l​a​y​e​r​s​ ​c​a​n​ ​f​i​n​d​ ​l​e​a​d​e​r​b​o​a​r​d​s​ ​o​n​ ​s​e​v​e​r​a​l​ ​o​t​h​e​r​ ​s​i​t​e​s​.​ ​T​h​i​s​ ​i​s​ ​t​h​e​ ​h​u​b​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​i​m​e​ ​T​r​i​a​l​s​.​ ​H​e​r​e​,​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​h​e​ ​m​o​s​t​ ​u​p​-​t​o​-​d​a​t​e​ ​r​a​n​k​i​n​g​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​7​,​ ​a​n​d​ ​M​a​r​i​o​ ​K​a​r​t​ ​W​i​i​,​ ​w​i​t​h​ ​e​v​e​r​y​ ​c​a​t​e​g​o​r​y​ ​i​m​a​g​i​n​a​b​l​e​.​ ​S​u​b​m​i​t​ ​y​o​u​r​ ​t​i​m​e​s​ ​t​o​ ​s​e​e​ ​w​h​e​r​e​ ​y​o​u​ ​s​t​a​c​k​ ​u​p​!
 		 */
-		CLAIM_PLAYER: string
-		/**
-		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​s​e​n​t​ ​a​ ​c​l​a​i​m​ ​f​o​r​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​t​o​ ​s​t​a​f​f​!
-		 */
-		CLAIM_PLAYER_SUCCESS: string
-		/**
-		 * C​l​a​i​m​i​n​g​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
-		 */
-		CLAIM_PLAYER_FAILED: string
-		/**
-		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
-		 */
-		CREATE_SHADOW_PLAYER: string
-		/**
-		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​a​d​d​e​d​ ​n​e​w​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r
-		 */
-		CREATE_SHADOW_PLAYER_SUCCESS: string
-		/**
-		 * A​d​d​i​n​g​ ​n​e​w​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​f​a​i​l​e​d
-		 */
-		CREATE_SHADOW_PLAYER_FAILURE: string
+		DESCRIPTION: string
 	}
 	TOURNAMENTS: {
 		/**
@@ -1557,20 +2127,6 @@ type RootTranslation = {
 		 * B​a​c​k​ ​t​o​ ​T​o​u​r​n​a​m​e​n​t
 		 */
 		BACK_TO_TOURNAMENT: string
-		TYPES: {
-			/**
-			 * S​o​l​o
-			 */
-			SOLO: string
-			/**
-			 * S​q​u​a​d
-			 */
-			SQUAD: string
-			/**
-			 * T​e​a​m
-			 */
-			TEAM: string
-		}
 		/**
 		 * R​e​g​i​s​t​e​r​ ​n​o​w​!
 		 */
@@ -1599,6 +2155,40 @@ type RootTranslation = {
 		 * T​o​u​r​n​a​m​e​n​t​ ​R​o​l​e​s
 		 */
 		TOURNAMENT_ROLES: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​D​e​t​a​i​l​s
+		 */
+		DETAILS: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​n​o​t​ ​f​o​u​n​d
+		 */
+		NOT_FOUND: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​P​l​a​c​e​m​e​n​t​s
+		 */
+		TOURNAMENT_PLACEMENTS: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s
+		 */
+		TOURNAMENT_SERIES: string
+		/**
+		 * S​e​a​r​c​h​ ​t​o​u​r​n​a​m​e​n​t​ ​s​e​r​i​e​s​.​.​.
+		 */
+		SEARCH_SERIES: string
+		HISTORY: {
+			/**
+			 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
+			 */
+			TOURNAMENT_HISTORY: string
+			/**
+			 * S​o​l​o​ ​T​o​u​r​n​a​m​e​n​t​s
+			 */
+			SOLO_TOURNAMENTS: string
+			/**
+			 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
+			 */
+			TEAM_TOURNAMENTS: string
+		}
 		INFO: {
 			/**
 			 * T​o​u​r​n​a​m​e​n​t​ ​I​n​f​o
@@ -1633,26 +2223,6 @@ type RootTranslation = {
 			 */
 			PART_OF_SERIES: string
 		}
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​D​e​t​a​i​l​s
-		 */
-		DETAILS: string
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​n​o​t​ ​f​o​u​n​d
-		 */
-		NOT_FOUND: string
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​P​l​a​c​e​m​e​n​t​s
-		 */
-		TOURNAMENT_PLACEMENTS: string
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s
-		 */
-		TOURNAMENT_SERIES: string
-		/**
-		 * S​e​a​r​c​h​ ​t​o​u​r​n​a​m​e​n​t​ ​s​e​r​i​e​s​.​.​.
-		 */
-		SEARCH_SERIES: string
 		REGISTRATIONS: {
 			/**
 			 * T​o​u​r​n​a​m​e​n​t​ ​R​e​g​i​s​t​r​a​t​i​o​n​s
@@ -1702,14 +2272,6 @@ type RootTranslation = {
 			 * (​s​h​o​w​ ​a​l​l​)
 			 */
 			SHOW_ALL_PLAYERS: string
-			/**
-			 * (​h​i​d​e​)
-			 */
-			HIDE_PLAYERS: string
-			/**
-			 * (​s​h​o​w​)
-			 */
-			SHOW_PLAYERS: string
 			/**
 			 * E​l​i​g​i​b​l​e​?
 			 */
@@ -2514,630 +3076,26 @@ type RootTranslation = {
 			 */
 			DUPLICATE: string
 		}
-	}
-	GAMES: {
-		/**
-		 * A​l​l​ ​G​a​m​e​s
-		 */
-		ALL: string
-		/**
-		 * S​e​l​e​c​t​ ​a​ ​g​a​m​e​.​.​.
-		 */
-		SELECT: string
-		/**
-		 * M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e
-		 */
-		MK8DX: string
-		/**
-		 * M​a​r​i​o​ ​K​a​r​t​ ​8
-		 */
-		MK8: string
-		/**
-		 * M​a​r​i​o​ ​K​a​r​t​ ​W​i​i
-		 */
-		MKW: string
-		/**
-		 * M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r
-		 */
-		MKT: string
-		/**
-		 * M​a​r​i​o​ ​K​a​r​t​ ​7
-		 */
-		MK7: string
-		/**
-		 * S​u​p​e​r​ ​M​a​r​i​o​ ​K​a​r​t
-		 */
-		SMK: string
-	}
-	MODES: {
-		/**
-		 * A​l​l​ ​M​o​d​e​s
-		 */
-		ALL: string
-		/**
-		 * S​e​l​e​c​t​ ​a​ ​m​o​d​e​.​.​.
-		 */
-		SELECT: string
-		/**
-		 * 1​5​0​c​c
-		 */
-		'150CC': string
-		/**
-		 * 2​0​0​c​c
-		 */
-		'200CC': string
-		/**
-		 * B​a​t​t​l​e​ ​(​M​i​x​e​d​)
-		 */
-		MIXED_BATTLE: string
-		/**
-		 * B​a​l​l​o​o​n​ ​B​a​t​t​l​e
-		 */
-		BALLOON_BATTLE: string
-		/**
-		 * S​h​i​n​e​ ​T​h​i​e​f
-		 */
-		SHINE_THIEF: string
-		/**
-		 * B​o​b​-​o​m​b​ ​B​l​a​s​t
-		 */
-		BOBOMB_BLAST: string
-		/**
-		 * C​o​i​n​ ​R​u​n​n​e​r​s
-		 */
-		COIN_RUNNERS: string
-		/**
-		 * R​e​n​e​g​a​d​e​ ​R​o​u​n​d​u​p
-		 */
-		RENEGADE_ROUNDUP: string
-		/**
-		 * M​a​t​c​h​ ​R​a​c​e
-		 */
-		MATCH_RACE: string
-		/**
-		 * M​i​x​e​d​ ​F​o​r​m​a​t
-		 */
-		MIXED: string
-		/**
-		 * R​e​g​u​l​a​r​ ​T​r​a​c​k​s
-		 */
-		RT: string
-		/**
-		 * C​u​s​t​o​m​ ​T​r​a​c​k​s
-		 */
-		CT: string
-		/**
-		 * V​S​ ​R​a​c​e
-		 */
-		VSRACE: string
-	}
-	TOURNAMENT_HISTORY: {
-		/**
-		 * T​o​u​r​n​a​m​e​n​t​ ​H​i​s​t​o​r​y
-		 */
-		TOURNAMENT_HISTORY: string
-		/**
-		 * S​o​l​o​ ​T​o​u​r​n​a​m​e​n​t​s
-		 */
-		SOLO_TOURNAMENTS: string
-		/**
-		 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
-		 */
-		TEAM_TOURNAMENTS: string
-	}
-	REGISTRATION_HISTORY: {
-		/**
-		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​H​i​s​t​o​r​y
-		 */
-		REGISTRATION_HISTORY: string
-	}
-	LANGUAGES: {
-		/**
-		 * E​n​g​l​i​s​h​ ​(​U​n​i​t​e​d​ ​S​t​a​t​e​s​)
-		 */
-		EN_US: string
-		/**
-		 * E​n​g​l​i​s​h​ ​(​G​r​e​a​t​ ​B​r​i​t​a​i​n​)
-		 */
-		EN_GB: string
-		/**
-		 * G​e​r​m​a​n
-		 */
-		DE: string
-		/**
-		 * S​p​a​n​i​s​h
-		 */
-		ES: string
-		/**
-		 * F​r​e​n​c​h
-		 */
-		FR: string
-		/**
-		 * J​a​p​a​n​e​s​e
-		 */
-		JA: string
-	}
-	TIME_TRIALS: {
-		/**
-		 * T​h​i​s​ ​p​a​g​e​ ​i​s​ ​c​u​r​r​e​n​t​l​y​ ​a​ ​w​o​r​k​ ​i​n​ ​p​r​o​g​r​e​s​s​,​ ​b​u​t​ ​i​t​ ​w​i​l​l​ ​e​v​e​n​t​u​a​l​l​y​ ​b​e​ ​t​h​e​ ​h​u​b​ ​f​o​r​ ​e​v​e​r​y​t​h​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​s​.​ ​F​o​r​ ​n​o​w​,​ ​p​l​a​y​e​r​s​ ​c​a​n​ ​f​i​n​d​ ​l​e​a​d​e​r​b​o​a​r​d​s​ ​o​n​ ​s​e​v​e​r​a​l​ ​o​t​h​e​r​ ​s​i​t​e​s​.​ ​T​h​i​s​ ​i​s​ ​t​h​e​ ​h​u​b​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​i​m​e​ ​T​r​i​a​l​s​.​ ​H​e​r​e​,​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​h​e​ ​m​o​s​t​ ​u​p​-​t​o​-​d​a​t​e​ ​r​a​n​k​i​n​g​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​7​,​ ​a​n​d​ ​M​a​r​i​o​ ​K​a​r​t​ ​W​i​i​,​ ​w​i​t​h​ ​e​v​e​r​y​ ​c​a​t​e​g​o​r​y​ ​i​m​a​g​i​n​a​b​l​e​.​ ​S​u​b​m​i​t​ ​y​o​u​r​ ​t​i​m​e​s​ ​t​o​ ​s​e​e​ ​w​h​e​r​e​ ​y​o​u​ ​s​t​a​c​k​ ​u​p​!
-		 */
-		DESCRIPTION: string
-	}
-	COLORS: {
-		/**
-		 * R​e​d​ ​1
-		 */
-		RED_1: string
-		/**
-		 * R​e​d​ ​2
-		 */
-		RED_2: string
-		/**
-		 * R​e​d​ ​3
-		 */
-		RED_3: string
-		/**
-		 * R​e​d​ ​4
-		 */
-		RED_4: string
-		/**
-		 * O​r​a​n​g​e​ ​1
-		 */
-		ORANGE_1: string
-		/**
-		 * O​r​a​n​g​e​ ​2
-		 */
-		ORANGE_2: string
-		/**
-		 * O​r​a​n​g​e​ ​3
-		 */
-		ORANGE_3: string
-		/**
-		 * O​r​a​n​g​e​ ​4
-		 */
-		ORANGE_4: string
-		/**
-		 * Y​e​l​l​o​w​ ​1
-		 */
-		YELLOW_1: string
-		/**
-		 * Y​e​l​l​o​w​ ​2
-		 */
-		YELLOW_2: string
-		/**
-		 * Y​e​l​l​o​w​ ​3
-		 */
-		YELLOW_3: string
-		/**
-		 * Y​e​l​l​o​w​ ​4
-		 */
-		YELLOW_4: string
-		/**
-		 * G​r​e​e​n​ ​1
-		 */
-		GREEN_1: string
-		/**
-		 * G​r​e​e​n​ ​2
-		 */
-		GREEN_2: string
-		/**
-		 * G​r​e​e​n​ ​3
-		 */
-		GREEN_3: string
-		/**
-		 * G​r​e​e​n​ ​4
-		 */
-		GREEN_4: string
-		/**
-		 * A​q​u​a​ ​1
-		 */
-		AQUA_1: string
-		/**
-		 * A​q​u​a​ ​2
-		 */
-		AQUA_2: string
-		/**
-		 * A​q​u​a​ ​3
-		 */
-		AQUA_3: string
-		/**
-		 * A​q​u​a​ ​4
-		 */
-		AQUA_4: string
-		/**
-		 * B​l​u​e​ ​1
-		 */
-		BLUE_1: string
-		/**
-		 * B​l​u​e​ ​2
-		 */
-		BLUE_2: string
-		/**
-		 * B​l​u​e​ ​3
-		 */
-		BLUE_3: string
-		/**
-		 * B​l​u​e​ ​4
-		 */
-		BLUE_4: string
-		/**
-		 * I​n​d​i​g​o​ ​1
-		 */
-		INDIGO_1: string
-		/**
-		 * I​n​d​i​g​o​ ​2
-		 */
-		INDIGO_2: string
-		/**
-		 * I​n​d​i​g​o​ ​3
-		 */
-		INDIGO_3: string
-		/**
-		 * I​n​d​i​g​o​ ​4
-		 */
-		INDIGO_4: string
-		/**
-		 * P​u​r​p​l​e​ ​1
-		 */
-		PURPLE_1: string
-		/**
-		 * P​u​r​p​l​e​ ​2
-		 */
-		PURPLE_2: string
-		/**
-		 * P​u​r​p​l​e​ ​3
-		 */
-		PURPLE_3: string
-		/**
-		 * P​u​r​p​l​e​ ​4
-		 */
-		PURPLE_4: string
-		/**
-		 * P​i​n​k​ ​1
-		 */
-		PINK_1: string
-		/**
-		 * P​i​n​k​ ​2
-		 */
-		PINK_2: string
-		/**
-		 * P​i​n​k​ ​3
-		 */
-		PINK_3: string
-		/**
-		 * P​i​n​k​ ​4
-		 */
-		PINK_4: string
-		/**
-		 * G​r​e​y​ ​1
-		 */
-		GREY_1: string
-		/**
-		 * G​r​e​y​ ​2
-		 */
-		GREY_2: string
-		/**
-		 * G​r​e​y​ ​3
-		 */
-		GREY_3: string
-		/**
-		 * B​l​a​c​k
-		 */
-		BLACK: string
-	}
-	NOTIFICATION: {
-		/**
-		 * M​a​r​k​ ​A​l​l​ ​a​s​ ​R​e​a​d
-		 */
-		MARK_ALL_READ: string
-		/**
-		 * S​e​e​ ​A​l​l​ ​N​o​t​i​f​i​c​a​t​i​o​n​s
-		 */
-		SEE_ALL_NOTIFICATIONS: string
-		/**
-		 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​u​n​r​e​a​d​ ​n​o​t​i​f​i​c​a​t​i​o​n​s
-		 */
-		NO_UNREAD: string
-		/**
-		 * Y​o​u​ ​m​u​s​t​ ​b​e​ ​l​o​g​g​e​d​ ​i​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
-		 */
-		MUST_BE_LOGGED_IN: string
-		/**
-		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​a​n​y​ ​n​o​t​i​f​i​c​a​t​i​o​n​s​.
-		 */
-		NO_NOTIFICATIONS: string
-		/**
-		 * M​a​r​k​ ​A​s​ ​R​e​a​d
-		 */
-		MARK_READ: string
-		/**
-		 * M​a​r​k​ ​A​s​ ​U​n​r​e​a​d
-		 */
-		MARK_UNREAD: string
-	}
-	NOTIFICATION_CONTENT: {
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​t​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.​ ​R​e​a​s​o​n​:​ ​{​r​e​a​s​o​n​|​b​o​l​d​}​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​{​d​a​t​e​|​p​a​r​s​e​d​a​t​e​|​b​o​l​d​}
-		 * @param {unknown} date
-		 * @param {unknown} reason
-		 */
-		'0': RequiredParams<'date|parsedate|bold' | 'reason|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​u​n​b​a​n​n​e​d​ ​a​n​d​ ​m​a​y​ ​n​o​w​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​M​K​C​e​n​t​r​a​l​ ​c​o​m​p​e​t​i​t​i​o​n​s​.
-		 */
-		'1': string
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​{​s​q​u​a​d​_​n​a​m​e​|​{​:​ ​a​,​ ​*​:​ ​t​h​e​}​}​ ​s​q​u​a​d​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {'' | string} squad_name
-		 * @param {unknown} tournament_name
-		 */
-		'2': RequiredParams<`squad_name|{:${string}, *:${string}}` | 'squad_name|bold' | 'tournament_name|bold'>
-		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​a​c​c​e​p​t​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​y​o​u​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​s​q​u​a​d​!
-		 * @param {unknown} player_name
-		 * @param {unknown} tournament_name
-		 */
-		'3': RequiredParams<'player_name|bold' | 'tournament_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} squad_name
-		 */
-		'4': RequiredParams<'squad_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} tournament_name
-		 */
-		'5': RequiredParams<'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​n​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​ ​f​r​o​m​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} tournament_name
-		 */
-		'6': RequiredParams<'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​a​d​d​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​t​o​ ​y​o​u​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​s​q​u​a​d​.
-		 * @param {unknown} player_name
-		 * @param {unknown} tournament_name
-		 */
-		'7': RequiredParams<'player_name|bold' | 'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​k​i​c​k​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​f​r​o​m​ ​y​o​u​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​s​q​u​a​d​.
-		 * @param {unknown} player_name
-		 * @param {unknown} tournament_name
-		 */
-		'8': RequiredParams<'player_name|bold' | 'tournament_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​i​n​v​i​t​e​d​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} roster_name
-		 */
-		'9': RequiredParams<'roster_name|bold'>
-		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​a​c​c​e​p​t​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.​ ​A​ ​m​o​d​e​r​a​t​o​r​ ​m​u​s​t​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​b​e​f​o​r​e​ ​t​h​e​y​ ​c​a​n​ ​p​l​a​y​ ​f​o​r​ ​y​o​u​r​ ​t​e​a​m​.
-		 * @param {unknown} player_name
-		 * @param {unknown} roster_name
-		 */
-		'10': RequiredParams<'player_name|bold' | 'roster_name|bold'>
-		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} player_name
-		 * @param {unknown} roster_name
-		 */
-		'11': RequiredParams<'player_name|bold' | 'roster_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​k​i​c​k​e​d​ ​f​r​o​m​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} roster_name
-		 */
-		'12': RequiredParams<'roster_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
-		 * @param {unknown} team_name
-		 */
-		'13': RequiredParams<'team_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 * @param {unknown} team_name
-		 */
-		'14': RequiredParams<'team_name|bold'>
-		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​j​o​i​n​e​d​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} player_name
-		 * @param {unknown} roster_name
-		 */
-		'15': RequiredParams<'player_name|bold' | 'roster_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​d​e​n​i​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​f​r​o​m​ ​j​o​i​n​i​n​g​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} player_name
-		 * @param {unknown} roster_name
-		 */
-		'16': RequiredParams<'player_name|bold' | 'roster_name|bold'>
-		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​l​e​f​t​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} player_name
-		 * @param {unknown} roster_name
-		 */
-		'17': RequiredParams<'player_name|bold' | 'roster_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
-		 * @param {unknown} team_name
-		 */
-		'18': RequiredParams<'team_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 * @param {unknown} team_name
-		 */
-		'19': RequiredParams<'team_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
-		 * @param {unknown} roster_name
-		 */
-		'20': RequiredParams<'roster_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​o​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 * @param {unknown} roster_name
-		 */
-		'21': RequiredParams<'roster_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​.
-		 * @param {unknown} game
-		 */
-		'22': RequiredParams<'game|uppercase|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​ ​f​r​i​e​n​d​ ​c​o​d​e​.
-		 * @param {unknown} game
-		 */
-		'23': RequiredParams<'game|uppercase|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
-		 */
-		'24': string
-		/**
-		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
-		 */
-		'25': string
-		/**
-		 * Y​o​u​r​ ​n​a​m​e​ ​c​h​a​n​g​e​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 */
-		'26': string
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​!
-		 * @param {unknown} role
-		 */
-		'27': RequiredParams<'role|bold'>
-		/**
-		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
-		 * @param {unknown} role
-		 */
-		'28': RequiredParams<'role|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} role
-		 * @param {unknown} team_name
-		 */
-		'29': RequiredParams<'role|bold' | 'team_name|bold'>
-		/**
-		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
-		 * @param {unknown} role
-		 * @param {unknown} team_name
-		 */
-		'30': RequiredParams<'role|bold' | 'team_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​s​e​r​i​e​s​_​n​a​m​e​|​b​o​l​d​}​ ​s​e​r​i​e​s​.
-		 * @param {unknown} role
-		 * @param {unknown} series_name
-		 */
-		'31': RequiredParams<'role|bold' | 'series_name|bold'>
-		/**
-		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​s​e​r​i​e​s​_​n​a​m​e​|​b​o​l​d​}​ ​s​e​r​i​e​s​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
-		 * @param {unknown} role
-		 * @param {unknown} series_name
-		 */
-		'32': RequiredParams<'role|bold' | 'series_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​g​i​v​e​n​ ​t​h​e​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​t​o​u​r​n​a​m​e​n​t​.
-		 * @param {unknown} role
-		 * @param {unknown} tournament_name
-		 */
-		'33': RequiredParams<'role|bold' | 'tournament_name|bold'>
-		/**
-		 * Y​o​u​r​ ​{​r​o​l​e​|​b​o​l​d​}​ ​r​o​l​e​ ​f​o​r​ ​t​h​e​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​ ​t​o​u​r​n​a​m​e​n​t​ ​h​a​s​ ​b​e​e​n​ ​r​e​m​o​v​e​d​.
-		 * @param {unknown} role
-		 * @param {unknown} tournament_name
-		 */
-		'34': RequiredParams<'role|bold' | 'tournament_name|bold'>
-		/**
-		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​p​p​r​o​v​e​d​!
-		 * @param {unknown} roster_name
-		 */
-		'35': RequiredParams<'roster_name|bold'>
-		/**
-		 * Y​o​u​r​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 * @param {unknown} roster_name
-		 */
-		'36': RequiredParams<'roster_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​m​a​d​e​ ​t​h​e​ ​s​q​u​a​d​ ​c​a​p​t​a​i​n​ ​f​o​r​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} squad_name
-		 */
-		'37': RequiredParams<'squad_name|bold'>
-		/**
-		 * Y​o​u​ ​h​a​v​e​ ​b​e​e​n​ ​m​a​d​e​ ​a​ ​t​e​a​m​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​ ​f​o​r​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} squad_name
-		 */
-		'38': RequiredParams<'squad_name|bold'>
-		/**
-		 * Y​o​u​ ​a​r​e​ ​n​o​ ​l​o​n​g​e​r​ ​a​ ​t​e​a​m​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​ ​f​o​r​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} squad_name
-		 */
-		'39': RequiredParams<'squad_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} team_name
-		 */
-		'40': RequiredParams<'team_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} roster_name
-		 */
-		'41': RequiredParams<'roster_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} tournament_name
-		 */
-		'42': RequiredParams<'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​n​r​e​g​i​s​t​e​r​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​f​r​o​m​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} tournament_name
-		 */
-		'43': RequiredParams<'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​c​r​e​a​t​e​d​ ​a​ ​s​q​u​a​d​ ​w​i​t​h​ ​y​o​u​ ​a​s​ ​t​h​e​ ​c​a​p​t​a​i​n​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} tournament_name
-		 */
-		'44': RequiredParams<'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​u​p​d​a​t​e​d​ ​y​o​u​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​f​o​r​ ​{​t​o​u​r​n​a​m​e​n​t​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} tournament_name
-		 */
-		'45': RequiredParams<'tournament_name|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​p​p​r​o​v​e​d​ ​y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​!
-		 * @param {unknown} roster_name
-		 */
-		'46': RequiredParams<'roster_name|bold'>
-		/**
-		 * Y​o​u​r​ ​t​e​a​m​ ​t​r​a​n​s​f​e​r​ ​t​o​ ​{​r​o​s​t​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 * @param {unknown} roster_name
-		 */
-		'47': RequiredParams<'roster_name|bold'>
-		/**
-		 * Y​o​u​r​ ​b​a​n​ ​h​a​s​ ​b​e​e​n​ ​u​p​d​a​t​e​d​.​ ​R​e​a​s​o​n​:​ ​{​r​e​a​s​o​n​|​b​o​l​d​}​.​ ​U​n​b​a​n​ ​D​a​t​e​:​ ​{​d​a​t​e​|​p​a​r​s​e​d​a​t​e​|​b​o​l​d​}
-		 * @param {unknown} date
-		 * @param {unknown} reason
-		 */
-		'48': RequiredParams<'date|parsedate|bold' | 'reason|bold'>
-		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​k​i​c​k​e​d​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​f​r​o​m​ ​y​o​u​r​ ​t​e​a​m​ ​{​t​e​a​m​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} player_name
-		 * @param {unknown} team_name
-		 */
-		'49': RequiredParams<'player_name|bold' | 'team_name|bold'>
-		/**
-		 * {​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​i​r​ ​i​n​v​i​t​a​t​i​o​n​ ​t​o​ ​{​s​q​u​a​d​_​n​a​m​e​|​b​o​l​d​}​.
-		 * @param {unknown} player_name
-		 * @param {unknown} squad_name
-		 */
-		'50': RequiredParams<'player_name|bold' | 'squad_name|bold'>
-		/**
-		 * Y​o​u​r​ ​c​l​a​i​m​ ​o​f​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​a​c​c​e​p​t​e​d​!
-		 * @param {unknown} player_name
-		 */
-		'51': RequiredParams<'player_name|bold'>
-		/**
-		 * Y​o​u​r​ ​c​l​a​i​m​ ​o​f​ ​s​h​a​d​o​w​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​n​a​m​e​|​b​o​l​d​}​ ​h​a​s​ ​b​e​e​n​ ​d​e​n​i​e​d​.
-		 * @param {unknown} player_name
-		 */
-		'52': RequiredParams<'player_name|bold'>
+		TYPES: {
+			/**
+			 * S​o​l​o
+			 */
+			SOLO: string
+			/**
+			 * S​q​u​a​d
+			 */
+			SQUAD: string
+			/**
+			 * T​e​a​m
+			 */
+			TEAM: string
+		}
 	}
 	COUNTRIES: {
+		/**
+		 * A​l​l​ ​C​o​u​n​t​r​i​e​s
+		 */
+		ALL: string
 		/**
 		 * A​f​g​h​a​n​i​s​t​a​n
 		 */
@@ -4139,133 +4097,285 @@ type RootTranslation = {
 
 export type TranslationFunctions = {
 	/**
-	 * Welcome to Mario Kart Central!
-	 */
-	WELCOME: () => LocalizedString
-	/**
-	 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
-	 */
-	SUMMARY: () => LocalizedString
-	/**
 	 * American English
 	 */
 	LANGUAGE: () => LocalizedString
-	/**
-	 * Logout
-	 */
-	LOGOUT: () => LocalizedString
-	/**
-	 * Email
-	 */
-	EMAIL: () => LocalizedString
-	/**
-	 * Password
-	 */
-	PASSWORD: () => LocalizedString
-	/**
-	 * MKCentral Registry
-	 */
-	MKC_REGISTRY: () => LocalizedString
-	/**
-	 * Game
-	 */
-	GAME: () => LocalizedString
-	/**
-	 * Mode
-	 */
-	MODE: () => LocalizedString
-	/**
-	 * Game/Mode
-	 */
-	GAME_MODE: () => LocalizedString
-	/**
-	 * Name
-	 */
-	NAME: () => LocalizedString
-	/**
-	 * Player
-	 */
-	PLAYER: () => LocalizedString
-	/**
-	 * Date
-	 */
-	DATE: () => LocalizedString
-	/**
-	 * Country
-	 */
-	COUNTRY: () => LocalizedString
-	/**
-	 * Tag
-	 */
-	TAG: () => LocalizedString
-	/**
-	 * From
-	 */
-	FROM: () => LocalizedString
-	/**
-	 * To
-	 */
-	TO: () => LocalizedString
-	/**
-	 * Yes
-	 */
-	YES: () => LocalizedString
-	/**
-	 * No
-	 */
-	NO: () => LocalizedString
-	/**
-	 * Show
-	 */
-	SHOW: () => LocalizedString
-	/**
-	 * Hide
-	 */
-	HIDE: () => LocalizedString
-	/**
-	 * Back
-	 */
-	BACK: () => LocalizedString
-	/**
-	 * Actions
-	 */
-	ACTIONS: () => LocalizedString
-	/**
-	 * Save
-	 */
-	SAVE: () => LocalizedString
-	/**
-	 * Submit
-	 */
-	SUBMIT: () => LocalizedString
-	/**
-	 * Cancel
-	 */
-	CANCEL: () => LocalizedString
-	/**
-	 * Search
-	 */
-	SEARCH: () => LocalizedString
-	/**
-	 * None
-	 */
-	NONE: () => LocalizedString
-	/**
-	 * Edit
-	 */
-	EDIT: () => LocalizedString
-	/**
-	 * Filter
-	 */
-	FILTER: () => LocalizedString
-	/**
-	 * Bagger
-	 */
-	BAGGER: () => LocalizedString
-	/**
-	 * You do not have permission to view this page.
-	 */
-	NO_PERMISSION: () => LocalizedString
+	COLORS: {
+		/**
+		 * Red 1
+		 */
+		RED_1: () => LocalizedString
+		/**
+		 * Red 2
+		 */
+		RED_2: () => LocalizedString
+		/**
+		 * Red 3
+		 */
+		RED_3: () => LocalizedString
+		/**
+		 * Red 4
+		 */
+		RED_4: () => LocalizedString
+		/**
+		 * Orange 1
+		 */
+		ORANGE_1: () => LocalizedString
+		/**
+		 * Orange 2
+		 */
+		ORANGE_2: () => LocalizedString
+		/**
+		 * Orange 3
+		 */
+		ORANGE_3: () => LocalizedString
+		/**
+		 * Orange 4
+		 */
+		ORANGE_4: () => LocalizedString
+		/**
+		 * Yellow 1
+		 */
+		YELLOW_1: () => LocalizedString
+		/**
+		 * Yellow 2
+		 */
+		YELLOW_2: () => LocalizedString
+		/**
+		 * Yellow 3
+		 */
+		YELLOW_3: () => LocalizedString
+		/**
+		 * Yellow 4
+		 */
+		YELLOW_4: () => LocalizedString
+		/**
+		 * Green 1
+		 */
+		GREEN_1: () => LocalizedString
+		/**
+		 * Green 2
+		 */
+		GREEN_2: () => LocalizedString
+		/**
+		 * Green 3
+		 */
+		GREEN_3: () => LocalizedString
+		/**
+		 * Green 4
+		 */
+		GREEN_4: () => LocalizedString
+		/**
+		 * Aqua 1
+		 */
+		AQUA_1: () => LocalizedString
+		/**
+		 * Aqua 2
+		 */
+		AQUA_2: () => LocalizedString
+		/**
+		 * Aqua 3
+		 */
+		AQUA_3: () => LocalizedString
+		/**
+		 * Aqua 4
+		 */
+		AQUA_4: () => LocalizedString
+		/**
+		 * Blue 1
+		 */
+		BLUE_1: () => LocalizedString
+		/**
+		 * Blue 2
+		 */
+		BLUE_2: () => LocalizedString
+		/**
+		 * Blue 3
+		 */
+		BLUE_3: () => LocalizedString
+		/**
+		 * Blue 4
+		 */
+		BLUE_4: () => LocalizedString
+		/**
+		 * Indigo 1
+		 */
+		INDIGO_1: () => LocalizedString
+		/**
+		 * Indigo 2
+		 */
+		INDIGO_2: () => LocalizedString
+		/**
+		 * Indigo 3
+		 */
+		INDIGO_3: () => LocalizedString
+		/**
+		 * Indigo 4
+		 */
+		INDIGO_4: () => LocalizedString
+		/**
+		 * Purple 1
+		 */
+		PURPLE_1: () => LocalizedString
+		/**
+		 * Purple 2
+		 */
+		PURPLE_2: () => LocalizedString
+		/**
+		 * Purple 3
+		 */
+		PURPLE_3: () => LocalizedString
+		/**
+		 * Purple 4
+		 */
+		PURPLE_4: () => LocalizedString
+		/**
+		 * Pink 1
+		 */
+		PINK_1: () => LocalizedString
+		/**
+		 * Pink 2
+		 */
+		PINK_2: () => LocalizedString
+		/**
+		 * Pink 3
+		 */
+		PINK_3: () => LocalizedString
+		/**
+		 * Pink 4
+		 */
+		PINK_4: () => LocalizedString
+		/**
+		 * Grey 1
+		 */
+		GREY_1: () => LocalizedString
+		/**
+		 * Grey 2
+		 */
+		GREY_2: () => LocalizedString
+		/**
+		 * Grey 3
+		 */
+		GREY_3: () => LocalizedString
+		/**
+		 * Black
+		 */
+		BLACK: () => LocalizedString
+	}
+	COMMON: {
+		/**
+		 * Game
+		 */
+		GAME: () => LocalizedString
+		/**
+		 * Mode
+		 */
+		MODE: () => LocalizedString
+		/**
+		 * Game/Mode
+		 */
+		GAME_MODE: () => LocalizedString
+		/**
+		 * Name
+		 */
+		NAME: () => LocalizedString
+		/**
+		 * Player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * Tag
+		 */
+		TAG: () => LocalizedString
+		/**
+		 * Date
+		 */
+		DATE: () => LocalizedString
+		/**
+		 * Country
+		 */
+		COUNTRY: () => LocalizedString
+		/**
+		 * From
+		 */
+		FROM: () => LocalizedString
+		/**
+		 * To
+		 */
+		TO: () => LocalizedString
+		/**
+		 * Yes
+		 */
+		YES: () => LocalizedString
+		/**
+		 * No
+		 */
+		NO: () => LocalizedString
+		/**
+		 * Show
+		 */
+		SHOW: () => LocalizedString
+		/**
+		 * Hide
+		 */
+		HIDE: () => LocalizedString
+		/**
+		 * (hide)
+		 */
+		HIDE_BUTTON: () => LocalizedString
+		/**
+		 * (show)
+		 */
+		SHOW_BUTTON: () => LocalizedString
+		/**
+		 * Back
+		 */
+		BACK: () => LocalizedString
+		/**
+		 * Actions
+		 */
+		ACTIONS: () => LocalizedString
+		/**
+		 * Save
+		 */
+		SAVE: () => LocalizedString
+		/**
+		 * Submit
+		 */
+		SUBMIT: () => LocalizedString
+		/**
+		 * Cancel
+		 */
+		CANCEL: () => LocalizedString
+		/**
+		 * Search
+		 */
+		SEARCH: () => LocalizedString
+		/**
+		 * None
+		 */
+		NONE: () => LocalizedString
+		/**
+		 * Edit
+		 */
+		EDIT: () => LocalizedString
+		/**
+		 * Filter
+		 */
+		FILTER: () => LocalizedString
+		/**
+		 * Bagger
+		 */
+		BAGGER: () => LocalizedString
+		/**
+		 * Language
+		 */
+		LANGUAGE: () => LocalizedString
+		/**
+		 * You do not have permission to view this page.
+		 */
+		NO_PERMISSION: () => LocalizedString
+	}
 	DISCORD: {
 		/**
 		 * Discord
@@ -4353,6 +4463,156 @@ export type TranslationFunctions = {
 		 * Other FCs:
 		 */
 		OTHER_FCS: () => LocalizedString
+	}
+	GAMES: {
+		/**
+		 * All Games
+		 */
+		ALL: () => LocalizedString
+		/**
+		 * Select a game...
+		 */
+		SELECT: () => LocalizedString
+		/**
+		 * Mario Kart 8 Deluxe
+		 */
+		MK8DX: () => LocalizedString
+		/**
+		 * Mario Kart 8
+		 */
+		MK8: () => LocalizedString
+		/**
+		 * Mario Kart Wii
+		 */
+		MKW: () => LocalizedString
+		/**
+		 * Mario Kart Tour
+		 */
+		MKT: () => LocalizedString
+		/**
+		 * Mario Kart 7
+		 */
+		MK7: () => LocalizedString
+		/**
+		 * Super Mario Kart
+		 */
+		SMK: () => LocalizedString
+	}
+	HOMEPAGE: {
+		/**
+		 * Welcome to Mario Kart Central!
+		 */
+		WELCOME: () => LocalizedString
+		/**
+		 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
+		 */
+		SUMMARY: () => LocalizedString
+	}
+	INVITES: {
+		/**
+		 * Team Invites
+		 */
+		TEAM_INVITES: () => LocalizedString
+		/**
+		 * Tournament Invites
+		 */
+		TOURNAMENT_INVITES: () => LocalizedString
+		/**
+		 * Select a roster to leave:
+		 */
+		SELECT_LEAVE_ROSTER: () => LocalizedString
+		/**
+		 * Please select a roster to leave
+		 */
+		SELECT_LEAVE_ROSTER_ERROR: () => LocalizedString
+		/**
+		 * Successfully accepted invite to {roster_name}! Your transfer must be processed by staff members before being completed.
+		 */
+		ACCEPT_TEAM_INVITE_SUCCESS: (arg: { roster_name: string }) => LocalizedString
+		/**
+		 * Accepting team invite failed
+		 */
+		ACCEPT_TEAM_INVITE_FAILED: () => LocalizedString
+		/**
+		 * Declining team invite failed
+		 */
+		DECLINE_TEAM_INVITE_FAILED: () => LocalizedString
+		/**
+		 * Accept
+		 */
+		ACCEPT: () => LocalizedString
+		/**
+		 * Decline
+		 */
+		DECLINE: () => LocalizedString
+		/**
+		 * No invites.
+		 */
+		NO_INVITES: () => LocalizedString
+		/**
+		 * Accept Team Invite
+		 */
+		ACCEPT_TEAM_INVITE: () => LocalizedString
+		/**
+		 * Are you sure you would like to accept the invite to {roster_name}?
+		 */
+		ACCEPT_TEAM_INVITE_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+		/**
+		 * Are you sure you would like to decline the invite to {roster_name}?
+		 */
+		DECLINE_TEAM_INVITE_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+		/**
+		 * Tournament
+		 */
+		TOURNAMENT: () => LocalizedString
+		/**
+		 * Squad
+		 */
+		SQUAD: () => LocalizedString
+		/**
+		 * Tournament Page
+		 */
+		TOURNAMENT_PAGE: () => LocalizedString
+	}
+	LANGUAGES: {
+		/**
+		 * English (United States)
+		 */
+		EN_US: () => LocalizedString
+		/**
+		 * English (Great Britain)
+		 */
+		EN_GB: () => LocalizedString
+		/**
+		 * German
+		 */
+		DE: () => LocalizedString
+		/**
+		 * Spanish
+		 */
+		ES: () => LocalizedString
+		/**
+		 * French
+		 */
+		FR: () => LocalizedString
+		/**
+		 * Japanese
+		 */
+		JA: () => LocalizedString
+	}
+	LOGIN: {
+		/**
+		 * Logout
+		 */
+		LOGOUT: () => LocalizedString
+		/**
+		 * Email
+		 */
+		EMAIL: () => LocalizedString
+		/**
+		 * Password
+		 */
+		PASSWORD: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
@@ -4642,6 +4902,68 @@ export type TranslationFunctions = {
 		 */
 		CREATE_SHADOW_PLAYER: () => LocalizedString
 	}
+	MODES: {
+		/**
+		 * All Modes
+		 */
+		ALL: () => LocalizedString
+		/**
+		 * Select a mode...
+		 */
+		SELECT: () => LocalizedString
+		/**
+		 * 150cc
+		 */
+		'150CC': () => LocalizedString
+		/**
+		 * 200cc
+		 */
+		'200CC': () => LocalizedString
+		/**
+		 * Battle (Mixed)
+		 */
+		MIXED_BATTLE: () => LocalizedString
+		/**
+		 * Balloon Battle
+		 */
+		BALLOON_BATTLE: () => LocalizedString
+		/**
+		 * Shine Thief
+		 */
+		SHINE_THIEF: () => LocalizedString
+		/**
+		 * Bob-omb Blast
+		 */
+		BOBOMB_BLAST: () => LocalizedString
+		/**
+		 * Coin Runners
+		 */
+		COIN_RUNNERS: () => LocalizedString
+		/**
+		 * Renegade Roundup
+		 */
+		RENEGADE_ROUNDUP: () => LocalizedString
+		/**
+		 * Match Race
+		 */
+		MATCH_RACE: () => LocalizedString
+		/**
+		 * Mixed Format
+		 */
+		MIXED: () => LocalizedString
+		/**
+		 * Regular Tracks
+		 */
+		RT: () => LocalizedString
+		/**
+		 * Custom Tracks
+		 */
+		CT: () => LocalizedString
+		/**
+		 * VS Race
+		 */
+		VSRACE: () => LocalizedString
+	}
 	NAVBAR: {
 		/**
 		 * Tournaments
@@ -4708,655 +5030,431 @@ export type TranslationFunctions = {
 		 */
 		MODERATOR: () => LocalizedString
 	}
-	PLAYER_LIST: {
+	NOTIFICATION: {
+		/**
+		 * Mark All as Read
+		 */
+		MARK_ALL_READ: () => LocalizedString
+		/**
+		 * See All Notifications
+		 */
+		SEE_ALL_NOTIFICATIONS: () => LocalizedString
+		/**
+		 * There are no unread notifications
+		 */
+		NO_UNREAD: () => LocalizedString
+		/**
+		 * You must be logged in to view this page.
+		 */
+		MUST_BE_LOGGED_IN: () => LocalizedString
+		/**
+		 * You do not have any notifications.
+		 */
+		NO_NOTIFICATIONS: () => LocalizedString
+		/**
+		 * Mark As Read
+		 */
+		MARK_READ: () => LocalizedString
+		/**
+		 * Mark As Unread
+		 */
+		MARK_UNREAD: () => LocalizedString
+	}
+	NOTIFICATION_CONTENT: {
+		/**
+		 * You have been banned and may not participate in MKCentral competitions. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}
+		 */
+		'0': (arg: { date: unknown, reason: unknown }) => LocalizedString
+		/**
+		 * You have been unbanned and may now participate in MKCentral competitions.
+		 */
+		'1': () => LocalizedString
+		/**
+		 * You have been invited to {squad_name|{: a, *: the}} squad {squad_name|bold} for {tournament_name|bold}!
+		 */
+		'2': (arg: { squad_name: '' | string, tournament_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} accepted their invitation to your {tournament_name|bold} squad!
+		 */
+		'3': (arg: { player_name: unknown, tournament_name: unknown }) => LocalizedString
+		/**
+		 * You have been kicked from {squad_name|bold}.
+		 */
+		'4': (arg: { squad_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has registered you for {tournament_name|bold}!
+		 */
+		'5': (arg: { tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has unregistered you from {tournament_name|bold}.
+		 */
+		'6': (arg: { tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator added {player_name|bold} to your {tournament_name|bold} squad.
+		 */
+		'7': (arg: { player_name: unknown, tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator kicked {player_name|bold} from your {tournament_name|bold} squad.
+		 */
+		'8': (arg: { player_name: unknown, tournament_name: unknown }) => LocalizedString
+		/**
+		 * You have been invited to {roster_name|bold}!
+		 */
+		'9': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} accepted their invitation to {roster_name|bold}. A moderator must approve this before they can play for your team.
+		 */
+		'10': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} declined their invitation to {roster_name|bold}.
+		 */
+		'11': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
+		/**
+		 * You have been kicked from {roster_name|bold}.
+		 */
+		'12': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * Your team {team_name|bold} has been approved!
+		 */
+		'13': (arg: { team_name: unknown }) => LocalizedString
+		/**
+		 * Your team {team_name|bold} has been denied.
+		 */
+		'14': (arg: { team_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} has joined {roster_name|bold}!
+		 */
+		'15': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has denied {player_name|bold} from joining {roster_name|bold}.
+		 */
+		'16': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} has left {roster_name|bold}.
+		 */
+		'17': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
+		/**
+		 * Your team name/tag change for {team_name|bold} has been approved!
+		 */
+		'18': (arg: { team_name: unknown }) => LocalizedString
+		/**
+		 * Your team name/tag change for {team_name|bold} has been denied.
+		 */
+		'19': (arg: { team_name: unknown }) => LocalizedString
+		/**
+		 * Your team roster name/tag change for {roster_name|bold} has been approved!
+		 */
+		'20': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * Your team roster name/tag change for {roster_name|bold} has been denied.
+		 */
+		'21': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has added a friend code to your profile. Game: {game|uppercase|bold}.
+		 */
+		'22': (arg: { game: unknown }) => LocalizedString
+		/**
+		 * A moderator has edited your {game|uppercase|bold} friend code.
+		 */
+		'23': (arg: { game: unknown }) => LocalizedString
+		/**
+		 * A moderator has set your primary friend code.
+		 */
+		'24': () => LocalizedString
+		/**
+		 * Your name change has been approved!
+		 */
+		'25': () => LocalizedString
+		/**
+		 * Your name change has been denied.
+		 */
+		'26': () => LocalizedString
+		/**
+		 * You have been given the {role|bold} role!
+		 */
+		'27': (arg: { role: unknown }) => LocalizedString
+		/**
+		 * Your {role|bold} role has been removed.
+		 */
+		'28': (arg: { role: unknown }) => LocalizedString
+		/**
+		 * You have been given the {role|bold} role for the team {team_name|bold}.
+		 */
+		'29': (arg: { role: unknown, team_name: unknown }) => LocalizedString
+		/**
+		 * Your {role|bold} role for the team {team_name|bold} has been removed.
+		 */
+		'30': (arg: { role: unknown, team_name: unknown }) => LocalizedString
+		/**
+		 * You have been given the {role|bold} role for the {series_name|bold} series.
+		 */
+		'31': (arg: { role: unknown, series_name: unknown }) => LocalizedString
+		/**
+		 * Your {role|bold} role for the {series_name|bold} series has been removed.
+		 */
+		'32': (arg: { role: unknown, series_name: unknown }) => LocalizedString
+		/**
+		 * You have been given the {role|bold} role for the {tournament_name|bold} tournament.
+		 */
+		'33': (arg: { role: unknown, tournament_name: unknown }) => LocalizedString
+		/**
+		 * Your {role|bold} role for the {tournament_name|bold} tournament has been removed.
+		 */
+		'34': (arg: { role: unknown, tournament_name: unknown }) => LocalizedString
+		/**
+		 * Your roster {roster_name|bold} has been approved!
+		 */
+		'35': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * Your roster {roster_name|bold} has been denied.
+		 */
+		'36': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * You have been made the squad captain for {squad_name|bold}!
+		 */
+		'37': (arg: { squad_name: unknown }) => LocalizedString
+		/**
+		 * You have been made a team representative for {squad_name|bold}!
+		 */
+		'38': (arg: { squad_name: unknown }) => LocalizedString
+		/**
+		 * You are no longer a team representative for {squad_name|bold}.
+		 */
+		'39': (arg: { squad_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has updated your team {team_name|bold}.
+		 */
+		'40': (arg: { team_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has updated your roster {roster_name|bold}.
+		 */
+		'41': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has registered your team for {tournament_name|bold}!
+		 */
+		'42': (arg: { tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has unregistered your team from {tournament_name|bold}.
+		 */
+		'43': (arg: { tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has created a squad with you as the captain for {tournament_name|bold}!
+		 */
+		'44': (arg: { tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has updated your registration for {tournament_name|bold}.
+		 */
+		'45': (arg: { tournament_name: unknown }) => LocalizedString
+		/**
+		 * A moderator has approved your team transfer to {roster_name|bold}!
+		 */
+		'46': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * Your team transfer to {roster_name|bold} has been denied.
+		 */
+		'47': (arg: { roster_name: unknown }) => LocalizedString
+		/**
+		 * Your ban has been updated. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}
+		 */
+		'48': (arg: { date: unknown, reason: unknown }) => LocalizedString
+		/**
+		 * A moderator has kicked {player_name|bold} from your team {team_name|bold}.
+		 */
+		'49': (arg: { player_name: unknown, team_name: unknown }) => LocalizedString
+		/**
+		 * {player_name|bold} declined their invitation to {squad_name|bold}.
+		 */
+		'50': (arg: { player_name: unknown, squad_name: unknown }) => LocalizedString
+		/**
+		 * Your claim of shadow player {player_name|bold} has been accepted!
+		 */
+		'51': (arg: { player_name: unknown }) => LocalizedString
+		/**
+		 * Your claim of shadow player {player_name|bold} has been denied.
+		 */
+		'52': (arg: { player_name: unknown }) => LocalizedString
+	}
+	PLAYERS: {
 		/**
 		 * Players
 		 */
 		PLAYERS: () => LocalizedString
 		/**
-		 * Player Listing
+		 * Registration History
 		 */
-		PLAYER_LISTING: () => LocalizedString
-		/**
-		 * Search
-		 */
-		SEARCH: () => LocalizedString
-		FILTERS: {
+		REGISTRATION_HISTORY: () => LocalizedString
+		LIST: {
 			/**
-			 * All Games
+			 * Player Listing
 			 */
-			ALL_GAMES: () => LocalizedString
-			/**
-			 * All Countries
-			 */
-			ALL_COUNTRIES: () => LocalizedString
+			PLAYER_LISTING: () => LocalizedString
 			/**
 			 * Search by Name or Friend Code...
 			 */
 			SEARCH_BY: () => LocalizedString
-			/**
-			 * Search
-			 */
-			SEARCH: () => LocalizedString
 		}
-		HEADER: {
+		PLAYER_SIGNUP: {
 			/**
-			 * Country
+			 * Player Signup
 			 */
-			COUNTRY: () => LocalizedString
+			PLAYER_SIGNUP: () => LocalizedString
 			/**
-			 * Name
+			 * You are already registered.
 			 */
-			NAME: () => LocalizedString
+			ALREADY_REGISTERED: () => LocalizedString
+			/**
+			 * Switch FC
+			 */
+			SWITCH_FC: () => LocalizedString
+			/**
+			 * MKT FC
+			 */
+			MKT_FC: () => LocalizedString
+			/**
+			 * MKW FC
+			 */
+			MKW_FC: () => LocalizedString
+			/**
+			 * 3DS FC
+			 */
+			'3DS_FC': () => LocalizedString
+			/**
+			 * Nintendo Network ID
+			 */
+			NNID: () => LocalizedString
+			/**
+			 * Register
+			 */
+			REGISTER: () => LocalizedString
+			/**
+			 * Registered successfully!
+			 */
+			REGISTER_SUCCESS: () => LocalizedString
+			/**
+			 * Registration failed
+			 */
+			REGISTER_FAILED: () => LocalizedString
 		}
-	}
-	ROLES: {
-		/**
-		 * User Roles
-		 */
-		USER_ROLES: () => LocalizedString
-		/**
-		 * Failed to add role
-		 */
-		ADD_ROLE_FAILED: () => LocalizedString
-		/**
-		 * Failed to remove role
-		 */
-		REMOVE_ROLE_FAILED: () => LocalizedString
-		/**
-		 * Are you sure you want to remove the role {role_name} from {player_name}?
-		 */
-		REMOVE_ROLE_CONFIRM: (arg: { player_name: unknown, role_name: unknown }) => LocalizedString
-		/**
-		 * Add Player
-		 */
-		ADD_PLAYER: () => LocalizedString
-		/**
-		 * Until
-		 */
-		UNTIL: () => LocalizedString
-		/**
-		 * Add
-		 */
-		ADD_ROLE: () => LocalizedString
-		/**
-		 * You do not have permission to edit this role.
-		 */
-		NO_EDIT_PERMISSION: () => LocalizedString
-		/**
-		 * Expires {date}
-		 */
-		ROLE_EXPIRES_ON: (arg: { date: unknown }) => LocalizedString
-		/**
-		 * Manage Roles
-		 */
-		MANAGE_ROLES: () => LocalizedString
-	}
-	INVITES: {
-		/**
-		 * Team Invites
-		 */
-		TEAM_INVITES: () => LocalizedString
-		/**
-		 * Tournament Invites
-		 */
-		TOURNAMENT_INVITES: () => LocalizedString
-		/**
-		 * Select a roster to leave:
-		 */
-		SELECT_LEAVE_ROSTER: () => LocalizedString
-		/**
-		 * Please select a roster to leave
-		 */
-		SELECT_LEAVE_ROSTER_ERROR: () => LocalizedString
-		/**
-		 * Successfully accepted invite to {roster_name}! Your transfer must be processed by staff members before being completed.
-		 */
-		ACCEPT_TEAM_INVITE_SUCCESS: (arg: { roster_name: string }) => LocalizedString
-		/**
-		 * Accepting team invite failed
-		 */
-		ACCEPT_TEAM_INVITE_FAILED: () => LocalizedString
-		/**
-		 * Declining team invite failed
-		 */
-		DECLINE_TEAM_INVITE_FAILED: () => LocalizedString
-		/**
-		 * Accept
-		 */
-		ACCEPT: () => LocalizedString
-		/**
-		 * Decline
-		 */
-		DECLINE: () => LocalizedString
-		/**
-		 * No invites.
-		 */
-		NO_INVITES: () => LocalizedString
-		/**
-		 * Accept Team Invite
-		 */
-		ACCEPT_TEAM_INVITE: () => LocalizedString
-		/**
-		 * Are you sure you would like to accept the invite to {roster_name}?
-		 */
-		ACCEPT_TEAM_INVITE_CONFIRM: (arg: { roster_name: string }) => LocalizedString
-		/**
-		 * Are you sure you would like to decline the invite to {roster_name}?
-		 */
-		DECLINE_TEAM_INVITE_CONFIRM: (arg: { roster_name: string }) => LocalizedString
-		/**
-		 * Tournament
-		 */
-		TOURNAMENT: () => LocalizedString
-		/**
-		 * Squad
-		 */
-		SQUAD: () => LocalizedString
-		/**
-		 * Tournament Page
-		 */
-		TOURNAMENT_PAGE: () => LocalizedString
-	}
-	TEAM_LIST: {
-		/**
-		 * Tag
-		 */
-		TAG: () => LocalizedString
-		/**
-		 * Teams
-		 */
-		TEAMS: () => LocalizedString
-		/**
-		 * Name
-		 */
-		NAME: () => LocalizedString
-		/**
-		 * Status
-		 */
-		STATUS: () => LocalizedString
-		/**
-		 * Game
-		 */
-		GAME: () => LocalizedString
-		/**
-		 * Mode
-		 */
-		MODE: () => LocalizedString
-		/**
-		 * Rosters
-		 */
-		ROSTERS: () => LocalizedString
-		/**
-		 * Registered
-		 */
-		REGISTERED: () => LocalizedString
-		/**
-		 * Create a team
-		 */
-		CREATE_TEAM: () => LocalizedString
-		/**
-		 * Team Listing
-		 */
-		TEAM_LISTING: () => LocalizedString
-		/**
-		 * show
-		 */
-		SHOW: () => LocalizedString
-		/**
-		 * hide
-		 */
-		HIDE: () => LocalizedString
-		/**
-		 * Active Teams
-		 */
-		ACTIVE_TEAMS: () => LocalizedString
-		/**
-		 * Historical Teams
-		 */
-		HISTORICAL_TEAMS: () => LocalizedString
-		/**
-		 * Search by team or roster name...
-		 */
-		SEARCH_BY: () => LocalizedString
-		/**
-		 * {count} teams
-		 */
-		TEAM_COUNT: (arg: { count: number }) => LocalizedString
-	}
-	TEAM_CREATE: {
-		/**
-		 * General Info
-		 */
-		GENERAL_INFO: () => LocalizedString
-	}
-	TEAM_EDIT: {
-		/**
-		 * Back to Team
-		 */
-		BACK_TO_TEAM: () => LocalizedString
-		/**
-		 * Team Page
-		 */
-		TEAM_PAGE: () => LocalizedString
-		/**
-		 * Team Name/Tag
-		 */
-		TEAM_NAME_TAG: () => LocalizedString
-		/**
-		 * Team Name
-		 */
-		TEAM_NAME: () => LocalizedString
-		/**
-		 * Team Tag
-		 */
-		TEAM_TAG: () => LocalizedString
-		/**
-		 * Team Color
-		 */
-		TEAM_COLOR: () => LocalizedString
-		/**
-		 * Request Name/Tag Change
-		 */
-		REQUEST_NAME_TAG_CHANGE: () => LocalizedString
-		/**
-		 * Team Logo
-		 */
-		TEAM_LOGO: () => LocalizedString
-		/**
-		 * Team Description
-		 */
-		TEAM_DESCRIPTION: () => LocalizedString
-		/**
-		 * Recruitment Status
-		 */
-		RECRUITMENT_STATUS: () => LocalizedString
-		/**
-		 * Misc. Info
-		 */
-		MISC_INFO: () => LocalizedString
-		/**
-		 * Customization
-		 */
-		CUSTOMIZATION: () => LocalizedString
-		/**
-		 * New Roster
-		 */
-		NEW_ROSTER: () => LocalizedString
-		/**
-		 * Invitations
-		 */
-		INVITATIONS: () => LocalizedString
-		/**
-		 * Invite Player
-		 */
-		INVITE_PLAYER: () => LocalizedString
-		/**
-		 * Retract Invite
-		 */
-		RETRACT_INVITE: () => LocalizedString
-		/**
-		 * Search for players...
-		 */
-		SEARCH_FOR_PLAYERS: () => LocalizedString
-		/**
-		 * Edit Roster
-		 */
-		EDIT_ROSTER: () => LocalizedString
-		/**
-		 * Roster Name
-		 */
-		ROSTER_NAME: () => LocalizedString
-		/**
-		 * Roster Tag
-		 */
-		ROSTER_TAG: () => LocalizedString
-		/**
-		 * You can request a name/tag change in {days} days.
-		 */
-		REQUEST_CHANGE_IN: (arg: { days: number }) => LocalizedString
-		/**
-		 * Name/Tag change pending approval from MKC Staff:
-		 */
-		NAME_TAG_CHANGE_PENDING: () => LocalizedString
-		/**
-		 * Your request to change your team's name/tag has been sent to MKCentral staff for approval.
-		 */
-		NAME_TAG_CHANGE_SUCCESS: () => LocalizedString
-		/**
-		 * Requesting team name/tag change failed
-		 */
-		NAME_TAG_CHANGE_FAILURE: () => LocalizedString
-		/**
-		 * Successfully edited team
-		 */
-		EDIT_TEAM_SUCCESS: () => LocalizedString
-		/**
-		 * Failed to edit team
-		 */
-		EDIT_TEAM_FAILURE: () => LocalizedString
-		/**
-		 * Team Roles
-		 */
-		TEAM_ROLES: () => LocalizedString
-		/**
-		 * Inactive
-		 */
-		ROSTER_INACTIVE: () => LocalizedString
-		/**
-		 * Kick Player
-		 */
-		KICK_PLAYER: () => LocalizedString
-		/**
-		 * Remove Leader
-		 */
-		REMOVE_LEADER: () => LocalizedString
-		/**
-		 * Make Leader
-		 */
-		MAKE_LEADER: () => LocalizedString
-		/**
-		 * Remove Manager
-		 */
-		REMOVE_MANAGER: () => LocalizedString
-		/**
-		 * Make Manager
-		 */
-		MAKE_MANAGER: () => LocalizedString
-		/**
-		 * Roster is pending approval from MKCentral staff.
-		 */
-		ROSTER_PENDING_APPROVAL: () => LocalizedString
-		/**
-		 * Kick {player_name} from this roster?
-		 */
-		KICK_CONFIRM: (arg: { player_name: string }) => LocalizedString
-		/**
-		 * Kick
-		 */
-		KICK: () => LocalizedString
-		/**
-		 * Inviting player failed
-		 */
-		PLAYER_INVITE_FAILED: () => LocalizedString
-		/**
-		 * Retracting invite failed
-		 */
-		DELETE_INVITE_FAILED: () => LocalizedString
-		/**
-		 * Kicking player failed
-		 */
-		PLAYER_KICK_FAILED: () => LocalizedString
-		/**
-		 * Successfully edited roster
-		 */
-		ROSTER_EDIT_SUCCESS: () => LocalizedString
-		/**
-		 * Editing roster failed
-		 */
-		ROSTER_EDIT_FAILED: () => LocalizedString
-		/**
-		 * Are you sure you want to give the {team_role} role to {player_name}?
-		 */
-		TEAM_ROLE_ADD_CONFIRM: (arg: { player_name: string, team_role: string }) => LocalizedString
-		/**
-		 * Failed to grant team role
-		 */
-		TEAM_ROLE_ADD_FAILED: () => LocalizedString
-		/**
-		 * Are you sure you want to remove the {team_role} role from {player_name}?
-		 */
-		TEAM_ROLE_REMOVE_CONFIRM: (arg: { player_name: string, team_role: string }) => LocalizedString
-		/**
-		 * Failed to remove team role
-		 */
-		TEAM_ROLE_REMOVE_FAILED: () => LocalizedString
-		/**
-		 * Your request to change your roster's name/tag has been sent to MKCentral staff for approval.
-		 */
-		ROSTER_NAME_TAG_CHANGE_SUCCESS: () => LocalizedString
-		/**
-		 * Requesting roster name/tag change failed
-		 */
-		ROSTER_NAME_TAG_CHANGE_FAILURE: () => LocalizedString
-	}
-	TEAM_PROFILE: {
-		/**
-		 * Team Profile
-		 */
-		TEAM_PROFILE: () => LocalizedString
-		/**
-		 * Manage Rosters
-		 */
-		MANAGE_ROSTERS: () => LocalizedString
-		/**
-		 * Edit Team
-		 */
-		EDIT_TEAM: () => LocalizedString
-		/**
-		 * Registered
-		 */
-		REGISTERED: () => LocalizedString
-		/**
-		 * Main Language
-		 */
-		MAIN_LANGUAGE: () => LocalizedString
-		/**
-		 * Managers
-		 */
-		MANAGERS: () => LocalizedString
-		/**
-		 * Rosters
-		 */
-		ROSTERS: () => LocalizedString
-		/**
-		 * player
-		 */
-		PLAYER: () => LocalizedString
-		/**
-		 * players
-		 */
-		PLAYERS: () => LocalizedString
-		/**
-		 * Join Date
-		 */
-		JOIN_DATE: () => LocalizedString
-		RECRUITMENT_STATUS: {
+		PROFILE: {
 			/**
-			 * Recruitment Status
+			 * Player Profile
 			 */
-			STATUS: () => LocalizedString
+			PLAYER_PROFILE: () => LocalizedString
 			/**
-			 * Recruiting
+			 * Invites
 			 */
-			RECRUITING: () => LocalizedString
+			INVITES: () => LocalizedString
 			/**
-			 * Not Recruiting
+			 * Edit Profile
 			 */
-			NOT_RECRUITING: () => LocalizedString
+			EDIT_PROFILE: () => LocalizedString
+			/**
+			 * Avatar URL
+			 */
+			AVATAR_URL: () => LocalizedString
+			/**
+			 * About me
+			 */
+			ABOUT_ME: () => LocalizedString
+			/**
+			 * Theme
+			 */
+			THEME: () => LocalizedString
+			/**
+			 * Teams:
+			 */
+			TEAMS: () => LocalizedString
+			/**
+			 * Timezone
+			 */
+			TIMEZONE: () => LocalizedString
+			/**
+			 * Player Notes
+			 */
+			PLAYER_NOTES: () => LocalizedString
+			/**
+			 * Edit Player Notes
+			 */
+			EDIT_PLAYER_NOTES: () => LocalizedString
+			/**
+			 * Clear
+			 */
+			CLEAR: () => LocalizedString
+			/**
+			 * Back to Profile
+			 */
+			BACK_TO_PROFILE: () => LocalizedString
+			/**
+			 * Edited profile successfully
+			 */
+			PROFILE_EDIT_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to edit profile
+			 */
+			PROFILE_EDIT_FAILED: () => LocalizedString
+			/**
+			 * Player Details
+			 */
+			PLAYER_DETAILS: () => LocalizedString
+			/**
+			 * Display Name
+			 */
+			DISPLAY_NAME: () => LocalizedString
+			/**
+			 * Show on player list?
+			 */
+			SHOW_ON_PLAYER_LIST: () => LocalizedString
+			/**
+			 * Request name change
+			 */
+			REQUEST_NAME_CHANGE: () => LocalizedString
+			/**
+			 * Pending name change
+			 */
+			PENDING_NAME_CHANGE: () => LocalizedString
+			/**
+			 * Failed to request name change
+			 */
+			REQUEST_NAME_CHANGE_FAILED: () => LocalizedString
+			/**
+			 * Editing player failed
+			 */
+			EDIT_PLAYER_FAILED: () => LocalizedString
+			/**
+			 * Player not found
+			 */
+			PLAYER_NOT_FOUND: () => LocalizedString
 		}
-		APPROVAL_STATUS: {
+		SHADOW_PLAYERS: {
 			/**
-			 * Approval Status
+			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.
 			 */
-			STATUS: () => LocalizedString
+			UNCLAIMED_PLAYER_DESCRIPTION: () => LocalizedString
 			/**
-			 * Approved
+			 * Claim Player
 			 */
-			APPROVED: () => LocalizedString
+			CLAIM_PLAYER: () => LocalizedString
 			/**
-			 * Pending
+			 * Successfully sent a claim for this player to staff!
 			 */
-			PENDING: () => LocalizedString
+			CLAIM_PLAYER_SUCCESS: () => LocalizedString
 			/**
-			 * Denied
+			 * Claiming player failed
 			 */
-			DENIED: () => LocalizedString
+			CLAIM_PLAYER_FAILED: () => LocalizedString
+			/**
+			 * Create Shadow Player
+			 */
+			CREATE_SHADOW_PLAYER: () => LocalizedString
+			/**
+			 * Successfully added new shadow player
+			 */
+			CREATE_SHADOW_PLAYER_SUCCESS: () => LocalizedString
+			/**
+			 * Adding new shadow player failed
+			 */
+			CREATE_SHADOW_PLAYER_FAILURE: () => LocalizedString
 		}
-		/**
-		 * Active/Historical
-		 */
-		ACTIVE_HISTORICAL: () => LocalizedString
-		/**
-		 * Active
-		 */
-		ACTIVE: () => LocalizedString
-		/**
-		 * Historical
-		 */
-		HISTORICAL: () => LocalizedString
-		/**
-		 * This team is pending approval from MKCentral Staff.
-		 */
-		PENDING_APPROVAL: () => LocalizedString
-		/**
-		 * No active rosters.
-		 */
-		NO_ACTIVE_ROSTERS: () => LocalizedString
-		/**
-		 * Team not found.
-		 */
-		TEAM_NOT_FOUND: () => LocalizedString
-		/**
-		 * Team Transfer History
-		 */
-		TRANSFER_HISTORY: () => LocalizedString
-		/**
-		 * All Rosters
-		 */
-		ALL_ROSTERS: () => LocalizedString
-		/**
-		 * Leave Roster
-		 */
-		LEAVE_ROSTER: () => LocalizedString
-		/**
-		 * Are you sure you want to leave the roster {roster_name}?
-		 */
-		LEAVE_ROSTER_CONFIRM: (arg: { roster_name: string }) => LocalizedString
-		/**
-		 * Successfully left roster
-		 */
-		LEAVE_ROSTER_SUCCESS: () => LocalizedString
-		/**
-		 * Leaving roster failed
-		 */
-		LEAVE_ROSTER_FAILED: () => LocalizedString
-		/**
-		 * Manager
-		 */
-		MANAGER: () => LocalizedString
-		/**
-		 * Leader
-		 */
-		LEADER: () => LocalizedString
-		/**
-		 * Search for teams...
-		 */
-		SEARCH_FOR_TEAMS: () => LocalizedString
-		/**
-		 * Search for rosters...
-		 */
-		SEARCH_FOR_ROSTERS: () => LocalizedString
-	}
-	TRANSFERS: {
-		/**
-		 * No team
-		 */
-		NO_TEAM: () => LocalizedString
-		/**
-		 * No transfers
-		 */
-		NO_TRANSFERS: () => LocalizedString
-	}
-	PLAYER_PROFILE: {
-		/**
-		 * Player Profile
-		 */
-		PLAYER_PROFILE: () => LocalizedString
-		/**
-		 * Invites
-		 */
-		INVITES: () => LocalizedString
-		/**
-		 * Edit Profile
-		 */
-		EDIT_PROFILE: () => LocalizedString
-		/**
-		 * Avatar URL
-		 */
-		AVATAR_URL: () => LocalizedString
-		/**
-		 * About me
-		 */
-		ABOUT_ME: () => LocalizedString
-		/**
-		 * Language
-		 */
-		LANGUAGE: () => LocalizedString
-		/**
-		 * Theme
-		 */
-		THEME: () => LocalizedString
-		/**
-		 * Timezone
-		 */
-		TIMEZONE: () => LocalizedString
-		/**
-		 * Player Notes
-		 */
-		PLAYER_NOTES: () => LocalizedString
-		/**
-		 * Edit Player Notes
-		 */
-		EDIT_PLAYER_NOTES: () => LocalizedString
-		/**
-		 * Clear
-		 */
-		CLEAR: () => LocalizedString
-		/**
-		 * Back to Profile
-		 */
-		BACK_TO_PROFILE: () => LocalizedString
-		/**
-		 * Edited profile successfully
-		 */
-		PROFILE_EDIT_SUCCESS: () => LocalizedString
-		/**
-		 * Failed to edit profile
-		 */
-		PROFILE_EDIT_FAILED: () => LocalizedString
-		/**
-		 * Player Details
-		 */
-		PLAYER_DETAILS: () => LocalizedString
-		/**
-		 * Display Name
-		 */
-		DISPLAY_NAME: () => LocalizedString
-		/**
-		 * Show on player list?
-		 */
-		SHOW_ON_PLAYER_LIST: () => LocalizedString
-		/**
-		 * Request name change
-		 */
-		REQUEST_NAME_CHANGE: () => LocalizedString
-		/**
-		 * Pending name change
-		 */
-		PENDING_NAME_CHANGE: () => LocalizedString
-		/**
-		 * Failed to request name change
-		 */
-		REQUEST_NAME_CHANGE_FAILED: () => LocalizedString
-		/**
-		 * Editing player failed
-		 */
-		EDIT_PLAYER_FAILED: () => LocalizedString
-		/**
-		 * Player not found
-		 */
-		PLAYER_NOT_FOUND: () => LocalizedString
 	}
 	PLAYER_BAN: {
 		/**
@@ -5544,77 +5642,439 @@ export type TranslationFunctions = {
 		 */
 		UNBAN_DATE: () => LocalizedString
 	}
-	PLAYER_SIGNUP: {
+	ROLES: {
 		/**
-		 * Player Signup
+		 * User Roles
 		 */
-		PLAYER_SIGNUP: () => LocalizedString
+		USER_ROLES: () => LocalizedString
 		/**
-		 * You are already registered.
+		 * Failed to add role
 		 */
-		ALREADY_REGISTERED: () => LocalizedString
+		ADD_ROLE_FAILED: () => LocalizedString
 		/**
-		 * Switch FC
+		 * Failed to remove role
 		 */
-		SWITCH_FC: () => LocalizedString
+		REMOVE_ROLE_FAILED: () => LocalizedString
 		/**
-		 * MKT FC
+		 * Are you sure you want to remove the role {role_name} from {player_name}?
 		 */
-		MKT_FC: () => LocalizedString
+		REMOVE_ROLE_CONFIRM: (arg: { player_name: unknown, role_name: unknown }) => LocalizedString
 		/**
-		 * MKW FC
+		 * Add Player
 		 */
-		MKW_FC: () => LocalizedString
+		ADD_PLAYER: () => LocalizedString
 		/**
-		 * 3DS FC
+		 * Until
 		 */
-		'3DS_FC': () => LocalizedString
+		UNTIL: () => LocalizedString
 		/**
-		 * Nintendo Network ID
+		 * Add
 		 */
-		NNID: () => LocalizedString
+		ADD_ROLE: () => LocalizedString
 		/**
-		 * Register
+		 * You do not have permission to edit this role.
 		 */
-		REGISTER: () => LocalizedString
+		NO_EDIT_PERMISSION: () => LocalizedString
 		/**
-		 * Registered successfully!
+		 * Expires {date}
 		 */
-		REGISTER_SUCCESS: () => LocalizedString
+		ROLE_EXPIRES_ON: (arg: { date: unknown }) => LocalizedString
 		/**
-		 * Registration failed
+		 * Manage Roles
 		 */
-		REGISTER_FAILED: () => LocalizedString
+		MANAGE_ROLES: () => LocalizedString
 	}
-	SHADOW_PLAYERS: {
+	TEAMS: {
 		/**
-		 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.
+		 * General Info
 		 */
-		UNCLAIMED_PLAYER_DESCRIPTION: () => LocalizedString
+		GENERAL_INFO: () => LocalizedString
+		EDIT: {
+			/**
+			 * Back to Team
+			 */
+			BACK_TO_TEAM: () => LocalizedString
+			/**
+			 * Team Page
+			 */
+			TEAM_PAGE: () => LocalizedString
+			/**
+			 * Team Name/Tag
+			 */
+			TEAM_NAME_TAG: () => LocalizedString
+			/**
+			 * Team Name
+			 */
+			TEAM_NAME: () => LocalizedString
+			/**
+			 * Team Tag
+			 */
+			TEAM_TAG: () => LocalizedString
+			/**
+			 * Team Color
+			 */
+			TEAM_COLOR: () => LocalizedString
+			/**
+			 * Request Name/Tag Change
+			 */
+			REQUEST_NAME_TAG_CHANGE: () => LocalizedString
+			/**
+			 * Team Logo
+			 */
+			TEAM_LOGO: () => LocalizedString
+			/**
+			 * Team Description
+			 */
+			TEAM_DESCRIPTION: () => LocalizedString
+			/**
+			 * Recruitment Status
+			 */
+			RECRUITMENT_STATUS: () => LocalizedString
+			/**
+			 * Misc. Info
+			 */
+			MISC_INFO: () => LocalizedString
+			/**
+			 * Customization
+			 */
+			CUSTOMIZATION: () => LocalizedString
+			/**
+			 * New Roster
+			 */
+			NEW_ROSTER: () => LocalizedString
+			/**
+			 * Invitations
+			 */
+			INVITATIONS: () => LocalizedString
+			/**
+			 * Invite Player
+			 */
+			INVITE_PLAYER: () => LocalizedString
+			/**
+			 * Retract Invite
+			 */
+			RETRACT_INVITE: () => LocalizedString
+			/**
+			 * Search for players...
+			 */
+			SEARCH_FOR_PLAYERS: () => LocalizedString
+			/**
+			 * Edit Roster
+			 */
+			EDIT_ROSTER: () => LocalizedString
+			/**
+			 * Roster Name
+			 */
+			ROSTER_NAME: () => LocalizedString
+			/**
+			 * Roster Tag
+			 */
+			ROSTER_TAG: () => LocalizedString
+			/**
+			 * You can request a name/tag change in {days} days.
+			 */
+			REQUEST_CHANGE_IN: (arg: { days: number }) => LocalizedString
+			/**
+			 * Name/Tag change pending approval from MKC Staff:
+			 */
+			NAME_TAG_CHANGE_PENDING: () => LocalizedString
+			/**
+			 * Your request to change your team's name/tag has been sent to MKCentral staff for approval.
+			 */
+			NAME_TAG_CHANGE_SUCCESS: () => LocalizedString
+			/**
+			 * Requesting team name/tag change failed
+			 */
+			NAME_TAG_CHANGE_FAILURE: () => LocalizedString
+			/**
+			 * Successfully edited team
+			 */
+			EDIT_TEAM_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to edit team
+			 */
+			EDIT_TEAM_FAILURE: () => LocalizedString
+			/**
+			 * Team Roles
+			 */
+			TEAM_ROLES: () => LocalizedString
+			/**
+			 * Inactive
+			 */
+			ROSTER_INACTIVE: () => LocalizedString
+			/**
+			 * Kick Player
+			 */
+			KICK_PLAYER: () => LocalizedString
+			/**
+			 * Remove Leader
+			 */
+			REMOVE_LEADER: () => LocalizedString
+			/**
+			 * Make Leader
+			 */
+			MAKE_LEADER: () => LocalizedString
+			/**
+			 * Remove Manager
+			 */
+			REMOVE_MANAGER: () => LocalizedString
+			/**
+			 * Make Manager
+			 */
+			MAKE_MANAGER: () => LocalizedString
+			/**
+			 * Roster is pending approval from MKCentral staff.
+			 */
+			ROSTER_PENDING_APPROVAL: () => LocalizedString
+			/**
+			 * Kick {player_name} from this roster?
+			 */
+			KICK_CONFIRM: (arg: { player_name: string }) => LocalizedString
+			/**
+			 * Kick
+			 */
+			KICK: () => LocalizedString
+			/**
+			 * Inviting player failed
+			 */
+			PLAYER_INVITE_FAILED: () => LocalizedString
+			/**
+			 * Retracting invite failed
+			 */
+			DELETE_INVITE_FAILED: () => LocalizedString
+			/**
+			 * Kicking player failed
+			 */
+			PLAYER_KICK_FAILED: () => LocalizedString
+			/**
+			 * Successfully edited roster
+			 */
+			ROSTER_EDIT_SUCCESS: () => LocalizedString
+			/**
+			 * Editing roster failed
+			 */
+			ROSTER_EDIT_FAILED: () => LocalizedString
+			/**
+			 * Are you sure you want to give the {team_role} role to {player_name}?
+			 */
+			TEAM_ROLE_ADD_CONFIRM: (arg: { player_name: string, team_role: string }) => LocalizedString
+			/**
+			 * Failed to grant team role
+			 */
+			TEAM_ROLE_ADD_FAILED: () => LocalizedString
+			/**
+			 * Are you sure you want to remove the {team_role} role from {player_name}?
+			 */
+			TEAM_ROLE_REMOVE_CONFIRM: (arg: { player_name: string, team_role: string }) => LocalizedString
+			/**
+			 * Failed to remove team role
+			 */
+			TEAM_ROLE_REMOVE_FAILED: () => LocalizedString
+			/**
+			 * Your request to change your roster's name/tag has been sent to MKCentral staff for approval.
+			 */
+			ROSTER_NAME_TAG_CHANGE_SUCCESS: () => LocalizedString
+			/**
+			 * Requesting roster name/tag change failed
+			 */
+			ROSTER_NAME_TAG_CHANGE_FAILURE: () => LocalizedString
+		}
+		LIST: {
+			/**
+			 * Tag
+			 */
+			TAG: () => LocalizedString
+			/**
+			 * Status
+			 */
+			STATUS: () => LocalizedString
+			/**
+			 * Rosters
+			 */
+			ROSTERS: () => LocalizedString
+			/**
+			 * Registered
+			 */
+			REGISTERED: () => LocalizedString
+			/**
+			 * Create a team
+			 */
+			CREATE_TEAM: () => LocalizedString
+			/**
+			 * Team Listing
+			 */
+			TEAM_LISTING: () => LocalizedString
+			/**
+			 * Active Teams
+			 */
+			ACTIVE_TEAMS: () => LocalizedString
+			/**
+			 * Historical Teams
+			 */
+			HISTORICAL_TEAMS: () => LocalizedString
+			/**
+			 * Search by team or roster name...
+			 */
+			SEARCH_BY: () => LocalizedString
+			/**
+			 * {count} teams
+			 */
+			TEAM_COUNT: (arg: { count: number }) => LocalizedString
+		}
+		PROFILE: {
+			/**
+			 * Team Profile
+			 */
+			TEAM_PROFILE: () => LocalizedString
+			/**
+			 * Manage Rosters
+			 */
+			MANAGE_ROSTERS: () => LocalizedString
+			/**
+			 * Edit Team
+			 */
+			EDIT_TEAM: () => LocalizedString
+			/**
+			 * Registered
+			 */
+			REGISTERED: () => LocalizedString
+			/**
+			 * Main Language
+			 */
+			MAIN_LANGUAGE: () => LocalizedString
+			/**
+			 * Managers
+			 */
+			MANAGERS: () => LocalizedString
+			/**
+			 * Rosters
+			 */
+			ROSTERS: () => LocalizedString
+			/**
+			 * player
+			 */
+			PLAYER: () => LocalizedString
+			/**
+			 * players
+			 */
+			PLAYERS: () => LocalizedString
+			/**
+			 * Join Date
+			 */
+			JOIN_DATE: () => LocalizedString
+			RECRUITMENT_STATUS: {
+				/**
+				 * Recruitment Status
+				 */
+				STATUS: () => LocalizedString
+				/**
+				 * Recruiting
+				 */
+				RECRUITING: () => LocalizedString
+				/**
+				 * Not Recruiting
+				 */
+				NOT_RECRUITING: () => LocalizedString
+			}
+			APPROVAL_STATUS: {
+				/**
+				 * Approval Status
+				 */
+				STATUS: () => LocalizedString
+				/**
+				 * Approved
+				 */
+				APPROVED: () => LocalizedString
+				/**
+				 * Pending
+				 */
+				PENDING: () => LocalizedString
+				/**
+				 * Denied
+				 */
+				DENIED: () => LocalizedString
+			}
+			/**
+			 * Active/Historical
+			 */
+			ACTIVE_HISTORICAL: () => LocalizedString
+			/**
+			 * Active
+			 */
+			ACTIVE: () => LocalizedString
+			/**
+			 * Historical
+			 */
+			HISTORICAL: () => LocalizedString
+			/**
+			 * This team is pending approval from MKCentral Staff.
+			 */
+			PENDING_APPROVAL: () => LocalizedString
+			/**
+			 * No active rosters.
+			 */
+			NO_ACTIVE_ROSTERS: () => LocalizedString
+			/**
+			 * Team not found.
+			 */
+			TEAM_NOT_FOUND: () => LocalizedString
+			/**
+			 * Team Transfer History
+			 */
+			TRANSFER_HISTORY: () => LocalizedString
+			/**
+			 * All Rosters
+			 */
+			ALL_ROSTERS: () => LocalizedString
+			/**
+			 * Leave Roster
+			 */
+			LEAVE_ROSTER: () => LocalizedString
+			/**
+			 * Are you sure you want to leave the roster {roster_name}?
+			 */
+			LEAVE_ROSTER_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+			/**
+			 * Successfully left roster
+			 */
+			LEAVE_ROSTER_SUCCESS: () => LocalizedString
+			/**
+			 * Leaving roster failed
+			 */
+			LEAVE_ROSTER_FAILED: () => LocalizedString
+			/**
+			 * Manager
+			 */
+			MANAGER: () => LocalizedString
+			/**
+			 * Leader
+			 */
+			LEADER: () => LocalizedString
+			/**
+			 * Search for teams...
+			 */
+			SEARCH_FOR_TEAMS: () => LocalizedString
+			/**
+			 * Search for rosters...
+			 */
+			SEARCH_FOR_ROSTERS: () => LocalizedString
+		}
+		TRANSFERS: {
+			/**
+			 * No team
+			 */
+			NO_TEAM: () => LocalizedString
+			/**
+			 * No transfers
+			 */
+			NO_TRANSFERS: () => LocalizedString
+		}
+	}
+	TIME_TRIALS: {
 		/**
-		 * Claim Player
+		 * This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!
 		 */
-		CLAIM_PLAYER: () => LocalizedString
-		/**
-		 * Successfully sent a claim for this player to staff!
-		 */
-		CLAIM_PLAYER_SUCCESS: () => LocalizedString
-		/**
-		 * Claiming player failed
-		 */
-		CLAIM_PLAYER_FAILED: () => LocalizedString
-		/**
-		 * Create Shadow Player
-		 */
-		CREATE_SHADOW_PLAYER: () => LocalizedString
-		/**
-		 * Successfully added new shadow player
-		 */
-		CREATE_SHADOW_PLAYER_SUCCESS: () => LocalizedString
-		/**
-		 * Adding new shadow player failed
-		 */
-		CREATE_SHADOW_PLAYER_FAILURE: () => LocalizedString
+		DESCRIPTION: () => LocalizedString
 	}
 	TOURNAMENTS: {
 		/**
@@ -5653,20 +6113,6 @@ export type TranslationFunctions = {
 		 * Back to Tournament
 		 */
 		BACK_TO_TOURNAMENT: () => LocalizedString
-		TYPES: {
-			/**
-			 * Solo
-			 */
-			SOLO: () => LocalizedString
-			/**
-			 * Squad
-			 */
-			SQUAD: () => LocalizedString
-			/**
-			 * Team
-			 */
-			TEAM: () => LocalizedString
-		}
 		/**
 		 * Register now!
 		 */
@@ -5695,6 +6141,40 @@ export type TranslationFunctions = {
 		 * Tournament Roles
 		 */
 		TOURNAMENT_ROLES: () => LocalizedString
+		/**
+		 * Tournament Details
+		 */
+		DETAILS: () => LocalizedString
+		/**
+		 * Tournament not found
+		 */
+		NOT_FOUND: () => LocalizedString
+		/**
+		 * Tournament Placements
+		 */
+		TOURNAMENT_PLACEMENTS: () => LocalizedString
+		/**
+		 * Tournament Series
+		 */
+		TOURNAMENT_SERIES: () => LocalizedString
+		/**
+		 * Search tournament series...
+		 */
+		SEARCH_SERIES: () => LocalizedString
+		HISTORY: {
+			/**
+			 * Tournament History
+			 */
+			TOURNAMENT_HISTORY: () => LocalizedString
+			/**
+			 * Solo Tournaments
+			 */
+			SOLO_TOURNAMENTS: () => LocalizedString
+			/**
+			 * Team Tournaments
+			 */
+			TEAM_TOURNAMENTS: () => LocalizedString
+		}
 		INFO: {
 			/**
 			 * Tournament Info
@@ -5729,26 +6209,6 @@ export type TranslationFunctions = {
 			 */
 			PART_OF_SERIES: () => LocalizedString
 		}
-		/**
-		 * Tournament Details
-		 */
-		DETAILS: () => LocalizedString
-		/**
-		 * Tournament not found
-		 */
-		NOT_FOUND: () => LocalizedString
-		/**
-		 * Tournament Placements
-		 */
-		TOURNAMENT_PLACEMENTS: () => LocalizedString
-		/**
-		 * Tournament Series
-		 */
-		TOURNAMENT_SERIES: () => LocalizedString
-		/**
-		 * Search tournament series...
-		 */
-		SEARCH_SERIES: () => LocalizedString
 		REGISTRATIONS: {
 			/**
 			 * Tournament Registrations
@@ -5794,14 +6254,6 @@ export type TranslationFunctions = {
 			 * (show all)
 			 */
 			SHOW_ALL_PLAYERS: () => LocalizedString
-			/**
-			 * (hide)
-			 */
-			HIDE_PLAYERS: () => LocalizedString
-			/**
-			 * (show)
-			 */
-			SHOW_PLAYERS: () => LocalizedString
 			/**
 			 * Eligible?
 			 */
@@ -6595,562 +7047,26 @@ export type TranslationFunctions = {
 			 */
 			DUPLICATE: () => LocalizedString
 		}
-	}
-	GAMES: {
-		/**
-		 * All Games
-		 */
-		ALL: () => LocalizedString
-		/**
-		 * Select a game...
-		 */
-		SELECT: () => LocalizedString
-		/**
-		 * Mario Kart 8 Deluxe
-		 */
-		MK8DX: () => LocalizedString
-		/**
-		 * Mario Kart 8
-		 */
-		MK8: () => LocalizedString
-		/**
-		 * Mario Kart Wii
-		 */
-		MKW: () => LocalizedString
-		/**
-		 * Mario Kart Tour
-		 */
-		MKT: () => LocalizedString
-		/**
-		 * Mario Kart 7
-		 */
-		MK7: () => LocalizedString
-		/**
-		 * Super Mario Kart
-		 */
-		SMK: () => LocalizedString
-	}
-	MODES: {
-		/**
-		 * All Modes
-		 */
-		ALL: () => LocalizedString
-		/**
-		 * Select a mode...
-		 */
-		SELECT: () => LocalizedString
-		/**
-		 * 150cc
-		 */
-		'150CC': () => LocalizedString
-		/**
-		 * 200cc
-		 */
-		'200CC': () => LocalizedString
-		/**
-		 * Battle (Mixed)
-		 */
-		MIXED_BATTLE: () => LocalizedString
-		/**
-		 * Balloon Battle
-		 */
-		BALLOON_BATTLE: () => LocalizedString
-		/**
-		 * Shine Thief
-		 */
-		SHINE_THIEF: () => LocalizedString
-		/**
-		 * Bob-omb Blast
-		 */
-		BOBOMB_BLAST: () => LocalizedString
-		/**
-		 * Coin Runners
-		 */
-		COIN_RUNNERS: () => LocalizedString
-		/**
-		 * Renegade Roundup
-		 */
-		RENEGADE_ROUNDUP: () => LocalizedString
-		/**
-		 * Match Race
-		 */
-		MATCH_RACE: () => LocalizedString
-		/**
-		 * Mixed Format
-		 */
-		MIXED: () => LocalizedString
-		/**
-		 * Regular Tracks
-		 */
-		RT: () => LocalizedString
-		/**
-		 * Custom Tracks
-		 */
-		CT: () => LocalizedString
-		/**
-		 * VS Race
-		 */
-		VSRACE: () => LocalizedString
-	}
-	TOURNAMENT_HISTORY: {
-		/**
-		 * Tournament History
-		 */
-		TOURNAMENT_HISTORY: () => LocalizedString
-		/**
-		 * Solo Tournaments
-		 */
-		SOLO_TOURNAMENTS: () => LocalizedString
-		/**
-		 * Team Tournaments
-		 */
-		TEAM_TOURNAMENTS: () => LocalizedString
-	}
-	REGISTRATION_HISTORY: {
-		/**
-		 * Registration History
-		 */
-		REGISTRATION_HISTORY: () => LocalizedString
-	}
-	LANGUAGES: {
-		/**
-		 * English (United States)
-		 */
-		EN_US: () => LocalizedString
-		/**
-		 * English (Great Britain)
-		 */
-		EN_GB: () => LocalizedString
-		/**
-		 * German
-		 */
-		DE: () => LocalizedString
-		/**
-		 * Spanish
-		 */
-		ES: () => LocalizedString
-		/**
-		 * French
-		 */
-		FR: () => LocalizedString
-		/**
-		 * Japanese
-		 */
-		JA: () => LocalizedString
-	}
-	TIME_TRIALS: {
-		/**
-		 * This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!
-		 */
-		DESCRIPTION: () => LocalizedString
-	}
-	COLORS: {
-		/**
-		 * Red 1
-		 */
-		RED_1: () => LocalizedString
-		/**
-		 * Red 2
-		 */
-		RED_2: () => LocalizedString
-		/**
-		 * Red 3
-		 */
-		RED_3: () => LocalizedString
-		/**
-		 * Red 4
-		 */
-		RED_4: () => LocalizedString
-		/**
-		 * Orange 1
-		 */
-		ORANGE_1: () => LocalizedString
-		/**
-		 * Orange 2
-		 */
-		ORANGE_2: () => LocalizedString
-		/**
-		 * Orange 3
-		 */
-		ORANGE_3: () => LocalizedString
-		/**
-		 * Orange 4
-		 */
-		ORANGE_4: () => LocalizedString
-		/**
-		 * Yellow 1
-		 */
-		YELLOW_1: () => LocalizedString
-		/**
-		 * Yellow 2
-		 */
-		YELLOW_2: () => LocalizedString
-		/**
-		 * Yellow 3
-		 */
-		YELLOW_3: () => LocalizedString
-		/**
-		 * Yellow 4
-		 */
-		YELLOW_4: () => LocalizedString
-		/**
-		 * Green 1
-		 */
-		GREEN_1: () => LocalizedString
-		/**
-		 * Green 2
-		 */
-		GREEN_2: () => LocalizedString
-		/**
-		 * Green 3
-		 */
-		GREEN_3: () => LocalizedString
-		/**
-		 * Green 4
-		 */
-		GREEN_4: () => LocalizedString
-		/**
-		 * Aqua 1
-		 */
-		AQUA_1: () => LocalizedString
-		/**
-		 * Aqua 2
-		 */
-		AQUA_2: () => LocalizedString
-		/**
-		 * Aqua 3
-		 */
-		AQUA_3: () => LocalizedString
-		/**
-		 * Aqua 4
-		 */
-		AQUA_4: () => LocalizedString
-		/**
-		 * Blue 1
-		 */
-		BLUE_1: () => LocalizedString
-		/**
-		 * Blue 2
-		 */
-		BLUE_2: () => LocalizedString
-		/**
-		 * Blue 3
-		 */
-		BLUE_3: () => LocalizedString
-		/**
-		 * Blue 4
-		 */
-		BLUE_4: () => LocalizedString
-		/**
-		 * Indigo 1
-		 */
-		INDIGO_1: () => LocalizedString
-		/**
-		 * Indigo 2
-		 */
-		INDIGO_2: () => LocalizedString
-		/**
-		 * Indigo 3
-		 */
-		INDIGO_3: () => LocalizedString
-		/**
-		 * Indigo 4
-		 */
-		INDIGO_4: () => LocalizedString
-		/**
-		 * Purple 1
-		 */
-		PURPLE_1: () => LocalizedString
-		/**
-		 * Purple 2
-		 */
-		PURPLE_2: () => LocalizedString
-		/**
-		 * Purple 3
-		 */
-		PURPLE_3: () => LocalizedString
-		/**
-		 * Purple 4
-		 */
-		PURPLE_4: () => LocalizedString
-		/**
-		 * Pink 1
-		 */
-		PINK_1: () => LocalizedString
-		/**
-		 * Pink 2
-		 */
-		PINK_2: () => LocalizedString
-		/**
-		 * Pink 3
-		 */
-		PINK_3: () => LocalizedString
-		/**
-		 * Pink 4
-		 */
-		PINK_4: () => LocalizedString
-		/**
-		 * Grey 1
-		 */
-		GREY_1: () => LocalizedString
-		/**
-		 * Grey 2
-		 */
-		GREY_2: () => LocalizedString
-		/**
-		 * Grey 3
-		 */
-		GREY_3: () => LocalizedString
-		/**
-		 * Black
-		 */
-		BLACK: () => LocalizedString
-	}
-	NOTIFICATION: {
-		/**
-		 * Mark All as Read
-		 */
-		MARK_ALL_READ: () => LocalizedString
-		/**
-		 * See All Notifications
-		 */
-		SEE_ALL_NOTIFICATIONS: () => LocalizedString
-		/**
-		 * There are no unread notifications
-		 */
-		NO_UNREAD: () => LocalizedString
-		/**
-		 * You must be logged in to view this page.
-		 */
-		MUST_BE_LOGGED_IN: () => LocalizedString
-		/**
-		 * You do not have any notifications.
-		 */
-		NO_NOTIFICATIONS: () => LocalizedString
-		/**
-		 * Mark As Read
-		 */
-		MARK_READ: () => LocalizedString
-		/**
-		 * Mark As Unread
-		 */
-		MARK_UNREAD: () => LocalizedString
-	}
-	NOTIFICATION_CONTENT: {
-		/**
-		 * You have been banned and may not participate in MKCentral competitions. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}
-		 */
-		'0': (arg: { date: unknown, reason: unknown }) => LocalizedString
-		/**
-		 * You have been unbanned and may now participate in MKCentral competitions.
-		 */
-		'1': () => LocalizedString
-		/**
-		 * You have been invited to {squad_name|{: a, *: the}} squad {squad_name|bold} for {tournament_name|bold}!
-		 */
-		'2': (arg: { squad_name: '' | string, tournament_name: unknown }) => LocalizedString
-		/**
-		 * {player_name|bold} accepted their invitation to your {tournament_name|bold} squad!
-		 */
-		'3': (arg: { player_name: unknown, tournament_name: unknown }) => LocalizedString
-		/**
-		 * You have been kicked from {squad_name|bold}.
-		 */
-		'4': (arg: { squad_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has registered you for {tournament_name|bold}!
-		 */
-		'5': (arg: { tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has unregistered you from {tournament_name|bold}.
-		 */
-		'6': (arg: { tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator added {player_name|bold} to your {tournament_name|bold} squad.
-		 */
-		'7': (arg: { player_name: unknown, tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator kicked {player_name|bold} from your {tournament_name|bold} squad.
-		 */
-		'8': (arg: { player_name: unknown, tournament_name: unknown }) => LocalizedString
-		/**
-		 * You have been invited to {roster_name|bold}!
-		 */
-		'9': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * {player_name|bold} accepted their invitation to {roster_name|bold}. A moderator must approve this before they can play for your team.
-		 */
-		'10': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
-		/**
-		 * {player_name|bold} declined their invitation to {roster_name|bold}.
-		 */
-		'11': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
-		/**
-		 * You have been kicked from {roster_name|bold}.
-		 */
-		'12': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * Your team {team_name|bold} has been approved!
-		 */
-		'13': (arg: { team_name: unknown }) => LocalizedString
-		/**
-		 * Your team {team_name|bold} has been denied.
-		 */
-		'14': (arg: { team_name: unknown }) => LocalizedString
-		/**
-		 * {player_name|bold} has joined {roster_name|bold}!
-		 */
-		'15': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has denied {player_name|bold} from joining {roster_name|bold}.
-		 */
-		'16': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
-		/**
-		 * {player_name|bold} has left {roster_name|bold}.
-		 */
-		'17': (arg: { player_name: unknown, roster_name: unknown }) => LocalizedString
-		/**
-		 * Your team name/tag change for {team_name|bold} has been approved!
-		 */
-		'18': (arg: { team_name: unknown }) => LocalizedString
-		/**
-		 * Your team name/tag change for {team_name|bold} has been denied.
-		 */
-		'19': (arg: { team_name: unknown }) => LocalizedString
-		/**
-		 * Your team roster name/tag change for {roster_name|bold} has been approved!
-		 */
-		'20': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * Your team roster name/tag change for {roster_name|bold} has been denied.
-		 */
-		'21': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has added a friend code to your profile. Game: {game|uppercase|bold}.
-		 */
-		'22': (arg: { game: unknown }) => LocalizedString
-		/**
-		 * A moderator has edited your {game|uppercase|bold} friend code.
-		 */
-		'23': (arg: { game: unknown }) => LocalizedString
-		/**
-		 * A moderator has set your primary friend code.
-		 */
-		'24': () => LocalizedString
-		/**
-		 * Your name change has been approved!
-		 */
-		'25': () => LocalizedString
-		/**
-		 * Your name change has been denied.
-		 */
-		'26': () => LocalizedString
-		/**
-		 * You have been given the {role|bold} role!
-		 */
-		'27': (arg: { role: unknown }) => LocalizedString
-		/**
-		 * Your {role|bold} role has been removed.
-		 */
-		'28': (arg: { role: unknown }) => LocalizedString
-		/**
-		 * You have been given the {role|bold} role for the team {team_name|bold}.
-		 */
-		'29': (arg: { role: unknown, team_name: unknown }) => LocalizedString
-		/**
-		 * Your {role|bold} role for the team {team_name|bold} has been removed.
-		 */
-		'30': (arg: { role: unknown, team_name: unknown }) => LocalizedString
-		/**
-		 * You have been given the {role|bold} role for the {series_name|bold} series.
-		 */
-		'31': (arg: { role: unknown, series_name: unknown }) => LocalizedString
-		/**
-		 * Your {role|bold} role for the {series_name|bold} series has been removed.
-		 */
-		'32': (arg: { role: unknown, series_name: unknown }) => LocalizedString
-		/**
-		 * You have been given the {role|bold} role for the {tournament_name|bold} tournament.
-		 */
-		'33': (arg: { role: unknown, tournament_name: unknown }) => LocalizedString
-		/**
-		 * Your {role|bold} role for the {tournament_name|bold} tournament has been removed.
-		 */
-		'34': (arg: { role: unknown, tournament_name: unknown }) => LocalizedString
-		/**
-		 * Your roster {roster_name|bold} has been approved!
-		 */
-		'35': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * Your roster {roster_name|bold} has been denied.
-		 */
-		'36': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * You have been made the squad captain for {squad_name|bold}!
-		 */
-		'37': (arg: { squad_name: unknown }) => LocalizedString
-		/**
-		 * You have been made a team representative for {squad_name|bold}!
-		 */
-		'38': (arg: { squad_name: unknown }) => LocalizedString
-		/**
-		 * You are no longer a team representative for {squad_name|bold}.
-		 */
-		'39': (arg: { squad_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has updated your team {team_name|bold}.
-		 */
-		'40': (arg: { team_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has updated your roster {roster_name|bold}.
-		 */
-		'41': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has registered your team for {tournament_name|bold}!
-		 */
-		'42': (arg: { tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has unregistered your team from {tournament_name|bold}.
-		 */
-		'43': (arg: { tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has created a squad with you as the captain for {tournament_name|bold}!
-		 */
-		'44': (arg: { tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has updated your registration for {tournament_name|bold}.
-		 */
-		'45': (arg: { tournament_name: unknown }) => LocalizedString
-		/**
-		 * A moderator has approved your team transfer to {roster_name|bold}!
-		 */
-		'46': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * Your team transfer to {roster_name|bold} has been denied.
-		 */
-		'47': (arg: { roster_name: unknown }) => LocalizedString
-		/**
-		 * Your ban has been updated. Reason: {reason|bold}. Unban Date: {date|parsedate|bold}
-		 */
-		'48': (arg: { date: unknown, reason: unknown }) => LocalizedString
-		/**
-		 * A moderator has kicked {player_name|bold} from your team {team_name|bold}.
-		 */
-		'49': (arg: { player_name: unknown, team_name: unknown }) => LocalizedString
-		/**
-		 * {player_name|bold} declined their invitation to {squad_name|bold}.
-		 */
-		'50': (arg: { player_name: unknown, squad_name: unknown }) => LocalizedString
-		/**
-		 * Your claim of shadow player {player_name|bold} has been accepted!
-		 */
-		'51': (arg: { player_name: unknown }) => LocalizedString
-		/**
-		 * Your claim of shadow player {player_name|bold} has been denied.
-		 */
-		'52': (arg: { player_name: unknown }) => LocalizedString
+		TYPES: {
+			/**
+			 * Solo
+			 */
+			SOLO: () => LocalizedString
+			/**
+			 * Squad
+			 */
+			SQUAD: () => LocalizedString
+			/**
+			 * Team
+			 */
+			TEAM: () => LocalizedString
+		}
 	}
 	COUNTRIES: {
+		/**
+		 * All Countries
+		 */
+		ALL: () => LocalizedString
 		/**
 		 * Afghanistan
 		 */
@@ -8153,5 +8069,5 @@ export type TranslationFunctions = {
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
 	parsedate: (value: unknown) => unknown
-	uppercase: (value: string | unknown) => unknown
+	uppercase: (value: unknown | string) => unknown
 }

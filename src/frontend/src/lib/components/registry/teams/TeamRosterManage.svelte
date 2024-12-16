@@ -71,7 +71,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TEAM_EDIT.PLAYER_INVITE_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.PLAYER_INVITE_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -99,7 +99,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TEAM_EDIT.DELETE_INVITE_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.DELETE_INVITE_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -133,7 +133,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TEAM_EDIT.PLAYER_KICK_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.PLAYER_KICK_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -157,9 +157,9 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert($LL.TEAM_EDIT.ROSTER_EDIT_SUCCESS());
+      alert($LL.TEAMS.EDIT.ROSTER_EDIT_SUCCESS());
     } else {
-      alert(`${$LL.TEAM_EDIT.ROSTER_EDIT_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -187,14 +187,14 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert($LL.TEAM_EDIT.ROSTER_EDIT_SUCCESS());
+      alert($LL.TEAMS.EDIT.ROSTER_EDIT_SUCCESS());
     } else {
-      alert(`${$LL.TEAM_EDIT.ROSTER_EDIT_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function grantTeamRole(player: RosterPlayer, role_name: string) {
-    let conf = window.confirm($LL.TEAM_EDIT.TEAM_ROLE_ADD_CONFIRM({player_name: player.name, team_role: role_name}));
+    let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_ADD_CONFIRM({player_name: player.name, team_role: role_name}));
     if(!conf) return;
     const payload = {
       player_id: player.player_id,
@@ -210,12 +210,12 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TEAM_EDIT.TEAM_ROLE_ADD_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.TEAM_ROLE_ADD_FAILED()}: ${result['title']}`);
     }
   }
 
   async function removeTeamRole(player: RosterPlayer, role_name: string) {
-    let conf = window.confirm($LL.TEAM_EDIT.TEAM_ROLE_REMOVE_CONFIRM({player_name: player.name, team_role: role_name}));
+    let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_REMOVE_CONFIRM({player_name: player.name, team_role: role_name}));
     if(!conf) return;
     const payload = {
       player_id: player.player_id,
@@ -231,7 +231,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TEAM_EDIT.TEAM_ROLE_REMOVE_FAILED()}: ${result['title']}`);
+      alert(`${$LL.TEAMS.EDIT.TEAM_ROLE_REMOVE_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -239,16 +239,16 @@
 <Section header="{roster.name}">
   <div slot="header_content">
     {#if !roster.is_active}
-      ({$LL.TEAM_EDIT.ROSTER_INACTIVE()})
+      ({$LL.TEAMS.EDIT.ROSTER_INACTIVE()})
     {/if}
     <TagBadge tag={roster.tag} color={roster.color} />
     <GameBadge game={roster.game}/>
     {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
-      <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAM_EDIT.EDIT_ROSTER()}</Button>
+      <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
     {/if}
   </div>
   {roster.players.length}
-  {roster.players.length !== 1 ? $LL.TEAM_PROFILE.PLAYERS() : $LL.TEAM_PROFILE.PLAYERS()}
+  {roster.players.length !== 1 ? $LL.TEAMS.PROFILE.PLAYERS() : $LL.TEAMS.PROFILE.PLAYERS()}
   {#if roster.players.length}
     <div class="section">
       <Table>
@@ -260,9 +260,9 @@
         <thead>
           <tr>
             <th></th>
-            <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
             <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
-            <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
+            <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
             <th />
           </tr>
         </thead>
@@ -280,28 +280,28 @@
                 <Dropdown>
                   {#if can_kick(player)}
                     <DropdownItem on:click={() => kickDialog(player)}>
-                      {$LL.TEAM_EDIT.KICK_PLAYER()}
+                      {$LL.TEAMS.EDIT.KICK_PLAYER()}
                     </DropdownItem>
                   {/if}
                   {#if check_team_permission(user_info, team_permissions.manage_team_roles, roster.team_id)}
                     {#if player.is_leader}
                       <DropdownItem on:click={() => removeTeamRole(player, "Leader")}>
-                        {$LL.TEAM_EDIT.REMOVE_LEADER()}
+                        {$LL.TEAMS.EDIT.REMOVE_LEADER()}
                       </DropdownItem>
                     {:else if !player.is_manager}
                       <DropdownItem on:click={() => grantTeamRole(player, "Leader")}>
-                        {$LL.TEAM_EDIT.MAKE_LEADER()}
+                        {$LL.TEAMS.EDIT.MAKE_LEADER()}
                       </DropdownItem>
                     {/if}
                   {/if}
                   {#if check_permission(user_info, team_permissions.manage_team_roles)}
                     {#if player.is_manager}
                       <DropdownItem on:click={() => removeTeamRole(player, "Manager")}>
-                        {$LL.TEAM_EDIT.REMOVE_MANAGER()}
+                        {$LL.TEAMS.EDIT.REMOVE_MANAGER()}
                       </DropdownItem>
                     {:else}
                       <DropdownItem on:click={() => grantTeamRole(player, "Manager")}>
-                        {$LL.TEAM_EDIT.MAKE_MANAGER()}
+                        {$LL.TEAMS.EDIT.MAKE_MANAGER()}
                       </DropdownItem>
                     {/if}
                   {/if}
@@ -316,7 +316,7 @@
   {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
     {#if roster.invites.length}
       <div class="section">
-        <h3>{$LL.TEAM_EDIT.INVITATIONS()}</h3>
+        <h3>{$LL.TEAMS.EDIT.INVITATIONS()}</h3>
         <Table>
           <col class="country" />
           <col class="name" />
@@ -326,9 +326,9 @@
           <thead>
             <tr>
               <th></th>
-              <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
+              <th>{$LL.COMMON.NAME()}</th>
               <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
-              <th class="mobile-hide">{$LL.TEAM_PROFILE.JOIN_DATE()}</th>
+              <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
               <th />
             </tr>
           </thead>
@@ -345,7 +345,7 @@
                 <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
                 <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
                 <td>
-                  <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAM_EDIT.RETRACT_INVITE()}</Button>
+                  <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button>
                 </td>
               </tr>
             {/each}
@@ -355,83 +355,83 @@
     {/if}
     {#if check_permission(user_info, permissions.invite_to_team, true)}
       <div class="section">
-        <b>{$LL.TEAM_EDIT.INVITE_PLAYER()}</b>
+        <b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b>
         <PlayerSearch bind:player={invite_player} game={roster.game} />
         {#if invite_player}
           {#if roster.game === 'mkw'}
             <div>
-              {$LL.BAGGER()}?
+              {$LL.COMMON.BAGGER()}?
               <select bind:value={invite_player_bagger}>
                 <option value={false}>
-                  {$LL.NO()}
+                  {$LL.COMMON.NO()}
                 </option>
                 <option value={true}>
-                  {$LL.YES()}
+                  {$LL.COMMON.YES()}
                 </option>
               </select>
             </div>
           {/if}
-          <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAM_EDIT.INVITE_PLAYER()}</Button>
+          <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</Button>
         {/if}
       </div>
     {/if}
     
   {:else if roster.approval_status === "pending"}
     <div>
-      {$LL.TEAM_EDIT.ROSTER_PENDING_APPROVAL()}
+      {$LL.TEAMS.EDIT.ROSTER_PENDING_APPROVAL()}
     </div>
   {/if}
 </Section>
 
-<Dialog bind:this={kick_dialog} header={$LL.TEAM_EDIT.KICK_PLAYER()}>
-  {$LL.TEAM_EDIT.KICK_CONFIRM({player_name: curr_player?.name})}
+<Dialog bind:this={kick_dialog} header={$LL.TEAMS.EDIT.KICK_PLAYER()}>
+  {$LL.TEAMS.EDIT.KICK_CONFIRM({player_name: curr_player?.name})}
   <div>
-    <Button on:click={() => kickPlayer(curr_player)}>{$LL.TEAM_EDIT.KICK()}</Button>
-    <Button on:click={kick_dialog.close}>{$LL.CANCEL()}</Button>
+    <Button on:click={() => kickPlayer(curr_player)}>{$LL.TEAMS.EDIT.KICK()}</Button>
+    <Button on:click={kick_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
   </div>
 </Dialog>
 
-<Dialog bind:this={edit_dialog} header={$LL.TEAM_EDIT.EDIT_ROSTER()}>
+<Dialog bind:this={edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
   <RosterNameTagRequest {roster}/>
   <br/>
   <form method="post" on:submit|preventDefault={editRoster}>
-    <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
+    <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
     <select name="recruiting">
-      <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-      <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+      <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+      <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
     </select>
     <br />
-    <Button type="submit">{$LL.SUBMIT()}</Button>
+    <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
   </form>
 </Dialog>
 
-<Dialog bind:this={force_edit_dialog} header={$LL.TEAM_EDIT.EDIT_ROSTER()}>
+<Dialog bind:this={force_edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
   <form method="post" on:submit|preventDefault={forceEditRoster}>
-    <label for="name">{$LL.TEAM_EDIT.ROSTER_NAME()}</label>
+    <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
     <input name="name" type="text" value={roster.name} required pattern="^\S.*\S$|^\S$"/>
     <br />
-    <label for="tag">{$LL.TEAM_EDIT.ROSTER_TAG()}</label>
+    <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
     <input name="tag" type="text" value={roster.tag} required pattern="^\S.*\S$|^\S$"/>
-    <label for="recruiting">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
+    <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
     <select name="recruiting">
-      <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-      <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+      <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+      <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
     </select>
     <br />
-    <label for="approval_status">{$LL.TEAM_PROFILE.APPROVAL_STATUS.STATUS()}</label>
+    <label for="approval_status">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.STATUS()}</label>
     <select name="approval_status" value={roster.approval_status}>
-      <option value="approved">{$LL.TEAM_PROFILE.APPROVAL_STATUS.APPROVED()}</option>
-      <option value="denied">{$LL.TEAM_PROFILE.APPROVAL_STATUS.DENIED()}</option>
-      <option value="pending">{$LL.TEAM_PROFILE.APPROVAL_STATUS.PENDING()}</option>
+      <option value="approved">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.APPROVED()}</option>
+      <option value="denied">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.DENIED()}</option>
+      <option value="pending">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.PENDING()}</option>
     </select>
     <br />
-    <label for="is_active">{$LL.TEAM_PROFILE.ACTIVE_HISTORICAL()}</label>
+    <label for="is_active">{$LL.TEAMS.PROFILE.ACTIVE_HISTORICAL()}</label>
     <select name="is_active" value={roster.is_active ? 'true' : 'false'}>
-      <option value="true">{$LL.TEAM_PROFILE.ACTIVE()}</option>
-      <option value="false">{$LL.TEAM_PROFILE.HISTORICAL()}</option>
+      <option value="true">{$LL.TEAMS.PROFILE.ACTIVE()}</option>
+      <option value="false">{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
     </select>
     <br />
-    <Button type="submit">{$LL.TEAM_EDIT.EDIT_ROSTER()}</Button>
+    <Button type="submit">{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
   </form>
 </Dialog>
 

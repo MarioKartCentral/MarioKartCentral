@@ -6,5 +6,5 @@
 </script>
 
 <Badge badgeClass={(recruiting ? 'recruiting' : 'not_recruiting') + '_badge wide'}>
-  {recruiting ? $LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING() : $LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}
+  {recruiting ? $LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING() : $LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}
 </Badge>

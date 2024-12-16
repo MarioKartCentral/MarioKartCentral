@@ -87,10 +87,10 @@
                 <thead>
                     <tr>
                         <th/>
-                        <th>{$LL.PLAYER()}</th>
+                        <th>{$LL.COMMON.PLAYER()}</th>
                         <th/>
                         <th>{$LL.MODERATOR.CLAIMED_PLAYER()}</th>
-                        <th class="mobile-hide">{$LL.DATE()}</th>
+                        <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
                         <th>{$LL.MODERATOR.APPROVE()}</th>
                     </tr>
                 </thead>
@@ -125,7 +125,7 @@
         {/if}
     </Section>
 {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 <style>

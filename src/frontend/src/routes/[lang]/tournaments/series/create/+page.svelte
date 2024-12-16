@@ -14,5 +14,5 @@
 {#if check_permission(user_info, permissions.create_series)}
   <CreateEditTournamentSeriesForm />
 {:else}
-  {$LL.NO_PERMISSION()}
+  {$LL.COMMON.NO_PERMISSION()}
 {/if}

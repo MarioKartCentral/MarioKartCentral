@@ -105,7 +105,7 @@
 {#if is_loaded}
     <Section header={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>
         <div slot="header_content">
-            <Button href="/{$page.params.lang}/tournaments/details?id={id}">{$LL.BACK()}</Button>
+            <Button href="/{$page.params.lang}/tournaments/details?id={id}">{$LL.COMMON.BACK()}</Button>
         </div>
     </Section>
     <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
@@ -119,7 +119,7 @@
             <textarea bind:value={text}/>
         </div>
         <div>
-            <Button on:click={savePlacements}>{$LL.SAVE()}</Button>
+            <Button on:click={savePlacements}>{$LL.COMMON.SAVE()}</Button>
         </div>
     </Section>
 {/if}

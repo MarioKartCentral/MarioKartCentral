@@ -198,7 +198,7 @@
   <thead>
     <tr>
       <th />
-      <th>{$LL.NAME()}</th>
+      <th>{$LL.COMMON.NAME()}</th>
       {#if tournament.mii_name_required && exclude_invites}
         <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_NAME}</th>
       {/if}
@@ -244,7 +244,7 @@
             {#if is_privileged}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
-                <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.EDIT()}</DropdownItem>
+                <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
                 <DropdownItem on:click={() => unregisterPlayer(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
               </Dropdown>
             {:else if my_player?.player_id === player.player_id && check_registrations_open(tournament)}
@@ -252,7 +252,7 @@
               <Dropdown>
                 {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
                   (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
-                  <DropdownItem on:click={() => edit_reg_dialog.open(player)}>{$LL.EDIT()}</DropdownItem>
+                  <DropdownItem on:click={() => edit_reg_dialog.open(player)}>{$LL.COMMON.EDIT()}</DropdownItem>
                 {/if}
                 <DropdownItem on:click={unregister}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER()}</DropdownItem>
               </Dropdown>

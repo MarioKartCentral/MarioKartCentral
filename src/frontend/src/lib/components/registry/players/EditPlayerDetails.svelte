@@ -26,7 +26,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`${$LL.PLAYER_PROFILE.REQUEST_NAME_CHANGE_FAILED()}: ${result['title']}`);
+            alert(`${$LL.PLAYERS.PROFILE.REQUEST_NAME_CHANGE_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -51,7 +51,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`${$LL.PLAYER_PROFILE.EDIT_PLAYER_FAILED()}: ${result['title']}`);
+            alert(`${$LL.PLAYERS.PROFILE.EDIT_PLAYER_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -60,14 +60,14 @@
     {#if !pending_change}
         <form method="POST" on:submit|preventDefault={requestNameChange}>
             <div class="option">
-                <label for="name">{$LL.PLAYER_PROFILE.DISPLAY_NAME()}</label>
+                <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
                 <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
             </div>
-            <Button type="submit">{$LL.PLAYER_PROFILE.REQUEST_NAME_CHANGE()}</Button>
+            <Button type="submit">{$LL.PLAYERS.PROFILE.REQUEST_NAME_CHANGE()}</Button>
         </form>
     {:else}
         <div class="bold">
-            {$LL.PLAYER_PROFILE.PENDING_NAME_CHANGE()}
+            {$LL.PLAYERS.PROFILE.PENDING_NAME_CHANGE()}
         </div>
         <div>
             {player.name} -&gt; {pending_change.name}
@@ -76,21 +76,21 @@
 {:else}
     <form method="POST" on:submit|preventDefault={forceEditPlayer}>
         <div class="option">
-            <label for="name">{$LL.PLAYER_PROFILE.DISPLAY_NAME()}</label>
+            <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
             <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
         </div>
         <div class="option">
-            <label for="country">{$LL.COUNTRY()}</label>
+            <label for="country">{$LL.COMMON.COUNTRY()}</label>
             <CountrySelect value={player.country_code} is_required={true}/>
         </div>
         <div class="option">
-            <label for="is_hidden">{$LL.PLAYER_PROFILE.SHOW_ON_PLAYER_LIST()}</label>
+            <label for="is_hidden">{$LL.PLAYERS.PROFILE.SHOW_ON_PLAYER_LIST()}</label>
             <select name="is_hidden" value={player.is_hidden} required>
-                <option value={false}>{$LL.SHOW()}</option>
-                <option value={true}>{$LL.HIDE()}</option>
+                <option value={false}>{$LL.COMMON.SHOW()}</option>
+                <option value={true}>{$LL.COMMON.HIDE()}</option>
             </select>
         </div>
-        <Button type="submit">{$LL.EDIT()}</Button>
+        <Button type="submit">{$LL.COMMON.EDIT()}</Button>
     </form>
 {/if}
 

@@ -31,6 +31,6 @@
     <CreateEditTournamentForm tournament_id={tournament.id} data={tournament} 
     series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} />
   {:else}
-    {$LL.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/if}
