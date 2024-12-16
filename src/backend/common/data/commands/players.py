@@ -550,3 +550,26 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
                     claimed_player = PlayerBasic(claim_player_id, claim_player_name, claim_player_country)
                     claims.append(PlayerClaim(claim_id, date, approval_status, player, claimed_player))
         return claims
+
+@dataclass
+class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        history: list[PlayerTransferItem] = []
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.join_date, tm.leave_date, tr.name as "roster_name"
+                FROM team_members as tm
+                JOIN team_rosters as tr
+                ON tm.roster_id = tr.id
+                JOIN teams as t
+                ON t.id = tr.team_id
+                WHERE player_id = ?
+                ORDER BY tm.join_date ASC;''',
+                (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    team_id, team_name, game, mode, join_date, leave_date, roster_name = row
+                    history.append(PlayerTransferItem(team_id, team_name, game, mode, join_date, leave_date, roster_name))
+                results = PlayerTransferHistory(history)
+                return results

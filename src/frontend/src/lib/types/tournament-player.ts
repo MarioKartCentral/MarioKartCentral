@@ -20,3 +20,9 @@ export type TournamentPlayer = {
   is_invite: boolean;
   is_bagger_clause: boolean;
 };
+
+export type TournamentPlayerDetailsShort = {
+  player_id: number;
+  player_name: string;
+  squad_id: number;
+};

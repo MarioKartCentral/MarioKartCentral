@@ -84,7 +84,7 @@ class GetSoloPlacementsCommand(Command[TournamentPlacementList]):
                 placed_ids = [p.registration_id for p in placed_players]
                 unplaced_players = [TournamentPlacementDetailed(player.id, None, None, None, False, player, None) for player in self.players if player.id not in placed_ids]
                 return TournamentPlacementList(self.tournament_id, False, placed_players, unplaced_players)
-            
+
 @dataclass
 class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
     tournament_id: int
@@ -101,3 +101,137 @@ class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
                 unplaced_squads = [TournamentPlacementDetailed(squad.id, None, None, None, False, None, squad) for squad in self.squads if squad.id not in placed_ids]
                 return TournamentPlacementList(self.tournament_id, True, placed_squads, unplaced_squads)
 
+
+@dataclass
+class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
+    """
+    Get all tournament placement data for a particular player
+    - Solo, Squad, & Team
+    """
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        tournament_solo_and_squad_results: list[PlayerTournamentPlacement] = []
+        tournament_team_results: list[PlayerTournamentPlacement] = []
+        async with db_wrapper.connect(readonly=True) as db:
+            # Solo placements
+            async with db.execute("""
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                FROM tournament_players as tp 
+                INNER JOIN tournaments as t
+                ON tp.tournament_id = t.id 
+                LEFT JOIN tournament_solo_placements as tsp 
+                ON tp.id = tsp.player_id
+                WHERE t.show_on_profiles = 1
+                AND tp.squad_id IS NULL
+                AND t.teams_only = 0
+                AND tp.player_id = ?
+                """, (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_solo_and_squad_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, None, None, None, date_start, date_end, placement, placement_description, is_disqualified, []))
+
+            # Squad placements
+            squad_dict: dict[int, PlayerTournamentPlacement] = {}
+            async with db.execute("""
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, tsp.squad_id, t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                FROM tournament_players as tp 
+                INNER JOIN tournaments as t
+                ON tp.tournament_id = t.id 
+                LEFT JOIN tournament_squad_placements as tsp 
+                ON tp.squad_id = tsp.squad_id
+                WHERE t.show_on_profiles = 1
+                AND tp.squad_id IS NOT NULL
+                AND t.teams_only = 0
+                AND tp.player_id = ?
+                """, (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, squad_id, date_start, date_end, placement, placement_description, is_disqualified = row
+                    squad_placement = PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, None, None, date_start, date_end, placement, placement_description, is_disqualified, [])
+                    squad_dict[squad_id] = squad_placement
+                    tournament_solo_and_squad_results.append(squad_placement)
+
+            # Get partner information
+            async with db.execute("""
+                SELECT tp.player_id, p.name, tp.squad_id
+                FROM tournament_players as tp
+                INNER JOIN tournament_squad_placements as tsp
+                ON tp.squad_id = tsp.squad_id
+                INNER JOIN tournament_squads as ts
+                ON tsp.squad_id = ts.id
+                INNER JOIN players as p
+                ON p.id = tp.player_id
+                WHERE tsp.squad_id 
+                IN (SELECT squad_id FROM tournament_players WHERE player_id = ?)
+                AND tsp.squad_id NOT IN (SELECT squad_id FROM team_squad_registrations)
+                AND tp.player_id <> ?;
+                """, (self.player_id,self.player_id)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, player_name, squad_id = row
+                    if squad_id in squad_dict:
+                        partner_details = TournamentPlayerDetailsShort(player_id, player_name, squad_id)
+                        squad_dict[squad_id].partners.append(partner_details)
+
+            # Team placements
+            async with db.execute("""
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, tsp.squad_id, teams.name as "squad_name", teams.id as "team_id", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                FROM tournament_players as tp 
+                INNER JOIN tournaments as t
+                ON tp.tournament_id = t.id 
+                LEFT JOIN tournament_squad_placements as tsp 
+                ON tp.squad_id = tsp.squad_id
+                INNER JOIN team_squad_registrations as tsr
+                ON tp.squad_id = tsr.squad_id
+                INNER JOIN team_rosters as tr ON
+                tsr.roster_id = tr.id
+                INNER JOIN teams
+                ON tr.team_id = teams.id
+                WHERE t.show_on_profiles = 1
+                AND tp.squad_id IS NOT NULL
+                AND tsp.squad_id IN (SELECT squad_id FROM team_squad_registrations)
+                AND tp.player_id = ?
+                ORDER BY t.date_start DESC;
+                """, (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_team_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified, []))
+                results = PlayerTournamentResults(tournament_solo_and_squad_results, tournament_team_results)
+                return results
+
+
+@dataclass
+class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
+    """
+    Get all tournament placement data for a particular team
+    """
+    team_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        tournament_team_results: list[TeamTournamentPlacement] = []
+        async with db_wrapper.connect(readonly=True) as db:
+            # Team placements
+            async with db.execute("""
+                SELECT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, teams.id as "team_id", teams.name as "team_name", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
+                FROM tournaments as t
+                INNER JOIN team_squad_registrations as tsr
+                ON tsr.tournament_id = t.id
+                LEFT JOIN tournament_squad_placements as tsp 
+                ON tsr.squad_id = tsp.squad_id
+                INNER JOIN team_rosters as tr ON
+                tsr.roster_id = tr.id
+                INNER JOIN teams
+                ON tr.team_id = teams.id
+                WHERE t.show_on_profiles = 1
+                AND teams.id = ?
+                ORDER BY t.date_start DESC;
+                """, (self.team_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tournament_id, tournament_name, game, mode, team_id, team_name, date_start, date_end, placement, placement_description, is_disqualified = row
+                    tournament_team_results.append(TeamTournamentPlacement(tournament_id, tournament_name, game, mode, team_id, team_name, date_start, date_end, placement, placement_description, is_disqualified))
+                results = TeamTournamentResults(tournament_team_results)
+                return results
