@@ -18,7 +18,6 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
-        data = self.data
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
                 async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
