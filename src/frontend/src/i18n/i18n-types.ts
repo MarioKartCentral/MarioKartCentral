@@ -901,6 +901,18 @@ type RootTranslation = {
 		 */
 		TOURNAMENTS: string
 		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​L​i​s​t​i​n​g
+		 */
+		TOURNAMENT_LISTING: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​S​e​r​i​e​s
+		 */
+		TOURNAMENT_SERIES: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​T​e​m​p​l​a​t​e​s
+		 */
+		TOURNAMENT_TEMPLATES: string
+		/**
 		 * T​i​m​e​ ​T​r​i​a​l​s
 		 */
 		TIME_TRIALS: string
@@ -912,6 +924,18 @@ type RootTranslation = {
 		 * R​e​g​i​s​t​r​y
 		 */
 		REGISTRY: string
+		/**
+		 * P​l​a​y​e​r​s
+		 */
+		PLAYERS: string
+		/**
+		 * T​e​a​m​s
+		 */
+		TEAMS: string
+		/**
+		 * R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		RECENT_TRANSCATIONS: string
 		/**
 		 * D​i​s​c​o​r​d
 		 */
@@ -960,6 +984,10 @@ type RootTranslation = {
 		 * M​o​d​e​r​a​t​o​r
 		 */
 		MODERATOR: string
+		/**
+		 * L​o​g​i​n​/​R​e​g​i​s​t​e​r
+		 */
+		LOGIN_REGISTER: string
 	}
 	NOTIFICATION: {
 		/**
@@ -4970,6 +4998,18 @@ export type TranslationFunctions = {
 		 */
 		TOURNAMENTS: () => LocalizedString
 		/**
+		 * Tournament Listing
+		 */
+		TOURNAMENT_LISTING: () => LocalizedString
+		/**
+		 * Tournament Series
+		 */
+		TOURNAMENT_SERIES: () => LocalizedString
+		/**
+		 * Tournament Templates
+		 */
+		TOURNAMENT_TEMPLATES: () => LocalizedString
+		/**
 		 * Time Trials
 		 */
 		TIME_TRIALS: () => LocalizedString
@@ -4981,6 +5021,18 @@ export type TranslationFunctions = {
 		 * Registry
 		 */
 		REGISTRY: () => LocalizedString
+		/**
+		 * Players
+		 */
+		PLAYERS: () => LocalizedString
+		/**
+		 * Teams
+		 */
+		TEAMS: () => LocalizedString
+		/**
+		 * Recent Transactions
+		 */
+		RECENT_TRANSCATIONS: () => LocalizedString
 		/**
 		 * Discord
 		 */
@@ -5029,6 +5081,10 @@ export type TranslationFunctions = {
 		 * Moderator
 		 */
 		MODERATOR: () => LocalizedString
+		/**
+		 * Login/Register
+		 */
+		LOGIN_REGISTER: () => LocalizedString
 	}
 	NOTIFICATION: {
 		/**

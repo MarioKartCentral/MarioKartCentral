@@ -239,9 +239,15 @@ const en_us: BaseTranslation = {
   },
   NAVBAR: {
     TOURNAMENTS: 'Tournaments',
+    TOURNAMENT_LISTING: 'Tournament Listing',
+    TOURNAMENT_SERIES: 'Tournament Series',
+    TOURNAMENT_TEMPLATES: 'Tournament Templates',
     TIME_TRIALS: 'Time Trials',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
+    PLAYERS: 'Players',
+    TEAMS: 'Teams',
+    RECENT_TRANSCATIONS: 'Recent Transactions',
     DISCORD: 'Discord',
     TYPE: 'Type',
     IS_READ: 'Is Read',
@@ -254,6 +260,7 @@ const en_us: BaseTranslation = {
     HOME_PAGE: 'Home Page',
     NOTIFICATIONS: 'Notifications',
     MODERATOR: 'Moderator',
+    LOGIN_REGISTER: 'Login/Register',
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',
