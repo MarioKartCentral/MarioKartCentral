@@ -29,7 +29,7 @@
     if (response.status < 300) {
       goto('/');
     } else {
-      alert('Logout failed');
+      alert($LL.LOGIN.LOGOUT_FAILED());
     }
   }
 </script>

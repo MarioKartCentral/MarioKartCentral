@@ -144,6 +144,9 @@ const en_us: BaseTranslation = {
     LOGOUT: 'Logout',
     EMAIL: 'Email',
     PASSWORD: 'Password',
+    LOGIN_FAILED: 'Login Failed',
+    LOGOUT_FAILED: 'Logout Failed',
+    REGISTRATION_FAILED: 'Registration Failed',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',

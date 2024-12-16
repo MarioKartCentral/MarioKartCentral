@@ -538,6 +538,18 @@ type RootTranslation = {
 		 * P​a​s​s​w​o​r​d
 		 */
 		PASSWORD: string
+		/**
+		 * L​o​g​i​n​ ​F​a​i​l​e​d
+		 */
+		LOGIN_FAILED: string
+		/**
+		 * L​o​g​o​u​t​ ​F​a​i​l​e​d
+		 */
+		LOGOUT_FAILED: string
+		/**
+		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​F​a​i​l​e​d
+		 */
+		REGISTRATION_FAILED: string
 	}
 	LOUNGE: {
 		/**
@@ -4641,6 +4653,18 @@ export type TranslationFunctions = {
 		 * Password
 		 */
 		PASSWORD: () => LocalizedString
+		/**
+		 * Login Failed
+		 */
+		LOGIN_FAILED: () => LocalizedString
+		/**
+		 * Logout Failed
+		 */
+		LOGOUT_FAILED: () => LocalizedString
+		/**
+		 * Registration Failed
+		 */
+		REGISTRATION_FAILED: () => LocalizedString
 	}
 	LOUNGE: {
 		/**

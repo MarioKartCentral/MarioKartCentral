@@ -26,7 +26,12 @@
                 window.location.reload();
             }
         } else {
-            alert(`${isLogin ? 'Login' : 'Registration'} failed`);
+            if(isLogin) {
+                alert($LL.LOGIN.LOGIN_FAILED())
+            }
+            else {
+                alert($LL.LOGIN.REGISTRATION_FAILED())
+            }
         }
     }
 </script>

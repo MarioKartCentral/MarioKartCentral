@@ -46,7 +46,7 @@
       if (response.status < 300) {
         window.location.reload();
       } else {
-        alert('Logout failed');
+        alert($LL.LOGIN.LOGOUT_FAILED());
     }
   }
 
