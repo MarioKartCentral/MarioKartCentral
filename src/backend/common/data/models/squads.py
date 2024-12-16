@@ -86,6 +86,7 @@ class TournamentSquadDetails():
     is_approved: bool
     players: list[SquadPlayerDetails]
 
+
 @dataclass
 class TournamentTeam(TournamentSquadDetails):
     roster_id: int

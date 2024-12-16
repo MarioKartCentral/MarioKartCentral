@@ -355,6 +355,7 @@ class CheckTournamentVisibilityCommand(Command[bool]):
                     raise Problem("Tournament not found", status=404)
                 is_viewable = row[0]
                 return bool(is_viewable)
+
             
 @dataclass
 class CheckIfSeriesHasTournament(Command[bool]):
