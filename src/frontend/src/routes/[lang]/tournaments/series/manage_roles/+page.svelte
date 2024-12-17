@@ -8,6 +8,7 @@
     import { get_highest_series_role_position } from "$lib/util/permissions";
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
+    import LL from "$i18n/i18n-svelte";
 
     let roles: Role[] = [];
     let series_id = 0;
@@ -36,9 +37,9 @@
     });
 </script>
 
-<Section header="Series Roles">
+<Section header={$LL.TOURNAMENTS.SERIES.SERIES_ROLES()}>
     <div slot="header_content">
-        <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
+        <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES()}</Button>
     </div>
     {#if roles.length}
         <div class="select">

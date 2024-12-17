@@ -11,6 +11,7 @@
     import ConfirmButton from "$lib/components/common/buttons/ConfirmButton.svelte";
     import CancelButton from "$lib/components/common/buttons/CancelButton.svelte";
     import { locale } from "$i18n/i18n-svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let user_info: UserInfo;
 
@@ -74,7 +75,7 @@
 </script>
 
 {#if check_permission(user_info, permissions.manage_shadow_players)}
-    <Section header="Unapproved Player Claims">
+    <Section header={$LL.MODERATOR.UNAPPROVED_PLAYER_CLAIMS()}>
         {#if claims.length}
             <Table>
                 <col class="country"/>
@@ -86,11 +87,11 @@
                 <thead>
                     <tr>
                         <th/>
-                        <th>Player</th>
+                        <th>{$LL.COMMON.PLAYER()}</th>
                         <th/>
-                        <th>Claimed Player</th>
-                        <th class="mobile-hide">Date</th>
-                        <th>Approve?</th>
+                        <th>{$LL.MODERATOR.CLAIMED_PLAYER()}</th>
+                        <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+                        <th>{$LL.MODERATOR.APPROVE()}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -120,11 +121,11 @@
                 </tbody>
             </Table>
         {:else}
-            No player claims.
+            {$LL.MODERATOR.NO_PLAYER_CLAIMS()}
         {/if}
     </Section>
 {:else}
-    You do not have permission to access this page.
+    {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 <style>

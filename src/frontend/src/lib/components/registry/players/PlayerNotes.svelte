@@ -13,7 +13,7 @@
 </script>
 
 <div>
-    <h1 class="text-lg font-bold mb-1.5">{$LL.PLAYER_PROFILE.PLAYER_NOTES()}</h1>
+    <h1 class="text-lg font-bold mb-1.5">{$LL.PLAYERS.PROFILE.PLAYER_NOTES()}</h1>
     {#if notes}
         <div>{notes.notes}</div>
         <div class="text-sm text-slate-300 pt-1.5">
@@ -24,6 +24,6 @@
             <span>{new Date(notes.date * 1000).toLocaleString($page.params.lang, options)}</span>
         </div>
     {:else}
-        {$LL.PLAYER_PROFILE.NONE()}
+        {$LL.COMMON.NONE()}
     {/if}
 </div>

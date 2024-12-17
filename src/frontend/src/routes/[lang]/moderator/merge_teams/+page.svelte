@@ -3,6 +3,7 @@
     import type { Team } from "$lib/types/team";
     import TeamSearch from "$lib/components/common/TeamSearch.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let from_team: Team | null = null;
     let to_team: Team | null = null;
@@ -12,10 +13,10 @@
             return;
         }
         if(from_team.id == to_team.id) {
-            alert("Please select two different teams");
+            alert($LL.MODERATOR.SELECT_UNIQUE_TEAMS());
             return;
         }
-        let conf = window.confirm(`Are you sure you want to merge all of ${from_team.name}'s data into ${to_team.name}? This will DELETE ${from_team.name} completely.`);
+        let conf = window.confirm($LL.MODERATOR.MERGE_TEAMS_CONFIRM({old_team: from_team.name, new_team: to_team.name}));
         if(!conf) return;
         const payload = {
             from_team_id: from_team.id,
@@ -29,31 +30,31 @@
         });
         const result = await res.json();
         if (res.status < 300) {
-            alert('Successfully merged teams!');
+            alert($LL.MODERATOR.MERGE_TEAMS_SUCCESS());
             window.location.reload();
         } else {
-            alert(`Merging teams failed: ${result['title']}`);
+            alert(`${$LL.MODERATOR.MERGE_TEAMS_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
-<Section header="Merge Teams">
+<Section header={$LL.MODERATOR.MERGE_TEAMS()}>
     <div class="option">
         <div>
-            Old Team:
+            {$LL.MODERATOR.OLD_TEAM()}:
         </div>
         <TeamSearch bind:team={from_team}/>
     </div>
     
     {#if from_team}
         <div class="option">
-            <div>New Team:</div>
+            <div>{$LL.MODERATOR.NEW_TEAM()}:</div>
             <TeamSearch bind:team={to_team}/>
         </div>
         
     {/if}
     {#if to_team}
-        <Button on:click={mergeTeams}>Merge Teams</Button>
+        <Button on:click={mergeTeams}>{$LL.MODERATOR.MERGE_TEAMS()}</Button>
     {/if}
 </Section>
 

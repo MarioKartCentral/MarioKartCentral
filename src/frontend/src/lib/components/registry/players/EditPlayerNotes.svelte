@@ -39,11 +39,11 @@
 
 <form on:submit|preventDefault={editNotes}>
     <div>
-        <label for="notes">{$LL.PLAYER_PROFILE.PLAYER_NOTES()}</label> <br/>
+        <label for="notes">{$LL.PLAYERS.PROFILE.PLAYER_NOTES()}</label> <br/>
         <textarea name='notes' class="w-full h-28" bind:value={newNotes}></textarea>
     </div>
     <br/>
-    <Button type="submit" disabled={newNotes.trim() === notes}>{$LL.PLAYER_PROFILE.SAVE()}</Button>
-    <Button color='red' on:click={handleCancel}>{$LL.PLAYER_PROFILE.CANCEL()}</Button>
-    <Button color='dark' extra_classes="float-right" on:click={() => newNotes = ""}>{$LL.PLAYER_PROFILE.CLEAR()}</Button>
+    <Button type="submit" disabled={newNotes.trim() === notes}>{$LL.COMMON.SAVE()}</Button>
+    <Button color='red' on:click={handleCancel}>{$LL.COMMON.CANCEL()}</Button>
+    <Button color='dark' extra_classes="float-right" on:click={() => newNotes = ""}>{$LL.PLAYERS.PROFILE.CLEAR()}</Button>
 </form>

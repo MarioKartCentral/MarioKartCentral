@@ -6,6 +6,7 @@
     import { onMount } from "svelte";
     import PlacementItem from "./PlacementItem.svelte";
     import { sort_placement_list } from "$lib/util/util";
+    import LL from "$i18n/i18n-svelte";
 
     export let tournament: Tournament;
     let placements: TournamentPlacementList;
@@ -31,7 +32,7 @@
 </script>
 
 {#if placement_list.length}
-    <Section header="Tournament Placements">
+    <Section header={$LL.TOURNAMENTS.TOURNAMENT_PLACEMENTS()}>
         <div slot="header_content">
             {#if placement_list.length > num_display}
                 <button on:click={() => show_all = !show_all}>

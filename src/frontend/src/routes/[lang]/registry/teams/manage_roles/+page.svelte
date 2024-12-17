@@ -9,6 +9,7 @@
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
     import { check_permission, team_permissions } from "$lib/util/permissions";
+    import LL from "$i18n/i18n-svelte";
 
     let roles: Role[] = [];
     let team_id = 0;
@@ -40,7 +41,7 @@
 </script>
 
 {#if check_permission(user_info, team_permissions.manage_team_roles)}
-    <Section header="Team Roles">
+    <Section header={$LL.TEAMS.EDIT.TEAM_ROLES()}>
         <div slot="header_content">
             <Button href="/{$page.params.lang}/registry/teams/profile?id={team_id}">Back to Team</Button>
         </div>
@@ -62,7 +63,7 @@
         </div>
     </Section>
 {:else}
-    You do not have permission to access this page.
+    {$LL.COMMON.NO_PERMISSION()}
 {/if}
 
 

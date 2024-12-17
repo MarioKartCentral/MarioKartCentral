@@ -2,6 +2,7 @@
     import type { PlayerInfo } from "$lib/types/player-info";
     import Section from "$lib/components/common/Section.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let player: PlayerInfo;
 
@@ -17,22 +18,21 @@
         });
         const result = await response.json();
         if (response.status < 300) {
-            alert("Successfully sent a claim for this player to staff!");
+            alert($LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER_SUCCESS());
             window.location.reload();
         }
         else {
-            alert(`Claiming player failed: ${result['title']}`);
+            alert(`${$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
-<Section header="Claim Player">
+<Section header={$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER()}>
     <div>
-        This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central.
-        To request to claim this player, click the button below.
+        {$LL.PLAYERS.SHADOW_PLAYERS.UNCLAIMED_PLAYER_DESCRIPTION()}
     </div>
     <div class="claim-button">
-        <Button on:click={claimPlayer}>Claim Player</Button>
+        <Button on:click={claimPlayer}>{$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER()}</Button>
     </div>
     
 </Section>

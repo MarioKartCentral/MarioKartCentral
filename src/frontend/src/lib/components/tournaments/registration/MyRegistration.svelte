@@ -1,42 +1,27 @@
 <script lang="ts">
-  import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
+  import type { MyTournamentRegistration, RegistrationDetails } from '$lib/types/tournaments/my-tournament-registration';
   import type { Tournament } from '$lib/types/tournament';
   import TournamentInviteList from './TournamentInviteList.svelte';
   import MySquad from './MySquad.svelte';
   import TournamentPlayerList from '../TournamentPlayerList.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { BadgeCheckSolid } from 'flowbite-svelte-icons';
+  import LL from '$i18n/i18n-svelte';
 
   export let registration: MyTournamentRegistration;
   export let tournament: Tournament;
 
-  function getRegSquad() {
-    for (let squad of registration.squads) {
-      if (squad.id === registration.player?.squad_id) {
-        return squad;
-      }
-    }
-    return null;
+  function getInvitedSquads() {
+    let invite_registrations = registration.registrations.filter((r) => r.player.is_invite);
+    // this line is mostly for the linter to know that none of the squad values will be null
+    return invite_registrations.map((r) => r.squad).filter((s) => s !== null);
   }
 
-  let squad = getRegSquad();
-
-  function getInvites() {
-    let squads = [];
-    for (let squad of registration.squads) {
-      if (squad.id !== registration.player?.squad_id) {
-        squads.push(squad);
-      }
-    }
-    return squads;
-  }
-
-  async function toggleCheckin() {
-    if(!registration.player) return;
+  async function toggleCheckin(reg: RegistrationDetails) {
     const payload = {
       tournament_id: tournament.id,
-      squad_id: registration.player.squad_id,
-      player_id: registration.player.player_id
+      squad_id: reg.player.squad_id,
+      player_id: reg.player.player_id
     }
     const endpoint = `/api/tournaments/${tournament.id}/toggleCheckin`;
     const response = await fetch(endpoint, {
@@ -48,70 +33,66 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Failed to check in/out: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_OUT_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
-{#if tournament.checkins_enabled && registration.player}
-  <div class="section">
-    {#if tournament.checkins_open}
-        {#if !registration.player.is_checked_in}
-          <Button on:click={toggleCheckin}>Check In Now!</Button>
-          <div>
-            Make sure to check in before the tournament starts!
-          </div>
-        {:else}
-          <div class="flex">
-            <BadgeCheckSolid/>
-            <div>
-              CHECKED IN
-            </div>
-            {#if squad}
+{#if tournament.is_squad}
+  {#if getInvitedSquads().length}
+    <div>
+      {$LL.TOURNAMENTS.REGISTRATIONS.MY_INVITES()}
+    </div>
+    <TournamentInviteList {tournament} squads={getInvitedSquads()}/>
+  {/if}
+{/if}
+  {#each registration.registrations.filter((r) => !r.player.is_invite) as reg}
+    <div class="registration">
+      {#if tournament.checkins_enabled}
+        <div class="section">
+          {#if tournament.checkins_open}
+            {#if !reg.player.is_checked_in}
+              <Button on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
               <div>
-                ({squad.players.filter((p) => p.is_checked_in).length}/{tournament.min_players_checkin})
+                {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
+              </div>
+            {:else}
+              <div class="flex">
+                <BadgeCheckSolid/>
+                <div>
+                  {$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}
+                </div>
+                {#if reg.squad}
+                  <div>
+                    ({reg.squad.players.filter((p) => p.is_checked_in).length}/{tournament.min_players_checkin})
+                  </div>
+                {/if}
+              </div>
+              <div>
+                <Button size="xs" on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
               </div>
             {/if}
-          </div>
-          <div>
-            <Button size="xs" on:click={toggleCheckin}>Check Out</Button>
-          </div>
-        {/if}
-    {:else}
-      Make sure to check in during the check-in window!
-    {/if}
-  </div>
-{/if}
-{#if tournament.is_squad}
-  {#if getInvites().length}
-    <div>My invites</div>
-    <TournamentInviteList {tournament} squads={getInvites()}/>
-  {/if}
-  {#if squad && registration.player}
-    {#if tournament.verification_required && !squad.is_approved}
-      <div class="section">
-        <div class="pending">
-          Pending Approval
+          {:else}
+            {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_CLOSED()}
+          {/if}
         </div>
-        Your registration must be approved before you can play.
-      </div>
-    {/if}
-    <MySquad {tournament} {squad} my_player={registration.player}/>
-  {/if}
-{:else}
-  {#if registration.player}
-    {#if tournament.verification_required && !registration.player.is_approved}
-      <div class="section">
-        <div class="pending">
-          Pending Approval
+      {/if}
+      {#if tournament.verification_required && ((reg.squad && !reg.squad.is_approved) || (!reg.squad && !reg.player.is_approved))}
+        <div class="section">
+          <div class="pending">
+            {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
+          </div>
+          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
         </div>
-        Your registration must be approved before you can play.
-      </div>
-    {/if}
-    <div>My Registration</div>
-    <TournamentPlayerList {tournament} players={[registration.player]} my_player={registration.player}/>
-  {/if}
-{/if}
+      {/if}
+      {#if reg.squad}
+        <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
+      {:else}
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
+        <TournamentPlayerList {tournament} players={[reg.player]} my_player={reg.player}/>
+      {/if}
+    </div>
+  {/each}
 
 <style>
   div.pending {
@@ -123,5 +104,9 @@
   div.flex {
     display: flex;
     gap: 5px;
+  }
+  div.registration {
+    padding-bottom: 10px;
+    border-bottom: 1px white solid;
   }
 </style>

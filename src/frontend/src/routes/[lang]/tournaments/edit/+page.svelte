@@ -6,6 +6,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import { check_tournament_permission, tournament_permissions, check_permission } from '$lib/util/permissions';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -29,5 +30,7 @@
   {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
     <CreateEditTournamentForm tournament_id={tournament.id} data={tournament} 
     series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} />
+  {:else}
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/if}

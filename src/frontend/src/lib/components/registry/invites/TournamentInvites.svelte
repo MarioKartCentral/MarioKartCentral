@@ -7,6 +7,7 @@
     import ArrowRight from "$lib/components/common/ArrowRight.svelte";
     import type { TournamentInvite } from "$lib/types/tournament-invite";
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let invites: TournamentInvite[];
 
@@ -24,10 +25,10 @@
         <col class="button"/>
         <thead>
             <tr>
-                <th>Tournament</th>
-                <th>Squad</th>
-                <th class="mobile-hide">Date</th>
-                <th>Accept/Deny</th>
+                <th>{$LL.INVITES.TOURNAMENT()}</th>
+                <th>{$LL.INVITES.SQUAD()}</th>
+                <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+                <th>{$LL.INVITES.ACCEPT()}?</th>
             </tr>
         </thead>
         <tbody>
@@ -46,7 +47,6 @@
                             <span class="tag">
                                 <TagBadge tag={invite.squad_tag} color={invite.squad_color}/>
                             </span>
-                            
                         {/if}
                         {#if invite.squad_name}
                             {invite.squad_name}
@@ -57,7 +57,7 @@
                     </td>
                     <td>
                         <Button href="/{$page.params.lang}/tournaments/details?id={invite.tournament_id}">
-                            Tournament Page
+                            {$LL.INVITES.TOURNAMENT_PAGE()}
                             <ArrowRight/>
                         </Button>
                     </td>
@@ -66,7 +66,7 @@
         </tbody>
     </Table>
 {:else}
-    No invites.
+    {$LL.INVITES.NO_INVITES()}
 {/if}
 
 <style>

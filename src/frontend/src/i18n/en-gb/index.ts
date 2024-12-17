@@ -1,9 +1,8 @@
 import en_us from '../en-us';
-import type { Translation } from '../i18n-types';
+import { extendDictionary } from 'typesafe-i18n/utils';
 
-const en_gb: Translation = {
-  ...en_us,
+const en_gb = extendDictionary(en_us, {
   LANGUAGE: 'British English',
-};
+});
 
 export default en_gb;

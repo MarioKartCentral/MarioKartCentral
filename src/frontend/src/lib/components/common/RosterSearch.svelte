@@ -7,6 +7,7 @@
     import { UserAddSolid } from "flowbite-svelte-icons";
     import CancelButton from "./buttons/CancelButton.svelte";
     import GameBadge from "../badges/GameBadge.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let roster: TeamRoster | null = null;
     export let game: string | null = null;
@@ -58,7 +59,7 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
     {#if !roster}
-        <input type="search" placeholder="Search for rosters..." bind:value={query} on:input={handle_search} />
+        <input type="search" placeholder={$LL.TEAMS.PROFILE.SEARCH_FOR_ROSTERS()} bind:value={query} on:input={handle_search} />
         {#if show_results}
             <div class="table-outer">
                 <div class="table-inner">

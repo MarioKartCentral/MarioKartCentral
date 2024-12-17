@@ -6,6 +6,7 @@
     import { onMount } from 'svelte';
     import DiscordUser from './DiscordUser.svelte';
     import { permissions, check_permission } from '$lib/util/permissions';
+    import LL from '$i18n/i18n-svelte';
 
     let user_info: UserInfo;
 
@@ -38,12 +39,12 @@
         if (response.status === 200) {
             linked_account = result;
         } else {
-            alert(`An error occurred: ${result['title']}`);
+            alert(`${$LL.DISCORD.REFRESH_ERROR()}: ${result['title']}`);
         }
     }
 
     async function deleteDiscordData() {
-        let conf = window.confirm("Are you sure you would like to delete your Discord data?");
+        let conf = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
         if(!conf) return;
         let endpoint = '/api/user/delete_discord';
         const response = await fetch(endpoint, {
@@ -54,29 +55,33 @@
         if (response.status === 200) {
             linked_account = null;
         } else {
-            alert(`An error occurred: ${result['title']}`);
+            alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
         }
     }
 </script>
 
 {#if user_info.id === null}
-    Sign in or Register to link your Discord Account
+    {$LL.DISCORD.SIGN_IN_REGISTER_TO_LINK()}
 {:else if linked_account !== undefined}
     {#if linked_account === null}
-        <Button on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}>Link Discord Account</Button>
+        <Button on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}>{$LL.DISCORD.LINK_DISCORD()}</Button>
     {:else}
         <div class="flex">
             <DiscordUser discord={linked_account}/>
             <div class="section">
                 <div class="flex buttons">
                     <div class="disc_button">
-                        <Button size="xs" extra_classes="w-32" on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}>Relink account</Button>
+                        <Button size="xs" extra_classes="w-32" on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}>
+                            {$LL.DISCORD.RELINK_DISCORD()}
+                        </Button>
                     </div>
                     <div class="disc_button">
-                        <Button size="xs" extra_classes="w-32" on:click={deleteDiscordData}>Unlink account</Button>
+                        <Button size="xs" extra_classes="w-32" on:click={deleteDiscordData}>{$LL.DISCORD.UNLINK_DISCORD()}</Button>
                     </div>
                     <div class="disc_button">
-                        <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData} disabled={!check_permission(user_info, permissions.link_discord, true)}>Refresh</Button>
+                        <Button size="xs" extra_classes="w-32" on:click={refreshDiscordData} disabled={!check_permission(user_info, permissions.link_discord, true)}>
+                            {$LL.DISCORD.REFRESH()}
+                        </Button>
                     </div>
                 </div>
             </div>

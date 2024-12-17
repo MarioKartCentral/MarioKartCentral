@@ -39,9 +39,9 @@
 
         if (response.status < 300) {
             window.location.reload();
-            alert('Edited profile successfully');
+            alert($LL.PLAYERS.PROFILE.PROFILE_EDIT_SUCCESS());
         } else {
-            alert(`Editing profile failed: ${result['title']}`);
+            alert(`${$LL.PLAYERS.PROFILE.PROFILE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -65,54 +65,54 @@
 
         if (response.status < 300) {
             window.location.reload();
-            alert('Edited profile successfully');
+            alert($LL.PLAYERS.PROFILE.PROFILE_EDIT_SUCCESS());
         } else {
-            alert(`Editing profile failed: ${result['title']}`);
+            alert(`${$LL.PLAYERS.PROFILE.PROFILE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
-<Section header={$LL.PLAYER_PROFILE.PLAYER_PROFILE()}>
+<Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
     <div slot="header_content">
-        <Button href="/{$page.params.lang}/registry/players/profile?id={player.id}">Back to Profile</Button>
+        <Button href="/{$page.params.lang}/registry/players/profile?id={player.id}">{$LL.PLAYERS.PROFILE.BACK_TO_PROFILE()}</Button>
     </div>
 </Section>
 
 {#if check_permission(user_info, permissions.edit_profile, true)}
-    <Section header="Player Details">
+    <Section header={$LL.PLAYERS.PROFILE.PLAYER_DETAILS()}>
         <EditPlayerDetails {player} is_privileged={check_permission(user_info, permissions.edit_player)}/>
     </Section>
-    <Section header={$LL.PLAYER_PROFILE.FRIEND_CODES()}>
+    <Section header={$LL.FRIEND_CODES.FRIEND_CODES()}>
         <EditFriendCodes {player} is_privileged={check_permission(user_info, permissions.edit_player)}/>
     </Section>
 {/if}
 
 {#if player.id === user_info.player?.id}
-    <Section header="Discord">
+    <Section header={$LL.DISCORD.DISCORD()}>
         <LinkDiscord/>
     </Section>
 {/if}
 
-<Section header="Edit Profile">
+<Section header={$LL.PLAYERS.PROFILE.EDIT_PROFILE()}>
   {#if player.user_settings}
     <form method="post" on:submit|preventDefault={user_info.player?.id === player.id ? editProfile : forceEditProfile}>
       <div>
-        <label for="avatar_url">{$LL.PLAYER_PROFILE.AVATAR_URL()}</label>
+        <label for="avatar_url">{$LL.PLAYERS.PROFILE.AVATAR_URL()}</label>
         <br />
         <input name="avatar_url" type="text" value={player.user_settings?.avatar ? player.user_settings.avatar : ''} />
       </div>
       <div>
-        <label for="about_me">{$LL.PLAYER_PROFILE.ABOUT_ME()}</label>
+        <label for="about_me">{$LL.PLAYERS.PROFILE.ABOUT_ME()}</label>
         <br />
         <textarea name="about_me">{player.user_settings?.about_me ? player.user_settings.about_me : ''}</textarea>
       </div>
       <div>
-        <label for="language">{$LL.PLAYER_PROFILE.LANGUAGE()}</label>
+        <label for="language">{$LL.COMMON.LANGUAGE()}</label>
         <br />
         <LanguageSelect bind:language={player.user_settings.language}/>
       </div>
       <div class="button">
-        <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.PLAYER_PROFILE.SAVE()}</Button>
+        <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.COMMON.SAVE()}</Button>
       </div>
     </form>
   {/if}

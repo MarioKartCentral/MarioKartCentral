@@ -8,6 +8,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   let tournament_squads: TournamentSquad[];
@@ -71,23 +72,28 @@
   {#if registrations_loaded}
     <div>
       <select bind:value={setting} on:change={filter_registrations}>
-        <option value={'any'}>All {tournament.is_squad ? 'Squads' : 'Players'}</option>
+        <option value={'any'}>
+          {$LL.TOURNAMENTS.REGISTRATIONS.ALL_REGISTRATIONS({is_squad: tournament.is_squad})}
+        </option>
         {#if tournament.is_squad}
-          <option value={'eligible'}>Eligible Only</option>
+          <option value={'eligible'}>{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE_ONLY()}</option>
         {/if}
         {#if tournament.host_status_required}
-          <option value={'hosts'}>Hosts Only</option>
+          <option value={'hosts'}>{$LL.TOURNAMENTS.REGISTRATIONS.HOSTS_ONLY()}</option>
         {/if}
         {#if tournament.verification_required && check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
           tournament.id, tournament.series_id)}
-          <option value={'pending'}>Pending</option>
+          <option value={'pending'}>{$LL.TOURNAMENTS.REGISTRATIONS.PENDING()}</option>
         {/if}
       </select>
     </div>
     {#if registration_count > 0}
       <div>
-        {registration_count}
-        {tournament.is_squad ? 'Squads' : 'Players'}
+        {#if tournament.is_squad}
+          {$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_COUNT({count: registration_count})}
+        {:else}
+          {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registration_count})}
+        {/if}
       </div>
       {#if tournament.is_squad}
         {#key tournament_squads}
@@ -103,7 +109,7 @@
         {/key}
       {/if}
     {:else}
-      No {tournament.is_squad ? 'squad' : 'player'}s. Be the first to register!
+      {$LL.TOURNAMENTS.REGISTRATIONS.NO_REGISTRATIONS({is_squad: tournament.is_squad})}
     {/if}
   {/if}
 </div>

@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
   import SeriesInfo from '$lib/components/tournaments/series/SeriesInfo.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let id = 0;
   let series: TournamentSeries;
@@ -29,5 +30,5 @@
 {#if series}
   <SeriesInfo {series} />
 {:else if not_found}
-  Series not found
+  {$LL.TOURNAMENTS.SERIES.NOT_FOUND()}
 {/if}

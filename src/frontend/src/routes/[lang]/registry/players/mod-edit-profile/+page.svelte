@@ -29,7 +29,7 @@
   </script>
   
   <svelte:head>
-    <title>{$LL.PLAYER_PROFILE.EDIT_PROFILE()} | Mario Kart Central</title>
+    <title>{$LL.PLAYERS.PROFILE.EDIT_PROFILE()} | Mario Kart Central</title>
   </svelte:head>
   
   {#if check_permission(user_info, permissions.edit_player)}
@@ -37,7 +37,7 @@
       <PlayerProfileEdit {player}/>
     {/if}
   {:else}
-    You do not have permission to view this page.
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
   
   

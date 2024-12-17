@@ -4,6 +4,7 @@
     import type { TournamentSquad } from '$lib/types/tournament-squad';
     import SquadTournamentFields from "./SquadTournamentFields.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
     
     export let tournament: Tournament;
     export let is_privileged: boolean;
@@ -39,7 +40,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing squad failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -64,29 +65,29 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing squad failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
-<Dialog bind:this={edit_squad_dialog} header="Edit Squad Registration">
+<Dialog bind:this={edit_squad_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD_REGISTRATION()}>
     {#if squad}
         <form method="POST" on:submit|preventDefault={is_privileged ? editSquad : editMySquad}>
             <SquadTournamentFields {tournament} squad_color={squad.color} squad_name={squad.name} squad_tag={squad.tag} />
             {#if is_privileged && tournament.verification_required}
                 <div class="item">
                     <span class="item-label">
-                        <label for="is_approved">Approved?</label>
+                        <label for="is_approved">{$LL.TOURNAMENTS.REGISTRATIONS.APPROVED_SELECT()}</label>
                     </span>
                     <select name="is_approved" value={Boolean(squad.is_approved)} required>
-                        <option value={false}>No</option>
-                        <option value={true}>Yes</option>
+                        <option value={false}>{$LL.COMMON.NO()}</option>
+                        <option value={true}>{$LL.COMMON.YES()}</option>
                     </select>
                 </div>
             {/if}
             <div>
-                <Button type="submit">Edit Squad</Button>
-                <Button type="button" on:click={edit_squad_dialog.close}>Cancel</Button>
+                <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
+                <Button type="button" on:click={edit_squad_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
             </div>
         </form>
     {/if}

@@ -89,11 +89,15 @@ class TournamentSquadDetails():
 
 
 @dataclass
+class MyTournamentRegistration():
+    squad: TournamentSquadDetails | None
+    player: TournamentPlayerDetails
+
+@dataclass
 class MyTournamentRegistrationDetails():
     player_id: int
     tournament_id: int
-    squads: list[TournamentSquadDetails]
-    player: TournamentPlayerDetails | None
+    registrations: list[MyTournamentRegistration]
 
 @dataclass
 class MakeCaptainRequestData():

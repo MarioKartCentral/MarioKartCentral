@@ -4,6 +4,7 @@
   import SoloTournamentFields from './SoloTournamentFields.svelte';
   import SquadTournamentFields from './SquadTournamentFields.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
@@ -28,9 +29,9 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert('Successfully registered for the tournament!');
+      alert($LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_SUCCESS());
     } else {
-      alert(`Registration failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
   async function registerSquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -61,9 +62,9 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert('Successfully registered for the tournament!');
+      alert($LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_SUCCESS());
     } else {
-      alert(`Registration failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -74,17 +75,17 @@
   {#if tournament.bagger_clause_enabled}
     <div class="item">
       <span class="item-label">
-        <label for="is_bagger_clause">Register as bagger?</label>
+        <label for="is_bagger_clause">{$LL.TOURNAMENTS.REGISTRATIONS.BAGGER_SELECT()}</label>
       </span>
       
       <select name="is_bagger_clause" required>
-        <option value={false}>No</option>
-        <option value={true}>Yes</option>
+        <option value={false}>{$LL.COMMON.NO()}</option>
+        <option value={true}>{$LL.COMMON.YES()}</option>
       </select>
     </div>
   {/if}
 
-  <Button type="submit">Register</Button>
+  <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
 </form>
 
 <style>

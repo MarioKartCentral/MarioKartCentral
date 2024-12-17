@@ -17,9 +17,9 @@
   <col class="game" />
   <thead>
     <tr>
-      <th>{$LL.TEAM_LIST.TAG()}</th>
-      <th>{$LL.TEAM_LIST.NAME()}</th>
-      <th>{$LL.TEAM_LIST.STATUS()}</th>
+      <th>{$LL.COMMON.TAG()}</th>
+      <th>{$LL.COMMON.NAME()}</th>
+      <th>{$LL.TEAMS.LIST.STATUS()}</th>
     </tr>
   </thead>
   <tbody>
@@ -48,13 +48,7 @@
   col.name {
     width: 45%;
   }
-  /* col.recruiting {
-    width: 25%;
-  } */
   col.game {
     width: 40%;
   }
-  /* col.mode {
-    width: 15%;
-  } */
 </style>

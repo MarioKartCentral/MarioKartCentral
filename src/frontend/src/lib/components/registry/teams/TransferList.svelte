@@ -16,6 +16,7 @@
     import PageNavigation from "$lib/components/common/PageNavigation.svelte";
     import GameModeSelect from "$lib/components/common/GameModeSelect.svelte";
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let approval_status: "approved" | "pending" | "denied";
     export let team_id: number | null = null;
@@ -88,7 +89,7 @@
     };
 
     async function approveTransfer(transfer: TeamTransfer) {
-        let conf = window.confirm("Are you sure you want to approve this transfer?");
+        let conf = window.confirm($LL.MODERATOR.APPROVE_TRANSFER_CONFIRM());
         if(!conf) return;
         const payload = {
             invite_id: transfer.invite_id,
@@ -103,7 +104,7 @@
         if (res.status < 300) {
             window.location.reload();
         } else {
-            alert(`Approving transfer failed: ${result['title']}`);
+            alert(`${$LL.MODERATOR.APPROVE_TRANSFER_FAILED()}: ${result['title']}`);
         }
     }
     
@@ -124,7 +125,7 @@
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`Approving transfer failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_TRANSFER_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -141,15 +142,15 @@
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
         {/if}
         <div class="option">
-            <label for="from">From</label>
+            <label for="from">{$LL.COMMON.FROM()}</label>
             <input name="from" type="datetime-local" bind:value={from}/>
         </div>
         <div class="option">
-            <label for="to">To</label>
+            <label for="to">{$LL.COMMON.TO()}</label>
             <input name="to" type="datetime-local" bind:value={to}/>
         </div>
         <div class="option">
-            <Button type="submit">Filter</Button>
+            <Button type="submit">{$LL.COMMON.FILTER()}</Button>
         </div>
         
     </div>
@@ -169,12 +170,12 @@
         <thead>
         <tr>
             <th></th>
-            <th>Player</th>
-            <th class="mobile-hide">Game/Mode</th>
+            <th>{$LL.COMMON.PLAYER()}</th>
+            <th class="mobile-hide">{$LL.COMMON.GAME_MODE()}</th>
             <th></th>
-            <th class="mobile-hide">Date</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
             {#if approval_status === "pending"}
-                <th>Approve?</th>
+                <th>{$LL.MODERATOR.APPROVE()}</th>
             {/if}
         </tr>
         </thead>
@@ -204,7 +205,7 @@
                         </a>
                         
                     {:else}
-                        No team
+                        {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                     <ArrowRight/>
                     {#if transfer.roster_join}
@@ -212,7 +213,7 @@
                             <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color}/>
                         </a>
                     {:else}
-                        No team
+                        {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                 </div>
                 
@@ -230,19 +231,19 @@
     </Table>
     <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
 {:else}
-    No transfers.
+    {$LL.TEAMS.TRANSFERS.NO_TRANSFERS()}
 {/if}
 
-<Dialog bind:this={deny_dialog} header="Deny Transfer">
-<div>
-    Send transfer back to the player?
-</div>
-<input type="checkbox" bind:value={send_back} />
-<br /><br />
-<div>
-    <Button on:click={() => denyTransfer(curr_transfer)}>Deny</Button>
-    <Button on:click={deny_dialog.close}>Cancel</Button>
-</div>
+<Dialog bind:this={deny_dialog} header={$LL.MODERATOR.DENY_TRANSFER()}>
+    <div>
+        {$LL.MODERATOR.SEND_TRANSFER_BACK()}
+    </div>
+    <input type="checkbox" bind:value={send_back} />
+    <br /><br />
+    <div>
+        <Button on:click={() => denyTransfer(curr_transfer)}>{$LL.MODERATOR.DENY()}</Button>
+        <Button on:click={deny_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
+    </div>
 </Dialog>
 
 <style>

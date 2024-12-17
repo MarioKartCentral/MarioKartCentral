@@ -66,68 +66,68 @@
 </script>
 
 <form method="post" on:submit|preventDefault={createTeam}>
-  <Section header={$LL.TEAM_CREATE.GENERAL_INFO()}>
+  <Section header={$LL.TEAMS.GENERAL_INFO()}>
     <GameModeSelect is_team flex/>
     <div class="option">
-      <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
+      <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
       <input name="name" type="text" required pattern="^\S.*\S$|^\S$"/>
     </div>
     <div class="option">
-      <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
+      <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
       <input name="tag" type="text" bind:value={tag} required maxlength=5 pattern="^\S.*\S$|^\S$"/>
     </div>    
   </Section>
-  <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
+  <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
     <div class="option">
-      <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
+      <label for="color">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
       <ColorSelect tag={tag}/>
     </div>
     <div class="option">
-      <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
+      <label for="logo">{$LL.TEAMS.EDIT.TEAM_LOGO()}</label>
       <input name="logo" type="text" />
     </div>
     
   </Section>
-  <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
+  <Section header={$LL.TEAMS.EDIT.MISC_INFO()}>
     <div class="option">
-      <label for="language">{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</label>
+      <label for="language">{$LL.TEAMS.PROFILE.MAIN_LANGUAGE()}</label>
       <LanguageSelect/>
     </div>
     <div class="option">
       <div>
-        <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
+        <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
       </div>
       <textarea name="description" />
     </div>
     <div class="option">
-      <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
+      <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
       <select name="recruiting">
-        <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-        <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+        <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+        <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
       </select>
     </div>
   </Section>
   {#if check_permission(user_info, permissions.manage_teams)}
     <Section header="Moderator">
       <div class="option">
-        <label for="approval_status">Approval Status</label>
+        <label for="approval_status">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.STATUS()}</label>
         <select name="approval_status">
-          <option value="approved">Approved</option>
-          <option value="pending">Pending</option>
-          <option value="denied">Denied</option>
+          <option value="approved">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.APPROVED()}</option>
+          <option value="pending">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.PENDING()}</option>
+          <option value="denied">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.DENIED()}</option>
         </select>
       </div>
       <div class="option">
-        <label for="is_historical">Active/Historical</label>
+        <label for="is_historical">{$LL.TEAMS.PROFILE.ACTIVE_HISTORICAL()}</label>
         <select name="is_historical">
-          <option value={false}>Active</option>
-          <option value={true}>Historical</option>
+          <option value={false}>{$LL.TEAMS.PROFILE.ACTIVE()}</option>
+          <option value={true}>{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
         </select>
       </div>
     </Section>
   {/if}
-  <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
-    <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
+  <Section header={$LL.COMMON.SUBMIT()}>
+    <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
   </Section>
 </form>
 

@@ -276,8 +276,8 @@ class TeamInvite():
     team_tag: str
     team_color: int
     roster_id: int
-    roster_name: str | None
-    roster_tag: str | None
+    roster_name: str
+    roster_tag: str
     game: Game
     mode: GameMode
 

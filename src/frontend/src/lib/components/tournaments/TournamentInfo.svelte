@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Tournament } from '$lib/types/tournament';
   import { locale } from '$i18n/i18n-svelte';
-  import { valid_games, mode_names } from '$lib/util/util';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import Section from '../common/Section.svelte';
   import Button from '../common/buttons/Button.svelte';
@@ -11,6 +10,7 @@
   import ModeBadge from '../badges/ModeBadge.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
 
@@ -19,7 +19,7 @@
     user_info = value;
   });
 
-  $: tournament_type = tournament.is_squad ? (tournament.teams_allowed ? 'Team' : 'Squad') : 'Solo';
+  let type = tournament.is_squad ? (tournament.teams_allowed ? $LL.TOURNAMENTS.TYPES.TEAM() : $LL.TOURNAMENTS.TYPES.SQUAD()) : $LL.TOURNAMENTS.TYPES.SOLO();
   let date_start = new Date(tournament.date_start * 1000);
   let date_end = new Date(tournament.date_end * 1000);
   let registration_deadline = tournament.registration_deadline
@@ -30,16 +30,21 @@
     timeStyle: 'short',
     hour12: true,
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const game_strings: any = $LL.GAMES;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mode_strings: any = $LL.MODES;
 </script>
 
-<Section header="Tournament Info">
+<Section header={$LL.TOURNAMENTS.INFO.INFO()}>
   <div slot="header_content">
     {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
-      <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">Edit Tournament</Button>
-      <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">Edit Placements</Button>
+      <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">{$LL.TOURNAMENTS.EDIT_TOURNAMENT()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">{$LL.TOURNAMENTS.EDIT_PLACEMENTS()}</Button>
     {/if}
     {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_roles, tournament.id, tournament.series_id)}
-      <Button href="/{$page.params.lang}/tournaments/manage_roles?id={tournament.id}">Manage Roles</Button>
+      <Button href="/{$page.params.lang}/tournaments/manage_roles?id={tournament.id}">{$LL.ROLES.MANAGE_ROLES()}</Button>
     {/if}
   </div>
   <div class="centered">
@@ -52,7 +57,7 @@
     <div class="badges">
       <GameBadge game={tournament.game}/>
       <ModeBadge mode={tournament.mode}/>
-      <TypeBadge type={tournament_type}/>
+      <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
     </div>
     
   </div>
@@ -61,28 +66,28 @@
     <div>
       <ul>
         <li>
-          <b>When:</b>
+          <b>{$LL.TOURNAMENTS.INFO.WHEN()}</b>
           {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}
         </li>
         {#if registration_deadline}
-          <li><b>Registration Deadline:</b> {registration_deadline.toLocaleString($locale, options)}</li>
+          <li><b>{$LL.TOURNAMENTS.INFO.REGISTRATION_DEADLINE()}</b> {registration_deadline.toLocaleString($locale, options)}</li>
         {/if}
         {#if tournament.location}
-          <li><b>Location: </b> {tournament.location}</li>
+          <li><b>{$LL.TOURNAMENTS.INFO.LOCATION()}</b> {tournament.location}</li>
         {/if}
-        <li><b>Game:</b> {valid_games[tournament.game]}</li>
-        <li><b>Mode:</b> {mode_names[tournament.mode]}</li>
-        <li><b>Registration Format:</b> {tournament_type}</li>
+        <li><b>{$LL.COMMON.GAME()}:</b> {game_strings[tournament.game.toUpperCase()]()}</li>
+        <li><b>{$LL.COMMON.MODE()}:</b> {mode_strings[tournament.mode.toUpperCase()]()}</li>
+        <li><b>{$LL.TOURNAMENTS.INFO.REGISTRATION_FORMAT()}</b> {type}</li>
         {#if tournament.is_squad}
           {#if tournament.min_squad_size}
-            <li><b>Minimum Squad Size:</b> {tournament.min_squad_size}</li>
+            <li><b>{$LL.TOURNAMENTS.INFO.MINIMUM_SQUAD_SIZE()}</b> {tournament.min_squad_size}</li>
           {/if}
           {#if tournament.max_squad_size}
-            <li><b>Maximum Squad Size:</b> {tournament.max_squad_size}</li>
+            <li><b>{$LL.TOURNAMENTS.INFO.MAXIMUM_SQUAD_SIZE()}</b> {tournament.max_squad_size}</li>
           {/if}
         {/if}
         {#if tournament.series_name}
-          <li><b>Part of a Series:</b> <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">{tournament.series_name}</a></li>
+          <li><b>{$LL.TOURNAMENTS.INFO.PART_OF_SERIES()}</b> <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">{tournament.series_name}</a></li>
         {/if}
       </ul>
     </div>

@@ -13,6 +13,7 @@
   import { user } from '$lib/stores/stores';
   import TournamentPlayerList from '../TournamentPlayerList.svelte';
   import type { TournamentPlayer } from '$lib/types/tournament-player';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   export let squad: TournamentSquad;
@@ -56,7 +57,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Invitation failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYER_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -64,7 +65,7 @@
     if (!my_player.is_squad_captain) {
       return;
     }
-    let conf = window.confirm('Are you sure you would like to withdraw your squad from this tournament?');
+    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_MY_SQUAD_CONFIRM());
     if (!conf) {
       return;
     }
@@ -82,7 +83,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Failed to unregister: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -108,12 +109,12 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Editing squad failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
-<div>My squad</div>
+<div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD()}</div>
 <div>
   {#if tournament.squad_tag_required}
     <TagBadge tag={squad.tag} color={squad.color}/>
@@ -122,11 +123,15 @@
     {squad.name}
   {/if}
 </div>
-<div>{registered_players.length} players</div>
+<div>
+  {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registered_players.length})}
+</div>
 <TournamentPlayerList {tournament} players={registered_players} {my_player}/>
 
 {#if invited_players.length > 0}
-  <div>{invited_players.length} invited players</div>
+  <div>
+    {$LL.TOURNAMENTS.REGISTRATIONS.INVITED_PLAYER_COUNT({count: invited_players.length})}
+  </div>
   <TournamentPlayerList {tournament} players={invited_players} {my_player} exclude_invites={false}/>
 {/if}
 
@@ -134,8 +139,8 @@
   <!-- If registrations are open and our squad is not full and we are the squad captain -->
   {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
     (!tournament.max_squad_size || squad.players.length < tournament.max_squad_size)}
-    <div class="section">
-      <div><b>Invite players</b></div>
+    <div>
+      <div><b>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYERS()}</b></div>
       <PlayerSearch
         bind:player={invite_player}
         game={tournament.game}
@@ -146,35 +151,35 @@
       {#if tournament.bagger_clause_enabled}
         <div class="section">
           <label for="invite_as_bagger">
-            Bagger?
+            {$LL.TOURNAMENTS.REGISTRATIONS.BAGGER_SELECT()}
           </label>
           <select name="invite_as_bagger" bind:value={invite_as_bagger}>
-            <option value={false}>No</option>
-            <option value={true}>Yes</option>
+            <option value={false}>{$LL.COMMON.NO()}</option>
+            <option value={true}>{$LL.COMMON.YES()}</option>
           </select>
         </div>
       {/if}
       <div class="section">
-        <Button on:click={() => invitePlayer(invite_player)}>Invite Player</Button>
+        <Button on:click={() => invitePlayer(invite_player)}>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYER()}</Button>
       </div>
     {/if}
   {/if}
   <br />
   <div>
     {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
-      <Button on:click={edit_squad_dialog.open}>Edit Squad</Button>
+      <Button on:click={edit_squad_dialog.open}>{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
     {/if}
-    <Button on:click={unregisterSquad}>Unregister Squad</Button>
+    <Button on:click={unregisterSquad}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_SQUAD()}</Button>
   </div>
 {/if}
 
-<Dialog bind:this={edit_squad_dialog} header="Edit Squad Registration">
+<Dialog bind:this={edit_squad_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD_REGISTRATION()}>
   <form method="POST" on:submit|preventDefault={editSquad}>
     <SquadTournamentFields {tournament} squad_color={squad.color} squad_name={squad.name} squad_tag={squad.tag} />
     <br />
     <div>
-      <Button type="submit">Edit Squad</Button>
-      <Button type="button" on:click={edit_squad_dialog.close}>Cancel</Button>
+      <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
+      <Button type="button" on:click={edit_squad_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </form>
 </Dialog>

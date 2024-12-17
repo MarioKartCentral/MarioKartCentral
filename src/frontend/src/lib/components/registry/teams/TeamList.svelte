@@ -77,21 +77,20 @@
   <div class="flex">
     <GameModeSelect all_option hide_labels inline bind:game={filters.game} bind:mode={filters.mode}/>
     <div class="option">
-      <input class="search" bind:value={filters.name} type="text" placeholder="Search by team or roster name..."/>
+      <input class="search" bind:value={filters.name} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
     </div>
     <div class="option">
       <select bind:value={filters.is_historical}>
-        <option value={false}>Active Teams</option>
-        <option value={true}>Historical Teams</option>
+        <option value={false}>{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
+        <option value={true}>{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
       </select>
     </div>
     <div class="option">
-      <Button type="submit">Search</Button>
+      <Button type="submit">{$LL.COMMON.SEARCH()}</Button>
     </div>
   </div>
 </form>
-{teams.length}
-{$LL.TEAM_LIST.TEAMS()}
+{$LL.TEAMS.LIST.TEAM_COUNT({count: teams.length})}
 <Table>
   <col class="tag" />
   <col class="name" />
@@ -99,10 +98,10 @@
   <col class="registration_date" />
   <thead>
     <tr>
-      <th>{$LL.TEAM_LIST.TAG()}</th>
-      <th>{$LL.TEAM_LIST.NAME()}</th>
-      <th>{$LL.TEAM_LIST.ROSTERS()}</th>
-      <th>{$LL.TEAM_LIST.REGISTERED()}</th>
+      <th>{$LL.COMMON.TAG()}</th>
+      <th>{$LL.COMMON.NAME()}</th>
+      <th>{$LL.TEAMS.LIST.ROSTERS()}</th>
+      <th>{$LL.TEAMS.LIST.REGISTERED()}</th>
     </tr>
   </thead>
   <tbody>
@@ -117,7 +116,7 @@
         <td>
           {sortFilterRosters(team.rosters).length}
           <button class="show-hide" on:click={() => toggle_show_rosters(team.id)}>
-            ({show_rosters[team.id] ? $LL.TEAM_LIST.HIDE() : $LL.TEAM_LIST.SHOW()})
+            {show_rosters[team.id] ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
           </button>
         </td>
         <td>

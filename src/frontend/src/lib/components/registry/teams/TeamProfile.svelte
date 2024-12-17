@@ -19,6 +19,9 @@
     day: 'numeric',
     hour12: true,
   };
+  
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const language_strings: any = $LL.LANGUAGES;
 </script>
 
 <div class="wrapper">
@@ -33,16 +36,16 @@
       <b>{team.name}</b>
     </div>
     <div>
-      <b>{$LL.TEAM_PROFILE.REGISTERED()}</b>
+      <b>{$LL.TEAMS.PROFILE.REGISTERED()}</b>
       {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
     </div>
     <div>
-      <b>{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</b>
-      {$LL.LANGUAGES[team.language.toUpperCase().replace("-", "_")]()}
+      <b>{$LL.TEAMS.PROFILE.MAIN_LANGUAGE()}</b>
+      {language_strings[team.language.toUpperCase().replace("-", "_")]()}
     </div>
     {#if team.managers.length}
       <div>
-        <b>{$LL.TEAM_PROFILE.MANAGERS()}</b>
+        <b>{$LL.TEAMS.PROFILE.MANAGERS()}</b>
         {#each team.managers as m, i}
           <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
             {i == team.managers.length - 1 ? m.name : `${m.name}, `}
