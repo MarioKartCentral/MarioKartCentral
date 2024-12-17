@@ -11,6 +11,7 @@
     import CancelButton from "$lib/components/common/buttons/CancelButton.svelte";
     import type { Player } from "$lib/types/player";
     import { locale } from "$i18n/i18n-svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let role: Role;
     export let url: string;
@@ -60,12 +61,12 @@
         if (response.status < 300) {
             await loadInfo();
         } else {
-            alert(`Failed to add role: ${result['title']}`);
+            alert(`${$LL.ROLES.ADD_ROLE_FAILED()}: ${result['title']}`);
         }
     }
 
     async function removeRoleFromPlayer(player: Player) {
-        let conf = window.confirm(`Are you sure you want to remove the role ${role.name} from ${player.name}?`);
+        let conf = window.confirm($LL.ROLES.REMOVE_ROLE_CONFIRM({player_name: player.name, role_name: role.name}));
         if(!conf) return;
         const payload = {
             player_id: player.id,
@@ -81,7 +82,7 @@
         if (response.status < 300) {
             await loadInfo();
         } else {
-            alert(`Failed to remove role: ${result['title']}`);
+            alert(`${$LL.ROLES.REMOVE_ROLE_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -96,21 +97,21 @@
         <div class="role">
             {#if user_position < role.position}
                 <div>
-                    Add Player
+                    {$LL.ROLES.ADD_PLAYER()}
                 </div>
                 <div class="addplayer">
                     <PlayerSearch bind:player={selected_player}/>
                     {#if selected_player !== null}
                         {#if is_expirable_role()}
-                            <label for="expires_on">Until</label>
+                            <label for="expires_on">{$LL.ROLES.UNTIL()}</label>
                             <input name="expires_on" type="datetime-local" bind:value={expires_on}/>
                         {/if}
-                        <Button on:click={() => giveRoleToPlayer(Number(selected_player?.id))}>Add</Button>
+                        <Button on:click={() => giveRoleToPlayer(Number(selected_player?.id))}>{$LL.ROLES.ADD_ROLE()}</Button>
                     {/if}
                 </div>
             {:else}
                 <div>
-                    You do not have permission to edit this role.
+                    {$LL.ROLES.NO_EDIT_PERMISSION()}
                 </div>
             {/if}
             <div class="table">
@@ -133,7 +134,7 @@
                             {#if is_expirable_role()}
                                 <td class="mobile-hide">
                                     {#if player.expires_on}
-                                        expires {new Date(player.expires_on * 1000).toLocaleString($locale, options)}
+                                        {$LL.ROLES.ROLE_EXPIRES_ON({date: new Date(player.expires_on * 1000).toLocaleString($locale, options)})}
                                     {/if}
                                 </td>
                             {/if}

@@ -71,7 +71,7 @@
 <Section header={$LL.NAVBAR.TOURNAMENTS()}>
     <div slot="header_content">
         {#if check_permission(user_info, series_permissions.create_tournament)}
-            <Button href="/{$page.params.lang}/tournaments/create/select_template">Create Tournament</Button>
+            <Button href="/{$page.params.lang}/tournaments/create/select_template">{$LL.TOURNAMENTS.CREATE_TOURNAMENT()}</Button>
         {/if}
     </div>
     <form on:submit|preventDefault={search}>
@@ -79,15 +79,15 @@
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
             <div class="option">
                 <div>
-                    <label for="name">Name</label>
+                    <label for="name">{$LL.COMMON.NAME()}</label>
                 </div>
                 <div>
-                    <input name="name" bind:value={name} placeholder="Search for tournaments..."/>
+                    <input name="name" bind:value={name} placeholder={$LL.TOURNAMENTS.SEARCH_FOR_TOURNAMENTS()}/>
                 </div>     
             </div>
             <div class="option">
                 <div>
-                    <label for="from">From</label>
+                    <label for="from">{$LL.COMMON.FROM()}</label>
                 </div>
                 <div>
                     <input name="from" type="datetime-local" bind:value={from}/>
@@ -95,7 +95,7 @@
             </div>
             <div class="option">
                 <div>
-                    <label for="to">To</label>
+                    <label for="to">{$LL.COMMON.TO()}</label>
                 </div>
                 <div>
                     <input name="to" type="datetime-local" bind:value={to}/>
@@ -109,20 +109,20 @@
                         <label for="show_hidden"/>
                     </div>
                     <select bind:value={show_hidden}>
-                        <option value={null}>Show hidden/private tournaments</option>
-                        <option value={true}>Public tournaments only</option>
-                        <option value={false}>Hidden/private tournaments only</option>
+                        <option value={null}>{$LL.TOURNAMENTS.SHOW_HIDDEN_PRIVATE_TOURNAMENTS()}</option>
+                        <option value={true}>{$LL.TOURNAMENTS.PUBLIC_TOURNAMENTS_ONLY()}</option>
+                        <option value={false}>{$LL.TOURNAMENTS.HIDDEN_PRIVATE_TOURNAMENTS_ONLY()}</option>
                     </select>
                 </div>
             {/if}
         </div>
         <div class="centered">
-            <Button type="submit">Filter</Button>
+            <Button type="submit">{$LL.COMMON.FILTER()}</Button>
         </div>
     </form>
     <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
     <div>
-        {totalTournaments} Tournaments
+        {$LL.TOURNAMENTS.TOURNAMENT_COUNT({count: totalTournaments})}
     </div>
     {#key tournaments}
         {#each tournaments as tournament}

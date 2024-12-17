@@ -81,7 +81,7 @@
 
 <!-- Dont render component if API response is empty  -->
 {#if team_placements.length != 0}
-  <Section header={$LL.TOURNAMENT_HISTORY.TOURNAMENT_HISTORY()}>
+  <Section header={$LL.TOURNAMENTS.HISTORY.TOURNAMENT_HISTORY()}>
     <div class="w-full m-auto">
       <form on:submit|preventDefault={filterData}>
         <div class="flex flex-row flex-wrap items-center justify-center">
@@ -101,7 +101,7 @@
       </form>
 
       <!-- Team Tournaments -->
-      <!-- <h2 class="text-2xl font-bold">{$LL.TOURNAMENT_HISTORY.TEAM_TOURNAMENTS()}</h2> -->
+      <!-- <h2 class="text-2xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2> -->
       <div>
         <Table>
           <thead>

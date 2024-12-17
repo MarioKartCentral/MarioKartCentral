@@ -10,6 +10,7 @@
   import PlacementsDisplay from '$lib/components/tournaments/placements/PlacementsDisplay.svelte';
   import Accordion from '$lib/components/common/Accordion.svelte';
   import AccordionItem from '$lib/components/common/AccordionItem.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let id = 0;
 
@@ -36,23 +37,23 @@
 
 {#if tournament}
   <TournamentInfo {tournament} />
-  <Section header="Tournament Details">
+  <Section header={$LL.TOURNAMENTS.DETAILS()}>
     <Accordion>
       <AccordionItem open>
-        <span slot="header">Tournament Description</span>
+        <span slot="header">{$LL.TOURNAMENTS.DESCRIPTION()}</span>
         <MarkdownBox content={tournament.use_series_description ? String(tournament.series_description) : tournament.description} />
       </AccordionItem>
       <AccordionItem open>
-        <span slot="header">Tournament Rules</span>
+        <span slot="header">{$LL.TOURNAMENTS.RULES()}</span>
         <MarkdownBox content={tournament.use_series_ruleset ? String(tournament.series_ruleset) : tournament.ruleset} />
       </AccordionItem>
     </Accordion>
   </Section>
   <PlacementsDisplay {tournament}/>
   <TournamentRegisterPanel {tournament} />
-  <Section header="Tournament Registrations">
+  <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS()}>
     <TournamentRegistrations {tournament} />
   </Section>
 {:else if not_found}
-  Tournament not found
+  {$LL.TOURNAMENTS.NOT_FOUND()}
 {/if}

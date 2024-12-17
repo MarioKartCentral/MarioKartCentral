@@ -8,6 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { page } from '$app/stores';
   import SeriesPageItem from '$lib/components/tournaments/series/SeriesPageItem.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -29,10 +30,10 @@
   });
 </script>
 
-<Section header="Tournament Series">
+<Section header={$LL.TOURNAMENTS.TOURNAMENT_SERIES()}>
   <div slot="header_content">
     {#if check_permission(user_info, permissions.create_series)}
-      <Button href="/{$page.params.lang}/tournaments/series/create">Create Series</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/create">{$LL.TOURNAMENTS.SERIES.CREATE()}</Button>
     {/if}
   </div>
 </Section>

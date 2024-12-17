@@ -7,6 +7,7 @@
     import type { TournamentSquad } from "$lib/types/tournament-squad";
     import PlayerSearch from "$lib/components/common/PlayerSearch.svelte";
     import type { PlayerInfo } from "$lib/types/player-info";
+    import LL from "$i18n/i18n-svelte";
 
     export let tournament: Tournament;
     let player: PlayerInfo | null = null;
@@ -54,7 +55,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Adding player failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -67,8 +68,8 @@
                 <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>
                 <TournamentStaffFields {tournament} squad_exists={true}/>
                 <div class="confirm">
-                    <Button type="submit">Add Player</Button>
-                    <Button type="button" on:click={add_player_dialog.close}>Cancel</Button>
+                    <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</Button>
+                    <Button type="button" on:click={add_player_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
                 </div>
             </form>
         {/if}

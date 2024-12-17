@@ -5,6 +5,7 @@
     import Dialog from "$lib/components/common/Dialog.svelte";
     import type { TournamentPlayer } from "$lib/types/tournament-player";
     import TournamentStaffFields from "./TournamentStaffFields.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let tournament: Tournament;
     let player: TournamentPlayer;
@@ -52,7 +53,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing registration failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.EDIT_REGISTRATION_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -78,12 +79,12 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing registration failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.REGISTRATIONS.EDIT_REGISTRATION_FAILED()}: ${result['title']}`);
         }
     }
 </script>
 
-<Dialog bind:this={edit_reg_dialog} header="Edit Player Registration">
+<Dialog bind:this={edit_reg_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.EDIT_PLAYER_REGISTRATION()}>
     {#if player}
         <form method="POST" on:submit|preventDefault={is_privileged ? editRegistration : editMyRegistration}>
             <SoloTournamentFields
@@ -97,8 +98,8 @@
                 <TournamentStaffFields {tournament} {player} squad_exists={true}/>
             {/if}
             <div class="confirm">
-                <Button type="submit">Edit Registration</Button>
-                <Button type="button" on:click={edit_reg_dialog.close}>Cancel</Button>
+                <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_REGISTRATION()}</Button>
+                <Button type="button" on:click={edit_reg_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
             </div>
         </form>
     {/if}

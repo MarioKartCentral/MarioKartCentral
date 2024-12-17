@@ -9,6 +9,7 @@
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
     import type { Tournament } from "$lib/types/tournament";
+    import LL from "$i18n/i18n-svelte";
 
     let roles: Role[] = [];
     let tournament_id = 0;
@@ -46,9 +47,9 @@
     });
 </script>
 
-<Section header="Tournament Roles">
+<Section header={$LL.TOURNAMENTS.TOURNAMENT_ROLES()}>
     <div slot="header_content">
-        <Button href="/{$page.params.lang}/tournaments/details?id={tournament_id}">Back to Tournament</Button>
+        <Button href="/{$page.params.lang}/tournaments/details?id={tournament_id}">{$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}</Button>
     </div>
     {#if roles.length}
         <div class="select">

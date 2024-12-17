@@ -4,6 +4,7 @@
   import Table from './Table.svelte';
   import { createEventDispatcher } from 'svelte';
   import CancelButton from './buttons/CancelButton.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let option: TournamentSeries | null = null;
   export let series_id: number | null = null;
@@ -57,7 +58,7 @@
 
 <div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
   {#if !option}
-    <input placeholder="Search tournament series..." bind:value={query} on:input={handle_search} />
+    <input placeholder={$LL.TOURNAMENTS.SEARCH_SERIES()} bind:value={query} on:input={handle_search} />
     {#if show_results}
       <div class="table">
         <Table show_padding={false}>

@@ -7,6 +7,7 @@
   import { check_series_permission, series_permissions } from '$lib/util/permissions';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   import Button from '$lib/components/common/buttons/Button.svelte';
 
@@ -32,19 +33,19 @@
   });
 </script>
 
-<Section header="Templates">
+<Section header={$LL.TOURNAMENTS.TEMPLATES.TOURNAMENT_TEMPLATES()}>
   <div slot="header_content">
     {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
       {#if series_id}
         <Button href="/{$page.params.lang}/tournaments/series/create_template?series_id={series_id}"
-          >Create Template</Button
+          >{$LL.TOURNAMENTS.TEMPLATES.CREATE_TEMPLATE()}</Button
         >
       {:else}
-        <Button href="/{$page.params.lang}/tournaments/templates/create">Create Template</Button>
+        <Button href="/{$page.params.lang}/tournaments/templates/create">{$LL.TOURNAMENTS.TEMPLATES.CREATE_TEMPLATE()}</Button>
       {/if}
     {/if}
     {#if series_id}
-      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.TEMPLATES.CREATE_TEMPLATE()}</Button>
     {/if}
   </div>
   <Table>
@@ -56,22 +57,21 @@
         <td>
           <div class="settings">
             {#if check_series_permission(user_info, series_permissions.edit_tournament_template, series_id)}
-              <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">Edit</Button>
+              <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">{$LL.COMMON.EDIT()}</Button>
             {/if}
             {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
               {#if series_id}
                 <Button
                   href="/{$page.params
                     .lang}/tournaments/series/create_template?series_id={series_id}&template_id={template.id}"
-                  >Duplicate</Button
+                  >{$LL.TOURNAMENTS.TEMPLATES.DUPLICATE()}</Button
                 >
               {:else}
                 <Button href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}"
-                  >Duplicate</Button
+                  >{$LL.TOURNAMENTS.TEMPLATES.DUPLICATE()}</Button
                 >
               {/if}
             {/if}
-            <div>Delete</div>
           </div>
         </td>
       </tr>

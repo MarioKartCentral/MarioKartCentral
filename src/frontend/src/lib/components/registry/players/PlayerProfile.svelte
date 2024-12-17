@@ -28,12 +28,12 @@
   }
 </script>
 
-<Section header={$LL.PLAYER_PROFILE.PLAYER_PROFILE()}>
+<Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
   <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <Button href="/{$page.params.lang}/registry/invites">{$LL.PLAYER_PROFILE.INVITES()}</Button>
+      <Button href="/{$page.params.lang}/registry/invites">{$LL.PLAYERS.PROFILE.INVITES()}</Button>
       <Button href="/{$page.params.lang}/registry/players/edit-profile"
-        >{$LL.PLAYER_PROFILE.EDIT_PROFILE()}</Button
+        >{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button
       >
     {/if}
   </div>
@@ -51,7 +51,7 @@
       </div>
       {#if player.friend_codes.length > 0}
         <div class="item">
-          <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
+          <b>{$LL.FRIEND_CODES.FRIEND_CODES()}:</b>
           {#each player.friend_codes.filter((f) => f.is_active).toSorted((a, b) => game_order[a.game] - game_order[b.game]) as fc}
             <div>
               <GameBadge game={fc.game}/>
@@ -62,7 +62,7 @@
       {/if}
       {#if player.rosters.length > 0}
         <div class="item">
-          <b>{$LL.TEAM_LIST.TEAMS()}:</b>
+          <b>{$LL.PLAYERS.PROFILE.TEAMS()}:</b>
           {#each player.rosters as r}
             <div>
               <GameBadge game={r.game}/>

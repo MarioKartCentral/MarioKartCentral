@@ -53,7 +53,7 @@
 {#if history.length <= 0}
   <div></div>
 {:else}
-  <Section header={$LL.REGISTRATION_HISTORY.REGISTRATION_HISTORY()}>
+  <Section header={$LL.PLAYERS.REGISTRATION_HISTORY()}>
     <div>
       <div>
         <form on:submit|preventDefault={filterData}>

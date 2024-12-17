@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails, FriendCode, Discord
+from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails, MyTournamentRegistration, FriendCode, Discord
 
 
 @save_to_command_log
@@ -240,12 +240,12 @@ class UnregisterPlayerCommand(Command[None]):
                 registrations_open = row[0]
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so players cannot be unregistered from this tournament", status=400)
-            async with db.execute("SELECT is_squad_captain FROM tournament_players WHERE tournament_id = ? AND squad_id iS ? AND player_id = ?",
+            async with db.execute("SELECT is_squad_captain, id FROM tournament_players WHERE tournament_id = ? AND squad_id iS ? AND player_id = ?",
                                   (self.tournament_id, self.squad_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player is not registered for this tournament", status=400)
-                is_squad_captain = row[0]
+                is_squad_captain, registration_id = row
             if self.squad_id is not None:
                 # we should unregister a squad if it has no members remaining after this player is unregistered
                 async with db.execute("SELECT count(*) FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 0", (self.tournament_id, self.squad_id)) as cursor:
@@ -259,6 +259,7 @@ class UnregisterPlayerCommand(Command[None]):
                     await db.execute("UPDATE tournament_squads SET is_registered = ? WHERE id = ?", (False, self.squad_id))
                     # delete any invites as well
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND is_invite = 1", (self.tournament_id, self.squad_id))
+            await db.execute("DELETE FROM tournament_solo_placements WHERE tournament_id = ? AND player_id = ?", (self.tournament_id, registration_id))
             async with db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND squad_id IS ? AND player_id = ?", (self.tournament_id, self.squad_id, self.player_id)) as cursor:
                 rowcount = cursor.rowcount
                 if rowcount == 0:
@@ -290,8 +291,7 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 if min_squad_size:
                     where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0)")
                 if bool(checkins_enabled) and min_players_checkin is not None:
-                    where_clauses.append("? <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
-                    variable_parameters.append(min_players_checkin)
+                    where_clauses.append("t.min_players_checkin <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
             if self.hosts_only:
                 where_clauses.append("EXISTS (SELECT p.id FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.squad_id = s.id AND p.can_host = 1)")
             if self.is_approved is not None and bool(verification_required):
@@ -486,7 +486,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     player_fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), description,
                                                                 bool(is_active)))
 
-            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, list(squads.values()), None)
+            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [])
             # finally, set all players' friend codes.
             # we need to do this at the end because some players might have two registration entries
             # (ex. if a player is invited to two different squads), so we need to make sure both of their
@@ -494,9 +494,8 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
             for squad in squads.values():
                 for player in squad.players:
                     player.friend_codes = player_fc_dict[player.player_id]
-                    if player.player_id == self.player_id and not player.is_invite:
-                        details.player = player
-
+                    if player.player_id == self.player_id:
+                        details.registrations.append(MyTournamentRegistration(squad, player))
         return details
     
 @dataclass
@@ -522,7 +521,7 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                                     (self.tournament_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    return MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], None)
+                    return MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [])
                 
                 (reg_id, player_id, player_timestamp, is_checked_in, mii_name, can_host, selected_fc_id, is_approved, name, country, 
                  discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
@@ -541,7 +540,8 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                 for row in rows:
                     fc_id, player_id, game, fc, is_verified, is_primary, description, is_active = row
                     player.friend_codes.append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), description, bool(is_active)))
-            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [], player)
+            registration = MyTournamentRegistration(None, player)
+            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [registration])
             return details
 
 @dataclass

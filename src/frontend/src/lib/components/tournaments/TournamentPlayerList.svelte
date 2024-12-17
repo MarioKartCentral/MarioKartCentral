@@ -13,6 +13,7 @@
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import EditPlayerRegistration from './registration/EditPlayerRegistration.svelte';
   import FriendCodeDisplay from '../common/FriendCodeDisplay.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   export let players: TournamentPlayer[];
@@ -36,7 +37,7 @@
   }
 
   async function unregisterPlayer(player: TournamentPlayer) {
-    const conf = window.confirm(`Are you sure you would like to unregister ${player.name} from this tournament?`);
+    const conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_PLAYER_CONFIRM({player_name: player.name}));
     if (!conf) {
       return;
     }
@@ -55,12 +56,12 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Failed to unregister: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_PLAYER_FAILED()}: ${result['title']}`);
     }
   }
 
   async function kickPlayer(player: TournamentPlayer) {
-    let conf = window.confirm('Are you sure you would like to kick this player?');
+    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER_CONFIRM({player_name: player.name}));
     if (!conf) {
       return;
     }
@@ -79,12 +80,12 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Kicking player failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER_FAILED()}: ${result['title']}`);
     }
   }
 
   async function makeCaptain(player: TournamentPlayer) {
-    let conf = window.confirm('Are you sure you would like to transfer captain permissions to this player?');
+    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN_CONFIRM({player_name: player.name}));
     if (!conf) {
       return;
     }
@@ -103,7 +104,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Transferring captain permissions failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -123,7 +124,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Adding representative failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -143,7 +144,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Adding representative failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REMOVE_REPRESENTATIVE_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -152,10 +153,10 @@
       return;
     }
     if (my_player.is_squad_captain) {
-      alert('Please unregister this squad or set another player as captain before unregistering for this tournament');
+      alert($LL.TOURNAMENTS.REGISTRATIONS.CAPTAIN_UNREGISTER_ERROR());
       return;
     }
-    const conf = window.confirm('Are you sure you would like to unregister for this tournament?');
+    const conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_CONFIRM());
     if (!conf) {
       return;
     }
@@ -173,7 +174,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Failed to unregister: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -197,16 +198,16 @@
   <thead>
     <tr>
       <th />
-      <th>Name</th>
+      <th>{$LL.COMMON.NAME()}</th>
       {#if tournament.mii_name_required && exclude_invites}
-        <th class="mobile-hide">In-Game Name</th>
+        <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_NAME}</th>
       {/if}
-      <th class="mobile-hide">Friend Codes</th>
+      <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
       {#if tournament.host_status_required && exclude_invites}
-        <th class="mobile-hide">Can Host</th>
+        <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.CAN_HOST()}</th>
       {/if}
       {#if tournament.checkins_enabled}
-        <th class="mobile-hide">Checked In</th>
+        <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}</th>
       {/if}
       {#if is_privileged || my_player}
         <th/>
@@ -243,31 +244,31 @@
             {#if is_privileged}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
-                <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>Edit</DropdownItem>
-                <DropdownItem on:click={() => unregisterPlayer(player)}>Remove</DropdownItem>
+                <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
+                <DropdownItem on:click={() => unregisterPlayer(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
               </Dropdown>
             {:else if my_player?.player_id === player.player_id && check_registrations_open(tournament)}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
                 {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
                   (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
-                  <DropdownItem on:click={() => edit_reg_dialog.open(player)}>Edit</DropdownItem>
+                  <DropdownItem on:click={() => edit_reg_dialog.open(player)}>{$LL.COMMON.EDIT()}</DropdownItem>
                 {/if}
-                <DropdownItem on:click={unregister}>Unregister</DropdownItem>
+                <DropdownItem on:click={unregister}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER()}</DropdownItem>
               </Dropdown>
             {:else if my_player?.is_squad_captain && my_player?.squad_id === player.squad_id && check_registrations_open(tournament)}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
                 <DropdownItem on:click={() => kickPlayer(player)}>
-                  {player.is_invite ? "Retract Invite" : "Kick"}
+                  {player.is_invite ? $LL.TOURNAMENTS.REGISTRATIONS.RETRACT_INVITE() : $LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER()}
                 </DropdownItem>
                 {#if !player.is_invite}
-                  <DropdownItem on:click={() => makeCaptain(player)}>Make Captain</DropdownItem>
+                  <DropdownItem on:click={() => makeCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem>
                   {#if tournament.teams_only}
                     {#if !player.is_representative}
-                      <DropdownItem on:click={() => addRepresentative(player)}>Make Representative</DropdownItem>
+                      <DropdownItem on:click={() => addRepresentative(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE()}</DropdownItem>
                     {:else}
-                      <DropdownItem on:click={() => removeRepresentative(player)}>Remove Representative</DropdownItem>
+                      <DropdownItem on:click={() => removeRepresentative(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE_REPRESENTATIVE()}</DropdownItem>
                     {/if}
                   {/if}
                 {/if}

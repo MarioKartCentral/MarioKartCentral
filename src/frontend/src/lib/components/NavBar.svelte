@@ -46,7 +46,7 @@
       if (response.status < 300) {
         window.location.reload();
       } else {
-        alert('Logout failed');
+        alert($LL.LOGIN.LOGOUT_FAILED());
     }
   }
 
@@ -79,15 +79,15 @@
         </div>
         <Dropdown>
           <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">{$LL.NAVBAR.PROFILE()}</DropdownItem>
-          <DropdownItem href="/{$page.params.lang}/registry/players/edit-profile">Edit Profile</DropdownItem>
-          <DropdownItem href="/{$page.params.lang}/registry/invites">Invites</DropdownItem>
-          <DropdownItem on:click={logout}><span class="logout">{$LL.LOGOUT()}</span></DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/registry/players/edit-profile">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/registry/invites">{$LL.PLAYERS.PROFILE.INVITES()}</DropdownItem>
+          <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
         <Button size="sm" href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</Button>
       {:else}
         <Button size="sm">
-          {$LL.NAVBAR.LOGIN()}/{$LL.NAVBAR.REGISTER()}
+          {$LL.NAVBAR.LOGIN_REGISTER()}
           <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
         </Button>
         <Dropdown>
@@ -103,10 +103,10 @@
         <ChevronDownOutline class="inline"/>
       </NavLi>
       <Dropdown>
-        <DropdownItem href="/{$page.params.lang}/tournaments">Tournament Listing</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/tournaments/series">Tournament Series</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENT_LISTING()}</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/tournaments/series">{$LL.NAVBAR.TOURNAMENT_SERIES()}</DropdownItem>
         {#if check_permission(user_info, series_permissions.create_tournament_template)}
-          <DropdownItem href="/{$page.params.lang}/tournaments/templates">Tournament Templates</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/tournaments/templates">{$LL.NAVBAR.TOURNAMENT_TEMPLATES()}</DropdownItem>
         {/if}
       </Dropdown>
       <NavLi href="/{$page.params.lang}/time-trials" class={checkSelectedNav('TIME TRIALS')}>{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
@@ -116,9 +116,9 @@
         <ChevronDownOutline class="inline"/>
       </NavLi>
       <Dropdown>
-        <DropdownItem href="/{$page.params.lang}/registry/players">Players</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/registry/teams">Teams</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">Recent Transactions</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/registry/players">{$LL.NAVBAR.PLAYERS()}</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/registry/teams">{$LL.NAVBAR.TEAMS()}</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">{$LL.NAVBAR.RECENT_TRANSCATIONS()}</DropdownItem>
       </Dropdown>
       <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
       {#if mod_panel_permissions.some((p) => check_permission(user_info, p))}

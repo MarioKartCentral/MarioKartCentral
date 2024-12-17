@@ -26,7 +26,12 @@
                 window.location.reload();
             }
         } else {
-            alert(`${isLogin ? 'Login' : 'Registration'} failed`);
+            if(isLogin) {
+                alert($LL.LOGIN.LOGIN_FAILED())
+            }
+            else {
+                alert($LL.LOGIN.REGISTRATION_FAILED())
+            }
         }
     }
 </script>
@@ -35,13 +40,13 @@
     <form method="post" on:submit|preventDefault={loginOrSignup}>
         <div class="field">
             <span class="item-label">
-                <label for="email">{$LL.EMAIL()}</label>
+                <label for="email">{$LL.LOGIN.EMAIL()}</label>
             </span>
             <input name="email" type="email" required/>
         </div>
         <div class="field">
             <span class="item-label">
-                <label for="password">{$LL.PASSWORD()}</label>
+                <label for="password">{$LL.LOGIN.PASSWORD()}</label>
             </span>
             <input name="password" type="password" required/>
         </div>
