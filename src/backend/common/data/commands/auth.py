@@ -8,6 +8,7 @@ from aiosqlite import Row
 import aiohttp
 import msgspec
 from urllib.parse import urlparse
+import secrets
 
 @dataclass 
 class GetUserIdFromSessionCommand(Command[User | None]):
@@ -161,15 +162,37 @@ class IsValidSessionCommand(Command[bool]):
             return row is not None and bool(row[0])
         
 @dataclass
-class CreateSessionCommand(Command[None]):
-    session_id: str
+class CreateSessionCommand(Command[SessionInfo]):
     user_id: int
-    expires_on: int
+    persistent_session_id: str | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            session_id = secrets.token_hex(16)
+            max_age = timedelta(days=365)
+            current_date = datetime.now(timezone.utc)
+            expiration_date = current_date + max_age
+
+            # create persistent session token between logins
+            persistent_session_id = self.persistent_session_id
+            # check if persistent session ID exists at all
+            if persistent_session_id:
+                async with db.execute("SELECT user_id FROM persistent_sessions WHERE session_id = ?", (persistent_session_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if not row:
+                        persistent_session_id = None
+            if persistent_session_id is None:
+                persistent_session_id = secrets.token_hex(16)
+            current_timestamp = int(current_date.timestamp())
+            async with db.execute("UPDATE persistent_sessions SET date_latest = ? WHERE session_id = ? AND user_id = ?", (current_timestamp, persistent_session_id, self.user_id)) as cursor:
+                row_count = cursor.rowcount
+            if not row_count:
+                await db.execute("INSERT INTO persistent_sessions(session_id, user_id, date_earliest, date_latest) VALUES (?, ?, ?, ?)", 
+                                 (persistent_session_id, self.user_id, current_timestamp, current_timestamp))
+                
+            # create session token for login
             command = "INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)"
-            async with db.execute(command, (self.session_id, self.user_id, self.expires_on)) as cursor:
+            async with db.execute(command, (session_id, self.user_id, int(expiration_date.timestamp()))) as cursor:
                 rows_inserted = cursor.rowcount
 
             # TODO: Run queries to identify why session creation failed
@@ -177,6 +200,7 @@ class CreateSessionCommand(Command[None]):
                 raise Problem("Failed to create session")
                 
             await db.commit()
+            return SessionInfo(session_id, persistent_session_id, max_age)
             
 @dataclass
 class DeleteSessionCommand(Command[None]):

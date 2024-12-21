@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
-import secrets
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route
@@ -29,14 +27,13 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
     if not is_valid_password:
         raise Problem("Invalid login details", status=401)
     
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
+    persistent_session_id = request.cookies.get('persistentSession', None)
 
-    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    session = await handle(CreateSessionCommand(user.id, persistent_session_id))
 
     resp = JSONResponse({}, status_code=200)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
     return resp
 
 @dataclass
@@ -52,14 +49,12 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
     await handle(CreateUserSettingsCommand(user.id))
 
     # login user after registering
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
-
-    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    persistent_session_id = request.cookies.get('persistentSession', None)
+    session = await handle(CreateSessionCommand(user.id, persistent_session_id))
 
     resp = JSONResponse(user, status_code=201)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
     return resp
 
 @require_logged_in

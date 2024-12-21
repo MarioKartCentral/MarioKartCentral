@@ -78,6 +78,22 @@ class Session(TableModel):
             session_id TEXT PRIMARY KEY NOT NULL,
             user_id INTEGER NOT NULL REFERENCES users(id),
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
+
+@dataclass
+class PersistentSession(TableModel):
+    session_id: str
+    user_id: int
+    date_earliest: int
+    date_latest: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS persistent_sessions(
+            session_id TEXT NOT NULL,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            date_earliest INTEGER NOT NULL,
+            date_latest INTEGER NOT NULL,
+            PRIMARY KEY (session_id, user_id)) WITHOUT ROWID"""
     
 @dataclass
 class UserDiscord(TableModel):
@@ -874,7 +890,7 @@ class PlayerNotes(TableModel):
             )"""
     
 all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
+    Player, FriendCode, User, Session, PersistentSession, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,

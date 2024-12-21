@@ -45,8 +45,8 @@ class PlayerRoster:
 class PlayerTransferItem:
     team_id: int
     team_name: str
-    game: str;
-    mode: str;
+    game: str
+    mode: str
     join_date: int
     leave_date: int | None
     roster_name: str

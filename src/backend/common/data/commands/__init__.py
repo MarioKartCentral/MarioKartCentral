@@ -4,6 +4,7 @@ from .auth import *
 from .command_log import *
 from .db_admin import *
 from .friend_codes import *
+from .moderator import *
 from .notifications import *
 from .players import *
 from .roles import *

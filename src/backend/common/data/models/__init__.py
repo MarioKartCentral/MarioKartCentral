@@ -1,8 +1,10 @@
 # re-export all the models
+from .auth import *
 from .common import *
 from .command_log import *
 from .discord_integration import *
 from .friend_codes import *
+from .moderator import *
 from .notifications import *
 from .players import *
 from .roles import *
