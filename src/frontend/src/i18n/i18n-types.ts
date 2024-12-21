@@ -1000,6 +1000,52 @@ type RootTranslation = {
 		 * L​o​g​i​n​/​R​e​g​i​s​t​e​r
 		 */
 		LOGIN_REGISTER: string
+		MOD_PANEL: {
+			/**
+			 * A​p​p​r​o​v​e​ ​T​e​a​m​s
+			 */
+			APPROVE_TEAMS: string
+			/**
+			 * T​e​a​m​ ​N​a​m​e​/​T​a​g​ ​C​h​a​n​g​e​s
+			 */
+			TEAM_NAME_TAG_CHANGES: string
+			/**
+			 * A​p​p​r​o​v​e​ ​T​r​a​n​s​f​e​r​s
+			 */
+			APPROVE_TRANSFERS: string
+			/**
+			 * U​s​e​r​ ​R​o​l​e​s
+			 */
+			USER_ROLES: string
+			/**
+			 * P​l​a​y​e​r​ ​B​a​n​s
+			 */
+			PLAYER_BANS: string
+			/**
+			 * P​l​a​y​e​r​ ​N​a​m​e​ ​C​h​a​n​g​e​s
+			 */
+			PLAYER_NAME_CHANGES: string
+			/**
+			 * S​h​a​d​o​w​ ​P​l​a​y​e​r​s
+			 */
+			SHADOW_PLAYERS: string
+			/**
+			 * P​l​a​y​e​r​ ​C​l​a​i​m​s
+			 */
+			PLAYER_CLAIMS: string
+			/**
+			 * M​e​r​g​e​ ​P​l​a​y​e​r​s
+			 */
+			MERGE_PLAYERS: string
+			/**
+			 * M​e​r​g​e​ ​T​e​a​m​s
+			 */
+			MERGE_TEAMS: string
+			/**
+			 * A​c​c​o​u​n​t​ ​M​a​t​c​h​e​s
+			 */
+			ACCOUNT_MATCHES: string
+		}
 	}
 	NOTIFICATION: {
 		/**
@@ -5109,6 +5155,52 @@ export type TranslationFunctions = {
 		 * Login/Register
 		 */
 		LOGIN_REGISTER: () => LocalizedString
+		MOD_PANEL: {
+			/**
+			 * Approve Teams
+			 */
+			APPROVE_TEAMS: () => LocalizedString
+			/**
+			 * Team Name/Tag Changes
+			 */
+			TEAM_NAME_TAG_CHANGES: () => LocalizedString
+			/**
+			 * Approve Transfers
+			 */
+			APPROVE_TRANSFERS: () => LocalizedString
+			/**
+			 * User Roles
+			 */
+			USER_ROLES: () => LocalizedString
+			/**
+			 * Player Bans
+			 */
+			PLAYER_BANS: () => LocalizedString
+			/**
+			 * Player Name Changes
+			 */
+			PLAYER_NAME_CHANGES: () => LocalizedString
+			/**
+			 * Shadow Players
+			 */
+			SHADOW_PLAYERS: () => LocalizedString
+			/**
+			 * Player Claims
+			 */
+			PLAYER_CLAIMS: () => LocalizedString
+			/**
+			 * Merge Players
+			 */
+			MERGE_PLAYERS: () => LocalizedString
+			/**
+			 * Merge Teams
+			 */
+			MERGE_TEAMS: () => LocalizedString
+			/**
+			 * Account Matches
+			 */
+			ACCOUNT_MATCHES: () => LocalizedString
+		}
 	}
 	NOTIFICATION: {
 		/**

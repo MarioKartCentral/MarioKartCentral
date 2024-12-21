@@ -272,6 +272,19 @@ const de: Translation = {
     NOTIFICATIONS: 'Notifications',
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
+    MOD_PANEL: {
+      APPROVE_TEAMS: 'Approve Teams',
+      TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
+      APPROVE_TRANSFERS: 'Approve Transfers',
+      USER_ROLES: 'User Roles',
+      PLAYER_BANS: 'Player Bans',
+      PLAYER_NAME_CHANGES: 'Player Name Changes',
+      SHADOW_PLAYERS: 'Shadow Players',
+      PLAYER_CLAIMS: 'Player Claims',
+      MERGE_PLAYERS: 'Merge Players',
+      MERGE_TEAMS: 'Merge Teams',
+      ACCOUNT_MATCHES: 'Account Matches',
+    }
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',
