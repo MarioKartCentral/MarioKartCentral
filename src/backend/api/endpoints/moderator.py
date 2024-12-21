@@ -14,6 +14,14 @@ async def view_session_matches(request: Request, filter: SessionMatchFilter) -> 
     match_list = await handle(command)
     return JSONResponse(match_list)
 
+@require_permission(permissions.VIEW_ACCOUNT_MATCHES)
+async def view_player_session_matches(request: Request) -> JSONResponse:
+    player_id = int(request.path_params['player_id'])
+    command = GetPlayerSessionMatchesCommand(player_id)
+    matches = await handle(command)
+    return JSONResponse(matches)
+
 routes = [
-    Route('/api/moderator/session_matches', view_session_matches)
+    Route('/api/moderator/session_matches', view_session_matches),
+    Route('/api/moderator/players/{player_id:int}/session_matches', view_player_session_matches)
 ]
