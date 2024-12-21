@@ -8,7 +8,7 @@ class GetSessionMatchesCommand(Command[SessionMatchList]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            limit = 20
+            limit = 10
             offset = 0
             if self.filter.page is not None:
                 offset = (self.filter.page - 1) * limit
