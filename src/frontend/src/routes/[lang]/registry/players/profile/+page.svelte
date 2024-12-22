@@ -19,11 +19,13 @@
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
+  import PlayerSessionMatches from '$lib/components/moderator/PlayerSessionMatches.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
   let playerNotesDialog: Dialog;
+  let playerMatchesDialog: PlayerSessionMatches;
 
   user.subscribe((value) => {
     user_info = value;
@@ -67,6 +69,12 @@
     resetPlayerNotes = !resetPlayerNotes;
     playerNotesDialog.close();
   }
+
+  const mod_permissions = [
+    permissions.ban_player,
+    permissions.edit_player,
+    permissions.view_account_matches
+  ]
 </script>
 
 <svelte:head>
@@ -78,7 +86,7 @@
     <PlayerProfileBan ban_info={player.ban_info} />
   {/if}
 
-  {#if check_permission(user_info, permissions.ban_player) || check_permission(user_info, permissions.edit_player)}
+  {#if mod_permissions.some((p) => check_permission(user_info, p))}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
         {#if check_permission(user_info, permissions.ban_player)}
@@ -91,6 +99,9 @@
         {#if check_permission(user_info, permissions.edit_player)}
           <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button>
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}</Button>
+        {/if}
+        {#if check_permission(user_info, permissions.view_account_matches)}
+          <Button on:click={playerMatchesDialog.open}>Account Matches</Button>
         {/if}
       </div>
       <PlayerNotes notes={player.notes} />
@@ -116,6 +127,7 @@
         />
       {/key}
     </Dialog>
+    <PlayerSessionMatches bind:this={playerMatchesDialog} player_id={id}/>
   {/if}
   <PlayerProfile {player} />
   <PlayerTournamentHistory {player} />
