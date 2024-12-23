@@ -165,6 +165,7 @@ class IsValidSessionCommand(Command[bool]):
 class CreateSessionCommand(Command[SessionInfo]):
     user_id: int
     persistent_session_id: str | None
+    ip_address: str | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -189,7 +190,15 @@ class CreateSessionCommand(Command[SessionInfo]):
             if not row_count:
                 await db.execute("INSERT INTO persistent_sessions(session_id, user_id, date_earliest, date_latest) VALUES (?, ?, ?, ?)", 
                                  (persistent_session_id, self.user_id, current_timestamp, current_timestamp))
-                
+
+            # update ip address latest timestamp + increment number of times used
+            if self.ip_address:
+                async with db.execute("UPDATE user_ips SET date_latest = ?, times = times + 1 WHERE user_id = ? AND ip_address = ?", (current_timestamp, self.user_id, self.ip_address)) as cursor:
+                    row_count = cursor.rowcount
+                if not row_count:
+                    await db.execute("INSERT INTO user_ips(user_id, ip_address, date_earliest, date_latest, times) VALUES(?, ?, ?, ?, ?)",
+                                    (self.user_id, self.ip_address, current_timestamp, current_timestamp, 1))
+
             # create session token for login
             command = "INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)"
             async with db.execute(command, (session_id, self.user_id, int(expiration_date.timestamp()))) as cursor:

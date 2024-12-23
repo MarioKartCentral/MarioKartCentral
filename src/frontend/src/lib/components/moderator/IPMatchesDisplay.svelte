@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { SessionMatch } from "$lib/types/account-matches";
+    import type { IPMatch } from "$lib/types/account-matches";
     import { locale } from "$i18n/i18n-svelte";
     import Flag from "../common/Flag.svelte";
     import { page } from "$app/stores";
 
-    export let matches: SessionMatch[];
+    export let matches: IPMatch[];
 
     const options: Intl.DateTimeFormatOptions = {
         dateStyle: 'short',
@@ -16,7 +16,14 @@
     {#each matches as match, i}
         <div class="row bg-{i%2}">
             <div class="header bg-primary-800">
-                {match.users.length} accounts - {new Date(match.date * 1000).toLocaleString($locale, options)}
+                {match.users.length} accounts - 
+                {#if match.ip_address}
+                    <a href="https://whatismyipaddress.com/ip/{match.ip_address}" class="underline">
+                        {match.ip_address}
+                    </a>
+                    -
+                {/if}
+                {new Date(match.date * 1000).toLocaleString($locale, options)}
             </div>
             {#each match.users as user}
                 <div class="flex">
@@ -30,12 +37,14 @@
                             </a>
                         </span>
                     </div>
-                    <div class="dates">
+                    <div class="date_times">
                         {new Date(user.date_earliest * 1000).toLocaleString($locale, options)}
                         -
                         {new Date(user.date_latest * 1000).toLocaleString($locale, options)}
                     </div>
-                    
+                    <div class="date_times">
+                        {user.times} times
+                    </div>
                 </div>
             {/each}
         </div>
@@ -74,7 +83,7 @@
         opacity: 0.7;
         text-decoration: line-through;
     }
-    .dates {
+    .date_times {
         font-size: smaller;
         min-width: 250px;
         margin-left: 10px;

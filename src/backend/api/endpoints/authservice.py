@@ -28,8 +28,9 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
         raise Problem("Invalid login details", status=401)
     
     persistent_session_id = request.cookies.get('persistentSession', None)
+    ip_address = request.client.host if request.client else None
 
-    session = await handle(CreateSessionCommand(user.id, persistent_session_id))
+    session = await handle(CreateSessionCommand(user.id, persistent_session_id, ip_address))
 
     resp = JSONResponse({}, status_code=200)
     resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
@@ -50,7 +51,8 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # login user after registering
     persistent_session_id = request.cookies.get('persistentSession', None)
-    session = await handle(CreateSessionCommand(user.id, persistent_session_id))
+    ip_address = request.client.host if request.client else None
+    session = await handle(CreateSessionCommand(user.id, persistent_session_id, ip_address))
 
     resp = JSONResponse(user, status_code=201)
     resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))

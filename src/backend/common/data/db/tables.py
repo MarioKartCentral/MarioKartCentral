@@ -96,6 +96,24 @@ class PersistentSession(TableModel):
             PRIMARY KEY (session_id, user_id)) WITHOUT ROWID"""
     
 @dataclass
+class UserIP(TableModel):
+    user_id: int
+    ip_address: str
+    date_earliest: int
+    date_latest: int
+    times: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_ips(
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            ip_address TEXT NOT NULL,
+            date_earliest INTEGER NOT NULL,
+            date_latest INTEGER NOT NULL,
+            times INTEGER NOT NULL,
+            PRIMARY KEY(user_id, ip_address)) WITHOUT ROWID"""
+    
+@dataclass
 class UserDiscord(TableModel):
     user_id: int
     discord_id: str
@@ -890,7 +908,7 @@ class PlayerNotes(TableModel):
             )"""
     
 all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, Session, PersistentSession, UserDiscord, Role, Permission, UserRole, RolePermission, 
+    Player, FriendCode, User, Session, PersistentSession, UserIP, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,

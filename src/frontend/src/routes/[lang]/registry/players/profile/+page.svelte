@@ -19,13 +19,13 @@
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
-  import PlayerSessionMatches from '$lib/components/moderator/PlayerSessionMatches.svelte';
+  import PlayerAccountMatches from '$lib/components/moderator/PlayerAccountMatches.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
   let playerNotesDialog: Dialog;
-  let playerMatchesDialog: PlayerSessionMatches;
+  let playerMatchesDialog: PlayerAccountMatches;
 
   user.subscribe((value) => {
     user_info = value;
@@ -127,7 +127,7 @@
         />
       {/key}
     </Dialog>
-    <PlayerSessionMatches bind:this={playerMatchesDialog} player_id={id}/>
+    <PlayerAccountMatches bind:this={playerMatchesDialog} player_id={id}/>
   {/if}
   <PlayerProfile {player} />
   <PlayerTournamentHistory {player} />
