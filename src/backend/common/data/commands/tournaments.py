@@ -262,6 +262,7 @@ class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements
                 JOIN tournament_squads ts ON ts.id = tsp.squad_id
                 JOIN team_squad_registrations tsr ON tsr.squad_id = tsp.squad_id
                 WHERE ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                ORDER BY tsp.placement
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}

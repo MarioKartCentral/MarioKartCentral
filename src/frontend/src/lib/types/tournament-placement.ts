@@ -76,6 +76,9 @@ export type TournamentSeriesPlacements = {
   silver_medals: number;
   bronze_medals: number;
   participations: number;
+  finals: number;
+  podiums: number;
+  medals_placement: number;
   podiums_placement: number;
   participations_placement: number;
   finals_placement: number;
