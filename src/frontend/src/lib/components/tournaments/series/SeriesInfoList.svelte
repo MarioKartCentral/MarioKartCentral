@@ -65,7 +65,7 @@
             </td>
             <td class="right">
               {#each tournament.placements as placement}
-                {#if placement.placement < 3}
+                {#if placement.placement < 4}
                   <span style="color:{getColor(placement.placement)}">
                     <a
                       href={`/${$page.params.lang}/tournaments/squads?id=${placement.squad.id}&tournament_id=${tournament.id}`}
@@ -100,9 +100,7 @@
           <td class="right">
             {#each tournament.placements as placement}
               <span style="color:{getColor(placement.placement)}">
-                <a
-                  href={`/${$page.params.lang}/registry/player?id=${placement.player.id}`}
-                >
+                <a href={`/${$page.params.lang}/registry/player?id=${placement.player.id}`}>
                   {'   ' + getMedail(placement.placement) + ' ' + placement.player.name}
                 </a>
               </span>
