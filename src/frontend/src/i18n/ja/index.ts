@@ -714,7 +714,7 @@ const ja: Translation = {
       START_FROM_SCRATCH: '新規作成',
       EDIT_TOURNAMENT: '大会編集',
       START_BEFORE_END_DATE: '開始日は終了日より前にする必要があります',
-      CREATE_TOURNAMENT_SUCCESS: 'Successfully created tournament!',
+      CREATE_TOURNAMENT_SUCCESS: '大会の作成に成功しました！',
       CREATE_TOURNAMENT_FAILED: 'Failed to create tournament',
       EDIT_TOURNAMENT_SUCCESS: 'Successfully edited tournament!',
       EDIT_TOURNAMENT_FAILED: 'Failed to edit tournament',
