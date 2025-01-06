@@ -67,6 +67,7 @@
     left: 50%;
     width: 90%;
     min-height: 200px;
+    
     transform: translate(-50%, -50%);
     background-color: rgba(64, 64, 64, 0.9);
   }
@@ -82,6 +83,8 @@
   }
   .content {
     padding: 15px;
+    max-height: 500px;
+    overflow: auto;
   }
   .exit {
     position: absolute;
