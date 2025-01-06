@@ -101,7 +101,7 @@
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}</Button>
         {/if}
         {#if check_permission(user_info, permissions.view_account_matches)}
-          <Button on:click={playerMatchesDialog.open}>Account Matches</Button>
+          <Button on:click={playerMatchesDialog.open}>{$LL.MODERATOR.ALT_DETECTION.ACCOUNT_MATCHES()}</Button>
         {/if}
       </div>
       <PlayerNotes notes={player.notes} />

@@ -52,29 +52,29 @@
 </script>
 
 {#if check_permission(user_info, permissions.view_account_matches)}
-    <Section header="Session Matches">
+    <Section header={$LL.MODERATOR.ALT_DETECTION.SESSION_MATCHES()}>
         {#if total_session_matches}
-            {total_session_matches} account matches
+            {$LL.MODERATOR.ALT_DETECTION.ACCOUNT_MATCH_COUNT({count: total_session_matches})}
             <PageNavigation bind:currentPage={current_session_page} bind:totalPages={total_session_pages} refresh_function={fetchSessionData}/>
             <div>
                 <SessionMatchesDisplay matches={session_matches}/>
             </div>
             <PageNavigation bind:currentPage={current_session_page} bind:totalPages={total_session_pages} refresh_function={fetchSessionData}/>
         {:else}
-            No account matches.
+            {$LL.MODERATOR.ALT_DETECTION.NO_ACCOUNT_MATCHES()}
         {/if}
         
     </Section>
-    <Section header="IP Matches">
+    <Section header={$LL.MODERATOR.ALT_DETECTION.IP_MATCHES()}>
         {#if total_ip_matches}
-            {total_ip_matches} account matches
+            {$LL.MODERATOR.ALT_DETECTION.ACCOUNT_MATCH_COUNT({count: total_ip_matches})}
             <PageNavigation bind:currentPage={current_ip_page} bind:totalPages={total_ip_pages} refresh_function={fetchIPData}/>
             <div>
                 <IPMatchesDisplay matches={ip_matches}/>
             </div>
             <PageNavigation bind:currentPage={current_ip_page} bind:totalPages={total_ip_pages} refresh_function={fetchIPData}/>
         {:else}
-            No account matches.
+            {$LL.MODERATOR.ALT_DETECTION.NO_ACCOUNT_MATCHES()}
         {/if}
     </Section>
 {:else}

@@ -844,6 +844,39 @@ type RootTranslation = {
 		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
 		 */
 		CREATE_SHADOW_PLAYER: string
+		ALT_DETECTION: {
+			/**
+			 * {​c​o​u​n​t​}​ ​a​c​c​o​u​n​t​s
+			 * @param {number} count
+			 */
+			ACCOUNT_COUNT: RequiredParams<'count'>
+			/**
+			 * A​c​c​o​u​n​t​ ​M​a​t​c​h​e​s
+			 */
+			ACCOUNT_MATCHES: string
+			/**
+			 * {​c​o​u​n​t​}​ ​a​c​c​o​u​n​t​ ​m​a​t​c​h​e​s
+			 * @param {number} count
+			 */
+			ACCOUNT_MATCH_COUNT: RequiredParams<'count'>
+			/**
+			 * I​P​ ​M​a​t​c​h​e​s
+			 */
+			IP_MATCHES: string
+			/**
+			 * N​o​ ​a​c​c​o​u​n​t​ ​m​a​t​c​h​e​s​.
+			 */
+			NO_ACCOUNT_MATCHES: string
+			/**
+			 * {​c​o​u​n​t​}​ ​t​i​m​e​s
+			 * @param {number} count
+			 */
+			NUMBER_TIMES_LOGGED_IN: RequiredParams<'count'>
+			/**
+			 * S​e​s​s​i​o​n​ ​M​a​t​c​h​e​s
+			 */
+			SESSION_MATCHES: string
+		}
 	}
 	MODES: {
 		/**
@@ -4999,6 +5032,36 @@ export type TranslationFunctions = {
 		 * Create Shadow Player
 		 */
 		CREATE_SHADOW_PLAYER: () => LocalizedString
+		ALT_DETECTION: {
+			/**
+			 * {count} accounts
+			 */
+			ACCOUNT_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Account Matches
+			 */
+			ACCOUNT_MATCHES: () => LocalizedString
+			/**
+			 * {count} account matches
+			 */
+			ACCOUNT_MATCH_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * IP Matches
+			 */
+			IP_MATCHES: () => LocalizedString
+			/**
+			 * No account matches.
+			 */
+			NO_ACCOUNT_MATCHES: () => LocalizedString
+			/**
+			 * {count} times
+			 */
+			NUMBER_TIMES_LOGGED_IN: (arg: { count: number }) => LocalizedString
+			/**
+			 * Session Matches
+			 */
+			SESSION_MATCHES: () => LocalizedString
+		}
 	}
 	MODES: {
 		/**

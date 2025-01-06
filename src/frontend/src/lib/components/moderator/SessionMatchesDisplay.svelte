@@ -3,6 +3,7 @@
     import { locale } from "$i18n/i18n-svelte";
     import Flag from "../common/Flag.svelte";
     import { page } from "$app/stores";
+    import LL from "$i18n/i18n-svelte";
 
     export let matches: SessionMatch[];
 
@@ -16,7 +17,8 @@
     {#each matches as match, i}
         <div class="row bg-{i%2}">
             <div class="header bg-primary-800">
-                {match.users.length} accounts - {new Date(match.date * 1000).toLocaleString($locale, options)}
+                {$LL.MODERATOR.ALT_DETECTION.ACCOUNT_COUNT({count:match.users.length})} -
+                {new Date(match.date * 1000).toLocaleString($locale, options)}
             </div>
             {#each match.users as user}
                 <div class="flex">

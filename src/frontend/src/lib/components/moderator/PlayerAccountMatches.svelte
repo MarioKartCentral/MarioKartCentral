@@ -4,6 +4,7 @@
     import Dialog from "../common/Dialog.svelte";
     import SessionMatchesDisplay from "./SessionMatchesDisplay.svelte";
     import IPMatchesDisplay from "./IPMatchesDisplay.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let player_id: number;
     
@@ -29,26 +30,26 @@
     }
 </script>
 
-<Dialog bind:this={matches_dialog} header="Account Matches">
+<Dialog bind:this={matches_dialog} header={$LL.MODERATOR.ALT_DETECTION.ACCOUNT_MATCHES()}>
     <div class="section">
         <div class="heading">
-            Session Matches
+            {$LL.MODERATOR.ALT_DETECTION.SESSION_MATCHES()}
         </div>
         {#if session_matches.length}
             <SessionMatchesDisplay matches={session_matches}/>
         {:else}
-            No account matches.
+            {$LL.MODERATOR.ALT_DETECTION.NO_ACCOUNT_MATCHES()}
         {/if}
         
     </div>
     <div class="section">
         <div class="heading">
-            IP Matches
+            {$LL.MODERATOR.ALT_DETECTION.IP_MATCHES()}
         </div>
         {#if ip_matches.length}
             <IPMatchesDisplay matches={ip_matches}/>
         {:else}
-            No account matches.
+        {$LL.MODERATOR.ALT_DETECTION.NO_ACCOUNT_MATCHES()}
         {/if}
         
     </div>

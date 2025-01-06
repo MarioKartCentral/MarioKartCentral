@@ -230,6 +230,15 @@ const es: Translation = {
     NO_PLAYER_CLAIMS: 'No player claims',
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
+    ALT_DETECTION: {
+      ACCOUNT_COUNT: '{count} accounts',
+      ACCOUNT_MATCHES: 'Account Matches',
+      ACCOUNT_MATCH_COUNT: '{count} account matches',
+      IP_MATCHES: 'IP Matches',
+      NO_ACCOUNT_MATCHES: 'No account matches.',
+      NUMBER_TIMES_LOGGED_IN: '{count} times',
+      SESSION_MATCHES: 'Session Matches',
+    },
   },
   MODES: {
     ALL: 'All Modes',

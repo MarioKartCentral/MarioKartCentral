@@ -3,6 +3,7 @@
     import { locale } from "$i18n/i18n-svelte";
     import Flag from "../common/Flag.svelte";
     import { page } from "$app/stores";
+    import LL from "$i18n/i18n-svelte";
 
     export let matches: IPMatch[];
 
@@ -16,7 +17,7 @@
     {#each matches as match, i}
         <div class="row bg-{i%2}">
             <div class="header bg-primary-800">
-                {match.users.length} accounts - 
+                {$LL.MODERATOR.ALT_DETECTION.ACCOUNT_COUNT({count:match.users.length})} -
                 {#if match.ip_address}
                     <a href="https://whatismyipaddress.com/ip/{match.ip_address}" class="underline">
                         {match.ip_address}
@@ -43,7 +44,7 @@
                         {new Date(user.date_latest * 1000).toLocaleString($locale, options)}
                     </div>
                     <div class="date_times">
-                        {user.times} times
+                        {$LL.MODERATOR.ALT_DETECTION.NUMBER_TIMES_LOGGED_IN({count: user.times})}
                     </div>
                 </div>
             {/each}
