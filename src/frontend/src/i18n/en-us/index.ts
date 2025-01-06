@@ -288,7 +288,7 @@ const en_us: BaseTranslation = {
       MERGE_PLAYERS: 'Merge Players',
       MERGE_TEAMS: 'Merge Teams',
       ACCOUNT_MATCHES: 'Account Matches',
-    }
+    },
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',

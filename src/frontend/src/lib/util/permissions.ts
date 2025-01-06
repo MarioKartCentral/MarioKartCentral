@@ -161,9 +161,9 @@ export const permissions = {
   manage_shadow_players: 'shadow_players_manage',
   merge_players: 'player_merge',
   merge_teams: 'team_merge',
-  view_account_matches: "account_matches_view",
-  view_ip_addresses: "ip_address_view",
-  edit_accounts: "account_edit"
+  view_account_matches: 'account_matches_view',
+  view_ip_addresses: 'ip_address_view',
+  edit_accounts: 'account_edit',
 };
 
 export const team_permissions = {
