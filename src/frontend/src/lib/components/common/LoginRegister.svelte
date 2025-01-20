@@ -2,10 +2,13 @@
     import LL from '$i18n/i18n-svelte';
     import { page } from '$app/stores';
     import Button from './buttons/Button.svelte';
-    import { getFingerprint } from "@thumbmarkjs/thumbmarkjs";
+    import { onMount } from 'svelte';
 
-    const fingerprint = getFingerprint();
-    console.log(fingerprint);
+    onMount(async () => {
+        const { getFingerprint } = await import('@thumbmarkjs/thumbmarkjs');
+        const fingerprint = await getFingerprint();
+        console.log(fingerprint);
+    });
 
     async function loginOrSignup(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
