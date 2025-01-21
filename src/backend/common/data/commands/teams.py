@@ -751,13 +751,13 @@ class ViewTransfersCommand(Command[TransferList]):
                         mode = leave_roster_mode
 
                     if leave_roster_id:
-                        leave_roster = TransferRoster(leave_team_id, leave_team_name, leave_team_tag, leave_team_color, leave_roster_id,
+                        leave_roster = RosterBasic(leave_team_id, leave_team_name, leave_team_tag, leave_team_color, leave_roster_id,
                                                    leave_roster_name, leave_roster_tag)
                     else:
                         leave_roster = None
 
                     if join_roster_id:
-                        join_roster = TransferRoster(join_team_id, join_team_name, join_team_tag, join_team_color, join_roster_id,
+                        join_roster = RosterBasic(join_team_id, join_team_name, join_team_tag, join_team_color, join_roster_id,
                                                      join_roster_name, join_roster_tag)
                     else:
                         join_roster = None
@@ -1321,9 +1321,11 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, game, fc, is_verified, is_primary, is_active = row
-                    fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
+                    player_fcs = fc_dict.get(player_id, None)
+                    if player_fcs:
+                        player_fcs.append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
             return rosters
-        
+
 @save_to_command_log
 @dataclass
 class MergeTeamsCommand(Command[None]):

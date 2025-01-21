@@ -372,6 +372,40 @@ async def toggle_checkin(request: Request, body: TournamentCheckinRequestData) -
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def add_roster_to_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    player_id = request.state.user.player_id
+    command = AddRosterToSquadCommand(tournament_id, body.squad_id, body.roster_id, player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    player_id = request.state.user.player_id
+    command = RemoveRosterFromSquadCommand(tournament_id, body.squad_id, body.roster_id, player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+async def force_add_roster_to_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    command = AddRosterToSquadCommand(tournament_id, body.squad_id, body.roster_id, None, True)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+async def force_remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    command = RemoveRosterFromSquadCommand(tournament_id, body.squad_id, body.roster_id, None, True)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/tournaments/{tournament_id:int}/register', register_me, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/forceRegister', force_register_player, methods=['POST']), # dispatches notification
@@ -397,5 +431,9 @@ routes = [
     Route('/api/tournaments/{tournament_id:int}/squads/{squad_id:int}', view_squad),
     Route('/api/tournaments/{tournament_id:int}/registrations', list_registrations),
     Route('/api/tournaments/{tournament_id:int}/myRegistration', my_registration),
-    Route('/api/tournaments/{tournament_id:int}/toggleCheckin', toggle_checkin, methods=['POST'])
+    Route('/api/tournaments/{tournament_id:int}/toggleCheckin', toggle_checkin, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/addRosterToSquad', add_roster_to_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/removeRosterFromSquad', remove_roster_from_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/forceAddRosterToSquad', force_add_roster_to_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/forceRemoveRosterFromSquad', force_remove_roster_from_squad, methods=['POST']),
 ]

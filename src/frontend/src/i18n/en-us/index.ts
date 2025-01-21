@@ -709,6 +709,13 @@ const en_us: BaseTranslation = {
       MANUALLY_REGISTER_SQUAD: 'Manually Register Squad',
       MANUAL_REGISTRATION_SUCCESS: 'Successfully registered this player for the tournament!',
       MANUAL_REGISTRATION_FAILED: 'Failed to register this player for the tournament',
+      MANAGE_ROSTERS: 'Manage Rosters',
+      ADD_ROSTER: 'Add Roster',
+      SELECT_A_ROSTER: 'Select a Roster...',
+      ADD_ROSTER_CONFIRM: 'Are you sure you want to add the roster {roster_name:string} to this squad?',
+      REMOVE_ROSTER_CONFIRM: 'Are you sure you want to remove the roster {roster_name:string} from this squad?',
+      ADD_ROSTER_FAILED: 'Failed to add roster',
+      REMOVE_ROSTER_FAILED: 'Failed to remove roster',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Select Template',

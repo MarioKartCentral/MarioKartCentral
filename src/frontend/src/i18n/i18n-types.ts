@@ -2707,6 +2707,36 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t
 			 */
 			MANUAL_REGISTRATION_FAILED: string
+			/**
+			 * M​a​n​a​g​e​ ​R​o​s​t​e​r​s
+			 */
+			MANAGE_ROSTERS: string
+			/**
+			 * A​d​d​ ​R​o​s​t​e​r
+			 */
+			ADD_ROSTER: string
+			/**
+			 * S​e​l​e​c​t​ ​a​ ​R​o​s​t​e​r​.​.​.
+			 */
+			SELECT_A_ROSTER: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​a​d​d​ ​t​h​e​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​ ​t​o​ ​t​h​i​s​ ​s​q​u​a​d​?
+			 * @param {string} roster_name
+			 */
+			ADD_ROSTER_CONFIRM: RequiredParams<'roster_name'>
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​ ​f​r​o​m​ ​t​h​i​s​ ​s​q​u​a​d​?
+			 * @param {string} roster_name
+			 */
+			REMOVE_ROSTER_CONFIRM: RequiredParams<'roster_name'>
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​a​d​d​ ​r​o​s​t​e​r
+			 */
+			ADD_ROSTER_FAILED: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​s​t​e​r
+			 */
+			REMOVE_ROSTER_FAILED: string
 		}
 		MANAGE: {
 			/**
@@ -6738,6 +6768,34 @@ export type TranslationFunctions = {
 			 * Failed to register this player for the tournament
 			 */
 			MANUAL_REGISTRATION_FAILED: () => LocalizedString
+			/**
+			 * Manage Rosters
+			 */
+			MANAGE_ROSTERS: () => LocalizedString
+			/**
+			 * Add Roster
+			 */
+			ADD_ROSTER: () => LocalizedString
+			/**
+			 * Select a Roster...
+			 */
+			SELECT_A_ROSTER: () => LocalizedString
+			/**
+			 * Are you sure you want to add the roster {roster_name} to this squad?
+			 */
+			ADD_ROSTER_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+			/**
+			 * Are you sure you want to remove the roster {roster_name} from this squad?
+			 */
+			REMOVE_ROSTER_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+			/**
+			 * Failed to add roster
+			 */
+			ADD_ROSTER_FAILED: () => LocalizedString
+			/**
+			 * Failed to remove roster
+			 */
+			REMOVE_ROSTER_FAILED: () => LocalizedString
 		}
 		MANAGE: {
 			/**

@@ -1,12 +1,4 @@
-type TransferRoster = {
-  team_id: number;
-  team_name: string;
-  team_tag: string;
-  team_color: number;
-  roster_id: number;
-  roster_name: string | null;
-  roster_tag: string | null;
-};
+import type { RosterBasic } from "./roster-basic";
 
 export type TeamTransfer = {
   invite_id: number;
@@ -17,6 +9,6 @@ export type TeamTransfer = {
   player_country_code: string;
   game: string;
   mode: string;
-  roster_leave: TransferRoster | null;
-  roster_join: TransferRoster | null;
+  roster_leave: RosterBasic | null;
+  roster_join: RosterBasic | null;
 };
