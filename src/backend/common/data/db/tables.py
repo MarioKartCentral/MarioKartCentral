@@ -873,6 +873,18 @@ class PlayerNotes(TableModel):
             date INTEGER NOT NULL
             )"""
     
+@dataclass
+class FilteredWords(TableModel):
+    id: int
+    word: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS filtered_words(
+            id INTEGER PRIMARY KEY,
+            word TEXT NOT NULL
+        )"""
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -882,4 +894,4 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEditRequest, RosterEditRequest,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest, PlayerNotes, PlayerClaim]
+    PlayerNameEditRequest, PlayerNotes, PlayerClaim, FilteredWords]

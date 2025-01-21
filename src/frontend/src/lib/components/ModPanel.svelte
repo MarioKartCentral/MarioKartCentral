@@ -101,5 +101,10 @@
       Merge Teams
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.manage_word_filter)}
+    <DropdownItem href="/{$page.params.lang}/moderator/word_filter">
+      Word Filter
+    </DropdownItem>
+  {/if}
   
 </Dropdown>
