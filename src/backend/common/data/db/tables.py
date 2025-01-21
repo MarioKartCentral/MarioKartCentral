@@ -24,7 +24,8 @@ class Player(TableModel):
             country_code TEXT NOT NULL,
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
-            is_banned BOOLEAN NOT NULL
+            is_banned BOOLEAN NOT NULL,
+            join_date INTEGER NOT NULL DEFAULT 0
             )"""
 
 @dataclass
@@ -64,7 +65,8 @@ class User(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER REFERENCES players(id),
             email TEXT UNIQUE,
-            password_hash TEXT)"""
+            password_hash TEXT,
+            join_date INTEGER NOT NULL DEFAULT 0)"""
 
 @dataclass
 class Session(TableModel):

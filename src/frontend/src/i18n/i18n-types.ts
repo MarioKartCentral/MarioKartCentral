@@ -844,6 +844,20 @@ type RootTranslation = {
 		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
 		 */
 		CREATE_SHADOW_PLAYER: string
+		WORD_FILTER: {
+			/**
+			 * W​o​r​d​ ​F​i​l​t​e​r​ ​L​i​s​t
+			 */
+			WORD_FILTER_LIST: string
+			/**
+			 * B​l​a​c​k​l​i​s​t​e​d​ ​W​o​r​d​s​ ​(​o​n​e​ ​p​e​r​ ​l​i​n​e​)
+			 */
+			BLACKLISTED_WORDS: string
+			/**
+			 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​e​d​i​t​i​n​g​ ​t​h​e​ ​w​o​r​d​ ​f​i​l​t​e​r
+			 */
+			EDIT_WORD_FILTER_ERROR: string
+		}
 	}
 	MODES: {
 		/**
@@ -1463,6 +1477,10 @@ type RootTranslation = {
 			 * P​l​a​y​e​r​ ​n​o​t​ ​f​o​u​n​d
 			 */
 			PLAYER_NOT_FOUND: string
+			/**
+			 * R​e​g​i​s​t​e​r​e​d
+			 */
+			REGISTRATION_DATE: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -4953,6 +4971,20 @@ export type TranslationFunctions = {
 		 * Create Shadow Player
 		 */
 		CREATE_SHADOW_PLAYER: () => LocalizedString
+		WORD_FILTER: {
+			/**
+			 * Word Filter List
+			 */
+			WORD_FILTER_LIST: () => LocalizedString
+			/**
+			 * Blacklisted Words (one per line)
+			 */
+			BLACKLISTED_WORDS: () => LocalizedString
+			/**
+			 * An error occurred editing the word filter
+			 */
+			EDIT_WORD_FILTER_ERROR: () => LocalizedString
+		}
 	}
 	MODES: {
 		/**
@@ -5504,6 +5536,10 @@ export type TranslationFunctions = {
 			 * Player not found
 			 */
 			PLAYER_NOT_FOUND: () => LocalizedString
+			/**
+			 * Registered
+			 */
+			REGISTRATION_DATE: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.commands import Command, save_to_command_log
 from common.data.models import Problem, User, UserLoginData, TeamInvite, TournamentInvite, PlayerInvites
+from datetime import datetime, timezone
 
 
 @dataclass
@@ -39,7 +40,8 @@ class CreateUserCommand(Command[User]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            row = await db.execute_insert("INSERT INTO users(email, password_hash) VALUES (?, ?)", (self.email, self.password_hash))
+            now = int(datetime.now(timezone.utc).timestamp())
+            row = await db.execute_insert("INSERT INTO users(email, password_hash, join_date) VALUES (?, ?, ?)", (self.email, self.password_hash, now))
 
             # TODO: Run queries to identify why user creation failed
             if row is None:

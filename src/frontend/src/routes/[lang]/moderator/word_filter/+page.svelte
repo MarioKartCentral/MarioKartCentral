@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import type { WordFilter } from "$lib/types/word-filter";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let words_text = ""
 
@@ -27,21 +28,21 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`An error occurred editing the word filter: ${result['title']}`);
+            alert(`${$LL.MODERATOR.WORD_FILTER.EDIT_WORD_FILTER_ERROR()}: ${result['title']}`);
         }
 
     }
 </script>
 
-<Section header="Word Filter List">
+<Section header={$LL.MODERATOR.WORD_FILTER.WORD_FILTER_LIST()}>
     <div>
-        Blacklisted Words (one per line)
+        {$LL.MODERATOR.WORD_FILTER.BLACKLISTED_WORDS()}
     </div>
     <div>
         <textarea bind:value={words_text}/>
     </div>
     <div>
-        <Button on:click={editFilter}>Save</Button>
+        <Button on:click={editFilter}>{$LL.COMMON.SAVE()}</Button>
     </div>
 </Section>
 

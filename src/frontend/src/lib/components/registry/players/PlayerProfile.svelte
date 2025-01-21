@@ -13,6 +13,7 @@
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
   import { game_order } from '$lib/util/util';
+  import { locale } from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
 
@@ -26,6 +27,10 @@
   if (player.user_settings && player.user_settings.avatar) {
     avatar_url = player.user_settings.avatar;
   }
+
+  const options: Intl.DateTimeFormatOptions = {
+    dateStyle: 'medium',
+  };
 </script>
 
 <Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
@@ -62,7 +67,7 @@
       {/if}
       {#if player.rosters.length > 0}
         <div class="item">
-          <b>{$LL.PLAYERS.PROFILE.TEAMS()}:</b>
+          <b>{$LL.PLAYERS.PROFILE.TEAMS()}</b>
           {#each player.rosters as r}
             <div>
               <GameBadge game={r.game}/>
@@ -74,6 +79,9 @@
           {/each}
         </div>
       {/if}
+      <div class="item">
+        {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()} {new Date(player.join_date * 1000).toLocaleString($locale, options)}
+      </div>
     </div>
     <div class="item">
       <DiscordDisplay discord={player.discord}/>

@@ -225,6 +225,11 @@ const en_us: BaseTranslation = {
     NO_PLAYER_CLAIMS: 'No player claims',
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
+    WORD_FILTER: {
+      WORD_FILTER_LIST: 'Word Filter List',
+      BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',
+      EDIT_WORD_FILTER_ERROR: 'An error occurred editing the word filter',
+    },
   },
   MODES: {
     ALL: 'All Modes',
@@ -374,6 +379,7 @@ const en_us: BaseTranslation = {
       REQUEST_NAME_CHANGE_FAILED: 'Failed to request name change',
       EDIT_PLAYER_FAILED: 'Editing player failed',
       PLAYER_NOT_FOUND: 'Player not found',
+      REGISTRATION_DATE: 'Registered',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
