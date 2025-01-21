@@ -253,9 +253,6 @@
         flex-wrap: wrap;
         gap: 5px;
     }
-    div.option {
-        margin-bottom: 10px;
-    }
     col.country {
         width: 15%;
     }

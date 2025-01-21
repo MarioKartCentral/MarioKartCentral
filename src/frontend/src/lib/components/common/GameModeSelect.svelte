@@ -21,7 +21,7 @@
 </script>
 
 <div class={inline ? 'flex gap' : ''}>
-  <div class="option">
+  <div class="option {inline ? '' : 'margin'}">
     <GameSelect
       bind:game
       on:change={() => {
@@ -76,5 +76,8 @@
   }
   .gap {
     gap: 5px;
+  }
+  .margin {
+    margin-bottom: 10px;
   }
 </style>
