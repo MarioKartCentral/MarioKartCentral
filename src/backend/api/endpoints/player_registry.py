@@ -28,6 +28,7 @@ async def create_shadow_player(request: Request, body: CreatePlayerRequestData) 
     return JSONResponse(player, status_code=201)
 
 @bind_request_body(EditPlayerRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PLAYER)
 async def edit_player(request: Request, body: EditPlayerRequestData) -> Response:    
     command = UpdatePlayerCommand(body)
@@ -62,6 +63,7 @@ async def list_players(_: Request, filter: PlayerFilter) -> Response:
     return JSONResponse(players)
 
 @bind_request_body(CreateFriendCodeRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSONResponse:
     command = CreateFriendCodeCommand(request.state.user.player_id, body.fc, body.game, False, body.is_primary, True, body.description, False)
@@ -69,6 +71,7 @@ async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSON
     return JSONResponse({})
 
 @bind_request_body(ForceCreateFriendCodeRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PLAYER)
 async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestData) -> JSONResponse:
     async def notify():
@@ -80,6 +83,7 @@ async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestDa
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(ForceEditFriendCodeRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PLAYER)
 async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) -> JSONResponse:
     async def notify():
@@ -92,6 +96,7 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditMyFriendCodeRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
@@ -118,6 +123,7 @@ async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeReque
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(PlayerRequestNameRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def request_edit_player_name(request: Request, body: PlayerRequestNameRequestData) -> JSONResponse:
     command = RequestEditPlayerNameCommand(request.state.user.player_id, body.name)

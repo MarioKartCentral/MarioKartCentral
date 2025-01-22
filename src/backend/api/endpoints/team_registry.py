@@ -9,10 +9,12 @@ from common.auth import permissions
 from common.auth import team_permissions
 from common.data.commands import *
 from common.data.models import *
+from api.utils.word_filter import check_word_filter
 import common.data.notifications as notifications
 
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateTeamRequestData)
+@check_word_filter
 @require_permission(permissions.MANAGE_TEAMS)
 async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResponse:
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
@@ -21,6 +23,7 @@ async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResp
     return JSONResponse({'id': team_id})
 
 @bind_request_body(RequestCreateTeamRequestData)
+@check_word_filter
 @require_permission(permissions.CREATE_TEAM, check_denied_only=True)
 async def request_create_team(request: Request, body: RequestCreateTeamRequestData) -> JSONResponse:
     approval_status = "pending"
@@ -37,6 +40,7 @@ async def view_team(request: Request) -> JSONResponse:
 
 # for moderator use, allows for direct editing of name/tags and approving/disapproving teams
 @bind_request_body(EditTeamRequestData)
+@check_word_filter
 @require_permission(permissions.MANAGE_TEAMS)
 async def edit_team(request: Request, body: EditTeamRequestData) -> JSONResponse:
     async def notify():
@@ -80,6 +84,7 @@ async def deny_team(request: Request) -> JSONResponse:
 
 # for editing non-essential team info such as description, color, etc
 @bind_request_body(ManagerEditTeamRequestData)
+@check_word_filter
 @require_team_permission(team_permissions.EDIT_TEAM_INFO)
 async def manager_edit_team(request: Request, body: ManagerEditTeamRequestData) -> JSONResponse:
     command = ManagerEditTeamCommand(body.team_id, body.description, body.language, body.color, body.logo)
@@ -88,6 +93,7 @@ async def manager_edit_team(request: Request, body: ManagerEditTeamRequestData) 
 
 # for editing team name/tag, which requires moderator approval
 @bind_request_body(RequestEditTeamRequestData)
+@check_word_filter
 @require_team_permission(team_permissions.EDIT_TEAM_INFO)
 async def request_edit_team(request: Request, body: RequestEditTeamRequestData) -> JSONResponse:
     command = RequestEditTeamCommand(body.team_id, body.name, body.tag)
@@ -126,6 +132,7 @@ async def list_team_edit_requests(request: Request) -> JSONResponse:
 
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateRosterRequestData)
+@check_word_filter
 @require_permission(permissions.MANAGE_TEAMS)
 async def create_roster(request: Request, body: CreateRosterRequestData) -> JSONResponse:
     command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, body.is_active, body.approval_status)
@@ -133,6 +140,7 @@ async def create_roster(request: Request, body: CreateRosterRequestData) -> JSON
     return JSONResponse({})
 
 @bind_request_body(RequestCreateRosterRequestData)
+@check_word_filter
 @require_team_permission(team_permissions.CREATE_ROSTERS)
 async def request_create_roster(request: Request, body: RequestCreateRosterRequestData) -> JSONResponse:
     command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, True, "pending")
@@ -141,6 +149,7 @@ async def request_create_roster(request: Request, body: RequestCreateRosterReque
 
 # for moderator use, allows for direct editing of name/tags
 @bind_request_body(EditRosterRequestData)
+@check_word_filter
 @require_permission(permissions.MANAGE_TEAMS)
 async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResponse:
     async def notify():

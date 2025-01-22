@@ -7,10 +7,12 @@ from api.utils.responses import JSONResponse, bind_request_body, bind_request_qu
 from common.auth import tournament_permissions
 from common.data.commands import *
 from common.data.models import *
+from api.utils.word_filter import check_word_filter
 import common.data.notifications as notifications
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -26,6 +28,7 @@ async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSO
 
 # endpoint used when a non-moderator user registers a team for a tournament
 @bind_request_body(RegisterTeamRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def register_my_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -36,6 +39,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     return JSONResponse({})
 
 @bind_request_body(RegisterTeamRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     async def notify():
@@ -52,6 +56,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
     async def notify():
@@ -66,6 +71,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditSquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -74,6 +80,7 @@ async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONRespon
     return JSONResponse({})
 
 @bind_request_body(EditMySquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -105,6 +112,7 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
 
 # endpoint used when a user registers themself for a tournament
 @bind_request_body(RegisterPlayerRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -119,6 +127,7 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
 
 # endpoint used when a tournament staff registers another player for a tournament (requires permissions)
 @bind_request_body(ForceRegisterPlayerRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
     async def notify():
@@ -137,6 +146,7 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditPlayerRegistrationRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_registration(request: Request, body: EditPlayerRegistrationRequestData) -> JSONResponse:
     async def notify():
@@ -152,6 +162,7 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditMyRegistrationRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def edit_my_registration(request: Request, body: EditMyRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -166,6 +177,7 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
     return JSONResponse({})
 
 @bind_request_body(AcceptInviteRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSONResponse:
     async def notify():

@@ -3,11 +3,13 @@ from starlette.routing import Route
 from api.auth import require_permission, require_tournament_permission, require_series_permission, get_user_info, check_tournament_visiblity
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
+from api.utils.word_filter import check_word_filter
 from common.auth import permissions, series_permissions, tournament_permissions
 from common.data.commands import *
 from common.data.models import *
 
 @bind_request_body(CreateTournamentRequestData)
+@check_word_filter
 @require_series_permission(series_permissions.CREATE_TOURNAMENT)
 async def create_tournament(request: Request, body: CreateTournamentRequestData) -> JSONResponse:
     command = CreateTournamentCommand(body)
@@ -15,6 +17,7 @@ async def create_tournament(request: Request, body: CreateTournamentRequestData)
     return JSONResponse({'id': tournament_id})
 
 @bind_request_body(EditTournamentRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.EDIT_TOURNAMENT)
 async def edit_tournament(request: Request, body: EditTournamentRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -37,6 +40,7 @@ async def tournament_list(request: Request, filter: TournamentFilter) -> JSONRes
     return JSONResponse(tournaments)
 
 @bind_request_body(SeriesRequestData)
+@check_word_filter
 @require_permission(permissions.CREATE_SERIES)
 async def create_series(request: Request, body: SeriesRequestData) -> JSONResponse:
     command = CreateSeriesCommand(body)
@@ -44,6 +48,7 @@ async def create_series(request: Request, body: SeriesRequestData) -> JSONRespon
     return JSONResponse({})
 
 @bind_request_body(EditSeriesRequestData)
+@check_word_filter
 @require_series_permission(series_permissions.EDIT_SERIES)
 async def edit_series(request: Request, body: EditSeriesRequestData) -> JSONResponse:
     series_id = request.path_params['series_id']
@@ -64,6 +69,7 @@ async def series_list(request: Request, filter: SeriesFilter) -> JSONResponse:
     return JSONResponse(series)
 
 @bind_request_body(TournamentTemplateRequestData)
+@check_word_filter
 @require_series_permission(series_permissions.CREATE_TOURNAMENT_TEMPLATE)
 async def create_template(request: Request, body: TournamentTemplateRequestData) -> JSONResponse:
     command = CreateTournamentTemplateCommand(body)
@@ -71,6 +77,7 @@ async def create_template(request: Request, body: TournamentTemplateRequestData)
     return JSONResponse({})
 
 @bind_request_body(TournamentTemplateRequestData)
+@check_word_filter
 @require_series_permission(series_permissions.EDIT_TOURNAMENT_TEMPLATE)
 async def edit_template(request: Request, body: TournamentTemplateRequestData) -> JSONResponse:
     template_id = request.path_params['template_id']
