@@ -247,6 +247,8 @@ const de: Translation = {
       USER_NO_DISCORD: 'This user has not linked a Discord account.',
       USER_NOT_FOUND: 'User not found',
       EDIT_USER_FAILED: 'Failed to edit user',
+      EDIT_USER: 'Edit User',
+      EDIT_USER_HEADER: 'Edit User: ID {user_id}',
     },
   },
   MODES: {

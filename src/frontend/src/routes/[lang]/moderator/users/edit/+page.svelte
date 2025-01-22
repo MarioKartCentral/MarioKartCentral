@@ -63,7 +63,7 @@
                 <Button href="/{$page.params.lang}/moderator/users">{$LL.COMMON.BACK()}</Button>
             </div>
         </Section>
-        <Section header="Edit User: ID {edit_user.id}">
+        <Section header={$LL.MODERATOR.MANAGE_USERS.EDIT_USER_HEADER({user_id: edit_user.id})}>
             <form on:submit|preventDefault={editUser}>
                 <div class="option">
                     <div class="label">
@@ -98,15 +98,17 @@
                     </div>
                     <div>
                         {#if edit_user.player}
-                            <div class="flex">
-                                <div>
-                                    <Flag country_code={edit_user.player.country_code}/>
+                            <a href="/{$page.params.lang}/registry/players/profile?id={edit_user.player.id}">
+                                <div class="flex">
+                                    <div>
+                                        <Flag country_code={edit_user.player.country_code}/>
+                                    </div>
+                                    <div>
+                                        {edit_user.player.name}
+                                    </div>
+                                
                                 </div>
-                                <div>
-                                    {edit_user.player.name}
-                                </div>
-        
-                            </div>
+                            </a>
                         {:else}
                             {$LL.MODERATOR.MANAGE_USERS.USER_NO_PLAYER()}
                         {/if}

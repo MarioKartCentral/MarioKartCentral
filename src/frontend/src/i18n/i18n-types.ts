@@ -904,6 +904,15 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​u​s​e​r
 			 */
 			EDIT_USER_FAILED: string
+			/**
+			 * E​d​i​t​ ​U​s​e​r
+			 */
+			EDIT_USER: string
+			/**
+			 * E​d​i​t​ ​U​s​e​r​:​ ​I​D​ ​{​u​s​e​r​_​i​d​}
+			 * @param {number} user_id
+			 */
+			EDIT_USER_HEADER: RequiredParams<'user_id'>
 		}
 	}
 	MODES: {
@@ -5107,6 +5116,14 @@ export type TranslationFunctions = {
 			 * Failed to edit user
 			 */
 			EDIT_USER_FAILED: () => LocalizedString
+			/**
+			 * Edit User
+			 */
+			EDIT_USER: () => LocalizedString
+			/**
+			 * Edit User: ID {user_id}
+			 */
+			EDIT_USER_HEADER: (arg: { user_id: number }) => LocalizedString
 		}
 	}
 	MODES: {
