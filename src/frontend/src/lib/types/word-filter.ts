@@ -1,3 +1,3 @@
 export type WordFilter = {
-    words: string[];
-}
+  words: string[];
+};

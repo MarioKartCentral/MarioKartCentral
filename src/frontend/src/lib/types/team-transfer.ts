@@ -1,4 +1,4 @@
-import type { RosterBasic } from "./roster-basic";
+import type { RosterBasic } from './roster-basic';
 
 export type TeamTransfer = {
   invite_id: number;

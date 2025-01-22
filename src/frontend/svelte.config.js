@@ -51,6 +51,9 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/player_bans`,
     `/${locale}/moderator/player_claims`,
     `/${locale}/moderator/shadow_players`,
+    `/${locale}/moderator/users`,
+    `/${locale}/moderator/users/edit`,
+    `/${locale}/moderator/word_filter`,
     `/${locale}/notifications`,
   ];
 }

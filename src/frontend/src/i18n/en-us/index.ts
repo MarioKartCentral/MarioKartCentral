@@ -242,7 +242,7 @@ const en_us: BaseTranslation = {
       USER_NO_DISCORD: 'This user has not linked a Discord account.',
       USER_NOT_FOUND: 'User not found',
       EDIT_USER_FAILED: 'Failed to edit user',
-    }
+    },
   },
   MODES: {
     ALL: 'All Modes',
