@@ -15,6 +15,7 @@ class Player(TableModel):
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
+    join_date: int
 
     @staticmethod
     def get_create_table_command():
@@ -58,6 +59,7 @@ class User(TableModel):
     player_id: int
     email: str
     password_hash: str
+    join_date: int
 
     @staticmethod
     def get_create_table_command():

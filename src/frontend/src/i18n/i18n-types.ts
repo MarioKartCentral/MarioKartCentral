@@ -858,6 +858,53 @@ type RootTranslation = {
 			 */
 			EDIT_WORD_FILTER_ERROR: string
 		}
+		MANAGE_USERS: {
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​u​s​e​r​s
+			 */
+			SEARCH_FOR_USERS: string
+			/**
+			 * S​e​a​r​c​h​ ​b​y​ ​n​a​m​e​ ​o​r​ ​e​m​a​i​l​.​.​.
+			 */
+			SEARCH_BY_NAME_EMAIL: string
+			/**
+			 * {​c​o​u​n​t​}​ ​u​s​e​r​s
+			 * @param {number} count
+			 */
+			USER_COUNT: RequiredParams<'count'>
+			/**
+			 * B​a​c​k​ ​t​o​ ​U​s​e​r​ ​L​i​s​t
+			 */
+			BACK_TO_USER_LIST: string
+			/**
+			 * D​o​ ​n​o​t​ ​c​h​a​n​g​e
+			 */
+			DO_NOT_CHANGE_PASSWORD: string
+			/**
+			 * S​e​t​ ​n​e​w​ ​p​a​s​s​w​o​r​d
+			 */
+			SET_NEW_PASSWORD: string
+			/**
+			 * N​e​w​ ​p​a​s​s​w​o​r​d​.​.​.
+			 */
+			NEW_PASSWORD: string
+			/**
+			 * T​h​i​s​ ​u​s​e​r​ ​h​a​s​ ​n​o​t​ ​c​o​m​p​l​e​t​e​d​ ​p​l​a​y​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​.
+			 */
+			USER_NO_PLAYER: string
+			/**
+			 * T​h​i​s​ ​u​s​e​r​ ​h​a​s​ ​n​o​t​ ​l​i​n​k​e​d​ ​a​ ​D​i​s​c​o​r​d​ ​a​c​c​o​u​n​t​.
+			 */
+			USER_NO_DISCORD: string
+			/**
+			 * U​s​e​r​ ​n​o​t​ ​f​o​u​n​d
+			 */
+			USER_NOT_FOUND: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​u​s​e​r
+			 */
+			EDIT_USER_FAILED: string
+		}
 	}
 	MODES: {
 		/**
@@ -5014,6 +5061,52 @@ export type TranslationFunctions = {
 			 * An error occurred editing the word filter
 			 */
 			EDIT_WORD_FILTER_ERROR: () => LocalizedString
+		}
+		MANAGE_USERS: {
+			/**
+			 * Search for users
+			 */
+			SEARCH_FOR_USERS: () => LocalizedString
+			/**
+			 * Search by name or email...
+			 */
+			SEARCH_BY_NAME_EMAIL: () => LocalizedString
+			/**
+			 * {count} users
+			 */
+			USER_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Back to User List
+			 */
+			BACK_TO_USER_LIST: () => LocalizedString
+			/**
+			 * Do not change
+			 */
+			DO_NOT_CHANGE_PASSWORD: () => LocalizedString
+			/**
+			 * Set new password
+			 */
+			SET_NEW_PASSWORD: () => LocalizedString
+			/**
+			 * New password...
+			 */
+			NEW_PASSWORD: () => LocalizedString
+			/**
+			 * This user has not completed player registration.
+			 */
+			USER_NO_PLAYER: () => LocalizedString
+			/**
+			 * This user has not linked a Discord account.
+			 */
+			USER_NO_DISCORD: () => LocalizedString
+			/**
+			 * User not found
+			 */
+			USER_NOT_FOUND: () => LocalizedString
+			/**
+			 * Failed to edit user
+			 */
+			EDIT_USER_FAILED: () => LocalizedString
 		}
 	}
 	MODES: {

@@ -5,7 +5,6 @@ from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestD
 from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
 from common.data.models.discord_integration import Discord
-
     
 @dataclass
 class Player:
@@ -15,6 +14,7 @@ class Player:
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
+    join_date: int
     discord: Discord | None
 
 @dataclass
@@ -70,7 +70,6 @@ class PlayerNotes:
 
 @dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
-    join_date: int
     rosters: list[PlayerRoster]
     ban_info: PlayerBanBasic | None
     user_settings: UserSettings | None

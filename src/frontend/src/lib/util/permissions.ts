@@ -161,7 +161,8 @@ export const permissions = {
   manage_shadow_players: 'shadow_players_manage',
   merge_players: 'player_merge',
   merge_teams: 'team_merge',
-  manage_word_filter: 'word_filter_manage'
+  manage_word_filter: 'word_filter_manage',
+  edit_user: 'user_edit',
 };
 
 export const team_permissions = {

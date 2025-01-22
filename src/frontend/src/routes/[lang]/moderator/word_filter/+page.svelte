@@ -4,8 +4,16 @@
     import type { WordFilter } from "$lib/types/word-filter";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import LL from "$i18n/i18n-svelte";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { user } from "$lib/stores/stores";
+    import { check_permission, permissions } from "$lib/util/permissions";
 
     let words_text = ""
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     onMount(async () => {
         const res = await fetch(`/api/moderator/wordFilter`);
@@ -34,17 +42,22 @@
     }
 </script>
 
-<Section header={$LL.MODERATOR.WORD_FILTER.WORD_FILTER_LIST()}>
-    <div>
-        {$LL.MODERATOR.WORD_FILTER.BLACKLISTED_WORDS()}
-    </div>
-    <div>
-        <textarea bind:value={words_text}/>
-    </div>
-    <div>
-        <Button on:click={editFilter}>{$LL.COMMON.SAVE()}</Button>
-    </div>
-</Section>
+{#if check_permission(user_info, permissions.manage_word_filter)}
+    <Section header={$LL.MODERATOR.WORD_FILTER.WORD_FILTER_LIST()}>
+        <div>
+            {$LL.MODERATOR.WORD_FILTER.BLACKLISTED_WORDS()}
+        </div>
+        <div>
+            <textarea bind:value={words_text}/>
+        </div>
+        <div>
+            <Button on:click={editFilter}>{$LL.COMMON.SAVE()}</Button>
+        </div>
+    </Section>
+{:else}
+    {$LL.COMMON.NO_PERMISSION()}
+{/if}
+
 
 <style>
     textarea {

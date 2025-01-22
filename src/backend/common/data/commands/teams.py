@@ -71,16 +71,16 @@ class GetTeamInfoCommand(Command[Team]):
             # use a set for O(1) lookup
             managers = set[int]()
             leaders = set[int]()
-            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, tr.name FROM players p
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
                 WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_hidden, is_shadow, is_banned, role_name = row
+                    player_id, name, country_code, is_hidden, is_shadow, is_banned, join_date, role_name = row
                     if role_name == team_roles.MANAGER:
-                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, None))
+                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, join_date, None))
                         managers.add(player_id)
                     else:
                         leaders.add(player_id)

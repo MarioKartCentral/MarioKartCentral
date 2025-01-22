@@ -230,6 +230,19 @@ const en_us: BaseTranslation = {
       BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',
       EDIT_WORD_FILTER_ERROR: 'An error occurred editing the word filter',
     },
+    MANAGE_USERS: {
+      SEARCH_FOR_USERS: 'Search for users',
+      SEARCH_BY_NAME_EMAIL: 'Search by name or email...',
+      USER_COUNT: '{count:number} users',
+      BACK_TO_USER_LIST: 'Back to User List',
+      DO_NOT_CHANGE_PASSWORD: 'Do not change',
+      SET_NEW_PASSWORD: 'Set new password',
+      NEW_PASSWORD: 'New password...',
+      USER_NO_PLAYER: 'This user has not completed player registration.',
+      USER_NO_DISCORD: 'This user has not linked a Discord account.',
+      USER_NOT_FOUND: 'User not found',
+      EDIT_USER_FAILED: 'Failed to edit user',
+    }
   },
   MODES: {
     ALL: 'All Modes',
