@@ -7,10 +7,12 @@ from api.utils.responses import JSONResponse, bind_request_body, bind_request_qu
 from common.auth import tournament_permissions
 from common.data.commands import *
 from common.data.models import *
+from api.utils.word_filter import check_word_filter
 import common.data.notifications as notifications
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -26,6 +28,7 @@ async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSO
 
 # endpoint used when a non-moderator user registers a team for a tournament
 @bind_request_body(RegisterTeamRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def register_my_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -36,6 +39,7 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     return JSONResponse({})
 
 @bind_request_body(RegisterTeamRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
     async def notify():
@@ -52,6 +56,7 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
     async def notify():
@@ -66,6 +71,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditSquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -74,6 +80,7 @@ async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONRespon
     return JSONResponse({})
 
 @bind_request_body(EditMySquadRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -105,6 +112,7 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
 
 # endpoint used when a user registers themself for a tournament
 @bind_request_body(RegisterPlayerRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -119,6 +127,7 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
 
 # endpoint used when a tournament staff registers another player for a tournament (requires permissions)
 @bind_request_body(ForceRegisterPlayerRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
     async def notify():
@@ -137,6 +146,7 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditPlayerRegistrationRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def edit_registration(request: Request, body: EditPlayerRegistrationRequestData) -> JSONResponse:
     async def notify():
@@ -152,6 +162,7 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(EditMyRegistrationRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def edit_my_registration(request: Request, body: EditMyRegistrationRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -166,6 +177,7 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
     return JSONResponse({})
 
 @bind_request_body(AcceptInviteRequestData)
+@check_word_filter
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
 async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSONResponse:
     async def notify():
@@ -372,6 +384,40 @@ async def toggle_checkin(request: Request, body: TournamentCheckinRequestData) -
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def add_roster_to_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    player_id = request.state.user.player_id
+    command = AddRosterToSquadCommand(tournament_id, body.squad_id, body.roster_id, player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
+async def remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    player_id = request.state.user.player_id
+    command = RemoveRosterFromSquadCommand(tournament_id, body.squad_id, body.roster_id, player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+async def force_add_roster_to_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    command = AddRosterToSquadCommand(tournament_id, body.squad_id, body.roster_id, None, True)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(AddRemoveRosterRequestData)
+@require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
+async def force_remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+    tournament_id = request.path_params['tournament_id']
+    command = RemoveRosterFromSquadCommand(tournament_id, body.squad_id, body.roster_id, None, True)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/tournaments/{tournament_id:int}/register', register_me, methods=['POST']),
     Route('/api/tournaments/{tournament_id:int}/forceRegister', force_register_player, methods=['POST']), # dispatches notification
@@ -397,5 +443,9 @@ routes = [
     Route('/api/tournaments/{tournament_id:int}/squads/{squad_id:int}', view_squad),
     Route('/api/tournaments/{tournament_id:int}/registrations', list_registrations),
     Route('/api/tournaments/{tournament_id:int}/myRegistration', my_registration),
-    Route('/api/tournaments/{tournament_id:int}/toggleCheckin', toggle_checkin, methods=['POST'])
+    Route('/api/tournaments/{tournament_id:int}/toggleCheckin', toggle_checkin, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/addRosterToSquad', add_roster_to_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/removeRosterFromSquad', remove_roster_from_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/forceAddRosterToSquad', force_add_roster_to_squad, methods=['POST']),
+    Route('/api/tournaments/{tournament_id:int}/forceRemoveRosterFromSquad', force_remove_roster_from_squad, methods=['POST']),
 ]

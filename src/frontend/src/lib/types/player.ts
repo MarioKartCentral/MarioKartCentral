@@ -7,5 +7,6 @@ export type Player = {
   is_hidden: boolean;
   is_shadow: boolean;
   is_banned: boolean;
+  join_date: number;
   discord: Discord | null;
 };

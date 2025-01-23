@@ -225,6 +225,26 @@ const en_us: BaseTranslation = {
     NO_PLAYER_CLAIMS: 'No player claims',
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
+    WORD_FILTER: {
+      WORD_FILTER_LIST: 'Word Filter List',
+      BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',
+      EDIT_WORD_FILTER_ERROR: 'An error occurred editing the word filter',
+    },
+    MANAGE_USERS: {
+      SEARCH_FOR_USERS: 'Search for users',
+      SEARCH_BY_NAME_EMAIL: 'Search by name or email...',
+      USER_COUNT: '{count:number} users',
+      BACK_TO_USER_LIST: 'Back to User List',
+      DO_NOT_CHANGE_PASSWORD: 'Do not change',
+      SET_NEW_PASSWORD: 'Set new password',
+      NEW_PASSWORD: 'New password...',
+      USER_NO_PLAYER: 'This user has not completed player registration.',
+      USER_NO_DISCORD: 'This user has not linked a Discord account.',
+      USER_NOT_FOUND: 'User not found',
+      EDIT_USER_FAILED: 'Failed to edit user',
+      EDIT_USER: 'Edit User',
+      EDIT_USER_HEADER: 'Edit User: ID {user_id:number}',
+    },
   },
   MODES: {
     ALL: 'All Modes',
@@ -374,6 +394,7 @@ const en_us: BaseTranslation = {
       REQUEST_NAME_CHANGE_FAILED: 'Failed to request name change',
       EDIT_PLAYER_FAILED: 'Editing player failed',
       PLAYER_NOT_FOUND: 'Player not found',
+      REGISTRATION_DATE: 'Registered',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
@@ -703,6 +724,13 @@ const en_us: BaseTranslation = {
       MANUALLY_REGISTER_SQUAD: 'Manually Register Squad',
       MANUAL_REGISTRATION_SUCCESS: 'Successfully registered this player for the tournament!',
       MANUAL_REGISTRATION_FAILED: 'Failed to register this player for the tournament',
+      MANAGE_ROSTERS: 'Manage Rosters',
+      ADD_ROSTER: 'Add Roster',
+      SELECT_A_ROSTER: 'Select a Roster...',
+      ADD_ROSTER_CONFIRM: 'Are you sure you want to add the roster {roster_name:string} to this squad?',
+      REMOVE_ROSTER_CONFIRM: 'Are you sure you want to remove the roster {roster_name:string} from this squad?',
+      ADD_ROSTER_FAILED: 'Failed to add roster',
+      REMOVE_ROSTER_FAILED: 'Failed to remove roster',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Select Template',

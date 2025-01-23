@@ -92,6 +92,9 @@
           <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button>
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}</Button>
         {/if}
+        {#if check_permission(user_info, permissions.edit_user) && player.user_settings}
+          <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}">{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button>
+        {/if}
       </div>
       <PlayerNotes notes={player.notes} />
     </Section>
