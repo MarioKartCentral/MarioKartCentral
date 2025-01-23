@@ -142,7 +142,9 @@
         </div>
       </div>
     {/if}
-    <GameModeSelect bind:game={data.game} bind:mode={data.mode} />
+    <div class="option">
+      <GameModeSelect bind:game={data.game} bind:mode={data.mode} />
+    </div> 
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.SERIES_DESCRIPTION()}>
     <div class="option">

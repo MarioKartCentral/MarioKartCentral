@@ -71,16 +71,16 @@ class GetTeamInfoCommand(Command[Team]):
             # use a set for O(1) lookup
             managers = set[int]()
             leaders = set[int]()
-            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, tr.name FROM players p
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
                 WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_hidden, is_shadow, is_banned, role_name = row
+                    player_id, name, country_code, is_hidden, is_shadow, is_banned, join_date, role_name = row
                     if role_name == team_roles.MANAGER:
-                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, None))
+                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, join_date, None))
                         managers.add(player_id)
                     else:
                         leaders.add(player_id)
@@ -751,13 +751,13 @@ class ViewTransfersCommand(Command[TransferList]):
                         mode = leave_roster_mode
 
                     if leave_roster_id:
-                        leave_roster = TransferRoster(leave_team_id, leave_team_name, leave_team_tag, leave_team_color, leave_roster_id,
+                        leave_roster = RosterBasic(leave_team_id, leave_team_name, leave_team_tag, leave_team_color, leave_roster_id,
                                                    leave_roster_name, leave_roster_tag)
                     else:
                         leave_roster = None
 
                     if join_roster_id:
-                        join_roster = TransferRoster(join_team_id, join_team_name, join_team_tag, join_team_color, join_roster_id,
+                        join_roster = RosterBasic(join_team_id, join_team_name, join_team_tag, join_team_color, join_roster_id,
                                                      join_roster_name, join_roster_tag)
                     else:
                         join_roster = None
@@ -1321,9 +1321,11 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, game, fc, is_verified, is_primary, is_active = row
-                    fc_dict[player_id].append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
+                    player_fcs = fc_dict.get(player_id, None)
+                    if player_fcs:
+                        player_fcs.append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
             return rosters
-        
+
 @save_to_command_log
 @dataclass
 class MergeTeamsCommand(Command[None]):

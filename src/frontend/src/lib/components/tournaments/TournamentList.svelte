@@ -76,7 +76,10 @@
     </div>
     <form on:submit|preventDefault={search}>
         <div class="flex">
-            <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
+            <div class="option">
+                <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
+            </div>
+            
             <div class="option">
                 <div>
                     <label for="name">{$LL.COMMON.NAME()}</label>

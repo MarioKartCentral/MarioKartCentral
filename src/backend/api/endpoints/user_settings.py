@@ -5,6 +5,7 @@ from api.auth import require_logged_in, require_permission
 from common.auth import permissions
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
+from api.utils.word_filter import check_word_filter
 from common.data.commands import *
 from common.data.models import Problem, EditUserSettingsRequestData
 
@@ -18,6 +19,7 @@ async def get_settings(request: Request) -> Response:
     return JSONResponse(user_settings)
 
 @bind_request_body(EditUserSettingsRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def edit_settings(request: Request, body: EditUserSettingsRequestData) -> JSONResponse:
     command = EditUserSettingsCommand(request.state.user.id, body)
@@ -35,6 +37,7 @@ async def edit_settings(request: Request, body: EditUserSettingsRequestData) -> 
     return resp
 
 @bind_request_body(EditPlayerUserSettingsRequestData)
+@check_word_filter
 @require_permission(permissions.EDIT_PLAYER)
 async def edit_player_user_settings(request: Request, body: EditPlayerUserSettingsRequestData) -> JSONResponse:
     command = EditPlayerUserSettingsCommand(body)

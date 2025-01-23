@@ -282,7 +282,7 @@ class TeamInvite():
     mode: GameMode
 
 @dataclass
-class TransferRoster():
+class RosterBasic():
     team_id: int
     team_name: str
     team_tag: str
@@ -302,8 +302,8 @@ class TeamTransfer():
     player_name: str
     player_country_code: str
     approval_status: Approval
-    roster_leave: TransferRoster | None
-    roster_join: TransferRoster | None
+    roster_leave: RosterBasic | None
+    roster_join: RosterBasic | None
 
 @dataclass
 class TransferFilter():

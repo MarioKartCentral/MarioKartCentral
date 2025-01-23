@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from common.data.models.tournament_registrations import TournamentPlayerDetails
+from common.data.models.teams import RosterBasic
 
 @dataclass
 class Squad:
@@ -85,6 +86,7 @@ class TournamentSquadDetails():
     is_registered: bool
     is_approved: bool
     players: list[SquadPlayerDetails]
+    rosters: list[RosterBasic]
 
 
 @dataclass
@@ -121,3 +123,8 @@ class RegisterTeamRequestData():
     squad_tag: str
     roster_ids: list[int]
     players: list[TeamTournamentPlayer]
+
+@dataclass
+class AddRemoveRosterRequestData:
+    squad_id: int
+    roster_id: int
