@@ -7,6 +7,11 @@
   export let playerId = '';
   export let isLoggedIn = false;
   import LoginRegister from '$lib/components/common/LoginRegister.svelte';
+  import RecentTransactions from '$lib/components/homepage/RecentTransactions.svelte';
+  import LatestTournaments from '$lib/components/homepage/LatestTournaments.svelte';
+  import LatestResults from '$lib/components/homepage/LatestResults.svelte';
+  import NewestTeams from '$lib/components/homepage/NewestTeams.svelte';
+  import NewestPlayers from '$lib/components/homepage/NewestPlayers.svelte';
 
   onMount(async () => {
     const res = await fetch(`/api/user/me`);
@@ -40,6 +45,23 @@
 
 <h1>{$LL.HOMEPAGE.WELCOME()}</h1>
 <p>{$LL.HOMEPAGE.SUMMARY()}</p>
+
+<div class="home-row">
+  <div class="latest-tournament">
+    <LatestTournaments />
+  </div>
+  <div class="latest-results">
+    <LatestResults />
+  </div>
+</div>
+<div class="home-row">
+  <NewestPlayers />
+  <NewestTeams />
+  <RecentTransactions />
+</div>
+
+
+<!-- TODO: remove below -->
 <p>{$LL.COMMON.LANGUAGE()}: {$LL.LANGUAGE()}</p>
 
 <p>User ID: {userId}</p>
@@ -51,3 +73,16 @@
 {:else}
   <LoginRegister/>
 {/if}
+
+<style>
+  .home-row {
+    display: flex;
+    gap: 15px;
+  }
+  .latest-tournament {
+    flex: 2;
+  }
+  .latest-results {
+    flex: 1;
+  }
+</style>
