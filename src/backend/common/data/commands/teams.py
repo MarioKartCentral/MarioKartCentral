@@ -1144,12 +1144,14 @@ class ListTeamsCommand(Command[List[Team]]):
                 append_not_equal_filter("approved", "r.approval_status")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            order_by = 't.creation_date' if filter.sort_by_newest else 't.name'
+            desc = 'DESC' if filter.sort_by_newest else ''
             teams_query = f"""  SELECT t.id, t.name, t.tag, t.description, t.creation_date, t.language, t.color, t.logo,
                                 t.approval_status, t.is_historical, r.id, r.game, r.mode, r.name, r.tag, r.creation_date,
                                 r.is_recruiting, r.is_active, r.approval_status
                                 FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
-                                ORDER BY t.name COLLATE NOCASE
+                                ORDER BY {order_by} COLLATE NOCASE {desc}
                                 """
             teams: dict[int, Team] = {}
             async with db.execute(teams_query, variable_parameters) as cursor:

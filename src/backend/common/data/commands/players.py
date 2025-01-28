@@ -256,12 +256,14 @@ class ListPlayersCommand(Command[PlayerList]):
                 where_clauses.append(f"p.id IN (SELECT p2.id FROM players p2 LEFT JOIN friend_codes f ON p2.id = f.player_id WHERE {fc_where_clauses_str})")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            order_by = 'p.join_date' if filter.sort_by_newest else 'name'
+            desc = 'DESC' if filter.sort_by_newest else ''
             players_query = f"""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date,
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ? """
+                                    {player_where_clause} ORDER BY {order_by} COLLATE NOCASE {desc} LIMIT ? OFFSET ? """
 
             fc_where_clause = ""
             fc_where_clauses = []
