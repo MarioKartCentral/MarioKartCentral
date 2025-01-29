@@ -38,7 +38,7 @@
 <Section header={'Recent Transactions'}>
     <HomeSectionContent link='/{$page.params.lang}/registry/teams/transfers' linkText='More Recent Transactions'>
         {#if transfers.length}
-            <div class="flex flex-col gap-[6px]">
+            <div class="flex flex-col gap-[5px]">
                 {#each transfers as transfer, i}
                     <div class="row">
                         <div class="left">
@@ -54,8 +54,8 @@
                                 </a>
                             </div>
                             <div class="badges">
-                                <GameBadge game={transfer.game}/>
-                                <ModeBadge mode={transfer.mode}/>
+                                <GameBadge game={transfer.game} style='font-size: 0.95rem; width: 85px;' />
+                                <ModeBadge mode={transfer.mode} style='font-size: 0.95rem; width: 85px;' />
                             </div>
                         </div>
                         <div class="right">
@@ -90,7 +90,7 @@
         align-items: center;
         font-size: 0.9rem;
         background-color: rgba(255, 255, 255, 0.15);
-        padding: 13px;
+        padding: 12px;
     }
     .row:nth-child(odd) {
         background-color: rgba(210, 210, 210, 0.15);
