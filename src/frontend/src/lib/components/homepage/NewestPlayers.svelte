@@ -1,44 +1,51 @@
 <script lang="ts">
     import { page } from "$app/stores";
-    import Section from "../common/Section.svelte";
     import LL from "$i18n/i18n-svelte";
     import { onMount } from "svelte";
     import type { PlayerInfo } from "$lib/types/player-info";
     import Flag from "../common/Flag.svelte";
-    import HomeSectionContent from "./HomeSectionContent.svelte";
+    import HomeSection from "./HomeSection.svelte";
 
-    let latestPlayers: PlayerInfo[] = []
+    export let style: string;
+    let innerWidth: number;
+    let allLatestPlayers: PlayerInfo[] = []
+
+    $: extend = 1025 <= innerWidth && innerWidth < 1280;
+    $: latestPlayers = allLatestPlayers.slice(0, extend ? 11 : 10)
 
     async function fetchLatestPlayers() {
-    const res = await fetch(`/api/registry/players?is_hidden=false&matching_fcs_only=false&include_shadow_players=false&sort_by_newest=true`);
-    console.log(res.status)
-    if (res.status === 200) {
-        const body = await res.json();
-        latestPlayers = body.player_list.slice(0, 10)
-        console.log(JSON.stringify(latestPlayers))
-    }
+        const res = await fetch(`/api/registry/players?is_hidden=false&matching_fcs_only=false&include_shadow_players=false&sort_by_newest=true`);
+        if (res.status === 200) {
+            const body = await res.json();
+            allLatestPlayers = body.player_list
+        }
     }
 
     onMount(fetchLatestPlayers)
 </script>
 
+<svelte:window bind:innerWidth />
+
 <!-- TODO: localization -->
-<Section header={'Newest Players'}>
-    <HomeSectionContent link='/{$page.params.lang}/registry/players' linkText='View All Players'>
-        {#if latestPlayers.length}
-            <div class="flex flex-col gap-[5px]">
-                {#each latestPlayers as player, i}
-                    <div class="row">
-                        <div class="flag">
-                            <Flag country_code={player.country_code}/>
-                        </div>
-                        <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
+<HomeSection 
+    header={'Newest Players'} 
+    link='/{$page.params.lang}/registry/players' 
+    linkText='View All Players' 
+    {style}
+>
+    {#if latestPlayers.length}
+        <div class="flex flex-col {extend ? 'gap7' : 'gap-[5px]'}">
+            {#each latestPlayers as player, i}
+                <div class="row">
+                    <div class="flag">
+                        <Flag country_code={player.country_code}/>
                     </div>
-                {/each}
-            </div>
-        {/if}
-    </HomeSectionContent>
-</Section>
+                    <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
+                </div>
+            {/each}
+        </div>
+    {/if}
+</HomeSection>
 
 <style>
     .row {
@@ -55,5 +62,8 @@
     }
     .flag {
         zoom: 85%;
+    }
+    .gap7 {
+        gap: 7px; /* tailwind has issue with gap-[7px] for some reason */
     }
 </style>

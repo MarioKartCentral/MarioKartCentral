@@ -46,22 +46,12 @@
 <h1>{$LL.HOMEPAGE.WELCOME()}</h1>
 <p>{$LL.HOMEPAGE.SUMMARY()}</p>
 
-<div class="container">
-  <div class="a">
-    <LatestTournaments />
-  </div>
-  <div class="b">
-    <LatestResults />
-  </div>
-  <div class="c">
-    <NewestPlayers />
-  </div>
-  <div class="d">
-    <NewestTeams />
-  </div>
-  <div class="e">
-    <RecentTransactions />
-  </div>
+<div class="grid-container">
+  <LatestTournaments style='grid-area: a;' />
+  <LatestResults style='grid-area: b;' />
+  <NewestPlayers style='grid-area: c;' />
+  <NewestTeams style='grid-area: d;' />
+  <RecentTransactions style='grid-area: e;' />
 </div>
 
 
@@ -79,28 +69,31 @@
 {/if}
 
 <style>
-  .a {
-    grid-area: a;
-  }
-  .b {
-    grid-area: b;
-  }
-  .c {
-    grid-area: c;
-  }
-  .d {
-    grid-area: d;
-  }
-  .e {
-    grid-area: e;
-  }
-  .container {
+  .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
     grid-template-areas: 
       "a a b"
       "c d e";
     gap: 15px;
+    margin: 20px 0;
   }
+  
+  @media (min-width: 1025px) and (max-width: 1279px) {
+    .grid-container {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-areas: 
+        "a a"
+        "b c"
+        "d e";
+    }
+  }
+  @media (max-width: 1024px) {
+    .grid-container {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
 </style>

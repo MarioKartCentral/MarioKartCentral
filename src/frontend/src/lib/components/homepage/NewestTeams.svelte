@@ -1,12 +1,12 @@
 <script lang="ts">
     import type { Team } from "$lib/types/team";
     import { page } from "$app/stores";
-    import Section from "../common/Section.svelte";
     import LL from "$i18n/i18n-svelte";
     import TagBadge from "../badges/TagBadge.svelte";
     import { onMount } from "svelte";
-    import HomeSectionContent from "./HomeSectionContent.svelte";
+    import HomeSection from "./HomeSection.svelte";
 
+    export let style: string;
     let latestTeams: Team[] = []
 
     async function fetchLatestTeams() {
@@ -21,23 +21,26 @@
 </script>
 
 <!-- TODO: localization -->
-<Section header={'Newest Teams'}>
-    <HomeSectionContent link='/{$page.params.lang}/registry/teams' linkText='View All Teams'>
-        {#if latestTeams.length}
-            <div class="flex flex-col gap-[5px]">
-                {#each latestTeams as team, i}
-                    <div class="row">
-                        <a 
-                            href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> 
-                            <TagBadge tag={team.tag} color={team.color}/> 
-                        </a>
-                        <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
-                    </div>
-                {/each}
-            </div>
-        {/if}
-    </HomeSectionContent>
-</Section>
+<HomeSection 
+    header={'Newest Teams'} 
+    link='/{$page.params.lang}/registry/teams' 
+    linkText='View All Teams'
+    {style}
+>
+    {#if latestTeams.length}
+        <div class="flex flex-col gap-[5px]">
+            {#each latestTeams as team, i}
+                <div class="row">
+                    <a 
+                        href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> 
+                        <TagBadge tag={team.tag} color={team.color}/> 
+                    </a>
+                    <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
+                </div>
+            {/each}
+        </div>
+    {/if}
+</HomeSection>
 
 <style>
     .row {

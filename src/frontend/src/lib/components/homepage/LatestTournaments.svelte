@@ -2,11 +2,11 @@
     import type { TournamentListItem } from "$lib/types/tournament-list-item";
     import { onMount } from "svelte";
     import TournamentList from "../tournaments/TournamentList.svelte";
-    import Section from "../common/Section.svelte";
     import { page } from '$app/stores';
     import HomeTournamentPageItem from "./HomeTournamentPageItem.svelte";
-    import HomeSectionContent from "./HomeSectionContent.svelte";
+    import HomeSection from "./HomeSection.svelte";
 
+    export let style: string;
     let tournaments: TournamentListItem[] = [];
 
     async function fetchLatestTournaments() {
@@ -22,14 +22,17 @@
 </script>
 
 <!-- TODO: localization -->
-<Section header={'Latest Tournaments'}>
-    <HomeSectionContent linkText='View All Tournaments' link='/{$page.params.lang}/tournaments' isTopRow={true}>
-        <div>
-            {#key tournaments}
-                {#each tournaments as tournament}
-                    <HomeTournamentPageItem {tournament} />
-                {/each}
-            {/key}
-        </div>
-    </HomeSectionContent>
-</Section>
+<HomeSection 
+    header={'Latest Tournaments'}
+    linkText='View All Tournaments' 
+    link='/{$page.params.lang}/tournaments' 
+    {style}
+>
+    <div>
+        {#key tournaments}
+            {#each tournaments as tournament}
+                <HomeTournamentPageItem {tournament} />
+            {/each}
+        {/key}
+    </div>
+</HomeSection>

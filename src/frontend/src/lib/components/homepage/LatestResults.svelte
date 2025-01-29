@@ -1,14 +1,14 @@
 <script lang="ts">
     import type { Tournament } from "$lib/types/tournament";
     import { onMount } from "svelte";
-    import Section from "../common/Section.svelte";
     import type { TournamentPlacementList } from "$lib/types/tournament-placement";
     import { sort_placement_list } from "$lib/util/util";
     import { page } from '$app/stores';
     import type { PlacementOrganizer } from "$lib/types/placement-organizer";
     import PlacementItem from "../tournaments/placements/PlacementItem.svelte";
-    import HomeSectionContent from "./HomeSectionContent.svelte";
+    import HomeSection from "./HomeSection.svelte";
 
+    export let style: string;
     let tournament: Tournament | null = null;
     let placements: TournamentPlacementList;
     let placement_list: PlacementOrganizer[] = [];
@@ -49,29 +49,32 @@
 </script>
 
 <!-- TODO: localization -->
-<Section header={'Latest Results'}>
+<HomeSection 
+    header={'Latest Results'}
+    link={tournament ? `/${$page.params.lang}/tournaments/details?id=${tournament.id}` : null}
+    linkText="View Full Placements"
+    {style}
+>
     {#if tournament && placement_list}
-        <HomeSectionContent isTopRow={true} link="/{$page.params.lang}/tournaments/details?id={tournament.id}" linkText="View Full Placements">
-            {#if tournament.logo}
-                <div class="flex w-full justify-center mt-[5px]">
-                    <a 
-                        href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
-                        class='flex w-[200px] h-[80px] justify-center'
-                    >
-                        <img src={tournament.logo} alt={tournament.name} class="max-w-full max-h-full" />
-                    </a>
-                </div>
-            {/if}
-            <div class="text-center mt-[15px] mb-[20px] font-bold">
-                <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
-                    {tournament.name}
+        {#if tournament.logo}
+            <div class="flex w-full justify-center mt-[5px]">
+                <a 
+                    href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
+                    class='flex w-[200px] h-[80px] justify-center'
+                >
+                    <img src={tournament.logo} alt={tournament.name} class="max-w-full max-h-full" />
                 </a>
             </div>
-            <div class="flex flex-col gap-[3px]">
-                {#each placement_list as placement}
-                    <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
-                {/each}
-            </div>
-        </HomeSectionContent>
+        {/if}
+        <div class="text-center mt-[15px] mb-[20px] font-bold">
+            <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
+                {tournament.name}
+            </a>
+        </div>
+        <div class="flex flex-col gap-[3px]">
+            {#each placement_list as placement}
+                <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
+            {/each}
+        </div>
     {/if}
-</Section>
+</HomeSection>
