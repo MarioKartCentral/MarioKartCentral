@@ -12,11 +12,11 @@
     </div>
     <div class="mt-[10px] mb-[10px] h-[20px] text-center">
         {#if link && linkText}
-            <a
-                class="hover:text-emerald-400 p-1"
-                href={link}>
-                {linkText}
-            </a>
+                <a
+                    class="hover:text-emerald-400 p-1 font-medium"
+                    href={link}>
+                    {linkText}
+                </a>
         {/if}
     </div>
 </div>
@@ -28,7 +28,7 @@
         justify-content: space-between;
     }
     .top-row {
-        height: 600px;
+        height: 575px;
     }
     .bottom-row {
         height: 500px;

@@ -92,6 +92,9 @@
         background-color: rgba(255, 255, 255, 0.15);
         padding: 13px;
     }
+    .row:nth-child(odd) {
+        background-color: rgba(210, 210, 210, 0.15);
+    }
     .flag {
         zoom: 85%;
     }

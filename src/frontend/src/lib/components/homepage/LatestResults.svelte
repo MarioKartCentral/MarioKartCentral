@@ -12,8 +12,6 @@
     let tournament: Tournament | null = null;
     let placements: TournamentPlacementList;
     let placement_list: PlacementOrganizer[] = [];
-    let show_all = false;
-    let num_display = 10;
 
     async function fetchLatestTournamentWithPlacements() {
         const res = await fetch(`/api/tournaments/latestWithPlacements`);
@@ -38,7 +36,7 @@
             })
         }
         placement_list.sort((a, b) => sort_placement_list(a, b));
-        placement_list = placement_list;
+        placement_list = placement_list.slice(0, 10);
     }
 
     onMount(async () => {
@@ -52,22 +50,28 @@
 
 <!-- TODO: localization -->
 <Section header={'Latest Results'}>
-    <div slot="header_content">
-        <!-- TODO: make list scrollable -->
-        {#if placement_list.length > num_display && placement_list}
-            <button on:click={() => show_all = !show_all}>
-                ({show_all ? "Hide" : "Show"} all)
-            </button>
-        {/if}
-    </div>
-    <HomeSectionContent isTopRow={true}>
-        {#if tournament && placement_list}
-            <div class="overflow-y-auto">
-                <a href="/{$page.params.lang}/tournaments/details/{tournament.id}">{tournament.name}</a>
-                {#each show_all ? placement_list : placement_list.slice(0, num_display) as placement}
-                    <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false}/>
+    {#if tournament && placement_list}
+        <HomeSectionContent isTopRow={true} link="/{$page.params.lang}/tournaments/details?id={tournament.id}" linkText="View Full Placements">
+            {#if tournament.logo}
+                <div class="flex w-full justify-center mt-[5px]">
+                    <a 
+                        href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
+                        class='flex w-[200px] h-[80px] justify-center'
+                    >
+                        <img src={tournament.logo} alt={tournament.name} class="max-w-full max-h-full" />
+                    </a>
+                </div>
+            {/if}
+            <div class="text-center mt-[15px] mb-[20px] font-bold">
+                <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
+                    {tournament.name}
+                </a>
+            </div>
+            <div class="flex flex-col gap-[3px]">
+                {#each placement_list as placement}
+                    <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
                 {/each}
             </div>
-        {/if}
-    </HomeSectionContent>
+        </HomeSectionContent>
+    {/if}
 </Section>

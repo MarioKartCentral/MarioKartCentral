@@ -50,6 +50,9 @@
         align-items: center;
         gap: 10px;
     }
+    .row:nth-child(odd) {
+        background-color: rgba(210, 210, 210, 0.15);
+    }
     .flag {
         zoom: 85%;
     }

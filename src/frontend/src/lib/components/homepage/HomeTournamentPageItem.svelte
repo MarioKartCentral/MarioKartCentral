@@ -85,7 +85,7 @@
         display: flex;
         justify-content: space-between;
         background-color: rgba(29, 33, 33, 0.8);
-        padding: 10px;
+        padding: 12px 10px;
         margin: 5px auto;
     }
     .container:nth-child(odd) {
