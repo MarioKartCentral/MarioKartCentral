@@ -46,18 +46,22 @@
 <h1>{$LL.HOMEPAGE.WELCOME()}</h1>
 <p>{$LL.HOMEPAGE.SUMMARY()}</p>
 
-<div class="home-row">
-  <div class="latest-tournament">
+<div class="container">
+  <div class="a">
     <LatestTournaments />
   </div>
-  <div class="latest-results">
+  <div class="b">
     <LatestResults />
   </div>
-</div>
-<div class="home-row">
-  <NewestPlayers />
-  <NewestTeams />
-  <RecentTransactions />
+  <div class="c">
+    <NewestPlayers />
+  </div>
+  <div class="d">
+    <NewestTeams />
+  </div>
+  <div class="e">
+    <RecentTransactions />
+  </div>
 </div>
 
 
@@ -75,14 +79,28 @@
 {/if}
 
 <style>
-  .home-row {
-    display: flex;
+  .a {
+    grid-area: a;
+  }
+  .b {
+    grid-area: b;
+  }
+  .c {
+    grid-area: c;
+  }
+  .d {
+    grid-area: d;
+  }
+  .e {
+    grid-area: e;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas: 
+      "a a b"
+      "c d e";
     gap: 15px;
-  }
-  .latest-tournament {
-    flex: 2;
-  }
-  .latest-results {
-    flex: 1;
   }
 </style>

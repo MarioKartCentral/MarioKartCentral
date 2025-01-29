@@ -5,6 +5,7 @@
     import { onMount } from "svelte";
     import type { PlayerInfo } from "$lib/types/player-info";
     import Flag from "../common/Flag.svelte";
+    import HomeSectionContent from "./HomeSectionContent.svelte";
 
     let latestPlayers: PlayerInfo[] = []
 
@@ -23,25 +24,20 @@
 
 <!-- TODO: localization -->
 <Section header={'Newest Players'}>
-    {#if latestPlayers.length}
-        <div class="flex flex-col gap-[5px]">
-            {#each latestPlayers as player, i}
-                <div class="row">
-                    <div class="flag">
-                        <Flag country_code={player.country_code}/>
+    <HomeSectionContent link='/{$page.params.lang}/registry/players' linkText='View All Players'>
+        {#if latestPlayers.length}
+            <div class="flex flex-col gap-[5px]">
+                {#each latestPlayers as player, i}
+                    <div class="row">
+                        <div class="flag">
+                            <Flag country_code={player.country_code}/>
+                        </div>
+                        <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
                     </div>
-                    <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
-                </div>
-            {/each}
-        </div>
-        <a
-            class="hover:text-emerald-400 p-1 mt-[10px]"
-            href="/{$page.params.lang}/registry/players">
-            {'View All Players'}
-        </a>
-    {:else}
-        {'No Players'}
-    {/if}
+                {/each}
+            </div>
+        {/if}
+    </HomeSectionContent>
 </Section>
 
 <style>
@@ -50,7 +46,7 @@
         font-size: 0.9rem;
         background-color: rgba(255, 255, 255, 0.15);
         padding: 0px 10px;
-        height: 20px;
+        height: 45px;
         align-items: center;
         gap: 10px;
     }

@@ -4,16 +4,17 @@
     import TournamentList from "../tournaments/TournamentList.svelte";
     import Section from "../common/Section.svelte";
     import { page } from '$app/stores';
-    import TournamentPageItem from "../tournaments/TournamentPageItem.svelte";
+    import HomeTournamentPageItem from "./HomeTournamentPageItem.svelte";
+    import HomeSectionContent from "./HomeSectionContent.svelte";
 
     let tournaments: TournamentListItem[] = [];
 
     async function fetchLatestTournaments() {
-        let url = `/api/tournaments/list`;
+        let url = `/api/tournaments/list?is_viewable=true&is_public=true`;
         const res = await fetch(url);
         if (res.status === 200) {
-        const body: TournamentList = await res.json();
-        tournaments = body.tournaments.slice(0, 7);
+            const body: TournamentList = await res.json();
+            tournaments = body.tournaments.slice(0, 7);
         }
     }
 
@@ -22,16 +23,13 @@
 
 <!-- TODO: localization -->
 <Section header={'Latest Tournaments'}>
-    <div class="h-[690px] m-[0]">
-        {#key tournaments}
-            {#each tournaments as tournament}
-                <TournamentPageItem {tournament} />
-            {/each}
-        {/key}
-        <a
-            class="hover:text-emerald-400 p-1"
-            href="/{$page.params.lang}/tournaments">
-            {'View All Tournaments'}
-        </a>
-    </div>
+    <HomeSectionContent linkText='View All Tournaments' link='/{$page.params.lang}/tournaments' isTopRow={true}>
+        <div>
+            {#key tournaments}
+                {#each tournaments as tournament}
+                    <HomeTournamentPageItem {tournament} />
+                {/each}
+            {/key}
+        </div>
+    </HomeSectionContent>
 </Section>

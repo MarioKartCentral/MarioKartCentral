@@ -5,6 +5,7 @@
     import LL from "$i18n/i18n-svelte";
     import TagBadge from "../badges/TagBadge.svelte";
     import { onMount } from "svelte";
+    import HomeSectionContent from "./HomeSectionContent.svelte";
 
     let latestTeams: Team[] = []
 
@@ -21,26 +22,21 @@
 
 <!-- TODO: localization -->
 <Section header={'Newest Teams'}>
-    {#if latestTeams.length}
-        <div class="flex flex-col gap-[5px]">
-            {#each latestTeams as team, i}
-                <div class="row">
-                    <a 
-                        href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> 
-                        <TagBadge tag={team.tag} color={team.color}/> 
-                    </a>
-                    <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
-                </div>
-            {/each}
-        </div>
-        <a
-            class="hover:text-emerald-400 p-1 mt-[10px]"
-            href="/{$page.params.lang}/registry/teams">
-            {'View All Teams'}
-        </a>
-    {:else}
-        {'No Teams'}
-    {/if}
+    <HomeSectionContent link='/{$page.params.lang}/registry/teams' linkText='View All Teams'>
+        {#if latestTeams.length}
+            <div class="flex flex-col gap-[5px]">
+                {#each latestTeams as team, i}
+                    <div class="row">
+                        <a 
+                            href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> 
+                            <TagBadge tag={team.tag} color={team.color}/> 
+                        </a>
+                        <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
+                    </div>
+                {/each}
+            </div>
+        {/if}
+    </HomeSectionContent>
 </Section>
 
 <style>

@@ -11,6 +11,7 @@
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
     import LL from "$i18n/i18n-svelte";
     import Section from "../common/Section.svelte";
+    import HomeSectionContent from "./HomeSectionContent.svelte";
 
     let transfers: TeamTransfer[] = [];
 
@@ -35,57 +36,51 @@
 
 <!-- TODO: localization -->
 <Section header={'Recent Transactions'}>
-    {#if transfers.length}
-        <div class="flex flex-col gap-[5px]">
-            {#each transfers as transfer, i}
-                <div class="row">
-                    <div class="left">
-                        <div class="flex items-center gap-[8px] mb-[5px] mt-[-5px]">
-                            <div class="flag">
-                                <Flag country_code={transfer.player_country_code}/>
+    <HomeSectionContent link='/{$page.params.lang}/registry/teams/transfers' linkText='More Recent Transactions'>
+        {#if transfers.length}
+            <div class="flex flex-col gap-[6px]">
+                {#each transfers as transfer, i}
+                    <div class="row">
+                        <div class="left">
+                            <div class="flex items-center gap-[8px] mb-[5px] mt-[-5px]">
+                                <div class="flag">
+                                    <Flag country_code={transfer.player_country_code}/>
+                                </div>
+                                <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
+                                    {transfer.player_name}
+                                    {#if transfer.is_bagger_clause}
+                                        <BaggerBadge/>
+                                    {/if}
+                                </a>
                             </div>
-                            <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
-                                {transfer.player_name}
-                                {#if transfer.is_bagger_clause}
-                                    <BaggerBadge/>
-                                {/if}
-                            </a>
+                            <div class="badges">
+                                <GameBadge game={transfer.game}/>
+                                <ModeBadge mode={transfer.mode}/>
+                            </div>
                         </div>
-                        <div class="badges">
-                            <GameBadge game={transfer.game}/>
-                            <ModeBadge mode={transfer.mode}/>
+                        <div class="right">
+                            {#if transfer.roster_leave}
+                                <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}">
+                                    <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color}/>
+                                </a>
+                                
+                            {:else}
+                                {$LL.TEAMS.TRANSFERS.NO_TEAM()}
+                            {/if}
+                            <ArrowRight/>
+                            {#if transfer.roster_join}
+                                <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_join.team_id}">
+                                    <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color}/>
+                                </a>
+                            {:else}
+                                {$LL.TEAMS.TRANSFERS.NO_TEAM()}
+                            {/if}
                         </div>
                     </div>
-                    <div class="right">
-                        {#if transfer.roster_leave}
-                            <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}">
-                                <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color}/>
-                            </a>
-                            
-                        {:else}
-                            {$LL.TEAMS.TRANSFERS.NO_TEAM()}
-                        {/if}
-                        <ArrowRight/>
-                        {#if transfer.roster_join}
-                            <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_join.team_id}">
-                                <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color}/>
-                            </a>
-                        {:else}
-                            {$LL.TEAMS.TRANSFERS.NO_TEAM()}
-                        {/if}
-                    </div>
-                </div>
-            {/each}
-        </div>
-        <!-- TODO: add recent transactions page -->
-        <a
-            class="hover:text-emerald-400 p-1 mt-[10px]"
-            href="/{$page.params.lang}/tournaments">
-            {'More Recent Transactions (TODO)'}
-        </a>
-    {:else}
-        {$LL.TEAMS.TRANSFERS.NO_TRANSFERS()}
-    {/if}
+                {/each}
+            </div>
+        {/if}
+    </HomeSectionContent>
 </Section>
 
 <style>
@@ -95,7 +90,7 @@
         align-items: center;
         font-size: 0.9rem;
         background-color: rgba(255, 255, 255, 0.15);
-        padding: 10px;
+        padding: 13px;
     }
     .flag {
         zoom: 85%;
