@@ -24,7 +24,9 @@
     {/if}
     {#if $$slots.default}
         <div class="wrapper">
-            <slot />
+            <div>
+                <slot />
+            </div>
             <div class="mt-[10px] mb-[5px] h-[20px] text-center">
                 {#if link && linkText}
                     <a

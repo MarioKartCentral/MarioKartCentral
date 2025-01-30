@@ -7,11 +7,13 @@
     import type { PlacementOrganizer } from "$lib/types/placement-organizer";
     import PlacementItem from "../tournaments/placements/PlacementItem.svelte";
     import HomeSection from "./HomeSection.svelte";
+    import { user } from "$lib/stores/stores";
+    import LL from "$i18n/i18n-svelte";
 
     export let style: string;
     let tournament: Tournament | null = null;
-    let placements: TournamentPlacementList;
     let placement_list: PlacementOrganizer[] = [];
+    let playerPlacement: number | null = null;
 
     async function fetchLatestTournamentWithPlacements() {
         const res = await fetch(`/api/tournaments/latestWithPlacements`);
@@ -26,17 +28,41 @@
     async function setPlacements(tournamentId: number) {
         const res = await fetch(`/api/tournaments/${tournamentId}/placements`);
         let placements_body: TournamentPlacementList = await res.json();
-        placements = placements_body;
+        const placements = placements_body;
+        const tmp: PlacementOrganizer[] = []
         for(let placement of placements.placements) {
-            placement_list.push({id: placement.registration_id, placement: placement.placement,
+            tmp.push({id: placement.registration_id, placement: placement.placement,
                 description: placement.placement_description, tie: false,
                 bounded: placement.placement_lower_bound ? true : false,
                 placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
                 player: placement.player, squad: placement.squad
             })
         }
-        placement_list.sort((a, b) => sort_placement_list(a, b));
-        placement_list = placement_list.slice(0, 10);
+        tmp.sort((a, b) => sort_placement_list(a, b));
+        playerPlacement = getPlayerPlacement(tmp)
+        placement_list = tmp.slice(0, 10);
+    }
+
+    // TODO: check ffa tournament
+    function getPlayerPlacement(list: PlacementOrganizer[]) {
+        const player = $user.player
+        if (!player)
+            return null
+        
+        for (let placement of list) {
+            // ffa tournaments
+            if (placement.player?.player_id === player.id)
+                return placement.placement
+
+            // squad tournaments
+            if (!placement.squad)
+                return null
+            for (let p of placement.squad.players) {
+                if (p.player_id === player.id)
+                    return placement.placement
+            }
+        }
+        return null
     }
 
     onMount(async () => {
@@ -57,7 +83,7 @@
 >
     {#if tournament && placement_list}
         {#if tournament.logo}
-            <div class="flex w-full justify-center mt-[5px]">
+            <div class="flex w-full justify-center mt-[5px] mb-[10px]">
                 <a 
                     href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
                     class='flex w-[200px] h-[80px] justify-center'
@@ -66,12 +92,17 @@
                 </a>
             </div>
         {/if}
-        <div class="text-center mt-[15px] mb-[20px] font-bold">
+        <div class="text-center font-bold">
             <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
                 {tournament.name}
             </a>
         </div>
-        <div class="flex flex-col gap-[3px]">
+        {#if playerPlacement}
+            <div class="text-center text-xl font-black">
+                {$LL.HOMEPAGE.YOU_PLACED({placement: playerPlacement})}
+            </div>
+        {/if}
+        <div class="flex flex-col {playerPlacement ? 'mt-[14px] gap-[1px]' : 'mt-[13px] gap-[4px]'}">
             {#each placement_list as placement}
                 <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
             {/each}
