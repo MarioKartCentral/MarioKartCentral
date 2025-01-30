@@ -20,11 +20,10 @@
     onMount(fetchLatestTeams)
 </script>
 
-<!-- TODO: localization -->
 <HomeSection 
-    header={'Newest Teams'} 
+    header={$LL.HOMEPAGE.NEWEST_TEAMS()} 
     link='/{$page.params.lang}/registry/teams' 
-    linkText='View All Teams'
+    linkText={$LL.HOMEPAGE.VIEW_ALL_TEAMS()}
     {style}
 >
     {#if latestTeams.length}

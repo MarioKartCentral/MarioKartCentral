@@ -26,16 +26,15 @@
 
 <svelte:window bind:innerWidth />
 
-<!-- TODO: localization -->
 <HomeSection 
-    header={'Newest Players'} 
+    header={$LL.HOMEPAGE.NEWEST_PLAYERS()} 
     link='/{$page.params.lang}/registry/players' 
-    linkText='View All Players' 
+    linkText={$LL.HOMEPAGE.VIEW_ALL_PLAYERS()}
     {style}
 >
     {#if latestPlayers.length}
         <div class="flex flex-col {extend ? 'gap7' : 'gap-[5px]'}">
-            {#each latestPlayers as player, i}
+            {#each latestPlayers as player}
                 <div class="row">
                     <div class="flag">
                         <Flag country_code={player.country_code}/>

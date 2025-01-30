@@ -119,6 +119,16 @@ const ja: Translation = {
     SUMMARY:
       "We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!",
     YOU_PLACED: 'You placed: {placement|ordinalSuffix}', // TODO: if possible, update the file formatters.ts and implement ordinalSuffixJa()
+    LATEST_RESULTS: 'Latest Results',
+    VIEW_FULL_PLACEMENTS: 'View Full Placements',
+    LATEST_TOURNAMENTS: 'Latest Tournaments',
+    VIEW_ALL_TOURNAMENTS: 'View All Tournaments',
+    NEWEST_PLAYERS: 'Newest Players',
+    VIEW_ALL_PLAYERS: 'View All Players',
+    NEWEST_TEAMS: 'Newest Teams',
+    VIEW_ALL_TEAMS: 'View All Teams',
+    RECENT_TRANSACTIONS: 'Recent Transactions',
+    MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
   },
   INVITES: {
     TEAM_INVITES: 'Team Invites',

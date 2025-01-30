@@ -43,7 +43,6 @@
         placement_list = tmp.slice(0, 10);
     }
 
-    // TODO: check ffa tournament
     function getPlayerPlacement(list: PlacementOrganizer[]) {
         const player = $user.player
         if (!player)
@@ -74,11 +73,10 @@
     });
 </script>
 
-<!-- TODO: localization -->
 <HomeSection 
-    header={'Latest Results'}
+    header={$LL.HOMEPAGE.LATEST_RESULTS()}
     link={tournament ? `/${$page.params.lang}/tournaments/details?id=${tournament.id}` : null}
-    linkText="View Full Placements"
+    linkText={$LL.HOMEPAGE.VIEW_FULL_PLACEMENTS()}
     {style}
 >
     {#if tournament && placement_list}
@@ -86,7 +84,7 @@
             <div class="flex w-full justify-center mt-[5px] mb-[10px]">
                 <a 
                     href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
-                    class='flex w-[200px] h-[80px] justify-center'
+                    class='flex w-[300px] h-[80px] justify-center'
                 >
                     <img src={tournament.logo} alt={tournament.name} class="max-w-full max-h-full" />
                 </a>

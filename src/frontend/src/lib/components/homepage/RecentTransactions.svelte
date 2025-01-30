@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { TeamTransfer } from "$lib/types/team-transfer";
     import { onMount } from "svelte";
-    import { locale } from "$i18n/i18n-svelte";
     import Flag from "$lib/components/common/Flag.svelte";
     import { page } from "$app/stores";
     import TagBadge from "$lib/components/badges/TagBadge.svelte";
@@ -34,16 +33,15 @@
     onMount(fetchData);
 </script>
 
-<!-- TODO: localization -->
 <HomeSection 
-    header={'Recent Transactions'} 
+    header={$LL.HOMEPAGE.RECENT_TRANSACTIONS()} 
     link='/{$page.params.lang}/registry/teams/transfers' 
-    linkText='More Recent Transactions'
+    linkText={$LL.HOMEPAGE.MORE_RECENT_TRANSACTIONS()}
     {style}
 >
     {#if transfers.length}
         <div class="flex flex-col gap-[5px]">
-            {#each transfers as transfer, i}
+            {#each transfers as transfer}
                 <div class="row">
                     <div class="left">
                         <div class="flex items-center gap-[8px] mb-[5px] mt-[-5px]">
@@ -109,5 +107,4 @@
     .badges {
         zoom: 85%;
     }
-
 </style>

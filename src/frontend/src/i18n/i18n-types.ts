@@ -434,6 +434,46 @@ type RootTranslation = {
 		 * @param {number} placement
 		 */
 		YOU_PLACED: RequiredParams<'placement|ordinalSuffix'>
+		/**
+		 * L​a​t​e​s​t​ ​R​e​s​u​l​t​s
+		 */
+		LATEST_RESULTS: string
+		/**
+		 * V​i​e​w​ ​F​u​l​l​ ​P​l​a​c​e​m​e​n​t​s
+		 */
+		VIEW_FULL_PLACEMENTS: string
+		/**
+		 * L​a​t​e​s​t​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		LATEST_TOURNAMENTS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		VIEW_ALL_TOURNAMENTS: string
+		/**
+		 * N​e​w​e​s​t​ ​P​l​a​y​e​r​s
+		 */
+		NEWEST_PLAYERS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​P​l​a​y​e​r​s
+		 */
+		VIEW_ALL_PLAYERS: string
+		/**
+		 * N​e​w​e​s​t​ ​T​e​a​m​s
+		 */
+		NEWEST_TEAMS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​T​e​a​m​s
+		 */
+		VIEW_ALL_TEAMS: string
+		/**
+		 * R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		RECENT_TRANSACTIONS: string
+		/**
+		 * M​o​r​e​ ​R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		MORE_RECENT_TRANSACTIONS: string
 	}
 	INVITES: {
 		/**
@@ -4660,6 +4700,46 @@ export type TranslationFunctions = {
 		 * You placed: {placement|ordinalSuffix}
 		 */
 		YOU_PLACED: (arg: { placement: number }) => LocalizedString
+		/**
+		 * Latest Results
+		 */
+		LATEST_RESULTS: () => LocalizedString
+		/**
+		 * View Full Placements
+		 */
+		VIEW_FULL_PLACEMENTS: () => LocalizedString
+		/**
+		 * Latest Tournaments
+		 */
+		LATEST_TOURNAMENTS: () => LocalizedString
+		/**
+		 * View All Tournaments
+		 */
+		VIEW_ALL_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Newest Players
+		 */
+		NEWEST_PLAYERS: () => LocalizedString
+		/**
+		 * View All Players
+		 */
+		VIEW_ALL_PLAYERS: () => LocalizedString
+		/**
+		 * Newest Teams
+		 */
+		NEWEST_TEAMS: () => LocalizedString
+		/**
+		 * View All Teams
+		 */
+		VIEW_ALL_TEAMS: () => LocalizedString
+		/**
+		 * Recent Transactions
+		 */
+		RECENT_TRANSACTIONS: () => LocalizedString
+		/**
+		 * More Recent Transactions
+		 */
+		MORE_RECENT_TRANSACTIONS: () => LocalizedString
 	}
 	INVITES: {
 		/**

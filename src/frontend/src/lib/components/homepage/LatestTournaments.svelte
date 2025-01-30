@@ -5,6 +5,7 @@
     import { page } from '$app/stores';
     import HomeTournamentPageItem from "./HomeTournamentPageItem.svelte";
     import HomeSection from "./HomeSection.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let style: string;
     let tournaments: TournamentListItem[] = [];
@@ -21,10 +22,9 @@
     onMount(fetchLatestTournaments)
 </script>
 
-<!-- TODO: localization -->
 <HomeSection 
-    header={'Latest Tournaments'}
-    linkText='View All Tournaments' 
+    header={$LL.HOMEPAGE.LATEST_TOURNAMENTS()}
+    linkText={$LL.HOMEPAGE.VIEW_ALL_TOURNAMENTS()} 
     link='/{$page.params.lang}/tournaments' 
     {style}
 >
