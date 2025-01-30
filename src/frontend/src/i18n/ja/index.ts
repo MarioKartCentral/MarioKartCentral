@@ -78,6 +78,7 @@ const ja: Translation = {
     BAGGER: 'Bagger',
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
+    ORDINAL_SUFFIX: '{val|ordinalSuffix}',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -303,6 +304,7 @@ const ja: Translation = {
     NOTIFICATIONS: 'Notifications',
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
+    ACCOUNT: 'Account',
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',

@@ -17,4 +17,4 @@ export type TransferList = {
   transfers: TeamTransfer[];
   transfer_count: number;
   page_count: number;
-}
+};

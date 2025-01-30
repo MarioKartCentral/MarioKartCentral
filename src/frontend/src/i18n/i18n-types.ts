@@ -297,6 +297,11 @@ type RootTranslation = {
 		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
 		 */
 		NO_PERMISSION: string
+		/**
+		 * {​v​a​l​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
+		 * @param {number} val
+		 */
+		ORDINAL_SUFFIX: RequiredParams<'val|ordinalSuffix'>
 	}
 	DISCORD: {
 		/**
@@ -4568,6 +4573,10 @@ export type TranslationFunctions = {
 		 * You do not have permission to view this page.
 		 */
 		NO_PERMISSION: () => LocalizedString
+		/**
+		 * {val|ordinalSuffix}
+		 */
+		ORDINAL_SUFFIX: (arg: { val: number }) => LocalizedString
 	}
 	DISCORD: {
 		/**

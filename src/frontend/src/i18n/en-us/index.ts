@@ -1,5 +1,7 @@
 import type { BaseTranslation } from '../i18n-types';
 
+// Usage examples: https://github.com/ivanhofer/typesafe-i18n/tree/main/packages/runtime
+
 const en_us: BaseTranslation = {
   LANGUAGE: 'American English',
   COLORS: {
@@ -73,6 +75,7 @@ const en_us: BaseTranslation = {
     BAGGER: 'Bagger',
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
+    ORDINAL_SUFFIX: '{val:number|ordinalSuffix}', // 1 -> '1st' for example
   },
   DISCORD: {
     DISCORD: 'Discord',

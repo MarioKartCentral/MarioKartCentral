@@ -39,4 +39,4 @@ export type PlayerList = {
   player_list: PlayerInfo[];
   player_count: number;
   page_count: number;
-}
+};

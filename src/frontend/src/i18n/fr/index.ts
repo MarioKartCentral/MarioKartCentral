@@ -78,6 +78,7 @@ const fr: Translation = {
     BAGGER: 'Bagger',
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
+    ORDINAL_SUFFIX: '{val|ordinalSuffix}',
   },
   DISCORD: {
     DISCORD: 'Discord',
