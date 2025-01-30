@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TeamTransfer } from "$lib/types/team-transfer";
+    import type { TeamTransfer, TransferList } from "$lib/types/team-transfer";
     import { onMount } from "svelte";
     import Flag from "$lib/components/common/Flag.svelte";
     import { page } from "$app/stores";
@@ -13,12 +13,6 @@
 
     export let style: string;
     let transfers: TeamTransfer[] = [];
-
-    type TransferList = {
-        transfers: TeamTransfer[];
-        transfer_count: number;
-        page_count: number;
-    }
     
     async function fetchData() {
         let url = `/api/registry/teams/transfers/approved`;

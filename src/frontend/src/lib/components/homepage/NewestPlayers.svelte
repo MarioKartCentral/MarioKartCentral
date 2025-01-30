@@ -2,7 +2,7 @@
     import { page } from "$app/stores";
     import LL from "$i18n/i18n-svelte";
     import { onMount } from "svelte";
-    import type { PlayerInfo } from "$lib/types/player-info";
+    import type { PlayerInfo, PlayerList } from "$lib/types/player-info";
     import Flag from "../common/Flag.svelte";
     import HomeSection from "./HomeSection.svelte";
 
@@ -16,7 +16,7 @@
     async function fetchLatestPlayers() {
         const res = await fetch(`/api/registry/players?is_hidden=false&matching_fcs_only=false&include_shadow_players=false&sort_by_newest=true`);
         if (res.status === 200) {
-            const body = await res.json();
+            const body: PlayerList = await res.json();
             allLatestPlayers = body.player_list;
         }
     }

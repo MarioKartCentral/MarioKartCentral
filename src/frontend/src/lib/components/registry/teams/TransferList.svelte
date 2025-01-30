@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TeamTransfer } from "$lib/types/team-transfer";
+    import type { TeamTransfer, TransferList } from "$lib/types/team-transfer";
     import Dialog from "$lib/components/common/Dialog.svelte";
     import Table from "$lib/components/common/Table.svelte";
     import { onMount } from "svelte";
@@ -30,11 +30,6 @@
     let page_number = 1;
     let total_pages = 0;
 
-    type TransferList = {
-        transfers: TeamTransfer[];
-        transfer_count: number;
-        page_count: number;
-    }
     let game: string | null = null;
     let mode: string | null = null;
     let from: string | null = null;
