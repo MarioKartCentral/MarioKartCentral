@@ -429,6 +429,11 @@ type RootTranslation = {
 		 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
 		 */
 		SUMMARY: string
+		/**
+		 * Y​o​u​ ​p​l​a​c​e​d​:​ ​{​p​l​a​c​e​m​e​n​t​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
+		 * @param {number} placement
+		 */
+		YOU_PLACED: RequiredParams<'placement|ordinalSuffix'>
 	}
 	INVITES: {
 		/**
@@ -4651,6 +4656,10 @@ export type TranslationFunctions = {
 		 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
 		 */
 		SUMMARY: () => LocalizedString
+		/**
+		 * You placed: {placement|ordinalSuffix}
+		 */
+		YOU_PLACED: (arg: { placement: number }) => LocalizedString
 	}
 	INVITES: {
 		/**
@@ -8352,6 +8361,7 @@ export type TranslationFunctions = {
 
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
+	ordinalSuffix: (value: number) => unknown
 	parsedate: (value: unknown) => unknown
 	uppercase: (value: unknown | string) => unknown
 }

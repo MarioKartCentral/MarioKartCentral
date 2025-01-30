@@ -118,6 +118,7 @@ const fr: Translation = {
     WELCOME: 'Bienvenue Mario Kart Central!',
     SUMMARY:
       'Nous somme le cœur des Compétitions Mario Kart, où vous trouverez des tournois pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur Mario Kart 8 Deluxe, Tour, et plus encore, avec une variété de matchs qui ont lieu chaque semaine!',
+    YOU_PLACED: 'You placed: {placement|ordinalSuffix}',
   },
   INVITES: {
     TEAM_INVITES: 'Team Invites',
