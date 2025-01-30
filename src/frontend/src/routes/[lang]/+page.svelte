@@ -43,8 +43,10 @@
   <title>Mario Kart Central</title>
 </svelte:head>
 
-<h1>{$LL.HOMEPAGE.WELCOME()}</h1>
-<p>{$LL.HOMEPAGE.SUMMARY()}</p>
+<div class="welcome">
+  <h1 class="text-2xl font-bold mb-[20px]">{$LL.HOMEPAGE.WELCOME()}</h1>
+  <p class="pl-[50px] pr-[50px] mb-[20px]">{$LL.HOMEPAGE.SUMMARY()}</p>
+</div>
 
 <div class="grid-container">
   <LatestTournaments style='grid-area: a;' />
@@ -69,6 +71,11 @@
 {/if}
 
 <style>
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -93,6 +100,11 @@
     .grid-container {
       display: flex;
       flex-direction: column;
+    }
+  }
+  @media (max-width: 600px) {
+    .welcome p {
+      padding: 0 20px;
     }
   }
 
