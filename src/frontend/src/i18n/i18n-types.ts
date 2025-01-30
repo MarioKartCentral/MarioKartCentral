@@ -1115,6 +1115,10 @@ type RootTranslation = {
 		 * L​o​g​i​n​/​R​e​g​i​s​t​e​r
 		 */
 		LOGIN_REGISTER: string
+		/**
+		 * A​c​c​o​u​n​t
+		 */
+		ACCOUNT: string
 	}
 	NOTIFICATION: {
 		/**
@@ -5370,6 +5374,10 @@ export type TranslationFunctions = {
 		 * Login/Register
 		 */
 		LOGIN_REGISTER: () => LocalizedString
+		/**
+		 * Account
+		 */
+		ACCOUNT: () => LocalizedString
 	}
 	NOTIFICATION: {
 		/**

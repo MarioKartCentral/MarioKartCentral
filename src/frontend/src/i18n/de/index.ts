@@ -303,6 +303,7 @@ const de: Translation = {
     NOTIFICATIONS: 'Notifications',
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
+    ACCOUNT: 'Account',
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',
