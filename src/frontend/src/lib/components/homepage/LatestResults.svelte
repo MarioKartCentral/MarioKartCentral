@@ -19,17 +19,17 @@
         const res = await fetch(`/api/tournaments/latestWithPlacements`);
         if (res.status === 200) {
             const body: Tournament = await res.json();
-            tournament = body
-            return body
+            tournament = body;
+            return body;
         }
-        return null
+        return null;
     }
 
     async function setPlacements(tournamentId: number) {
         const res = await fetch(`/api/tournaments/${tournamentId}/placements`);
         let placements_body: TournamentPlacementList = await res.json();
         const placements = placements_body;
-        const tmp: PlacementOrganizer[] = []
+        const tmp: PlacementOrganizer[] = [];
         for(let placement of placements.placements) {
             tmp.push({id: placement.registration_id, placement: placement.placement,
                 description: placement.placement_description, tie: false,
@@ -39,37 +39,37 @@
             })
         }
         tmp.sort((a, b) => sort_placement_list(a, b));
-        playerPlacement = getPlayerPlacement(tmp)
+        playerPlacement = getPlayerPlacement(tmp);
         placement_list = tmp.slice(0, 10);
     }
 
     function getPlayerPlacement(list: PlacementOrganizer[]) {
-        const player = $user.player
+        const player = $user.player;
         if (!player)
-            return null
+            return null;
         
         for (let placement of list) {
             // ffa tournaments
             if (placement.player?.player_id === player.id)
-                return placement.placement
+                return placement.placement;
 
             // squad tournaments
             if (!placement.squad)
-                return null
+                return null;
             for (let p of placement.squad.players) {
                 if (p.player_id === player.id)
-                    return placement.placement
+                    return placement.placement;
             }
         }
-        return null
+        return null;
     }
 
     onMount(async () => {
-        const latestTournament = await fetchLatestTournamentWithPlacements()
+        const latestTournament = await fetchLatestTournamentWithPlacements();
         if (!latestTournament)
-            return
+            return;
         
-        await setPlacements(latestTournament.id)
+        await setPlacements(latestTournament.id);
     });
 </script>
 

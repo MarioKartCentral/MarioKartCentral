@@ -8,20 +8,20 @@
 
     export let style: string;
     let innerWidth: number;
-    let allLatestPlayers: PlayerInfo[] = []
+    let allLatestPlayers: PlayerInfo[] = [];
 
     $: extend = 1025 <= innerWidth && innerWidth < 1280;
-    $: latestPlayers = allLatestPlayers.slice(0, extend ? 11 : 10)
+    $: latestPlayers = allLatestPlayers.slice(0, extend ? 11 : 10);
 
     async function fetchLatestPlayers() {
         const res = await fetch(`/api/registry/players?is_hidden=false&matching_fcs_only=false&include_shadow_players=false&sort_by_newest=true`);
         if (res.status === 200) {
             const body = await res.json();
-            allLatestPlayers = body.player_list
+            allLatestPlayers = body.player_list;
         }
     }
 
-    onMount(fetchLatestPlayers)
+    onMount(fetchLatestPlayers);
 </script>
 
 <svelte:window bind:innerWidth />

@@ -19,7 +19,7 @@
         }
     }
 
-    onMount(fetchLatestTournaments)
+    onMount(fetchLatestTournaments);
 </script>
 
 <HomeSection 

@@ -7,17 +7,17 @@
     import HomeSection from "./HomeSection.svelte";
 
     export let style: string;
-    let latestTeams: Team[] = []
+    let latestTeams: Team[] = [];
 
     async function fetchLatestTeams() {
         const res = await fetch(`/api/registry/teams?is_historical=false&is_active=true&sort_by_newest=true`);
         if (res.status === 200) {
             const body: Team[] = await res.json();
-            latestTeams = body.slice(0, 10)
+            latestTeams = body.slice(0, 10);
         }
     }
 
-    onMount(fetchLatestTeams)
+    onMount(fetchLatestTeams);
 </script>
 
 <HomeSection 

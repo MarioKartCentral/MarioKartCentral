@@ -257,6 +257,6 @@ class GetLatestTournamentIdWithPlacements(Command[int]):
                 )
                 """) as cursor:
                 row = await cursor.fetchone()
-                if row is None:
+                if row is None or row[0] is None:
                     raise Problem('There are no tournaments with placements', status=404)
                 return row[0]

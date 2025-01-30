@@ -24,19 +24,24 @@ export const initFormatters: FormattersInitializer<Locales, Formatters> = (local
 
 function ordinalSuffix(val: number, locale: Locales) {
   // implementations based from https://www.unicode.org/cldr/charts/46/supplemental/language_plural_rules.html
-  if (locale === 'en-gb' || locale === 'en-us')
-    return ordinalSuffixEn(val)
-  if (locale === 'es')
-    return ordinalSuffixEs(val)
-  if (locale === 'fr')
-    return ordinalSuffixFr(val)
-  if (locale === 'de')
-    return ordinalSuffixDe(val)
-  if (locale === 'ja')
-    return ordinalSuffixJa(val) // TODO: implement below
+  if (locale === 'en-gb' || locale === 'en-us') {
+    return ordinalSuffixEn(val);
+  }
+  if (locale === 'es') {
+    return ordinalSuffixEs(val);
+  }
+  if (locale === 'fr') {
+    return ordinalSuffixFr(val);
+  }
+  if (locale === 'de') {
+    return ordinalSuffixDe(val);
+  }
+  if (locale === 'ja') {
+    return ordinalSuffixJa(val); // TODO: implement below
+  }
 
   // just return the number if a locale is not implemented
-  return val.toString()
+  return val.toString();
 }
 
 function ordinalSuffixEn(n: number) {
@@ -53,20 +58,21 @@ function ordinalSuffixEn(n: number) {
 }
 
 function ordinalSuffixEs(n: number) {
-  return `${n}.º`
+  return `${n}.º`;
 }
 
 function ordinalSuffixFr(n: number) {
-  if (n === 1)
-    return `${n}er`
-  return `${n}e`
+  if (n === 1) {
+    return `${n}er`;
+  }
+  return `${n}e`;
 }
 
 function ordinalSuffixDe(n: number) {
-  return `${n}.`
+  return `${n}.`;
 }
 
 function ordinalSuffixJa(n: number) {
   // TODO: implement this function
-  return `${n}`
+  return `${n}`;
 }
