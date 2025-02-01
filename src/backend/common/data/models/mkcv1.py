@@ -213,6 +213,17 @@ class MKCTournamentSeries:
     location: str | None
 
 @dataclass
+class MKCTransfer:
+    id: int
+    player_id: int
+    from_team: int
+    to_team: int
+    status: Literal["accepted", "cancelled_by_team", "decline", "declined", "invited", "rejected_by_mod"]
+    created_at: str # timestamp
+    updated_at: str
+    roster_category: Literal["150cc", "200cc", "mktour_vs"]
+
+@dataclass
 class MKCData:
     event_placements: List[MKCEventPlacement]
     event_registrations: List[MKCEventRegistration]
@@ -228,6 +239,7 @@ class MKCData:
     team_rosters: List[MKCTeamRosters]
     teams: List[MKCTeam]
     tournament_series: List[MKCTournamentSeries]
+    transfers: List[MKCTransfer]
 
 @dataclass
 class MKCV1Data:
