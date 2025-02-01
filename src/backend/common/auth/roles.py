@@ -35,6 +35,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.MERGE_TEAMS,
         permissions.MANAGE_WORD_FILTER,
         permissions.EDIT_USER,
+        permissions.IMPORT_V1_DATA,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
