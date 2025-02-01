@@ -22,7 +22,7 @@
         <!-- logo and name -->
         <div class="flex gap-[5px] mobile-center">
             <div class='flex items-center w-[25px] h-[25px]'>
-                {#if tournament.logo != null}
+                {#if tournament.logo}
                     <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
                         <img src={tournament.logo} alt={tournament.name} />
                     </a>

@@ -15,7 +15,7 @@
         const res = await fetch(url);
         if (res.status === 200) {
             const body: TournamentList = await res.json();
-            tournaments = body.tournaments.slice(0, 7);
+            tournaments = body.tournaments.slice(0, 6);
         }
     }
 
