@@ -3,6 +3,9 @@
   import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let series: TournamentSeries;
 </script>
@@ -18,16 +21,16 @@
     {/if}
     <div class="flex">
       <div class="inner">
-        {series.game}
+        <GameBadge game={series.game} />
       </div>
       <div class="inner">
-        {series.mode}
+        <ModeBadge mode={series.mode} />
       </div>
     </div>
     <div class="description">
       <MarkdownBox content={series.description} />
       <hr />
-      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}"> More Details </a>
+      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
     </div>
   </div>
 </Section>
@@ -38,8 +41,9 @@
   }
   img {
     margin: auto;
-    max-width: 400px;
+    max-width: 300px;
     max-height: 200px;
+    width: 100%;
   }
   .flex {
     display: flex;

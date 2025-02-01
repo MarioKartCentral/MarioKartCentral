@@ -13,7 +13,7 @@ PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 class SchemaGenerator(BaseSchemaGenerator):
     @staticmethod
-    def type_to_openapi(typ: type, is_nullable=False) -> dict[str, Any]:
+    def type_to_openapi(typ: type[Any], is_nullable=False) -> dict[str, Any]:
         if typ == str:
             type_str = "string"
         elif typ == int:
@@ -24,12 +24,12 @@ class SchemaGenerator(BaseSchemaGenerator):
             type_str = "number"
         elif get_origin(typ) is Literal:
             enum = list(get_args(typ))
-            enum_type = type(enum[0])
+            enum_type = type(enum[0]) # type: ignore
             if not(all(enum_type == type(enum_val) for enum_val in enum)):
                 raise Problem("Literal contains values of different types", f"Literal contains values of different types: {typ}")
             if is_nullable:
                 enum += [None]
-            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable)
+            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable) # type: ignore
             base_openapi["enum"] = enum
             return base_openapi
         elif get_origin(typ) is Optional:
@@ -56,7 +56,7 @@ class SchemaGenerator(BaseSchemaGenerator):
         }
         schema.setdefault("paths", {})
 
-        all_types: list[type] = []
+        all_types: list[type[Any]] = []
         endpoints = self.get_endpoints(routes)
         for endpoint in endpoints:
             path_data: dict[str, Any] = {}
@@ -70,7 +70,7 @@ class SchemaGenerator(BaseSchemaGenerator):
                     if dataclasses.is_dataclass(spec_types.query_type):
                         params: list[dict[str, Any]] = []
                         for field in dataclasses.fields(spec_types.query_type):
-                            param_schema = SchemaGenerator.type_to_openapi(field.type)
+                            param_schema = SchemaGenerator.type_to_openapi(field.type) # type: ignore
 
                             is_required = True
                             if field.default is not dataclasses.MISSING:

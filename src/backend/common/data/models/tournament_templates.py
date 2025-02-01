@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from common.data.models.tournaments import CreateTournamentRequestData
 
-
 @dataclass
 class TournamentTemplateRequestData(CreateTournamentRequestData):
     template_name: str

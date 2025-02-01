@@ -4,14 +4,24 @@
   import Table from '$lib/components/common/Table.svelte';
   import type { TeamEditRequest } from '$lib/types/team-edit-request';
   import type { RosterEditRequest } from '$lib/types/roster-edit-request';
-  import { permissions } from '$lib/util/util';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
-  import { goto } from '$app/navigation';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import ArrowRight from '$lib/components/common/ArrowRight.svelte';
+  import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
+  import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   let team_requests: TeamEditRequest[] = [];
   let roster_requests: RosterEditRequest[] = [];
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   onMount(async () => {
     const team_res = await fetch(`/api/registry/teams/changeRequests`);
@@ -33,6 +43,8 @@
   };
 
   async function approveTeamRequest(request: TeamEditRequest) {
+    let conf = window.confirm($LL.MODERATOR.APPROVE_TEAM_EDIT_CONFIRM());
+    if(!conf) return;
     const payload = {
       request_id: request.id,
     };
@@ -43,14 +55,15 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully approved team profile change');
-      goto(`/${$page.params.lang}/registry/teams`);
+      window.location.reload();
     } else {
-      alert(`Team edit failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.APPROVE_TEAM_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function denyTeamRequest(request: TeamEditRequest) {
+    let conf = window.confirm($LL.MODERATOR.DENY_TEAM_EDIT_CONFIRM());
+    if(!conf) return;
     const payload = {
       request_id: request.id,
     };
@@ -61,14 +74,15 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully denied team profile change');
-      goto(`/${$page.params.lang}/registry/teams`);
+      window.location.reload();
     } else {
-      alert(`Failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_TEAM_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function approveRosterRequest(request: RosterEditRequest) {
+    let conf = window.confirm($LL.MODERATOR.APPROVE_ROSTER_EDIT_CONFIRM());
+    if(!conf) return;
     const payload = {
       request_id: request.id,
     };
@@ -79,14 +93,15 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully approved roster profile change');
-      goto(`/${$page.params.lang}/registry/teams`);
+      window.location.reload();
     } else {
-      alert(`Team edit failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.APPROVE_ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function denyRosterRequest(request: RosterEditRequest) {
+    let conf = window.confirm($LL.MODERATOR.DENY_ROSTER_EDIT_CONFIRM());
+    if(!conf) return;
     const payload = {
       request_id: request.id,
     };
@@ -97,96 +112,151 @@
     });
     const result = await res.json();
     if (res.status < 300) {
-      alert('Successfully denied roster profile change');
-      goto(`/${$page.params.lang}/registry/teams`);
+      window.location.reload();
     } else {
-      alert(`Failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
-<PermissionCheck permission={permissions.manage_teams}>
-  <Section header="Pending Team Edit Requests">
+{#if check_permission(user_info, permissions.manage_teams)}
+  <Section header="{$LL.MODERATOR.PENDING_TEAM_EDIT_REQUESTS()}">
+    {#if team_requests.length}
     <Table>
-      <col class="old_tag" />
-      <col class="old_name" />
-      <col class="new_tag" />
-      <col class="new_name" />
-      <col class="date" />
-      <col class="approve" />
+      <col class="tag"/>
+      <col class="name"/>
+      <col class="date mobile-hide"/>
+      <col class="approve"/>
       <thead>
         <tr>
-          <th>Old Tag</th>
-          <th>Old Name</th>
-          <th>New Tag</th>
-          <th>New Name</th>
-          <th>Date</th>
-          <th>Approve?</th>
+          <th>
+            {$LL.COMMON.TAG()}
+          </th>
+          <th>
+            {$LL.COMMON.NAME()}
+          </th>
+          <th class="mobile-hide">
+            {$LL.COMMON.DATE()}
+          </th>
+          <th>
+            {$LL.MODERATOR.APPROVE()}
+          </th>
         </tr>
       </thead>
       <tbody>
         {#each team_requests as r, i}
           <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_tag}</a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_name}</a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_tag}</a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_name}</a></td>
-            <td>{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
             <td>
-              <button class="check" on:click={() => approveTeamRequest(r)}>✓</button>
-              <button class="x" on:click={() => denyTeamRequest(r)}>X</button>
+              <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
+                <div class="flex">
+                  <TagBadge tag={r.old_tag} color={r.color}/>
+                  {#if r.old_tag !== r.new_tag}
+                  <ArrowRight/>
+                  <TagBadge tag={r.new_tag} color={r.color}/>
+                  {/if}
+                </div>
+              </a>
+            </td>
+            <td>
+              <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
+                <div class="flex">
+                  {r.old_name}
+                  {#if r.old_name !== r.new_name}
+                  <ArrowRight/>
+                  {r.new_name}
+                  {/if}
+                </div>
+              </a>
+            </td>
+            <td class="mobile-hide">{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
+            <td>
+              <ConfirmButton on:click={() => approveTeamRequest(r)}/>
+              <CancelButton on:click={() => denyTeamRequest(r)}/>
             </td>
           </tr>
         {/each}
       </tbody>
     </Table>
+    {:else}
+      {$LL.MODERATOR.NO_PENDING_TEAM_EDIT_REQUESTS()}
+    {/if}
+    
   </Section>
 
-  <Section header="Pending Roster Edit Requests">
-    <Table>
-      <col class="old_tag" />
-      <col class="old_name" />
-      <col class="new_tag" />
-      <col class="new_name" />
-      <col class="date" />
-      <col class="approve" />
-      <thead>
-        <tr>
-          <th>Old Tag</th>
-          <th>Old Name</th>
-          <th>New Tag</th>
-          <th>New Name</th>
-          <th>Date</th>
-          <th>Approve?</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each roster_requests as r, i}
-          <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_tag}</a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.old_name}</a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_tag}</a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">{r.new_name}</a></td>
-            <td>{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
-            <td>
-              <button class="check" on:click={() => approveRosterRequest(r)}>✓</button>
-              <button class="x" on:click={() => denyRosterRequest(r)}>X</button>
-            </td>
+  <Section header={$LL.MODERATOR.PENDING_ROSTER_EDIT_REQUESTS()}>
+    {#if roster_requests.length}
+      <Table>
+        <col class="tag"/>
+        <col class="name"/>
+        <col class="date mobile-hide"/>
+        <col class="approve"/>
+        <thead>
+          <tr>
+            <th>{$LL.COMMON.TAG()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+            <th>{$LL.MODERATOR.APPROVE()}</th>
           </tr>
-        {/each}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {#each roster_requests as r, i}
+            <tr class="row-{i % 2}">
+              <td>
+                <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
+                  <div class="flex">
+                    <TagBadge tag={r.old_tag} color={r.color}/>
+                    {#if r.old_tag !== r.new_tag}
+                    <ArrowRight/>
+                    <TagBadge tag={r.new_tag} color={r.color}/>
+                    {/if}
+                  </div>
+                </a>
+              </td>
+              <td>
+                <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
+                  <div class="flex">
+                    {r.old_name}
+                    {#if r.old_name !== r.new_name}
+                    <ArrowRight/>
+                    {r.new_name}
+                    {/if}
+                  </div>
+                </a>
+              </td>
+              <td class="mobile-hide">{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
+              <td>
+                <ConfirmButton on:click={() => approveRosterRequest(r)}/>
+                <CancelButton on:click={() => denyRosterRequest(r)}/>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+    {:else}
+      {$LL.MODERATOR.NO_PENDING_ROSTER_EDIT_REQUESTS()}
+    {/if}
+    
   </Section>
-</PermissionCheck>
+{:else}
+  {$LL.COMMON.NO_PERMISSION()}
+{/if}
 
 <style>
-  button {
-    min-width: 50px;
+  .flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
-  .check {
-    background-color: green;
+  col.tag {
+    width: 25%;
   }
-  .x {
-    background-color: red;
+  col.name {
+    width: 30%;
+  }
+  col.date {
+    width: 20%;
+  }
+  col.approve {
+    width: 25%;
   }
 </style>

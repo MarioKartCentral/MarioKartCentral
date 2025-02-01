@@ -1,13 +1,17 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import CreateEditTournamentForm from '$lib/components/tournaments/CreateEditTournamentForm.svelte';
-  import { permissions, addPermission, series_permissions, setSeriesPerms } from '$lib/util/util';
-  import SeriesPermissionCheck from '$lib/components/common/SeriesPermissionCheck.svelte';
   import { onMount } from 'svelte';
   import type { Tournament } from '$lib/types/tournament';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import { check_tournament_permission, tournament_permissions, check_permission } from '$lib/util/permissions';
+  import LL from '$i18n/i18n-svelte';
 
-  setSeriesPerms();
-  addPermission(permissions.edit_tournament);
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let tournament: Tournament;
 
@@ -23,7 +27,10 @@
 </script>
 
 {#if tournament}
-  <SeriesPermissionCheck series_id={tournament.series_id} permission={series_permissions.edit_tournament}>
-    <CreateEditTournamentForm tournament_id={tournament.id} data={tournament} series_restrict={true} />
-  </SeriesPermissionCheck>
+  {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
+    <CreateEditTournamentForm tournament_id={tournament.id} data={tournament} 
+    series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} />
+  {:else}
+    {$LL.COMMON.NO_PERMISSION()}
+  {/if}
 {/if}

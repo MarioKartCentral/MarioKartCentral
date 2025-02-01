@@ -1,49 +1,83 @@
 <script lang="ts">
-  import { valid_games, valid_modes, mode_names } from '$lib/util/util';
+  import { valid_modes, valid_team_modes } from '$lib/util/util';
   import { createEventDispatcher } from 'svelte';
+  import GameSelect from './GameSelect.svelte';
+  import LL from '$i18n/i18n-svelte';
 
-  export let game = 'mk8dx';
-  export let mode = '150cc';
+  export let game: string | null = null;
+  export let mode: string | null = null;
   export let disabled = false;
+  export let flex = false;
+  export let required = false;
+  export let all_option = false;
+  export let hide_labels = false;
+  export let inline = false;
+  export let is_team = false;
 
   const dispatch = createEventDispatcher();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mode_strings: any = $LL.MODES;
 </script>
 
-<div class="option">
-  <div>
-    <label for="game">Game</label>
-  </div>
-  <div>
-    <select
-      name="game"
-      bind:value={game}
+<div class={inline ? 'flex gap' : ''}>
+  <div class="option {inline ? '' : 'margin'}">
+    <GameSelect
+      bind:game
       on:change={() => {
-        [mode] = valid_modes[game];
+        if (game) {
+          [mode] = valid_modes[game];
+        } else {
+          mode = null;
+        }
         dispatch('change');
       }}
       {disabled}
-    >
-      {#each Object.keys(valid_games) as game}
-        <option value={game}>{valid_games[game]}</option>
-      {/each}
-    </select>
+      {flex}
+      {required}
+      {all_option}
+      {hide_labels}
+      {is_team}
+    />
   </div>
-</div>
-<div class="option">
-  <div>
-    <label for="mode">Mode</label>
-  </div>
-  <div>
-    <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled}>
-      {#each valid_modes[game] as mode}
-        <option value={mode}>{mode_names[mode]}</option>
-      {/each}
-    </select>
+
+  <div class="option {flex ? 'flex' : ''}">
+    {#if !hide_labels}
+      <div>
+        <label for="mode">{$LL.COMMON.MODE()}</label>
+      </div>
+    {/if}
+    <div>
+      <select name="mode" bind:value={mode} on:change={() => dispatch('change')} {disabled} {required}>
+        {#if all_option}
+          <option value={null} selected>{$LL.MODES.ALL()}</option>
+        {:else}
+          <option value={null} disabled selected>{$LL.MODES.SELECT()}</option>
+        {/if}
+        {#if game}
+          {#each is_team ? valid_team_modes[game] : valid_modes[game] as mode}
+            <option value={mode}>{mode_strings[mode.toUpperCase()]()}</option>
+          {/each}
+        {/if}
+      </select>
+    </div>
   </div>
 </div>
 
 <style>
-  .option {
+  .flex {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  select {
+    width: 192px;
+    /* margin-right: 10px; */
+  }
+  .gap {
+    gap: 5px;
+  }
+  .margin {
     margin-bottom: 10px;
   }
 </style>

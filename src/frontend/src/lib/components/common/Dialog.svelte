@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
+  import CancelButton from "./buttons/CancelButton.svelte";
+
+  const dispatch = createEventDispatcher();
+
   let dialog: HTMLDialogElement;
   export let header: string | null = null;
 
@@ -8,6 +13,7 @@
 
   export function close() {
     dialog.close();
+    dispatch('close');
   }
 </script>
 
@@ -16,14 +22,14 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="outer" on:click={close}>
     <div class="container" on:click|stopPropagation>
-      <div class="header">
+      <div class="header bg-primary-800">
         <div>
           {#if header}
             <h3>{header}</h3>
           {/if}
         </div>
         <div class="exit">
-          <button on:click={close}>X</button>
+          <CancelButton on:click={close}/>
         </div>
       </div>
       <div class="content">
@@ -34,6 +40,10 @@
 </dialog>
 
 <style>
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
   dialog {
     position: fixed;
     width: 100%;
@@ -55,15 +65,18 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 400px;
+    width: 90%;
     min-height: 200px;
-    margin-left: -200px;
-    margin-top: -100px;
+    transform: translate(-50%, -50%);
     background-color: rgba(64, 64, 64, 0.9);
+  }
+  @media (min-width: 600px) {
+    .container {
+      width: 400px;
+    }
   }
   .header {
     display: grid;
-    background-color: rgba(0, 128, 0, 0.6);
     padding: 15px;
     min-height: 50px;
   }
@@ -73,11 +86,5 @@
   .exit {
     position: absolute;
     right: 5%;
-  }
-  button {
-    background-color: transparent;
-    outline: none;
-    border: none;
-    cursor: pointer;
   }
 </style>

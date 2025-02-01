@@ -1,11 +1,16 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import CreateEditTournamentForm from '$lib/components/tournaments/CreateEditTournamentForm.svelte';
-  import { permissions, addPermission } from '$lib/util/util';
-  import PermissionCheck from '$lib/components/common/PermissionCheck.svelte';
+  import { check_permission, series_permissions } from '$lib/util/permissions';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
   import { onMount } from 'svelte';
+  import LL from '$i18n/i18n-svelte';
 
-  addPermission(permissions.create_tournament);
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let template_id: number | null;
 
@@ -15,6 +20,8 @@
   });
 </script>
 
-<PermissionCheck permission={permissions.create_tournament}>
+{#if check_permission(user_info, series_permissions.create_tournament)}
   <CreateEditTournamentForm {template_id} />
-</PermissionCheck>
+{:else}
+  {$LL.COMMON.NO_PERMISSION()}
+{/if}

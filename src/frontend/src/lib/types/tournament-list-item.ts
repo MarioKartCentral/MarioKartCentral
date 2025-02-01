@@ -1,6 +1,6 @@
 export type TournamentListItem = {
   id: number;
-  tournament_name: string;
+  name: string;
   game: string;
   mode: string;
   date_start: number;
@@ -11,6 +11,10 @@ export type TournamentListItem = {
   series_description: string | null;
   is_squad: boolean;
   teams_allowed: boolean;
+  registrations_open: boolean;
+  use_series_logo: boolean;
   description: string;
   logo: string | null;
+  is_viewable: boolean;
+  is_public: boolean;
 };

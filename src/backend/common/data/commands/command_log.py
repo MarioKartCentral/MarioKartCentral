@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import msgspec
@@ -128,7 +128,7 @@ class SaveToHistoricalCommandLogsCommand(Command[None]):
             last_index_entry = None if not index else index[-1]
             if last_index_entry is None or (last_index_entry.from_id == (next_command_file - 1) * COMMAND_LOGS_PER_FILE):
                 # Handle case where we need a new log file and entry
-                next_command_datetime = datetime.utcfromtimestamp(next_command.timestamp)
+                next_command_datetime = datetime.fromtimestamp(next_command.timestamp, timezone.utc)
                 last_index_entry = HistoricalCommandLogIndexEntry(
                     f"{next_command_datetime.strftime('%Y-%m-%d_%H-%M-%S')}_{next_command.id}.json",
                     next_command.id,
@@ -184,5 +184,5 @@ class ClearCommandLogUpToIdCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            await db.execute("DELETE FROM command_log WHERE id < ?", (id,))
+            await db.execute("DELETE FROM command_log WHERE id < ?", (self.id,))
             await db.commit()

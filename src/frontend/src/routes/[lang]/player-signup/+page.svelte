@@ -3,7 +3,11 @@
   import type { UserInfo } from '$lib/types/user-info';
   import type { FriendCode } from '$lib/types/friend-code';
   import { goto } from '$app/navigation';
-  import { country_codes } from '$lib/stores/country_codes';
+  import Section from '$lib/components/common/Section.svelte';
+  import CountrySelect from '$lib/components/common/CountrySelect.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
 
@@ -21,17 +25,16 @@
       if (fc === '') {
         continue;
       }
-      friend_codes.push({ id: 0, fc: fc, game: games[i], is_primary: true, description: null, is_verified: false });
+      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), game: games[i], is_primary: true, description: null, is_verified: false, is_active: true });
     }
 
     const payload = {
       name: data.get('name'),
-      country_code: data.get('country_code'),
+      country_code: data.get('country'),
       friend_codes: friend_codes,
       is_hidden: false,
       is_shadow: false,
       is_banned: false,
-      discord_id: data.get('discord_id'),
     };
     const endpoint = '/api/registry/players/create';
     const response = await fetch(endpoint, {
@@ -43,55 +46,77 @@
 
     if (response.status < 300) {
       goto('/');
-      alert('Registered successfully!');
+      alert($LL.PLAYERS.PLAYER_SIGNUP.REGISTER_SUCCESS());
     } else {
-      alert(`Registration failed: ${result['title']}`);
+      alert(`${$LL.PLAYERS.PLAYER_SIGNUP.REGISTER_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
-<h2>Player Signup</h2>
-
 {#if user_info.player_id !== null}
-  Already registered
+  {$LL.PLAYERS.PLAYER_SIGNUP.ALREADY_REGISTERED()}
 {:else}
-  <form method="post" on:submit|preventDefault={register}>
-    <div>
-      <label for="name">Name</label>
-      <input name="name" type="name" minlength="2" />
-    </div>
-    <div>
-      <label for="country_code">Country</label>
-      <select name="country_code" required>
-        {#each country_codes as country_code}
-          <option value={country_code}>{country_code}</option>
-        {/each}
-      </select>
-    </div>
-    <div>
-      <label for="switch_fc">Switch FC</label>
-      <input name="switch_fc" />
-    </div>
-    <div>
-      <label for="mkt_fc">MKTour FC</label>
-      <input name="mkt_fc" />
-    </div>
-    <div>
-      <label for="mkw_fc">MKW FC</label>
-      <input name="mkw_fc" />
-    </div>
-    <div>
-      <label for="3ds_fc">3DS FC</label>
-      <input name="3ds_fc" />
-    </div>
-    <div>
-      <label for="nnid">Nintendo Network ID</label>
-      <input name="nnid" />
-    </div>
-    <div>
-      <label for="discord_id">Discord ID</label>
-      <input name="discord_id" type="discord_id" />
-    </div>
-    <button class="register-btn" type="submit">Register</button>
-  </form>
+  <Section header={$LL.DISCORD.DISCORD()}>
+    <LinkDiscord/>
+  </Section>
+  <Section header={$LL.PLAYERS.PLAYER_SIGNUP.PLAYER_SIGNUP()}>
+    <form method="post" on:submit|preventDefault={register}>
+      <div class="field">
+        <span class="item-label">
+          <label for="name">{$LL.COMMON.NAME()}</label>
+        </span>
+        <input name="name" type="name" minlength="2" pattern="^\S.*\S$|^\S$" />
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="country">{$LL.COMMON.COUNTRY()}</label>
+        </span>
+        <CountrySelect is_required={true}/>
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="switch_fc">{$LL.PLAYERS.PLAYER_SIGNUP.SWITCH_FC()}</label>
+        </span>
+        <input name="switch_fc" placeholder='0000-0000-0000'/>
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="mkt_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKT_FC()}</label>
+        </span>
+        <input name="mkt_fc" placeholder='0000-0000-0000'/>
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="mkw_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKW_FC()}</label>
+        </span>
+        <input name="mkw_fc" placeholder='0000-0000-0000'/>
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="3ds_fc">{$LL.PLAYERS.PLAYER_SIGNUP['3DS_FC']()}</label>
+        </span>
+        <input name="3ds_fc" placeholder='0000-0000-0000'/>
+      </div>
+      <div class="field">
+        <span class="item-label">
+          <label for="nnid">{$LL.PLAYERS.PLAYER_SIGNUP.NNID()}</label>
+        </span>
+        <input name="nnid" placeholder='NNID'/>
+      </div>
+      <Button type="submit">{$LL.PLAYERS.PLAYER_SIGNUP.REGISTER()}</Button>
+    </form>
+  </Section>
 {/if}
+
+<style>
+  div.field {
+    margin-bottom: 5px;
+  }
+  span.item-label {
+    display: inline-block;
+    width: 150px;
+  }
+  input {
+    width: 200px;
+  }
+</style>

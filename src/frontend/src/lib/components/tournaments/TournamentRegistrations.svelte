@@ -5,6 +5,10 @@
   import { onMount } from 'svelte';
   import TournamentSquadList from './TournamentSquadList.svelte';
   import TournamentPlayerList from './TournamentPlayerList.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   let tournament_squads: TournamentSquad[];
@@ -13,8 +17,14 @@
   let registration_count = 0;
   let setting = 'any';
 
+  let user_info: UserInfo;
+
+  user.subscribe((value) => {
+    user_info = value;
+  });
+
   onMount(async () => {
-    const res = await fetch(`/api/tournaments/${tournament.id}/registrations`);
+    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?is_approved=true`);
     if (res.status < 300) {
       const body = await res.json();
       if (tournament.is_squad) {
@@ -31,15 +41,19 @@
   async function filter_registrations() {
     let eligible_only = false;
     let hosts_only = false;
+    let is_approved = true;
     if (setting === 'eligible' || setting === 'hosts') {
       eligible_only = true;
     }
     if (setting === 'hosts') {
       hosts_only = true;
     }
-    const res = await fetch(
-      `/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}&hosts_only=${hosts_only}`,
-    );
+    if (setting === 'pending') {
+      is_approved = false;
+    }
+    
+    let url = `/api/tournaments/${tournament.id}/registrations?eligible_only=${eligible_only}&hosts_only=${hosts_only}&is_approved=${is_approved}`
+    const res = await fetch(url);
     if (res.status < 300) {
       const body = await res.json();
       console.log(body);
@@ -58,27 +72,44 @@
   {#if registrations_loaded}
     <div>
       <select bind:value={setting} on:change={filter_registrations}>
-        <option value={'any'}>All {tournament.is_squad ? 'Squads' : 'Players'}</option>
+        <option value={'any'}>
+          {$LL.TOURNAMENTS.REGISTRATIONS.ALL_REGISTRATIONS({is_squad: tournament.is_squad})}
+        </option>
         {#if tournament.is_squad}
-          <option value={'eligible'}>Eligible Only</option>
+          <option value={'eligible'}>{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE_ONLY()}</option>
         {/if}
         {#if tournament.host_status_required}
-          <option value={'hosts'}>Hosts Only</option>
+          <option value={'hosts'}>{$LL.TOURNAMENTS.REGISTRATIONS.HOSTS_ONLY()}</option>
+        {/if}
+        {#if tournament.verification_required && check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+          tournament.id, tournament.series_id)}
+          <option value={'pending'}>{$LL.TOURNAMENTS.REGISTRATIONS.PENDING()}</option>
         {/if}
       </select>
     </div>
     {#if registration_count > 0}
       <div>
-        {registration_count}
-        {tournament.is_squad ? 'Squads' : 'Players'}
+        {#if tournament.is_squad}
+          {$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_COUNT({count: registration_count})}
+        {:else}
+          {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registration_count})}
+        {/if}
       </div>
       {#if tournament.is_squad}
-        <TournamentSquadList {tournament} squads={tournament_squads} />
+        {#key tournament_squads}
+          <TournamentSquadList {tournament} squads={tournament_squads} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+            tournament.id, tournament.series_id
+          )}/>
+        {/key}
       {:else}
-        <TournamentPlayerList {tournament} players={tournament_players} />
+        {#key tournament_players}
+          <TournamentPlayerList {tournament} players={tournament_players} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+            tournament.id, tournament.series_id
+          )}/>
+        {/key}
       {/if}
     {:else}
-      No {tournament.is_squad ? 'squad' : 'player'}s. Be the first to register!
+      {$LL.TOURNAMENTS.REGISTRATIONS.NO_REGISTRATIONS({is_squad: tournament.is_squad})}
     {/if}
   {/if}
 </div>

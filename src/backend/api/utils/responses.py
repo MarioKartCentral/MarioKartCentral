@@ -8,8 +8,8 @@ from common.data.models import Problem
 
 @dataclass
 class RouteSpecTypes:
-    query_type: type | None = None
-    body_type: type | None = None
+    query_type: type[Any] | None = None
+    body_type: type[Any] | None = None
 
 
 def bind_request_query[T](type: type[T]): # pyright: ignore[reportInvalidTypeVarUse]

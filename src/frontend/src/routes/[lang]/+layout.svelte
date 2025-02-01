@@ -6,7 +6,7 @@
   import Footer from '$lib/components/Footer.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { onMount, setContext } from 'svelte';
+  import { onMount } from 'svelte';
 
   export let data: LayoutData;
 
@@ -18,35 +18,9 @@
     user_info = value;
   });
 
-  let permissions: string[] = []; // permissions list passed up from current page
-  let check_team_permissions = false;
-  let check_series_permissions = false;
-  function addPermission(permission: string) {
-    // function that updates list of all permissions
-    permissions.push(permission);
-  }
-  function checkTeamPerms() {
-    check_team_permissions = true;
-  }
-  function checkSeriesPerms() {
-    check_series_permissions = true;
-  }
-  setContext('page-init', { addPermission, checkTeamPerms, checkSeriesPerms });
-
   onMount(async () => {
     if (user_info.is_checked === false) {
-      let query_params = [];
-      if (permissions.length > 0) {
-        query_params.push(`permissions=${permissions.join(',')}`);
-      }
-      if (check_team_permissions) {
-        query_params.push('check_team_perms=true');
-      }
-      if (check_series_permissions) {
-        query_params.push('check_series_perms=true');
-      }
-      let query_text = `?` + query_params.join('&');
-      const res = await fetch(`/api/user/me/player${query_text}`);
+      const res = await fetch(`/api/user/me/player`);
       if (res.status != 200) {
         user.update((u) => {
           u.is_checked = true;
@@ -59,9 +33,10 @@
         id: body['id'],
         player_id: body['player_id'],
         player: body['player'],
-        permissions: body['permissions'],
-        team_permissions: body['team_permissions'],
-        series_permissions: body['series_permissions'],
+        user_roles: body['user_roles'],
+        team_roles: body['team_roles'],
+        series_roles: body['series_roles'],
+        tournament_roles: body['tournament_roles'],
         mod_notifications: body['mod_notifications'],
         is_checked: true,
       };
@@ -70,19 +45,17 @@
   });
 </script>
 
-<div class="container">
-  <header>
-    <NavBar />
-  </header>
-
+<header>
+  <NavBar />
+</header>
+<div class="container md:mx-auto">
   <main>
     <slot />
   </main>
-
-  <footer>
-    <Footer />
-  </footer>
 </div>
+<footer>
+  <Footer />
+</footer>
 
 <style>
   /* If the header and main elements are directly placed within the body, the fixed behavior will stop after scrolling one screen's height.
@@ -99,15 +72,13 @@
   }
   main {
     flex: 1 0;
-    padding: 30px 50px;
-  }
-  :global(a) {
-    color: white;
-    text-decoration: none;
-    transition: color 0.2s ease-out;
-  }
-  :global(a:hover) {
-    color: rgb(0, 162, 255);
-    text-decoration: none;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 50px;
+    padding-right: 50px;
+    @media(max-width: 800px) {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
   }
 </style>

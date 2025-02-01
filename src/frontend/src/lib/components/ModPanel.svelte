@@ -1,46 +1,115 @@
 <script lang="ts">
-  import DropdownMenu from './DropdownMenu.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { permissions } from '$lib/util/util';
   import { page } from '$app/stores';
-
-  let dropdown: DropdownMenu;
-  export function toggleModPanel() {
-    dropdown.toggleDropdown();
-  }
+  import Dropdown from './common/Dropdown.svelte';
+  import DropdownItem from './common/DropdownItem.svelte';
+  import { NavLi } from 'flowbite-svelte';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
+  import LL from '$i18n/i18n-svelte';
+  import AlertCount from './common/AlertCount.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;
+  let unread_count = 0;
 
   user.subscribe((value) => {
     user_info = value;
+    let mod_notifs = value.mod_notifications
+    if(mod_notifs) {
+      unread_count = Object.values(mod_notifs).reduce((sum, a) => sum + a, 0);
+    }
   });
+
+  // underline a nav item if it's the section we're currently in
+  function checkSelectedNav(name: string) {
+    if($page.data.activeNavItem === name) {
+      return "text-white font-bold underline underline-offset-4";
+    }
+    return "";
+  }
 </script>
 
-<DropdownMenu bind:this={dropdown}>
-  {#if user_info.permissions.includes(permissions.manage_teams)}
-    <div>
-      <a href="/{$page.params.lang}/moderator/approve_teams"
-        >Approve Teams {user_info.mod_notifications?.pending_teams
-          ? `(${user_info.mod_notifications.pending_teams})`
-          : ''}</a
-      >
-    </div>
-    <div>
-      <a href="/{$page.params.lang}/moderator/approve_team_edits"
-        >Team Name/Tag Changes {user_info.mod_notifications?.pending_team_edits
-          ? `(${user_info.mod_notifications.pending_team_edits})`
-          : ''}</a
-      >
-    </div>
+<NavLi class="cursor-pointer {checkSelectedNav("MODERATOR")}">
+  {$LL.NAVBAR.MODERATOR()}
+  {#if unread_count}
+    <AlertCount count={unread_count}/>
   {/if}
-  {#if user_info.permissions.includes(permissions.manage_transfers)}
-    <div>
-      <a href="/{$page.params.lang}/moderator/approve_transfers"
-        >Transfers {user_info.mod_notifications?.pending_transfers
-          ? `(${user_info.mod_notifications.pending_transfers})`
-          : ''}</a
-      >
-    </div>
+  <ChevronDownOutline class="inline"/>
+  
+</NavLi>
+<Dropdown>
+  {#if check_permission(user_info, permissions.manage_teams)}
+    <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">
+      Approve Teams 
+      {#if user_info.mod_notifications?.pending_teams}
+        <AlertCount count={user_info.mod_notifications.pending_teams}/>
+      {/if}
+      
+    </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/moderator/approve_team_edits">
+      Team Name/Tag Changes
+      {#if user_info.mod_notifications?.pending_team_edits}
+        <AlertCount count={user_info.mod_notifications.pending_team_edits}/>
+      {/if}
+    </DropdownItem>
   {/if}
-</DropdownMenu>
+  {#if check_permission(user_info, permissions.manage_transfers)}
+    <DropdownItem href="/{$page.params.lang}/moderator/approve_transfers">
+      Transfers
+      {#if user_info.mod_notifications?.pending_transfers}
+        <AlertCount count={user_info.mod_notifications.pending_transfers}/>
+      {/if}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.manage_user_roles)}
+    <DropdownItem href="/{$page.params.lang}/moderator/manage_user_roles">
+      User Roles
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.ban_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/player_bans">
+      Player Bans
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.edit_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/approve_player_names">
+      Player Name Changes
+      {#if user_info.mod_notifications?.pending_player_name_changes}
+        <AlertCount count={user_info.mod_notifications.pending_player_name_changes}/>
+      {/if}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.manage_shadow_players)}
+    <DropdownItem href="/{$page.params.lang}/moderator/shadow_players">
+      Shadow Players
+    </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/moderator/player_claims">
+      Player Claims
+      {#if user_info.mod_notifications?.pending_player_claims}
+        <AlertCount count={user_info.mod_notifications.pending_player_claims}/>
+      {/if}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.merge_players)}
+    <DropdownItem href="/{$page.params.lang}/moderator/merge_players">
+      Merge Players
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.merge_teams)}
+    <DropdownItem href="/{$page.params.lang}/moderator/merge_teams">
+      Merge Teams
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.manage_word_filter)}
+    <DropdownItem href="/{$page.params.lang}/moderator/word_filter">
+      Word Filter
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.edit_user)}
+    <DropdownItem href="/{$page.params.lang}/moderator/users">
+      Manage Users
+    </DropdownItem>
+  {/if}
+  
+</Dropdown>

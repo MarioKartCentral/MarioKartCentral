@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { Team } from '$lib/types/team';
   import logo from '$lib/assets/logo.png';
-  import { locale } from '$i18n/i18n-svelte';
+  import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import { Avatar } from 'flowbite-svelte';
 
   export let team: Team;
 
@@ -17,35 +19,40 @@
     day: 'numeric',
     hour12: true,
   };
+  
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const language_strings: any = $LL.LANGUAGES;
 </script>
 
 <div class="wrapper">
-  <div>
-    <img class="avatar" src={avatar_url} alt={team.name} />
+  <div class="avatar">
+    <Avatar size="xl" src={avatar_url} border alt={team.name}/>
   </div>
   <div class="team_details">
     <div class="tag">
-      {team.tag}
+      <TagBadge tag={team.tag} color={team.color}/>
     </div>
     <div class="name">
       <b>{team.name}</b>
     </div>
     <div>
-      <b>Registered</b>
+      <b>{$LL.TEAMS.PROFILE.REGISTERED()}</b>
       {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
     </div>
     <div>
-      <b>Main Language:</b>
-      {team.language}
+      <b>{$LL.TEAMS.PROFILE.MAIN_LANGUAGE()}</b>
+      {language_strings[team.language.toUpperCase().replace("-", "_")]()}
     </div>
-    <div>
-      <b>Managers:</b>
-      {#each team.managers as m, i}
-        <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
-          {i == team.managers.length - 1 ? m.name : `${m.name}, `}
-        </a>
-      {/each}
-    </div>
+    {#if team.managers.length}
+      <div>
+        <b>{$LL.TEAMS.PROFILE.MANAGERS()}</b>
+        {#each team.managers as m, i}
+          <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
+            {i == team.managers.length - 1 ? m.name : `${m.name}, `}
+          </a>
+        {/each}
+      </div>
+    {/if}
   </div>
   <div class="about_me">
     {team.description}
@@ -54,21 +61,22 @@
 
 <style>
   div.wrapper {
-    display: inline-grid;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
   }
-  img.avatar {
-    width: 150px;
-    height: 150px;
-    margin: 10px;
-    border: 5px white solid;
-    border-radius: 50%;
-    object-fit: cover;
-  }
   div.team_details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     grid-column-start: 2;
+    @media(min-width:800px) {
+      justify-content: left;
+    }
   }
   div.tag {
     font-size: 2em;
@@ -77,6 +85,20 @@
     font-size: 1.5em;
   }
   div.about_me {
+    display: flex;
+    align-self: flex-start;
     grid-column-start: 3;
+    justify-content: center;
+    max-width: 400px;
+    word-break: break-word;
+    @media(min-width: 800px) {
+      justify-content: left;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+  div.avatar { 
+    min-width: 150px;
+    margin-bottom: 20px;
   }
 </style>
