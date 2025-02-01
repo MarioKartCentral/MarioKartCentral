@@ -12,3 +12,9 @@ export type TeamTransfer = {
   roster_leave: RosterBasic | null;
   roster_join: RosterBasic | null;
 };
+
+export type TransferList = {
+  transfers: TeamTransfer[];
+  transfer_count: number;
+  page_count: number;
+};

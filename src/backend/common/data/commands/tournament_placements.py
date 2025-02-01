@@ -245,3 +245,18 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
                     tournament_team_results.append(TeamTournamentPlacement(tournament_id, tournament_name, game, mode, team_id, team_name, date_start, date_end, placement, placement_description, is_disqualified))
                 results = TeamTournamentResults(tournament_team_results)
                 return results
+
+@dataclass
+class GetLatestTournamentIdWithPlacements(Command[int]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("""
+                SELECT MAX(tournament_id) from (
+                    SELECT tournament_id FROM tournament_squad_placements UNION 
+                    SELECT tournament_id FROM tournament_solo_placements
+                )
+                """) as cursor:
+                row = await cursor.fetchone()
+                if row is None or row[0] is None:
+                    raise Problem('There are no tournaments with placements', status=404)
+                return row[0]
