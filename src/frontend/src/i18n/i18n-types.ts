@@ -297,6 +297,11 @@ type RootTranslation = {
 		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
 		 */
 		NO_PERMISSION: string
+		/**
+		 * {​v​a​l​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
+		 * @param {number} val
+		 */
+		ORDINAL_SUFFIX: RequiredParams<'val|ordinalSuffix'>
 	}
 	DISCORD: {
 		/**
@@ -429,6 +434,51 @@ type RootTranslation = {
 		 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
 		 */
 		SUMMARY: string
+		/**
+		 * Y​o​u​ ​p​l​a​c​e​d​:​ ​{​p​l​a​c​e​m​e​n​t​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
+		 * @param {number} placement
+		 */
+		YOU_PLACED: RequiredParams<'placement|ordinalSuffix'>
+		/**
+		 * L​a​t​e​s​t​ ​R​e​s​u​l​t​s
+		 */
+		LATEST_RESULTS: string
+		/**
+		 * V​i​e​w​ ​F​u​l​l​ ​P​l​a​c​e​m​e​n​t​s
+		 */
+		VIEW_FULL_PLACEMENTS: string
+		/**
+		 * L​a​t​e​s​t​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		LATEST_TOURNAMENTS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		VIEW_ALL_TOURNAMENTS: string
+		/**
+		 * N​e​w​e​s​t​ ​P​l​a​y​e​r​s
+		 */
+		NEWEST_PLAYERS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​P​l​a​y​e​r​s
+		 */
+		VIEW_ALL_PLAYERS: string
+		/**
+		 * N​e​w​e​s​t​ ​T​e​a​m​s
+		 */
+		NEWEST_TEAMS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​T​e​a​m​s
+		 */
+		VIEW_ALL_TEAMS: string
+		/**
+		 * R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		RECENT_TRANSACTIONS: string
+		/**
+		 * M​o​r​e​ ​R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		MORE_RECENT_TRANSACTIONS: string
 	}
 	INVITES: {
 		/**
@@ -1070,6 +1120,10 @@ type RootTranslation = {
 		 * L​o​g​i​n​/​R​e​g​i​s​t​e​r
 		 */
 		LOGIN_REGISTER: string
+		/**
+		 * A​c​c​o​u​n​t
+		 */
+		ACCOUNT: string
 	}
 	NOTIFICATION: {
 		/**
@@ -4519,6 +4573,10 @@ export type TranslationFunctions = {
 		 * You do not have permission to view this page.
 		 */
 		NO_PERMISSION: () => LocalizedString
+		/**
+		 * {val|ordinalSuffix}
+		 */
+		ORDINAL_SUFFIX: (arg: { val: number }) => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -4651,6 +4709,50 @@ export type TranslationFunctions = {
 		 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
 		 */
 		SUMMARY: () => LocalizedString
+		/**
+		 * You placed: {placement|ordinalSuffix}
+		 */
+		YOU_PLACED: (arg: { placement: number }) => LocalizedString
+		/**
+		 * Latest Results
+		 */
+		LATEST_RESULTS: () => LocalizedString
+		/**
+		 * View Full Placements
+		 */
+		VIEW_FULL_PLACEMENTS: () => LocalizedString
+		/**
+		 * Latest Tournaments
+		 */
+		LATEST_TOURNAMENTS: () => LocalizedString
+		/**
+		 * View All Tournaments
+		 */
+		VIEW_ALL_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Newest Players
+		 */
+		NEWEST_PLAYERS: () => LocalizedString
+		/**
+		 * View All Players
+		 */
+		VIEW_ALL_PLAYERS: () => LocalizedString
+		/**
+		 * Newest Teams
+		 */
+		NEWEST_TEAMS: () => LocalizedString
+		/**
+		 * View All Teams
+		 */
+		VIEW_ALL_TEAMS: () => LocalizedString
+		/**
+		 * Recent Transactions
+		 */
+		RECENT_TRANSACTIONS: () => LocalizedString
+		/**
+		 * More Recent Transactions
+		 */
+		MORE_RECENT_TRANSACTIONS: () => LocalizedString
 	}
 	INVITES: {
 		/**
@@ -5281,6 +5383,10 @@ export type TranslationFunctions = {
 		 * Login/Register
 		 */
 		LOGIN_REGISTER: () => LocalizedString
+		/**
+		 * Account
+		 */
+		ACCOUNT: () => LocalizedString
 	}
 	NOTIFICATION: {
 		/**
@@ -8352,6 +8458,7 @@ export type TranslationFunctions = {
 
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
+	ordinalSuffix: (value: number) => unknown
 	parsedate: (value: unknown) => unknown
 	uppercase: (value: unknown | string) => unknown
 }

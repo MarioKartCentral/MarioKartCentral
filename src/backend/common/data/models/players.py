@@ -115,6 +115,7 @@ class PlayerFilter:
     squad_id: int | None = None
     matching_fcs_only: bool = False
     include_shadow_players: bool = False
+    sort_by_newest: bool | None = False
 
 @dataclass
 class PlayerRequestNameRequestData:

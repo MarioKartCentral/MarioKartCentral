@@ -78,6 +78,7 @@ const fr: Translation = {
     BAGGER: 'Bagger',
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
+    ORDINAL_SUFFIX: '{val|ordinalSuffix}',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -118,6 +119,17 @@ const fr: Translation = {
     WELCOME: 'Bienvenue Mario Kart Central!',
     SUMMARY:
       'Nous somme le cœur des Compétitions Mario Kart, où vous trouverez des tournois pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là! Nous organisons des tournois sur Mario Kart 8 Deluxe, Tour, et plus encore, avec une variété de matchs qui ont lieu chaque semaine!',
+    YOU_PLACED: 'You placed: {placement|ordinalSuffix}',
+    LATEST_RESULTS: 'Latest Results',
+    VIEW_FULL_PLACEMENTS: 'View Full Placements',
+    LATEST_TOURNAMENTS: 'Latest Tournaments',
+    VIEW_ALL_TOURNAMENTS: 'View All Tournaments',
+    NEWEST_PLAYERS: 'Newest Players',
+    VIEW_ALL_PLAYERS: 'View All Players',
+    NEWEST_TEAMS: 'Newest Teams',
+    VIEW_ALL_TEAMS: 'View All Teams',
+    RECENT_TRANSACTIONS: 'Recent Transactions',
+    MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
   },
   INVITES: {
     TEAM_INVITES: 'Team Invites',
@@ -292,6 +304,7 @@ const fr: Translation = {
     NOTIFICATIONS: 'Notifications',
     MODERATOR: 'Modérateur',
     LOGIN_REGISTER: 'Login/Register',
+    ACCOUNT: 'Account',
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',

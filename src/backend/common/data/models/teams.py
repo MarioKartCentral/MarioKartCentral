@@ -265,6 +265,7 @@ class TeamFilter():
     is_recruiting: bool | None = None
     is_historical: bool | None = None
     is_active: bool | None = None
+    sort_by_newest: bool | None = False
 
 @dataclass
 class TeamInvite():
