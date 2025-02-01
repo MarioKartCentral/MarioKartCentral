@@ -28,7 +28,7 @@
 >
     {#if latestTeams.length}
         <div class="flex flex-col gap-[5px]">
-            {#each latestTeams as team, i}
+            {#each latestTeams as team}
                 <div class="row">
                     <a 
                         href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> 

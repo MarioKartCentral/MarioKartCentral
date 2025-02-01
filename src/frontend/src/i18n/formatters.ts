@@ -37,7 +37,7 @@ function ordinalSuffix(val: number, locale: Locales) {
     return ordinalSuffixDe(val);
   }
   if (locale === 'ja') {
-    return ordinalSuffixJa(val); // TODO: implement below
+    return ordinalSuffixJa(val);
   }
 
   // just return the number if a locale is not implemented
@@ -73,6 +73,5 @@ function ordinalSuffixDe(n: number) {
 }
 
 function ordinalSuffixJa(n: number) {
-  // TODO: implement this function
-  return `${n}`;
+  return `${n}位`;
 }
