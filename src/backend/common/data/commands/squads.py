@@ -361,7 +361,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
 
             rosters: list[RosterBasic] = []
             # get teams connected to squads
-            async with db.execute(f"""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+            async with db.execute("""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
                                   FROM team_squad_registrations tsr
                                   JOIN team_rosters tr ON tsr.roster_id = tr.id
                                   JOIN teams t ON tr.team_id = t.id
@@ -448,7 +448,7 @@ class AddRosterToSquadCommand(Command[None]):
 
             # make sure creating player has permission for all rosters they are registering
             if not self.is_privileged:
-                async with db.execute(f"""
+                async with db.execute("""
                     SELECT tr.id FROM team_roles r
                     JOIN user_team_roles ur ON ur.role_id = r.id
                     JOIN team_rosters tr ON tr.team_id = ur.team_id

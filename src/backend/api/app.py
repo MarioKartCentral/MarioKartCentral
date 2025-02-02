@@ -2,7 +2,7 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from api import settings
 from api.data import on_startup, on_shutdown
-from api.endpoints import (authservice, roleservice, s3service, userservice, tournaments, 
+from api.endpoints import (authservice, roleservice, userservice, tournaments, 
                            tournament_registration, tournament_placements, player_registry, player_bans, 
                            team_registry, user_settings, notifications, moderation, mkcv1importer)
 from api.utils.middleware import ProblemHandlingMiddleware
@@ -18,7 +18,6 @@ routes = [
     *mkcv1importer.routes,
     *moderation.routes,
     *roleservice.routes,
-    *s3service.routes,
     *userservice.routes,
     *tournaments.routes,
     *tournament_registration.routes,
