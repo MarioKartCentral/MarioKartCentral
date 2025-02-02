@@ -223,7 +223,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
                 for row in rows:
                     ban_list.append(PlayerBanDetailed(*row))
             
-            async with db.execute(f"""SELECT COUNT(*) FROM {joined_tables} {where_clause}""", variable_parameters) as cursor:
+            async with db.execute(f"SELECT COUNT(*) FROM {joined_tables} {where_clause}", variable_parameters) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 ban_count = row[0]
