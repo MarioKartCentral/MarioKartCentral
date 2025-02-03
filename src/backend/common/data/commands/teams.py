@@ -104,9 +104,11 @@ class GetTeamInfoCommand(Command[Team]):
             team_members: list[PartialTeamMember] = []
             # get all current team members who are in a roster that belongs to our team
             roster_id_query = ','.join(map(str, roster_dict.keys()))
-            async with db.execute(f"""SELECT player_id, roster_id, join_date, is_bagger_clause
-                                    FROM team_members
+            async with db.execute(f"""SELECT m.player_id, m.roster_id, m.join_date, m.is_bagger_clause
+                                    FROM team_members m
+                                    JOIN players p ON m.player_id = p.id
                                     WHERE roster_id IN ({roster_id_query}) AND leave_date IS ?
+                                    ORDER BY p.name COLLATE NOCASE
                                     """, (None,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -116,9 +118,11 @@ class GetTeamInfoCommand(Command[Team]):
 
             team_invites: list[PartialTeamMember] = []
             # get all invited players to a roster on our team
-            async with db.execute(f"""SELECT player_id, roster_id, date, is_bagger_clause
-                                  FROM team_transfers
-                                  WHERE roster_id IN ({roster_id_query}) AND approval_status = 'pending'""") as cursor:
+            async with db.execute(f"""SELECT t.player_id, t.roster_id, t.date, t.is_bagger_clause
+                                  FROM team_transfers t
+                                  JOIN players p ON t.player_id = p.id
+                                  WHERE roster_id IN ({roster_id_query}) AND approval_status = 'pending'
+                                  ORDER BY p.name COLLATE NOCASE""") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     player_id, roster_id, join_date, is_bagger_clause = row
