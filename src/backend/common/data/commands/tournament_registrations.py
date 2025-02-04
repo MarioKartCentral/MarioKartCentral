@@ -336,7 +336,8 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                                     JOIN players p on t.player_id = p.id
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    WHERE t.tournament_id = ?""",
+                                    WHERE t.tournament_id = ?
+                                    ORDER BY p.name COLLATE NOCASE""",
                                     (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
@@ -494,7 +495,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                                         SELECT p2.id FROM tournament_players p2
                                         WHERE p2.squad_id = t.squad_id AND p2.player_id = ?
                                     )
-                                    """, (self.tournament_id, self.player_id)) as cursor:
+                                    ORDER BY p.name COLLATE NOCASE""", (self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
