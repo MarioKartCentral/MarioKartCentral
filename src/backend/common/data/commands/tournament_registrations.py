@@ -310,7 +310,6 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved = row
                     curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, [], [])
                     squads[squad_id] = curr_squad
-
             # get teams connected to squads
             if teams_allowed:
                 async with db.execute(f"""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
@@ -329,7 +328,6 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                         squad = squads.get(squad_id, None)
                         if squad:
                             squad.rosters.append(roster)
-
             # get tournament players
             async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, p.name, p.country_code, 
@@ -356,10 +354,9 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     curr_squad = squads[squad_id]
                     curr_squad.players.append(curr_player)
                     player_fc_dict[player_id] = []
-
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND player_id IN (
+                            SELECT t.player_id FROM tournament_players t WHERE t.tournament_id = ?
                         )"""
             async with db.execute(fc_query, (game, self.tournament_id)) as cursor:
                 rows = await cursor.fetchall()
@@ -426,8 +423,8 @@ class GetFFARegistrationsCommand(Command[list[TournamentPlayerDetails]]):
                     player_dict[player_id] = curr_player
 
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE {where_clause} AND t.player_id = f.player_id
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND player_id IN (
+                            SELECT t.player_id FROM tournament_players t WHERE {where_clause}
                         )
                         """
             async with db.execute(fc_query, (game, *variable_parameters)) as cursor:
@@ -517,11 +514,10 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     player_fc_dict[player_id] = []
 
             # gathering all the valid FCs for each player in their squads
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = f.player_id
-                            AND EXISTS (
-                                SELECT p2.id FROM tournament_players p2
-                                WHERE p2.squad_id = t.squad_id AND p2.player_id = ?
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND player_id IN (
+                            SELECT t.player_id FROM tournament_players t WHERE t.tournament_id = ? AND t.squad_id IN (
+                                SELECT p2.squad_id FROM tournament_players p2
+                                WHERE p2.player_id = ?
                             )
                         )"""
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
@@ -576,8 +572,8 @@ class GetPlayerSoloRegCommand(Command[MyTournamentRegistrationDetails]):
                 player = TournamentPlayerDetails(reg_id, player_id, None, player_timestamp, is_checked_in, is_approved, mii_name, can_host, name, country, player_discord, selected_fc_id, [])
 
             # gathering all the valid FCs for each player for this tournament
-            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND EXISTS (
-                            SELECT t.id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = ? AND t.player_id = f.player_id
+            fc_query = f"""SELECT id, player_id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes f WHERE f.game = ? AND player_id IN (
+                            SELECT t.player_id FROM tournament_players t WHERE t.tournament_id = ? AND t.player_id = ?
                         )
                         """
             async with db.execute(fc_query, (game, self.tournament_id, self.player_id)) as cursor:
