@@ -300,7 +300,7 @@ class TournamentSquad(TableModel):
     color: int
     timestamp: int
     tournament_id: int
-    is_registered: int
+    is_registered: bool
     is_approved: bool
 
     @staticmethod
@@ -312,7 +312,7 @@ class TournamentSquad(TableModel):
             color INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            is_registered INTEGER NOT NULL,
+            is_registered BOOLEAN NOT NULL,
             is_approved BOOLEAN DEFAULT FALSE NOT NULL
             )"""
 
@@ -328,7 +328,7 @@ class TournamentPlayer(TableModel):
     mii_name: str | None
     can_host: bool
     is_invite: bool
-    selected_fc_id: int
+    selected_fc_id: int | None
     is_representative: bool
     is_approved: bool
 
@@ -460,6 +460,7 @@ class TeamMember(TableModel):
     player_id: int
     join_date: int
     leave_date: int | None
+    is_bagger_clause: bool
 
     @staticmethod
     def get_create_table_command():

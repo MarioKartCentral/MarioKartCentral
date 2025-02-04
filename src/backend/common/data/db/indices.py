@@ -35,7 +35,36 @@ class UserTournamentRolesExpiresOn(IndexModel):
         return """CREATE INDEX IF NOT EXISTS user_tournament_roles_expires_on 
             ON user_tournament_roles (expires_on) WHERE expires_on IS NOT NULL"""
     
+@dataclass
+class TournamentSquadsTournamentID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS tournament_squads_tournament_id
+            ON tournament_squads (tournament_id)"""
+    
+@dataclass
+class TournamentPlayersTournamentIDSquadID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS tournament_players_tournament_id_squad_id
+            ON tournament_players (tournament_id, squad_id)"""
+    
+@dataclass
+class FriendCodesGame(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS friend_codes_game
+            ON friend_codes(game)"""
+    
+@dataclass
+class FriendCodesPlayerID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS friend_codes_player_id
+            ON friend_codes (player_id)"""
+    
 
 all_indices : list[type[IndexModel]] = [
-    UserRolesExpiresOn, UserTeamRolesExpiresOn, UserSeriesRolesExpiresOn, UserTournamentRolesExpiresOn
+    UserRolesExpiresOn, UserTeamRolesExpiresOn, UserSeriesRolesExpiresOn, UserTournamentRolesExpiresOn,
+    TournamentSquadsTournamentID, TournamentPlayersTournamentIDSquadID, FriendCodesGame, FriendCodesPlayerID
 ]
