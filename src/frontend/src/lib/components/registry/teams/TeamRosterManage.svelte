@@ -21,6 +21,8 @@
   import RosterPlayerName from './RosterPlayerName.svelte';
   import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import { page } from '$app/stores';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -243,6 +245,7 @@
     {/if}
     <TagBadge tag={roster.tag} color={roster.color} />
     <GameBadge game={roster.game}/>
+    <ModeBadge mode={roster.mode}/>
     {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
       <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
     {/if}
@@ -337,7 +340,9 @@
               <tr>
                 <td><Flag country_code={player.country_code} /></td>
                 <td>
-                  {player.name}
+                  <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">
+                    {player.name}
+                  </a>
                   {#if player.is_bagger_clause}
                     <BaggerBadge/>
                   {/if}
