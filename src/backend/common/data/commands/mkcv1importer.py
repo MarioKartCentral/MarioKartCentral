@@ -521,31 +521,20 @@ class ConvertMKCV1DataCommand(Command[None]):
                                                 player.status == "invited", None, False, False)
             new_tournament_players.append(new_player)
             tournament_player_id += 1
-
-        ## TODO:
-        ## - Store user info in separate S3 file
         
-        
-        max_player_id = 0
         async with db_wrapper.connect() as db:
             # inserting/modifying players
             inserts = [(player.id, player.name, player.country_code, player.is_hidden, player.is_shadow, player.is_banned, player.join_date)
-                    for player in player_dict.values() if player.id > max_player_id]
+                    for player in player_dict.values()]
             await db.executemany("""INSERT INTO players(id, name, country_code, is_hidden, is_shadow, is_banned, join_date)
                                             VALUES(?, ?, ?, ?, ?, ?, ?)""", inserts)
-            updates = [(player.name, player.country_code, player.is_hidden, player.is_shadow, player.is_banned, player.join_date, player.id)
-                    for player in player_dict.values() if player.id <= max_player_id]
-            await db.executemany("""UPDATE players SET name = ?, country_code = ?, is_hidden = ?, is_banned = ?, join_date = ? WHERE id = ?""", updates)
 
             # friend codes
-            await db.execute("DELETE FROM friend_codes WHERE player_id < ?", (max_player_id,))
             await db.executemany("""INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description)
                                     VALUES(?, ?, ?, ?, ?, ?, ?)""",
                                     [(fc.player_id, fc.game, fc.fc, False, True, True, None) for fc in friend_codes])
             
             # bans
-            await db.execute("DELETE FROM player_bans WHERE player_id < ?", (max_player_id,))
-            await db.execute("DELETE FROM player_bans_historical WHERE player_id < ?", (max_player_id,))
             await db.executemany("""INSERT INTO player_bans(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment)
                                     VALUES(?, ?, ?, ?, ?, ?, ?)""",
                                     [(ban.player_id, ban.banned_by, ban.is_indefinite, ban.ban_date, ban.expiration_date, ban.reason, ban.comment) for ban in player_bans.values()])
