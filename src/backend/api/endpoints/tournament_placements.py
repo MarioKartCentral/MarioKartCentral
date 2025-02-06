@@ -31,12 +31,12 @@ async def get_placements(request: Request) -> JSONResponse:
     command = CheckIfSquadTournament(tournament_id)
     is_squad = await handle(command)
     if is_squad:
-        reg_command = GetSquadRegistrationsCommand(tournament_id, True, True, False, True)
+        reg_command = GetSquadRegistrationsCommand(tournament_id, False, False, False, None)
         squads = await handle(reg_command)
         placements_command = GetSquadPlacementsCommand(tournament_id, squads)
         placements = await handle(placements_command)
     else:
-        reg_command = GetFFARegistrationsCommand(tournament_id, True, False, True)
+        reg_command = GetFFARegistrationsCommand(tournament_id, False, False, None)
         players = await handle(reg_command)
         placements_command = GetSoloPlacementsCommand(tournament_id, players)
         placements = await handle(placements_command)
