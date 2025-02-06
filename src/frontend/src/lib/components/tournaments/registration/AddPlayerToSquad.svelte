@@ -8,6 +8,7 @@
     import PlayerSearch from "$lib/components/common/PlayerSearch.svelte";
     import type { PlayerInfo } from "$lib/types/player-info";
     import LL from "$i18n/i18n-svelte";
+    import { game_fc_types } from "$lib/util/util";
 
     export let tournament: Tournament;
     let player: PlayerInfo | null = null;
@@ -60,9 +61,9 @@
     }
 </script>
 
-<Dialog bind:this={add_player_dialog} header="Add Player to Squad">
+<Dialog bind:this={add_player_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_TO_SQUAD()}>
     {#if squad}
-        <PlayerSearch bind:player={player} game={tournament.game}/>
+        <PlayerSearch bind:player={player} fc_type={game_fc_types[tournament.game]}/>
         {#if player}
             <form method="POST" on:submit|preventDefault={addPlayer}>
                 <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>

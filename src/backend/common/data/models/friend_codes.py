@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 
-from common.data.models.common import Game
+from common.data.models.common import FriendCodeType
 
 @dataclass
 class FriendCode:
     id: int
     fc: str
-    game: Game
+    type: FriendCodeType
     player_id: int
     is_verified: bool
     is_primary: bool
@@ -16,7 +16,7 @@ class FriendCode:
 @dataclass
 class CreateFriendCodeRequestData:
     fc: str
-    game: Game
+    type: FriendCodeType
     is_primary: bool
     description: str | None
 

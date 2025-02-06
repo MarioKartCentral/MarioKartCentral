@@ -171,13 +171,13 @@ class ConvertMKCV1DataCommand(Command[None]):
             player_dict[player.id] = new_player
 
             if player.switch_fc:
-                friend_codes.append(NewMKCFriendCode(player.id, player.switch_fc, "mk8dx"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.switch_fc, "switch"))
             if player.fc_3ds:
-                friend_codes.append(NewMKCFriendCode(player.id, player.fc_3ds, "mk7"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.fc_3ds, "3ds"))
             if player.mktour_fc:
                 friend_codes.append(NewMKCFriendCode(player.id, player.mktour_fc, "mkt"))
             if player.nnid:
-                friend_codes.append(NewMKCFriendCode(player.id, player.nnid, "mk8"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.nnid, "nnid"))
             
         now = int(datetime.now(timezone.utc).timestamp())
         player_bans: dict[int, NewMKCPlayerBan] = {}
@@ -352,7 +352,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             "mk7_vs_race": ("mk7", "vsrace"),
             "mktour_vs_race": ("mkt", "vsrace"),
             "mkw_vs_race": ("mkw", "rt"),
-            "smk_match_race": ("smk", "vsrace"),
+            "smk_match_race": ("smk", "match_race"),
             "switch_other": ("mk8dx", "150cc"), # technically not accurate but this is just used for 2 pokemon tournaments lol
         }
         series_dict: dict[int, NewMKCSeries] = {}
@@ -530,9 +530,9 @@ class ConvertMKCV1DataCommand(Command[None]):
                                             VALUES(?, ?, ?, ?, ?, ?, ?)""", inserts)
 
             # friend codes
-            await db.executemany("""INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description)
+            await db.executemany("""INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description)
                                     VALUES(?, ?, ?, ?, ?, ?, ?)""",
-                                    [(fc.player_id, fc.game, fc.fc, False, True, True, None) for fc in friend_codes])
+                                    [(fc.player_id, fc.type, fc.fc, False, True, True, None) for fc in friend_codes])
             
             # bans
             await db.executemany("""INSERT INTO player_bans(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment)

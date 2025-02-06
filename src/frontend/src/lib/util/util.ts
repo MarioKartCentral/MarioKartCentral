@@ -59,6 +59,22 @@ export const game_order: { [key: string]: number } = {
   mk7: 4,
   smk: 5,
 };
+export const fc_types = ['switch', 'nnid', 'mkw', 'mkt', '3ds'];
+export const game_fc_types: { [key: string]: string } = {
+  mk8dx: 'switch',
+  mk8: 'nnid',
+  mkw: 'mkw',
+  mkt: 'mkt',
+  mk7: '3ds',
+  smk: 'switch',
+};
+export const fc_type_order: { [key: string]: number } = {
+  switch: 0,
+  nnid: 1,
+  mkw: 2,
+  mkt: 3,
+  '3ds': 4,
+};
 export const valid_modes: { [key: string]: string[] } = {
   mk8dx: [
     '150cc',

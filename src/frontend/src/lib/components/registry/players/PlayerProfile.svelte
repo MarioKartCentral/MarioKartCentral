@@ -12,8 +12,9 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
-  import { game_order } from '$lib/util/util';
+  import { fc_type_order } from '$lib/util/util';
   import { locale } from '$i18n/i18n-svelte';
+  import FCTypeBadge from '$lib/components/badges/FCTypeBadge.svelte';
 
   let user_info: UserInfo;
 
@@ -57,9 +58,9 @@
       {#if player.friend_codes.length > 0}
         <div class="item">
           <b>{$LL.FRIEND_CODES.FRIEND_CODES()}:</b>
-          {#each player.friend_codes.filter((f) => f.is_active).toSorted((a, b) => game_order[a.game] - game_order[b.game]) as fc}
+          {#each player.friend_codes.filter((f) => f.is_active).toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]) as fc}
             <div>
-              <GameBadge game={fc.game}/>
+              <FCTypeBadge type={fc.type}/>
               {fc.fc}
             </div>
           {/each}

@@ -390,6 +390,36 @@ type RootTranslation = {
 		 * O​t​h​e​r​ ​F​C​s​:
 		 */
 		OTHER_FCS: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​F​C​ ​t​y​p​e​.​.​.
+		 */
+		SELECT_TYPE: string
+		TYPES: {
+			/**
+			 * A​l​l​ ​F​C​ ​T​y​p​e​s
+			 */
+			ALL: string
+			/**
+			 * S​w​i​t​c​h
+			 */
+			SWITCH: string
+			/**
+			 * N​N​I​D
+			 */
+			NNID: string
+			/**
+			 * M​K​W
+			 */
+			MKW: string
+			/**
+			 * M​K​T
+			 */
+			MKT: string
+			/**
+			 * 3​D​S
+			 */
+			'3DS': string
+		}
 	}
 	GAMES: {
 		/**
@@ -1276,15 +1306,15 @@ type RootTranslation = {
 		 */
 		'21': RequiredParams<'roster_name|bold'>
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​.
-		 * @param {unknown} game
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​T​y​p​e​:​ ​{​t​y​p​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​.
+		 * @param {unknown} type
 		 */
-		'22': RequiredParams<'game|uppercase|bold'>
+		'22': RequiredParams<'type|uppercase|bold'>
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​ ​f​r​i​e​n​d​ ​c​o​d​e​.
-		 * @param {unknown} game
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​{​t​y​p​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 * @param {unknown} type
 		 */
-		'23': RequiredParams<'game|uppercase|bold'>
+		'23': RequiredParams<'type|uppercase|bold'>
 		/**
 		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
 		 */
@@ -2452,6 +2482,10 @@ type RootTranslation = {
 			 * A​d​d​ ​P​l​a​y​e​r
 			 */
 			ADD_PLAYER: string
+			/**
+			 * A​d​d​ ​P​l​a​y​e​r​ ​t​o​ ​S​q​u​a​d
+			 */
+			ADD_PLAYER_TO_SQUAD: string
 			/**
 			 * R​e​m​o​v​e
 			 */
@@ -4665,6 +4699,36 @@ export type TranslationFunctions = {
 		 * Other FCs:
 		 */
 		OTHER_FCS: () => LocalizedString
+		/**
+		 * Select a FC type...
+		 */
+		SELECT_TYPE: () => LocalizedString
+		TYPES: {
+			/**
+			 * All FC Types
+			 */
+			ALL: () => LocalizedString
+			/**
+			 * Switch
+			 */
+			SWITCH: () => LocalizedString
+			/**
+			 * NNID
+			 */
+			NNID: () => LocalizedString
+			/**
+			 * MKW
+			 */
+			MKW: () => LocalizedString
+			/**
+			 * MKT
+			 */
+			MKT: () => LocalizedString
+			/**
+			 * 3DS
+			 */
+			'3DS': () => LocalizedString
+		}
 	}
 	GAMES: {
 		/**
@@ -5508,13 +5572,13 @@ export type TranslationFunctions = {
 		 */
 		'21': (arg: { roster_name: unknown }) => LocalizedString
 		/**
-		 * A moderator has added a friend code to your profile. Game: {game|uppercase|bold}.
+		 * A moderator has added a friend code to your profile. Type: {type|uppercase|bold}.
 		 */
-		'22': (arg: { game: unknown }) => LocalizedString
+		'22': (arg: { type: unknown }) => LocalizedString
 		/**
-		 * A moderator has edited your {game|uppercase|bold} friend code.
+		 * A moderator has edited your {type|uppercase|bold} friend code.
 		 */
-		'23': (arg: { game: unknown }) => LocalizedString
+		'23': (arg: { type: unknown }) => LocalizedString
 		/**
 		 * A moderator has set your primary friend code.
 		 */
@@ -6628,6 +6692,10 @@ export type TranslationFunctions = {
 			 * Add Player
 			 */
 			ADD_PLAYER: () => LocalizedString
+			/**
+			 * Add Player to Squad
+			 */
+			ADD_PLAYER_TO_SQUAD: () => LocalizedString
 			/**
 			 * Remove
 			 */

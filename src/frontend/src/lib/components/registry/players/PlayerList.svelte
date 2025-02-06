@@ -9,8 +9,8 @@
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
-  import GameSelect from '$lib/components/common/GameSelect.svelte';
   import CountrySelect from '$lib/components/common/CountrySelect.svelte';
+  import FCTypeSelect from '$lib/components/common/FCTypeSelect.svelte';
 
   export let is_shadow: boolean | null = false;
 
@@ -19,7 +19,7 @@
   let totalPages = 0;
   let currentPage = 1;
   let filters: PlayerFilter = {
-    game: null,
+    fc_type: null,
     name: null,
     country: null,
     fc: null,
@@ -29,8 +29,8 @@
   async function fetchData() {
     players = [];
     let url = '/api/registry/players?detailed=true&is_banned=false&is_hidden=false';
-    if (filters.game != null && filters.game != '') {
-      url += '&game=' + filters.game;
+    if (filters.fc_type != null && filters.fc_type != '') {
+      url += '&fc_type=' + filters.fc_type;
     }
     if (filters.name_or_fc) {
       url += '&name_or_fc=' + filters.name_or_fc;
@@ -67,7 +67,7 @@
 
 <form on:submit|preventDefault={search}>
   <div class="flex">
-    <GameSelect all_option hide_labels bind:game={filters.game}/>
+    <FCTypeSelect all_option hide_labels bind:type={filters.fc_type}/>
     <CountrySelect bind:value={filters.country} is_filter={true}/>
     <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} />
     <Button type="submit">{$LL.COMMON.SEARCH()}</Button>

@@ -150,12 +150,12 @@ class GetTeamInfoCommand(Command[Team]):
                         player_dict[player_id] = PartialPlayer(player_id, player_name, country, bool(is_banned), player_discord, [])
 
                 # get all friend codes for members of our team that are from a game that our team has a roster for
-                game_query = ','.join(set([f"'{r.game}'" for r in rosters]))
-                async with db.execute(f"SELECT id, player_id, game, fc, is_verified, is_primary, is_active FROM friend_codes WHERE player_id IN ({member_id_query}) AND game IN ({game_query})") as cursor:
+                fc_type_query = ','.join(set([f"'{game_fc_map[r.game]}'" for r in rosters]))
+                async with db.execute(f"SELECT id, player_id, type, fc, is_verified, is_primary, is_active FROM friend_codes WHERE player_id IN ({member_id_query}) AND type IN ({fc_type_query})") as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        id, player_id, game, fc, is_verified, is_primary, is_active = row
-                        curr_fc = FriendCode(id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active))
+                        id, player_id, type, fc, is_verified, is_primary, is_active = row
+                        curr_fc = FriendCode(id, fc, type, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active))
                         player_dict[player_id].friend_codes.append(curr_fc)
 
             for member in team_members:
@@ -164,14 +164,14 @@ class GetTeamInfoCommand(Command[Team]):
                 is_manager = p.player_id in managers
                 is_leader = p.player_id in leaders
                 curr_player = RosterPlayerInfo(p.player_id, p.name, p.country_code, p.is_banned, p.discord, member.join_date, is_manager, is_leader, member.is_bagger_clause,
-                    [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
+                    [fc for fc in p.friend_codes if fc.type == game_fc_map[curr_roster.game]]) # only add FCs that are for the same game as current roster
                 curr_roster.players.append(curr_player)
 
             for invite in team_invites:
                 curr_roster = roster_dict[invite.roster_id]
                 p = player_dict[invite.player_id]
                 curr_player = RosterInvitedPlayer(p.player_id, p.name, p.country_code, p.is_banned, p.discord, invite.join_date, invite.is_bagger_clause,
-                    [fc for fc in p.friend_codes if fc.game == curr_roster.game]) # only add FCs that are for the same game as current roster
+                    [fc for fc in p.friend_codes if fc.type == game_fc_map[curr_roster.game]]) # only add FCs that are for the same game as current roster
                 curr_roster.invites.append(curr_player) 
 
             team.rosters = rosters
@@ -436,7 +436,8 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player not found", status=404)
-            async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
+            fc_type = game_fc_map[game]
+            async with db.execute("SELECT id FROM friend_codes WHERE type = ? AND player_id = ? AND is_active = ?", (fc_type, self.player_id, True)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
@@ -501,7 +502,8 @@ class AcceptInviteCommand(Command[None]):
                     if row is None:
                         raise Problem("Player is not registered for the roster they are leaving", status=400)
             # make sure we have at least one FC for the game of the roster that we are accepting an invite for
-            async with db.execute("SELECT count(id) FROM friend_codes WHERE player_id = ? AND game = ?", (self.player_id, game)) as cursor:
+            fc_type = game_fc_map[game]
+            async with db.execute("SELECT count(id) FROM friend_codes WHERE player_id = ? AND type = ?", (self.player_id, fc_type)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 fc_count = row[0]
@@ -990,7 +992,8 @@ class ForceTransferPlayerCommand(Command[None]):
                 game = row[1]
                 if self.is_bagger_clause and game != "mkw":
                     raise Problem("Cannot make players baggers for games other than MKW", status=400)
-            async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
+            fc_type = game_fc_map[game]
+            async with db.execute("SELECT id FROM friend_codes WHERE type = ? AND player_id = ? AND is_active = ?", (fc_type, self.player_id, True)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
@@ -1316,20 +1319,21 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                               bool(is_bagger_clause), fc_dict[player_id])
                     roster_dict[roster_id].append(player)
             
-            async with db.execute(f"""SELECT DISTINCT f.id, f.player_id, f.game, f.fc, f.is_verified, f.is_primary, f.is_active
+            fc_type = game_fc_map[self.game]
+            async with db.execute(f"""SELECT DISTINCT f.id, f.player_id, f.type, f.fc, f.is_verified, f.is_primary, f.is_active
                                   FROM friend_codes f
                                   JOIN players p ON f.player_id = p.id
                                   JOIN team_members m ON p.id = m.player_id
-                                  WHERE f.game = ? AND m.roster_id IN (
+                                  WHERE f.type = ? AND m.roster_id IN (
                                     SELECT tr.id
                                     {rosters_query}
-                                  )""", (self.game, *variable_parameters)) as cursor:
+                                  )""", (fc_type, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    fc_id, player_id, game, fc, is_verified, is_primary, is_active = row
+                    fc_id, player_id, type, fc, is_verified, is_primary, is_active = row
                     player_fcs = fc_dict.get(player_id, None)
                     if player_fcs:
-                        player_fcs.append(FriendCode(fc_id, fc, game, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
+                        player_fcs.append(FriendCode(fc_id, fc, type, player_id, bool(is_verified), bool(is_primary), is_active=bool(is_active)))
             return rosters
 
 @save_to_command_log

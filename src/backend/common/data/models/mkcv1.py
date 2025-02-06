@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import List, Literal
-from common.data.models.common import Game, GameMode
+from common.data.models.common import Game, GameMode, FriendCodeType
 
 @dataclass
 class XFUser:
@@ -291,7 +291,7 @@ class NewMKCPlayer:
 class NewMKCFriendCode:
     player_id: int
     fc: str
-    game: Game
+    type: FriendCodeType
 
 @dataclass
 class NewMKCPlayerBan:

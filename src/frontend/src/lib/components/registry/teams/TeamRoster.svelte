@@ -10,6 +10,7 @@
   import RosterPlayerName from './RosterPlayerName.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import { game_fc_types } from '$lib/util/util';
 
   export let roster: TeamRoster;
 
@@ -80,7 +81,7 @@
             <td>
               <RosterPlayerName {player}/>
             </td>
-            <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+            <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
             <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
           </tr>
         {/each}

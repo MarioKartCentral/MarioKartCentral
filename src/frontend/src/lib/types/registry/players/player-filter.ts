@@ -1,5 +1,5 @@
 export type PlayerFilter = {
-  game: string | null;
+  fc_type: string | null;
   name: string | null;
   country: string | null;
   fc: string | null;

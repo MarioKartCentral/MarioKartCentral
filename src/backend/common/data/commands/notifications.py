@@ -189,15 +189,15 @@ class GetTournamentNameFromIdCommand(Command[str]):
                 return row[0]
             
 @dataclass
-class GetGameFromPlayerFCCommand(Command[str]):
+class GetTypeFromPlayerFCCommand(Command[str]):
     fc_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):# -> Any:
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT game FROM friend_codes WHERE id = ?", (self.fc_id,)) as cursor:
+            async with db.execute("SELECT type FROM friend_codes WHERE id = ?", (self.fc_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
-                    raise Problem("Dispatching notification failed to query fc game", status=500)
+                    raise Problem("Dispatching notification failed to query fc type", status=500)
                 return row[0]
 
 @dataclass

@@ -33,7 +33,7 @@ class Player(TableModel):
 class FriendCode(TableModel):
     id: int
     player_id: int
-    game: str
+    type: str
     fc: str
     is_verified: bool
     is_primary: bool
@@ -45,7 +45,7 @@ class FriendCode(TableModel):
         return """CREATE TABLE IF NOT EXISTS friend_codes(
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
-            game TEXT NOT NULL,
+            type TEXT NOT NULL,
             fc TEXT NOT NULL,
             is_verified BOOLEAN NOT NULL,
             is_primary BOOLEAN NOT NULL,

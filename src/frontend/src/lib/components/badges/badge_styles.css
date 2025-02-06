@@ -43,6 +43,27 @@
   background-color: #9755ab;
   border: 1px solid #892bad;
 }
+.fc_type_switch_badge {
+  background-color: rgb(158, 35, 35);
+  border: 1px solid rgb(112, 0, 0);
+}
+.fc_type_nnid_badge {
+  background-color: rgb(41, 147, 182);
+  border: 1px solid rgb(26, 95, 117);
+}
+.fc_type_mkw_badge {
+  background-color: #65bedc;
+  border: 1px solid #57a2c8;
+}
+.fc_type_mkt_badge {
+  background-color: #a1385d;
+  border: 1px solid #8e1643;
+}
+.fc_type_3ds_badge {
+  background-color: #ab5555;
+  border: 1px solid #902a2a;
+}
+
 .mode_mixed_badge,
 .mode_mixed_battle_badge,
 .mode_balloon_ballon_badge,

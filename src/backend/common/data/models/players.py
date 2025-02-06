@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from common.data.models.common import Game, CountryCode, Approval
+from common.data.models.common import FriendCodeType, CountryCode, Approval
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
@@ -104,7 +104,7 @@ class PlayerFilter:
     name: str | None = None
     friend_code: str | None = None
     name_or_fc: str | None = None
-    game: Game | None = None
+    fc_type: FriendCodeType | None = None
     country: CountryCode | None = None
     is_hidden: bool | None = None
     is_shadow: bool | None = None

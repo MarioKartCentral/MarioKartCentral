@@ -23,6 +23,7 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import { page } from '$app/stores';
+  import { game_fc_types } from '$lib/util/util';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -276,7 +277,7 @@
               <td>
                 <RosterPlayerName {player}/>
               </td>
-              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
               <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
               <td>
                 <ChevronDownSolid class="cursor-pointer"/>
@@ -347,7 +348,7 @@
                     <BaggerBadge/>
                   {/if}
                 </td>
-                <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+                <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
                 <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
                 <td>
                   <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button>
@@ -361,7 +362,7 @@
     {#if check_permission(user_info, permissions.invite_to_team, true)}
       <div class="section">
         <b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b>
-        <PlayerSearch bind:player={invite_player} game={roster.game} />
+        <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
         {#if invite_player}
           {#if roster.game === 'mkw'}
             <div>
