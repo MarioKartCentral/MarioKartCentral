@@ -8,8 +8,8 @@ class FriendCode:
     fc: str
     game: Game
     player_id: int
-    is_verified: int
-    is_primary: int
+    is_verified: bool
+    is_primary: bool
     description: str | None = None
     is_active: bool = True
 

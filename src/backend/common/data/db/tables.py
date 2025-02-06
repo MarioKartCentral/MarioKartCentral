@@ -357,7 +357,7 @@ class TournamentSoloPlacements(TableModel):
     tournament_id: int
     player_id: int
     placement: int
-    placement_description: str
+    placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
@@ -379,7 +379,7 @@ class TournamentSquadPlacements(TableModel):
     tournament_id: int
     squad_id: int
     placement: int
-    placement_description: str
+    placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
