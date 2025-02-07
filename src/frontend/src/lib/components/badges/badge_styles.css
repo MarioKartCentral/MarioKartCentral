@@ -146,3 +146,40 @@
   border: 1px solid #027d99;
   font-weight: bold;
 }
+
+.role_super_administrator_badge {
+  background-color: #000000;
+  border: 1px solid #111111;
+}
+.role_administrator_badge {
+  background-color: #000000;
+  border: 1px solid #111111;
+}
+.role_site_moderator_badge {
+  background-color: #DC143C;
+  border: 1px solid #820d24;
+}
+.role_event_admin_badge {
+  background-color: #663399;
+  border: 1px solid #3d135b;
+}
+.role_event_mod_badge {
+  background-color: #663399;
+  border: 1px solid #3d135b;
+}
+.role_support_staff_badge {
+  background-color: #0066ff;
+  border: 1px solid #023e99;
+}
+.role_site_supporter_badge {
+  background-color: #008000;
+  border: 1px solid #005800;
+}
+.role_banned_badge {
+  background-color: #757575;
+  border: 1px solid #656565;
+}
+.role_team_leader_banned_badge {
+  background-color: #757575;
+  border: 1px solid #656565;
+}

@@ -15,6 +15,7 @@
   import { fc_type_order } from '$lib/util/util';
   import { locale } from '$i18n/i18n-svelte';
   import FCTypeBadge from '$lib/components/badges/FCTypeBadge.svelte';
+  import RoleBadge from '$lib/components/badges/RoleBadge.svelte';
 
   let user_info: UserInfo;
 
@@ -55,6 +56,7 @@
         {/if}
         {player.name}
       </div>
+      
       {#if player.friend_codes.length > 0}
         <div class="item">
           <b>{$LL.FRIEND_CODES.FRIEND_CODES()}:</b>
@@ -84,6 +86,15 @@
         {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()} {new Date(player.join_date * 1000).toLocaleString($locale, options)}
       </div>
     </div>
+    {#if player.roles.length}
+      <div class="item">
+        {#each player.roles as role}
+          <div>
+            <RoleBadge {role}/>
+          </div>
+        {/each}
+      </div>
+    {/if}
     <div class="item">
       <DiscordDisplay discord={player.discord}/>
     </div>

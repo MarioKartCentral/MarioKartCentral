@@ -98,7 +98,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
     include_notes: bool = False
     include_unban_date: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper, s3_wrapper) -> PlayerDetailed | None:
         async with db_wrapper.connect(readonly=True) as db:
             query = "SELECT name, country_code, is_hidden, is_shadow, is_banned, join_date FROM players WHERE id = ?"
             async with db.execute(query, (self.id,)) as cursor:
@@ -182,7 +182,20 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                                 edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
                             notes = PlayerNotes(player_notes, edited_by, date)
 
-            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), player_join_date, discord, friend_codes, rosters, ban_info, user_settings, name_changes, notes)
+            roles: list[PlayerRole] = []
+            if user:
+                async with db.execute("""SELECT r.id, r.name, r.position
+                                        FROM roles r
+                                        JOIN user_roles ur ON r.id = ur.role_id
+                                        WHERE ur.user_id = ?
+                                        ORDER BY r.position""", (user.id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        role_id, role_name, role_position = row
+                        roles.append(PlayerRole(role_id, role_name, role_position))
+
+            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), player_join_date, discord, friend_codes, 
+                                  rosters, ban_info, user_settings, name_changes, notes, roles)
         
 @dataclass
 class ListPlayersCommand(Command[PlayerList]):
@@ -306,7 +319,7 @@ class ListPlayersCommand(Command[PlayerList]):
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, join_date, player_discord, [], [], None, None, [], None)
+                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, join_date, player_discord, [], [], None, None, [], None, [])
                     players.append(player)
                     friend_codes[player.id] = player.friend_codes
 

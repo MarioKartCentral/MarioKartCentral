@@ -69,12 +69,19 @@ class PlayerNotes:
     date: int
 
 @dataclass
+class PlayerRole:
+    id: int
+    name: str
+    position: int
+
+@dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
     ban_info: PlayerBanBasic | None
     user_settings: UserSettings | None
     name_changes: list[PlayerNameChange]
     notes: PlayerNotes | None
+    roles: list[PlayerRole]
 
 @dataclass
 class PlayerList:
