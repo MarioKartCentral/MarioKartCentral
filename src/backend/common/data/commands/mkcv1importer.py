@@ -104,16 +104,28 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
             # TODO: Run queries to identify why user creation failed
             if row is None:
                 raise Problem("Failed to create user")
-            user_id = row[0]
+            user_id = int(row[0])
+
+            is_banned = False
+            expiration_date: int | None = None
+            if self.player_id:
+                async with db.execute("SELECT expiration_date FROM player_bans WHERE player_id = ?", (self.player_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        is_banned = True
+                        if row[0]:
+                            expiration_date = int(row[0])
 
             # add about me from old site data
             await db.execute("INSERT INTO user_settings(user_id, about_me) VALUES(?, ?)", (user_id, self.about_me))
 
             # add user, series, team roles
-            insert_user_roles = [(user_id, roles.id_by_default_role[role.role_name]) for role in self.user_roles]
+            insert_user_roles: list[tuple[int, int, int | None]] = [(user_id, roles.id_by_default_role[role.role_name], None) for role in self.user_roles]
+            if is_banned:
+                insert_user_roles.append((user_id, roles.id_by_default_role[roles.BANNED], expiration_date))
             insert_series_roles = [(user_id, series_roles.id_by_default_role[role.role_name], role.series_id) for role in self.series_roles]
             insert_team_roles = [(user_id, team_roles.id_by_default_role[role.role_name], role.team_id) for role in self.team_roles]
-            await db.executemany("""INSERT INTO user_roles(user_id, role_id) VALUES(?, ?)""", insert_user_roles)
+            await db.executemany("""INSERT INTO user_roles(user_id, role_id, expires_on) VALUES(?, ?, ?)""", insert_user_roles)
             await db.executemany("""INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""", insert_series_roles)
             await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES(?, ?, ?)""", insert_team_roles)
             await db.commit()
