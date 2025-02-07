@@ -154,7 +154,7 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
                 LEFT JOIN players bbp ON bbu.player_id = bbp.id"""
             # bbu: BannedByUser, bbp: BannedByPlayer
             ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.comment, b.banned_by, bbp.id, bbp.name
-                FROM {joined_tables} {where_clause} LIMIT ? OFFSET ?"""
+                FROM {joined_tables} {where_clause} ORDER BY b.ban_date DESC LIMIT ? OFFSET ?"""
 
             ban_list: list[PlayerBanDetailed] = []
             async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
@@ -215,7 +215,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
                 LEFT JOIN players ubp ON ubu.player_id = ubp.id"""
             # bbu: BannedByUser, bbp: BannedByPlayer
             ban_query = f"""SELECT p.name, p.id, p.country_code, b.is_indefinite, b.ban_date, b.expiration_date, b.reason, b.comment, b.banned_by, bbp.id, bbp.name, b.unban_date, b.unbanned_by, ubp.id, ubp.name
-                FROM {joined_tables} {where_clause} LIMIT ? OFFSET ?"""        
+                FROM {joined_tables} {where_clause} ORDER BY b.ban_date DESC LIMIT ? OFFSET ?"""        
 
             ban_list: list[PlayerBanDetailed] = []
             async with db.execute(ban_query, (*variable_parameters, limit, offset)) as cursor:
