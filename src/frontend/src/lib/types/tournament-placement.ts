@@ -9,6 +9,14 @@ export type TournamentPlacementSimple = {
   is_disqualified: boolean;
 };
 
+export type TournamentPlacementSimplePlayerIDs = {
+  player_ids: number[];
+  placement: number | null;
+  placement_description: string | null;
+  placement_lower_bound: number | null;
+  is_disqualified: boolean;
+};
+
 export type TournamentPlacement = TournamentPlacementSimple & {
   player: TournamentPlayer | null;
   squad: TournamentSquad | null;

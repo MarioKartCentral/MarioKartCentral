@@ -461,7 +461,7 @@ class NewMKCRosterSquadLink:
 class NewMKCSoloPlacement:
     tournament_id: int
     player_id: int
-    placement: int
+    placement: int | None
     placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
@@ -470,7 +470,7 @@ class NewMKCSoloPlacement:
 class NewMKCSquadPlacement:
     tournament_id: int
     squad_id: int
-    placement: int
+    placement: int | None
     placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool

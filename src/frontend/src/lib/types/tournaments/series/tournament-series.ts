@@ -11,7 +11,7 @@ export type TournamentSeriesBasic = {
   logo: string | null;
   organizer: string;
   location: string;
-}
+};
 
 export type TournamentSeries = TournamentSeriesBasic & {
   description: string;

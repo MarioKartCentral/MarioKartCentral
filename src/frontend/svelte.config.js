@@ -13,6 +13,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/tournaments/edit`,
     `/${locale}/tournaments/edit_placements`,
     `/${locale}/tournaments/edit_placements/raw`,
+    `/${locale}/tournaments/edit_placements/raw_player_id`,
     `/${locale}/tournaments/manage_roles`,
     `/${locale}/tournaments/series`,
     `/${locale}/tournaments/series/create`,

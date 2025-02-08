@@ -463,7 +463,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                 new_squad_dict[new_squad.id] = new_squad
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
-                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, placement.placement, placement.title, None, bool(placement.disqualified))
+                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, None if placement.disqualified else placement.placement, placement.title, None, bool(placement.disqualified))
                     squad_placements.append(new_placement)
             # in the case that the registration has a team linked, we need to make a new squad with all of the members of the team that were in it at the time.
             elif reg.team_id:
@@ -506,7 +506,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                     tournament_player_id += 1
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
-                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, placement.placement, placement.title, None, bool(placement.disqualified))
+                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, None if placement.disqualified else placement.placement, placement.title, None, bool(placement.disqualified))
                     squad_placements.append(new_placement)
             # if the registration is for a single player (solo tournaments)
             else:
@@ -518,7 +518,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                 tournament_player_id += 1
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
-                    new_placement = NewMKCSoloPlacement(tournament.id, new_player.id, placement.placement, placement.title, None, bool(placement.disqualified))
+                    new_placement = NewMKCSoloPlacement(tournament.id, new_player.id, None if placement.disqualified else placement.placement, placement.title, None, bool(placement.disqualified))
                     solo_placements.append(new_placement)
 
         for player in mkc_data.squad_memberships:

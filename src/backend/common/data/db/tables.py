@@ -340,7 +340,7 @@ class TournamentPlayer(TableModel):
             player_id INTEGER NOT NULL REFERENCES players(id),
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
             squad_id INTEGER REFERENCES tournament_squads(id),
-            is_squad_captain BOOLEAN,
+            is_squad_captain BOOLEAN NOT NULL,
             timestamp INTEGER NOT NULL,
             is_checked_in BOOLEAN NOT NULL,
             mii_name TEXT,

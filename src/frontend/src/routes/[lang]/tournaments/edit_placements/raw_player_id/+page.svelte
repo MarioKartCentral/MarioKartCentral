@@ -2,47 +2,25 @@
     import Section from "$lib/components/common/Section.svelte";
     import { page } from "$app/stores";
     import { onMount } from "svelte";
-    import type { TournamentPlacementList, TournamentPlacementSimple } from "$lib/types/tournament-placement";
+    import type { TournamentPlacementSimplePlayerIDs } from "$lib/types/tournament-placement";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import LL from "$i18n/i18n-svelte";
 
     let id = 0;
     let is_loaded = false;
-    let placements: TournamentPlacementList;
 
     let text = "";
 
     onMount(async() => {
         let param_id = $page.url.searchParams.get('id');
         id = Number(param_id);
-
-        const res = await fetch(`/api/tournaments/${id}/placements`);
-        let placements_body: TournamentPlacementList = await res.json();
-        placements = placements_body;
-        for(let placement of placements.placements) {
-            // if it's a solo tournament, we want to use player ID instead of registration ID
-            // since you can't view tournament player IDs on frontend
-            let curr_line = `${placement.player ? placement.player.player_id : placement.registration_id}\t\t`
-            if(placement.placement_lower_bound) {
-                curr_line += `${placement.placement}-${placement.placement_lower_bound}`;
-            }
-            else if(placement.is_disqualified) {
-                curr_line += `DQ`;
-            }
-            else {
-                curr_line += `${placement.placement}`;
-            }
-            if(placement.placement_description) {
-                curr_line += `\t${placement.placement_description}`;
-            }
-            curr_line += "\n";
-            text += curr_line;
-        }
         is_loaded = true;
     });
 
     async function savePlacements() {
-        let new_placements: TournamentPlacementSimple[] = [];
+        let conf = window.confirm($LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID_CONFIRM());
+        if(!conf) return;
+        let new_placements: TournamentPlacementSimplePlayerIDs[] = [];
         let lines = text.split("\n");
         for(let line of lines) {
             let vals = line.split(/[ \t]+/);
@@ -50,21 +28,21 @@
                 continue;
             }
             try {
-                let reg_id = Number(vals[0]);
-                if(isNaN(reg_id)) {
+                let reg_ids = vals.slice(0, vals.length-1).map((p) => Number(p));
+                if(!reg_ids.length) {
                     alert($LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_LINE_INCORRECT({line: line}));
                     return;
                 }
                 let placement: number | null;
                 let is_disqualified = false;
                 let lower_bound: number | null = null;
-                let description: string | null = null;
-                if(vals[1].toUpperCase() === "DQ") {
+                let description = null;
+                if(vals[vals.length-1].toUpperCase() === "DQ") {
                     placement = null;
                     is_disqualified = true;
                 }
                 else {
-                    let range = vals[1].split("-");
+                    let range = vals[vals.length-1].split("-");
                     for(let n in range) {
                         if(isNaN(Number(n))) {
                             alert($LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_LINE_INCORRECT({line: line}));
@@ -76,10 +54,7 @@
                     }
                     placement = Number(range[0]);
                 }
-                if(vals.length > 2) {
-                    description = vals.splice(2).join(" ");
-                }
-                new_placements.push({registration_id: reg_id, placement: placement, is_disqualified: is_disqualified, 
+                new_placements.push({player_ids: reg_ids, placement: placement, is_disqualified: is_disqualified, 
                     placement_lower_bound: lower_bound, placement_description: description});
             }
             catch(e) {
@@ -87,7 +62,7 @@
             }
         }
 
-        const endpoint = `/api/tournaments/${id}/placements/set`;
+        const endpoint = `/api/tournaments/${id}/placements/setFromPlayerIDs`;
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -110,15 +85,16 @@
             <Button href="/{$page.params.lang}/tournaments/details?id={id}">{$LL.COMMON.BACK()}</Button>
         </div>
     </Section>
-    <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
+    <Section header="Placements Raw Input (Player IDs)">
         <div slot="header_content">
             <Button href="/{$page.params.lang}/tournaments/edit_placements?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_INTERACTIVE_INPUT()}</Button>
-            {#if placements.is_squad}
-                <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
-            {/if}
+            <Button href="/{$page.params.lang}/tournaments/edit_placements/raw?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_RAW_INPUT()}</Button>
         </div>
         <div>
-            {$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_INSTRUCTIONS()}
+            {$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID_INSTRUCTIONS()}
+        </div>
+        <div>
+            {$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID_WARNING()}
         </div>
         <div>
             <textarea bind:value={text}/>

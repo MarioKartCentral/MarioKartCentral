@@ -20,4 +20,4 @@ export type TeamList = {
   teams: Team[];
   team_count: number;
   page_count: number;
-}
+};

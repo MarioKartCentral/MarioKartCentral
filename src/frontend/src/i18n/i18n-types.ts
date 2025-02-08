@@ -3155,6 +3155,22 @@ type RootTranslation = {
 			 * O​n​ ​e​a​c​h​ ​l​i​n​e​,​ ​e​n​t​e​r​ ​t​h​e​ ​I​D​ ​o​f​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​ ​r​e​g​i​s​t​r​a​t​i​o​n​,​ ​f​o​l​l​o​w​e​d​ ​b​y​ ​t​h​e​i​r​ ​r​a​n​k​,​ ​s​e​p​a​r​a​t​e​d​ ​b​y​ ​a​ ​s​p​a​c​e​.​ ​F​o​r​ ​d​i​s​q​u​a​l​i​f​i​e​d​ ​p​a​r​t​i​c​i​p​a​n​t​s​,​ ​e​n​t​e​r​ ​D​Q​ ​i​n​ ​p​l​a​c​e​ ​o​f​ ​t​h​e​ ​r​a​n​k​.​ ​Y​o​u​ ​m​a​y​ ​e​n​t​e​r​ ​a​n​ ​o​p​t​i​o​n​a​l​ ​t​i​t​l​e​ ​a​f​t​e​r​ ​t​h​e​ ​r​a​n​k​.
 			 */
 			RAW_INPUT_INSTRUCTIONS: string
+			/**
+			 * R​a​w​ ​i​n​p​u​t​ ​(​p​l​a​y​e​r​ ​I​D​s​)
+			 */
+			RAW_INPUT_PLAYER_ID: string
+			/**
+			 * O​n​ ​e​a​c​h​ ​l​i​n​e​,​ ​e​n​t​e​r​ ​t​h​e​ ​p​l​a​y​e​r​ ​I​D​s​ ​f​o​r​ ​e​a​c​h​ ​p​l​a​y​e​r​ ​i​n​ ​e​a​c​h​ ​s​q​u​a​d​,​ ​f​o​l​l​o​w​e​d​ ​b​y​ ​t​h​e​i​r​ ​r​a​n​k​,​ ​s​e​p​a​r​a​t​e​d​ ​b​y​ ​a​ ​s​p​a​c​e​.​ ​F​o​r​ ​d​i​s​q​u​a​l​i​f​i​e​d​ ​p​a​r​t​i​c​i​p​a​n​t​s​,​ ​e​n​t​e​r​ ​D​Q​ ​i​n​ ​p​l​a​c​e​ ​o​f​ ​t​h​e​ ​r​a​n​k​.​ ​T​h​i​s​ ​i​n​p​u​t​ ​d​o​e​s​ ​n​o​t​ ​s​u​p​p​o​r​t​ ​p​l​a​c​e​m​e​n​t​ ​t​i​t​l​e​s​,​ ​y​o​u​ ​c​a​n​ ​u​s​e​ ​t​h​e​ ​i​n​t​e​r​a​c​t​i​v​e​ ​i​n​p​u​t​ ​t​o​ ​a​d​d​ ​t​h​e​m​ ​i​n​ ​a​f​t​e​r​ ​s​a​v​i​n​g​ ​h​e​r​e​.
+			 */
+			RAW_INPUT_PLAYER_ID_INSTRUCTIONS: string
+			/**
+			 * W​a​r​n​i​n​g​:​ ​C​l​i​c​k​i​n​g​ ​"​S​a​v​e​"​ ​o​n​ ​t​h​i​s​ ​p​a​g​e​ ​w​i​l​l​ ​d​e​l​e​t​e​ ​a​l​l​ ​c​u​r​r​e​n​t​l​y​ ​r​e​g​i​s​t​e​r​e​d​ ​s​q​u​a​d​s​ ​a​n​d​ ​c​r​e​a​t​e​ ​n​e​w​ ​o​n​e​s​ ​b​a​s​e​d​ ​o​n​ ​t​h​e​ ​i​n​p​u​t​ ​i​n​ ​t​h​i​s​ ​b​o​x​.​ ​D​o​ ​n​o​t​ ​u​s​e​ ​t​h​i​s​ ​u​n​l​e​s​s​ ​y​o​u​ ​k​n​o​w​ ​e​x​a​c​t​l​y​ ​w​h​a​t​ ​y​o​u​ ​a​r​e​ ​d​o​i​n​g​.
+			 */
+			RAW_INPUT_PLAYER_ID_WARNING: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​s​a​v​e​ ​p​l​a​c​e​m​e​n​t​s​?​ ​T​h​i​s​ ​w​i​l​l​ ​d​e​l​e​t​e​ ​a​l​l​ ​c​u​r​r​e​n​t​l​y​ ​r​e​g​i​s​t​e​r​e​d​ ​s​q​u​a​d​s​.
+			 */
+			RAW_INPUT_PLAYER_ID_CONFIRM: string
 		}
 		SERIES: {
 			/**
@@ -7356,6 +7372,22 @@ export type TranslationFunctions = {
 			 * On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.
 			 */
 			RAW_INPUT_INSTRUCTIONS: () => LocalizedString
+			/**
+			 * Raw input (player IDs)
+			 */
+			RAW_INPUT_PLAYER_ID: () => LocalizedString
+			/**
+			 * On each line, enter the player IDs for each player in each squad, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. This input does not support placement titles, you can use the interactive input to add them in after saving here.
+			 */
+			RAW_INPUT_PLAYER_ID_INSTRUCTIONS: () => LocalizedString
+			/**
+			 * Warning: Clicking "Save" on this page will delete all currently registered squads and create new ones based on the input in this box. Do not use this unless you know exactly what you are doing.
+			 */
+			RAW_INPUT_PLAYER_ID_WARNING: () => LocalizedString
+			/**
+			 * Are you sure you would like to save placements? This will delete all currently registered squads.
+			 */
+			RAW_INPUT_PLAYER_ID_CONFIRM: () => LocalizedString
 		}
 		SERIES: {
 			/**

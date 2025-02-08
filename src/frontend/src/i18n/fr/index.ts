@@ -830,6 +830,13 @@ const fr: Translation = {
       SWITCH_TO_INTERACTIVE_INPUT: 'Switch to interactive input',
       RAW_INPUT_INSTRUCTIONS:
         'On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.',
+      RAW_INPUT_PLAYER_ID: 'Raw input (player IDs)',
+      RAW_INPUT_PLAYER_ID_INSTRUCTIONS:
+        'On each line, enter the player IDs for each player in each squad, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. This input does not support placement titles, you can use the interactive input to add them in after saving here.',
+      RAW_INPUT_PLAYER_ID_WARNING:
+        'Warning: Clicking "Save" on this page will delete all currently registered squads and create new ones based on the input in this box. Do not use this unless you know exactly what you are doing.',
+      RAW_INPUT_PLAYER_ID_CONFIRM:
+        'Are you sure you would like to save placements? This will delete all currently registered squads.',
     },
     SERIES: {
       CREATE: 'Create Series',
