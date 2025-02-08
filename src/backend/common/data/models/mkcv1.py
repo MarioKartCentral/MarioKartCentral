@@ -365,13 +365,14 @@ class NewMKCTransfer:
 @dataclass
 class NewMKCSeries:
     id: int
-    name: str
+    series_name: str
     url: str | None
     display_order: int
     game: str
     mode: str
     is_historical: bool
     is_public: bool
+    short_description: str
     description: str
     ruleset: str
     logo: str | None

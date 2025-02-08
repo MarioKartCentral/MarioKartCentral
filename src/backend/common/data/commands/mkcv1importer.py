@@ -135,6 +135,10 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
 @dataclass
 class ConvertMKCV1DataCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper) -> None:
+        # TODO (when added to data imports):
+        # - Add placement upper bound
+        # - Import series_templates when available
+
         # converts MKC's string timestamps to our int timestamps
         def get_mkc_timestamp(timestamp: str):
             return int(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timestamp())
@@ -373,7 +377,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             organizer = organizer_map[series.organizer]
             logo = None # change to series.logo_filename later
             new_series = NewMKCSeries(series.id, series.series_name, series.url_slug, series.display_order, game, mode, bool(series.historical), bool(series.published),
-                                      series.full_description if series.full_description else "", "", logo, organizer, series.location)
+                                      series.short_description, series.full_description if series.full_description else "", "", logo, organizer, series.location)
             series_dict[series.id] = new_series
 
         
@@ -572,31 +576,33 @@ class ConvertMKCV1DataCommand(Command[None]):
                                     [(t.player_id, t.roster_id, t.date, t.roster_leave_id, False, t.is_accepted, t.approval_status) for t in transfers])
 
             # tournaments
-            await db.executemany("""INSERT INTO tournament_series(id, name, url, display_order, game, mode, is_historical, is_public, description, ruleset, logo)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                                    [(s.id, s.name, s.url, s.display_order, s.game, s.mode, s.is_historical, s.is_public, s.description, s.ruleset, s.logo)
+            await db.executemany("""INSERT INTO tournament_series(id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo,
+                                    organizer, location)
+                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                    [(s.id, s.series_name, s.url, s.display_order, s.game, s.mode, s.is_historical, s.is_public, s.short_description, s.logo,
+                                      s.organizer, s.location)
                                       for s in series_dict.values()])
             for series in series_dict.values():
                 s3_message = bytes(msgspec.json.encode(series))
                 await s3_wrapper.put_object(s3.SERIES_BUCKET, f'{series.id}.json', s3_message)
             
             await db.executemany("""INSERT INTO tournaments(id, name, game, mode, series_id, is_squad, registrations_open, date_start, date_end,
-                                    description, use_series_description, series_stats_include, logo, use_series_logo, url, registration_deadline,
+                                    use_series_description, series_stats_include, logo, use_series_logo, url, registration_deadline,
                                     registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
                                     squad_name_required, mii_name_required, host_status_required, checkins_enabled, checkins_open, min_players_checkin,
                                     verification_required, verified_fc_required, is_viewable, is_public, is_deleted, show_on_profiles, require_single_fc,
                                     min_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location)
                                     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                                    ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                    ?, ?, ?, ?, ?, ?, ?, ?)""",
                                     [(t.id, t.name, t.game, t.mode, t.series_id, t.is_squad, t.registrations_open, t.date_start, t.date_end,
-                                      t.description, t.use_series_description, t.series_stats_include, t.logo, t.use_series_logo, t.url,
+                                      t.use_series_description, t.series_stats_include, t.logo, t.use_series_logo, t.url,
                                       t.registration_deadline, t.registration_cap, t.teams_allowed, t.teams_only, t.team_members_only, t.min_squad_size,
                                       t.max_squad_size, t.squad_tag_required, t.squad_name_required, t.mii_name_required, t.host_status_required,
                                       t.checkins_enabled, t.checkins_open, t.min_players_checkin, t.verification_required, t.verified_fc_required,
                                       t.is_viewable, t.is_public, t.is_deleted, t.show_on_profiles, t.require_single_fc, t.min_representatives,
                                       t.bagger_clause_enabled, t.use_series_ruleset, t.organizer, t.location) for t in tournament_dict.values()])
             for tournament in tournament_dict.values():
-                s3_body = TournamentS3Fields(tournament.ruleset)
+                s3_body = TournamentS3Fields(tournament.description, tournament.ruleset)
                 s3_message = bytes(msgspec.json.encode(s3_body))
                 await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament.id}.json', s3_message)
 

@@ -8,7 +8,7 @@ export type TournamentListItem = {
   series_id: number;
   series_name: string | null;
   series_url: string | null;
-  series_description: string | null;
+  series_short_description: string | null;
   is_squad: boolean;
   teams_allowed: boolean;
   registrations_open: boolean;

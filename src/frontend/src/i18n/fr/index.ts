@@ -842,6 +842,7 @@ const fr: Translation = {
       SERIES_URL: 'Series URL',
       DISPLAY_ORDER: 'Display Order',
       SERIES_LOGO: 'Series Logo',
+      SHORT_DESCRIPTION: 'Short Description',
       SERIES_DESCRIPTION: 'Series Description',
       SERIES_RULESET: 'Series Ruleset',
       EVENT_DEFAULTS: 'Event Defaults',

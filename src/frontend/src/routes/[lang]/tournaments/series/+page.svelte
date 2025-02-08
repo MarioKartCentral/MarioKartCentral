@@ -1,6 +1,6 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
-  import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
+  import type { TournamentSeriesBasic } from '$lib/types/tournaments/series/tournament-series';
   import { check_permission, permissions } from '$lib/util/permissions';
   import { onMount } from 'svelte';
   import { user } from '$lib/stores/stores';
@@ -15,7 +15,7 @@
     user_info = value;
   });
 
-  let series: TournamentSeries[] = [];
+  let series: TournamentSeriesBasic[] = [];
 
   onMount(async () => {
     const res = await fetch('/api/tournaments/series/list');

@@ -171,9 +171,10 @@ class TournamentSeries(TableModel):
     mode: str
     is_historical: bool
     is_public: bool
-    description: str
-    ruleset: str
+    short_description: str
     logo: str | None
+    organizer: str
+    location: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -186,9 +187,11 @@ class TournamentSeries(TableModel):
             mode TEXT NOT NULL,
             is_historical INTEGER NOT NULL,
             is_public INTEGER NOT NULL,
-            description TEXT NOT NULL,
-            ruleset TEXT NOT NULL,
-            logo TEXT)"""
+            short_description TEXT NOT NULL,
+            logo TEXT,
+            organizer TEXT NOT NULL,
+            location TEXT
+            )"""
 
 @dataclass
 class Tournament(TableModel):
@@ -201,7 +204,6 @@ class Tournament(TableModel):
     registrations_open: bool
     date_start: int
     date_end: int
-    description: str
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
@@ -230,7 +232,7 @@ class Tournament(TableModel):
     min_representatives: int | None
     bagger_clause_enabled: bool
     use_series_ruleset: bool
-    organizer: str | None
+    organizer: str
     location: str | None
 
     @staticmethod
@@ -245,7 +247,6 @@ class Tournament(TableModel):
             registrations_open BOOLEAN NOT NULL,
             date_start INTEGER NOT NULL,
             date_end INTEGER NOT NULL,
-            description TEXT NOT NULL,
             use_series_description BOOLEAN NOT NULL,
             series_stats_include BOOLEAN NOT NULL,
             logo TEXT,
@@ -275,7 +276,7 @@ class Tournament(TableModel):
             min_representatives INTEGER,
             bagger_clause_enabled BOOLEAN NOT NULL,
             use_series_ruleset BOOLEAN DEFAULT 0 NOT NULL,
-            organizer TEXT,
+            organizer TEXT NOT NULL,
             location TEXT
             )"""
 

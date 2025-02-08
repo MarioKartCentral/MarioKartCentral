@@ -3198,6 +3198,10 @@ type RootTranslation = {
 			 */
 			SERIES_LOGO: string
 			/**
+			 * S​h​o​r​t​ ​D​e​s​c​r​i​p​t​i​o​n
+			 */
+			SHORT_DESCRIPTION: string
+			/**
 			 * S​e​r​i​e​s​ ​D​e​s​c​r​i​p​t​i​o​n
 			 */
 			SERIES_DESCRIPTION: string
@@ -7394,6 +7398,10 @@ export type TranslationFunctions = {
 			 * Series Logo
 			 */
 			SERIES_LOGO: () => LocalizedString
+			/**
+			 * Short Description
+			 */
+			SHORT_DESCRIPTION: () => LocalizedString
 			/**
 			 * Series Description
 			 */
