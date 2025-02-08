@@ -266,6 +266,7 @@ class TeamFilter():
     is_historical: bool | None = None
     is_active: bool | None = None
     sort_by_newest: bool | None = False
+    page: int | None = None
 
 @dataclass
 class TeamInvite():
@@ -349,3 +350,9 @@ class RegisterableRostersRequestData():
 class MergeTeamsRequestData():
     from_team_id: int
     to_team_id: int
+
+@dataclass
+class TeamList:
+    teams: list[Team]
+    team_count: int
+    page_count: int

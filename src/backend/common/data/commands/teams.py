@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import List
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
@@ -1107,7 +1106,7 @@ class EditTeamMemberCommand(Command[None]):
             await db.commit()
 
 @dataclass
-class ListTeamsCommand(Command[List[Team]]):
+class ListTeamsCommand(Command[TeamList]):
     filter: TeamFilter
     approved: bool = True
 
@@ -1117,6 +1116,12 @@ class ListTeamsCommand(Command[List[Team]]):
 
             where_clauses: list[str] = []
             variable_parameters: list[Any] = []
+
+            limit:int = 50
+            offset:int = 0
+
+            if filter.page is not None:
+                offset = (filter.page - 1) * limit
 
             def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
@@ -1140,8 +1145,25 @@ class ListTeamsCommand(Command[List[Team]]):
             append_equal_filter(filter.mode, "r.mode")
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
-            append_equal_filter(filter.is_historical, "t.is_historical")
             append_equal_filter(filter.is_active, "r.is_active")
+
+            # query that determines if a team has at least 1 member in an active roster
+            member_query = """SELECT t.id
+                                FROM teams t
+                                JOIN team_rosters r ON t.id = r.team_id
+                                JOIN team_members m ON m.roster_id = r.id
+                                WHERE m.leave_date IS NULL AND r.is_active = 1
+                            """
+            # we should include teams which have 0 members but aren't listed as historical in this filter
+            if filter.is_historical is True:
+                historical_clause = f"(t.is_historical = ? OR t.id NOT IN ({member_query}))"
+                where_clauses.append(historical_clause)
+                variable_parameters.append(filter.is_historical)
+            # require that teams have at least 1 member
+            elif filter.is_historical is False:
+                historical_clause = f"(t.is_historical = ? AND t.id IN ({member_query}))"
+                where_clauses.append(historical_clause)
+                variable_parameters.append(filter.is_historical)
 
             if self.approved:
                 append_equal_filter("approved", "t.approval_status")
@@ -1153,28 +1175,47 @@ class ListTeamsCommand(Command[List[Team]]):
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             order_by = 't.creation_date' if filter.sort_by_newest else 't.name'
             desc = 'DESC' if filter.sort_by_newest else ''
-            teams_query = f"""  SELECT t.id, t.name, t.tag, t.description, t.creation_date, t.language, t.color, t.logo,
-                                t.approval_status, t.is_historical, r.id, r.game, r.mode, r.name, r.tag, r.creation_date,
-                                r.is_recruiting, r.is_active, r.approval_status
-                                FROM teams t JOIN team_rosters r ON t.id = r.team_id
+            team_from_where_clause = f"""FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
                                 ORDER BY {order_by} COLLATE NOCASE {desc}
-                                """
+                """
+            teams_query = f"""SELECT DISTINCT t.id, t.name, t.tag, t.description, t.creation_date, t.language,
+                                    t.color, t.logo, t.approval_status, t.is_historical
+                                    {team_from_where_clause} LIMIT ? OFFSET ?"""
             teams: dict[int, Team] = {}
-            async with db.execute(teams_query, variable_parameters) as cursor:
+            async with db.execute(teams_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, rid,
-                      game, mode, rname, rtag, rdate, is_recruiting, is_active, rapprove) = row
-                    roster = TeamRoster(rid, tid, game, mode, rname if rname else tname, rtag if rtag else ttag, rdate, is_recruiting, is_active, rapprove, color, [], [])
-                    if tid in teams:
-                        team: Team = teams[tid]
-                        team.rosters.append(roster)
-                        continue
-                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical, [roster], [])
+                    (tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical) = row
+                    team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, bool(is_historical), [], [])
                     teams[tid] = team
+            rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag, r.creation_date, r.is_recruiting,
+                                        r.is_active, r.approval_status
+                                        FROM team_rosters r
+                                        WHERE r.team_id IN (
+                                            SELECT DISTINCT t.id {team_from_where_clause} LIMIT ? OFFSET ?
+                                        )"""
+            async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    roster_id, team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status = row
+                    team = teams[team_id]
+                    roster = TeamRoster(roster_id, team_id, game, mode, name if name else team.name, tag if tag else team.tag, creation_date,
+                                        bool(is_recruiting), bool(is_active), approval_status, team.color, [], [])
+                    team.rosters.append(roster)
             team_list = list(teams.values())
-            return team_list
+
+            count_query = f"""SELECT COUNT(*) FROM (SELECT DISTINCT t.id {team_from_where_clause})"""
+            page_count: int = 0
+            team_count: int = 0
+            async with db.execute(count_query, variable_parameters) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                team_count = row[0]
+            
+            page_count = int(team_count / limit) + (1 if team_count % limit else 0)
+
+            return TeamList(team_list, team_count, page_count)
         
 @dataclass
 class ListRostersCommand(Command[list[TeamRoster]]):

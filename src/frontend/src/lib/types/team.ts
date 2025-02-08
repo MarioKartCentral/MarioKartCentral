@@ -15,3 +15,9 @@ export type Team = {
   rosters: TeamRoster[];
   managers: PlayerInfo[];
 };
+
+export type TeamList = {
+  teams: Team[];
+  team_count: number;
+  page_count: number;
+}

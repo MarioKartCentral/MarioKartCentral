@@ -270,7 +270,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             recruitment_status = team.recruitment_status == "recruiting"
             logo = None # change to team.picture_filename later
             new_team = NewMKCTeam(team.id, team.team_name, team.team_tag, team.team_description, creation_date, new_language, team.color_number,
-                                  logo, new_approval, bool(team.is_historical), recruitment_status, {})
+                                  logo, new_approval, bool(team.is_historical or team.is_shadow), recruitment_status, {})
             team_dict[team.id] = new_team
 
             # create a team roster if the category is one that doesn't have rosters on the old site
