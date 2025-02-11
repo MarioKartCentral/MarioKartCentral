@@ -72,7 +72,7 @@
       </div>
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">
-          <Avatar src={avatar_url}/>
+          <Avatar size='sm' src={avatar_url}/>
           <div class="username">
             {user_info.player.name}
           </div>
@@ -84,7 +84,14 @@
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
-        <Button size="sm" href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</Button>
+        <Button size="sm">
+          {$LL.NAVBAR.ACCOUNT()}
+          <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
+        </Button>
+        <Dropdown>
+          <DropdownItem href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
+          <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
+        </Dropdown>
       {:else}
         <Button size="sm">
           {$LL.NAVBAR.LOGIN_REGISTER()}

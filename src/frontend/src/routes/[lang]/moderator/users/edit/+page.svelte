@@ -1,0 +1,156 @@
+<script lang="ts">
+    import { onMount } from "svelte";
+    import type { User } from "$lib/types/user";
+    import { page } from "$app/stores";
+    import Section from "$lib/components/common/Section.svelte";
+    import Flag from "$lib/components/common/Flag.svelte";
+    import DiscordDisplay from "$lib/components/common/discord/DiscordDisplay.svelte";
+    import Button from "$lib/components/common/buttons/Button.svelte";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { user } from "$lib/stores/stores";
+    import { check_permission, permissions } from "$lib/util/permissions";
+    import LL from "$i18n/i18n-svelte";
+
+    let id: number | null = null;
+    let user_found = true;
+    let edit_user: User;
+    let change_password = false;
+    let new_password = "";
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
+
+    onMount(async() => {
+        let param_id = $page.url.searchParams.get('id');
+        id = Number(param_id);
+        const res = await fetch(`/api/user/${id}`);
+        if(res.status !== 200) {
+            user_found = false;
+            return;
+        }
+        const body: User = await res.json();
+        edit_user = body;
+    });
+
+    async function editUser() {
+        const payload = {
+            user_id: id,
+            email: edit_user.email,
+            password: change_password ? new_password : null
+        };
+        console.log(payload);
+        const endpoint = '/api/user/edit';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if (response.status < 300) {
+            window.location.reload();
+        } else {
+            alert(`${$LL.MODERATOR.MANAGE_USERS.EDIT_USER_FAILED()}: ${result['title']}`);
+        }
+    }
+</script>
+
+{#if check_permission(user_info, permissions.edit_user)}
+    {#if user}
+        <Section header={$LL.MODERATOR.MANAGE_USERS.BACK_TO_USER_LIST()}>
+            <div slot="header_content">
+                <Button href="/{$page.params.lang}/moderator/users">{$LL.COMMON.BACK()}</Button>
+            </div>
+        </Section>
+        <Section header={$LL.MODERATOR.MANAGE_USERS.EDIT_USER_HEADER({user_id: edit_user.id})}>
+            <form on:submit|preventDefault={editUser}>
+                <div class="option">
+                    <div class="label">
+                        <label for="email">{$LL.LOGIN.EMAIL()}</label>
+                    </div>
+                    <div>
+                        <input type="email" bind:value={edit_user.email} required/>
+                    </div>
+                    
+                </div>
+                <div class="option">
+                    <div class="label">
+                        <label for="change_password">
+                            {$LL.LOGIN.PASSWORD()}
+                        </label>
+                    </div>
+                    <div>
+                        <select bind:value={change_password}>
+                            <option value={false}>{$LL.MODERATOR.MANAGE_USERS.DO_NOT_CHANGE_PASSWORD()}</option>
+                            <option value={true}>{$LL.MODERATOR.MANAGE_USERS.SET_NEW_PASSWORD()}</option>
+                        </select>
+                        {#if change_password}
+                            <div class="change_password">
+                                <input type="password" bind:value={new_password} placeholder={$LL.MODERATOR.MANAGE_USERS.NEW_PASSWORD()} required/>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+                <div class="option">
+                    <div class="label">
+                        {$LL.COMMON.PLAYER()}
+                    </div>
+                    <div>
+                        {#if edit_user.player}
+                            <a href="/{$page.params.lang}/registry/players/profile?id={edit_user.player.id}">
+                                <div class="flex">
+                                    <div>
+                                        <Flag country_code={edit_user.player.country_code}/>
+                                    </div>
+                                    <div>
+                                        {edit_user.player.name}
+                                    </div>
+                                
+                                </div>
+                            </a>
+                        {:else}
+                            {$LL.MODERATOR.MANAGE_USERS.USER_NO_PLAYER()}
+                        {/if}
+                    </div>
+                </div>
+                <div class="option">
+                    <div class="label">{$LL.DISCORD.DISCORD()}</div>
+                    <div>
+                        {#if edit_user.player?.discord}
+                            <DiscordDisplay discord={edit_user.player.discord}/>
+                        {:else}
+                            {$LL.MODERATOR.MANAGE_USERS.USER_NO_DISCORD()}
+                        {/if}
+                    </div>
+                </div>
+                <div>
+                    <Button type="submit">{$LL.COMMON.SAVE()}</Button>
+                </div>
+            </form>
+        </Section>
+    {:else if !user_found}
+        {$LL.MODERATOR.MANAGE_USERS.USER_NOT_FOUND()}
+    {/if}
+{:else}
+    {$LL.COMMON.NO_PERMISSION()}
+{/if}
+
+<style>
+    div.option {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    div.label {
+        width: 100px;
+    }
+    div.flex {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    div.change_password {
+        margin-top: 10px;
+    }
+</style>

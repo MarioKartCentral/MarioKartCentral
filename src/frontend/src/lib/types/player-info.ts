@@ -27,9 +27,16 @@ export type PlayerInfo = {
   is_banned: boolean;
   discord: Discord | null;
   friend_codes: FriendCode[];
+  join_date: number;
   rosters: PlayerRoster[];
   ban_info: BanInfoBasic | null;
   user_settings: UserSettings | null;
   name_changes: PlayerNameChange[];
   notes: PlayerNotes | null;
+};
+
+export type PlayerList = {
+  player_list: PlayerInfo[];
+  player_count: number;
+  page_count: number;
 };

@@ -11,6 +11,7 @@
   import EditSquadDialog from './registration/EditSquadDialog.svelte';
   import AddPlayerToSquad from './registration/AddPlayerToSquad.svelte';
   import LL from '$i18n/i18n-svelte';
+  import ManageSquadRosters from './registration/ManageSquadRosters.svelte';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
@@ -18,6 +19,7 @@
 
   let edit_squad_dialog: EditSquadDialog;
   let add_player_dialog: AddPlayerToSquad;
+  let manage_rosters_dialog: ManageSquadRosters;
 
   let all_toggle_on = false;
 
@@ -148,6 +150,9 @@
               {/if}
               <DropdownItem on:click={() => edit_squad_dialog.open(squad)}>{$LL.COMMON.EDIT()}</DropdownItem>
               <DropdownItem on:click={() => unregisterSquad(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
+              {#if tournament.teams_allowed}
+                <DropdownItem on:click={() => manage_rosters_dialog.open(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</DropdownItem>
+              {/if}
             </Dropdown>
           </td>
         {/if}
@@ -164,7 +169,8 @@
 </Table>
 
 <AddPlayerToSquad bind:this={add_player_dialog} {tournament}/>
-<EditSquadDialog bind:this={edit_squad_dialog} {tournament} {is_privileged}/>
+<EditSquadDialog bind:this={edit_squad_dialog} {tournament} is_privileged={true}/>
+<ManageSquadRosters bind:this={manage_rosters_dialog} {tournament} is_privileged={true}/>
 
 <style>
   button.show-players {

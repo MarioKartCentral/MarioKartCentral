@@ -161,7 +161,9 @@
       </div>
     </div>
   {/if}
-  <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData} disabled={is_edit} />
+  <div class="option">
+    <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData} disabled={is_edit}/>
+  </div>
   <div class="option">
     <div>
       <label for="is_squad">{$LL.TOURNAMENTS.MANAGE.REGISTRATION_FORMAT()}</label>

@@ -14,7 +14,7 @@ class ListRolesCommand(Command[list[Role]]):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
             # ban info can be retrieved in its own endpoint
-            async with db.execute(f"SELECT id, name, position FROM roles WHERE name != '{BANNED}'") as cursor:
+            async with db.execute("SELECT id, name, position FROM roles WHERE name != ?", (BANNED,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row
@@ -26,7 +26,7 @@ class ListTeamRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
-            async with db.execute(f"SELECT id, name, position FROM team_roles") as cursor:
+            async with db.execute("SELECT id, name, position FROM team_roles") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row
@@ -38,7 +38,7 @@ class ListSeriesRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
-            async with db.execute(f"SELECT id, name, position FROM series_roles") as cursor:
+            async with db.execute("SELECT id, name, position FROM series_roles") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row
@@ -50,7 +50,7 @@ class ListTournamentRolesCommand(Command[list[Role]]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
-            async with db.execute(f"SELECT id, name, position FROM tournament_roles") as cursor:
+            async with db.execute("SELECT id, name, position FROM tournament_roles") as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row
@@ -70,7 +70,7 @@ class GetRoleInfoCommand(Command[RoleInfo]):
                 role_name, position = row
 
             permissions: list[Permission] = []
-            async with db.execute(f"""
+            async with db.execute("""
                 SELECT p.name, rp.is_denied
                 FROM permissions p
                 JOIN role_permissions rp ON p.id = rp.permission_id
@@ -82,8 +82,8 @@ class GetRoleInfoCommand(Command[RoleInfo]):
                     permissions.append(Permission(permission_name, is_denied))
             
             players: list[RolePlayer] = []
-            async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, ur.expires_on
+            async with db.execute("""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, ur.expires_on
                 FROM user_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
@@ -91,8 +91,8 @@ class GetRoleInfoCommand(Command[RoleInfo]):
                 """, (self.role_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, expires_on = row
-                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, None, expires_on))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, None, expires_on))
             role_info = RoleInfo(self.role_id, role_name, position, permissions, players)
             return role_info
         
@@ -110,7 +110,7 @@ class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
                 role_name, position = row
 
             permissions: list[Permission] = []
-            async with db.execute(f"""
+            async with db.execute("""
                 SELECT p.name, rp.is_denied
                 FROM team_permissions p
                 JOIN team_role_permissions rp ON p.id = rp.permission_id
@@ -122,8 +122,8 @@ class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
                     permissions.append(Permission(permission_name, is_denied))
             
             players: list[RolePlayer] = []
-            async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, ur.expires_on
+            async with db.execute("""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, ur.expires_on
                 FROM user_team_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
@@ -131,8 +131,8 @@ class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
                 """, (self.role_id, self.team_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, expires_on = row
-                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, None, expires_on))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, None, expires_on))
             role_info = TeamRoleInfo(self.role_id, role_name, position, permissions, players, self.team_id)
             return role_info
         
@@ -150,7 +150,7 @@ class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
                 role_name, position = row
 
             permissions: list[Permission] = []
-            async with db.execute(f"""
+            async with db.execute("""
                 SELECT p.name, rp.is_denied
                 FROM series_permissions p
                 JOIN series_role_permissions rp ON p.id = rp.permission_id
@@ -162,8 +162,8 @@ class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
                     permissions.append(Permission(permission_name, is_denied))
             
             players: list[RolePlayer] = []
-            async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, ur.expires_on
+            async with db.execute("""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, ur.expires_on
                 FROM user_series_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
@@ -171,8 +171,8 @@ class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
                 """, (self.role_id, self.series_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, expires_on = row
-                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, None, expires_on))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, None, expires_on))
             role_info = SeriesRoleInfo(self.role_id, role_name, position, permissions, players, self.series_id)
             return role_info
         
@@ -190,7 +190,7 @@ class GetTournamentRoleInfoCommand(Command[TournamentRoleInfo]):
                 role_name, position = row
 
             permissions: list[Permission] = []
-            async with db.execute(f"""
+            async with db.execute("""
                 SELECT p.name, rp.is_denied
                 FROM tournament_permissions p
                 JOIN tournament_role_permissions rp ON p.id = rp.permission_id
@@ -202,8 +202,8 @@ class GetTournamentRoleInfoCommand(Command[TournamentRoleInfo]):
                     permissions.append(Permission(permission_name, is_denied))
             
             players: list[RolePlayer] = []
-            async with db.execute(f"""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, ur.expires_on
+            async with db.execute("""
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, ur.expires_on
                 FROM user_tournament_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
@@ -211,8 +211,8 @@ class GetTournamentRoleInfoCommand(Command[TournamentRoleInfo]):
                 """, (self.role_id, self.tournament_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, expires_on = row
-                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, None, expires_on))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, None, expires_on))
             role_info = TournamentRoleInfo(self.role_id, role_name, position, permissions, players, self.tournament_id)
             return role_info
                 

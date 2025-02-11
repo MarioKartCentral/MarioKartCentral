@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from common.data.models.players import PlayerDetailed
+from common.data.models.players import PlayerDetailed, Player
 from common.data.models.teams import TeamInvite
 from common.data.models.tournaments import TournamentInvite
 from common.data.models.roles import UserRole, TeamRole, SeriesRole, TournamentRole
@@ -45,3 +45,27 @@ class PlayerInvites:
     player_id: int
     team_invites: list[TeamInvite]
     tournament_invites: list[TournamentInvite]
+
+@dataclass
+class UserFilter:
+    name_or_email: str | None = None
+    page: int | None = None
+
+@dataclass
+class EditUserRequestData:
+    user_id: int
+    email: str
+    password: str | None
+
+@dataclass
+class UserInfo:
+    id: int
+    email: str
+    join_date: int
+    player: Player | None
+
+@dataclass
+class UserList:
+    users: list[UserInfo]
+    user_count: int
+    page_count: int

@@ -297,6 +297,11 @@ type RootTranslation = {
 		 * Y​o​u​ ​d​o​ ​n​o​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
 		 */
 		NO_PERMISSION: string
+		/**
+		 * {​v​a​l​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
+		 * @param {number} val
+		 */
+		ORDINAL_SUFFIX: RequiredParams<'val|ordinalSuffix'>
 	}
 	DISCORD: {
 		/**
@@ -429,6 +434,51 @@ type RootTranslation = {
 		 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
 		 */
 		SUMMARY: string
+		/**
+		 * Y​o​u​ ​p​l​a​c​e​d​:​ ​{​p​l​a​c​e​m​e​n​t​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
+		 * @param {number} placement
+		 */
+		YOU_PLACED: RequiredParams<'placement|ordinalSuffix'>
+		/**
+		 * L​a​t​e​s​t​ ​R​e​s​u​l​t​s
+		 */
+		LATEST_RESULTS: string
+		/**
+		 * V​i​e​w​ ​F​u​l​l​ ​P​l​a​c​e​m​e​n​t​s
+		 */
+		VIEW_FULL_PLACEMENTS: string
+		/**
+		 * L​a​t​e​s​t​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		LATEST_TOURNAMENTS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​T​o​u​r​n​a​m​e​n​t​s
+		 */
+		VIEW_ALL_TOURNAMENTS: string
+		/**
+		 * N​e​w​e​s​t​ ​P​l​a​y​e​r​s
+		 */
+		NEWEST_PLAYERS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​P​l​a​y​e​r​s
+		 */
+		VIEW_ALL_PLAYERS: string
+		/**
+		 * N​e​w​e​s​t​ ​T​e​a​m​s
+		 */
+		NEWEST_TEAMS: string
+		/**
+		 * V​i​e​w​ ​A​l​l​ ​T​e​a​m​s
+		 */
+		VIEW_ALL_TEAMS: string
+		/**
+		 * R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		RECENT_TRANSACTIONS: string
+		/**
+		 * M​o​r​e​ ​R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
+		 */
+		MORE_RECENT_TRANSACTIONS: string
 	}
 	INVITES: {
 		/**
@@ -844,6 +894,76 @@ type RootTranslation = {
 		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
 		 */
 		CREATE_SHADOW_PLAYER: string
+		WORD_FILTER: {
+			/**
+			 * W​o​r​d​ ​F​i​l​t​e​r​ ​L​i​s​t
+			 */
+			WORD_FILTER_LIST: string
+			/**
+			 * B​l​a​c​k​l​i​s​t​e​d​ ​W​o​r​d​s​ ​(​o​n​e​ ​p​e​r​ ​l​i​n​e​)
+			 */
+			BLACKLISTED_WORDS: string
+			/**
+			 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​e​d​i​t​i​n​g​ ​t​h​e​ ​w​o​r​d​ ​f​i​l​t​e​r
+			 */
+			EDIT_WORD_FILTER_ERROR: string
+		}
+		MANAGE_USERS: {
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​u​s​e​r​s
+			 */
+			SEARCH_FOR_USERS: string
+			/**
+			 * S​e​a​r​c​h​ ​b​y​ ​n​a​m​e​ ​o​r​ ​e​m​a​i​l​.​.​.
+			 */
+			SEARCH_BY_NAME_EMAIL: string
+			/**
+			 * {​c​o​u​n​t​}​ ​u​s​e​r​s
+			 * @param {number} count
+			 */
+			USER_COUNT: RequiredParams<'count'>
+			/**
+			 * B​a​c​k​ ​t​o​ ​U​s​e​r​ ​L​i​s​t
+			 */
+			BACK_TO_USER_LIST: string
+			/**
+			 * D​o​ ​n​o​t​ ​c​h​a​n​g​e
+			 */
+			DO_NOT_CHANGE_PASSWORD: string
+			/**
+			 * S​e​t​ ​n​e​w​ ​p​a​s​s​w​o​r​d
+			 */
+			SET_NEW_PASSWORD: string
+			/**
+			 * N​e​w​ ​p​a​s​s​w​o​r​d​.​.​.
+			 */
+			NEW_PASSWORD: string
+			/**
+			 * T​h​i​s​ ​u​s​e​r​ ​h​a​s​ ​n​o​t​ ​c​o​m​p​l​e​t​e​d​ ​p​l​a​y​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​.
+			 */
+			USER_NO_PLAYER: string
+			/**
+			 * T​h​i​s​ ​u​s​e​r​ ​h​a​s​ ​n​o​t​ ​l​i​n​k​e​d​ ​a​ ​D​i​s​c​o​r​d​ ​a​c​c​o​u​n​t​.
+			 */
+			USER_NO_DISCORD: string
+			/**
+			 * U​s​e​r​ ​n​o​t​ ​f​o​u​n​d
+			 */
+			USER_NOT_FOUND: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​e​d​i​t​ ​u​s​e​r
+			 */
+			EDIT_USER_FAILED: string
+			/**
+			 * E​d​i​t​ ​U​s​e​r
+			 */
+			EDIT_USER: string
+			/**
+			 * E​d​i​t​ ​U​s​e​r​:​ ​I​D​ ​{​u​s​e​r​_​i​d​}
+			 * @param {number} user_id
+			 */
+			EDIT_USER_HEADER: RequiredParams<'user_id'>
+		}
 	}
 	MODES: {
 		/**
@@ -1000,6 +1120,10 @@ type RootTranslation = {
 		 * L​o​g​i​n​/​R​e​g​i​s​t​e​r
 		 */
 		LOGIN_REGISTER: string
+		/**
+		 * A​c​c​o​u​n​t
+		 */
+		ACCOUNT: string
 	}
 	NOTIFICATION: {
 		/**
@@ -1463,6 +1587,10 @@ type RootTranslation = {
 			 * P​l​a​y​e​r​ ​n​o​t​ ​f​o​u​n​d
 			 */
 			PLAYER_NOT_FOUND: string
+			/**
+			 * R​e​g​i​s​t​e​r​e​d
+			 */
+			REGISTRATION_DATE: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -2689,6 +2817,36 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​f​o​r​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t
 			 */
 			MANUAL_REGISTRATION_FAILED: string
+			/**
+			 * M​a​n​a​g​e​ ​R​o​s​t​e​r​s
+			 */
+			MANAGE_ROSTERS: string
+			/**
+			 * A​d​d​ ​R​o​s​t​e​r
+			 */
+			ADD_ROSTER: string
+			/**
+			 * S​e​l​e​c​t​ ​a​ ​R​o​s​t​e​r​.​.​.
+			 */
+			SELECT_A_ROSTER: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​a​d​d​ ​t​h​e​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​ ​t​o​ ​t​h​i​s​ ​s​q​u​a​d​?
+			 * @param {string} roster_name
+			 */
+			ADD_ROSTER_CONFIRM: RequiredParams<'roster_name'>
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​e​ ​r​o​s​t​e​r​ ​{​r​o​s​t​e​r​_​n​a​m​e​}​ ​f​r​o​m​ ​t​h​i​s​ ​s​q​u​a​d​?
+			 * @param {string} roster_name
+			 */
+			REMOVE_ROSTER_CONFIRM: RequiredParams<'roster_name'>
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​a​d​d​ ​r​o​s​t​e​r
+			 */
+			ADD_ROSTER_FAILED: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​s​t​e​r
+			 */
+			REMOVE_ROSTER_FAILED: string
 		}
 		MANAGE: {
 			/**
@@ -4415,6 +4573,10 @@ export type TranslationFunctions = {
 		 * You do not have permission to view this page.
 		 */
 		NO_PERMISSION: () => LocalizedString
+		/**
+		 * {val|ordinalSuffix}
+		 */
+		ORDINAL_SUFFIX: (arg: { val: number }) => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -4547,6 +4709,50 @@ export type TranslationFunctions = {
 		 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
 		 */
 		SUMMARY: () => LocalizedString
+		/**
+		 * You placed: {placement|ordinalSuffix}
+		 */
+		YOU_PLACED: (arg: { placement: number }) => LocalizedString
+		/**
+		 * Latest Results
+		 */
+		LATEST_RESULTS: () => LocalizedString
+		/**
+		 * View Full Placements
+		 */
+		VIEW_FULL_PLACEMENTS: () => LocalizedString
+		/**
+		 * Latest Tournaments
+		 */
+		LATEST_TOURNAMENTS: () => LocalizedString
+		/**
+		 * View All Tournaments
+		 */
+		VIEW_ALL_TOURNAMENTS: () => LocalizedString
+		/**
+		 * Newest Players
+		 */
+		NEWEST_PLAYERS: () => LocalizedString
+		/**
+		 * View All Players
+		 */
+		VIEW_ALL_PLAYERS: () => LocalizedString
+		/**
+		 * Newest Teams
+		 */
+		NEWEST_TEAMS: () => LocalizedString
+		/**
+		 * View All Teams
+		 */
+		VIEW_ALL_TEAMS: () => LocalizedString
+		/**
+		 * Recent Transactions
+		 */
+		RECENT_TRANSACTIONS: () => LocalizedString
+		/**
+		 * More Recent Transactions
+		 */
+		MORE_RECENT_TRANSACTIONS: () => LocalizedString
 	}
 	INVITES: {
 		/**
@@ -4953,6 +5159,74 @@ export type TranslationFunctions = {
 		 * Create Shadow Player
 		 */
 		CREATE_SHADOW_PLAYER: () => LocalizedString
+		WORD_FILTER: {
+			/**
+			 * Word Filter List
+			 */
+			WORD_FILTER_LIST: () => LocalizedString
+			/**
+			 * Blacklisted Words (one per line)
+			 */
+			BLACKLISTED_WORDS: () => LocalizedString
+			/**
+			 * An error occurred editing the word filter
+			 */
+			EDIT_WORD_FILTER_ERROR: () => LocalizedString
+		}
+		MANAGE_USERS: {
+			/**
+			 * Search for users
+			 */
+			SEARCH_FOR_USERS: () => LocalizedString
+			/**
+			 * Search by name or email...
+			 */
+			SEARCH_BY_NAME_EMAIL: () => LocalizedString
+			/**
+			 * {count} users
+			 */
+			USER_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Back to User List
+			 */
+			BACK_TO_USER_LIST: () => LocalizedString
+			/**
+			 * Do not change
+			 */
+			DO_NOT_CHANGE_PASSWORD: () => LocalizedString
+			/**
+			 * Set new password
+			 */
+			SET_NEW_PASSWORD: () => LocalizedString
+			/**
+			 * New password...
+			 */
+			NEW_PASSWORD: () => LocalizedString
+			/**
+			 * This user has not completed player registration.
+			 */
+			USER_NO_PLAYER: () => LocalizedString
+			/**
+			 * This user has not linked a Discord account.
+			 */
+			USER_NO_DISCORD: () => LocalizedString
+			/**
+			 * User not found
+			 */
+			USER_NOT_FOUND: () => LocalizedString
+			/**
+			 * Failed to edit user
+			 */
+			EDIT_USER_FAILED: () => LocalizedString
+			/**
+			 * Edit User
+			 */
+			EDIT_USER: () => LocalizedString
+			/**
+			 * Edit User: ID {user_id}
+			 */
+			EDIT_USER_HEADER: (arg: { user_id: number }) => LocalizedString
+		}
 	}
 	MODES: {
 		/**
@@ -5109,6 +5383,10 @@ export type TranslationFunctions = {
 		 * Login/Register
 		 */
 		LOGIN_REGISTER: () => LocalizedString
+		/**
+		 * Account
+		 */
+		ACCOUNT: () => LocalizedString
 	}
 	NOTIFICATION: {
 		/**
@@ -5504,6 +5782,10 @@ export type TranslationFunctions = {
 			 * Player not found
 			 */
 			PLAYER_NOT_FOUND: () => LocalizedString
+			/**
+			 * Registered
+			 */
+			REGISTRATION_DATE: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -6702,6 +6984,34 @@ export type TranslationFunctions = {
 			 * Failed to register this player for the tournament
 			 */
 			MANUAL_REGISTRATION_FAILED: () => LocalizedString
+			/**
+			 * Manage Rosters
+			 */
+			MANAGE_ROSTERS: () => LocalizedString
+			/**
+			 * Add Roster
+			 */
+			ADD_ROSTER: () => LocalizedString
+			/**
+			 * Select a Roster...
+			 */
+			SELECT_A_ROSTER: () => LocalizedString
+			/**
+			 * Are you sure you want to add the roster {roster_name} to this squad?
+			 */
+			ADD_ROSTER_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+			/**
+			 * Are you sure you want to remove the roster {roster_name} from this squad?
+			 */
+			REMOVE_ROSTER_CONFIRM: (arg: { roster_name: string }) => LocalizedString
+			/**
+			 * Failed to add roster
+			 */
+			ADD_ROSTER_FAILED: () => LocalizedString
+			/**
+			 * Failed to remove roster
+			 */
+			REMOVE_ROSTER_FAILED: () => LocalizedString
 		}
 		MANAGE: {
 			/**
@@ -8148,6 +8458,7 @@ export type TranslationFunctions = {
 
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
+	ordinalSuffix: (value: number) => unknown
 	parsedate: (value: unknown) => unknown
 	uppercase: (value: unknown | string) => unknown
 }

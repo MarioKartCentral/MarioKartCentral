@@ -14,7 +14,9 @@
     export let placement: PlacementOrganizer;
     export let is_squad: boolean;
     export let is_edit: boolean;
+    export let is_homepage = false;
 
+    $: rank_width = is_homepage ? 'w-[50px]' : 'w-[100px]'
     let bg_class = "other";
     $: {
         bg_class = "other";
@@ -71,7 +73,7 @@
 </script>
 
 <div class="flex {bg_class}">
-    <div class="rank">
+    <div class="rank {rank_width}">
         {getPlacementText(placement)}
     </div>
     <div class="info">
@@ -103,7 +105,7 @@
             </DropdownItem>
         </Dropdown>
     {/if}
-    <div class="description">
+    <div class="description {is_homepage ? 'hidden' : ''}">
         {#if placement.placement}
             {#if is_edit}
                 <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()}/>
@@ -145,10 +147,10 @@
         cursor: pointer;
     }
     .rank {
-        width: 100px;
         display: block;
         text-align: center;
-        font-size: 1.75em;
+        font-size: 1.5em;
+        font-weight: 600;
     }
     .info {
         min-width: 150px;

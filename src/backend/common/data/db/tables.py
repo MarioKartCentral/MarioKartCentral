@@ -15,6 +15,7 @@ class Player(TableModel):
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
+    join_date: int
 
     @staticmethod
     def get_create_table_command():
@@ -24,7 +25,8 @@ class Player(TableModel):
             country_code TEXT NOT NULL,
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
-            is_banned BOOLEAN NOT NULL
+            is_banned BOOLEAN NOT NULL,
+            join_date INTEGER NOT NULL DEFAULT 0
             )"""
 
 @dataclass
@@ -57,6 +59,7 @@ class User(TableModel):
     player_id: int
     email: str
     password_hash: str
+    join_date: int
 
     @staticmethod
     def get_create_table_command():
@@ -64,7 +67,8 @@ class User(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER REFERENCES players(id),
             email TEXT UNIQUE,
-            password_hash TEXT)"""
+            password_hash TEXT,
+            join_date INTEGER NOT NULL DEFAULT 0)"""
 
 @dataclass
 class Session(TableModel):
@@ -873,6 +877,18 @@ class PlayerNotes(TableModel):
             date INTEGER NOT NULL
             )"""
     
+@dataclass
+class FilteredWords(TableModel):
+    id: int
+    word: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS filtered_words(
+            id INTEGER PRIMARY KEY,
+            word TEXT NOT NULL
+        )"""
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -882,4 +898,4 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEditRequest, RosterEditRequest,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest, PlayerNotes, PlayerClaim]
+    PlayerNameEditRequest, PlayerNotes, PlayerClaim, FilteredWords]

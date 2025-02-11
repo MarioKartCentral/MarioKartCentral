@@ -2,11 +2,13 @@ from dataclasses import dataclass
 from types import TracebackType
 import aiobotocore.session
 from types_aiobotocore_s3 import S3Client
+from types_aiobotocore_s3.literals import ObjectCannedACLType
 
 TOURNAMENTS_BUCKET = "mkc-tournaments"
 TEMPLATES_BUCKET = "mkc-templates"
 SERIES_BUCKET = "mkc-series"
 COMMAND_LOG_BUCKET = "mkc-commandlog"
+MKCV1_BUCKET = "mkc-v1data"
 
 @dataclass
 class S3Wrapper:
@@ -27,8 +29,8 @@ class S3Wrapper:
         except self.client.exceptions.NoSuchKey:
             return None
 
-    async def put_object(self, bucket_name: str, key: str, body: bytes):
-        await self.client.put_object(Bucket=bucket_name, Key=key, Body=body)
+    async def put_object(self, bucket_name: str, key: str, body: bytes, acl: ObjectCannedACLType = "public-read"):
+        await self.client.put_object(Bucket=bucket_name, Key=key, Body=body, ACL=acl)
 
 @dataclass
 class S3WrapperManager:

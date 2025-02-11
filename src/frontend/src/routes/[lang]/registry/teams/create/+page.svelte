@@ -67,7 +67,9 @@
 
 <form method="post" on:submit|preventDefault={createTeam}>
   <Section header={$LL.TEAMS.GENERAL_INFO()}>
-    <GameModeSelect is_team flex/>
+    <div class="option">
+      <GameModeSelect is_team flex/>
+    </div>
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
       <input name="name" type="text" required pattern="^\S.*\S$|^\S$"/>

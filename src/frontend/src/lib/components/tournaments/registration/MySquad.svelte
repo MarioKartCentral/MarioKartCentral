@@ -14,12 +14,14 @@
   import TournamentPlayerList from '../TournamentPlayerList.svelte';
   import type { TournamentPlayer } from '$lib/types/tournament-player';
   import LL from '$i18n/i18n-svelte';
+  import ManageSquadRosters from './ManageSquadRosters.svelte';
 
   export let tournament: Tournament;
   export let squad: TournamentSquad;
   export let my_player: TournamentPlayer;
 
   let edit_squad_dialog: Dialog;
+  let manage_rosters_dialog: ManageSquadRosters;
 
   let invite_player: PlayerInfo | null = null;
   let invite_as_bagger = false;
@@ -170,6 +172,9 @@
       <Button on:click={edit_squad_dialog.open}>{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
     {/if}
     <Button on:click={unregisterSquad}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_SQUAD()}</Button>
+    {#if tournament.teams_allowed}
+      <Button on:click={() => manage_rosters_dialog.open(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</Button>
+    {/if}
   </div>
 {/if}
 
@@ -183,6 +188,7 @@
     </div>
   </form>
 </Dialog>
+<ManageSquadRosters bind:this={manage_rosters_dialog} {tournament}/>
 
 <style>
   div.section {

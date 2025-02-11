@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Any
 import re
 
 from common.data.commands import Command, save_to_command_log
@@ -25,11 +25,12 @@ class CreatePlayerCommand(Command[Player]):
                     assert row is not None
                     if row[0] is not None:
                         raise Problem("Can only have one player per user", status=400)
-            command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned) 
-                VALUES (?, ?, ?, ?, ?)"""
+            now = int(datetime.now(timezone.utc).timestamp())
+            command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned, join_date) 
+                VALUES (?, ?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
                 command, 
-                (self.name, self.country_code, self.is_hidden, self.is_shadow, False))
+                (self.name, self.country_code, self.is_hidden, self.is_shadow, False, now))
             
             # TODO: Run queries to determine why it errored
             if player_row is None:
@@ -68,7 +69,7 @@ class CreatePlayerCommand(Command[Player]):
             await db.executemany("INSERT INTO friend_codes(player_id, game, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
-            return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, None)
+            return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
 
 @save_to_command_log
 @dataclass
@@ -99,14 +100,14 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            query = "SELECT name, country_code, is_hidden, is_shadow, is_banned FROM players WHERE id = ?"
+            query = "SELECT name, country_code, is_hidden, is_shadow, is_banned, join_date FROM players WHERE id = ?"
             async with db.execute(query, (self.id,)) as cursor:
                 player_row = await cursor.fetchone()
             
             if player_row is None:
                 return None
             
-            name, country_code, is_hidden, is_shadow, is_banned = player_row
+            name, country_code, is_hidden, is_shadow, is_banned, player_join_date = player_row
 
             fc_query = "SELECT id, game, fc, is_verified, is_primary, description, is_active FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
@@ -170,18 +171,18 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     row = await cursor.fetchone()
                     if row:
                         player_notes, edited_by, date = row
-                        query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned FROM players p 
+                        query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date FROM players p 
                             JOIN users u ON u.player_id = p.id
                             WHERE u.id = ?"""
                         async with db.execute(query, (edited_by,)) as cursor:
                             player_row = await cursor.fetchone()
                             edited_by =  None
                             if player_row:
-                                p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned = player_row
-                                edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, None)
+                                p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date = player_row
+                                edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
                             notes = PlayerNotes(player_notes, edited_by, date)
 
-            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), discord, friend_codes, rosters, ban_info, user_settings, name_changes, notes)
+            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), player_join_date, discord, friend_codes, rosters, ban_info, user_settings, name_changes, notes)
         
 @dataclass
 class ListPlayersCommand(Command[PlayerList]):
@@ -255,12 +256,15 @@ class ListPlayersCommand(Command[PlayerList]):
                 where_clauses.append(f"p.id IN (SELECT p2.id FROM players p2 LEFT JOIN friend_codes f ON p2.id = f.player_id WHERE {fc_where_clauses_str})")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            players_query = f"""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned,
+            order_by = 'p.join_date' if filter.sort_by_newest else 'name'
+            desc = 'DESC' if filter.sort_by_newest else ''
+            player_from_where_clause = f"{player_where_clause} ORDER BY {order_by} COLLATE NOCASE {desc} LIMIT ? OFFSET ?"
+            players_query = f"""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date,
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ? """
+                                    {player_from_where_clause}"""
 
             fc_where_clause = ""
             fc_where_clauses = []
@@ -283,7 +287,7 @@ class ListPlayersCommand(Command[PlayerList]):
                 SELECT p.id FROM players p
                 LEFT JOIN users u ON u.player_id = p.id
                 LEFT JOIN user_discords d ON u.id = d.user_id
-                {player_where_clause} ORDER BY name COLLATE NOCASE LIMIT ? OFFSET ?
+                {player_from_where_clause}
             ) {fc_where_clause}"""
 
             count_query = f"""SELECT COUNT (*) FROM (SELECT p.id FROM players p
@@ -291,18 +295,18 @@ class ListPlayersCommand(Command[PlayerList]):
                                     LEFT JOIN user_discords d ON u.id = d.user_id
                                     {player_where_clause})"""
 
-            players: List[PlayerDetailed] = []
+            players: list[PlayerDetailed] = []
             friend_codes: dict[int, list[FriendCode]] = {}
 
             async with db.execute(players_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (id, name, country_code, is_hidden, is_shadow, is_banned, discord_id, d_username,
+                    (id, name, country_code, is_hidden, is_shadow, is_banned, join_date, discord_id, d_username,
                      d_discriminator, d_global_name, d_avatar) = row
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, player_discord, [], [], None, None, [], None)
+                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, join_date, player_discord, [], [], None, None, [], None)
                     players.append(player)
                     friend_codes[player.id] = player.friend_codes
 

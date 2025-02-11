@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, SquadPlayerDetails, TournamentPlayerDetails, TournamentSquadDetails, MyTournamentRegistrationDetails, MyTournamentRegistration, FriendCode, Discord
+from common.data.models import *
 
 
 @save_to_command_log
@@ -276,11 +276,12 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT game, verification_required, checkins_enabled, min_players_checkin, min_squad_size FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed FROM tournaments WHERE id = ?",
+                                  (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=400)
-                game, verification_required, checkins_enabled, min_players_checkin, min_squad_size = row
+                game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed = row
             where_clauses = ["tournament_id = ?"]
             variable_parameters = [self.tournament_id]
             # get only squads which have not withdrawn from the tournament
@@ -298,16 +299,38 @@ class GetSquadRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                 where_clauses.append("s.is_approved = ?")
                 variable_parameters.append(self.is_approved)
             where_clause = " AND ".join(where_clauses)
+            squads: dict[int, TournamentSquadDetails] = {}
             async with db.execute(f"""SELECT s.id, s.name, s.tag, s.color, s.timestamp, s.is_registered, s.is_approved
                                   FROM tournament_squads s
                                   JOIN tournaments t ON s.tournament_id = t.id
                                   WHERE {where_clause}""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
-                squads: dict[int, TournamentSquadDetails] = {}
+                
                 for row in rows:
                     squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved = row
-                    curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, [])
+                    curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, [], [])
                     squads[squad_id] = curr_squad
+
+            # get teams connected to squads
+            if teams_allowed:
+                async with db.execute(f"""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+                                    FROM team_squad_registrations tsr
+                                    JOIN team_rosters tr ON tsr.roster_id = tr.id
+                                    JOIN teams t ON tr.team_id = t.id
+                                    WHERE tsr.squad_id IN (
+                                        SELECT s.id FROM tournament_squads s
+                                        JOIN tournaments t ON s.tournament_id = t.id
+                                        WHERE {where_clause}
+                                    )""", variable_parameters) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        squad_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
+                        roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
+                        squad = squads.get(squad_id, None)
+                        if squad:
+                            squad.rosters.append(roster)
+
+            # get tournament players
             async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, p.name, p.country_code, 
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
@@ -421,13 +444,13 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
     
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT game FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT game, teams_allowed FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=400)
-                game = row[0]
+                game, teams_allowed = row
             # get squads that the player is either in or has been invited to
-            async with db.execute(f"""SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads s
+            async with db.execute("""SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads s
                                   WHERE s.tournament_id = ? AND EXISTS (
                                     SELECT p.id FROM tournament_players p
                                     WHERE p.squad_id = s.id AND p.player_id = ?
@@ -437,10 +460,32 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 squads: dict[int, TournamentSquadDetails] = {}
                 for row in rows:
                     squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved = row
-                    curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, [])
+                    curr_squad = TournamentSquadDetails(squad_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, [], [])
                     squads[squad_id] = curr_squad
+
+            # get teams connected to squads
+            if teams_allowed:
+                async with db.execute("""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+                                    FROM team_squad_registrations tsr
+                                    JOIN team_rosters tr ON tsr.roster_id = tr.id
+                                    JOIN teams t ON tr.team_id = t.id
+                                    WHERE tsr.squad_id IN (
+                                        SELECT s.id FROM tournament_squads s
+                                        WHERE s.tournament_id = ? AND EXISTS (
+                                            SELECT p.id FROM tournament_players p
+                                            WHERE p.squad_id = s.id AND p.player_id = ?
+                                        )
+                                    )""", (self.tournament_id, self.player_id)) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        squad_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
+                        roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
+                        squad = squads.get(squad_id, None)
+                        if squad:
+                            squad.rosters.append(roster)
+
             # get all players from squads that the requested player is in
-            async with db.execute(f"""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
+            async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, p.name, p.country_code, 
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
