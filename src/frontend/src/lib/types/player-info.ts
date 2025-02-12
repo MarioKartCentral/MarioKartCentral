@@ -3,14 +3,16 @@ import type { BanInfoBasic } from '$lib/types/ban-info';
 import type { UserSettings } from '$lib/types/user-settings';
 import type { PlayerRoster } from './player-roster';
 import type { Discord } from './discord';
-import type { Player } from './player';
+import type { Player, PlayerBasic } from './player';
 import type { Role } from './role';
 
 type PlayerNameChange = {
   id: number;
-  name: string;
+  old_name: string;
+  new_name: string;
   date: number;
   approval_status: string;
+  handled_by: PlayerBasic | null;
 };
 
 export type PlayerNotes = {

@@ -70,7 +70,7 @@
             {$LL.PLAYERS.PROFILE.PENDING_NAME_CHANGE()}
         </div>
         <div>
-            {player.name} -&gt; {pending_change.name}
+            {player.name} -&gt; {pending_change.new_name}
         </div>
     {/if}
 {:else}

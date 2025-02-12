@@ -827,21 +827,25 @@ class PlayerBansHistorical(TableModel):
             comment TEXT NOT NULL)"""
     
 @dataclass
-class PlayerNameEditRequest(TableModel):
+class PlayerNameEdit(TableModel):
     id: int
     player_id: int
-    name: str
+    old_name: str
+    new_name: str
     date: int
     approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS player_name_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS player_name_edits (
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
-            name TEXT NOT NULL,
+            old_name TEXT NOT NULL,
+            new_name TEXT NOT NULL,
             date INTEGER NOT NULL,
-            approval_status TEXT NOT NULL
+            approval_status TEXT NOT NULL,
+            handled_by INTEGER REFERENCES players(id)
             )"""
 
 @dataclass
@@ -900,4 +904,4 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEditRequest, RosterEditRequest,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest, PlayerNotes, PlayerClaim, FilteredWords]
+    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]

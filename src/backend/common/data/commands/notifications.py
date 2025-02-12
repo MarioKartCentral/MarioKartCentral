@@ -241,7 +241,7 @@ class GetNotificationDataFromNameChangeRequestCommand(Command[NotificationDataUs
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT u.id, r.player_id FROM users u 
-                JOIN player_name_edit_requests r ON u.player_id = r.player_id 
+                JOIN player_name_edits r ON u.player_id = r.player_id 
                 WHERE r.id = ?"""
             async with db.execute(query, (self.request_id,)) as cursor:
                 row = await cursor.fetchone()

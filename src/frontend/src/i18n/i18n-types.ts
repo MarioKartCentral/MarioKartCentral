@@ -302,6 +302,10 @@ type RootTranslation = {
 		 * @param {number} val
 		 */
 		ORDINAL_SUFFIX: RequiredParams<'val|ordinalSuffix'>
+		/**
+		 * D​e​l​e​t​e
+		 */
+		DELETE: string
 	}
 	DISCORD: {
 		/**
@@ -655,6 +659,14 @@ type RootTranslation = {
 		 */
 		PENDING_NAME_REQUESTS: string
 		/**
+		 * A​p​p​r​o​v​e​d​ ​P​l​a​y​e​r​ ​N​a​m​e​ ​R​e​q​u​e​s​t​s
+		 */
+		APPROVED_NAME_REQUESTS: string
+		/**
+		 * D​e​n​i​e​d​ ​P​l​a​y​e​r​ ​N​a​m​e​ ​R​e​q​u​e​s​t​s
+		 */
+		DENIED_NAME_REQUESTS: string
+		/**
 		 * A​p​p​r​o​v​e​?
 		 */
 		APPROVE: string
@@ -924,6 +936,15 @@ type RootTranslation = {
 		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
 		 */
 		CREATE_SHADOW_PLAYER: string
+		/**
+		 * {​c​o​u​n​t​}​ ​n​a​m​e​ ​{​{​c​h​a​n​g​e​|​c​h​a​n​g​e​s​}​}
+		 * @param {number} count
+		 */
+		NAME_CHANGE_COUNT: RequiredParams<'count'>
+		/**
+		 * H​a​n​d​l​e​d​ ​b​y
+		 */
+		NAME_CHANGE_HANDLED_BY: string
 		WORD_FILTER: {
 			/**
 			 * W​o​r​d​ ​F​i​l​t​e​r​ ​L​i​s​t
@@ -1621,6 +1642,10 @@ type RootTranslation = {
 			 * R​e​g​i​s​t​e​r​e​d
 			 */
 			REGISTRATION_DATE: string
+			/**
+			 * N​a​m​e​ ​C​h​a​n​g​e​ ​H​i​s​t​o​r​y
+			 */
+			NAME_CHANGE_HISTORY: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -4631,6 +4656,10 @@ export type TranslationFunctions = {
 		 * {val|ordinalSuffix}
 		 */
 		ORDINAL_SUFFIX: (arg: { val: number }) => LocalizedString
+		/**
+		 * Delete
+		 */
+		DELETE: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -4980,6 +5009,14 @@ export type TranslationFunctions = {
 		 */
 		PENDING_NAME_REQUESTS: () => LocalizedString
 		/**
+		 * Approved Player Name Requests
+		 */
+		APPROVED_NAME_REQUESTS: () => LocalizedString
+		/**
+		 * Denied Player Name Requests
+		 */
+		DENIED_NAME_REQUESTS: () => LocalizedString
+		/**
 		 * Approve?
 		 */
 		APPROVE: () => LocalizedString
@@ -5243,6 +5280,14 @@ export type TranslationFunctions = {
 		 * Create Shadow Player
 		 */
 		CREATE_SHADOW_PLAYER: () => LocalizedString
+		/**
+		 * {count} name {{change|changes}}
+		 */
+		NAME_CHANGE_COUNT: (arg: { count: number }) => LocalizedString
+		/**
+		 * Handled by
+		 */
+		NAME_CHANGE_HANDLED_BY: () => LocalizedString
 		WORD_FILTER: {
 			/**
 			 * Word Filter List
@@ -5870,6 +5915,10 @@ export type TranslationFunctions = {
 			 * Registered
 			 */
 			REGISTRATION_DATE: () => LocalizedString
+			/**
+			 * Name Change History
+			 */
+			NAME_CHANGE_HISTORY: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**

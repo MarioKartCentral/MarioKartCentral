@@ -30,8 +30,9 @@ async def create_shadow_player(request: Request, body: CreatePlayerRequestData) 
 @bind_request_body(EditPlayerRequestData)
 @check_word_filter
 @require_permission(permissions.EDIT_PLAYER)
-async def edit_player(request: Request, body: EditPlayerRequestData) -> Response:    
-    command = UpdatePlayerCommand(body)
+async def edit_player(request: Request, body: EditPlayerRequestData) -> Response:
+    mod_player_id = request.state.user.player_id    
+    command = UpdatePlayerCommand(body, mod_player_id)
     succeeded = await handle(command)
     if not succeeded:
         raise Problem("Player not found", status=404)
@@ -130,9 +131,10 @@ async def request_edit_player_name(request: Request, body: PlayerRequestNameRequ
     await handle(command)
     return JSONResponse({})
 
+@bind_request_query(PlayerNameRequestFilter)
 @require_permission(permissions.EDIT_PLAYER)
-async def get_pending_player_name_requests(request: Request) -> JSONResponse:
-    command = ListPlayerNameRequestsCommand("pending")
+async def get_player_name_requests(request: Request, filter: PlayerNameRequestFilter) -> JSONResponse:
+    command = ListPlayerNameRequestsCommand(filter)
     changes = await handle(command)
     return JSONResponse(changes)
 
@@ -142,8 +144,8 @@ async def approve_player_name_request(request: Request, body: ApprovePlayerNameR
     async def notify():
         data = await handle(GetNotificationDataFromNameChangeRequestCommand(body.request_id))
         await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_APPROVED, {}, f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
-
-    command = ApprovePlayerNameRequestCommand(body.request_id)
+    mod_player_id = request.state.user.player_id
+    command = ApprovePlayerNameRequestCommand(body.request_id, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -153,8 +155,8 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
     async def notify():
         data = await handle(GetNotificationDataFromNameChangeRequestCommand(body.request_id))
         await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_DENIED, {}, f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
-
-    command = DenyPlayerNameRequestCommand(body.request_id)
+    mod_player_id = request.state.user.player_id    
+    command = DenyPlayerNameRequestCommand(body.request_id, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -224,7 +226,7 @@ routes = [
     Route('/api/registry/setPrimaryFriendCode', set_primary_fc, methods=['POST']),
     Route('/api/registry/forcePrimaryFriendCode', force_primary_fc, methods=['POST']), # dispatches notification
     Route('/api/registry/players/requestName', request_edit_player_name, methods=['POST']),
-    Route('/api/registry/players/pendingNameChanges', get_pending_player_name_requests),
+    Route('/api/registry/players/nameChanges', get_player_name_requests),
     Route('/api/registry/players/approveNameChange', approve_player_name_request, methods=['POST']), # dispatches notification
     Route('/api/registry/players/denyNameChange', deny_player_name_request, methods=['POST']), # dispatches notification
     Route('/api/registry/players/claim', claim_player, methods=['POST']),

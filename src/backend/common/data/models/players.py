@@ -58,7 +58,8 @@ class PlayerTransferHistory:
 @dataclass
 class PlayerNameChange:
     id: int
-    name: str
+    old_name: str
+    new_name: str
     date: int
     approval_status: Approval
 
@@ -132,11 +133,23 @@ class PlayerRequestNameRequestData:
 class PlayerNameRequest:
     id: int
     player_id: int
-    player_name: str
     player_country: CountryCode
-    request_name: str
+    old_name: str
+    new_name: str
     date: int
     approval_status: Approval
+    handled_by: PlayerBasic | None
+
+@dataclass
+class PlayerNameRequestFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class PlayerNameRequestList:
+    change_list: list[PlayerNameRequest]
+    count: int
+    page_count: int
 
 @dataclass
 class ApprovePlayerNameRequestData:

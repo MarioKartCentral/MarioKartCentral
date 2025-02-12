@@ -76,6 +76,7 @@ const en_us: BaseTranslation = {
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
     ORDINAL_SUFFIX: '{val:number|ordinalSuffix}', // 1 -> '1st' for example
+    DELETE: 'Delete',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -180,6 +181,8 @@ const en_us: BaseTranslation = {
   MODERATOR: {
     MODERATOR: 'Moderator',
     PENDING_NAME_REQUESTS: 'Pending Player Name Requests',
+    APPROVED_NAME_REQUESTS: 'Approved Player Name Requests',
+    DENIED_NAME_REQUESTS: 'Denied Player Name Requests',
     APPROVE: 'Approve?',
     DENY: 'Deny',
     NO_PENDING_NAME_REQUESTS: 'No pending name requests.',
@@ -248,6 +251,8 @@ const en_us: BaseTranslation = {
     NO_PLAYER_CLAIMS: 'No player claims',
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
+    NAME_CHANGE_COUNT: '{count:number} name {{change|changes}}', //TODO: update change/changes
+    NAME_CHANGE_HANDLED_BY: 'Handled by',
     WORD_FILTER: {
       WORD_FILTER_LIST: 'Word Filter List',
       BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',
@@ -419,6 +424,7 @@ const en_us: BaseTranslation = {
       EDIT_PLAYER_FAILED: 'Editing player failed',
       PLAYER_NOT_FOUND: 'Player not found',
       REGISTRATION_DATE: 'Registered',
+      NAME_CHANGE_HISTORY: 'Name Change History',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:

@@ -16,6 +16,7 @@
   import { locale } from '$i18n/i18n-svelte';
   import FCTypeBadge from '$lib/components/badges/FCTypeBadge.svelte';
   import RoleBadge from '$lib/components/badges/RoleBadge.svelte';
+  import PlayerNameHistory from '$lib/components/registry/players/PlayerNameHistory.svelte';
 
   let user_info: UserInfo;
 
@@ -51,10 +52,13 @@
 
     <div class="user_details">
       <div class="name">
-        {#if player.country_code}
-          <Flag country_code={player.country_code} />
-        {/if}
-        {player.name}
+        <div>
+          {#if player.country_code}
+            <Flag country_code={player.country_code} />
+          {/if}
+          {player.name}
+        </div>
+        <PlayerNameHistory {player}/>
       </div>
       
       {#if player.friend_codes.length > 0}
