@@ -100,7 +100,7 @@
                     <th>{$LL.MODERATOR.APPROVE()}</th>
                 {/if}
                 {#if approval_status !== "pending"}
-                    <th class="mobile-hide">{$LL.MODERATOR.NAME_CHANGE_HANDLED_BY()}</th>
+                    <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
                 {/if}
                 {#if approval_status === "approved"}
                     <th>{$LL.COMMON.DELETE()}</th>
@@ -134,7 +134,7 @@
                     {#if approval_status !== "pending"}
                         <td class="mobile-hide">
                             {#if r.handled_by}
-                                <a href="/{$page.params.lang}/registry/players/profile?id={r.player_id}">
+                                <a href="/{$page.params.lang}/registry/players/profile?id={r.handled_by.id}">
                                     <div class="flex">      
                                         <Flag country_code={r.handled_by.country_code}/>
                                         <div>

@@ -191,9 +191,15 @@ const en_us: BaseTranslation = {
     APPROVE_NAME_REQUEST_FAILED: 'Approving name change request failed',
     DENY_NAME_REQUEST_FAILED: 'Denying name change request failed',
     PENDING_TEAM_EDIT_REQUESTS: 'Pending Team Edit Requests',
-    NO_PENDING_TEAM_EDIT_REQUESTS: 'No pending team edit requests.',
+    APPROVED_TEAM_EDIT_REQUESTS: 'Approved Team Edit Requests',
+    DENIED_TEAM_EDIT_REQUESTS: 'Denied Team Edit Requests',
+    NO_TEAM_EDIT_REQUESTS: 'No team edit requests.',
+    TEAM_EDIT_COUNT: '{count:number} team {{edit|edits}}', //TODO: change edit/edits
     PENDING_ROSTER_EDIT_REQUESTS: 'Pending Roster Edit Requests',
-    NO_PENDING_ROSTER_EDIT_REQUESTS: 'No pending roster edit requests.',
+    APPROVED_ROSTER_EDIT_REQUESTS: 'Approved Roster Edit Requests',
+    DENIED_ROSTER_EDIT_REQUESTS: 'Denied Roster Edit Requests',
+    NO_ROSTER_EDIT_REQUESTS: 'No roster edit requests.',
+    ROSTER_EDIT_COUNT: '{count:number} roster {{edit|edits}}', //TODO: change edit/edits
     APPROVE_TEAM_EDIT_CONFIRM: 'Are you sure you wish to approve this team edit request?',
     DENY_TEAM_EDIT_CONFIRM: 'Are you sure you wish to deny this team edit request?',
     APPROVE_TEAM_EDIT_FAILED: 'Approving team edit request failed',
@@ -252,7 +258,7 @@ const en_us: BaseTranslation = {
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
     NAME_CHANGE_COUNT: '{count:number} name {{change|changes}}', //TODO: update change/changes
-    NAME_CHANGE_HANDLED_BY: 'Handled by',
+    HANDLED_BY: 'Handled by',
     WORD_FILTER: {
       WORD_FILTER_LIST: 'Word Filter List',
       BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',

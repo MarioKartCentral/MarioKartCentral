@@ -79,6 +79,7 @@ const de: Translation = {
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
     ORDINAL_SUFFIX: '{val|ordinalSuffix}',
+    DELETE: 'Delete',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -183,6 +184,8 @@ const de: Translation = {
   MODERATOR: {
     MODERATOR: 'Moderator',
     PENDING_NAME_REQUESTS: 'Pending Player Name Requests',
+    APPROVED_NAME_REQUESTS: 'Approved Player Name Requests',
+    DENIED_NAME_REQUESTS: 'Denied Player Name Requests',
     APPROVE: 'Approve?',
     DENY: 'Deny',
     NO_PENDING_NAME_REQUESTS: 'No pending name requests.',
@@ -191,9 +194,15 @@ const de: Translation = {
     APPROVE_NAME_REQUEST_FAILED: 'Approving name change request failed',
     DENY_NAME_REQUEST_FAILED: 'Denying name change request failed',
     PENDING_TEAM_EDIT_REQUESTS: 'Pending Team Edit Requests',
-    NO_PENDING_TEAM_EDIT_REQUESTS: 'No pending team edit requests.',
+    APPROVED_TEAM_EDIT_REQUESTS: 'Approved Team Edit Requests',
+    DENIED_TEAM_EDIT_REQUESTS: 'Denied Team Edit Requests',
+    NO_TEAM_EDIT_REQUESTS: 'No team edit requests.',
+    TEAM_EDIT_COUNT: '{count} team {{edit|edits}}', //TODO: change edit/edits
     PENDING_ROSTER_EDIT_REQUESTS: 'Pending Roster Edit Requests',
-    NO_PENDING_ROSTER_EDIT_REQUESTS: 'No pending roster edit requests.',
+    APPROVED_ROSTER_EDIT_REQUESTS: 'Approved Roster Edit Requests',
+    DENIED_ROSTER_EDIT_REQUESTS: 'Denied Roster Edit Requests',
+    NO_ROSTER_EDIT_REQUESTS: 'No roster edit requests.',
+    ROSTER_EDIT_COUNT: '{count} roster {{edit|edits}}', //TODO: change edit/edits
     APPROVE_TEAM_EDIT_CONFIRM: 'Are you sure you wish to approve this team edit request?',
     DENY_TEAM_EDIT_CONFIRM: 'Are you sure you wish to deny this team edit request?',
     APPROVE_TEAM_EDIT_FAILED: 'Approving team edit request failed',
@@ -251,6 +260,8 @@ const de: Translation = {
     NO_PLAYER_CLAIMS: 'No player claims',
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
+    NAME_CHANGE_COUNT: '{count} name {{change|changes}}', //TODO: update change/changes,
+    HANDLED_BY: 'Handled by',
     WORD_FILTER: {
       WORD_FILTER_LIST: 'Word Filter List',
       BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',
@@ -422,6 +433,7 @@ const de: Translation = {
       EDIT_PLAYER_FAILED: 'Editing player failed',
       PLAYER_NOT_FOUND: 'Player not found',
       REGISTRATION_DATE: 'Registered',
+      NAME_CHANGE_HISTORY: 'Name Change History',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:

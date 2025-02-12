@@ -273,7 +273,7 @@ class GetNotificationTeamDataFromEditRequestCommand(Command[NotificationDataTeam
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT t.id, t.name FROM teams t 
-                JOIN team_edit_requests r ON t.id = r.team_id 
+                JOIN team_edits r ON t.id = r.team_id 
                 WHERE r.id = ?"""
             
             async with db.execute(query, (self.edit_request_id,)) as cursor:
@@ -304,9 +304,9 @@ class GetNotificationTeamRosterDataFromRosterEditRequestCommand(Command[Notifica
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            query = """SELECT t.id, t.name, r.name FROM teams t 
+            query = """SELECT t.id, t.name, r.new_name FROM teams t 
                 JOIN team_rosters tr ON tr.team_id = t.id 
-                JOIN roster_edit_requests r ON tr.id = r.roster_id 
+                JOIN roster_edits r ON tr.id = r.roster_id 
                 WHERE r.id = ?"""
             
             async with db.execute(query, (self.edit_request_id,)) as cursor:

@@ -683,39 +683,55 @@ class TeamTransfer(TableModel):
             )"""
 
 @dataclass
-class TeamEditRequest(TableModel):
+class TeamEdit(TableModel):
     id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    old_name: str
+    new_name: str
+    old_tag: str
+    new_tag: str
+    date: int
+    approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS team_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS team_edits (
             id INTEGER PRIMARY KEY,
             team_id INTEGER NOT NULL REFERENCES teams(id),
-            name TEXT,
-            tag TEXT,
+            old_name TEXT NOT NULL,
+            new_name TEXT NOT NULL,
+            old_tag TEXT NOT NULL,
+            new_tag TEXT NOT NULL,
             date INTEGER NOT NULL,
-            approval_status TEXT NOT NULL
+            approval_status TEXT NOT NULL,
+            handled_by INTEGER REFERENCES players(id)
             )"""
     
 @dataclass
-class RosterEditRequest(TableModel):
+class RosterEdit(TableModel):
     id: int
     roster_id: int
-    name: str | None
-    tag: str | None
+    old_name: str
+    new_name: str
+    old_tag: str
+    new_tag: str
+    date: int
+    approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS roster_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS roster_edits (
         id INTEGER PRIMARY KEY,
         roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
-        name TEXT,
-        tag TEXT,
+        old_name TEXT NOT NULL,
+        new_name TEXT NOT NULL,
+        old_tag TEXT NOT NULL,
+        new_tag TEXT NOT NULL,
         date INTEGER NOT NULL,
-        approval_status TEXT NOT NULL
+        approval_status TEXT NOT NULL,
+        handled_by INTEGER REFERENCES players(id)
         )
         """
     
@@ -902,6 +918,6 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
-    TeamTransfer, TeamEditRequest, RosterEditRequest,
+    TeamTransfer, TeamEdit, RosterEdit,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
     PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]

@@ -699,17 +699,43 @@ type RootTranslation = {
 		 */
 		PENDING_TEAM_EDIT_REQUESTS: string
 		/**
-		 * N​o​ ​p​e​n​d​i​n​g​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 * A​p​p​r​o​v​e​d​ ​T​e​a​m​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
 		 */
-		NO_PENDING_TEAM_EDIT_REQUESTS: string
+		APPROVED_TEAM_EDIT_REQUESTS: string
+		/**
+		 * D​e​n​i​e​d​ ​T​e​a​m​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
+		 */
+		DENIED_TEAM_EDIT_REQUESTS: string
+		/**
+		 * N​o​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_TEAM_EDIT_REQUESTS: string
+		/**
+		 * {​c​o​u​n​t​}​ ​t​e​a​m​ ​{​{​e​d​i​t​|​e​d​i​t​s​}​}
+		 * @param {number} count
+		 */
+		TEAM_EDIT_COUNT: RequiredParams<'count'>
 		/**
 		 * P​e​n​d​i​n​g​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
 		 */
 		PENDING_ROSTER_EDIT_REQUESTS: string
 		/**
-		 * N​o​ ​p​e​n​d​i​n​g​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 * A​p​p​r​o​v​e​d​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
 		 */
-		NO_PENDING_ROSTER_EDIT_REQUESTS: string
+		APPROVED_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * D​e​n​i​e​d​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
+		 */
+		DENIED_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * N​o​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * {​c​o​u​n​t​}​ ​r​o​s​t​e​r​ ​{​{​e​d​i​t​|​e​d​i​t​s​}​}
+		 * @param {number} count
+		 */
+		ROSTER_EDIT_COUNT: RequiredParams<'count'>
 		/**
 		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​?
 		 */
@@ -944,7 +970,7 @@ type RootTranslation = {
 		/**
 		 * H​a​n​d​l​e​d​ ​b​y
 		 */
-		NAME_CHANGE_HANDLED_BY: string
+		HANDLED_BY: string
 		WORD_FILTER: {
 			/**
 			 * W​o​r​d​ ​F​i​l​t​e​r​ ​L​i​s​t
@@ -5049,17 +5075,41 @@ export type TranslationFunctions = {
 		 */
 		PENDING_TEAM_EDIT_REQUESTS: () => LocalizedString
 		/**
-		 * No pending team edit requests.
+		 * Approved Team Edit Requests
 		 */
-		NO_PENDING_TEAM_EDIT_REQUESTS: () => LocalizedString
+		APPROVED_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * Denied Team Edit Requests
+		 */
+		DENIED_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * No team edit requests.
+		 */
+		NO_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * {count} team {{edit|edits}}
+		 */
+		TEAM_EDIT_COUNT: (arg: { count: number }) => LocalizedString
 		/**
 		 * Pending Roster Edit Requests
 		 */
 		PENDING_ROSTER_EDIT_REQUESTS: () => LocalizedString
 		/**
-		 * No pending roster edit requests.
+		 * Approved Roster Edit Requests
 		 */
-		NO_PENDING_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		APPROVED_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * Denied Roster Edit Requests
+		 */
+		DENIED_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * No roster edit requests.
+		 */
+		NO_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * {count} roster {{edit|edits}}
+		 */
+		ROSTER_EDIT_COUNT: (arg: { count: number }) => LocalizedString
 		/**
 		 * Are you sure you wish to approve this team edit request?
 		 */
@@ -5287,7 +5337,7 @@ export type TranslationFunctions = {
 		/**
 		 * Handled by
 		 */
-		NAME_CHANGE_HANDLED_BY: () => LocalizedString
+		HANDLED_BY: () => LocalizedString
 		WORD_FILTER: {
 			/**
 			 * Word Filter List

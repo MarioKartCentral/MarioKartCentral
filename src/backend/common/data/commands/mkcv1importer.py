@@ -273,7 +273,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             creation_date = get_mkc_timestamp(team.created_at)
             recruitment_status = team.recruitment_status == "recruiting"
             logo = None # change to team.picture_filename later
-            new_team = NewMKCTeam(team.id, team.team_name, team.team_tag, team.team_description, creation_date, new_language, team.color_number,
+            new_team = NewMKCTeam(team.id, team.team_name, team.team_tag, team.team_description, creation_date, new_language, team.color_number-1, # subtract 1 from anything that uses colors
                                   logo, new_approval, bool(team.is_historical or team.is_shadow), recruitment_status, {})
             team_dict[team.id] = new_team
 
@@ -457,7 +457,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                 squad = squad_dict[reg.squad_id]
                 # Old site stores squad name as "Squad #" if it has no name, we would like to just set it to None instead
                 squad_name = squad.squad_name if not re.match(squad_regex, squad.squad_name) else None
-                new_squad = NewMKCSquad(squad.id, squad_name, squad.squad_tag, squad.color_number, timestamp, reg.event_id, reg.status == "registered",
+                new_squad = NewMKCSquad(squad.id, squad_name, squad.squad_tag, squad.color_number-1, timestamp, reg.event_id, reg.status == "registered",
                                         bool(reg.verified))
                 new_squads.append(new_squad)
                 new_squad_dict[new_squad.id] = new_squad
