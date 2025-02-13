@@ -187,13 +187,13 @@ class ConvertMKCV1DataCommand(Command[None]):
             player_dict[player.id] = new_player
 
             if player.switch_fc:
-                friend_codes.append(NewMKCFriendCode(player.id, player.switch_fc, "switch"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.switch_fc, "switch", join_date))
             if player.fc_3ds:
-                friend_codes.append(NewMKCFriendCode(player.id, player.fc_3ds, "3ds"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.fc_3ds, "3ds", join_date))
             if player.mktour_fc:
-                friend_codes.append(NewMKCFriendCode(player.id, player.mktour_fc, "mkt"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.mktour_fc, "mkt", join_date))
             if player.nnid:
-                friend_codes.append(NewMKCFriendCode(player.id, player.nnid, "nnid"))
+                friend_codes.append(NewMKCFriendCode(player.id, player.nnid, "nnid", join_date))
             
         now = int(datetime.now(timezone.utc).timestamp())
         player_bans: dict[int, NewMKCPlayerBan] = {}
@@ -546,9 +546,9 @@ class ConvertMKCV1DataCommand(Command[None]):
                                             VALUES(?, ?, ?, ?, ?, ?, ?)""", inserts)
 
             # friend codes
-            await db.executemany("""INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?)""",
-                                    [(fc.player_id, fc.type, fc.fc, False, True, True, None) for fc in friend_codes])
+            await db.executemany("""INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date)
+                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""",
+                                    [(fc.player_id, fc.type, fc.fc, False, True, True, None, fc.creation_date) for fc in friend_codes])
             
             # bans
             await db.executemany("""INSERT INTO player_bans(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment)

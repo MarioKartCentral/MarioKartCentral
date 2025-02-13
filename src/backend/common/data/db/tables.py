@@ -39,6 +39,7 @@ class FriendCode(TableModel):
     is_primary: bool
     is_active: bool
     description: str
+    creation_date: int
 
     @staticmethod
     def get_create_table_command():
@@ -50,7 +51,8 @@ class FriendCode(TableModel):
             is_verified BOOLEAN NOT NULL,
             is_primary BOOLEAN NOT NULL,
             is_active BOOLEAN NOT NULL,
-            description TEXT
+            description TEXT,
+            creation_date INTEGER NOT NULL
             )"""
 
 @dataclass
@@ -734,6 +736,28 @@ class RosterEdit(TableModel):
         handled_by INTEGER REFERENCES players(id)
         )
         """
+
+@dataclass
+class FriendCodeEdit(TableModel):
+    id: int
+    fc_id: int
+    old_fc: str | None
+    new_fc: str | None
+    is_active: bool | None
+    handled_by: int | None
+    date: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS friend_code_edits(
+        id INTEGER PRIMARY KEY,
+        fc_id INTEGER NOT NULL REFERENCES friend_codes(id),
+        old_fc TEXT,
+        new_fc TEXT,
+        is_active BOOLEAN,
+        handled_by INTEGER REFERENCES players(id),
+        date INTEGER NOT NULL
+        )"""
     
 @dataclass
 class UserSettings(TableModel):
@@ -918,6 +942,6 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
-    TeamTransfer, TeamEdit, RosterEdit,
+    TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
     PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]

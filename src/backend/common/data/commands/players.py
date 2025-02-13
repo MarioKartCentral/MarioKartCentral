@@ -119,10 +119,10 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             
             name, country_code, is_hidden, is_shadow, is_banned, player_join_date = player_row
 
-            fc_query = "SELECT id, type, fc, is_verified, is_primary, description, is_active FROM friend_codes WHERE player_id = ?"
+            fc_query = "SELECT id, type, fc, is_verified, is_primary, description, is_active, creation_date FROM friend_codes WHERE player_id = ?"
             friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
-            friend_codes = [FriendCode(id, fc, type, self.id, bool(is_verified), bool(is_primary), description, bool(is_active)) for id, type, fc, is_verified, is_primary, 
-                            description, is_active in friend_code_rows]
+            friend_codes = [FriendCode(id, fc, type, self.id, bool(is_verified), bool(is_primary), creation_date, description, bool(is_active)) for id, type, fc, is_verified, is_primary, 
+                            description, is_active, creation_date in friend_code_rows]
 
             user_query = "SELECT id FROM users WHERE player_id = ?"
             async with db.execute(user_query, (self.id,)) as cursor:
@@ -306,7 +306,7 @@ class ListPlayersCommand(Command[PlayerList]):
                         fc_where_clauses.append("f.fc LIKE ?")
                         fc_variable_parameters.append(f"%{filter.name_or_fc}%")
                 fc_where_clause = "" if not len(fc_where_clauses) else f"AND {' AND '.join(fc_where_clauses)}"
-            friend_codes_query = f"""SELECT f.id, f.fc, f.type, f.player_id, f.is_verified, f.is_primary, f.description, f.is_active FROM friend_codes f WHERE f.player_id IN (
+            friend_codes_query = f"""SELECT f.id, f.fc, f.type, f.player_id, f.is_verified, f.is_primary, f.description, f.is_active, f.creation_date FROM friend_codes f WHERE f.player_id IN (
                 SELECT p.id FROM players p
                 LEFT JOIN users u ON u.player_id = p.id
                 LEFT JOIN user_discords d ON u.id = d.user_id
@@ -346,8 +346,8 @@ class ListPlayersCommand(Command[PlayerList]):
                 async with db.execute(friend_codes_query, (*variable_parameters, limit, offset, *fc_variable_parameters)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        id, fc, fc_type, player_id, is_verified, is_primary, description, is_active = row
-                        friend_codes[player_id].append(FriendCode(id, fc, fc_type, player_id, bool(is_verified), bool(is_primary), description, bool(is_active)))
+                        id, fc, fc_type, player_id, is_verified, is_primary, description, is_active, creation_date = row
+                        friend_codes[player_id].append(FriendCode(id, fc, fc_type, player_id, bool(is_verified), bool(is_primary), creation_date, description, bool(is_active)))
                 
             return PlayerList(players, player_count, page_count)
 

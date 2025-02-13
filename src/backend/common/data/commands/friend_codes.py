@@ -3,6 +3,7 @@ import re
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+from datetime import datetime, timezone
 
 @save_to_command_log
 @dataclass
@@ -45,8 +46,11 @@ class CreateFriendCodeCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Another player is currently using this friend code for this category", status=400)
-            await db.execute("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                             (self.player_id, self.type, self.fc, self.is_verified, is_primary, self.is_active, self.description))
+            now = int(datetime.now(timezone.utc).timestamp())
+            async with db.execute("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                             (self.player_id, self.type, self.fc, self.is_verified, is_primary, self.is_active, self.description, now)) as cursor:
+                fc_id = cursor.lastrowid
+            await db.execute("INSERT INTO friend_code_edits(fc_id, new_fc, date) VALUES(?, ?, ?)", (fc_id, self.fc, now)) # log friend code creation
             await db.commit()
 
 @save_to_command_log    
@@ -58,6 +62,7 @@ class EditFriendCodeCommand(Command[None]):
     is_primary: bool
     is_active: bool | None
     description: str | None
+    mod_player_id: int | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -83,6 +88,14 @@ class EditFriendCodeCommand(Command[None]):
             if self.is_primary and not curr_is_primary:
                 await db.execute("UPDATE friend_codes SET is_primary = 0 WHERE player_id = ? AND type = ? AND id != ?", (self.player_id, type, self.id))
             await db.execute("UPDATE friend_codes SET fc = ?, is_active = ?, description = ?, is_primary = ? WHERE id = ?", (fc, is_active, self.description, self.is_primary, self.id))
+            # log fc edit if a mod changes it
+            if self.mod_player_id:
+                now = int(datetime.now(timezone.utc).timestamp())
+                old_fc = curr_fc if curr_fc != fc else None
+                new_fc = fc if curr_fc != fc else None
+                is_active = is_active if curr_is_active != is_active else None
+                await db.execute("INSERT INTO friend_code_edits(fc_id, old_fc, new_fc, is_active, handled_by, date) VALUES(?, ?, ?, ?, ?, ?)",
+                                 (self.id, old_fc, new_fc, is_active, self.mod_player_id, now))
             await db.commit()
 
 @save_to_command_log
@@ -100,3 +113,53 @@ class SetPrimaryFCCommand(Command[None]):
             await db.execute("UPDATE friend_codes SET is_primary = ? WHERE id != ? AND player_id = ?", (False, self.id, self.player_id))
             await db.execute("UPDATE friend_codes SET is_primary = ? WHERE id = ? AND player_id = ?", (True, self.id, self.player_id))
             await db.commit()
+
+@dataclass
+class ListFriendCodeEditsCommand(Command[FriendCodeEditList]):
+    filter: FriendCodeEditFilter
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        filter = self.filter
+
+        limit:int = 50
+        offset:int = 0
+
+        if filter.page is not None:
+            offset = (filter.page - 1) * limit
+
+        edit_query = """FROM friend_code_edits e
+                        JOIN friend_codes f ON e.fc_id = f.id
+                        JOIN players p ON f.player_id = p.id
+                        LEFT JOIN players p2 ON e.handled_by = p2.id"""
+        
+        async with db_wrapper.connect() as db:
+            edits: list[FriendCodeEdit] = []
+            async with db.execute(f"""SELECT e.id, e.old_fc, e.new_fc, e.is_active, e.date,
+                                        f.id, f.type, f.fc, f.is_verified, f.is_primary, f.is_active,
+                                        f.description, f.creation_date, p.id, p.name, p.country_code,
+                                        p2.id, p2.name, p2.country_code
+                                        {edit_query} ORDER BY e.date DESC LIMIT ? OFFSET ?
+                                  """, (limit, offset)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (edit_id, old_fc, new_fc, edit_active, edit_date, fc_id, fc_type, fc_fc, is_verified, is_primary, is_active,
+                    description, creation_date, player_id, player_name, player_country, handled_by_id, handled_by_name, 
+                    handled_by_country) = row
+                    player = PlayerBasic(player_id, player_name, player_country)
+                    fc = FriendCode(fc_id, fc_fc, fc_type, player_id, is_verified, is_primary, creation_date, description, is_active)
+                    handled_by = None
+                    if handled_by_id:
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                    edit = FriendCodeEdit(edit_id, old_fc, new_fc, edit_active, edit_date, fc, player, handled_by)
+                    edits.append(edit)
+        
+            count_query = f"""SELECT COUNT(*) FROM (SELECT DISTINCT e.id {edit_query})"""
+            page_count: int = 0
+            count: int = 0
+            async with db.execute(count_query) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                count = row[0]
+            
+            page_count = int(count / limit) + (1 if count % limit else 0)
+            return FriendCodeEditList(edits, count, page_count)

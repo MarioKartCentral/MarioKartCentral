@@ -292,6 +292,7 @@ class NewMKCFriendCode:
     player_id: int
     fc: str
     type: FriendCodeType
+    creation_date: int
 
 @dataclass
 class NewMKCPlayerBan:

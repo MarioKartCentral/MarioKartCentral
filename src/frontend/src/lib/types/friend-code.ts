@@ -6,4 +6,5 @@ export type FriendCode = {
   description: string | null;
   is_verified: boolean;
   is_active: boolean;
+  creation_date: number;
 };

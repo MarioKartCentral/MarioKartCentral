@@ -92,7 +92,8 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         await handle(DispatchNotificationCommand([user_id], notifications.FORCE_EDIT_FRIEND_CODE, {'type': type}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
-    command = EditFriendCodeCommand(body.player_id, body.id, body.fc, body.is_primary, body.is_active, body.description)
+    mod_player_id = request.state.user.player_id
+    command = EditFriendCodeCommand(body.player_id, body.id, body.fc, body.is_primary, body.is_active, body.description, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -101,7 +102,7 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
-    command = EditFriendCodeCommand(player_id, body.id, None, body.is_primary, None, body.description)
+    command = EditFriendCodeCommand(player_id, body.id, None, body.is_primary, None, body.description, None)
     await handle(command)
     return JSONResponse({})
 

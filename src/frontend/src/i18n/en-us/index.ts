@@ -77,6 +77,7 @@ const en_us: BaseTranslation = {
     NO_PERMISSION: 'You do not have permission to view this page.',
     ORDINAL_SUFFIX: '{val:number|ordinalSuffix}', // 1 -> '1st' for example
     DELETE: 'Delete',
+    NEW: 'New',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -322,6 +323,21 @@ const en_us: BaseTranslation = {
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
     ACCOUNT: 'Account',
+    MOD_PANEL: {
+      APPROVE_TEAMS: 'Approve Teams',
+      TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
+      APPROVE_TRANSFERS: 'Approve Transfers',
+      USER_ROLES: 'User Roles',
+      PLAYER_BANS: 'Player Bans',
+      PLAYER_NAME_CHANGES: 'Player Name Changes',
+      SHADOW_PLAYERS: 'Shadow Players',
+      PLAYER_CLAIMS: 'Player Claims',
+      MERGE_PLAYERS: 'Merge Players',
+      MERGE_TEAMS: 'Merge Teams',
+      FRIEND_CODE_CHANGES: 'Friend Code Changes',
+      WORD_FILTER: 'Word Filter',
+      MANAGE_USERS: 'Manage Users',
+    },
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',

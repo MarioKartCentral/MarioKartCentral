@@ -4,6 +4,11 @@
   background-color: #029dbd;
   border: 1px solid #027d99;
 }
+.new_badge {
+  width: 40px;
+  background-color: #029dbd;
+  border: 1px solid #027d99;
+}
 .representative_badge {
   font-weight: 700;
   background-color: #bd8000;

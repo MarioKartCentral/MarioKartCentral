@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
-from common.data.models.players import Player, PlayerBasic
+from common.data.models.players import Player
+from common.data.models.player_basic import PlayerBasic
 from common.data.models.discord_integration import Discord
-
 
 @dataclass
 class RequestCreateTeamRequestData():
