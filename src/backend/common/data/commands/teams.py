@@ -1350,7 +1350,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
     
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            rosters_query = f"""
+            rosters_query = """
                     FROM team_roles r
                     JOIN user_team_roles ur ON ur.role_id = r.id
                     JOIN team_rosters tr ON tr.team_id = ur.team_id

@@ -450,7 +450,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                     raise Problem("Tournament not found", status=400)
                 game, teams_allowed = row
             # get squads that the player is either in or has been invited to
-            async with db.execute(f"""SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads s
+            async with db.execute("""SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads s
                                   WHERE s.tournament_id = ? AND EXISTS (
                                     SELECT p.id FROM tournament_players p
                                     WHERE p.squad_id = s.id AND p.player_id = ?
@@ -465,7 +465,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
 
             # get teams connected to squads
             if teams_allowed:
-                async with db.execute(f"""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+                async with db.execute("""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
                                     FROM team_squad_registrations tsr
                                     JOIN team_rosters tr ON tsr.roster_id = tr.id
                                     JOIN teams t ON tr.team_id = t.id
@@ -485,7 +485,7 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                             squad.rosters.append(roster)
 
             # get all players from squads that the requested player is in
-            async with db.execute(f"""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
+            async with db.execute("""SELECT t.id, t.player_id, t.squad_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, p.name, p.country_code, 
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
