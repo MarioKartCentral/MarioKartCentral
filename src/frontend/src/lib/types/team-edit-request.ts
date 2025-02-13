@@ -1,4 +1,4 @@
-import type { PlayerBasic } from "./player";
+import type { PlayerBasic } from './player';
 
 export type TeamEditRequest = {
   id: number;
@@ -17,4 +17,4 @@ export type TeamEditList = {
   change_list: TeamEditRequest[];
   count: number;
   page_count: number;
-}
+};

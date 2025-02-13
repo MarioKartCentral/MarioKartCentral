@@ -1,4 +1,4 @@
-import type { PlayerBasic } from "./player";
+import type { PlayerBasic } from './player';
 
 export type RosterEditRequest = {
   id: number;
@@ -18,4 +18,4 @@ export type RosterEditList = {
   change_list: RosterEditRequest[];
   count: number;
   page_count: number;
-}
+};

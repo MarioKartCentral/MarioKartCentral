@@ -1,4 +1,4 @@
-import type { PlayerBasic } from "./player";
+import type { PlayerBasic } from './player';
 
 export type PlayerClaim = {
   id: number;

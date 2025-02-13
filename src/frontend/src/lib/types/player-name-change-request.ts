@@ -1,4 +1,4 @@
-import type { PlayerBasic } from "./player";
+import type { PlayerBasic } from './player';
 
 export type PlayerNameChangeRequest = {
   id: number;
@@ -15,4 +15,4 @@ export type PlayerNameChangeRequestList = {
   change_list: PlayerNameChangeRequest[];
   count: number;
   page_count: number;
-}
+};
