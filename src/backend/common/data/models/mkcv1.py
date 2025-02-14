@@ -35,6 +35,7 @@ class MKCEventPlacement:
     placement: int
     disqualified: Literal[0, 1]
     title: str | None
+    placement_upper_bound: int | None
 
 @dataclass
 class MKCEventRegistration:
@@ -227,6 +228,33 @@ class MKCTransfer:
     roster_category: Literal["150cc", "200cc", "mktour_vs"]
 
 @dataclass
+class MKCSeriesTemplate:
+    id: int
+    tournament_series_id: int
+    template_name: str
+    tournament_title: str | None
+    logo_filename: str | None
+    organizer: str | None
+    location: str | None
+    default_game_mode: MKCGameMode | None
+    default_event_format: str | None
+    minimum_team_size: int | None
+    maximum_team_size: int | None
+    team_tag_required: int
+    team_name_required: int
+    player_host_required: int
+    player_ign_required: int
+    pr_value: int
+    checkin_required: int
+    checkin_minimum: int | None
+    verification_required: int
+    description: str | None
+    rules: str | None
+    post_registration_message: str | None
+    created_at: str
+    updated_at: str
+
+@dataclass
 class MKCData:
     event_placements: List[MKCEventPlacement]
     event_registrations: List[MKCEventRegistration]
@@ -235,6 +263,7 @@ class MKCData:
     player_optouts: List[MKCPlayerOptout]
     player_roles: List[MKCPlayerRole]
     players: List[MKCPlayer]
+    series_templates: List[MKCSeriesTemplate]
     squad_memberships: List[MKCSquadMembership]
     squads: List[MKCSquad]
     team_memberships: List[MKCTeamMembership]
@@ -475,6 +504,53 @@ class NewMKCSquadPlacement:
     placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
+
+@dataclass
+class NewMKCTournamentTemplate:
+    id: int
+    template_name: str
+    name: str
+    game: Game
+    mode: GameMode
+    series_id: int | None
+    is_squad: bool
+    registrations_open: bool
+    date_start: int
+    date_end: int
+    use_series_description: bool
+    series_stats_include: bool
+    logo: str | None
+    use_series_logo: bool
+    url: str | None
+    registration_deadline: int | None
+    registration_cap: int | None
+    teams_allowed: bool
+    teams_only: bool
+    team_members_only: bool
+    min_squad_size: int | None
+    max_squad_size: int | None
+    squad_tag_required: bool
+    squad_name_required: bool
+    mii_name_required: bool
+    host_status_required: bool
+    checkins_enabled: bool
+    checkins_open: bool
+    min_players_checkin: int | None
+    verification_required: bool
+    verified_fc_required: bool
+    is_viewable: bool
+    is_public: bool
+    is_deleted: bool
+    show_on_profiles: bool
+    require_single_fc: bool
+    min_representatives: int | None
+    bagger_clause_enabled: bool
+    use_series_ruleset: bool
+    organizer: str | None
+    location: str | None
+    description: str
+    ruleset: str
+
 
 @dataclass
 class NewMKCUserData:

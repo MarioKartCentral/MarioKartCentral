@@ -41,7 +41,7 @@ class TournamentDBFields():
     min_representatives: int | None
     bagger_clause_enabled: bool
     use_series_ruleset: bool
-    organizer: str | None
+    organizer: str
     location: str | None
 
 @dataclass

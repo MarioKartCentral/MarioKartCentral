@@ -463,13 +463,14 @@ class ConvertMKCV1DataCommand(Command[None]):
                 new_squad_dict[new_squad.id] = new_squad
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
-                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, None if placement.disqualified else placement.placement, placement.title, None, bool(placement.disqualified))
+                    placement_value = None if placement.disqualified else (placement.placement_upper_bound if placement.placement_upper_bound else placement.placement)
+                    placement_lower_bound = None if placement.disqualified else (placement.placement if placement.placement_upper_bound else None)
+                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, placement_value, placement.title, placement_lower_bound, bool(placement.disqualified))
                     squad_placements.append(new_placement)
             # in the case that the registration has a team linked, we need to make a new squad with all of the members of the team that were in it at the time.
             elif reg.team_id:
                 team = team_dict[reg.team_id]
                 
-
                 roster_mode = tournament_team_map[(tournament.game, tournament.mode)]
                 if roster_mode not in team.rosters:
                     new_roster = NewMKCTeamRoster(roster_id, team.id, tournament.game, tournament.mode, None, None, team.creation_date, team.is_recruiting, False, team.approval_status, [])
@@ -506,7 +507,9 @@ class ConvertMKCV1DataCommand(Command[None]):
                     tournament_player_id += 1
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
-                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, None if placement.disqualified else placement.placement, placement.title, None, bool(placement.disqualified))
+                    placement_value = None if placement.disqualified else (placement.placement_upper_bound if placement.placement_upper_bound else placement.placement)
+                    placement_lower_bound = None if placement.disqualified else (placement.placement if placement.placement_upper_bound else None)
+                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, placement_value, placement.title, placement_lower_bound, bool(placement.disqualified))
                     squad_placements.append(new_placement)
             # if the registration is for a single player (solo tournaments)
             else:
@@ -518,7 +521,9 @@ class ConvertMKCV1DataCommand(Command[None]):
                 tournament_player_id += 1
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
-                    new_placement = NewMKCSoloPlacement(tournament.id, new_player.id, None if placement.disqualified else placement.placement, placement.title, None, bool(placement.disqualified))
+                    placement_value = None if placement.disqualified else (placement.placement_upper_bound if placement.placement_upper_bound else placement.placement)
+                    placement_lower_bound = None if placement.disqualified else (placement.placement if placement.placement_upper_bound else None)
+                    new_placement = NewMKCSoloPlacement(tournament.id, new_player.id, placement_value, placement.title, placement_lower_bound, bool(placement.disqualified))
                     solo_placements.append(new_placement)
 
         for player in mkc_data.squad_memberships:
@@ -537,6 +542,31 @@ class ConvertMKCV1DataCommand(Command[None]):
                                                 player.status == "invited", None, False, False)
             new_tournament_players.append(new_player)
             tournament_player_id += 1
+
+        templates: list[NewMKCTournamentTemplate] = []
+        for template in mkc_data.series_templates:
+            if template.default_game_mode:
+                game, mode = tournament_mode_map[template.default_game_mode]
+            else:
+                game, mode = ("mk8dx", "150cc")
+            tournament_name = "" if template.tournament_title is None else template.tournament_title
+            is_squad = template.default_event_format in ['0', '2']
+            teams_allowed = template.default_event_format in ['0']
+            organizer = organizer_map[template.organizer] if template.organizer else "MKCentral"
+            location = template.location if organizer == "LAN" else None
+            logo = None # update to template.logo_filename later
+            new_template = NewMKCTournamentTemplate(template.id, template.template_name, tournament_name,
+                                                    game, mode, template.tournament_series_id, is_squad,
+                                                    False, 0, 0, False, True, logo, False, None,
+                                                    None, None, teams_allowed, teams_allowed, teams_allowed,
+                                                    template.minimum_team_size, template.maximum_team_size,
+                                                    bool(template.team_tag_required), bool(template.team_name_required),
+                                                    bool(template.player_ign_required), bool(template.player_host_required),
+                                                    bool(template.checkin_required), False, template.checkin_minimum, 
+                                                    bool(template.verification_required), False, True, True, False, True,
+                                                    False, None, False, False, organizer, location, 
+                                                    str(template.description), str(template.rules))
+            templates.append(new_template)
         
         async with db_wrapper.connect() as db:
             # inserting/modifying players
@@ -626,6 +656,13 @@ class ConvertMKCV1DataCommand(Command[None]):
             await db.executemany("""INSERT INTO tournament_squad_placements(tournament_id, squad_id, placement, placement_description, placement_lower_bound, is_disqualified)
                                  VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.squad_id, p.placement, p.placement_description, p.placement_lower_bound,
                                                                    p.is_disqualified) for p in squad_placements])
+
+            # tournament templates
+            await db.executemany("INSERT INTO tournament_templates(id, name, series_id) VALUES(?, ?, ?)", [(t.id, t.template_name, t.series_id) for t in templates])
+            for template in templates:
+                s3_message = bytes(msgspec.json.encode(template))
+                await s3_wrapper.put_object(s3.TEMPLATES_BUCKET, f'{template.id}.json', s3_message)
+
             await db.commit()
 
         # create a new S3 file which lets us retrieve a user's info easier upon first login
