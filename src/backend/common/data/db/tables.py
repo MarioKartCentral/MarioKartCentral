@@ -152,7 +152,7 @@ class UserRole(TableModel):
 class RolePermission(TableModel):
     role_id: int
     permission_id: int
-    denied: bool
+    is_denied: bool
 
     @staticmethod
     def get_create_table_command():
@@ -167,6 +167,7 @@ class TournamentSeries(TableModel):
     id: int
     name: str
     url: str
+    display_order: int
     game: str
     mode: str
     is_historical: bool
@@ -205,6 +206,7 @@ class Tournament(TableModel):
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
+    use_series_logo: bool
     url: str
     registration_deadline: int | None
     registration_cap: int | None
@@ -330,6 +332,7 @@ class TournamentPlayer(TableModel):
     is_invite: bool
     selected_fc_id: int
     is_representative: bool
+    is_bagger_clause: bool
     is_approved: bool
 
     @staticmethod
@@ -460,6 +463,7 @@ class TeamMember(TableModel):
     player_id: int
     join_date: int
     leave_date: int | None
+    is_bagger_clause: bool
 
     @staticmethod
     def get_create_table_command():
@@ -643,7 +647,7 @@ class TournamentRolePermission(TableModel):
 class UserTournamentRole(TableModel):
     user_id: int
     role_id: int
-    tournament: int
+    tournament_id: int
     expires_on: int | None
 
     @staticmethod
@@ -663,8 +667,9 @@ class TeamTransfer(TableModel):
     player_id: int
     roster_id: int
     date: int
+    is_bagger_clause: bool
     roster_leave_id: int
-    is_accepted: int
+    is_accepted: bool
     approval_status: str
 
     @staticmethod
@@ -686,6 +691,8 @@ class TeamEditRequest(TableModel):
     team_id: int
     name: str | None
     tag: str | None
+    date: int
+    approval_status: str
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -704,6 +711,8 @@ class RosterEditRequest(TableModel):
     roster_id: int
     name: str | None
     tag: str | None
+    date: int
+    approval_status: str
 
     @staticmethod
     def get_create_table_command() -> str:

@@ -4,8 +4,8 @@ from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
 from common.auth import permissions
-from common.data.commands.mkcv1importer import ImportMKCV1DataCommand
-from common.data.models.mkcv1 import MKCV1Data
+from common.data.commands import ImportMKCV1DataCommand
+from common.data.models import MKCV1Data
 
 @bind_request_body(MKCV1Data)
 @require_permission(permissions.IMPORT_V1_DATA)

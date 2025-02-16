@@ -8,7 +8,7 @@ from oauthlib.oauth2 import WebApplicationClient
 from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from api import settings
+from api import appsettings
 from common.auth import pw_hasher, permissions
 from common.data.commands import *
 from common.data.models import *
@@ -73,7 +73,7 @@ async def log_out(request: Request) -> Response:
 @bind_request_query(LinkDiscordRequestData)
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request, data: LinkDiscordRequestData) -> Response:
-    client = WebApplicationClient(settings.DISCORD_CLIENT_ID)
+    client = WebApplicationClient(appsettings.DISCORD_CLIENT_ID)
     # get the base URL to figure out the redirect URI
     base_url = urlparse(data.page_url)._replace(path='', params='', query='').geturl()
     redirect_uri = f'{base_url}/api/user/discord_callback'
@@ -89,7 +89,7 @@ async def link_discord(request: Request, data: LinkDiscordRequestData) -> Respon
 @bind_request_query(DiscordAuthCallbackData)
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def discord_callback(request: Request, data: DiscordAuthCallbackData) -> Response:
-    command = LinkUserDiscordCommand(request.state.user.id, data, settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET, settings.ENV)
+    command = LinkUserDiscordCommand(request.state.user.id, data, appsettings.DISCORD_CLIENT_ID, appsettings.DISCORD_CLIENT_SECRET, appsettings.ENV)
     await handle(command)
     # state should contain the URL we were on before linking our discord account,
     # so we should redirect them back there if it exists
@@ -111,7 +111,7 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
 
 @require_logged_in
 async def delete_discord_data(request: Request) -> JSONResponse:
-    command = DeleteUserDiscordDataCommand(request.state.user.id, settings.DISCORD_CLIENT_ID, settings.DISCORD_CLIENT_SECRET)
+    command = DeleteUserDiscordDataCommand(request.state.user.id, appsettings.DISCORD_CLIENT_ID, appsettings.DISCORD_CLIENT_SECRET)
     await handle(command)
     return JSONResponse({})
 
