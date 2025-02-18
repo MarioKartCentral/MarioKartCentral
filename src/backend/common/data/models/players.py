@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
-from common.data.models.common import Game, CountryCode, Approval
+from common.data.models.common import FriendCodeType, CountryCode, Approval
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
 from common.data.models.discord_integration import Discord
+from common.data.models.player_basic import PlayerBasic
     
 @dataclass
 class Player:
@@ -16,12 +17,6 @@ class Player:
     is_banned: bool
     join_date: int
     discord: Discord | None
-
-@dataclass
-class PlayerBasic:
-    id: int
-    name: str
-    country_code: CountryCode
     
 @dataclass
 class PlayerAndFriendCodes(Player):
@@ -58,7 +53,8 @@ class PlayerTransferHistory:
 @dataclass
 class PlayerNameChange:
     id: int
-    name: str
+    old_name: str
+    new_name: str
     date: int
     approval_status: Approval
 
@@ -69,12 +65,19 @@ class PlayerNotes:
     date: int
 
 @dataclass
+class PlayerRole:
+    id: int
+    name: str
+    position: int
+
+@dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
     rosters: list[PlayerRoster]
     ban_info: PlayerBanBasic | None
     user_settings: UserSettings | None
     name_changes: list[PlayerNameChange]
     notes: PlayerNotes | None
+    roles: list[PlayerRole]
 
 @dataclass
 class PlayerList:
@@ -104,7 +107,7 @@ class PlayerFilter:
     name: str | None = None
     friend_code: str | None = None
     name_or_fc: str | None = None
-    game: Game | None = None
+    fc_type: FriendCodeType | None = None
     country: CountryCode | None = None
     is_hidden: bool | None = None
     is_shadow: bool | None = None
@@ -125,11 +128,23 @@ class PlayerRequestNameRequestData:
 class PlayerNameRequest:
     id: int
     player_id: int
-    player_name: str
     player_country: CountryCode
-    request_name: str
+    old_name: str
+    new_name: str
     date: int
     approval_status: Approval
+    handled_by: PlayerBasic | None
+
+@dataclass
+class PlayerNameRequestFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class PlayerNameRequestList:
+    change_list: list[PlayerNameRequest]
+    count: int
+    page_count: int
 
 @dataclass
 class ApprovePlayerNameRequestData:

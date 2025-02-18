@@ -104,7 +104,7 @@
             {#if is_privileged}
                 <div>{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</div>
                 <div>
-                    <RosterSearch bind:roster={selected_roster} game={tournament.game} is_active={null} is_historical={null}/>
+                    <RosterSearch bind:roster={selected_roster} game={tournament.game} mode={tournament.mode} is_active={null} is_historical={null}/>
                 </div>
             {:else if registerable_rosters.length}
             <div>{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</div>

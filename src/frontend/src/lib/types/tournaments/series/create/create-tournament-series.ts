@@ -7,6 +7,7 @@ export type CreateTournamentSeries = {
   mode: string;
   is_historical: boolean;
   is_public: boolean;
+  short_description: string;
   description: string;
   logo: string | null;
   ruleset: string;

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
 from common.data.models.players import Player
+from common.data.models.player_basic import PlayerBasic
 from common.data.models.discord_integration import Discord
-
 
 @dataclass
 class RequestCreateTeamRequestData():
@@ -50,7 +50,7 @@ class RequestEditTeamRequestData():
     tag: str
 
 @dataclass
-class TeamEditRequest():
+class TeamEdit():
     id: int
     team_id: int
     old_name: str
@@ -60,21 +60,43 @@ class TeamEditRequest():
     color: int
     date: int
     approval_status: Approval
+    handled_by: PlayerBasic | None
 
 @dataclass
-class RosterEditRequest():
+class TeamEditFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class TeamEditList:
+    change_list: list[TeamEdit]
+    count: int
+    page_count: int
+
+@dataclass
+class RosterEdit():
     id: int
     roster_id: int
     team_id: int
-    team_name: str
-    team_tag: str
-    old_name: str | None
-    old_tag: str | None
-    new_name: str | None
-    new_tag: str | None
+    old_name: str
+    old_tag: str
+    new_name: str
+    new_tag: str
     color: int
     date: int
     approval_status: Approval
+    handled_by: PlayerBasic | None
+
+@dataclass
+class RosterEditFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class RosterEditList:
+    change_list: list[RosterEdit]
+    count: int
+    page_count: int
 
 @dataclass
 class PartialTeamMember():
@@ -171,8 +193,8 @@ class CreateRosterRequestData():
 class EditRosterRequestData():
     roster_id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    name: str
+    tag: str
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
@@ -221,8 +243,8 @@ class DenyTeamEditRequestData():
 class RequestEditRosterRequestData():
     roster_id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    name: str
+    tag: str
 
 @dataclass
 class ApproveRosterEditRequestData():
@@ -266,6 +288,7 @@ class TeamFilter():
     is_historical: bool | None = None
     is_active: bool | None = None
     sort_by_newest: bool | None = False
+    page: int | None = None
 
 @dataclass
 class TeamInvite():
@@ -349,3 +372,9 @@ class RegisterableRostersRequestData():
 class MergeTeamsRequestData():
     from_team_id: int
     to_team_id: int
+
+@dataclass
+class TeamList:
+    teams: list[Team]
+    team_count: int
+    page_count: int

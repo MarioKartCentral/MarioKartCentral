@@ -1,4 +1,4 @@
-export type TournamentSeries = {
+export type TournamentSeriesBasic = {
   id: number;
   series_name: string;
   url: string | null;
@@ -7,9 +7,13 @@ export type TournamentSeries = {
   mode: string;
   is_historical: boolean;
   is_public: boolean;
-  description: string;
+  short_description: string;
   logo: string | null;
-  ruleset: string;
   organizer: string;
   location: string;
+};
+
+export type TournamentSeries = TournamentSeriesBasic & {
+  description: string;
+  ruleset: string;
 };

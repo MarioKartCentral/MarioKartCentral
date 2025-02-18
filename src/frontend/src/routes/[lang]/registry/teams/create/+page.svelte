@@ -43,7 +43,6 @@
     if(check_permission(user_info, permissions.manage_teams)) {
       endpoint = '/api/registry/teams/create';
     }
-    window.confirm(endpoint);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

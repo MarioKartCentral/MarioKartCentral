@@ -302,6 +302,14 @@ type RootTranslation = {
 		 * @param {number} val
 		 */
 		ORDINAL_SUFFIX: RequiredParams<'val|ordinalSuffix'>
+		/**
+		 * D​e​l​e​t​e
+		 */
+		DELETE: string
+		/**
+		 * N​e​w
+		 */
+		NEW: string
 	}
 	DISCORD: {
 		/**
@@ -390,6 +398,36 @@ type RootTranslation = {
 		 * O​t​h​e​r​ ​F​C​s​:
 		 */
 		OTHER_FCS: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​F​C​ ​t​y​p​e​.​.​.
+		 */
+		SELECT_TYPE: string
+		TYPES: {
+			/**
+			 * A​l​l​ ​F​C​ ​T​y​p​e​s
+			 */
+			ALL: string
+			/**
+			 * S​w​i​t​c​h
+			 */
+			SWITCH: string
+			/**
+			 * N​N​I​D
+			 */
+			NNID: string
+			/**
+			 * M​K​W
+			 */
+			MKW: string
+			/**
+			 * M​K​T
+			 */
+			MKT: string
+			/**
+			 * 3​D​S
+			 */
+			'3DS': string
+		}
 	}
 	GAMES: {
 		/**
@@ -625,6 +663,14 @@ type RootTranslation = {
 		 */
 		PENDING_NAME_REQUESTS: string
 		/**
+		 * A​p​p​r​o​v​e​d​ ​P​l​a​y​e​r​ ​N​a​m​e​ ​R​e​q​u​e​s​t​s
+		 */
+		APPROVED_NAME_REQUESTS: string
+		/**
+		 * D​e​n​i​e​d​ ​P​l​a​y​e​r​ ​N​a​m​e​ ​R​e​q​u​e​s​t​s
+		 */
+		DENIED_NAME_REQUESTS: string
+		/**
 		 * A​p​p​r​o​v​e​?
 		 */
 		APPROVE: string
@@ -657,17 +703,43 @@ type RootTranslation = {
 		 */
 		PENDING_TEAM_EDIT_REQUESTS: string
 		/**
-		 * N​o​ ​p​e​n​d​i​n​g​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 * A​p​p​r​o​v​e​d​ ​T​e​a​m​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
 		 */
-		NO_PENDING_TEAM_EDIT_REQUESTS: string
+		APPROVED_TEAM_EDIT_REQUESTS: string
+		/**
+		 * D​e​n​i​e​d​ ​T​e​a​m​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
+		 */
+		DENIED_TEAM_EDIT_REQUESTS: string
+		/**
+		 * N​o​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_TEAM_EDIT_REQUESTS: string
+		/**
+		 * {​c​o​u​n​t​}​ ​t​e​a​m​ ​{​{​e​d​i​t​|​e​d​i​t​s​}​}
+		 * @param {number} count
+		 */
+		TEAM_EDIT_COUNT: RequiredParams<'count'>
 		/**
 		 * P​e​n​d​i​n​g​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
 		 */
 		PENDING_ROSTER_EDIT_REQUESTS: string
 		/**
-		 * N​o​ ​p​e​n​d​i​n​g​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 * A​p​p​r​o​v​e​d​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
 		 */
-		NO_PENDING_ROSTER_EDIT_REQUESTS: string
+		APPROVED_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * D​e​n​i​e​d​ ​R​o​s​t​e​r​ ​E​d​i​t​ ​R​e​q​u​e​s​t​s
+		 */
+		DENIED_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * N​o​ ​r​o​s​t​e​r​ ​e​d​i​t​ ​r​e​q​u​e​s​t​s​.
+		 */
+		NO_ROSTER_EDIT_REQUESTS: string
+		/**
+		 * {​c​o​u​n​t​}​ ​r​o​s​t​e​r​ ​{​{​e​d​i​t​|​e​d​i​t​s​}​}
+		 * @param {number} count
+		 */
+		ROSTER_EDIT_COUNT: RequiredParams<'count'>
 		/**
 		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​i​s​h​ ​t​o​ ​a​p​p​r​o​v​e​ ​t​h​i​s​ ​t​e​a​m​ ​e​d​i​t​ ​r​e​q​u​e​s​t​?
 		 */
@@ -894,6 +966,15 @@ type RootTranslation = {
 		 * C​r​e​a​t​e​ ​S​h​a​d​o​w​ ​P​l​a​y​e​r
 		 */
 		CREATE_SHADOW_PLAYER: string
+		/**
+		 * {​c​o​u​n​t​}​ ​n​a​m​e​ ​{​{​c​h​a​n​g​e​|​c​h​a​n​g​e​s​}​}
+		 * @param {number} count
+		 */
+		NAME_CHANGE_COUNT: RequiredParams<'count'>
+		/**
+		 * H​a​n​d​l​e​d​ ​b​y
+		 */
+		HANDLED_BY: string
 		WORD_FILTER: {
 			/**
 			 * W​o​r​d​ ​F​i​l​t​e​r​ ​L​i​s​t
@@ -1124,6 +1205,60 @@ type RootTranslation = {
 		 * A​c​c​o​u​n​t
 		 */
 		ACCOUNT: string
+		MOD_PANEL: {
+			/**
+			 * A​p​p​r​o​v​e​ ​T​e​a​m​s
+			 */
+			APPROVE_TEAMS: string
+			/**
+			 * T​e​a​m​ ​N​a​m​e​/​T​a​g​ ​C​h​a​n​g​e​s
+			 */
+			TEAM_NAME_TAG_CHANGES: string
+			/**
+			 * A​p​p​r​o​v​e​ ​T​r​a​n​s​f​e​r​s
+			 */
+			APPROVE_TRANSFERS: string
+			/**
+			 * U​s​e​r​ ​R​o​l​e​s
+			 */
+			USER_ROLES: string
+			/**
+			 * P​l​a​y​e​r​ ​B​a​n​s
+			 */
+			PLAYER_BANS: string
+			/**
+			 * P​l​a​y​e​r​ ​N​a​m​e​ ​C​h​a​n​g​e​s
+			 */
+			PLAYER_NAME_CHANGES: string
+			/**
+			 * S​h​a​d​o​w​ ​P​l​a​y​e​r​s
+			 */
+			SHADOW_PLAYERS: string
+			/**
+			 * P​l​a​y​e​r​ ​C​l​a​i​m​s
+			 */
+			PLAYER_CLAIMS: string
+			/**
+			 * M​e​r​g​e​ ​P​l​a​y​e​r​s
+			 */
+			MERGE_PLAYERS: string
+			/**
+			 * M​e​r​g​e​ ​T​e​a​m​s
+			 */
+			MERGE_TEAMS: string
+			/**
+			 * F​r​i​e​n​d​ ​C​o​d​e​ ​C​h​a​n​g​e​s
+			 */
+			FRIEND_CODE_CHANGES: string
+			/**
+			 * W​o​r​d​ ​F​i​l​t​e​r
+			 */
+			WORD_FILTER: string
+			/**
+			 * M​a​n​a​g​e​ ​U​s​e​r​s
+			 */
+			MANAGE_USERS: string
+		}
 	}
 	NOTIFICATION: {
 		/**
@@ -1276,15 +1411,15 @@ type RootTranslation = {
 		 */
 		'21': RequiredParams<'roster_name|bold'>
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​G​a​m​e​:​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​.
-		 * @param {unknown} game
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​a​d​d​e​d​ ​a​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​p​r​o​f​i​l​e​.​ ​T​y​p​e​:​ ​{​t​y​p​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​.
+		 * @param {unknown} type
 		 */
-		'22': RequiredParams<'game|uppercase|bold'>
+		'22': RequiredParams<'type|uppercase|bold'>
 		/**
-		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​{​g​a​m​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​ ​f​r​i​e​n​d​ ​c​o​d​e​.
-		 * @param {unknown} game
+		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​e​d​i​t​e​d​ ​y​o​u​r​ ​{​t​y​p​e​|​u​p​p​e​r​c​a​s​e​|​b​o​l​d​}​ ​f​r​i​e​n​d​ ​c​o​d​e​.
+		 * @param {unknown} type
 		 */
-		'23': RequiredParams<'game|uppercase|bold'>
+		'23': RequiredParams<'type|uppercase|bold'>
 		/**
 		 * A​ ​m​o​d​e​r​a​t​o​r​ ​h​a​s​ ​s​e​t​ ​y​o​u​r​ ​p​r​i​m​a​r​y​ ​f​r​i​e​n​d​ ​c​o​d​e​.
 		 */
@@ -1591,6 +1726,10 @@ type RootTranslation = {
 			 * R​e​g​i​s​t​e​r​e​d
 			 */
 			REGISTRATION_DATE: string
+			/**
+			 * N​a​m​e​ ​C​h​a​n​g​e​ ​H​i​s​t​o​r​y
+			 */
+			NAME_CHANGE_HISTORY: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -2453,6 +2592,10 @@ type RootTranslation = {
 			 */
 			ADD_PLAYER: string
 			/**
+			 * A​d​d​ ​P​l​a​y​e​r​ ​t​o​ ​S​q​u​a​d
+			 */
+			ADD_PLAYER_TO_SQUAD: string
+			/**
 			 * R​e​m​o​v​e
 			 */
 			REMOVE: string
@@ -3121,6 +3264,22 @@ type RootTranslation = {
 			 * O​n​ ​e​a​c​h​ ​l​i​n​e​,​ ​e​n​t​e​r​ ​t​h​e​ ​I​D​ ​o​f​ ​t​h​e​ ​t​o​u​r​n​a​m​e​n​t​ ​r​e​g​i​s​t​r​a​t​i​o​n​,​ ​f​o​l​l​o​w​e​d​ ​b​y​ ​t​h​e​i​r​ ​r​a​n​k​,​ ​s​e​p​a​r​a​t​e​d​ ​b​y​ ​a​ ​s​p​a​c​e​.​ ​F​o​r​ ​d​i​s​q​u​a​l​i​f​i​e​d​ ​p​a​r​t​i​c​i​p​a​n​t​s​,​ ​e​n​t​e​r​ ​D​Q​ ​i​n​ ​p​l​a​c​e​ ​o​f​ ​t​h​e​ ​r​a​n​k​.​ ​Y​o​u​ ​m​a​y​ ​e​n​t​e​r​ ​a​n​ ​o​p​t​i​o​n​a​l​ ​t​i​t​l​e​ ​a​f​t​e​r​ ​t​h​e​ ​r​a​n​k​.
 			 */
 			RAW_INPUT_INSTRUCTIONS: string
+			/**
+			 * R​a​w​ ​i​n​p​u​t​ ​(​p​l​a​y​e​r​ ​I​D​s​)
+			 */
+			RAW_INPUT_PLAYER_ID: string
+			/**
+			 * O​n​ ​e​a​c​h​ ​l​i​n​e​,​ ​e​n​t​e​r​ ​t​h​e​ ​p​l​a​y​e​r​ ​I​D​s​ ​f​o​r​ ​e​a​c​h​ ​p​l​a​y​e​r​ ​i​n​ ​e​a​c​h​ ​s​q​u​a​d​,​ ​f​o​l​l​o​w​e​d​ ​b​y​ ​t​h​e​i​r​ ​r​a​n​k​,​ ​s​e​p​a​r​a​t​e​d​ ​b​y​ ​a​ ​s​p​a​c​e​.​ ​F​o​r​ ​d​i​s​q​u​a​l​i​f​i​e​d​ ​p​a​r​t​i​c​i​p​a​n​t​s​,​ ​e​n​t​e​r​ ​D​Q​ ​i​n​ ​p​l​a​c​e​ ​o​f​ ​t​h​e​ ​r​a​n​k​.​ ​T​h​i​s​ ​i​n​p​u​t​ ​d​o​e​s​ ​n​o​t​ ​s​u​p​p​o​r​t​ ​p​l​a​c​e​m​e​n​t​ ​t​i​t​l​e​s​,​ ​y​o​u​ ​c​a​n​ ​u​s​e​ ​t​h​e​ ​i​n​t​e​r​a​c​t​i​v​e​ ​i​n​p​u​t​ ​t​o​ ​a​d​d​ ​t​h​e​m​ ​i​n​ ​a​f​t​e​r​ ​s​a​v​i​n​g​ ​h​e​r​e​.
+			 */
+			RAW_INPUT_PLAYER_ID_INSTRUCTIONS: string
+			/**
+			 * W​a​r​n​i​n​g​:​ ​C​l​i​c​k​i​n​g​ ​"​S​a​v​e​"​ ​o​n​ ​t​h​i​s​ ​p​a​g​e​ ​w​i​l​l​ ​d​e​l​e​t​e​ ​a​l​l​ ​c​u​r​r​e​n​t​l​y​ ​r​e​g​i​s​t​e​r​e​d​ ​s​q​u​a​d​s​ ​a​n​d​ ​c​r​e​a​t​e​ ​n​e​w​ ​o​n​e​s​ ​b​a​s​e​d​ ​o​n​ ​t​h​e​ ​i​n​p​u​t​ ​i​n​ ​t​h​i​s​ ​b​o​x​.​ ​D​o​ ​n​o​t​ ​u​s​e​ ​t​h​i​s​ ​u​n​l​e​s​s​ ​y​o​u​ ​k​n​o​w​ ​e​x​a​c​t​l​y​ ​w​h​a​t​ ​y​o​u​ ​a​r​e​ ​d​o​i​n​g​.
+			 */
+			RAW_INPUT_PLAYER_ID_WARNING: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​s​a​v​e​ ​p​l​a​c​e​m​e​n​t​s​?​ ​T​h​i​s​ ​w​i​l​l​ ​d​e​l​e​t​e​ ​a​l​l​ ​c​u​r​r​e​n​t​l​y​ ​r​e​g​i​s​t​e​r​e​d​ ​s​q​u​a​d​s​.
+			 */
+			RAW_INPUT_PLAYER_ID_CONFIRM: string
 		}
 		SERIES: {
 			/**
@@ -3163,6 +3322,10 @@ type RootTranslation = {
 			 * S​e​r​i​e​s​ ​L​o​g​o
 			 */
 			SERIES_LOGO: string
+			/**
+			 * S​h​o​r​t​ ​D​e​s​c​r​i​p​t​i​o​n
+			 */
+			SHORT_DESCRIPTION: string
 			/**
 			 * S​e​r​i​e​s​ ​D​e​s​c​r​i​p​t​i​o​n
 			 */
@@ -4577,6 +4740,14 @@ export type TranslationFunctions = {
 		 * {val|ordinalSuffix}
 		 */
 		ORDINAL_SUFFIX: (arg: { val: number }) => LocalizedString
+		/**
+		 * Delete
+		 */
+		DELETE: () => LocalizedString
+		/**
+		 * New
+		 */
+		NEW: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -4665,6 +4836,36 @@ export type TranslationFunctions = {
 		 * Other FCs:
 		 */
 		OTHER_FCS: () => LocalizedString
+		/**
+		 * Select a FC type...
+		 */
+		SELECT_TYPE: () => LocalizedString
+		TYPES: {
+			/**
+			 * All FC Types
+			 */
+			ALL: () => LocalizedString
+			/**
+			 * Switch
+			 */
+			SWITCH: () => LocalizedString
+			/**
+			 * NNID
+			 */
+			NNID: () => LocalizedString
+			/**
+			 * MKW
+			 */
+			MKW: () => LocalizedString
+			/**
+			 * MKT
+			 */
+			MKT: () => LocalizedString
+			/**
+			 * 3DS
+			 */
+			'3DS': () => LocalizedString
+		}
 	}
 	GAMES: {
 		/**
@@ -4896,6 +5097,14 @@ export type TranslationFunctions = {
 		 */
 		PENDING_NAME_REQUESTS: () => LocalizedString
 		/**
+		 * Approved Player Name Requests
+		 */
+		APPROVED_NAME_REQUESTS: () => LocalizedString
+		/**
+		 * Denied Player Name Requests
+		 */
+		DENIED_NAME_REQUESTS: () => LocalizedString
+		/**
 		 * Approve?
 		 */
 		APPROVE: () => LocalizedString
@@ -4928,17 +5137,41 @@ export type TranslationFunctions = {
 		 */
 		PENDING_TEAM_EDIT_REQUESTS: () => LocalizedString
 		/**
-		 * No pending team edit requests.
+		 * Approved Team Edit Requests
 		 */
-		NO_PENDING_TEAM_EDIT_REQUESTS: () => LocalizedString
+		APPROVED_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * Denied Team Edit Requests
+		 */
+		DENIED_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * No team edit requests.
+		 */
+		NO_TEAM_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * {count} team {{edit|edits}}
+		 */
+		TEAM_EDIT_COUNT: (arg: { count: number }) => LocalizedString
 		/**
 		 * Pending Roster Edit Requests
 		 */
 		PENDING_ROSTER_EDIT_REQUESTS: () => LocalizedString
 		/**
-		 * No pending roster edit requests.
+		 * Approved Roster Edit Requests
 		 */
-		NO_PENDING_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		APPROVED_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * Denied Roster Edit Requests
+		 */
+		DENIED_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * No roster edit requests.
+		 */
+		NO_ROSTER_EDIT_REQUESTS: () => LocalizedString
+		/**
+		 * {count} roster {{edit|edits}}
+		 */
+		ROSTER_EDIT_COUNT: (arg: { count: number }) => LocalizedString
 		/**
 		 * Are you sure you wish to approve this team edit request?
 		 */
@@ -5159,6 +5392,14 @@ export type TranslationFunctions = {
 		 * Create Shadow Player
 		 */
 		CREATE_SHADOW_PLAYER: () => LocalizedString
+		/**
+		 * {count} name {{change|changes}}
+		 */
+		NAME_CHANGE_COUNT: (arg: { count: number }) => LocalizedString
+		/**
+		 * Handled by
+		 */
+		HANDLED_BY: () => LocalizedString
 		WORD_FILTER: {
 			/**
 			 * Word Filter List
@@ -5387,6 +5628,60 @@ export type TranslationFunctions = {
 		 * Account
 		 */
 		ACCOUNT: () => LocalizedString
+		MOD_PANEL: {
+			/**
+			 * Approve Teams
+			 */
+			APPROVE_TEAMS: () => LocalizedString
+			/**
+			 * Team Name/Tag Changes
+			 */
+			TEAM_NAME_TAG_CHANGES: () => LocalizedString
+			/**
+			 * Approve Transfers
+			 */
+			APPROVE_TRANSFERS: () => LocalizedString
+			/**
+			 * User Roles
+			 */
+			USER_ROLES: () => LocalizedString
+			/**
+			 * Player Bans
+			 */
+			PLAYER_BANS: () => LocalizedString
+			/**
+			 * Player Name Changes
+			 */
+			PLAYER_NAME_CHANGES: () => LocalizedString
+			/**
+			 * Shadow Players
+			 */
+			SHADOW_PLAYERS: () => LocalizedString
+			/**
+			 * Player Claims
+			 */
+			PLAYER_CLAIMS: () => LocalizedString
+			/**
+			 * Merge Players
+			 */
+			MERGE_PLAYERS: () => LocalizedString
+			/**
+			 * Merge Teams
+			 */
+			MERGE_TEAMS: () => LocalizedString
+			/**
+			 * Friend Code Changes
+			 */
+			FRIEND_CODE_CHANGES: () => LocalizedString
+			/**
+			 * Word Filter
+			 */
+			WORD_FILTER: () => LocalizedString
+			/**
+			 * Manage Users
+			 */
+			MANAGE_USERS: () => LocalizedString
+		}
 	}
 	NOTIFICATION: {
 		/**
@@ -5508,13 +5803,13 @@ export type TranslationFunctions = {
 		 */
 		'21': (arg: { roster_name: unknown }) => LocalizedString
 		/**
-		 * A moderator has added a friend code to your profile. Game: {game|uppercase|bold}.
+		 * A moderator has added a friend code to your profile. Type: {type|uppercase|bold}.
 		 */
-		'22': (arg: { game: unknown }) => LocalizedString
+		'22': (arg: { type: unknown }) => LocalizedString
 		/**
-		 * A moderator has edited your {game|uppercase|bold} friend code.
+		 * A moderator has edited your {type|uppercase|bold} friend code.
 		 */
-		'23': (arg: { game: unknown }) => LocalizedString
+		'23': (arg: { type: unknown }) => LocalizedString
 		/**
 		 * A moderator has set your primary friend code.
 		 */
@@ -5786,6 +6081,10 @@ export type TranslationFunctions = {
 			 * Registered
 			 */
 			REGISTRATION_DATE: () => LocalizedString
+			/**
+			 * Name Change History
+			 */
+			NAME_CHANGE_HISTORY: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -6629,6 +6928,10 @@ export type TranslationFunctions = {
 			 */
 			ADD_PLAYER: () => LocalizedString
 			/**
+			 * Add Player to Squad
+			 */
+			ADD_PLAYER_TO_SQUAD: () => LocalizedString
+			/**
 			 * Remove
 			 */
 			REMOVE: () => LocalizedString
@@ -7284,6 +7587,22 @@ export type TranslationFunctions = {
 			 * On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.
 			 */
 			RAW_INPUT_INSTRUCTIONS: () => LocalizedString
+			/**
+			 * Raw input (player IDs)
+			 */
+			RAW_INPUT_PLAYER_ID: () => LocalizedString
+			/**
+			 * On each line, enter the player IDs for each player in each squad, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. This input does not support placement titles, you can use the interactive input to add them in after saving here.
+			 */
+			RAW_INPUT_PLAYER_ID_INSTRUCTIONS: () => LocalizedString
+			/**
+			 * Warning: Clicking "Save" on this page will delete all currently registered squads and create new ones based on the input in this box. Do not use this unless you know exactly what you are doing.
+			 */
+			RAW_INPUT_PLAYER_ID_WARNING: () => LocalizedString
+			/**
+			 * Are you sure you would like to save placements? This will delete all currently registered squads.
+			 */
+			RAW_INPUT_PLAYER_ID_CONFIRM: () => LocalizedString
 		}
 		SERIES: {
 			/**
@@ -7326,6 +7645,10 @@ export type TranslationFunctions = {
 			 * Series Logo
 			 */
 			SERIES_LOGO: () => LocalizedString
+			/**
+			 * Short Description
+			 */
+			SHORT_DESCRIPTION: () => LocalizedString
 			/**
 			 * Series Description
 			 */

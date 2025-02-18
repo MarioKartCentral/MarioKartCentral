@@ -41,14 +41,14 @@
 <Dropdown>
   {#if check_permission(user_info, permissions.manage_teams)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">
-      Approve Teams 
+      {$LL.NAVBAR.MOD_PANEL.APPROVE_TEAMS()}
       {#if user_info.mod_notifications?.pending_teams}
         <AlertCount count={user_info.mod_notifications.pending_teams}/>
       {/if}
       
     </DropdownItem>
     <DropdownItem href="/{$page.params.lang}/moderator/approve_team_edits">
-      Team Name/Tag Changes
+      {$LL.NAVBAR.MOD_PANEL.TEAM_NAME_TAG_CHANGES()}
       {#if user_info.mod_notifications?.pending_team_edits}
         <AlertCount count={user_info.mod_notifications.pending_team_edits}/>
       {/if}
@@ -56,7 +56,7 @@
   {/if}
   {#if check_permission(user_info, permissions.manage_transfers)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_transfers">
-      Transfers
+      {$LL.NAVBAR.MOD_PANEL.APPROVE_TRANSFERS()}
       {#if user_info.mod_notifications?.pending_transfers}
         <AlertCount count={user_info.mod_notifications.pending_transfers}/>
       {/if}
@@ -64,28 +64,31 @@
   {/if}
   {#if check_permission(user_info, permissions.manage_user_roles)}
     <DropdownItem href="/{$page.params.lang}/moderator/manage_user_roles">
-      User Roles
+      {$LL.NAVBAR.MOD_PANEL.USER_ROLES()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.ban_player)}
     <DropdownItem href="/{$page.params.lang}/moderator/player_bans">
-      Player Bans
+      {$LL.NAVBAR.MOD_PANEL.PLAYER_BANS()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.edit_player)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_player_names">
-      Player Name Changes
+      {$LL.NAVBAR.MOD_PANEL.PLAYER_NAME_CHANGES()}
       {#if user_info.mod_notifications?.pending_player_name_changes}
         <AlertCount count={user_info.mod_notifications.pending_player_name_changes}/>
       {/if}
     </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/moderator/friend_code_edits">
+      {$LL.NAVBAR.MOD_PANEL.FRIEND_CODE_CHANGES()}
+    </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.manage_shadow_players)}
     <DropdownItem href="/{$page.params.lang}/moderator/shadow_players">
-      Shadow Players
+      {$LL.NAVBAR.MOD_PANEL.SHADOW_PLAYERS()}
     </DropdownItem>
     <DropdownItem href="/{$page.params.lang}/moderator/player_claims">
-      Player Claims
+      {$LL.NAVBAR.MOD_PANEL.PLAYER_CLAIMS()}
       {#if user_info.mod_notifications?.pending_player_claims}
         <AlertCount count={user_info.mod_notifications.pending_player_claims}/>
       {/if}
@@ -93,22 +96,22 @@
   {/if}
   {#if check_permission(user_info, permissions.merge_players)}
     <DropdownItem href="/{$page.params.lang}/moderator/merge_players">
-      Merge Players
+      {$LL.NAVBAR.MOD_PANEL.MERGE_PLAYERS()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.merge_teams)}
     <DropdownItem href="/{$page.params.lang}/moderator/merge_teams">
-      Merge Teams
+      {$LL.NAVBAR.MOD_PANEL.MERGE_TEAMS()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.manage_word_filter)}
     <DropdownItem href="/{$page.params.lang}/moderator/word_filter">
-      Word Filter
+      {$LL.NAVBAR.MOD_PANEL.WORD_FILTER()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.edit_user)}
     <DropdownItem href="/{$page.params.lang}/moderator/users">
-      Manage Users
+      {$LL.NAVBAR.MOD_PANEL.MANAGE_USERS()}
     </DropdownItem>
   {/if}
   

@@ -52,8 +52,9 @@ async def edit_team(request: Request, body: EditTeamRequestData) -> JSONResponse
     except Exception:
         pass
 
+    mod_player_id = request.state.user.player_id
     command = EditTeamCommand(body.team_id, body.name, body.tag, body.description, body.language, body.color,
-        body.logo, body.approval_status, body.is_historical, True)
+        body.logo, body.approval_status, body.is_historical, True, mod_player_id)
     await handle(command)
 
     return JSONResponse({}, background=BackgroundTask(notify))
@@ -108,7 +109,8 @@ async def approve_team_edit_request(request: Request, body: ApproveTeamEditReque
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
         await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_ACCEPTED, {'team_name': data.team_name}, f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
 
-    command = ApproveTeamEditCommand(body.request_id)
+    mod_player_id = request.state.user.player_id
+    command = ApproveTeamEditCommand(body.request_id, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -120,13 +122,15 @@ async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
         await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_CHANGE_DENIED, {'team_name': data.team_name}, f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
 
-    command = DenyTeamEditCommand(body.request_id)
+    mod_player_id = request.state.user.player_id
+    command = DenyTeamEditCommand(body.request_id, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
+@bind_request_query(TeamEditFilter)
 @require_permission(permissions.MANAGE_TEAMS)
-async def list_team_edit_requests(request: Request) -> JSONResponse:
-    command = ListTeamEditRequestsCommand("pending")
+async def list_team_edit_requests(request: Request, filter: TeamEditFilter) -> JSONResponse:
+    command = ListTeamEditRequestsCommand(filter)
     requests = await handle(command)
     return JSONResponse(requests)
 
@@ -162,8 +166,9 @@ async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResp
     except Exception:
         pass
 
+    mod_player_id = request.state.user.player_id
     command = EditRosterCommand(body.roster_id, body.team_id, body.name, body.tag, body.is_recruiting,
-                                body.is_active, body.approval_status)
+                                body.is_active, body.approval_status, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -190,7 +195,8 @@ async def approve_roster_edit_request(request: Request, body: EditRosterChangeRe
         content_args = {'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_ACCEPTED, content_args, f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
 
-    command = ApproveRosterEditCommand(body.request_id)
+    mod_player_id = request.state.user.player_id
+    command = ApproveRosterEditCommand(body.request_id, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -203,7 +209,8 @@ async def deny_roster_edit_request(request: Request, body: EditRosterChangeReque
         content_args = {'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand(user_ids, notifications.ROSTER_CHANGE_DENIED, content_args, f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
 
-    command = DenyRosterEditCommand(body.request_id)
+    mod_player_id = request.state.user.player_id
+    command = DenyRosterEditCommand(body.request_id, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
 
@@ -332,9 +339,10 @@ async def view_denied_transfers(request: Request, filter: TransferFilter) -> JSO
     transfers = await handle(command)
     return JSONResponse(transfers)
 
+@bind_request_query(RosterEditFilter)
 @require_permission(permissions.MANAGE_TEAMS)
-async def list_roster_edit_requests(request: Request) -> JSONResponse:
-    command = ListRosterEditRequestsCommand("pending")
+async def list_roster_edit_requests(request: Request, filter: RosterEditFilter) -> JSONResponse:
+    command = ListRosterEditRequestsCommand(filter)
     requests = await handle(command)
     return JSONResponse(requests)
 

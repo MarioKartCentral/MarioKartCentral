@@ -19,6 +19,9 @@
 
   let user_info: UserInfo;
 
+  let show_all = false;
+  let display_limit = 12;
+
   user.subscribe((value) => {
     user_info = value;
   });
@@ -64,6 +67,7 @@
         tournament_players = body;
         registration_count = tournament_players.length;
       }
+      show_all = false;
     }
   }
 </script>
@@ -94,16 +98,19 @@
         {:else}
           {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registration_count})}
         {/if}
+        {#if !show_all && registration_count > display_limit}
+          <button class="show-players" on:click={() => show_all = true}>{$LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}</button>
+        {/if}
       </div>
       {#if tournament.is_squad}
-        {#key tournament_squads}
-          <TournamentSquadList {tournament} squads={tournament_squads} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+        {#key [tournament_squads, show_all]}
+          <TournamentSquadList {tournament} squads={show_all ? tournament_squads : tournament_squads.slice(0, display_limit)} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
             tournament.id, tournament.series_id
           )}/>
         {/key}
       {:else}
-        {#key tournament_players}
-          <TournamentPlayerList {tournament} players={tournament_players} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+        {#key [tournament_players, show_all]}
+          <TournamentPlayerList {tournament} players={show_all ? tournament_players : tournament_players.slice(0, display_limit)} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
             tournament.id, tournament.series_id
           )}/>
         {/key}
@@ -113,3 +120,12 @@
     {/if}
   {/if}
 </div>
+
+<style>
+  button.show-players {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+</style>

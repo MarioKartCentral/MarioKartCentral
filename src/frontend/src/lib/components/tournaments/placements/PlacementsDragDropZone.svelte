@@ -40,7 +40,9 @@
         // convert our placement list into the format used by the API
         for(let p of placement_list) {
             if(p.placement || p.is_disqualified) {
-                new_placements.push({registration_id: p.id, placement: p.placement, placement_description: p.description,
+                // if it's a solo tournament, we want to use player ID instead of registration ID
+                // since you can't view tournament player IDs on frontend
+                new_placements.push({registration_id: p.player ? p.player.player_id : p.id, placement: p.placement, placement_description: p.description,
                     placement_lower_bound: p.placement_lower_bound, is_disqualified: Boolean(p.is_disqualified)
                 });
             }

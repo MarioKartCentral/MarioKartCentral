@@ -14,6 +14,7 @@
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
   import LL from '$i18n/i18n-svelte';
+  import { game_fc_types } from '$lib/util/util';
 
   export let tournament: Tournament;
 
@@ -25,7 +26,7 @@
   });
 
   function get_game_fcs(game: string, fcs: FriendCode[]) {
-    return fcs.filter((fc) => fc.game === game);
+    return fcs.filter((fc) => fc.type === game_fc_types[game]);
   }
 
 

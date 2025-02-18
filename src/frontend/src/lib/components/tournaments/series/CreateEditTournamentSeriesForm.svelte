@@ -23,6 +23,7 @@
     mode: '150cc',
     is_historical: false,
     is_public: true,
+    short_description: '',
     description: '',
     ruleset: '',
     logo: null,
@@ -146,6 +147,9 @@
       <GameModeSelect bind:game={data.game} bind:mode={data.mode} />
     </div> 
   </Section>
+  <Section header={$LL.TOURNAMENTS.SERIES.SHORT_DESCRIPTION()}>
+    <textarea bind:value={data.short_description} maxlength=500/>
+  </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.SERIES_DESCRIPTION()}>
     <div class="option">
       <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData}/>
@@ -188,5 +192,9 @@
 <style>
   div.option {
     margin-bottom: 10px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 100px;
   }
 </style>

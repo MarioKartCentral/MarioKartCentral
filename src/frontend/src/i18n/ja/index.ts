@@ -79,6 +79,8 @@ const ja: Translation = {
     LANGUAGE: 'Language',
     NO_PERMISSION: 'You do not have permission to view this page.',
     ORDINAL_SUFFIX: '{val|ordinalSuffix}',
+    DELETE: 'Delete',
+    NEW: 'New',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -104,6 +106,15 @@ const ja: Translation = {
     PRIMARY: 'Primary?',
     SELECTED_FC: 'Selected FC:',
     OTHER_FCS: 'Other FCs:',
+    SELECT_TYPE: 'Select a FC type...',
+    TYPES: {
+      ALL: 'All FC Types',
+      SWITCH: 'Switch',
+      NNID: 'NNID',
+      MKW: 'MKW',
+      MKT: 'MKT',
+      '3DS': '3DS',
+    },
   },
   GAMES: {
     ALL: 'All Games',
@@ -174,6 +185,8 @@ const ja: Translation = {
   MODERATOR: {
     MODERATOR: 'Moderator',
     PENDING_NAME_REQUESTS: 'Pending Player Name Requests',
+    APPROVED_NAME_REQUESTS: 'Approved Player Name Requests',
+    DENIED_NAME_REQUESTS: 'Denied Player Name Requests',
     APPROVE: 'Approve?',
     DENY: 'Deny',
     NO_PENDING_NAME_REQUESTS: 'No pending name requests.',
@@ -182,9 +195,15 @@ const ja: Translation = {
     APPROVE_NAME_REQUEST_FAILED: 'Approving name change request failed',
     DENY_NAME_REQUEST_FAILED: 'Denying name change request failed',
     PENDING_TEAM_EDIT_REQUESTS: 'Pending Team Edit Requests',
-    NO_PENDING_TEAM_EDIT_REQUESTS: 'No pending team edit requests.',
+    APPROVED_TEAM_EDIT_REQUESTS: 'Approved Team Edit Requests',
+    DENIED_TEAM_EDIT_REQUESTS: 'Denied Team Edit Requests',
+    NO_TEAM_EDIT_REQUESTS: 'No team edit requests.',
+    TEAM_EDIT_COUNT: '{count} team {{edit|edits}}', //TODO: change edit/edits
     PENDING_ROSTER_EDIT_REQUESTS: 'Pending Roster Edit Requests',
-    NO_PENDING_ROSTER_EDIT_REQUESTS: 'No pending roster edit requests.',
+    APPROVED_ROSTER_EDIT_REQUESTS: 'Approved Roster Edit Requests',
+    DENIED_ROSTER_EDIT_REQUESTS: 'Denied Roster Edit Requests',
+    NO_ROSTER_EDIT_REQUESTS: 'No roster edit requests.',
+    ROSTER_EDIT_COUNT: '{count} roster {{edit|edits}}', //TODO: change edit/edits
     APPROVE_TEAM_EDIT_CONFIRM: 'Are you sure you wish to approve this team edit request?',
     DENY_TEAM_EDIT_CONFIRM: 'Are you sure you wish to deny this team edit request?',
     APPROVE_TEAM_EDIT_FAILED: 'Approving team edit request failed',
@@ -242,6 +261,8 @@ const ja: Translation = {
     NO_PLAYER_CLAIMS: 'No player claims',
     SHADOW_PLAYERS: 'Shadow Players',
     CREATE_SHADOW_PLAYER: 'Create Shadow Player',
+    NAME_CHANGE_COUNT: '{count} name {{change|changes}}', //TODO: update change/changes,
+    HANDLED_BY: 'Handled by',
     WORD_FILTER: {
       WORD_FILTER_LIST: 'Word Filter List',
       BLACKLISTED_WORDS: 'Blacklisted Words (one per line)',
@@ -305,6 +326,21 @@ const ja: Translation = {
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
     ACCOUNT: 'Account',
+    MOD_PANEL: {
+      APPROVE_TEAMS: 'Approve Teams',
+      TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
+      APPROVE_TRANSFERS: 'Approve Transfers',
+      USER_ROLES: 'User Roles',
+      PLAYER_BANS: 'Player Bans',
+      PLAYER_NAME_CHANGES: 'Player Name Changes',
+      SHADOW_PLAYERS: 'Shadow Players',
+      PLAYER_CLAIMS: 'Player Claims',
+      MERGE_PLAYERS: 'Merge Players',
+      MERGE_TEAMS: 'Merge Teams',
+      FRIEND_CODE_CHANGES: 'Friend Code Changes',
+      WORD_FILTER: 'Word Filter',
+      MANAGE_USERS: 'Manage Users',
+    },
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'Mark All as Read',
@@ -338,8 +374,8 @@ const ja: Translation = {
     '19': 'Your team name/tag change for {team_name|bold} has been denied.',
     '20': 'Your team roster name/tag change for {roster_name|bold} has been approved!',
     '21': 'Your team roster name/tag change for {roster_name|bold} has been denied.',
-    '22': 'A moderator has added a friend code to your profile. Game: {game|uppercase|bold}.',
-    '23': 'A moderator has edited your {game|uppercase|bold} friend code.',
+    '22': 'A moderator has added a friend code to your profile. Type: {type|uppercase|bold}.',
+    '23': 'A moderator has edited your {type|uppercase|bold} friend code.',
     '24': 'A moderator has set your primary friend code.',
     '25': 'Your name change has been approved!',
     '26': 'Your name change has been denied.',
@@ -413,6 +449,7 @@ const ja: Translation = {
       EDIT_PLAYER_FAILED: 'Editing player failed',
       PLAYER_NOT_FOUND: 'Player not found',
       REGISTRATION_DATE: 'Registered',
+      NAME_CHANGE_HISTORY: 'Name Change History',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
@@ -650,6 +687,7 @@ const ja: Translation = {
       ELIGIBLE: 'Eligible?',
       REGISTRATION_DATE: 'Registration Date',
       ADD_PLAYER: 'Add Player',
+      ADD_PLAYER_TO_SQUAD: 'Add Player to Squad',
       REMOVE: 'Remove',
       UNREGISTER_SQUAD_CONFIRM: 'Are you sure you would like to remove this squad from this tournament?',
       UNREGISTER_SQUAD_FAILED: 'Failed to unregister squad',
@@ -820,6 +858,13 @@ const ja: Translation = {
       SWITCH_TO_INTERACTIVE_INPUT: 'Switch to interactive input',
       RAW_INPUT_INSTRUCTIONS:
         'On each line, enter the ID of the tournament registration, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.',
+      RAW_INPUT_PLAYER_ID: 'Raw input (player IDs)',
+      RAW_INPUT_PLAYER_ID_INSTRUCTIONS:
+        'On each line, enter the player IDs for each player in each squad, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. This input does not support placement titles, you can use the interactive input to add them in after saving here.',
+      RAW_INPUT_PLAYER_ID_WARNING:
+        'Warning: Clicking "Save" on this page will delete all currently registered squads and create new ones based on the input in this box. Do not use this unless you know exactly what you are doing.',
+      RAW_INPUT_PLAYER_ID_CONFIRM:
+        'Are you sure you would like to save placements? This will delete all currently registered squads.',
     },
     SERIES: {
       CREATE: 'Create Series',
@@ -832,6 +877,7 @@ const ja: Translation = {
       SERIES_URL: 'Series URL',
       DISPLAY_ORDER: 'Display Order',
       SERIES_LOGO: 'Series Logo',
+      SHORT_DESCRIPTION: 'Short Description',
       SERIES_DESCRIPTION: 'Series Description',
       SERIES_RULESET: 'Series Ruleset',
       EVENT_DEFAULTS: 'Event Defaults',

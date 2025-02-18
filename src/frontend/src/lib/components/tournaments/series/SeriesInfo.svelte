@@ -42,7 +42,10 @@
         <img src={series.logo} alt={series.series_name} />
       </div>
     {/if}
-    <MarkdownBox content={series.description} />
+    <div class="series-name">
+      {series.series_name}
+    </div>
+    <MarkdownBox content={series.description ? series.description : series.short_description} />
   </div>
 </Section>
 
@@ -54,5 +57,11 @@
     margin: auto;
     max-width: 400px;
     max-height: 200px;
+  }
+  .series-name {
+    margin: auto;
+    font-weight: bold;
+    font-size: 30px;
+    text-align: center;
   }
 </style>

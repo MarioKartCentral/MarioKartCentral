@@ -33,10 +33,10 @@
     async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
         const payload = {
-        roster_id: roster.id,
-        team_id: roster.team_id,
-        name: data.get('name')?.toString(),
-        tag: data.get('tag')?.toString(),
+            roster_id: roster.id,
+            team_id: roster.team_id,
+            name: data.get('name')?.toString(),
+            tag: data.get('tag')?.toString(),
         };
         console.log(payload);
         const endpoint = '/api/registry/teams/requestRosterChange';
@@ -76,17 +76,16 @@
             </div>
         {/each}
     {:else}
-    <div>
-        <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-        <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
-    </div>
-    <div>
-        <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-        <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
-    </div>
-    <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+        <div>
+            <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
+            <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
+        </div>
+        <div>
+            <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
+            <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
+        </div>
+        <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}
-    
 </form>
 
 <style>
