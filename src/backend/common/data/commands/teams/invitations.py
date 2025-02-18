@@ -28,7 +28,8 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player not found", status=404)
-            async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
+            fc_type = game_fc_map[game]
+            async with db.execute("SELECT id FROM friend_codes WHERE type = ? AND player_id = ? AND is_active = ?", (fc_type, self.player_id, True)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
@@ -93,7 +94,8 @@ class AcceptInviteCommand(Command[None]):
                     if row is None:
                         raise Problem("Player is not registered for the roster they are leaving", status=400)
             # make sure we have at least one FC for the game of the roster that we are accepting an invite for
-            async with db.execute("SELECT count(id) FROM friend_codes WHERE player_id = ? AND game = ?", (self.player_id, game)) as cursor:
+            fc_type = game_fc_map[game]
+            async with db.execute("SELECT count(id) FROM friend_codes WHERE player_id = ? AND type = ?", (self.player_id, fc_type)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 fc_count = row[0]

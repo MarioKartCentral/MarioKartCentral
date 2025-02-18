@@ -242,7 +242,8 @@ class ForceTransferPlayerCommand(Command[None]):
                 game = row[1]
                 if self.is_bagger_clause and game != "mkw":
                     raise Problem("Cannot make players baggers for games other than MKW", status=400)
-            async with db.execute("SELECT id FROM friend_codes WHERE game = ? AND player_id = ? AND is_active = ?", (game, self.player_id, True)) as cursor:
+            fc_type = game_fc_map[game]
+            async with db.execute("SELECT id FROM friend_codes WHERE type = ? AND player_id = ? AND is_active = ?", (fc_type, self.player_id, True)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
