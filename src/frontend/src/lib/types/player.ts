@@ -1,9 +1,12 @@
 import type { Discord } from './discord';
 
-export type Player = {
+export type PlayerBasic = {
   id: number;
   name: string;
-  country_code: string | null;
+  country_code: string;
+};
+
+export type Player = PlayerBasic & {
   is_hidden: boolean;
   is_shadow: boolean;
   is_banned: boolean;

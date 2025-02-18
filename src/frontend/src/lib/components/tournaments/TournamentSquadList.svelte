@@ -12,6 +12,7 @@
   import AddPlayerToSquad from './registration/AddPlayerToSquad.svelte';
   import LL from '$i18n/i18n-svelte';
   import ManageSquadRosters from './registration/ManageSquadRosters.svelte';
+  import { page } from '$app/stores';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
@@ -129,7 +130,15 @@
           </td>
         {/if}
         {#if tournament.squad_name_required}
-          <td>{squad.name}</td>
+          <td>
+            {#if squad.rosters.length}
+              <a href="/{$page.params.lang}/registry/teams/profile?id={squad.rosters[0].team_id}">
+                {squad.name}
+              </a>
+            {:else}
+              {squad.name}
+            {/if}
+          </td>
         {/if}
         <td
           >{squad.players.filter((p) => !p.is_invite).length}

@@ -72,12 +72,12 @@
     }
     if (from) {
       filtered_solo_placements = filtered_solo_placements.filter((item) => {
-        return item.date_start >= Date.parse(from) / 1000;
+        return from && item.date_start >= Date.parse(from) / 1000;
       });
     }
     if (to) {
       filtered_team_placements = filtered_team_placements.filter((item) => {
-        return item.date_end <= Date.parse(to) / 1000;
+        return to && item.date_end <= Date.parse(to) / 1000;
       });
     }
 
@@ -145,7 +145,11 @@
                     {toDate(placement.date_start)}
                     {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
                   </td>
-                  {#if placement.partners != null}
+                  {#if placement.squad_name}
+                    <td class="mobile-hide">
+                      {placement.squad_name}
+                    </td>
+                  {:else if placement.partners != null}
                     <td class="mobile-hide">
                       {#each placement.partners as partner}
                         <div class="flex flex-row">
@@ -203,12 +207,16 @@
                   </td>
                   {#if placement.squad_id != null && placement.squad_name != null}
                     <td class="mobile-hide">
-                      <a
-                        class="hover:text-emerald-400"
-                        href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
-                      >
+                      {#if placement.team_id}
+                        <a
+                          class="hover:text-emerald-400"
+                          href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
+                        >
+                          {placement.squad_name}
+                        </a>
+                      {:else}
                         {placement.squad_name}
-                      </a>
+                      {/if}
                     </td>
                   {:else}
                     <td></td>

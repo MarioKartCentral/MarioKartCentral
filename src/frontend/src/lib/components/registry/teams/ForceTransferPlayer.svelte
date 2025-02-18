@@ -93,7 +93,7 @@
         <div class="item">
             <div>{$LL.MODERATOR.NEW_ROSTER()}</div>
             {#key from_roster}
-                <RosterSearch bind:roster={to_roster} game={from_roster?.game}/>
+                <RosterSearch bind:roster={to_roster} game={from_roster?.game} mode={from_roster?.mode}/>
             {/key}
         </div>
         {#if !from_roster && to_roster?.game === "mkw"}

@@ -11,6 +11,14 @@ class TournamentPlacement():
     is_disqualified: bool
 
 @dataclass
+class TournamentPlacementFromPlayerIDs():
+    player_ids: list[int]
+    placement: int | None
+    placement_description: str | None
+    placement_lower_bound: int | None
+    is_disqualified: bool
+
+@dataclass
 class TournamentPlacementDetailed(TournamentPlacement):
     player: TournamentPlayerDetails | None
     squad: TournamentSquadDetails | None

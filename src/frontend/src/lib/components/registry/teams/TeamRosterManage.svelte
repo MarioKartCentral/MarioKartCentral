@@ -21,6 +21,9 @@
   import RosterPlayerName from './RosterPlayerName.svelte';
   import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import { page } from '$app/stores';
+  import { game_fc_types } from '$lib/util/util';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -243,6 +246,7 @@
     {/if}
     <TagBadge tag={roster.tag} color={roster.color} />
     <GameBadge game={roster.game}/>
+    <ModeBadge mode={roster.mode}/>
     {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
       <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
     {/if}
@@ -273,7 +277,7 @@
               <td>
                 <RosterPlayerName {player}/>
               </td>
-              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+              <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
               <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
               <td>
                 <ChevronDownSolid class="cursor-pointer"/>
@@ -337,12 +341,14 @@
               <tr>
                 <td><Flag country_code={player.country_code} /></td>
                 <td>
-                  {player.name}
+                  <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">
+                    {player.name}
+                  </a>
                   {#if player.is_bagger_clause}
                     <BaggerBadge/>
                   {/if}
                 </td>
-                <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.game === roster.game)[0].fc}</td>
+                <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
                 <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
                 <td>
                   <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button>
@@ -356,7 +362,7 @@
     {#if check_permission(user_info, permissions.invite_to_team, true)}
       <div class="section">
         <b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b>
-        <PlayerSearch bind:player={invite_player} game={roster.game} />
+        <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
         {#if invite_player}
           {#if roster.game === 'mkw'}
             <div>

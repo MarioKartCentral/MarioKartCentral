@@ -18,14 +18,14 @@
   async function register(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
     const fc_labels = ['switch_fc', 'mkt_fc', 'mkw_fc', '3ds_fc', 'nnid'];
-    const games = ['mk8dx', 'mkt', 'mkw', 'mk7', 'mk8'];
+    const types = ['switch', 'mkt', 'mkw', '3ds', 'nnid'];
     let friend_codes: FriendCode[] = [];
     for (let i = 0; i < fc_labels.length; i++) {
       let fc = data.get(fc_labels[i]) as string;
       if (fc === '') {
         continue;
       }
-      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), game: games[i], is_primary: true, description: null, is_verified: false, is_active: true });
+      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), type: types[i], is_primary: true, description: null, is_verified: false, is_active: true });
     }
 
     const payload = {

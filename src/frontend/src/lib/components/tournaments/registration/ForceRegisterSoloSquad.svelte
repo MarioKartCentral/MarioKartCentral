@@ -11,6 +11,7 @@
     import type { UserInfo } from "$lib/types/user-info";
     import { check_permission, permissions } from "$lib/util/permissions";
     import LL from "$i18n/i18n-svelte";
+    import { game_fc_types } from "$lib/util/util";
 
     export let tournament: Tournament;
     let player: PlayerInfo | null;
@@ -105,7 +106,7 @@
             <Button on:click={shadow_dialog.open}>{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
         {/if}
     </div>
-    <PlayerSearch bind:player={player} game={tournament.game} is_shadow={null} include_shadow_players={true}/>
+    <PlayerSearch bind:player={player} fc_type={game_fc_types[tournament.game]} is_shadow={null} include_shadow_players={true}/>
     {#if player}
         <form method="POST" on:submit|preventDefault={tournament.is_squad ? registerSquad : registerSolo}>
             <SquadTournamentFields {tournament}/>

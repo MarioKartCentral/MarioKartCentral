@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Team } from '$lib/types/team';
+  import type { Team, TeamList } from '$lib/types/team';
   import Table from '$lib/components/common/Table.svelte';
   import RosterList from '$lib/components/registry/teams/RosterList.svelte';
   import { locale } from '$i18n/i18n-svelte';
@@ -10,10 +10,13 @@
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { onMount } from 'svelte';
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
 
   let teams: Team[] = [];
 
   let show_rosters: { [id: number]: boolean } = {};
+  let totalTeams = 0;
+  let totalPages = 0;
 
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
@@ -32,6 +35,7 @@
     name: string | null;
     is_historical: boolean;
     is_active: boolean | null;
+    page: number;
   }
 
   let filters: TeamFilter = {
@@ -40,6 +44,7 @@
     name: null,
     is_historical: false,
     is_active: null,
+    page: 1,
   }
 
   async function fetchData() {
@@ -60,11 +65,13 @@
     url += filter_strings.join("&");
     const res = await fetch(url);
     if (res.status === 200) {
-      const body = await res.json();
-      for (let t of body) {
+      const body: TeamList = await res.json();
+      for (let t of body.teams) {
         teams.push(t);
       }
       teams = teams;
+      totalTeams = body.team_count;
+      totalPages = body.page_count;
     }
   }
 
@@ -92,7 +99,8 @@
     </div>
   </div>
 </form>
-{$LL.TEAMS.LIST.TEAM_COUNT({count: teams.length})}
+{$LL.TEAMS.LIST.TEAM_COUNT({count: totalTeams})}
+<PageNavigation bind:currentPage={filters.page} bind:totalPages={totalPages} refresh_function={fetchData}/>
 <Table>
   <col class="tag" />
   <col class="name" />
@@ -135,6 +143,7 @@
     {/each}
   </tbody>
 </Table>
+<PageNavigation bind:currentPage={filters.page} bind:totalPages={totalPages} refresh_function={fetchData}/>
 
 <style>
   col.tag {
