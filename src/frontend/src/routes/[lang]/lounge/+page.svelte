@@ -9,13 +9,12 @@
   import LogoMKTC from '$lib/assets/logo_loungemktc.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
+  import LL from '$i18n/i18n-svelte';
 </script>
 
 <main class="container">
-  <h1>Lounge</h1>
-  <h2>Mario Kart 8 Deluxe</h2>
   <GameBadge game="mk8dx" />
-  <Section header={'MK8DX 150cc Lounge'}>
+  <Section header={'150cc Lounge'}>
     <div class="flex flex-row">
       <!-- <img class="w-32 h-32" src={Logo150} alt="150cc Lounge" /> -->
       <img class="w-32 h-32" src={Logo150Animated} alt="150cc Lounge" />
@@ -25,14 +24,14 @@
         </div>
         <div class="mb-2 mx-2">
           <Button size="lg" color="blue" href="https://discord.gg/revmGkE">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
+            <DiscordSolid class="mr-2" />Discord</Button
           >
         </div>
       </div>
     </div>
   </Section>
 
-  <Section header={'MK8DX 200cc Lounge'}>
+  <Section header={'200cc Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
       <!-- <img class="w-32 h-32" src={Logo200Animated} alt="150cc Lounge" /> -->
@@ -42,31 +41,29 @@
         </div>
         <div class="mb-2 mx-2">
           <Button size="lg" color="blue" href="https://discord.gg/dfdRkFu">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
+            <DiscordSolid class="mr-2" />Discord</Button
           >
         </div>
       </div>
     </div>
   </Section>
 
-  <h2>Mario Kart Tour</h2>
   <GameBadge game="mkt" />
-  <Section header={'MKTC Lounge'}>
+  <Section header={'Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={LogoMKTC} alt="MKTC Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
           <Button size="lg" color="blue" href="https://discord.gg/vYr3bQQHFY">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
+            <DiscordSolid class="mr-2" />Discord</Button
           >
         </div>
       </div>
     </div>
   </Section>
 
-  <h2>Mario Kart Wii</h2>
   <GameBadge game="mkw" />
-  <Section header={'MKW Lounge'}>
+  <Section header={'Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={LogoMKW} alt="MKW Lounge" />
       <div class="flex flex-col justify-start">
@@ -75,7 +72,7 @@
         </div>
         <div class="mb-2 mx-2">
           <Button size="lg" color="blue" href="https://discord.gg/revmGkE">
-            <DiscordSolid class="mr-2" />Discord Invite</Button
+            <DiscordSolid class="mr-2" />Discord</Button
           >
         </div>
       </div>
