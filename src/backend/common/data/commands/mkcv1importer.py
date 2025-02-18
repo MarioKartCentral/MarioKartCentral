@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import bcrypt
 import msgspec
 from common.data import s3
+from common.data.s3 import S3Wrapper
 from common.data.models.common import Problem, Game, GameMode
 from common.data.models.mkcv1 import *
 from common.data.models.users import UserLoginData
@@ -134,15 +135,11 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
 @save_to_command_log
 @dataclass
 class ConvertMKCV1DataCommand(Command[None]):
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
-        # TODO (when added to data imports):
-        # - Add placement upper bound
-        # - Import series_templates when available
-
-        # converts MKC's string timestamps to our int timestamps
-        def get_mkc_timestamp(timestamp: str):
-            return int(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timestamp())
-
+    # converts MKC's string timestamps to our int timestamps
+    def get_mkc_timestamp(self, timestamp: str):
+        return int(datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S").timestamp())
+    
+    async def get_xf_data(self, s3_wrapper: S3Wrapper) -> dict[int, NewMKCUser]:
         xf_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "xf.json")
         if xf_bytes is None:
             raise Problem("MKC V1 data is not imported")
@@ -162,12 +159,9 @@ class ConvertMKCV1DataCommand(Command[None]):
                 bcrypt_hash = user_auth.data[22:82] # data is in format 'a:1:{s:4:"hash",s:60:"$2y$...";}'
                 new_user = NewMKCUser(user.user_id, user.username, user.email, user.register_date, bcrypt_hash, None, None, [], [], [])
                 xf_dict[user.user_id] = new_user
-
-        mkc_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "mkc.json")
-        if mkc_bytes is None:
-            raise Problem("MKCV1 data is not imported")
-        mkc_data = msgspec.json.decode(mkc_bytes, type=MKCData)
-
+        return xf_dict
+    
+    def get_player_info(self, mkc_data: MKCData, xf_dict: dict[int, NewMKCUser]):
         # initialize structures for things contained in the player data
         player_dict: dict[int, NewMKCPlayer] = {}
         friend_codes: list[NewMKCFriendCode] = []
@@ -182,7 +176,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             if len(player.profile_message) and user:
                 user.about_me = player.profile_message
 
-            join_date = get_mkc_timestamp(player.created_at)
+            join_date = self.get_mkc_timestamp(player.created_at)
             new_player = NewMKCPlayer(player.id, player.display_name, player.country, bool(player.is_hidden), player.user_id == None, False, join_date, user)
             player_dict[player.id] = new_player
 
@@ -194,25 +188,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                 friend_codes.append(NewMKCFriendCode(player.id, player.mktour_fc, "mkt", join_date))
             if player.nnid:
                 friend_codes.append(NewMKCFriendCode(player.id, player.nnid, "nnid", join_date))
-            
-        now = int(datetime.now(timezone.utc).timestamp())
-        player_bans: dict[int, NewMKCPlayerBan] = {}
-        historical_bans: list[NewMKCHistoricalBan] = []
         
-        for ban in mkc_data.player_bans:
-            if ban.end_date is None:
-                player = player_dict.get(ban.player_id, None)
-                if player:
-                    player.is_banned = True
-            ban_date = get_mkc_timestamp(ban.start_date)
-            unban_date =  get_mkc_timestamp(ban.end_date) if ban.end_date else 0
-            banned_by_player = player_dict[ban.banned_by]
-            if ban.end_date is None or unban_date > now:
-                new_ban = NewMKCPlayerBan(ban.player_id, 0, ban.end_date is None, ban_date, unban_date, ban.reason, f"Banned by: {banned_by_player.name} ({banned_by_player.id})")
-                player_bans[ban.player_id] = new_ban
-            else:
-                historical_bans.append(NewMKCHistoricalBan(ban.player_id, 0, None, unban_date, False, ban_date, unban_date, ban.reason, f"Banned by: {banned_by_player.name} ({banned_by_player.id})"))
-
         user_role_map = {
             "administrate": roles.ADMINISTRATOR,
             "event_admin": roles.EVENT_ADMIN,
@@ -235,6 +211,29 @@ class ConvertMKCV1DataCommand(Command[None]):
             new_role_name = user_role_map[player_role.role]
             player.user.user_roles.append(NewMKCUserRole(new_role_name))
 
+        return player_dict, friend_codes
+
+    def get_ban_data(self, mkc_data: MKCData, player_dict: dict[int, NewMKCPlayer]):
+        now = int(datetime.now(timezone.utc).timestamp())
+        player_bans: dict[int, NewMKCPlayerBan] = {}
+        historical_bans: list[NewMKCHistoricalBan] = []
+        
+        for ban in mkc_data.player_bans:
+            if ban.end_date is None:
+                player = player_dict.get(ban.player_id, None)
+                if player:
+                    player.is_banned = True
+            ban_date = self.get_mkc_timestamp(ban.start_date)
+            unban_date =  self.get_mkc_timestamp(ban.end_date) if ban.end_date else 0
+            banned_by_player = player_dict[ban.banned_by]
+            if ban.end_date is None or unban_date > now:
+                new_ban = NewMKCPlayerBan(ban.player_id, 0, ban.end_date is None, ban_date, unban_date, ban.reason, f"Banned by: {banned_by_player.name} ({banned_by_player.id})")
+                player_bans[ban.player_id] = new_ban
+            else:
+                historical_bans.append(NewMKCHistoricalBan(ban.player_id, 0, None, unban_date, False, ban_date, unban_date, ban.reason, f"Banned by: {banned_by_player.name} ({banned_by_player.id})"))
+        return player_bans, historical_bans
+    
+    def get_team_data(self, mkc_data: MKCData, player_dict: dict[int, NewMKCPlayer]):
         # map language strings on old site to language strings on new site.
         # for some reason the old site let you put in a custom language,
         # so we'll just change all the extraneous ones to english
@@ -252,7 +251,6 @@ class ConvertMKCV1DataCommand(Command[None]):
             "unapproved": "pending",
             "disapproved": "denied"
         }
-
         # map old site game-modes to new site game/mode
         game_mode_map: dict[str, tuple[Game, GameMode]] = {
             "150cc": ("mk8dx", "150cc"),
@@ -270,7 +268,7 @@ class ConvertMKCV1DataCommand(Command[None]):
         for team in mkc_data.teams:
             new_language = language_map.get(team.main_language, 'en-us')
             new_approval = team_approval_map[team.status]
-            creation_date = get_mkc_timestamp(team.created_at)
+            creation_date = self.get_mkc_timestamp(team.created_at)
             recruitment_status = team.recruitment_status == "recruiting"
             logo = None # change to team.picture_filename later
             new_team = NewMKCTeam(team.id, team.team_name, team.team_tag, team.team_description, creation_date, new_language, team.color_number-1, # subtract 1 from anything that uses colors
@@ -307,8 +305,8 @@ class ConvertMKCV1DataCommand(Command[None]):
             if team_member.roster_category not in team.rosters:
                 continue
             roster = team.rosters[team_member.roster_category]
-            join_date = get_mkc_timestamp(team_member.joined)
-            leave_date = get_mkc_timestamp(team_member.left) if team_member.left else None
+            join_date = self.get_mkc_timestamp(team_member.joined)
+            leave_date = self.get_mkc_timestamp(team_member.left) if team_member.left else None
             # give user leader role if they are in the team and are team leader
             if not leave_date and team_member.team_leader:
                 player = player_dict[team_member.player_id]
@@ -317,7 +315,10 @@ class ConvertMKCV1DataCommand(Command[None]):
             new_member = NewMKCTeamMember(roster.id, team_member.player_id, join_date, leave_date)
             roster.members.append(new_member)
             team_members.append(new_member)
-        
+
+        return team_dict, roster_dict, team_members, roster_id
+    
+    def get_transfer_data(self, mkc_data: MKCData, team_dict: dict[int, NewMKCTeam]):
         transfers: list[NewMKCTransfer] = []
         transfer_approval_map = {
             "accepted" : "approved",
@@ -337,40 +338,21 @@ class ConvertMKCV1DataCommand(Command[None]):
                 if transfer.roster_category not in new_team.rosters:
                     continue
                 to_roster_id = new_team.rosters[transfer.roster_category].id
-            date = get_mkc_timestamp(transfer.created_at)
+            date = self.get_mkc_timestamp(transfer.created_at)
             # on the new site we just delete transfers that are canceled/declined, so we don't need to move these over.
             # for some reason there are a bunch of random transfers labeled "invited" from years ago
             # that are invisible on the current site, and it's impossible to invite people to teams
             # on the old site currently anyway, so we also delete transfers which are labeled as "invited".
             if transfer.status in ["cancelled_by_team", "decline", "declined", "invited"]:
                 continue
-            
             is_accepted = transfer.status in ["accepted", "rejected_by_mod"]
             approval_status = transfer_approval_map[transfer.status]
             new_transfer = NewMKCTransfer(transfer.player_id, to_roster_id, from_roster_id, date, is_accepted, approval_status)
             transfers.append(new_transfer)
+        return transfers
 
-        organizer_map = {
-            "mkc": "MKCentral",
-            "affiliate": "Affiliate",
-            "lan": "LAN",
-        }
-        tournament_mode_map: dict[MKCGameMode, tuple[Game, GameMode]] = {
-            "mk8dx_150": ("mk8dx", "150cc"),
-            "mk8dx_200": ("mk8dx", "200cc"),
-            "mk8dx_battle_bobomb": ("mk8dx", "bobomb_blast"),
-            "mk8dx_battle_coin": ("mk8dx", "coin_runners"),
-            "mk8dx_battle_renegade": ("mk8dx", "renegade_roundup"),
-            "mk8dx_battle_shine": ("mk8dx", "shine_thief"),
-            "mk8dx_mixed": ("mk8dx", "mixed"),
-            "mk8u_150": ("mk8", "150cc"),
-            "mk8u_200": ("mk8", "200cc"),
-            "mk7_vs_race": ("mk7", "vsrace"),
-            "mktour_vs_race": ("mkt", "vsrace"),
-            "mkw_vs_race": ("mkw", "rt"),
-            "smk_match_race": ("smk", "match_race"),
-            "switch_other": ("mk8dx", "150cc"), # technically not accurate but this is just used for 2 pokemon tournaments lol
-        }
+    def get_tournament_data(self, mkc_data: MKCData, tournament_mode_map: dict[MKCGameMode, tuple[Game, GameMode]], organizer_map: dict[str, str]):
+        
         series_dict: dict[int, NewMKCSeries] = {}
         for series in mkc_data.tournament_series:
             game, mode = tournament_mode_map[series.default_game_mode] if series.default_game_mode else ("mk8dx", "150cc")
@@ -379,7 +361,6 @@ class ConvertMKCV1DataCommand(Command[None]):
             new_series = NewMKCSeries(series.id, series.series_name, series.url_slug, series.display_order, game, mode, bool(series.historical), bool(series.published),
                                       series.short_description, series.full_description if series.full_description else "", "", logo, organizer, series.location)
             series_dict[series.id] = new_series
-
         
         tournament_dict: dict[int, NewMKCTournament] = {}
         for tournament in mkc_data.events:
@@ -399,9 +380,9 @@ class ConvertMKCV1DataCommand(Command[None]):
             squad_tag_required = True if teams_allowed else bool(tournament.team_tag_required)
             squad_name_required = True if teams_allowed else bool(tournament.team_name_required)
 
-            date_start = get_mkc_timestamp(tournament.start_date)
-            date_end = get_mkc_timestamp(tournament.end_date)
-            registration_deadline = get_mkc_timestamp(tournament.transfer_date) if tournament.transfer_date else None
+            date_start = self.get_mkc_timestamp(tournament.start_date)
+            date_end = self.get_mkc_timestamp(tournament.end_date)
+            registration_deadline = self.get_mkc_timestamp(tournament.transfer_date) if tournament.transfer_date else None
             logo = None # change to tournament.logo_filename later
             new_tournament = NewMKCTournament(tournament.id, tournament.title, game, mode,
                                               tournament.tournament_series_id, is_squad,
@@ -417,7 +398,10 @@ class ConvertMKCV1DataCommand(Command[None]):
                                               False, None, False, False, organizer, tournament.location, tournament.rules
                                               )
             tournament_dict[tournament.id] = new_tournament
-
+        return series_dict, tournament_dict
+    
+    def get_tournament_registration_data(self, mkc_data: MKCData, tournament_dict: dict[int, NewMKCTournament], team_dict: dict[int, NewMKCTeam], roster_dict: dict[int, NewMKCTeamRoster],
+                                         roster_id: int):
         # we'll be going back and forth between these structs a lot so just make them into dictionaries for O(1) access
         squad_dict: dict[int, MKCSquad] = {s.id: s for s in mkc_data.squads}
         placement_dict: dict[int, MKCEventPlacement] = {p.event_registration_id: p for p in mkc_data.event_placements}
@@ -448,7 +432,7 @@ class ConvertMKCV1DataCommand(Command[None]):
         }
         squad_regex = re.compile(r"Squad [0-9]+")
         for reg in mkc_data.event_registrations:
-            timestamp = get_mkc_timestamp(reg.created_at)
+            timestamp = self.get_mkc_timestamp(reg.created_at)
             if reg.event_id not in tournament_dict:
                 continue
             tournament = tournament_dict[reg.event_id]
@@ -536,13 +520,16 @@ class ConvertMKCV1DataCommand(Command[None]):
             if player.status in ["cancelled", "declined", "withdrawn", "kicked"]:
                 continue
             squad = new_squad_dict[player.squad_id]
-            timestamp = get_mkc_timestamp(player.created_at)
+            timestamp = self.get_mkc_timestamp(player.created_at)
             new_player = NewMKCTournamentPlayer(tournament_player_id, player.player_id, squad.tournament_id, squad.id, bool(player.captain),
                                                 timestamp, bool(player.checked_in), player.mii_name, bool(player.player_can_host),
                                                 player.status == "invited", None, False, False)
             new_tournament_players.append(new_player)
             tournament_player_id += 1
-
+        
+        return new_squads, new_tournament_players, roster_squad_links, solo_placements, squad_placements
+    
+    def get_tournament_template_data(self, mkc_data: MKCData, tournament_mode_map: dict[MKCGameMode, tuple[Game, GameMode]], organizer_map: dict[str, str]):
         templates: list[NewMKCTournamentTemplate] = []
         for template in mkc_data.series_templates:
             if template.default_game_mode:
@@ -567,13 +554,52 @@ class ConvertMKCV1DataCommand(Command[None]):
                                                     False, None, False, False, organizer, location, 
                                                     str(template.description), str(template.rules))
             templates.append(new_template)
+        return templates
+    
+    async def handle(self, db_wrapper, s3_wrapper) -> None:
+        xf_dict = await self.get_xf_data(s3_wrapper)
+        
+        mkc_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "mkc.json")
+        if mkc_bytes is None:
+            raise Problem("MKCV1 data is not imported")
+        mkc_data = msgspec.json.decode(mkc_bytes, type=MKCData)
+        
+        player_dict, friend_codes = self.get_player_info(mkc_data, xf_dict)
+        player_bans, historical_bans = self.get_ban_data(mkc_data, player_dict)
+        team_dict, roster_dict, team_members, roster_id = self.get_team_data(mkc_data, player_dict)
+        transfers = self.get_transfer_data(mkc_data, team_dict)
+
+        tournament_mode_map: dict[MKCGameMode, tuple[Game, GameMode]] = {
+            "mk8dx_150": ("mk8dx", "150cc"),
+            "mk8dx_200": ("mk8dx", "200cc"),
+            "mk8dx_battle_bobomb": ("mk8dx", "bobomb_blast"),
+            "mk8dx_battle_coin": ("mk8dx", "coin_runners"),
+            "mk8dx_battle_renegade": ("mk8dx", "renegade_roundup"),
+            "mk8dx_battle_shine": ("mk8dx", "shine_thief"),
+            "mk8dx_mixed": ("mk8dx", "mixed"),
+            "mk8u_150": ("mk8", "150cc"),
+            "mk8u_200": ("mk8", "200cc"),
+            "mk7_vs_race": ("mk7", "vsrace"),
+            "mktour_vs_race": ("mkt", "vsrace"),
+            "mkw_vs_race": ("mkw", "rt"),
+            "smk_match_race": ("smk", "match_race"),
+            "switch_other": ("mk8dx", "150cc"), # technically not accurate but this is just used for 2 pokemon tournaments lol
+        }
+        organizer_map = {
+            "mkc": "MKCentral",
+            "affiliate": "Affiliate",
+            "lan": "LAN",
+        }
+        series_dict, tournament_dict = self.get_tournament_data(mkc_data, tournament_mode_map, organizer_map)
+        (new_squads, new_tournament_players, roster_squad_links, 
+         solo_placements, squad_placements) = self.get_tournament_registration_data(mkc_data, tournament_dict, team_dict, roster_dict, roster_id)
+        templates = self.get_tournament_template_data(mkc_data, tournament_mode_map, organizer_map)
         
         async with db_wrapper.connect() as db:
-            # inserting/modifying players
-            inserts = [(player.id, player.name, player.country_code, player.is_hidden, player.is_shadow, player.is_banned, player.join_date)
-                    for player in player_dict.values()]
+            # players
             await db.executemany("""INSERT INTO players(id, name, country_code, is_hidden, is_shadow, is_banned, join_date)
-                                            VALUES(?, ?, ?, ?, ?, ?, ?)""", inserts)
+                                            VALUES(?, ?, ?, ?, ?, ?, ?)""", [(player.id, player.name, player.country_code, player.is_hidden, player.is_shadow, player.is_banned, player.join_date)
+                    for player in player_dict.values()])
 
             # friend codes
             await db.executemany("""INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date)
