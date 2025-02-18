@@ -181,7 +181,8 @@
       </b>
     </div>
     {#if is_privileged}
-      <RosterSearch bind:roster={selected_roster} game={tournament.game} is_active={is_privileged ? null : true} is_historical={null} on:change={() => selectRosterFromSearch(selected_roster)}/>
+      <RosterSearch bind:roster={selected_roster} game={tournament.game} mode={tournament.mode} is_active={is_privileged ? null : true}
+      is_historical={null} on:change={() => selectRosterFromSearch(selected_roster)}/>
     {:else if unselected_rosters.length}
       <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>
         <option value={null}>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_TEAM()}</option>

@@ -1,9 +1,9 @@
+import type { PlayerBasic } from './player';
+
 export type RosterEditRequest = {
   id: number;
   roster_id: number;
   team_id: number;
-  team_name: string;
-  team_tag: string;
   old_name: string | null;
   old_tag: string | null;
   new_name: string | null;
@@ -11,4 +11,11 @@ export type RosterEditRequest = {
   color: number;
   date: number;
   approval_status: string;
+  handled_by: PlayerBasic | null;
+};
+
+export type RosterEditList = {
+  change_list: RosterEditRequest[];
+  count: number;
+  page_count: number;
 };

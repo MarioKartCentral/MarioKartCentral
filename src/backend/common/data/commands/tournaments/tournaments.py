@@ -36,12 +36,12 @@ class CreateTournamentCommand(Command[int | None]):
             
             cursor = await db.execute(
                 """INSERT INTO tournaments(
-                    name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, description, use_series_description, series_stats_include,
+                    name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, use_series_description, series_stats_include,
                     logo, use_series_logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
                     squad_name_required, mii_name_required, host_status_required, checkins_enabled, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
                     is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description,
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.use_series_description,
                 b.series_stats_include, b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open, b.min_players_checkin, 
                 b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives,
@@ -49,7 +49,7 @@ class CreateTournamentCommand(Command[int | None]):
             tournament_id = cursor.lastrowid
             await db.commit()
 
-        s3_body = TournamentS3Fields(b.ruleset)
+        s3_body = TournamentS3Fields(b.description, b.ruleset)
         s3_message = bytes(msgspec.json.encode(s3_body))
         await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
         return tournament_id
@@ -95,7 +95,6 @@ class EditTournamentCommand(Command[None]):
                 registrations_open = ?,
                 date_start = ?,
                 date_end = ?,
-                description = ?,
                 use_series_description = ?,
                 use_series_ruleset = ?,
                 series_stats_include = ?,
@@ -124,7 +123,7 @@ class EditTournamentCommand(Command[None]):
                 show_on_profiles = ?,
                 min_representatives = ?
                 WHERE id = ?""",
-                (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.description, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
+                (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
                 b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
@@ -133,7 +132,7 @@ class EditTournamentCommand(Command[None]):
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
 
-            s3_body = TournamentS3Fields(b.ruleset)
+            s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
             await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
 
@@ -166,7 +165,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                                                        registrations_open=t.registrations_open,
                                                        date_start=t.date_start,
                                                        date_end=t.date_end,
-                                                       description=t.description,
+                                                       description=s3_fields.description,
                                                        use_series_description=t.use_series_description,
                                                        series_stats_include=t.series_stats_include,
                                                        logo=t.logo,
@@ -204,16 +203,16 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                                                        series_description=None,
                                                        series_ruleset=None)
             if tournament_data.series_id:
-                async with db.execute("SELECT name, url, description, ruleset, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
-                    row = await cursor.fetchone()
-                    assert row is not None
-                    series_name, series_url, series_description, series_ruleset, logo = row
-                    tournament_data.series_name = series_name
-                    tournament_data.series_url = series_url
-                    tournament_data.series_description = series_description
-                    tournament_data.series_ruleset = series_ruleset
+                s3_body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{tournament_data.series_id}.json')
+                if s3_body:
+                    series = msgspec.json.decode(s3_body, type=Series)
+                    tournament_data.series_name = series.series_name
+                    tournament_data.series_url = series.url
+                    tournament_data.series_description = series.description
+                    tournament_data.series_ruleset = series.ruleset
                     if tournament_data.use_series_logo:
-                        tournament_data.logo = logo
+                        tournament_data.logo = series.logo
+                   
         return tournament_data
 
 @dataclass
@@ -299,8 +298,8 @@ class GetTournamentListCommand(Command[TournamentList]):
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             tournaments_query = f"""SELECT t.id, t.name, t.game, t.mode, t.date_start, t.date_end, t.is_squad, t.registrations_open, 
-                                        t.teams_allowed, t.description, t.logo, t.use_series_logo, t.is_viewable, t.is_public,
-                                        s.id, s.name, s.url, s.description, s.logo
+                                        t.teams_allowed, t.logo, t.use_series_logo, t.is_viewable, t.is_public,
+                                        s.id, s.name, s.url, s.short_description, s.logo
                                         FROM tournaments t
                                         LEFT JOIN tournament_series s ON t.series_id = s.id
                                         {where_clause}
@@ -311,12 +310,12 @@ class GetTournamentListCommand(Command[TournamentList]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (tournament_id, name, game, mode, date_start, date_end, is_squad, registrations_open,
-                      teams_allowed, description, logo, use_series_logo, is_viewable, is_public,
-                      series_id, series_name, series_url, series_description, series_logo) = row
+                      teams_allowed, logo, use_series_logo, is_viewable, is_public,
+                      series_id, series_name, series_url, series_short_description, series_logo) = row
                     if bool(use_series_logo):
                         logo = series_logo
-                    tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_description,
-                        bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, bool(use_series_logo), bool(is_viewable), bool(is_public)))
+                    tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_short_description,
+                        bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable), bool(is_public)))
 
             count_query = f"SELECT COUNT(*) FROM tournaments t {where_clause}"
             page_count: int = 0

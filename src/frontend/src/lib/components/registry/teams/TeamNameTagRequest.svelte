@@ -75,19 +75,18 @@
             </div>
         {/each}
     {:else}
-    <div>
-        <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-        <input name="name" type="text" value={team.name} required disabled={days_until_change > 0}/>
-    </div>
-    <div>
-        <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-        <input name="tag" type="text" value={team.tag} required disabled={days_until_change > 0}/>
-    </div>
-    <div class="submit">
-        <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
-    </div>
+        <div>
+            <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
+            <input name="name" type="text" value={team.name} required disabled={days_until_change > 0}/>
+        </div>
+        <div>
+            <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
+            <input name="tag" type="text" value={team.tag} required disabled={days_until_change > 0}/>
+        </div>
+        <div class="submit">
+            <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+        </div>
     {/if}
-    
 </form>
 
 <style>

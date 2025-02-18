@@ -5,16 +5,22 @@ ADMINISTRATOR = "Administrator"
 SITE_MODERATOR = "Site Moderator"
 SUPPORT_STAFF = "Support Staff"
 SITE_SUPPORTER = "Site Supporter"
+EVENT_ADMIN = "Event Admin"
+EVENT_MOD = "Event Mod"
 BANNED = "Banned"
+TEAM_LEADER_BANNED = "Team Leader Banned"
 
 # (roleid, name, role hierarchy pos)
 default_roles = [
     (0, SUPER_ADMINISTRATOR, 0),
     (1, ADMINISTRATOR, 1),
     (2, SITE_MODERATOR, 2),
-    (3, SUPPORT_STAFF, 3),
-    (4, SITE_SUPPORTER, 4),
-    (5, BANNED, 99)
+    (3, EVENT_ADMIN, 3),
+    (4, EVENT_MOD, 4),
+    (5, SUPPORT_STAFF, 5),
+    (6, SITE_SUPPORTER, 6),
+    (7, BANNED, 99),
+    (8, TEAM_LEADER_BANNED, 99),
 ]
 
 id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
@@ -120,6 +126,25 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.MANAGE_TOURNAMENT_ROLES,
         tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     ],
+    EVENT_ADMIN: [
+        series_permissions.CREATE_TOURNAMENT,
+        series_permissions.CREATE_TOURNAMENT_TEMPLATE,
+        series_permissions.EDIT_TOURNAMENT_TEMPLATE,
+        series_permissions.MANAGE_SERIES_ROLES,
+        series_permissions.EDIT_SERIES,
+        tournament_permissions.EDIT_TOURNAMENT,
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
+    ],
+    EVENT_MOD: [
+        tournament_permissions.EDIT_TOURNAMENT,
+        tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
+        tournament_permissions.MANAGE_PLACEMENTS,
+        tournament_permissions.MANAGE_TOURNAMENT_ROLES,
+        tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
+    ],
     SUPPORT_STAFF: [
         permissions.EDIT_PLAYER,
         permissions.MANAGE_TEAMS,
@@ -136,13 +161,17 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
     SITE_SUPPORTER: [],
-    BANNED: []
+    BANNED: [],
+    TEAM_LEADER_BANNED: [],
 }
 
 default_denied_permissions_by_default_role: dict[str, list[str]] = {
     SUPER_ADMINISTRATOR: [],
     ADMINISTRATOR: [],
     SITE_MODERATOR: [],
+    EVENT_ADMIN: [],
+    EVENT_MOD: [],
+    SUPPORT_STAFF: [],
     SITE_SUPPORTER: [],
     BANNED: [
         tournament_permissions.REGISTER_TOURNAMENT,
@@ -151,7 +180,11 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         permissions.INVITE_TO_TEAM,
         permissions.EDIT_PROFILE,
         permissions.LINK_DISCORD
-    ]
+    ],
+    TEAM_LEADER_BANNED: [
+        permissions.CREATE_TEAM,
+        permissions.INVITE_TO_TEAM
+    ],
 }
 
 # roleid, permissionid, is_denied

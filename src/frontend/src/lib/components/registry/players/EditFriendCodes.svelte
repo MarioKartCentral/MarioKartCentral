@@ -1,12 +1,12 @@
 <script lang="ts">
     import type { PlayerInfo } from "$lib/types/player-info";
-    import GameBadge from "$lib/components/badges/GameBadge.svelte";
     import Dialog from '$lib/components/common/Dialog.svelte';
     import Button from "$lib/components/common/buttons/Button.svelte";
     import FriendCodeForm from "./FriendCodeForm.svelte";
     import LL from "$i18n/i18n-svelte";
     import { EditSolid } from "flowbite-svelte-icons";
     import type { FriendCode } from "$lib/types/friend-code";
+    import FCTypeBadge from "$lib/components/badges/FCTypeBadge.svelte";
 
     export let player: PlayerInfo;
     export let is_privileged = false;
@@ -76,7 +76,7 @@
 
 {#each friend_codes as fc}
     <div class="flex">
-        <GameBadge game={fc.game}/>
+        <FCTypeBadge type={fc.type}/>
         {fc.fc}
         {#if !fc.is_active}
             ({$LL.FRIEND_CODES.INACTIVE()})
@@ -101,8 +101,8 @@
                         <label for="fc">{$LL.FRIEND_CODES.FRIEND_CODE()}</label>
                     </div>
                     <div>
-                        <input name="fc" placeholder={selected_fc.game !== 'mk8' ? '0000-0000-0000' : 'NNID'} 
-                        minlength={selected_fc.game === 'mk8' ? 6 : null} maxlength={selected_fc.game === 'mk8' ? 16 : null} 
+                        <input name="fc" placeholder={selected_fc.type !== 'nnid' ? '0000-0000-0000' : 'NNID'} 
+                        minlength={selected_fc.type === 'nnid' ? 6 : null} maxlength={selected_fc.type === 'nnid' ? 16 : null} 
                         disabled={!is_privileged} value={selected_fc.fc} required/>
                     </div>
                 </div>

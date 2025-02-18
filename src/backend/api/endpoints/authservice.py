@@ -22,13 +22,22 @@ class LoginRequestData:
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
     user = await handle(GetUserDataFromEmailCommand(body.email))
-    if user is None:
-        raise Problem("User not found", status=404)
+    if user:
+        is_valid_password = pw_hasher.verify(user.password_hash, body.password)
+        if not is_valid_password:
+            raise Problem("Invalid login details", status=401)
+    else:
+        # check MKC V1 data for the email/password combo if user can't be found in the database
+        mkc_user = await handle(GetMKCV1UserCommand(body.email, body.password))
+        password_hash = pw_hasher.hash(body.password)
+        if mkc_user is None:
+            raise Problem("User not found", status=404)
+        # create new user with MKC V1 user's data if it exists
+        user = await handle(TransferMKCV1UserCommand(body.email, password_hash, mkc_user.register_date,
+                                                     mkc_user.player_id, mkc_user.about_me,
+                                                     mkc_user.user_roles, mkc_user.series_roles,
+                                                     mkc_user.team_roles))
 
-    is_valid_password = pw_hasher.verify(user.password_hash, body.password)
-    if not is_valid_password:
-        raise Problem("Invalid login details", status=401)
-    
     session_id = secrets.token_hex(16)
     max_age = timedelta(days=365)
     expiration_date = datetime.now(timezone.utc) + max_age

@@ -15,6 +15,7 @@
   import type { TournamentPlayer } from '$lib/types/tournament-player';
   import LL from '$i18n/i18n-svelte';
   import ManageSquadRosters from './ManageSquadRosters.svelte';
+  import { game_fc_types } from '$lib/util/util';
 
   export let tournament: Tournament;
   export let squad: TournamentSquad;
@@ -145,7 +146,7 @@
       <div><b>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYERS()}</b></div>
       <PlayerSearch
         bind:player={invite_player}
-        game={tournament.game}
+        fc_type={game_fc_types[tournament.game]}
         squad_id={tournament.team_members_only ? my_player.squad_id : null}
       />
     </div>

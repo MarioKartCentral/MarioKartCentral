@@ -4,6 +4,11 @@
   background-color: #029dbd;
   border: 1px solid #027d99;
 }
+.new_badge {
+  width: 40px;
+  background-color: #029dbd;
+  border: 1px solid #027d99;
+}
 .representative_badge {
   font-weight: 700;
   background-color: #bd8000;
@@ -43,6 +48,27 @@
   background-color: #9755ab;
   border: 1px solid #892bad;
 }
+.fc_type_switch_badge {
+  background-color: rgb(158, 35, 35);
+  border: 1px solid rgb(112, 0, 0);
+}
+.fc_type_nnid_badge {
+  background-color: rgb(41, 147, 182);
+  border: 1px solid rgb(26, 95, 117);
+}
+.fc_type_mkw_badge {
+  background-color: #65bedc;
+  border: 1px solid #57a2c8;
+}
+.fc_type_mkt_badge {
+  background-color: #a1385d;
+  border: 1px solid #8e1643;
+}
+.fc_type_3ds_badge {
+  background-color: #ab5555;
+  border: 1px solid #902a2a;
+}
+
 .mode_mixed_badge,
 .mode_mixed_battle_badge,
 .mode_balloon_ballon_badge,
@@ -124,4 +150,41 @@
   background-color: #029dbd;
   border: 1px solid #027d99;
   font-weight: bold;
+}
+
+.role_super_administrator_badge {
+  background-color: #000000;
+  border: 1px solid #111111;
+}
+.role_administrator_badge {
+  background-color: #000000;
+  border: 1px solid #111111;
+}
+.role_site_moderator_badge {
+  background-color: #dc143c;
+  border: 1px solid #820d24;
+}
+.role_event_admin_badge {
+  background-color: #663399;
+  border: 1px solid #3d135b;
+}
+.role_event_mod_badge {
+  background-color: #663399;
+  border: 1px solid #3d135b;
+}
+.role_support_staff_badge {
+  background-color: #0066ff;
+  border: 1px solid #023e99;
+}
+.role_site_supporter_badge {
+  background-color: #008000;
+  border: 1px solid #005800;
+}
+.role_banned_badge {
+  background-color: #757575;
+  border: 1px solid #656565;
+}
+.role_team_leader_banned_badge {
+  background-color: #757575;
+  border: 1px solid #656565;
 }

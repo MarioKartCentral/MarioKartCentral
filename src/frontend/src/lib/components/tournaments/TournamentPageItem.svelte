@@ -85,7 +85,7 @@
     <div class="cta flex flex-col justify-center">
       <div class="description">
         {#if tournament.series_id != null}
-          <div class="text-gray-300 p-1">{tournament.series_description}</div>
+          <div class="text-gray-300 p-1">{tournament.series_short_description}</div>
         {/if}
       </div>
       {#if tournament.registrations_open}

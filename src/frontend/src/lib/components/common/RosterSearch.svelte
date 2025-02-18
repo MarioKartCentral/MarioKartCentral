@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Team } from "$lib/types/team";
+    import type { Team, TeamList } from "$lib/types/team";
     import type { TeamRoster } from "$lib/types/team-roster";
     import { createEventDispatcher } from "svelte";
     import Table from "./Table.svelte";
@@ -8,9 +8,11 @@
     import CancelButton from "./buttons/CancelButton.svelte";
     import GameBadge from "../badges/GameBadge.svelte";
     import LL from "$i18n/i18n-svelte";
+    import ModeBadge from "../badges/ModeBadge.svelte";
 
     export let roster: TeamRoster | null = null;
     export let game: string | null = null;
+    export let mode: string | null = null;
     export let is_active: boolean | null = true;
     export let is_historical: boolean | null = false;
 
@@ -35,14 +37,17 @@
         }
         const name_var = query ? `name=${query}` : ``;
         const game_var = game ? `&game=${game}` : ``;
+        const mode_var = mode ? `&mode=${mode}` : ``;
         const active_var = is_active !== null ? `&is_active=${is_active}` : ``;
         const historical_var = is_historical !== null ? `&is_historical=${is_historical}` : ``;
-        const url = `/api/registry/teams?${name_var}${game_var}${active_var}${historical_var}`;
+        const url = `/api/registry/teams?${name_var}${game_var}${mode_var}${active_var}${historical_var}`;
         const res = await fetch(url);
         if (res.status === 200) {
-            const body = await res.json();
-            let team_list: Team[] = body;
-            results = team_list.flatMap((t) => t.rosters);
+            const body: TeamList = await res.json();
+            let team_list: Team[] = body.teams;
+            results = team_list.flatMap((t) => t.rosters.filter((r) => ((!game || r.game === game)
+                && (!mode || r.mode === mode)
+            )));
         }
     }
 
@@ -79,6 +84,7 @@
                                     </td>
                                     <td>
                                         <GameBadge game={result.game}/>
+                                        <ModeBadge mode={result.mode}/>
                                     </td>
                                     <td>
                                         <UserAddSolid size="lg"/>

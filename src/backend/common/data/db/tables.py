@@ -33,24 +33,26 @@ class Player(TableModel):
 class FriendCode(TableModel):
     id: int
     player_id: int
-    game: str
+    type: str
     fc: str
     is_verified: bool
     is_primary: bool
     is_active: bool
     description: str
+    creation_date: int
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS friend_codes(
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
-            game TEXT NOT NULL,
+            type TEXT NOT NULL,
             fc TEXT NOT NULL,
             is_verified BOOLEAN NOT NULL,
             is_primary BOOLEAN NOT NULL,
             is_active BOOLEAN NOT NULL,
-            description TEXT
+            description TEXT,
+            creation_date INTEGER NOT NULL
             )"""
 
 @dataclass
@@ -172,9 +174,10 @@ class TournamentSeries(TableModel):
     mode: str
     is_historical: bool
     is_public: bool
-    description: str
-    ruleset: str
+    short_description: str
     logo: str | None
+    organizer: str
+    location: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -187,9 +190,11 @@ class TournamentSeries(TableModel):
             mode TEXT NOT NULL,
             is_historical INTEGER NOT NULL,
             is_public INTEGER NOT NULL,
-            description TEXT NOT NULL,
-            ruleset TEXT NOT NULL,
-            logo TEXT)"""
+            short_description TEXT NOT NULL,
+            logo TEXT,
+            organizer TEXT NOT NULL,
+            location TEXT
+            )"""
 
 @dataclass
 class Tournament(TableModel):
@@ -202,7 +207,6 @@ class Tournament(TableModel):
     registrations_open: bool
     date_start: int
     date_end: int
-    description: str
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
@@ -232,7 +236,7 @@ class Tournament(TableModel):
     min_representatives: int | None
     bagger_clause_enabled: bool
     use_series_ruleset: bool
-    organizer: str | None
+    organizer: str
     location: str | None
 
     @staticmethod
@@ -247,7 +251,6 @@ class Tournament(TableModel):
             registrations_open BOOLEAN NOT NULL,
             date_start INTEGER NOT NULL,
             date_end INTEGER NOT NULL,
-            description TEXT NOT NULL,
             use_series_description BOOLEAN NOT NULL,
             series_stats_include BOOLEAN NOT NULL,
             logo TEXT,
@@ -277,7 +280,7 @@ class Tournament(TableModel):
             min_representatives INTEGER,
             bagger_clause_enabled BOOLEAN NOT NULL,
             use_series_ruleset BOOLEAN DEFAULT 0 NOT NULL,
-            organizer TEXT,
+            organizer TEXT NOT NULL,
             location TEXT
             )"""
 
@@ -302,7 +305,7 @@ class TournamentSquad(TableModel):
     color: int
     timestamp: int
     tournament_id: int
-    is_registered: int
+    is_registered: bool
     is_approved: bool
 
     @staticmethod
@@ -314,7 +317,7 @@ class TournamentSquad(TableModel):
             color INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            is_registered INTEGER NOT NULL,
+            is_registered BOOLEAN NOT NULL,
             is_approved BOOLEAN DEFAULT FALSE NOT NULL
             )"""
 
@@ -330,7 +333,7 @@ class TournamentPlayer(TableModel):
     mii_name: str | None
     can_host: bool
     is_invite: bool
-    selected_fc_id: int
+    selected_fc_id: int | None
     is_representative: bool
     is_bagger_clause: bool
     is_approved: bool
@@ -342,7 +345,7 @@ class TournamentPlayer(TableModel):
             player_id INTEGER NOT NULL REFERENCES players(id),
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
             squad_id INTEGER REFERENCES tournament_squads(id),
-            is_squad_captain BOOLEAN,
+            is_squad_captain BOOLEAN NOT NULL,
             timestamp INTEGER NOT NULL,
             is_checked_in BOOLEAN NOT NULL,
             mii_name TEXT,
@@ -360,7 +363,7 @@ class TournamentSoloPlacements(TableModel):
     tournament_id: int
     player_id: int
     placement: int
-    placement_description: str
+    placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
@@ -382,7 +385,7 @@ class TournamentSquadPlacements(TableModel):
     tournament_id: int
     squad_id: int
     placement: int
-    placement_description: str
+    placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
@@ -686,45 +689,79 @@ class TeamTransfer(TableModel):
             )"""
 
 @dataclass
-class TeamEditRequest(TableModel):
+class TeamEdit(TableModel):
     id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    old_name: str
+    new_name: str
+    old_tag: str
+    new_tag: str
     date: int
     approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS team_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS team_edits (
             id INTEGER PRIMARY KEY,
             team_id INTEGER NOT NULL REFERENCES teams(id),
-            name TEXT,
-            tag TEXT,
+            old_name TEXT NOT NULL,
+            new_name TEXT NOT NULL,
+            old_tag TEXT NOT NULL,
+            new_tag TEXT NOT NULL,
             date INTEGER NOT NULL,
-            approval_status TEXT NOT NULL
+            approval_status TEXT NOT NULL,
+            handled_by INTEGER REFERENCES players(id)
             )"""
     
 @dataclass
-class RosterEditRequest(TableModel):
+class RosterEdit(TableModel):
     id: int
     roster_id: int
-    name: str | None
-    tag: str | None
+    old_name: str
+    new_name: str
+    old_tag: str
+    new_tag: str
     date: int
     approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS roster_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS roster_edits (
         id INTEGER PRIMARY KEY,
         roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
-        name TEXT,
-        tag TEXT,
+        old_name TEXT NOT NULL,
+        new_name TEXT NOT NULL,
+        old_tag TEXT NOT NULL,
+        new_tag TEXT NOT NULL,
         date INTEGER NOT NULL,
-        approval_status TEXT NOT NULL
+        approval_status TEXT NOT NULL,
+        handled_by INTEGER REFERENCES players(id)
         )
         """
+
+@dataclass
+class FriendCodeEdit(TableModel):
+    id: int
+    fc_id: int
+    old_fc: str | None
+    new_fc: str | None
+    is_active: bool | None
+    handled_by: int | None
+    date: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS friend_code_edits(
+        id INTEGER PRIMARY KEY,
+        fc_id INTEGER NOT NULL REFERENCES friend_codes(id),
+        old_fc TEXT,
+        new_fc TEXT,
+        is_active BOOLEAN,
+        handled_by INTEGER REFERENCES players(id),
+        date INTEGER NOT NULL
+        )"""
     
 @dataclass
 class UserSettings(TableModel):
@@ -834,21 +871,25 @@ class PlayerBansHistorical(TableModel):
             comment TEXT NOT NULL)"""
     
 @dataclass
-class PlayerNameEditRequest(TableModel):
+class PlayerNameEdit(TableModel):
     id: int
     player_id: int
-    name: str
+    old_name: str
+    new_name: str
     date: int
     approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS player_name_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS player_name_edits (
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
-            name TEXT NOT NULL,
+            old_name TEXT NOT NULL,
+            new_name TEXT NOT NULL,
             date INTEGER NOT NULL,
-            approval_status TEXT NOT NULL
+            approval_status TEXT NOT NULL,
+            handled_by INTEGER REFERENCES players(id)
             )"""
 
 @dataclass
@@ -905,6 +946,6 @@ all_tables : list[type[TableModel]] = [
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
-    TeamTransfer, TeamEditRequest, RosterEditRequest,
+    TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEditRequest, PlayerNotes, PlayerClaim, FilteredWords]
+    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]

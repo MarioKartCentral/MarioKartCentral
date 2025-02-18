@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Team } from "$lib/types/team";
+    import type { Team, TeamList } from "$lib/types/team";
     import { page } from "$app/stores";
     import LL from "$i18n/i18n-svelte";
     import TagBadge from "../badges/TagBadge.svelte";
@@ -12,8 +12,8 @@
     async function fetchLatestTeams() {
         const res = await fetch(`/api/registry/teams?is_historical=false&is_active=true&sort_by_newest=true`);
         if (res.status === 200) {
-            const body: Team[] = await res.json();
-            latestTeams = body.slice(0, 10);
+            const body: TeamList = await res.json();
+            latestTeams = body.teams.slice(0, 10);
         }
     }
 
