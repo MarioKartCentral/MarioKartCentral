@@ -8,7 +8,6 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
-  import LL from '$i18n/i18n-svelte';
 </script>
 
 <main class="container">
