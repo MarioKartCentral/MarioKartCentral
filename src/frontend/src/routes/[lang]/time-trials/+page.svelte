@@ -1,12 +1,6 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
-  import { page } from '$app/stores';
-  import LL from '$i18n/i18n-svelte';
-  import MK8DX from '$lib/assets/logo_mk8dx.png';
-  import MK8 from '$lib/assets/logo_mk8.png';
-  import MK7 from '$lib/assets/logo_mk7.png';
-  import MKW from '$lib/assets/logo_mkw.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
 </script>
