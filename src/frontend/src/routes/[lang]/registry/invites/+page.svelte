@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import TournamentInvites from '$lib/components/registry/invites/TournamentInvites.svelte';
   import TeamInvites from '$lib/components/registry/invites/TeamInvites.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   let invites: PlayerInvites;
 
@@ -18,11 +19,11 @@
 </script>
 
 {#if invites}
-  <Section header="Team Invites">
+  <Section header={$LL.INVITES.TEAM_INVITES()}>
     <TeamInvites invites={invites.team_invites}/>
   </Section>
 
-  <Section header="Tournament Invites">
+  <Section header={$LL.INVITES.TOURNAMENT_INVITES()}>
     <TournamentInvites invites={invites.tournament_invites}/>
   </Section>
 {/if}

@@ -5,6 +5,7 @@
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
   import Button from '$lib/components/common/buttons/Button.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let series_id: number | null = null;
 
@@ -23,20 +24,22 @@
   });
 </script>
 
-<Section header="Select Template">
+<Section header={$LL.TOURNAMENTS.MANAGE.SELECT_TEMPLATE()}>
   <div slot="header_content">
     {#if series_id}
-      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">Back to Series</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.MANAGE.BACK_TO_SERIES()}</Button>
     {/if}
   </div>
   <Table>
-    {#if !series_id}
-      <tr class="row-1">
-        <td class="left">
-          <a href="/{$page.params.lang}/tournaments/create">Start from scratch</a>
-        </td>
-      </tr>
-    {/if}
+    <tr class="row-1">
+      <td class="left">
+        {#if series_id}
+          <a href="/{$page.params.lang}/tournaments/series/create_tournament?id={series_id}">{$LL.TOURNAMENTS.MANAGE.START_FROM_SCRATCH()}</a>
+        {:else}
+          <a href="/{$page.params.lang}/tournaments/create">{$LL.TOURNAMENTS.MANAGE.START_FROM_SCRATCH()}</a>
+        {/if}
+      </td>
+    </tr>
     {#each templates as template, i}
       <tr class="row-{i % 2}">
         <td class="left">

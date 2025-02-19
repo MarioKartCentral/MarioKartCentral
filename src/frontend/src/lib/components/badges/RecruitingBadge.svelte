@@ -1,22 +1,10 @@
 <script lang="ts">
   import Badge from "./Badge.svelte";
+  import LL from "$i18n/i18n-svelte";
 
-  export let recruiting: string;
-  const recruitingStr = recruiting == '1' ? 'Recruiting' :  'Not Recruiting'
-  const recruitingId = recruiting == '1' ? 'recruiting' :  'not_recruiting'
+  export let recruiting: boolean;
 </script>
 
-<Badge badgeClass={recruitingId + '_badge wide'}>{recruitingStr}</Badge>
-
-<style>
-
-  :global(.recruiting_badge) {
-    background-color: #00997b;
-    border: 1px solid #006b5c;
-  }
-
-  :global(.not_recruiting_badge) {
-    background-color: #7f7f80;
-    border: 1px solid #4b4b4b;
-  }
-</style>
+<Badge badgeClass={(recruiting ? 'recruiting' : 'not_recruiting') + '_badge wide'}>
+  {recruiting ? $LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING() : $LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}
+</Badge>

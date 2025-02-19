@@ -15,7 +15,7 @@ class Player(TableModel):
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
-    discord_id: str | None
+    join_date: int
 
     @staticmethod
     def get_create_table_command():
@@ -26,30 +26,33 @@ class Player(TableModel):
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
             is_banned BOOLEAN NOT NULL,
-            discord_id TEXT)"""
+            join_date INTEGER NOT NULL DEFAULT 0
+            )"""
 
 @dataclass
 class FriendCode(TableModel):
     id: int
     player_id: int
-    game: str
+    type: str
     fc: str
     is_verified: bool
     is_primary: bool
     is_active: bool
     description: str
+    creation_date: int
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS friend_codes(
             id INTEGER PRIMARY KEY,
-            player_id INTEGER NOT NULL,
-            game TEXT NOT NULL,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            type TEXT NOT NULL,
             fc TEXT NOT NULL,
             is_verified BOOLEAN NOT NULL,
             is_primary BOOLEAN NOT NULL,
             is_active BOOLEAN NOT NULL,
-            description TEXT
+            description TEXT,
+            creation_date INTEGER NOT NULL
             )"""
 
 @dataclass
@@ -58,6 +61,7 @@ class User(TableModel):
     player_id: int
     email: str
     password_hash: str
+    join_date: int
 
     @staticmethod
     def get_create_table_command():
@@ -65,7 +69,8 @@ class User(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER REFERENCES players(id),
             email TEXT UNIQUE,
-            password_hash TEXT)"""
+            password_hash TEXT,
+            join_date INTEGER NOT NULL DEFAULT 0)"""
 
 @dataclass
 class Session(TableModel):
@@ -79,17 +84,46 @@ class Session(TableModel):
             session_id TEXT PRIMARY KEY NOT NULL,
             user_id INTEGER NOT NULL REFERENCES users(id),
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
+    
+@dataclass
+class UserDiscord(TableModel):
+    user_id: int
+    discord_id: str
+    username: str
+    discriminator: str
+    global_name: str | None
+    avatar: str | None
+    access_token: str
+    token_expires_on: int
+    refresh_token: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_discords(
+        user_id INTEGER PRIMARY KEY REFERENCES users(id),
+        discord_id TEXT NOT NULL,
+        username TEXT NOT NULL,
+        discriminator TEXT NOT NULL,
+        global_name TEXT,
+        avatar TEXT,
+        access_token TEXT NOT NULL,
+        token_expires_on INTEGER NOT NULL,
+        refresh_token TEXT NOT NULL
+        )"""
 
 @dataclass
 class Role(TableModel):
     id: int
     name: str
+    position: int
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS roles(
             id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL)"""
+            name TEXT NOT NULL,
+            position INTEGER NOT NULL
+            )"""
 
 @dataclass
 class Permission(TableModel):
@@ -106,24 +140,28 @@ class Permission(TableModel):
 class UserRole(TableModel):
     user_id: int
     role_id: int
+    expires_on: int | None
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS user_roles(
             user_id INTEGER NOT NULL REFERENCES users(id),
             role_id INTEGER NOT NULL REFERENCES roles(id),
+            expires_on INTEGER,
             PRIMARY KEY (user_id, role_id)) WITHOUT ROWID"""
 
 @dataclass
 class RolePermission(TableModel):
     role_id: int
     permission_id: int
+    denied: bool
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS role_permissions(
             role_id INTEGER NOT NULL REFERENCES roles(id),
             permission_id INTEGER NOT NULL REFERENCES permissions(id),
+            is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
 
 @dataclass
@@ -135,9 +173,10 @@ class TournamentSeries(TableModel):
     mode: str
     is_historical: bool
     is_public: bool
-    description: str
-    ruleset: str
+    short_description: str
     logo: str | None
+    organizer: str
+    location: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -150,9 +189,11 @@ class TournamentSeries(TableModel):
             mode TEXT NOT NULL,
             is_historical INTEGER NOT NULL,
             is_public INTEGER NOT NULL,
-            description TEXT NOT NULL,
-            ruleset TEXT NOT NULL,
-            logo TEXT)"""
+            short_description TEXT NOT NULL,
+            logo TEXT,
+            organizer TEXT NOT NULL,
+            location TEXT
+            )"""
 
 @dataclass
 class Tournament(TableModel):
@@ -165,7 +206,6 @@ class Tournament(TableModel):
     registrations_open: bool
     date_start: int
     date_end: int
-    description: str
     use_series_description: bool
     series_stats_include: bool
     logo: str | None
@@ -181,6 +221,7 @@ class Tournament(TableModel):
     squad_name_required: bool
     mii_name_required: bool
     host_status_required: bool
+    checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
     verification_required: bool
@@ -191,6 +232,10 @@ class Tournament(TableModel):
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
+    bagger_clause_enabled: bool
+    use_series_ruleset: bool
+    organizer: str
+    location: str | None
 
     @staticmethod
     def get_create_table_command():
@@ -204,7 +249,6 @@ class Tournament(TableModel):
             registrations_open BOOLEAN NOT NULL,
             date_start INTEGER NOT NULL,
             date_end INTEGER NOT NULL,
-            description TEXT NOT NULL,
             use_series_description BOOLEAN NOT NULL,
             series_stats_include BOOLEAN NOT NULL,
             logo TEXT,
@@ -221,6 +265,7 @@ class Tournament(TableModel):
             squad_name_required BOOLEAN NOT NULL,
             mii_name_required BOOLEAN NOT NULL,
             host_status_required BOOLEAN NOT NULL,
+            checkins_enabled BOOLEAN NOT NULL,
             checkins_open BOOLEAN NOT NULL,
             min_players_checkin INTEGER,
             verification_required BOOLEAN NOT NULL,
@@ -230,7 +275,11 @@ class Tournament(TableModel):
             is_deleted BOOLEAN NOT NULL,
             show_on_profiles BOOLEAN NOT NULL,
             require_single_fc BOOLEAN NOT NULL,
-            min_representatives INTEGER
+            min_representatives INTEGER,
+            bagger_clause_enabled BOOLEAN NOT NULL,
+            use_series_ruleset BOOLEAN DEFAULT 0 NOT NULL,
+            organizer TEXT NOT NULL,
+            location TEXT
             )"""
 
 @dataclass
@@ -254,7 +303,8 @@ class TournamentSquad(TableModel):
     color: int
     timestamp: int
     tournament_id: int
-    is_registered: int
+    is_registered: bool
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -265,7 +315,9 @@ class TournamentSquad(TableModel):
             color INTEGER NOT NULL,
             timestamp INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            is_registered INTEGER NOT NULL)"""
+            is_registered BOOLEAN NOT NULL,
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL
+            )"""
 
 @dataclass
 class TournamentPlayer(TableModel):
@@ -279,8 +331,9 @@ class TournamentPlayer(TableModel):
     mii_name: str | None
     can_host: bool
     is_invite: bool
-    selected_fc_id: int
+    selected_fc_id: int | None
     is_representative: bool
+    is_approved: bool
 
     @staticmethod
     def get_create_table_command():
@@ -289,14 +342,16 @@ class TournamentPlayer(TableModel):
             player_id INTEGER NOT NULL REFERENCES players(id),
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
             squad_id INTEGER REFERENCES tournament_squads(id),
-            is_squad_captain BOOLEAN,
+            is_squad_captain BOOLEAN NOT NULL,
             timestamp INTEGER NOT NULL,
             is_checked_in BOOLEAN NOT NULL,
             mii_name TEXT,
             can_host BOOLEAN NOT NULL,
             is_invite BOOLEAN NOT NULL,
             selected_fc_id INTEGER,
-            is_representative BOOLEAN NOT NULL
+            is_representative BOOLEAN NOT NULL,
+            is_bagger_clause BOOLEAN NOT NULL,
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL
             )"""
     
 @dataclass
@@ -305,7 +360,7 @@ class TournamentSoloPlacements(TableModel):
     tournament_id: int
     player_id: int
     placement: int
-    placement_description: str
+    placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
@@ -327,7 +382,7 @@ class TournamentSquadPlacements(TableModel):
     tournament_id: int
     squad_id: int
     placement: int
-    placement_description: str
+    placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
@@ -408,6 +463,7 @@ class TeamMember(TableModel):
     player_id: int
     join_date: int
     leave_date: int | None
+    is_bagger_clause: bool
 
     @staticmethod
     def get_create_table_command():
@@ -416,7 +472,8 @@ class TeamMember(TableModel):
             roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
             player_id INTEGER NOT NULL REFERENCES players(id),
             join_date INTEGER NOT NULL,
-            leave_date INTEGER
+            leave_date INTEGER,
+            is_bagger_clause BOOLEAN NOT NULL
             )
             """
 
@@ -440,12 +497,14 @@ class TeamSquadRegistration(TableModel):
 class TeamRole(TableModel):
     id: int
     name: str
+    position: int
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS team_roles(
             id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL)"""
+            name TEXT NOT NULL,
+            position INTEGER NOT NULL)"""
     
 @dataclass
 class TeamPermission(TableModel):
@@ -462,12 +521,14 @@ class TeamPermission(TableModel):
 class TeamRolePermission(TableModel):
     role_id: int
     permission_id: int
+    is_denied: bool
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS team_role_permissions(
             role_id INTEGER NOT NULL REFERENCES team_roles(id),
             permission_id INTEGER NOT NULL REFERENCES team_permissions(id),
+            is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
 
 @dataclass
@@ -475,6 +536,7 @@ class UserTeamRole(TableModel):
     user_id: int
     role_id: int
     team_id: int
+    expires_on: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -482,6 +544,7 @@ class UserTeamRole(TableModel):
             user_id INTEGER NOT NULL REFERENCES users(id),
             role_id INTEGER NOT NULL REFERENCES team_roles(id),
             team_id INTEGER NOT NULL REFERENCES teams(id),
+            expires_on INTEGER,
             PRIMARY KEY (user_id, role_id, team_id)
             ) WITHOUT ROWID
             """
@@ -490,12 +553,14 @@ class UserTeamRole(TableModel):
 class SeriesRole(TableModel):
     id: int
     name: str
+    position: int
 
     @staticmethod
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS series_roles(
             id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL)"""
+            name TEXT NOT NULL,
+            position INTEGER NOT NULL)"""
     
 @dataclass
 class SeriesPermission(TableModel):
@@ -512,12 +577,14 @@ class SeriesPermission(TableModel):
 class SeriesRolePermission(TableModel):
     role_id: int
     permission_id: int
+    is_denied: bool
 
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS series_role_permissions(
             role_id INTEGER NOT NULL REFERENCES series_roles(id),
             permission_id INTEGER NOT NULL REFERENCES series_permissions(id),
+            is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
 
 @dataclass
@@ -525,6 +592,7 @@ class UserSeriesRole(TableModel):
     user_id: int
     role_id: int
     series_id: int
+    expires_on: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -532,12 +600,69 @@ class UserSeriesRole(TableModel):
             user_id INTEGER NOT NULL REFERENCES users(id),
             role_id INTEGER NOT NULL REFERENCES series_roles(id),
             series_id INTEGER NOT NULL REFERENCES tournament_series(id),
+            expires_on INTEGER,
             PRIMARY KEY (user_id, role_id, series_id)
+            ) WITHOUT ROWID
+            """
+    
+@dataclass
+class TournamentRole(TableModel):
+    id: int
+    name: str
+    position: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS tournament_roles(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            position INTEGER NOT NULL)"""
+    
+@dataclass
+class TournamentPermission(TableModel):
+    id: int
+    name: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS tournament_permissions(
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL)"""
+    
+@dataclass
+class TournamentRolePermission(TableModel):
+    role_id: int
+    permission_id: int
+    is_denied: bool
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS tournament_role_permissions(
+            role_id INTEGER NOT NULL REFERENCES tournament_roles(id),
+            permission_id INTEGER NOT NULL REFERENCES tournament_permissions(id),
+            is_denied BOOLEAN DEFAULT FALSE NOT NULL,
+            PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+    
+@dataclass
+class UserTournamentRole(TableModel):
+    user_id: int
+    role_id: int
+    tournament: int
+    expires_on: int | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_tournament_roles (
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            role_id INTEGER NOT NULL REFERENCES tournament_roles(id),
+            tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
+            expires_on INTEGER,
+            PRIMARY KEY (user_id, role_id, tournament_id)
             ) WITHOUT ROWID
             """
 
 @dataclass
-class RosterInvite(TableModel):
+class TeamTransfer(TableModel):
     id: int
     player_id: int
     roster_id: int
@@ -554,52 +679,90 @@ class RosterInvite(TableModel):
             roster_id INTEGER REFERENCES team_rosters(id),
             date INTEGER NOT NULL,
             roster_leave_id INTEGER REFERENCES team_rosters(id),
+            is_bagger_clause BOOLEAN NOT NULL,
             is_accepted BOOLEAN NOT NULL,
-            approval_status TEXT NOT NULL 
+            approval_status TEXT NOT NULL
             )"""
 
 @dataclass
-class TeamEditRequest(TableModel):
+class TeamEdit(TableModel):
     id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    old_name: str
+    new_name: str
+    old_tag: str
+    new_tag: str
+    date: int
+    approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS team_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS team_edits (
             id INTEGER PRIMARY KEY,
             team_id INTEGER NOT NULL REFERENCES teams(id),
-            name TEXT,
-            tag TEXT,
+            old_name TEXT NOT NULL,
+            new_name TEXT NOT NULL,
+            old_tag TEXT NOT NULL,
+            new_tag TEXT NOT NULL,
             date INTEGER NOT NULL,
-            approval_status TEXT NOT NULL
+            approval_status TEXT NOT NULL,
+            handled_by INTEGER REFERENCES players(id)
             )"""
     
 @dataclass
-class RosterEditRequest(TableModel):
+class RosterEdit(TableModel):
     id: int
     roster_id: int
-    name: str | None
-    tag: str | None
+    old_name: str
+    new_name: str
+    old_tag: str
+    new_tag: str
+    date: int
+    approval_status: str
+    handled_by: int | None
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS roster_edit_requests (
+        return """CREATE TABLE IF NOT EXISTS roster_edits (
         id INTEGER PRIMARY KEY,
         roster_id INTEGER NOT NULL REFERENCES team_rosters(id),
-        name TEXT,
-        tag TEXT,
+        old_name TEXT NOT NULL,
+        new_name TEXT NOT NULL,
+        old_tag TEXT NOT NULL,
+        new_tag TEXT NOT NULL,
         date INTEGER NOT NULL,
-        approval_status TEXT NOT NULL
+        approval_status TEXT NOT NULL,
+        handled_by INTEGER REFERENCES players(id)
         )
         """
+
+@dataclass
+class FriendCodeEdit(TableModel):
+    id: int
+    fc_id: int
+    old_fc: str | None
+    new_fc: str | None
+    is_active: bool | None
+    handled_by: int | None
+    date: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS friend_code_edits(
+        id INTEGER PRIMARY KEY,
+        fc_id INTEGER NOT NULL REFERENCES friend_codes(id),
+        old_fc TEXT,
+        new_fc TEXT,
+        is_active BOOLEAN,
+        handled_by INTEGER REFERENCES players(id),
+        date INTEGER NOT NULL
+        )"""
     
 @dataclass
 class UserSettings(TableModel):
     user_id: int
     avatar: str | None
-    discord_tag: str | None
     about_me: str | None
     language: str
     color_scheme: str
@@ -615,17 +778,6 @@ class UserSettings(TableModel):
             color_scheme TEXT DEFAULT 'light' NOT NULL,
             timezone TEXT DEFAULT 'UTC' NOT NULL
             ) WITHOUT ROWID"""
-    
-@dataclass
-class NotificationContent(TableModel):
-    id: int
-    content: str
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS notification_content(
-            id INTEGER PRIMARY KEY,
-            content TEXT NOT NULL)"""
 
 @dataclass
 class Notifications(TableModel):
@@ -633,8 +785,9 @@ class Notifications(TableModel):
     user_id: int
     type: int
     content_id: int
+    content_args: str
+    link: str
     created_date: int
-    content_is_shared: int
     is_read: int
 
     @staticmethod
@@ -643,9 +796,10 @@ class Notifications(TableModel):
             id INTEGER PRIMARY KEY,
             user_id INTEGER NOT NULL REFERENCES users(id),
             type INTEGER DEFAULT 0 NOT NULL,
-            content_id INTEGER NOT NULL REFERENCES notification_content(id),
+            content_id INTEGER NOT NULL,
+            content_args TEXT NOT NULL,
+            link TEXT,
             created_date INTEGER NOT NULL,
-            content_is_shared INTEGER NOT NULL,
             is_read INTEGER DEFAULT 0 NOT NULL)"""
 
 @dataclass
@@ -666,26 +820,128 @@ class CommandLog(TableModel):
 @dataclass
 class PlayerBans(TableModel):
     player_id: int
-    staff_id: int
+    banned_by: int
     is_indefinite: bool
+    ban_date: int
     expiration_date: int
     reason: str
+    comment: str
 
     @staticmethod
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS player_bans(
             player_id INTEGER PRIMARY KEY REFERENCES players(id),
-            staff_id INTEGER NOT NULL REFERENCES users(id),
+            banned_by INTEGER NOT NULL REFERENCES users(id),
             is_indefinite BOOLEAN NOT NULL,
+            ban_date INTEGER NOT NULL,
             expiration_date INTEGER NOT NULL,
-            reason TEXT NOT NULL
+            reason TEXT NOT NULL,
+            comment TEXT NOT NULL
             ) WITHOUT ROWID"""
     
+@dataclass
+class PlayerBansHistorical(TableModel):
+    id: int
+    player_id: int
+    banned_by: int
+    unbanned_by: int | None
+    unban_date: int
+    is_indefinite: bool
+    ban_date: int
+    expiration_date: int
+    reason: str
+    comment: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_bans_historical(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER REFERENCES players(id),
+            banned_by INTEGER NOT NULL REFERENCES users(id),
+            unbanned_by INTEGER REFERENCES users(id),
+            unban_date INTEGER NOT NULL,
+            is_indefinite BOOLEAN NOT NULL,
+            ban_date INTEGER NOT NULL,
+            expiration_date INTEGER NOT NULL,
+            reason TEXT NOT NULL,
+            comment TEXT NOT NULL)"""
+    
+@dataclass
+class PlayerNameEdit(TableModel):
+    id: int
+    player_id: int
+    old_name: str
+    new_name: str
+    date: int
+    approval_status: str
+    handled_by: int | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_name_edits (
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            old_name TEXT NOT NULL,
+            new_name TEXT NOT NULL,
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL,
+            handled_by INTEGER REFERENCES players(id)
+            )"""
+
+@dataclass
+class PlayerClaim(TableModel):
+    id: int
+    player_id: int
+    claimed_player_id: int
+    date: int
+    approval_status: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_claims(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            claimed_player_id INTEGER NOT NULL REFERENCES players(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
+        )"""
+
+    
+@dataclass
+class PlayerNotes(TableModel):
+    player_id: int
+    notes: str
+    edited_by: int
+    date: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS player_notes (
+            player_id INTEGER PRIMARY KEY REFERENCES players(id),
+            notes TEXT NOT NULL,
+            edited_by INTEGER NOT NULL REFERENCES users(id),
+            date INTEGER NOT NULL
+            )"""
+    
+@dataclass
+class FilteredWords(TableModel):
+    id: int
+    word: str
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS filtered_words(
+            id INTEGER PRIMARY KEY,
+            word TEXT NOT NULL
+        )"""
+    
 all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, Session, Role, Permission, UserRole, RolePermission, 
+    Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
-    SeriesRole, SeriesPermission, SeriesRolePermission,
-    UserSeriesRole, RosterInvite, TeamEditRequest, RosterEditRequest,
-    UserSettings, NotificationContent, Notifications, CommandLog, PlayerBans]
+    SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
+    TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
+    TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
+    UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
+    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]

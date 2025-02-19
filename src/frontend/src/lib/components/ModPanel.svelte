@@ -1,7 +1,6 @@
 <script lang="ts">
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { permissions } from '$lib/util/util';
   import { page } from '$app/stores';
   import Dropdown from './common/Dropdown.svelte';
   import DropdownItem from './common/DropdownItem.svelte';
@@ -9,6 +8,7 @@
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
   import AlertCount from './common/AlertCount.svelte';
+  import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;
   let unread_count = 0;
@@ -17,7 +17,7 @@
     user_info = value;
     let mod_notifs = value.mod_notifications
     if(mod_notifs) {
-      unread_count = mod_notifs.pending_teams + mod_notifs.pending_team_edits + mod_notifs.pending_transfers;
+      unread_count = Object.values(mod_notifs).reduce((sum, a) => sum + a, 0);
     }
   });
 
@@ -39,27 +39,80 @@
   
 </NavLi>
 <Dropdown>
-  {#if user_info.permissions.includes(permissions.manage_teams)}
+  {#if check_permission(user_info, permissions.manage_teams)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">
-      Approve Teams 
+      {$LL.NAVBAR.MOD_PANEL.APPROVE_TEAMS()}
       {#if user_info.mod_notifications?.pending_teams}
         <AlertCount count={user_info.mod_notifications.pending_teams}/>
       {/if}
       
     </DropdownItem>
     <DropdownItem href="/{$page.params.lang}/moderator/approve_team_edits">
-      Team Name/Tag Changes
+      {$LL.NAVBAR.MOD_PANEL.TEAM_NAME_TAG_CHANGES()}
       {#if user_info.mod_notifications?.pending_team_edits}
         <AlertCount count={user_info.mod_notifications.pending_team_edits}/>
       {/if}
     </DropdownItem>
   {/if}
-  {#if user_info.permissions.includes(permissions.manage_transfers)}
+  {#if check_permission(user_info, permissions.manage_transfers)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_transfers">
-      Transfers
+      {$LL.NAVBAR.MOD_PANEL.APPROVE_TRANSFERS()}
       {#if user_info.mod_notifications?.pending_transfers}
         <AlertCount count={user_info.mod_notifications.pending_transfers}/>
       {/if}
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.manage_user_roles)}
+    <DropdownItem href="/{$page.params.lang}/moderator/manage_user_roles">
+      {$LL.NAVBAR.MOD_PANEL.USER_ROLES()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.ban_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/player_bans">
+      {$LL.NAVBAR.MOD_PANEL.PLAYER_BANS()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.edit_player)}
+    <DropdownItem href="/{$page.params.lang}/moderator/approve_player_names">
+      {$LL.NAVBAR.MOD_PANEL.PLAYER_NAME_CHANGES()}
+      {#if user_info.mod_notifications?.pending_player_name_changes}
+        <AlertCount count={user_info.mod_notifications.pending_player_name_changes}/>
+      {/if}
+    </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/moderator/friend_code_edits">
+      {$LL.NAVBAR.MOD_PANEL.FRIEND_CODE_CHANGES()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.manage_shadow_players)}
+    <DropdownItem href="/{$page.params.lang}/moderator/shadow_players">
+      {$LL.NAVBAR.MOD_PANEL.SHADOW_PLAYERS()}
+    </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/moderator/player_claims">
+      {$LL.NAVBAR.MOD_PANEL.PLAYER_CLAIMS()}
+      {#if user_info.mod_notifications?.pending_player_claims}
+        <AlertCount count={user_info.mod_notifications.pending_player_claims}/>
+      {/if}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.merge_players)}
+    <DropdownItem href="/{$page.params.lang}/moderator/merge_players">
+      {$LL.NAVBAR.MOD_PANEL.MERGE_PLAYERS()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.merge_teams)}
+    <DropdownItem href="/{$page.params.lang}/moderator/merge_teams">
+      {$LL.NAVBAR.MOD_PANEL.MERGE_TEAMS()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.manage_word_filter)}
+    <DropdownItem href="/{$page.params.lang}/moderator/word_filter">
+      {$LL.NAVBAR.MOD_PANEL.WORD_FILTER()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.edit_user)}
+    <DropdownItem href="/{$page.params.lang}/moderator/users">
+      {$LL.NAVBAR.MOD_PANEL.MANAGE_USERS()}
+    </DropdownItem>
+  {/if}
+  
 </Dropdown>

@@ -7,13 +7,16 @@
     import Dropdown from "$lib/components/common/Dropdown.svelte";
     import DropdownItem from "$lib/components/common/DropdownItem.svelte";
     import { ChevronDownSolid } from "flowbite-svelte-icons";
+    import LL from "$i18n/i18n-svelte";
 
     const dispatch = createEventDispatcher();
 
     export let placement: PlacementOrganizer;
     export let is_squad: boolean;
     export let is_edit: boolean;
+    export let is_homepage = false;
 
+    $: rank_width = is_homepage ? 'w-[50px]' : 'w-[100px]'
     let bg_class = "other";
     $: {
         bg_class = "other";
@@ -70,7 +73,7 @@
 </script>
 
 <div class="flex {bg_class}">
-    <div class="rank">
+    <div class="rank {rank_width}">
         {getPlacementText(placement)}
     </div>
     <div class="info">
@@ -85,27 +88,27 @@
     </div>
     {#if is_edit}
         <div class="actions">
-            Actions
+            {$LL.COMMON.ACTIONS()}
             <ChevronDownSolid/>
         </div>
         <Dropdown>
             <DropdownItem>
-                <label for="tie">Tie?</label>
+                <label for="tie">{$LL.TOURNAMENTS.PLACEMENTS.TIE()}</label>
                 <input id="tie" type="checkbox" bind:checked={placement.tie} on:change/>
             </DropdownItem>
             <DropdownItem>
-                <label for="bound">Lower bound?</label>
+                <label for="bound">{$LL.TOURNAMENTS.PLACEMENTS.LOWER_BOUND()}</label>
                 <input id="bound" type="checkbox" bind:checked={placement.bounded} on:change/>
             </DropdownItem>
             <DropdownItem on:click={toggleDQ}>
-                Toggle DQ
+                {$LL.TOURNAMENTS.PLACEMENTS.TOGGLE_DQ()}
             </DropdownItem>
         </Dropdown>
     {/if}
-    <div class="description">
+    <div class="description {is_homepage ? 'hidden' : ''}">
         {#if placement.placement}
             {#if is_edit}
-                <input class="title" bind:value={placement.description} placeholder="Title"/>
+                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()}/>
             {:else if placement.description}
                 {placement.description}
             {/if}
@@ -144,10 +147,10 @@
         cursor: pointer;
     }
     .rank {
-        width: 100px;
         display: block;
         text-align: center;
-        font-size: 1.75em;
+        font-size: 1.5em;
+        font-weight: 600;
     }
     .info {
         min-width: 150px;

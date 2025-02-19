@@ -3,9 +3,9 @@
     import { onMount } from "svelte";
     import { page } from "$app/stores";
     import PlacementsDragDropZone from "$lib/components/tournaments/placements/PlacementsDragDropZone.svelte";
-
     import type { TournamentPlacementList } from "$lib/types/tournament-placement";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let id = 0;
     let placements: TournamentPlacementList;
@@ -23,18 +23,21 @@
 </script>
 
 {#if is_loaded}
-    <Section header="Back to Tournament">
+    <Section header={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>
         <div slot="header_content">
-            <Button href="/{$page.params.lang}/tournaments/details?id={placements.tournament_id}">Back</Button>
+            <Button href="/{$page.params.lang}/tournaments/details?id={placements.tournament_id}">{$LL.COMMON.BACK()}</Button>
         </div>
     </Section>
-    <Section header="Edit Placements">
+    <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
         <div slot="header_content">
-            <Button href="/{$page.params.lang}/tournaments/edit_placements/raw?id={placements.tournament_id}">Switch to raw input</Button>
+            <Button href="/{$page.params.lang}/tournaments/edit_placements/raw?id={placements.tournament_id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_RAW_INPUT()}</Button>
+            {#if placements.is_squad}
+                <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
+            {/if}
         </div>
         <PlacementsDragDropZone tournament_id={placements.tournament_id} is_squad={placements.is_squad} placements={placements.placements}/>
     </Section>
-    <Section header="Unplaced Teams">
+    <Section header={$LL.TOURNAMENTS.PLACEMENTS.UNPLACED({is_squad: placements.is_squad})}>
         <PlacementsDragDropZone tournament_id={placements.tournament_id} is_squad={placements.is_squad} placements={placements.unplaced} is_placements={false}/>
     </Section>
 {/if}

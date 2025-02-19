@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
+  import type { TournamentSeriesBasic } from '$lib/types/tournaments/series/tournament-series';
   import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import LL from '$i18n/i18n-svelte';
 
-  export let series: TournamentSeries;
+  export let series: TournamentSeriesBasic;
 </script>
 
 <Section header={series.series_name} href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
@@ -27,9 +28,9 @@
       </div>
     </div>
     <div class="description">
-      <MarkdownBox content={series.description} />
+      <MarkdownBox content={series.short_description} />
       <hr />
-      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}"> More Details </a>
+      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
     </div>
   </div>
 </Section>
@@ -40,8 +41,9 @@
   }
   img {
     margin: auto;
-    max-width: 400px;
+    max-width: 300px;
     max-height: 200px;
+    width: 100%;
   }
   .flex {
     display: flex;

@@ -8,4 +8,5 @@ export type TournamentInvite = {
   tournament_name: string;
   tournament_game: string;
   tournament_mode: string;
+  is_bagger_clause: boolean;
 };

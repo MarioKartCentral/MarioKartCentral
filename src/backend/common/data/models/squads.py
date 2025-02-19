@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from common.data.models.tournament_registrations import TournamentPlayerDetails
-
+from common.data.models.teams import RosterBasic
 
 @dataclass
 class Squad:
@@ -18,29 +18,32 @@ class CreateSquadRequestData:
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class ForceCreateSquadRequestData(CreateSquadRequestData):
     player_id: int
-    roster_ids: list[int]
-    representative_ids: list[int]
+    is_checked_in: bool = False
+    is_approved: bool = False
 
 @dataclass
 class EditMySquadRequestData:
     squad_id: int
-    squad_name: str
-    squad_tag: str
-    squad_color: int
+    squad_name: str | None
+    squad_tag: str | None
+    squad_color: int | None
 
 @dataclass
 class EditSquadRequestData(EditMySquadRequestData):
-    is_registered: bool
+    is_registered: bool | None = None
+    is_approved: bool | None = None
 
 @dataclass
 class InvitePlayerRequestData:
     squad_id: int
     player_id: int
     is_representative: bool = False
+    is_bagger_clause: bool = False
 
 @dataclass
 class KickSquadPlayerRequestData:
@@ -63,14 +66,15 @@ class UnregisterPlayerRequestData():
     squad_id: int | None
 
 @dataclass
-class StaffUnregisterPlayerRequestData():
-    squad_id: int | None
+class StaffUnregisterPlayerRequestData(UnregisterPlayerRequestData):
     player_id: int
 
 @dataclass
 class SquadPlayerDetails(TournamentPlayerDetails):
     is_squad_captain: bool
+    is_representative: bool
     is_invite: bool
+    is_bagger_clause: bool
 
 @dataclass
 class TournamentSquadDetails():
@@ -79,15 +83,22 @@ class TournamentSquadDetails():
     tag: str | None
     color: int
     timestamp: int
-    is_registered: int
+    is_registered: bool
+    is_approved: bool
     players: list[SquadPlayerDetails]
+    rosters: list[RosterBasic]
+
+
+@dataclass
+class MyTournamentRegistration():
+    squad: TournamentSquadDetails | None
+    player: TournamentPlayerDetails
 
 @dataclass
 class MyTournamentRegistrationDetails():
     player_id: int
     tournament_id: int
-    squads: list[TournamentSquadDetails]
-    player: TournamentPlayerDetails | None
+    registrations: list[MyTournamentRegistration]
 
 @dataclass
 class MakeCaptainRequestData():
@@ -97,3 +108,23 @@ class MakeCaptainRequestData():
 @dataclass
 class UnregisterSquadRequestData():
     squad_id: int
+
+@dataclass
+class TeamTournamentPlayer():
+    player_id: int
+    is_captain: bool
+    is_representative: bool
+    is_bagger_clause: bool
+
+@dataclass
+class RegisterTeamRequestData():
+    squad_color: int
+    squad_name: str
+    squad_tag: str
+    roster_ids: list[int]
+    players: list[TeamTournamentPlayer]
+
+@dataclass
+class AddRemoveRosterRequestData:
+    squad_id: int
+    roster_id: int

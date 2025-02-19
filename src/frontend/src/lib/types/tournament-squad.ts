@@ -1,4 +1,5 @@
 import type { TournamentPlayer } from '$lib/types/tournament-player';
+import type { RosterBasic } from './roster-basic';
 
 export type TournamentSquad = {
   id: number;
@@ -7,5 +8,7 @@ export type TournamentSquad = {
   color: number;
   timestamp: number;
   is_registered: boolean;
+  is_approved: boolean;
   players: TournamentPlayer[];
+  rosters: RosterBasic[];
 };

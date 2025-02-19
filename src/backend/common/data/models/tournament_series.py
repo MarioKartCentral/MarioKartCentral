@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from common.data.models.common import Game, GameMode
 
-
 @dataclass
-class SeriesRequestData():
+class SeriesDBFields():
     series_name: str
     url: str | None
     display_order: int
@@ -11,14 +10,25 @@ class SeriesRequestData():
     mode: GameMode
     is_historical: bool
     is_public: bool
-    description: str
+    short_description: str
     logo: str | None
-    ruleset: str
     organizer: str
     location: str | None
+
+@dataclass
+class SeriesS3Fields():
+    description: str
+    ruleset: str
+
+@dataclass
+class SeriesRequestData(SeriesDBFields, SeriesS3Fields): pass
     
 @dataclass
-class Series():
+class EditSeriesRequestData(SeriesRequestData):
+    series_id: int
+
+@dataclass
+class SeriesBasic:
     id: int
     series_name: str
     url: str | None
@@ -27,9 +37,15 @@ class Series():
     mode: GameMode
     is_historical: bool
     is_public: bool
+    short_description: str
+    logo: str | None
+    organizer: str
+    location: str | None
+
+@dataclass
+class Series(SeriesBasic):
     description: str
     ruleset: str
-    logo: str | None
 
 @dataclass
 class SeriesFilter():

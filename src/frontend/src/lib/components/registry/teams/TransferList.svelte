@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TeamTransfer } from "$lib/types/team-transfer";
+    import type { TeamTransfer, TransferList } from "$lib/types/team-transfer";
     import Dialog from "$lib/components/common/Dialog.svelte";
     import Table from "$lib/components/common/Table.svelte";
     import { onMount } from "svelte";
@@ -15,8 +15,12 @@
     import ModeBadge from "$lib/components/badges/ModeBadge.svelte";
     import PageNavigation from "$lib/components/common/PageNavigation.svelte";
     import GameModeSelect from "$lib/components/common/GameModeSelect.svelte";
+    import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let approval_status: "approved" | "pending" | "denied";
+    export let team_id: number | null = null;
+    export let roster_id: number | null = null;
 
     let transfers: TeamTransfer[] = [];
     let deny_dialog: Dialog;
@@ -26,13 +30,17 @@
     let page_number = 1;
     let total_pages = 0;
 
-    type TransferList = {
-        transfers: TeamTransfer[];
-        transfer_count: number;
-        page_count: number;
-    }
     let game: string | null = null;
     let mode: string | null = null;
+    let from: string | null = null;
+    let to: string | null = null;
+
+    $: {
+        if(roster_id) {
+            game = null;
+            mode = null;
+        }
+    }
     
     async function fetchData() {
         let url = `/api/registry/teams/transfers/${approval_status}?page=${page_number}`;
@@ -41,6 +49,18 @@
         }
         if(mode !== null) {
             url += `&mode=${mode}`;
+        }
+        if(team_id !== null) {
+            url += `&team_id=${team_id}`;
+        }
+        if(roster_id !== null) {
+            url += `&roster_id=${roster_id}`;
+        }
+        if(from) {
+            url += `&from_date=${new Date(from).getTime()/1000}`;
+        }
+        if(to) {
+            url += `&to_date=${new Date(to).getTime()/1000}`;
         }
         const res = await fetch(url);
         if (res.status !== 200) {
@@ -51,14 +71,20 @@
         total_pages = body.page_count;
     }
 
+    async function search() {
+        page_number = 1;
+        fetchData();
+    }
+
     onMount(fetchData);
 
     const options: Intl.DateTimeFormatOptions = {
-        dateStyle: 'medium'
+        dateStyle: 'medium',
+        timeStyle: 'short'
     };
 
     async function approveTransfer(transfer: TeamTransfer) {
-        let conf = window.confirm("Are you sure you want to approve this transfer?");
+        let conf = window.confirm($LL.MODERATOR.APPROVE_TRANSFER_CONFIRM());
         if(!conf) return;
         const payload = {
             invite_id: transfer.invite_id,
@@ -73,7 +99,7 @@
         if (res.status < 300) {
             window.location.reload();
         } else {
-            alert(`Approving transfer failed: ${result['title']}`);
+            alert(`${$LL.MODERATOR.APPROVE_TRANSFER_FAILED()}: ${result['title']}`);
         }
     }
     
@@ -94,7 +120,7 @@
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`Approving transfer failed: ${result['title']}`);
+      alert(`${$LL.MODERATOR.DENY_TRANSFER_FAILED()}: ${result['title']}`);
     }
   }
 
@@ -104,12 +130,27 @@
   }
 </script>
 
-<form on:submit|preventDefault={fetchData}>
+
+<form on:submit|preventDefault={search}>
     <div class="flex">
-        <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline/>
-        <Button type="submit">Filter</Button>
+        {#if !team_id}
+            <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
+        {/if}
+        <div class="option">
+            <label for="from">{$LL.COMMON.FROM()}</label>
+            <input name="from" type="datetime-local" bind:value={from}/>
+        </div>
+        <div class="option">
+            <label for="to">{$LL.COMMON.TO()}</label>
+            <input name="to" type="datetime-local" bind:value={to}/>
+        </div>
+        <div class="option">
+            <Button type="submit">{$LL.COMMON.FILTER()}</Button>
+        </div>
+        
     </div>
 </form>
+
 {#if transfers.length}
     <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
     <Table>
@@ -124,12 +165,12 @@
         <thead>
         <tr>
             <th></th>
-            <th>Player</th>
-            <th class="mobile-hide">Game/Mode</th>
+            <th>{$LL.COMMON.PLAYER()}</th>
+            <th class="mobile-hide">{$LL.COMMON.GAME_MODE()}</th>
             <th></th>
-            <th class="mobile-hide">Date</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
             {#if approval_status === "pending"}
-                <th>Approve?</th>
+                <th>{$LL.MODERATOR.APPROVE()}</th>
             {/if}
         </tr>
         </thead>
@@ -142,6 +183,9 @@
             <td>
                 <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
                     {transfer.player_name}
+                    {#if transfer.is_bagger_clause}
+                        <BaggerBadge/>
+                    {/if}
                 </a>
             </td>
             <td class="mobile-hide">
@@ -156,7 +200,7 @@
                         </a>
                         
                     {:else}
-                        No team
+                        {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                     <ArrowRight/>
                     {#if transfer.roster_join}
@@ -164,7 +208,7 @@
                             <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color}/>
                         </a>
                     {:else}
-                        No team
+                        {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                 </div>
                 
@@ -180,26 +224,29 @@
         {/each}
         </tbody>
     </Table>
+    <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
 {:else}
-    No transfers.
+    {$LL.TEAMS.TRANSFERS.NO_TRANSFERS()}
 {/if}
 
-<Dialog bind:this={deny_dialog} header="Deny Transfer">
-<div>
-    Send transfer back to the player?
-</div>
-<input type="checkbox" bind:value={send_back} />
-<br /><br />
-<div>
-    <Button on:click={() => denyTransfer(curr_transfer)}>Deny</Button>
-    <Button on:click={deny_dialog.close}>Cancel</Button>
-</div>
+<Dialog bind:this={deny_dialog} header={$LL.MODERATOR.DENY_TRANSFER()}>
+    <div>
+        {$LL.MODERATOR.SEND_TRANSFER_BACK()}
+    </div>
+    <input type="checkbox" bind:value={send_back} />
+    <br /><br />
+    <div>
+        <Button on:click={() => denyTransfer(curr_transfer)}>{$LL.MODERATOR.DENY()}</Button>
+        <Button on:click={deny_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
+    </div>
 </Dialog>
 
 <style>
     div.flex {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
     }
     col.country {
         width: 15%;

@@ -5,19 +5,25 @@
   import Table from '$lib/components/common/Table.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
-  import type { FriendCode } from '$lib/types/friend-code';
-    import Button from '$lib/components/common/buttons/Button.svelte';
-    import TagBadge from '$lib/components/badges/TagBadge.svelte';
-    import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
-    import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
+  import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   export let squads: TournamentSquad[];
-  export let friend_codes: FriendCode[];
 
   let all_toggle_on = false;
   let accept_dialog: Dialog;
   let curr_invite: TournamentSquad;
+
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   // use this to store whether we should display players for each squad, as well as convert their timestamps to Dates
   let squad_data: { [id: number]: { display_players: boolean; date: Date } } = {};
@@ -65,14 +71,14 @@
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
-      alert('Successfully registered for the tournament!');
+      alert($LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_SUCCESS());
     } else {
-      alert(`Registration failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function declineInvite(squad: TournamentSquad) {
-    let conf = window.confirm('Are you sure you would like to decline this invite?');
+    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.DECLINE_INVITE_CONFIRM());
     if (!conf) {
       return;
     }
@@ -90,7 +96,7 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Declining invite failed: ${result['title']}`);
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.DECLINE_INVITE_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -109,18 +115,18 @@
     <tr>
       <th>ID</th>
       {#if tournament.squad_tag_required}
-        <th>Tag</th>
+        <th>{$LL.COMMON.TAG()}</th>
       {/if}
       {#if tournament.squad_name_required}
-        <th>Name</th>
+        <th>{$LL.COMMON.NAME()}</th>
       {/if}
       <th>
-        Players
+        {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
         <button class="show-players" on:click={toggle_all_players}>
-          ({all_toggle_on ? 'hide all' : 'show all'})
+          ({all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()})
         </button>
       </th>
-      <th>Accept?</th>
+      <th>{$LL.INVITES.ACCEPT()}</th>
     </tr>
   </thead>
   <tbody>
@@ -138,7 +144,7 @@
         <td
           >{squad.players.filter((p) => !p.is_invite).length}
           <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
-            ({squad_data[squad.id].display_players ? 'hide' : 'show'})
+            {squad_data[squad.id].display_players ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
           </button></td
         >
         <td>
@@ -158,22 +164,25 @@
   </tbody>
 </Table>
 
-<Dialog bind:this={accept_dialog} header="Accept squad invite">
+<Dialog bind:this={accept_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.ACCEPT_SQUAD_INVITE()}>
   <form method="POST" on:submit|preventDefault={acceptInvite}>
-    <SoloTournamentFields {tournament} {friend_codes} />
-    <br />
-    <div>Squad ID: {curr_invite?.id}</div>
-    {#if tournament.squad_tag_required}
-      <div>Squad Tag: {curr_invite?.tag}</div>
+    {#if user_info.player}
+      <SoloTournamentFields {tournament} friend_codes={user_info.player.friend_codes} />
+      <br />
+      <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_ID}: {curr_invite?.id}</div>
+      {#if tournament.squad_tag_required}
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG}: {curr_invite?.tag}</div>
+      {/if}
+      {#if tournament.squad_name_required}
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME}: {curr_invite?.name}</div>
+      {/if}
+      <br />
+      <div>
+        <Button type="submit">{$LL.INVITES.ACCEPT()}</Button>
+        <Button type="button" on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
+      </div>
     {/if}
-    {#if tournament.squad_name_required}
-      <div>Squad Name: {curr_invite?.name}</div>
-    {/if}
-    <br />
-    <div>
-      <Button type="submit">Accept</Button>
-      <Button type="button" on:click={accept_dialog.close}>Cancel</Button>
-    </div>
+    
   </form>
 </Dialog>
 

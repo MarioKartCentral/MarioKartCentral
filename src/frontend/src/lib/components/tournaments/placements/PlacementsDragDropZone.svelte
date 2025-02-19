@@ -5,6 +5,7 @@
     import PlacementItem from "./PlacementItem.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import { sort_placement_list } from "$lib/util/util";
+    import LL from "$i18n/i18n-svelte";
 
     export let tournament_id: number;
     export let is_squad: boolean;
@@ -12,8 +13,6 @@
     export let is_placements = true;
 
     let placement_list: PlacementOrganizer[] = [];
-
-    
 
     for(let placement of placements) {
         placement_list.push({id: placement.registration_id, placement: placement.placement,
@@ -41,7 +40,9 @@
         // convert our placement list into the format used by the API
         for(let p of placement_list) {
             if(p.placement || p.is_disqualified) {
-                new_placements.push({registration_id: p.id, placement: p.placement, placement_description: p.description,
+                // if it's a solo tournament, we want to use player ID instead of registration ID
+                // since you can't view tournament player IDs on frontend
+                new_placements.push({registration_id: p.player ? p.player.player_id : p.id, placement: p.placement, placement_description: p.description,
                     placement_lower_bound: p.placement_lower_bound, is_disqualified: Boolean(p.is_disqualified)
                 });
             }
@@ -57,7 +58,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing placements failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.PLACEMENTS.SAVE_PLACEMENTS_FAILED()}: ${result['title']}`);
         }
     }
 
@@ -173,7 +174,7 @@
 </section>
 
 {#if is_placements}
-    <Button on:click={savePlacements}>Save</Button>
+    <Button on:click={savePlacements}>{$LL.COMMON.SAVE()}</Button>
 {/if}
 
 <style>

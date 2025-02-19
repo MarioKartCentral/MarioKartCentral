@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
     import type { TournamentPlacementList, TournamentPlacementSimple } from "$lib/types/tournament-placement";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     let id = 0;
     let is_loaded = false;
@@ -19,7 +20,9 @@
         let placements_body: TournamentPlacementList = await res.json();
         placements = placements_body;
         for(let placement of placements.placements) {
-            let curr_line = `${placement.registration_id}\t\t`
+            // if it's a solo tournament, we want to use player ID instead of registration ID
+            // since you can't view tournament player IDs on frontend
+            let curr_line = `${placement.player ? placement.player.player_id : placement.registration_id}\t\t`
             if(placement.placement_lower_bound) {
                 curr_line += `${placement.placement}-${placement.placement_lower_bound}`;
             }
@@ -49,7 +52,7 @@
             try {
                 let reg_id = Number(vals[0]);
                 if(isNaN(reg_id)) {
-                    alert(`Placement ${line} is in incorrect format`);
+                    alert($LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_LINE_INCORRECT({line: line}));
                     return;
                 }
                 let placement: number | null;
@@ -64,7 +67,7 @@
                     let range = vals[1].split("-");
                     for(let n in range) {
                         if(isNaN(Number(n))) {
-                            alert(`Placement ${line} is in incorrect format`);
+                            alert($LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_LINE_INCORRECT({line: line}));
                             return;
                         }
                     }
@@ -80,7 +83,7 @@
                     placement_lower_bound: lower_bound, placement_description: description});
             }
             catch(e) {
-                alert(`An error occurred parsing text: ${e}`);
+                alert(`${$LL.TOURNAMENTS.PLACEMENTS.PARSE_TEXT_ERROR()}: ${e}`);
             }
         }
 
@@ -95,31 +98,33 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
-            alert(`Editing placements failed: ${result['title']}`);
+            alert(`${$LL.TOURNAMENTS.PLACEMENTS.SAVE_PLACEMENTS_FAILED()}: ${result['title']}`);
         }
 
     }
 </script>
 
 {#if is_loaded}
-    <Section header="Back to Tournament">
+    <Section header={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>
         <div slot="header_content">
-            <Button href="/{$page.params.lang}/tournaments/details?id={id}">Back</Button>
+            <Button href="/{$page.params.lang}/tournaments/details?id={id}">{$LL.COMMON.BACK()}</Button>
         </div>
     </Section>
-    <Section header="Edit Placements">
+    <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
         <div slot="header_content">
-            <Button href="/{$page.params.lang}/tournaments/edit_placements?id={id}">Switch to interactive input</Button>
+            <Button href="/{$page.params.lang}/tournaments/edit_placements?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_INTERACTIVE_INPUT()}</Button>
+            {#if placements.is_squad}
+                <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
+            {/if}
         </div>
         <div>
-            On each line, enter the ID of the tournament registration, followed by their rank, separated by a space.
-            For disqualified participants, enter DQ in place of the rank. You may enter an optional title after the rank.
+            {$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_INSTRUCTIONS()}
         </div>
         <div>
             <textarea bind:value={text}/>
         </div>
         <div>
-            <Button on:click={savePlacements}>Save</Button>
+            <Button on:click={savePlacements}>{$LL.COMMON.SAVE()}</Button>
         </div>
     </Section>
 {/if}

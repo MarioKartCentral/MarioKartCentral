@@ -1,0 +1,24 @@
+from starlette.requests import Request
+from starlette.routing import Route
+from api.auth import require_permission
+from api.data import handle
+from api.utils.responses import JSONResponse, bind_request_body
+from common.auth import permissions
+from common.data.commands.mkcv1importer import ImportMKCV1DataCommand, ConvertMKCV1DataCommand
+from common.data.models.mkcv1 import MKCV1Data
+
+@bind_request_body(MKCV1Data)
+@require_permission(permissions.IMPORT_V1_DATA)
+async def import_data(request: Request, body: MKCV1Data):
+    await handle(ImportMKCV1DataCommand(body))
+    return JSONResponse({}, status_code=200)
+
+@require_permission(permissions.IMPORT_V1_DATA)
+async def convert_data(request: Request):
+    await handle(ConvertMKCV1DataCommand())
+    return JSONResponse({})
+
+routes = [
+    Route('/api/mkcv1/import', import_data, methods=["POST"]),
+    Route('/api/mkcv1/convert', convert_data, methods=["POST"]),
+]

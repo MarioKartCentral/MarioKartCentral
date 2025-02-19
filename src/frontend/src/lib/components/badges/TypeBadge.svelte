@@ -1,25 +1,12 @@
 <script lang="ts">
   import Badge from "./Badge.svelte";
+  import LL from "$i18n/i18n-svelte";
 
-  export let type: string;
+  export let is_squad: boolean;
+  export let teams_allowed: boolean;
+  export let style = '';
+
+  let type = is_squad ? (teams_allowed ? $LL.TOURNAMENTS.TYPES.TEAM() : $LL.TOURNAMENTS.TYPES.SQUAD()) : $LL.TOURNAMENTS.TYPES.SOLO();
 </script>
 
-<Badge badgeClass={'type_' + type.toLowerCase() + '_badge wide'}>{type}</Badge>
-
-<style>
-
-  :global(.type_team_badge) {
-    background-color: #006ea1;
-    border: 1px solid #004c80;
-  }
-
-  :global(.type_solo_badge) {
-    background-color: #a1006b;
-    border: 1px solid #6b0040;
-  }
-
-  :global(.type_squad_badge) {
-    background-color: #006633;
-    border: 1px solid #005621;
-  }
-</style>
+<Badge badgeClass='type_{is_squad ? (teams_allowed ? 'team' : 'squad') : 'solo'}_badge wide' {style}>{type}</Badge>

@@ -20,6 +20,7 @@
     width: 100%;
     font-size: small;
     text-align: left;
+    word-break: break-word;
   }
   table :global(thead) {
     background-color: theme('colors.primary.700');
@@ -27,9 +28,6 @@
   table :global(tr) {
     border-top: 1px solid rgb(0, 128, 0, 0.5);
   }
-  /* table :global(tr:hover) {
-    background-color: rgba(255, 255, 255, 0.1);
-  } */
   
   table :global(th) {
     padding: 5px 10px;
@@ -43,16 +41,13 @@
   table :global(tr.row-1) {
     background-color: #374151;
   }
-  /*  */
-  /* table :global(tbody>tr:hover) {
-    background-color: rgba(255, 255, 255, 0.1);
-  } */
+  
   /* Style for a table row containing the logged in user */
   table :global(tr.me) {
     background-color: theme('colors.primary.800'/ 30%) ;
   }
 
-  @media(max-width: 1000px) {
+  @media(max-width: 1024px) {
     table :global(.mobile-hide) {
       display: none;
     }

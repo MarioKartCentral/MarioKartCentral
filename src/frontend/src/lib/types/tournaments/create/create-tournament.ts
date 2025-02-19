@@ -1,5 +1,5 @@
 export type CreateTournament = {
-  tournament_name: string;
+  name: string;
   series_id: number | null;
   date_start: number;
   date_end: number;
@@ -22,6 +22,7 @@ export type CreateTournament = {
   host_status_required: boolean;
   mii_name_required: boolean;
   require_single_fc: boolean;
+  checkins_enabled: boolean;
   checkins_open: boolean;
   min_players_checkin: number | null;
   verification_required: boolean;
@@ -34,7 +35,9 @@ export type CreateTournament = {
   registration_deadline: number | null;
   is_viewable: boolean;
   is_public: boolean;
+  is_deleted: boolean;
   show_on_profiles: boolean;
   series_stats_include: boolean;
   verified_fc_required: boolean;
+  bagger_clause_enabled: boolean;
 };

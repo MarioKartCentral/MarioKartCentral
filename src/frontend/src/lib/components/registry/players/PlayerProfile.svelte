@@ -10,7 +10,13 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import { Avatar } from 'flowbite-svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
-    import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
+  import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
+  import { fc_type_order } from '$lib/util/util';
+  import { locale } from '$i18n/i18n-svelte';
+  import FCTypeBadge from '$lib/components/badges/FCTypeBadge.svelte';
+  import RoleBadge from '$lib/components/badges/RoleBadge.svelte';
+  import PlayerNameHistory from '$lib/components/registry/players/PlayerNameHistory.svelte';
 
   let user_info: UserInfo;
 
@@ -24,14 +30,18 @@
   if (player.user_settings && player.user_settings.avatar) {
     avatar_url = player.user_settings.avatar;
   }
+
+  const options: Intl.DateTimeFormatOptions = {
+    dateStyle: 'medium',
+  };
 </script>
 
-<Section header={$LL.PLAYER_PROFILE.PLAYER_PROFILE()}>
+<Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
   <div slot="header_content">
     {#if user_info.player_id == player.id}
-      <Button href="/{$page.params.lang}/registry/invites">{$LL.PLAYER_PROFILE.INVITES()}</Button>
+      <Button href="/{$page.params.lang}/registry/invites">{$LL.PLAYERS.PROFILE.INVITES()}</Button>
       <Button href="/{$page.params.lang}/registry/players/edit-profile"
-        >{$LL.PLAYER_PROFILE.EDIT_PROFILE()}</Button
+        >{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button
       >
     {/if}
   </div>
@@ -42,17 +52,21 @@
 
     <div class="user_details">
       <div class="name">
-        {#if player.country_code}
-          <Flag country_code={player.country_code} />
-        {/if}
-        {player.name}
+        <div>
+          {#if player.country_code}
+            <Flag country_code={player.country_code} />
+          {/if}
+          {player.name}
+        </div>
+        <PlayerNameHistory {player}/>
       </div>
+      
       {#if player.friend_codes.length > 0}
         <div class="item">
-          <b>{$LL.PLAYER_PROFILE.FRIEND_CODES()}:</b>
-          {#each player.friend_codes as fc}
+          <b>{$LL.FRIEND_CODES.FRIEND_CODES()}:</b>
+          {#each player.friend_codes.filter((f) => f.is_active).toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]) as fc}
             <div>
-              <GameBadge game={fc.game}/>
+              <FCTypeBadge type={fc.type}/>
               {fc.fc}
             </div>
           {/each}
@@ -60,7 +74,7 @@
       {/if}
       {#if player.rosters.length > 0}
         <div class="item">
-          <b>{$LL.TEAM_LIST.TEAMS()}:</b>
+          <b>{$LL.PLAYERS.PROFILE.TEAMS()}</b>
           {#each player.rosters as r}
             <div>
               <GameBadge game={r.game}/>
@@ -72,14 +86,27 @@
           {/each}
         </div>
       {/if}
+      <div class="item">
+        {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()} {new Date(player.join_date * 1000).toLocaleString($locale, options)}
+      </div>
     </div>
-    
+    {#if player.roles.length}
+      <div class="item">
+        {#each player.roles as role}
+          <div>
+            <RoleBadge {role}/>
+          </div>
+        {/each}
+      </div>
+    {/if}
+    <div class="item">
+      <DiscordDisplay discord={player.discord}/>
+    </div>
     <div class="about_me">
       {#if player.user_settings && player.user_settings.about_me}
         {player.user_settings.about_me}
       {/if}
     </div>
-    
   </div>
 </Section>
 
@@ -111,10 +138,13 @@
     grid-column-start: 3;
     align-self: flex-start;
     justify-content: center;
+    max-width: 400px;
+    word-break: break-word;
     @media(min-width: 800px) {
       margin-left: auto;
       margin-right: auto;
     }
+    
   }
   div.avatar {
     min-width: 150px;

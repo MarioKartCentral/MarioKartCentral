@@ -1,7 +1,25 @@
 import type { FriendCode } from '$lib/types/friend-code';
-import type { BanInfo } from '$lib/types/ban-info';
+import type { BanInfoBasic } from '$lib/types/ban-info';
 import type { UserSettings } from '$lib/types/user-settings';
 import type { PlayerRoster } from './player-roster';
+import type { Discord } from './discord';
+import type { Player, PlayerBasic } from './player';
+import type { Role } from './role';
+
+type PlayerNameChange = {
+  id: number;
+  old_name: string;
+  new_name: string;
+  date: number;
+  approval_status: string;
+  handled_by: PlayerBasic | null;
+};
+
+export type PlayerNotes = {
+  notes: string;
+  edited_by: Player | null;
+  date: number;
+};
 
 export type PlayerInfo = {
   id: number;
@@ -10,9 +28,19 @@ export type PlayerInfo = {
   is_hidden: boolean;
   is_shadow: boolean;
   is_banned: boolean;
-  discord_id: string | null;
+  discord: Discord | null;
   friend_codes: FriendCode[];
+  join_date: number;
   rosters: PlayerRoster[];
-  ban_info: BanInfo | null;
+  ban_info: BanInfoBasic | null;
   user_settings: UserSettings | null;
+  name_changes: PlayerNameChange[];
+  notes: PlayerNotes | null;
+  roles: Role[];
+};
+
+export type PlayerList = {
+  player_list: PlayerInfo[];
+  player_count: number;
+  page_count: number;
 };

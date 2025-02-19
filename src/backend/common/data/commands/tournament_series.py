@@ -4,9 +4,8 @@ from typing import Any
 import msgspec
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, Series, SeriesFilter, SeriesRequestData
+from common.data.models import Problem, Series, SeriesBasic, SeriesFilter, EditSeriesRequestData, SeriesRequestData
 import common.data.s3 as s3
-
 
 @save_to_command_log
 @dataclass
@@ -18,8 +17,10 @@ class CreateSeriesCommand(Command[None]):
         # store minimal data about each series in the SQLite DB
         async with db_wrapper.connect() as db:
             cursor = await db.execute(
-                "INSERT INTO tournament_series(name, url, display_order, game, mode, is_historical, is_public, description, ruleset, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.description, b.ruleset, b.logo))
+                """INSERT INTO tournament_series(name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.short_description, b.logo,
+                 b.organizer, b.location))
             series_id = cursor.lastrowid
             await db.commit()
 
@@ -31,7 +32,7 @@ class CreateSeriesCommand(Command[None]):
 @save_to_command_log
 @dataclass
 class EditSeriesCommand(Command[None]):
-    body: SeriesRequestData
+    body: EditSeriesRequestData
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -45,15 +46,16 @@ class EditSeriesCommand(Command[None]):
                 mode = ?,
                 is_historical = ?,
                 is_public = ?,
-                description = ?,
-                ruleset = ?,
-                logo = ?
+                short_description = ?,
+                logo = ?,
+                organizer = ?,
+                location = ?
                 WHERE id = ?""",
-                (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.description, b.ruleset, b.logo, self.series_id))
+                (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.short_description, b.logo, self.series_id,
+                 b.organizer, b.location))
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No series found', status=404)
-            
 
             s3_data = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{self.series_id}.json')
             if s3_data is None:
@@ -69,18 +71,18 @@ class EditSeriesCommand(Command[None]):
             await db.commit()
 
 @dataclass
-class GetSeriesDataCommand(Command[dict[Any, Any]]):
+class GetSeriesDataCommand(Command[Series]):
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{self.series_id}.json')
         if body is None:
             raise Problem('No series found', status=404)
-        series_data = msgspec.json.decode(body)
+        series_data = msgspec.json.decode(body, type=Series)
         return series_data
 
 @dataclass
-class GetSeriesListCommand(Command[list[Series]]):
+class GetSeriesListCommand(Command[list[SeriesBasic]]):
     filter: SeriesFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -107,12 +109,14 @@ class GetSeriesListCommand(Command[list[Series]]):
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
 
-            series_query = f"SELECT id, name, url, display_order, game, mode, is_historical, is_public, description, ruleset, logo FROM tournament_series{where_clause}"
+            series_query = f"SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location FROM tournament_series {where_clause}"
 
-            series: list[Series] = []
+            series: list[SeriesBasic] = []
             async with db.execute(series_query, variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    series_id, series_name, url, display_order, game, mode, is_historical, is_public, description, ruleset, logo = row
-                    series.append(Series(series_id, series_name, url, display_order, game, mode, bool(is_historical), bool(is_public), description, ruleset, logo))
+                    (series_id, series_name, url, display_order, game, mode, is_historical, 
+                     is_public, short_description, logo, organizer, location) = row
+                    series.append(SeriesBasic(series_id, series_name, url, display_order, game, mode, 
+                                              bool(is_historical), bool(is_public), short_description, logo, organizer, location))
             return series

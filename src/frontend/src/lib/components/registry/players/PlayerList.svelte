@@ -4,68 +4,131 @@
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
-  export let players: PlayerInfo[];
+  import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
+  import { onMount } from 'svelte';
+  import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
+  import CountrySelect from '$lib/components/common/CountrySelect.svelte';
+  import FCTypeSelect from '$lib/components/common/FCTypeSelect.svelte';
+
+  export let is_shadow: boolean | null = false;
+
+  let players: PlayerInfo[] = [];
+  let totalPlayers = 0;
+  let totalPages = 0;
+  let currentPage = 1;
+  let filters: PlayerFilter = {
+    fc_type: null,
+    name: null,
+    country: null,
+    fc: null,
+    name_or_fc: null,
+  };
+
+  async function fetchData() {
+    players = [];
+    let url = '/api/registry/players?detailed=true&is_banned=false&is_hidden=false';
+    if (filters.fc_type != null && filters.fc_type != '') {
+      url += '&fc_type=' + filters.fc_type;
+    }
+    if (filters.name_or_fc) {
+      url += '&name_or_fc=' + filters.name_or_fc;
+    }
+    if (filters.country != null && filters.country != '') {
+      url += '&country=' + filters.country;
+    }
+    if(is_shadow !== null) {
+      url += `&is_shadow=${is_shadow}`;
+    }
+    url += '&page=' + currentPage;
+    console.log(url);
+    const res = await fetch(url);
+    if (res.status === 200) {
+      const body = await res.json();
+      console.log(body);
+      const body_players = body['player_list'];
+      for (let t of body_players) {
+        players.push(t);
+      }
+      players = players;
+      totalPlayers = body['player_count'];
+      totalPages = body['page_count'];
+    }
+  }
+
+  async function search() {
+    currentPage = 1;
+    fetchData();
+  }
+
+  onMount(fetchData);
 </script>
 
-<Table>
-  <col class="country_code" />
-  <col class="name" />
-  <col class="mk8dx mobile-hide" />
-  <col class="mkw mobile-hide" />
-  <col class="mkt mobile-hide" />
-  <col class="mk7 mobile-hide" />
-  <col class="mk8 mobile-hide" />
-  <thead>
-    <tr>
-      <th></th>
-      <th>{$LL.PLAYER_LIST.HEADER.NAME()}</th>
-      <th class="mobile-hide">Switch FC</th>
-      <th class="mobile-hide">MKW FC</th>
-      <th class="mobile-hide">MKT FC</th>
-      <th class="mobile-hide">3DS FC</th>
-      <th class="mobile-hide">NNID</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each players as player, i}
-      <tr class="row-{i % 2}">
-        <td><Flag country_code={player.country_code} /></td>
-        <td>
-          <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">{player.name}</a>
-        </td>
-        <td class="mobile-hide"
-          >{#each player.friend_codes.filter((fc) => fc.game === "mk8dx") as friend_code}{friend_code.fc}{/each}</td
-        >
-        <td class="mobile-hide"
-          >{#each player.friend_codes.filter((fc) => fc.game === "mkw") as friend_code}{friend_code.fc}{/each}</td
-        >
-        <td class="mobile-hide"
-          >{#each player.friend_codes.filter((fc) => fc.game === "mkt") as friend_code}{friend_code.fc}{/each}</td
-        >
-        <td class="mobile-hide"
-          >{#each player.friend_codes.filter((fc) => fc.game === "mk7") as friend_code}{friend_code.fc}{/each}</td
-        >
-        <td class="mobile-hide"
-          >{#each player.friend_codes.filter((fc) => fc.game === "mk8") as friend_code}{friend_code.fc}{/each}</td
-        >
-      </tr>
-    {/each}
-  </tbody>
-  
-</Table>
+<form on:submit|preventDefault={search}>
+  <div class="flex">
+    <FCTypeSelect all_option hide_labels bind:type={filters.fc_type}/>
+    <CountrySelect bind:value={filters.country} is_filter={true}/>
+    <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} />
+    <Button type="submit">{$LL.COMMON.SEARCH()}</Button>
+  </div>
+</form>
+<div class="player_list">
+  {totalPlayers}
+  {$LL.PLAYERS.PLAYERS()}
+  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+  {#if totalPlayers}
+    <Table>
+      <col class="country_code" />
+      <col class="name" />
+      <col class="friend_codes mobile-hide"/>
+      <thead>
+        <tr>
+          <th></th>
+          <th>{$LL.COMMON.NAME()}</th>
+          <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each players as player, i}
+          <tr class="row-{i % 2}">
+            <td><Flag country_code={player.country_code} /></td>
+            <td>
+              <a href="/{$page.params.lang}/registry/players/profile?id={player.id}" class={player.is_banned ? 'banned_name' : ''}>{player.name}</a>
+            </td>
+            <td class="mobile-hide">
+              <FriendCodeDisplay friend_codes={player.friend_codes}/>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </Table>
+  {/if}
+  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+</div>
+
 
 <style>
   col.country_code {
-    width: 10%;
+    width: 20%;
   }
   col.name {
-    width: 15%;
+    width: 40%;
   }
-  col.mk8dx,
-  col.mkw,
-  col.mkt,
-  col.mk7,
-  col.mk8 {
-    width: 15%;
+  col.friend_codes {
+    width: 40%;
+  }
+  .banned_name {
+    opacity: 0.7;
+    text-decoration: line-through;
+  }
+  .flex {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .player_list {
+    margin-top: 10px;
   }
 </style>

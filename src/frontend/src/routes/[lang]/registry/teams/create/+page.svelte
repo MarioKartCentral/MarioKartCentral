@@ -1,35 +1,21 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import { goto } from '$app/navigation';
-  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
-  import { colors } from '$lib/util/util';
-    import Button from '$lib/components/common/buttons/Button.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import { page } from '$app/stores';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+  import ColorSelect from '$lib/components/common/ColorSelect.svelte';
+  import LanguageSelect from '$lib/components/common/LanguageSelect.svelte';
+  import { user } from '$lib/stores/stores';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { permissions, check_permission } from '$lib/util/permissions';
 
-  const valid_games: { [key: string]: string } = {
-    mk8dx: 'Mario Kart 8 Deluxe',
-    mkw: 'Mario Kart Wii',
-    mkt: 'Mario Kart Tour',
-  };
-  const valid_modes: { [key: string]: string[] } = { mk8dx: ['150cc', '200cc'], mkw: ['rt', 'ct'], mkt: ['vsrace'] };
-  const mode_names: { [key: string]: string } = {
-    '150cc': '150cc',
-    '200cc': '200cc',
-    rt: 'Regular Tracks',
-    ct: 'Custom Tracks',
-    vsrace: 'VS Race',
-  };
-  const languages = [
-    { value: 'de', getLang: 'DE' },
-    { value: 'en-gb', getLang: 'EN_GB' },
-    { value: 'en-us', getLang: 'EN_US' },
-    { value: 'fr', getLang: 'FR' },
-    { value: 'es', getLang: 'ES' },
-    { value: 'ja', getLang: 'JA' },
-  ];
-  let game = 'mk8dx';
-  let mode = '150cc';
-  let color = { id: 1 };
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
+
   let tag = "";
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -37,6 +23,7 @@
     function getOptionalValue(name: string) {
       return data.get(name) ? data.get(name)?.toString() : '';
     }
+    const is_historical = getOptionalValue('is_historical') === 'true';
     const payload = {
       game: data.get('game')?.toString(),
       mode: data.get('mode')?.toString(),
@@ -46,10 +33,16 @@
       logo: getOptionalValue('logo'),
       language: data.get('language')?.toString(),
       description: getOptionalValue('description'),
-      is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
+      is_recruiting: getOptionalValue('recruiting') === 'true',
+      approval_status: getOptionalValue('approval_status'),
+      is_historical: is_historical,
+      is_active: !is_historical,
     };
     console.log(payload);
-    const endpoint = '/api/registry/teams/request';
+    let endpoint = '/api/registry/teams/request';
+    if(check_permission(user_info, permissions.manage_teams)) {
+      endpoint = '/api/registry/teams/create';
+    }
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,7 +50,13 @@
     });
     const result = await response.json();
     if (response.status < 300) {
-      goto(`/`);
+      let team_id = result['id'];
+      if(team_id) {
+        goto(`/${$page.params.lang}/registry/teams/profile?id=${team_id}`);
+      }
+      else {
+        goto(`/${$page.params.lang}/registry/teams`);
+      }
       alert('Your team has been sent to MKCentral staff for approval.');
     } else {
       alert(`Creating team failed: ${result['title']}`);
@@ -66,57 +65,85 @@
 </script>
 
 <form method="post" on:submit|preventDefault={createTeam}>
-  <Section header={$LL.TEAM_CREATE.GENERAL_INFO()}>
-    <label for="game">{$LL.TEAM_LIST.GAME()}</label>
-    <select name="game" bind:value={game} on:change={() => ([mode] = valid_modes[game])}>
-      {#each Object.keys(valid_games) as game}
-        <option value={game}>{valid_games[game]}</option>
-      {/each}
-    </select>
-    <label for="mode">{$LL.TEAM_LIST.MODE()}</label>
-    <select name="mode" bind:value={mode}>
-      {#each valid_modes[game] as mode}
-        <option value={mode}>{mode_names[mode]}</option>
-      {/each}
-    </select>
-    <br />
-    <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
-    <input name="name" type="text" required />
-    <br />
-    <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
-    <input name="tag" type="text" bind:value={tag} required maxlength=5/>
+  <Section header={$LL.TEAMS.GENERAL_INFO()}>
+    <div class="option">
+      <GameModeSelect is_team flex/>
+    </div>
+    <div class="option">
+      <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
+      <input name="name" type="text" required pattern="^\S.*\S$|^\S$"/>
+    </div>
+    <div class="option">
+      <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
+      <input name="tag" type="text" bind:value={tag} required maxlength=5 pattern="^\S.*\S$|^\S$"/>
+    </div>    
   </Section>
-  <Section header={$LL.TEAM_EDIT.CUSTOMIZATION()}>
-    <label for="color">{$LL.TEAM_EDIT.TEAM_COLOR()}</label>
-    <select name="color" bind:value={color.id}>
-      {#each colors as color, i}
-        <option value={i}>{$LL.COLORS[color.label]()}</option>
-      {/each}
-    </select>
-    <TagBadge tag={tag} color={color.id}/>
-    <br />
-    <label for="logo">{$LL.TEAM_EDIT.TEAM_LOGO()}</label>
-    <input name="logo" type="text" />
+  <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
+    <div class="option">
+      <label for="color">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
+      <ColorSelect tag={tag}/>
+    </div>
+    <div class="option">
+      <label for="logo">{$LL.TEAMS.EDIT.TEAM_LOGO()}</label>
+      <input name="logo" type="text" />
+    </div>
+    
   </Section>
-  <Section header={$LL.TEAM_EDIT.MISC_INFO()}>
-    <label for="language">{$LL.TEAM_PROFILE.MAIN_LANGUAGE()}</label>
-    <select name="language" value="en-us">
-      {#each languages as language}
-        <option value={language.value}>{$LL.LANGUAGES[language.getLang]()}</option>
-      {/each}
-    </select>
-    <br />
-    <label for="description">{$LL.TEAM_EDIT.TEAM_DESCRIPTION()}</label>
-    <br />
-    <textarea name="description" />
-    <br />
-    <label for="recruiting">{$LL.TEAM_EDIT.RECRUITMENT_STATUS()}</label>
-    <select name="recruiting">
-      <option value="true">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-      <option value="false">{$LL.TEAM_PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
-    </select>
+  <Section header={$LL.TEAMS.EDIT.MISC_INFO()}>
+    <div class="option">
+      <label for="language">{$LL.TEAMS.PROFILE.MAIN_LANGUAGE()}</label>
+      <LanguageSelect/>
+    </div>
+    <div class="option">
+      <div>
+        <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
+      </div>
+      <textarea name="description" />
+    </div>
+    <div class="option">
+      <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
+      <select name="recruiting">
+        <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+        <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+      </select>
+    </div>
   </Section>
-  <Section header={$LL.PLAYER_PROFILE.SUBMIT()}>
-    <Button type="submit">{$LL.PLAYER_PROFILE.SUBMIT()}</Button>
+  {#if check_permission(user_info, permissions.manage_teams)}
+    <Section header="Moderator">
+      <div class="option">
+        <label for="approval_status">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.STATUS()}</label>
+        <select name="approval_status">
+          <option value="approved">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.APPROVED()}</option>
+          <option value="pending">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.PENDING()}</option>
+          <option value="denied">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.DENIED()}</option>
+        </select>
+      </div>
+      <div class="option">
+        <label for="is_historical">{$LL.TEAMS.PROFILE.ACTIVE_HISTORICAL()}</label>
+        <select name="is_historical">
+          <option value={false}>{$LL.TEAMS.PROFILE.ACTIVE()}</option>
+          <option value={true}>{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
+        </select>
+      </div>
+    </Section>
+  {/if}
+  <Section header={$LL.COMMON.SUBMIT()}>
+    <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
   </Section>
 </form>
+
+<style>
+  :global(label) {
+    display: inline-block;
+    width: 150px;
+    margin-right: 10px;
+  }
+  input {
+    width: 200px;
+  }
+  .option {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+</style>

@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
 from common.data.models.players import Player
-
+from common.data.models.player_basic import PlayerBasic
+from common.data.models.discord_integration import Discord
 
 @dataclass
 class RequestCreateTeamRequestData():
@@ -49,7 +50,7 @@ class RequestEditTeamRequestData():
     tag: str
 
 @dataclass
-class TeamEditRequest():
+class TeamEdit():
     id: int
     team_id: int
     old_name: str
@@ -59,27 +60,50 @@ class TeamEditRequest():
     color: int
     date: int
     approval_status: Approval
+    handled_by: PlayerBasic | None
 
 @dataclass
-class RosterEditRequest():
+class TeamEditFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class TeamEditList:
+    change_list: list[TeamEdit]
+    count: int
+    page_count: int
+
+@dataclass
+class RosterEdit():
     id: int
     roster_id: int
     team_id: int
-    team_name: str
-    team_tag: str
-    old_name: str | None
-    old_tag: str | None
-    new_name: str | None
-    new_tag: str | None
+    old_name: str
+    old_tag: str
+    new_name: str
+    new_tag: str
     color: int
     date: int
     approval_status: Approval
+    handled_by: PlayerBasic | None
+
+@dataclass
+class RosterEditFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class RosterEditList:
+    change_list: list[RosterEdit]
+    count: int
+    page_count: int
 
 @dataclass
 class PartialTeamMember():
     player_id: int
     roster_id: int
     join_date: int
+    is_bagger_clause: bool
 
 @dataclass
 class PartialPlayer():
@@ -87,7 +111,7 @@ class PartialPlayer():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     friend_codes: list[FriendCode]
 
 @dataclass
@@ -96,8 +120,11 @@ class RosterPlayerInfo():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     join_date: int
+    is_manager: bool
+    is_leader: bool
+    is_bagger_clause: bool
     friend_codes: list[FriendCode]
 
 @dataclass
@@ -106,8 +133,9 @@ class RosterInvitedPlayer():
     name: str
     country_code: str
     is_banned: bool
-    discord_id: str
+    discord: Discord | None
     invite_date: int
+    is_bagger_clause: bool
     friend_codes: list[FriendCode]
     
 @dataclass
@@ -165,17 +193,21 @@ class CreateRosterRequestData():
 class EditRosterRequestData():
     roster_id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    name: str
+    tag: str
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
 
 @dataclass
-class InviteRosterPlayerRequestData():
+class DeleteInviteRequestData():
     team_id: int
     player_id: int
     roster_id: int
+
+@dataclass
+class InviteRosterPlayerRequestData(DeleteInviteRequestData):
+    is_bagger_clause: bool
 
 @dataclass
 class AcceptRosterInviteRequestData():
@@ -211,8 +243,8 @@ class DenyTeamEditRequestData():
 class RequestEditRosterRequestData():
     roster_id: int
     team_id: int
-    name: str | None
-    tag: str | None
+    name: str
+    tag: str
 
 @dataclass
 class ApproveRosterEditRequestData():
@@ -228,6 +260,7 @@ class ForceTransferPlayerRequestData():
     roster_id: int
     team_id: int
     roster_leave_id: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class EditTeamMemberInfoRequestData():
@@ -236,6 +269,7 @@ class EditTeamMemberInfoRequestData():
     team_id: int
     join_date: int | None
     leave_date: int | None
+    is_bagger_clause: bool
 
 @dataclass
 class KickPlayerRequestData():
@@ -252,23 +286,27 @@ class TeamFilter():
     language: str | None = None
     is_recruiting: bool | None = None
     is_historical: bool | None = None
+    is_active: bool | None = None
+    sort_by_newest: bool | None = False
+    page: int | None = None
 
 @dataclass
 class TeamInvite():
     invite_id: int
     date: int
+    is_bagger_clause: bool
     team_id: int
     team_name: str
     team_tag: str
     team_color: int
     roster_id: int
-    roster_name: str | None
-    roster_tag: str | None
+    roster_name: str
+    roster_tag: str
     game: Game
     mode: GameMode
 
 @dataclass
-class TransferRoster():
+class RosterBasic():
     team_id: int
     team_name: str
     team_tag: str
@@ -281,19 +319,24 @@ class TransferRoster():
 class TeamTransfer():
     invite_id: int
     date: int
+    is_bagger_clause: bool
     game: Game
     mode: GameMode
     player_id: int
     player_name: str
     player_country_code: str
     approval_status: Approval
-    roster_leave: TransferRoster | None
-    roster_join: TransferRoster | None
+    roster_leave: RosterBasic | None
+    roster_join: RosterBasic | None
 
 @dataclass
 class TransferFilter():
     game: Game | None = None
     mode: GameMode | None = None
+    team_id: int | None = None
+    roster_id: int | None = None
+    from_date: int | None = None
+    to_date: int | None = None
     page: int | None = None
 
 @dataclass
@@ -324,3 +367,14 @@ class RegisterableRostersRequestData():
     tournament_id: int
     game: Game
     mode: GameMode
+
+@dataclass
+class MergeTeamsRequestData():
+    from_team_id: int
+    to_team_id: int
+
+@dataclass
+class TeamList:
+    teams: list[Team]
+    team_count: int
+    page_count: int

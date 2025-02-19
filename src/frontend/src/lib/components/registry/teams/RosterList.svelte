@@ -6,6 +6,7 @@
   import RecruitingBadge from '$lib/components/badges/RecruitingBadge.svelte'
   import TagBadge from '$lib/components/badges/TagBadge.svelte';  
   import LL from '$i18n/i18n-svelte';
+  import { sortFilterRosters } from '$lib/util/util';
 
   export let team: Team;
 </script>
@@ -14,34 +15,26 @@
   <col class="tag" />
   <col class="name" />
   <col class="game" />
-  <col class="recruiting" />
-  <col class="mode" />
   <thead>
     <tr>
-      <th>{$LL.TEAM_LIST.TAG()}</th>
-      <th>{$LL.TEAM_LIST.NAME()}</th>
-      <th>{$LL.TEAM_LIST.STATUS()}</th>
-      <th>{$LL.TEAM_LIST.GAME()}</th>
-      <th>{$LL.TEAM_LIST.MODE()}</th>
+      <th>{$LL.COMMON.TAG()}</th>
+      <th>{$LL.COMMON.NAME()}</th>
+      <th>{$LL.TEAMS.LIST.STATUS()}</th>
     </tr>
   </thead>
   <tbody>
-    {#each team.rosters as roster, i}
+    {#each sortFilterRosters(team.rosters) as roster, i}
       <tr class="row-{i % 2}">
         <td>
-          <TagBadge tag={team.tag} color={team.color} />
+          <TagBadge tag={roster.tag} color={roster.color} />
         </td>
         <td>
           {roster.name}
         </td>
-        <td>
-          <RecruitingBadge recruiting={roster.is_recruiting} />
-        </td>
-        <td>
+        <td>     
           <GameBadge game={roster.game} />
-        </td>
-        <td>
           <ModeBadge mode={roster.mode} />
+          <RecruitingBadge recruiting={roster.is_recruiting} />
         </td>
       </tr>
     {/each}
@@ -53,15 +46,9 @@
     width: 15%;
   }
   col.name {
-    width: 30%;
-  }
-  col.recruiting {
-    width: 25%;
+    width: 45%;
   }
   col.game {
-    width: 15%;
-  }
-  col.mode {
-    width: 15%;
+    width: 40%;
   }
 </style>

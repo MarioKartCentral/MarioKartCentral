@@ -33,10 +33,10 @@
     async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
         const payload = {
-        roster_id: roster.id,
-        team_id: roster.team_id,
-        name: data.get('name')?.toString(),
-        tag: data.get('tag')?.toString(),
+            roster_id: roster.id,
+            team_id: roster.team_id,
+            name: data.get('name')?.toString(),
+            tag: data.get('tag')?.toString(),
         };
         console.log(payload);
         const endpoint = '/api/registry/teams/requestRosterChange';
@@ -48,9 +48,9 @@
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
-            alert(`Your request to change your roster's name/tag has been sent to MKCentral staff for approval.`);
+            alert($LL.TEAMS.EDIT.ROSTER_NAME_TAG_CHANGE_SUCCESS());
         } else {
-            alert(`Editing roster failed: ${result['title']}`);
+            alert(`${$LL.TEAMS.EDIT.ROSTER_NAME_TAG_CHANGE_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
@@ -58,35 +58,34 @@
 <form method="post" on:submit|preventDefault={editNameTag}>
     {#if days_until_change > 0}
         <div>
-            You can request a name/tag change in {days_until_change} days.
+            {$LL.TEAMS.EDIT.REQUEST_CHANGE_IN({days: days_until_change})}
         </div>
     {/if}
     {#if pending_requests.length}
         {#each pending_requests as r}
             <div>
-                Name/Tag change pending approval from MKC Staff:
+                {$LL.TEAMS.EDIT.NAME_TAG_CHANGE_PENDING()}
             </div>
             <div>
-                <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
+                <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
                 <input name="name" type="text" value={r.new_name} required disabled/>
             </div>
             <div>
-                <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
+                <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
                 <input name="tag" type="text" value={r.new_tag} required disabled/>
             </div>
         {/each}
     {:else}
-    <div>
-        <label for="name">{$LL.TEAM_EDIT.TEAM_NAME()}</label>
-        <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0}/>
-    </div>
-    <div>
-        <label for="tag">{$LL.TEAM_EDIT.TEAM_TAG()}</label>
-        <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0}/>
-    </div>
-    <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAM_EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+        <div>
+            <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
+            <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
+        </div>
+        <div>
+            <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
+            <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
+        </div>
+        <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}
-    
 </form>
 
 <style>

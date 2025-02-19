@@ -10,7 +10,7 @@
 <div class="flex">
   <GameSelect all_option hide_labels/>
   <CountrySelect bind:value={filters.country} is_filter={true}/>
-  <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYER_LIST.FILTERS.SEARCH_BY()} />
+  <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} />
 </div>
 
 

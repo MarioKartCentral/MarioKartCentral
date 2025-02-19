@@ -1,12 +1,6 @@
 <script lang="ts">
     import Badge from "./Badge.svelte";
+    import LL from "$i18n/i18n-svelte";
 </script>
 
-<Badge badgeClass="primary">Primary</Badge>
-
-<style>
-    :global(.primary) {
-        background-color: #029dbd;
-        border: 1px solid #027d99;
-  }
-</style>
+<Badge badgeClass="primary">{$LL.TOURNAMENTS.REGISTRATIONS.PRIMARY()}</Badge>

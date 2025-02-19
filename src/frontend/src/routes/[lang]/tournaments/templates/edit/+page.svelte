@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { permissions, addPermission, setSeriesPerms } from '$lib/util/util';
   import { page } from '$app/stores';
   import CreateEditTemplateForm from '$lib/components/tournaments/templates/CreateEditTemplateForm.svelte';
   import { onMount } from 'svelte';
+  import type { UserInfo } from '$lib/types/user-info';
+  import { user } from '$lib/stores/stores';
+  import { check_permission, series_permissions } from '$lib/util/permissions';
 
-  setSeriesPerms();
-  addPermission(permissions.edit_tournament_template);
+  let user_info: UserInfo;
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let template_id: number;
 
@@ -16,5 +20,6 @@
 </script>
 
 {#if template_id}
-  <CreateEditTemplateForm {template_id} is_edit={true} series_restrict={true} />
+  <CreateEditTemplateForm {template_id} is_edit={true}
+  series_restrict={!check_permission(user_info, series_permissions.edit_tournament_template)} />
 {/if}

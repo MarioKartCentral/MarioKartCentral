@@ -11,6 +11,10 @@
   import MyRegistration from './MyRegistration.svelte';
   import TeamTournamentRegister from './TeamTournamentRegister.svelte';
   import { check_registrations_open } from '$lib/util/util';
+  import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
+  import LL from '$i18n/i18n-svelte';
+  import { game_fc_types } from '$lib/util/util';
 
   export let tournament: Tournament;
 
@@ -22,7 +26,7 @@
   });
 
   function get_game_fcs(game: string, fcs: FriendCode[]) {
-    return fcs.filter((fc) => fc.game === game);
+    return fcs.filter((fc) => fc.type === game_fc_types[game]);
   }
 
 
@@ -36,41 +40,52 @@
   });
 </script>
 
-<Section header="Register">
+<Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}>
   {#if registration}
     {#if user_info.player}
-      <MyRegistration
-        {registration}
-        {tournament}
-        friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
-      />
-      {#if tournament.teams_allowed}
-        <TeamTournamentRegister {tournament} player={user_info.player} />
-      {/if}
+      <MyRegistration {registration} {tournament}/>
     {/if}
-    {#if !registration.player}
-      {#if !check_registrations_open(tournament)}
-        Registration for this tournament is closed.
-      {:else if user_info.player}
-        <div>Want to register for this tournament? Just fill out your registration details below!</div>
-
-        {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-          {#if !tournament.teams_only}
-            <SoloSquadTournamentRegister
-              {tournament}
-              friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
-            />
+    {#if !check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
+      <div>
+        {$LL.TOURNAMENTS.REGISTRATIONS.NO_PERMISSION_TO_REGISTER()}
+      </div>
+    {:else}
+      {#if tournament.teams_allowed}
+        <TeamTournamentRegister {tournament}/>
+      {/if}
+      {#if !registration.registrations.some((r) => !r.player.is_invite)}
+        {#if !check_registrations_open(tournament)}
+          <div>
+            {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS_CLOSED()}
+          </div>
+        {:else if user_info.player}
+          {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
+            {#if !tournament.teams_only}
+              <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
+              <SoloSquadTournamentRegister
+                {tournament}
+                friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
+              />
+            {/if}
+          {:else}
+            {$LL.TOURNAMENTS.REGISTRATIONS.ADD_FC_TO_REGISTER({game: tournament.game})}
           {/if}
         {:else}
-          <div>Please add an FC for {tournament.game} to register for this tournament.</div>
+          <div>
+            <a href="/{$page.params.lang}/player-signup"
+              >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
+            >
+          </div>
         {/if}
-      {:else}
-        <div>
-          <a href="/{$page.params.lang}/player-signup"
-            >Please complete your player registration to register for this tournament.</a
-          >
-        </div>
       {/if}
+    {/if}
+  {/if}
+  {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
+    {#if !tournament.teams_only}
+      <ForceRegisterSoloSquad {tournament}/>
+    {/if}
+    {#if tournament.teams_allowed}
+      <TeamTournamentRegister {tournament} is_privileged={true}/>
     {/if}
   {/if}
 </Section>
