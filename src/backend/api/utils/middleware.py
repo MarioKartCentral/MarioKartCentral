@@ -4,6 +4,7 @@ from common.data.models import Problem
 from starlette.background import BackgroundTasks
 from api.data import handle
 from common.data.commands import *
+from api import appsettings
 
 class ProblemHandlingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
@@ -16,6 +17,8 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         response = await call_next(request)
         async def log():
+            if not appsettings.ENABLE_IP_LOGGING:
+                return
             session_id = request.cookies.get("session", None)
             if not session_id:
                 return

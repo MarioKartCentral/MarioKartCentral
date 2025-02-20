@@ -12,6 +12,7 @@ class DBWrapperConnection():
         db = await self.connection
         if not self.readonly:
             await db.execute("pragma foreign_keys = ON;")
+            await db.execute("PRAGMA busy_timeout = 3000")
         return db
 
     async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:

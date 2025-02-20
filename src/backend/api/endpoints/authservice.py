@@ -38,7 +38,8 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     async def log_ip_fingerprint():
-        await handle(LogUserIPCommand(user.id, ip_address))
+        if appsettings.ENABLE_IP_LOGGING:
+            await handle(LogUserIPCommand(user.id, ip_address))
         await handle(LogFingerprintCommand(body.fingerprint))
         
 
@@ -63,7 +64,8 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     async def log_ip_fingerprint():
-        await handle(LogUserIPCommand(user.id, ip_address))
+        if appsettings.ENABLE_IP_LOGGING:
+            await handle(LogUserIPCommand(user.id, ip_address))
         await handle(LogFingerprintCommand(body.fingerprint))
 
     resp = JSONResponse(user, status_code=201, background=BackgroundTask(log_ip_fingerprint))
