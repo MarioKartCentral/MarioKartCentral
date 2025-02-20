@@ -1,6 +1,6 @@
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
-from api import settings
+from api import appsettings
 from api.data import on_startup, on_shutdown
 from api.endpoints import (authservice, roleservice, userservice, tournaments, 
                            tournament_registration, tournament_placements, player_registry, player_bans, 
@@ -8,7 +8,7 @@ from api.endpoints import (authservice, roleservice, userservice, tournaments,
 from api.utils.middleware import ProblemHandlingMiddleware, IPLoggingMiddleware
 from api.utils.schema_gen import schema_route
 
-if settings.DEBUG:
+if appsettings.DEBUG:
     import debugpy
     debugpy.listen(("0.0.0.0", 5678))
     debugpy.wait_for_client()  # blocks execution until client is attached
