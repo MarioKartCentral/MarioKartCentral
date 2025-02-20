@@ -77,5 +77,7 @@ class DeleteSessionCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            now = int(datetime.now(timezone.utc).timestamp())
             await db.execute("DELETE FROM sessions WHERE session_id = ?", (self.session_id, ))
+            await db.execute("UPDATE user_logins SET logout_date = ? WHERE session_id = ?", (now, self.session_id))
             await db.commit()
