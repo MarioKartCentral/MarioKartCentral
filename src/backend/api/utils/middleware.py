@@ -22,7 +22,9 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
             user = await handle(GetUserIdFromSessionCommand(session_id))
             if not user:
                 return
-            ip_address = request.client.host if request.client else None
+            ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
+            if not ip_address:
+                ip_address = request.client.host if request.client else None
             await handle(LogUserIPCommand(user.id, ip_address))
         if request.method == "POST":
             tasks = BackgroundTasks()
