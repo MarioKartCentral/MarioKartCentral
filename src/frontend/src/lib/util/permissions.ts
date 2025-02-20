@@ -163,6 +163,7 @@ export const permissions = {
   merge_teams: 'team_merge',
   manage_word_filter: 'word_filter_manage',
   edit_user: 'user_edit',
+  view_alt_flags: 'alt_flag_view',
 };
 
 export const team_permissions = {

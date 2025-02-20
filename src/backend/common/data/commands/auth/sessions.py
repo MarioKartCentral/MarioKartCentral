@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from common.data.commands import Command
 from common.data.models import *
 from datetime import datetime, timezone
-import msgspec
-import common.data.s3 as s3
 import secrets
 
 @dataclass 
@@ -36,31 +34,6 @@ class IsValidSessionCommand(Command[bool]):
                 row = await cursor.fetchone()
 
             return row is not None and bool(row[0])
-        
-@dataclass
-class LogUserIPCommand(Command[None]):
-    user_id: int
-    ip_address: str | None
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
-            now = int(datetime.now(timezone.utc).timestamp())
-            ip = self.ip_address if self.ip_address else "0.0.0.0"
-            async with db.execute("UPDATE user_ips SET date_latest = ?, times = times + 1 WHERE user_id = ? AND ip_address = ?",
-                                  (now, self.user_id, ip)) as cursor:
-                row_count = cursor.rowcount
-            if not row_count:
-                await db.execute("""INSERT INTO user_ips(user_id, ip_address, date_earliest, date_latest, times, is_mobile, is_vpn, is_checked)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.user_id, ip, now, now, 1, False, False, False))
-            await db.commit()
-
-@dataclass
-class LogFingerprintCommand(Command[None]):
-    fingerprint: Fingerprint
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        fingerprint_bytes = msgspec.json.encode(self.fingerprint.data)
-        await s3_wrapper.put_object(s3.FINGERPRINT_BUCKET, f"{self.fingerprint.hash}.json", fingerprint_bytes)
 
 @dataclass
 class CreateSessionCommand(Command[SessionInfo]):
