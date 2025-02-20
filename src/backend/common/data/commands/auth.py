@@ -209,7 +209,7 @@ class CreateSessionCommand(Command[SessionInfo]):
             ip = self.ip_address if self.ip_address else "0.0.0.0"
 
             command = "INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)"
-            async with db.execute(command, (session_id, self.user_id, expiration_date)) as cursor:
+            async with db.execute(command, (session_id, self.user_id, int(expiration_date.timestamp()))) as cursor:
                 rows_inserted = cursor.rowcount
 
             # TODO: Run queries to identify why session creation failed
