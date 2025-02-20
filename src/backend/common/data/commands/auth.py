@@ -2,11 +2,13 @@ from dataclasses import dataclass
 from common.data.commands import Command
 from common.data.models import *
 from common.auth import permissions
+import common.data.s3 as s3
 from datetime import datetime, timedelta, timezone
 from typing import Iterable
 from aiosqlite import Row
 import aiohttp
 import msgspec
+import secrets
 from urllib.parse import urlparse
 
 @dataclass 
@@ -159,24 +161,67 @@ class IsValidSessionCommand(Command[bool]):
                 row = await cursor.fetchone()
 
             return row is not None and bool(row[0])
-        
+
 @dataclass
-class CreateSessionCommand(Command[None]):
-    session_id: str
+class LogUserIPCommand(Command[None]):
     user_id: int
-    expires_on: int
+    ip_address: str | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            now = int(datetime.now(timezone.utc).timestamp())
+            ip = self.ip_address if self.ip_address else "0.0.0.0"
+            async with db.execute("UPDATE user_ips SET date_latest = ?, times = times + 1 WHERE user_id = ? AND ip_address = ?",
+                                  (now, self.user_id, ip)) as cursor:
+                row_count = cursor.rowcount
+            if not row_count:
+                await db.execute("""INSERT INTO user_ips(user_id, ip_address, date_earliest, date_latest, times, is_mobile, is_vpn, is_checked)
+                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.user_id, ip, now, now, 1, False, False, False))
+            await db.commit()
+
+@dataclass
+class LogFingerprintCommand(Command[None]):
+    fingerprint: Fingerprint
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        fingerprint_bytes = msgspec.json.encode(self.fingerprint.data)
+        await s3_wrapper.put_object(s3.FINGERPRINT_BUCKET, f"{self.fingerprint.hash}.json", fingerprint_bytes)
+
+@dataclass
+class CreateSessionCommand(Command[SessionInfo]):
+    user_id: int
+    ip_address: str | None
+    persistent_session_id: str | None
+    fingerprint: Fingerprint
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            session_id = secrets.token_hex(16)
+            max_age = timedelta(days=365)
+            current_date = datetime.now(timezone.utc)
+            expiration_date = current_date + max_age
+
+            persistent_session_id = self.persistent_session_id
+            if not persistent_session_id:
+                persistent_session_id = secrets.token_hex(16)
+            current_timestamp = int(current_date.timestamp())
+            had_persistent_session = self.persistent_session_id is not None
+            ip = self.ip_address if self.ip_address else "0.0.0.0"
+
             command = "INSERT INTO sessions(session_id, user_id, expires_on) VALUES (?, ?, ?)"
-            async with db.execute(command, (self.session_id, self.user_id, self.expires_on)) as cursor:
+            async with db.execute(command, (session_id, self.user_id, expiration_date)) as cursor:
                 rows_inserted = cursor.rowcount
 
             # TODO: Run queries to identify why session creation failed
             if rows_inserted != 1:
                 raise Problem("Failed to create session")
+            
+            await db.execute("""INSERT INTO user_logins(user_id, ip, session_id, persistent_session_id, fingerprint, had_persistent_session, date)
+                                VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.user_id, ip, session_id, persistent_session_id, self.fingerprint.hash,
+                                                                 had_persistent_session, current_timestamp))
                 
             await db.commit()
+            return SessionInfo(session_id, persistent_session_id, max_age)
             
 @dataclass
 class DeleteSessionCommand(Command[None]):
