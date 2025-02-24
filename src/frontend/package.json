@@ -43,6 +43,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@thumbmarkjs/thumbmarkjs": "^0.19.1",
     "dompurify": "^3.1.7",
     "typesafe-i18n": "^5.26.2"
   }
