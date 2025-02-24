@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Team } from "$lib/types/team";
+    import type { Team, TeamList } from "$lib/types/team";
     import { createEventDispatcher } from "svelte";
     import Table from "./Table.svelte";
     import TagBadge from "../badges/TagBadge.svelte";
@@ -38,8 +38,8 @@
         const url = `/api/registry/teams?${name_var}${game_var}${active_var}${historical_var}`;
         const res = await fetch(url);
         if (res.status === 200) {
-            const body = await res.json();
-            results = body;
+            const body: TeamList = await res.json();
+            results = body.teams;
         }
     }
 
