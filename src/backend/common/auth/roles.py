@@ -178,15 +178,33 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
     SITE_SUPPORTER: [],
     BANNED: [
         tournament_permissions.REGISTER_TOURNAMENT,
+        team_permissions.EDIT_TEAM_NAME_TAG, 
+        team_permissions.EDIT_TEAM_INFO, 
+        team_permissions.CREATE_ROSTERS, 
+        team_permissions.MANAGE_ROSTERS,
+        team_permissions.MANAGE_TEAM_ROLES, 
+        team_permissions.INVITE_PLAYERS, 
+        team_permissions.KICK_PLAYERS, 
+        team_permissions.REGISTER_TOURNAMENT,
+        team_permissions.MANAGE_TOURNAMENT_ROSTERS,
         permissions.CREATE_TEAM,
         permissions.JOIN_TEAM,
         permissions.INVITE_TO_TEAM,
         permissions.EDIT_PROFILE,
-        permissions.LINK_DISCORD
+        permissions.LINK_DISCORD,
     ],
     TEAM_LEADER_BANNED: [
+        team_permissions.EDIT_TEAM_NAME_TAG, 
+        team_permissions.EDIT_TEAM_INFO, 
+        team_permissions.CREATE_ROSTERS, 
+        team_permissions.MANAGE_ROSTERS,
+        team_permissions.MANAGE_TEAM_ROLES, 
+        team_permissions.INVITE_PLAYERS, 
+        team_permissions.KICK_PLAYERS, 
+        team_permissions.REGISTER_TOURNAMENT,
+        team_permissions.MANAGE_TOURNAMENT_ROSTERS,
         permissions.CREATE_TEAM,
-        permissions.INVITE_TO_TEAM
+        permissions.INVITE_TO_TEAM,
     ],
 }
 
