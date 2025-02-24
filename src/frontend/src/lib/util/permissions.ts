@@ -14,7 +14,7 @@ export function check_permission(user_info: UserInfo, permission: string, check_
     return true;
   }
   const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
-  if(accepted_perm) return true;
+  if (accepted_perm) return true;
   return false;
 }
 
@@ -33,13 +33,15 @@ export function check_team_permission(
   // if we have a denied permission, always return false
   if (denied_perm) return false;
   // if permission is denied by user roles, return false
-  if(!check_permission(user_info, permission, true)) {
+  if (!check_permission(user_info, permission, true)) {
     return false;
   }
   if (check_denied_only) {
     return true;
   }
-  return permissions.some((p) => p.name === permission && !p.is_denied);
+  const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
+  if (accepted_perm) return true;
+  return check_permission(user_info, permission, false);
 }
 
 export function check_series_permission(
@@ -57,13 +59,15 @@ export function check_series_permission(
   // if we have a denied permission, always return false
   if (denied_perm) return false;
   // if permission is denied by user roles, return false
-  if(!check_permission(user_info, permission, true)) {
+  if (!check_permission(user_info, permission, true)) {
     return false;
   }
   if (check_denied_only) {
     return true;
   }
-  return permissions.some((p) => p.name === permission && !p.is_denied);
+  const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
+  if (accepted_perm) return true;
+  return check_permission(user_info, permission, false);
 }
 
 export function check_tournament_permission(
@@ -82,13 +86,15 @@ export function check_tournament_permission(
   // if we have a denied permission, always return false
   if (denied_perm) return false;
   // if permission is denied by user or series roles, return false
-  if(!check_series_permission(user_info, permission, series_id, true)) {
+  if (!check_series_permission(user_info, permission, series_id, true)) {
     return false;
   }
   if (check_denied_only) {
     return true;
   }
-  return permissions.some((p) => p.name === permission && !p.is_denied);
+  const accepted_perm = permissions.find((p) => p.name === permission && !p.is_denied);
+  if (accepted_perm) return true;
+  return check_series_permission(user_info, permission, series_id, false);
 }
 
 export function get_highest_role_position(user_info: UserInfo) {

@@ -22,9 +22,7 @@ class CheckUserHasPermissionCommand(Command[bool]):
                 num_rows = sum(1 for r in rows) # type: ignore
                 if num_rows == 0:
                     return None
-                # if we find an instance of the permission which isnt denied, we have the permission no matter what,
-                # so just return True once we find one. otherwise, the permission must have been denied, so we return
-                # False after iterating
+                # if we find an instance of the permission which is denied, always just return False
                 for row in rows:
                     is_denied = row[0]
                     if is_denied:
