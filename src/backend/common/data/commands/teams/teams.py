@@ -383,7 +383,7 @@ class ListTeamEditRequestsCommand(Command[TeamEditList]):
 @dataclass
 class ListTeamsCommand(Command[TeamList]):
     filter: TeamFilter
-    approved: bool = True
+    approval_status: Approval | None = "approved"
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
@@ -401,11 +401,6 @@ class ListTeamsCommand(Command[TeamList]):
             def append_equal_filter(filter_value: Any, column_name: str):
                 if filter_value is not None:
                     where_clauses.append(f"{column_name} = ?")
-                    variable_parameters.append(filter_value)
-
-            def append_not_equal_filter(filter_value: Any, column_name: str):
-                if filter_value is not None:
-                    where_clauses.append(f"{column_name} != ?")
                     variable_parameters.append(filter_value)
 
             # check both the team and team_roster fields with the same name for a match
@@ -440,12 +435,9 @@ class ListTeamsCommand(Command[TeamList]):
                 where_clauses.append(historical_clause)
                 variable_parameters.append(filter.is_historical)
 
-            if self.approved:
-                append_equal_filter("approved", "t.approval_status")
-                append_equal_filter("approved", "r.approval_status")
-            else:
-                append_not_equal_filter("approved", "t.approval_status")
-                append_not_equal_filter("approved", "r.approval_status")
+            if self.approval_status:
+                append_equal_filter(self.approval_status, "t.approval_status")
+                append_equal_filter(self.approval_status, "r.approval_status")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             order_by = 't.creation_date' if filter.sort_by_newest else 't.name'
