@@ -283,6 +283,17 @@ const ja: Translation = {
       EDIT_USER: 'Edit User',
       EDIT_USER_HEADER: 'Edit User: ID {user_id}',
     },
+    ALT_DETECTION: {
+      ALT_FLAGS: 'Alt Flags',
+      PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      TABLE: {
+        PLAYERS: 'Players',
+        TYPE: 'Type',
+        SCORE: 'Score',
+        DATA: 'Data',
+        DETECTED_AT: 'Detected at',
+      },
+    },
   },
   MODES: {
     ALL: 'All Modes',
@@ -340,6 +351,7 @@ const ja: Translation = {
       FRIEND_CODE_CHANGES: 'Friend Code Changes',
       WORD_FILTER: 'Word Filter',
       MANAGE_USERS: 'Manage Users',
+      ALT_DETECTION: 'Alt Detection',
     },
   },
   NOTIFICATION: {
