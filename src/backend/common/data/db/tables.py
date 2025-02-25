@@ -939,6 +939,88 @@ class FilteredWords(TableModel):
             word TEXT NOT NULL
         )"""
     
+@dataclass
+class UserLogin(TableModel):
+    id: int
+    user_id: int
+    ip: str
+    session_id: str
+    persistent_session_id: str
+    fingerprint: str
+    had_persistent_session: bool
+    date: int
+    logout_date: int | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_logins(
+            id INTEGER PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            ip TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            persistent_session_id TEXT NOT NULL,
+            fingerprint TEXT NOT NULL,
+            had_persistent_session BOOLEAN NOT NULL,
+            date INTEGER NOT NULL,
+            logout_date INTEGER
+        )"""
+    
+@dataclass
+class AltFlag(TableModel):
+    id: int
+    type: str
+    data: str
+    score: int
+    date: int
+    login_id: int | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS alt_flags(
+            id INTEGER PRIMARY KEY,
+            type TEXT NOT NULL,
+            data TEXT NOT NULL,
+            score INTEGER NOT NULL,
+            date INTEGER NOT NULL,
+            login_id INTEGER REFERENCES user_logins(id)
+        )"""
+    
+@dataclass
+class UserAltFlag(TableModel):
+    user_id: int
+    flag_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_alt_flags(
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            flag_id INTEGER NOT NULL REFERENCES alt_flags(id),
+            PRIMARY KEY (user_id, flag_id)) WITHOUT ROWID"""
+
+@dataclass
+class UserIP(TableModel):
+    user_id: int
+    ip_address: str
+    date_earliest: int
+    date_latest: int
+    times: int
+    is_mobile: bool
+    is_vpn: bool
+    is_checked: bool
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS user_ips(
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            ip_address TEXT NOT NULL,
+            date_earliest INTEGER NOT NULL,
+            date_latest INTEGER NOT NULL,
+            times INTEGER NOT NULL,
+            is_mobile BOOLEAN NOT NULL,
+            is_vpn BOOLEAN NOT NULL,
+            is_checked BOOLEAN NOT NULL,
+            PRIMARY KEY(user_id, ip_address)) WITHOUT ROWID"""
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -948,4 +1030,5 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]
+    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords,
+    UserLogin, AltFlag, UserAltFlag, UserIP]

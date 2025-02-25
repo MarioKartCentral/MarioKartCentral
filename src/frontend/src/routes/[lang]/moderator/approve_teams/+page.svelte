@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
-  import type { Team } from '$lib/types/team';
+  import type { Team, TeamList } from '$lib/types/team';
   import type { TeamRoster } from '$lib/types/team-roster';
   import { check_permission, permissions } from '$lib/util/permissions';
   import { locale } from '$i18n/i18n-svelte';
@@ -16,11 +16,10 @@
   import { user } from '$lib/stores/stores';
   import LL from '$i18n/i18n-svelte';
 
-  let teams: Team[] = [];
   let rosters: TeamRoster[] = [];
 
-  $: pending_teams = teams.filter((t) => t.approval_status === 'pending');
-  $: denied_teams = teams.filter((t) => t.approval_status === 'denied');
+  let pending_teams: Team[] = [];
+  let denied_teams: Team[] = [];
   $: pending_rosters = rosters.filter((r) => r.approval_status === 'pending');
   $: denied_rosters = rosters.filter((r) => r.approval_status === 'denied');
 
@@ -30,16 +29,22 @@
   });
 
   onMount(async () => {
-    const res = await fetch(`/api/registry/teams/unapprovedTeams`);
+    const res = await fetch(`/api/registry/teams/pendingTeams`);
     if (res.status === 200) {
-      const body: Team[] = await res.json();
-      teams = body;
+      const body: TeamList = await res.json();
+      pending_teams = body.teams;
     }
 
     const res2 = await fetch(`/api/registry/teams/unapprovedRosters`);
     if (res2.status === 200) {
       const body: TeamRoster[] = await res2.json();
       rosters = body;
+    }
+
+    const res3 = await fetch(`/api/registry/teams/deniedTeams`);
+    if(res3.status === 200) {
+      const body: TeamList = await res3.json();
+      denied_teams = body.teams;
     }
   });
 

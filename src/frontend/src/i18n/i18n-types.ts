@@ -1045,6 +1045,38 @@ type RootTranslation = {
 			 */
 			EDIT_USER_HEADER: RequiredParams<'user_id'>
 		}
+		ALT_DETECTION: {
+			/**
+			 * A​l​t​ ​F​l​a​g​s
+			 */
+			ALT_FLAGS: string
+			/**
+			 * P​l​a​y​e​r​ ​A​l​t​ ​F​l​a​g​s
+			 */
+			PLAYER_ALT_FLAGS: string
+			TABLE: {
+				/**
+				 * P​l​a​y​e​r​s
+				 */
+				PLAYERS: string
+				/**
+				 * T​y​p​e
+				 */
+				TYPE: string
+				/**
+				 * S​c​o​r​e
+				 */
+				SCORE: string
+				/**
+				 * D​a​t​a
+				 */
+				DATA: string
+				/**
+				 * D​e​t​e​c​t​e​d​ ​a​t
+				 */
+				DETECTED_AT: string
+			}
+		}
 	}
 	MODES: {
 		/**
@@ -1258,6 +1290,10 @@ type RootTranslation = {
 			 * M​a​n​a​g​e​ ​U​s​e​r​s
 			 */
 			MANAGE_USERS: string
+			/**
+			 * A​l​t​ ​D​e​t​e​c​t​i​o​n
+			 */
+			ALT_DETECTION: string
 		}
 	}
 	NOTIFICATION: {
@@ -5468,6 +5504,38 @@ export type TranslationFunctions = {
 			 */
 			EDIT_USER_HEADER: (arg: { user_id: number }) => LocalizedString
 		}
+		ALT_DETECTION: {
+			/**
+			 * Alt Flags
+			 */
+			ALT_FLAGS: () => LocalizedString
+			/**
+			 * Player Alt Flags
+			 */
+			PLAYER_ALT_FLAGS: () => LocalizedString
+			TABLE: {
+				/**
+				 * Players
+				 */
+				PLAYERS: () => LocalizedString
+				/**
+				 * Type
+				 */
+				TYPE: () => LocalizedString
+				/**
+				 * Score
+				 */
+				SCORE: () => LocalizedString
+				/**
+				 * Data
+				 */
+				DATA: () => LocalizedString
+				/**
+				 * Detected at
+				 */
+				DETECTED_AT: () => LocalizedString
+			}
+		}
 	}
 	MODES: {
 		/**
@@ -5681,6 +5749,10 @@ export type TranslationFunctions = {
 			 * Manage Users
 			 */
 			MANAGE_USERS: () => LocalizedString
+			/**
+			 * Alt Detection
+			 */
+			ALT_DETECTION: () => LocalizedString
 		}
 	}
 	NOTIFICATION: {

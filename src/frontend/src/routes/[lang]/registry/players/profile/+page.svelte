@@ -19,11 +19,13 @@
   import ClaimPlayer from '$lib/components/registry/players/ClaimPlayer.svelte';
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
+  import PlayerAltFlags from '$lib/components/moderator/PlayerAltFlags.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
   let playerNotesDialog: Dialog;
+  let altDialog: PlayerAltFlags;
 
   user.subscribe((value) => {
     user_info = value;
@@ -95,6 +97,9 @@
         {#if check_permission(user_info, permissions.edit_user) && player.user_settings}
           <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}">{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button>
         {/if}
+        {#if check_permission(user_info, permissions.view_alt_flags)}
+          <Button on:click={altDialog.open}>Alt Flags</Button>
+        {/if}
       </div>
       <PlayerNotes notes={player.notes} />
     </Section>
@@ -119,6 +124,7 @@
         />
       {/key}
     </Dialog>
+    <PlayerAltFlags bind:this={altDialog} player_id={player.id}/>
   {/if}
   <PlayerProfile {player} />
   <PlayerTournamentHistory {player} />

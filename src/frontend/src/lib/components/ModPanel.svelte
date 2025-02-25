@@ -114,5 +114,9 @@
       {$LL.NAVBAR.MOD_PANEL.MANAGE_USERS()}
     </DropdownItem>
   {/if}
-  
+  {#if check_permission(user_info, permissions.view_alt_flags)}
+    <DropdownItem href="/{$page.params.lang}/moderator/alt_detection">
+      {$LL.NAVBAR.MOD_PANEL.ALT_DETECTION()}
+    </DropdownItem>
+  {/if}
 </Dropdown>
