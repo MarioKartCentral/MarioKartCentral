@@ -5,6 +5,7 @@
   import LatestResults from '$lib/components/homepage/LatestResults.svelte';
   import NewestTeams from '$lib/components/homepage/NewestTeams.svelte';
   import NewestPlayers from '$lib/components/homepage/NewestPlayers.svelte';
+  import LatestAnnouncements from '$lib/components/homepage/LatestAnnouncements.svelte';
 </script>
 
 <svelte:head>
@@ -16,7 +17,9 @@
   <p class="pl-[50px] pr-[50px] mb-[20px]">{$LL.HOMEPAGE.SUMMARY()}</p>
 </div>
 
+
 <div class="grid-container">
+  <LatestAnnouncements style='grid-area: f;'/>
   <LatestTournaments style='grid-area: a;' />
   <LatestResults style='grid-area: b;' />
   <NewestPlayers style='grid-area: c;' />
@@ -35,6 +38,7 @@
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
     grid-template-areas: 
+      "f f b"
       "a a b"
       "c d e";
     gap: 15px;
@@ -45,6 +49,7 @@
     .grid-container {
       grid-template-columns: repeat(2, 1fr);
       grid-template-areas: 
+        "f f"
         "a a"
         "b c"
         "d e";
