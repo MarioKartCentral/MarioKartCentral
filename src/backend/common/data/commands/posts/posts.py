@@ -90,7 +90,7 @@ class ListPostsCommand(Command[PostList]):
                     """
         query_dict: dict[str, Any] = {"is_global": self.is_global, "series_id": self.series_id, "tournament_id": self.tournament_id, "is_privileged": self.is_privileged}
         
-        limit:int = 20
+        limit:int = 10
         offset:int = 0
         if filter.page is not None:
             offset = (filter.page - 1) * limit
@@ -104,7 +104,7 @@ class ListPostsCommand(Command[PostList]):
                     created_by = None
                     if player_id:
                         created_by = PlayerBasic(player_id, player_name, player_country)
-                    posts.append(PostBasic(post_id, title, is_public, is_global, creation_date, created_by))
+                    posts.append(PostBasic(post_id, title, bool(is_public), bool(is_global), creation_date, created_by))
 
             count_query = f"SELECT COUNT(*) FROM ({query})"
             count = 0
@@ -150,5 +150,5 @@ class GetPostCommand(Command[Post]):
         if not s3_body:
             raise Problem("Failed to get post S3 data")
         post_data = msgspec.json.decode(s3_body, type=PostS3Fields)
-        post = Post(post_id, title, is_public, is_global, creation_date, created_by, post_data.content)
+        post = Post(post_id, title, bool(is_public), bool(is_global), creation_date, created_by, post_data.content)
         return post

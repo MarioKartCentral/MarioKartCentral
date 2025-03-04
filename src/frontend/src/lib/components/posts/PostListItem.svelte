@@ -1,10 +1,12 @@
 <script lang="ts">
     import type { PostBasic } from "$lib/types/posts";
-    import Flag from "./Flag.svelte";
+    import Flag from "../common/Flag.svelte";
     import { locale } from "$i18n/i18n-svelte";
     import { page } from "$app/stores";
 
     export let post: PostBasic;
+    export let series_id: number | null = null;
+    export let tournament_id: number | null = null;
 
     const options: Intl.DateTimeFormatOptions = {
         dateStyle: 'medium',
@@ -13,7 +15,10 @@
 
 <div class="wrapper">
     <div class="title">
-        {post.title}
+        <a href="/{$page.params.lang}/{tournament_id ? `tournaments/` : series_id ? `tournaments/series/` : ''}posts/view?id={post.id}{tournament_id 
+            ? `&tournament_id=${tournament_id}` : ''}{series_id ? `&series_id=${series_id}` : ''}">
+            {post.title}
+        </a>
     </div>
     <div class="flex">
         {#if post.created_by}
