@@ -3,6 +3,7 @@
     import Flag from "../common/Flag.svelte";
     import { locale } from "$i18n/i18n-svelte";
     import { page } from "$app/stores";
+    import HiddenBadge from "../badges/HiddenBadge.svelte";
 
     export let post: PostBasic;
     export let series_id: number | null = null;
@@ -13,8 +14,11 @@
     };
 </script>
 
-<div class="wrapper">
-    <div class="title">
+<div class="wrapper {post.is_public ? "" : "post-hidden"}">
+    <div class="title flex">
+        {#if !post.is_public}
+            <HiddenBadge/>
+        {/if}
         <a href="/{$page.params.lang}/{tournament_id ? `tournaments/` : series_id ? `tournaments/series/` : ''}posts/view?id={post.id}{tournament_id 
             ? `&tournament_id=${tournament_id}` : ''}{series_id ? `&series_id=${series_id}` : ''}">
             {post.title}
@@ -40,6 +44,9 @@
 <style>
     .wrapper {
         margin-bottom: 10px;
+    }
+    .post-hidden {
+        opacity: 0.5;
     }
     .title {
         font-size: 1.25em;
