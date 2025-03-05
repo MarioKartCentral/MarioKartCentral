@@ -7,9 +7,11 @@ from common.auth import permissions, series_permissions, tournament_permissions
 from common.data.commands import *
 from common.data.models import *
 from api.data import handle
+from api.utils.word_filter import check_word_filter
 
 @bind_request_body(CreateEditPostRequestData)
 @require_permission(permissions.MANAGE_POSTS)
+@check_word_filter
 async def create_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
     command = CreatePostCommand(body.title, body.content, body.is_public, True, player_id)
@@ -18,6 +20,7 @@ async def create_post(request: Request, body: CreateEditPostRequestData) -> JSON
 
 @bind_request_body(CreateEditPostRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_POSTS)
+@check_word_filter
 async def create_series_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
     series_id = request.path_params['series_id']
@@ -27,6 +30,7 @@ async def create_series_post(request: Request, body: CreateEditPostRequestData) 
 
 @bind_request_body(CreateEditPostRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_POSTS)
+@check_word_filter
 async def create_tournament_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
     tournament_id = request.path_params['tournament_id']
@@ -36,6 +40,7 @@ async def create_tournament_post(request: Request, body: CreateEditPostRequestDa
 
 @bind_request_body(CreateEditPostRequestData)
 @require_permission(permissions.MANAGE_POSTS)
+@check_word_filter
 async def edit_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
     post_id = request.path_params['post_id']
     command = EditPostCommand(post_id, body.title, body.content, body.is_public, True)
@@ -44,6 +49,7 @@ async def edit_post(request: Request, body: CreateEditPostRequestData) -> JSONRe
 
 @bind_request_body(CreateEditPostRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_POSTS)
+@check_word_filter
 async def edit_series_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
     post_id = request.path_params['post_id']
     series_id = request.path_params['series_id']
@@ -53,6 +59,7 @@ async def edit_series_post(request: Request, body: CreateEditPostRequestData) ->
 
 @bind_request_body(CreateEditPostRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_POSTS)
+@check_word_filter
 async def edit_tournament_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
     post_id = request.path_params['post_id']
     tournament_id = request.path_params['tournament_id']
