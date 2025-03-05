@@ -26,8 +26,8 @@
     let post: Post | null = null;
 
     onMount(async() => {
-        console.log('hi');
-        let url = `/api/posts/${id}`;
+        let path = tournament_id ? `tournaments/${tournament_id}/` : series_id ? `tournaments/series/${series_id}/`: ``;
+        let url = `/api/${path}posts/${id}`;
         const res = await fetch(url);
         if(res.status === 200) {
             const body: Post = await res.json();

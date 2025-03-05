@@ -121,6 +121,7 @@ class ListPostsCommand(Command[PostList]):
 class GetPostCommand(Command[Post]):
     id: int
     is_privileged: bool
+    is_global: bool
     series_id: int | None
     tournament_id: int | None
 
@@ -129,6 +130,7 @@ class GetPostCommand(Command[Post]):
                     FROM posts p
                     LEFT JOIN players pl ON p.created_by = pl.id
                     WHERE p.id = :id
+                    AND p.is_global = :is_global
                     AND (p.is_public = 1 OR :is_privileged = 1)
                     AND (:series_id IS NULL OR p.id IN (
                         SELECT sp.post_id FROM series_posts sp WHERE sp.series_id = :series_id
@@ -138,7 +140,7 @@ class GetPostCommand(Command[Post]):
                     ))"""
         async with db_wrapper.connect() as db:
             async with db.execute(query, {"id": self.id, "is_privileged": self.is_privileged, "series_id": self.series_id, 
-                                          "tournament_id": self.tournament_id}) as cursor:
+                                          "tournament_id": self.tournament_id, "is_global": self.is_global}) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Post not found", status=404)

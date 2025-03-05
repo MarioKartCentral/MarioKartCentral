@@ -75,7 +75,8 @@ async def view_post(request: Request) -> JSONResponse:
     series_id = request.path_params.get('series_id', None)
     tournament_id = request.path_params.get('tournament_id', None)
     post_id = request.path_params['post_id']
-    command = GetPostCommand(post_id, request.state.is_privileged, series_id, tournament_id)
+    is_global = series_id is None and tournament_id is None
+    command = GetPostCommand(post_id, request.state.is_privileged, is_global, series_id, tournament_id)
     post = await handle(command)
     return JSONResponse(post)
 
