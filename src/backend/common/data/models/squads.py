@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.models.tournament_registrations import TournamentPlayerDetails
 from common.data.models.teams import RosterBasic
+from common.data.models.players import PlayerMin
 
 @dataclass
 class Squad:

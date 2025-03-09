@@ -68,14 +68,15 @@ async def get_team_placements(request: Request) -> JSONResponse:
     command = GetTeamTournamentPlacementsCommand(team_id)
     placements = await handle(command)
     return JSONResponse(placements)
+
 async def get_series_placements(request: Request) -> JSONResponse:
     series_id = int(request.path_params['id'])
     filter = TournamentFilter()
     filter.series_id = series_id
-    list_command = GetTournamentListCommand(filter)
-    tournaments = await handle(list_command)
-    if len(tournaments) > 0:
-        tournament_id = tournaments[0].id   
+    list_command = GetTournamentListCommand(filter, None)
+    tournament_list = await handle(list_command)
+    if tournament_list.tournament_count > 0:
+        tournament_id: int = tournament_list.tournaments[0].id   
         command = CheckIfSquadTournament(tournament_id)
         is_squad = await handle(command)
         if is_squad:
@@ -86,27 +87,6 @@ async def get_series_placements(request: Request) -> JSONResponse:
             tournamentsWithPlacements = await handle(reg_command)
         return JSONResponse(tournamentsWithPlacements)
     return JSONResponse({})
-
-
-async def get_series_placements(request: Request) -> JSONResponse:
-    series_id = int(request.path_params['id'])
-    filter = TournamentFilter()
-    filter.series_id = series_id
-    list_command = GetTournamentListCommand(filter)
-    tournaments = await handle(list_command)
-    if len(tournaments) > 0:
-        tournament_id = tournaments[0].id   
-        command = CheckIfSquadTournament(tournament_id)
-        is_squad = await handle(command)
-        if is_squad:
-            reg_command = GetSquadTournamentListWithPlacements(series_id)
-            tournamentsWithPlacements = await handle(reg_command)
-        else:
-            reg_command = GetSoloTournamentListWithPlacements(series_id)
-            tournamentsWithPlacements = await handle(reg_command)
-        return JSONResponse(tournamentsWithPlacements)
-    return JSONResponse({})
-
 
 routes = [
     Route('/api/tournaments/{tournament_id:int}/placements/set', set_placements, methods=["POST"]),

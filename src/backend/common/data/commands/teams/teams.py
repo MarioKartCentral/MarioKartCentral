@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import timedelta, timezone
-from typing import List
 from common.auth import team_roles
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *

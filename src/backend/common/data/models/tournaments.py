@@ -60,7 +60,7 @@ class GetTournamentRequestData(CreateTournamentRequestData):
     series_url: str | None = None
     series_description: str | None = None
     series_ruleset: str | None = None
-    
+
 @dataclass
 class EditTournamentRequestData():
     name: str
@@ -128,10 +128,6 @@ class TournamentWithPlacements(TournamentDataBasic):
     placements: list[TournamentPlacementDetailed]
 
 @dataclass
-class TournamentWithPlacements(TournamentDataBasic):
-    placements: list[TournamentPlacementDetailed]
-
-@dataclass
 class TournamentFilter():
     name: str | None = None
     game: Game | None = None
@@ -155,3 +151,10 @@ class TournamentInvite():
     tournament_name: str
     tournament_game: Game
     tournament_mode: GameMode
+
+@dataclass
+class GetTournamentListData():
+    tournaments: list[TournamentDataBasic]
+    tournament_count: int
+    page_count: int
+    

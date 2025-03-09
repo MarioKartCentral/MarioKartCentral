@@ -216,7 +216,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
         return tournament_data
 
 @dataclass
-class GetTournamentListCommand(Command[TournamentList]):
+class GetTournamentListCommand(Command[GetTournamentListData]):
     filter: TournamentFilter
     user: User | None
 
@@ -310,12 +310,12 @@ class GetTournamentListCommand(Command[TournamentList]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (tournament_id, name, game, mode, date_start, date_end, is_squad, registrations_open,
-                      teams_allowed, logo, use_series_logo, is_viewable, is_public,
+                      teams_allowed, logo, use_series_logo,
                       series_id, series_name, series_url, series_short_description, series_logo) = row
                     if bool(use_series_logo):
                         logo = series_logo
                     tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_short_description,
-                        bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable), bool(is_public)))
+                        bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, bool(use_series_logo)))
 
             count_query = f"SELECT COUNT(*) FROM tournaments t {where_clause}"
             page_count: int = 0
@@ -327,7 +327,7 @@ class GetTournamentListCommand(Command[TournamentList]):
 
             page_count = int(tournament_count / limit) + (1 if tournament_count % limit else 0)
 
-            return TournamentList(tournaments, tournament_count, page_count)
+            return GetTournamentListData(tournaments, tournament_count, page_count)
 
 @dataclass
 class CheckIfSquadTournament(Command[bool]):
@@ -387,15 +387,15 @@ class GetSquadTournamentListWithPlacements(Command[list[TournamentWithPlacements
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
-                    tournament = TournamentWithPlacements(id, name, game, mode, date_start, date_end, series_id,  None, None, None, bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, use_series_logo, [])
+                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo = row
+                    tournament = TournamentWithPlacements(id, name, game, mode, date_start, date_end, series_id,  None, None, None, bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, use_series_logo, [])
                     tournaments.append(tournament)
                     placements[tournament.id] = tournament.placements
             async with db.execute(placements_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows: 
                     id, tournament_id, squad_id, squad_name, tag, roster_id, placement , placement_description, is_disqualified = row
-                    squad =  TournamentTeam(squad_id, squad_name, tag, 1, 1, 1, [], roster_id)
+                    squad =  TournamentTeam(squad_id, squad_name, tag, 1, 1, True, True, [], [], roster_id)
                     placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, None, squad)
                     placements[tournament_id].append(placement)
             return tournaments
@@ -406,7 +406,7 @@ class GetSoloTournamentListWithPlacements(Command[list[TournamentWithPlacements]
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             series_id = self.series_id
-            tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo FROM tournaments WHERE series_id = ?"
+            tournaments_query = f"SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo FROM tournaments WHERE series_id = ?"
             placements_query = f"""
                 SELECT s.id, s.tournament_id, p.id AS player_id, p.name AS player_name, placement, placement_description, is_disqualified
                 FROM tournament_solo_placements s
@@ -419,15 +419,15 @@ class GetSoloTournamentListWithPlacements(Command[list[TournamentWithPlacements]
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, description, logo, use_series_logo = row
-                    tournament = TournamentWithPlacements(id, name, game, mode, date_start, date_end, series_id,  None, None, None, bool(is_squad), bool(registrations_open), bool(teams_allowed), description, logo, use_series_logo, [])
+                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo = row
+                    tournament = TournamentWithPlacements(id, name, game, mode, date_start, date_end, series_id,  None, None, None, bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, use_series_logo, [])
                     tournaments.append(tournament)
                     placements[tournament.id] = tournament.placements
             async with db.execute(placements_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows: 
                     id, tournament_id, player_id, player_name, placement , placement_description, is_disqualified = row
-                    player =  TournamentPlayerDetails(id, player_id, None, 1, True, None, True, player_name, None, None, [])
+                    player =  TournamentPlayerDetails(id, player_id, None, 1, True, True, None, True, player_name, None, None, None, [])
                     placement = TournamentPlacementDetailed(id, placement, placement_description, None, is_disqualified, player, None)
                     placements[tournament_id].append(placement)
             return tournaments
