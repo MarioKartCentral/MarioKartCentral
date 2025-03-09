@@ -27,3 +27,7 @@ class EditPlayerUserSettingsRequestData:
     language: Literal['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'] | None = None
     color_scheme: Literal['light', 'dark'] | None = None
     timezone: str | None = None
+
+@dataclass
+class SetLanguageRequestData:
+    language: Literal['de', 'en-gb', 'en-us', 'es', 'fr', 'ja']

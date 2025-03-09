@@ -327,6 +327,7 @@ const fr: Translation = {
     MODERATOR: 'Modération',
     LOGIN_REGISTER: "Se connecter/S'inscrire",
     ACCOUNT: 'Account',
+    SET_LANGUAGE_FAILED: 'Failed to set language',
     MOD_PANEL: {
       APPROVE_TEAMS: 'Approve Teams',
       TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',

@@ -1209,6 +1209,10 @@ type RootTranslation = {
 		 * A​c​c​o​u​n​t
 		 */
 		ACCOUNT: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​s​e​t​ ​l​a​n​g​u​a​g​e
+		 */
+		SET_LANGUAGE_FAILED: string
 		MOD_PANEL: {
 			/**
 			 * A​p​p​r​o​v​e​ ​T​e​a​m​s
@@ -5699,6 +5703,10 @@ export type TranslationFunctions = {
 		 * Account
 		 */
 		ACCOUNT: () => LocalizedString
+		/**
+		 * Failed to set language
+		 */
+		SET_LANGUAGE_FAILED: () => LocalizedString
 		MOD_PANEL: {
 			/**
 			 * Approve Teams

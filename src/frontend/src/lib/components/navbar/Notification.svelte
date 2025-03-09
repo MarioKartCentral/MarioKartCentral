@@ -1,20 +1,20 @@
 <script lang="ts">
   import type { Notification } from '$lib/types/notification';
   import { have_unread_notification, user } from '$lib/stores/stores';
-  import DropdownMenu from './DropdownMenu.svelte';
-  import Dropdown from './common/Dropdown.svelte';
-  import DropdownItem from './common/DropdownItem.svelte';
+  // import DropdownMenu from './DropdownMenu.svelte';
+  import Dropdown from '$lib/components/common/Dropdown.svelte';
+  import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import LL from '$i18n/i18n-svelte';
   import { goto } from '$app/navigation';
-  import NotificationContent from './common/NotificationContent.svelte';
+  import NotificationContent from '$lib/components/common/NotificationContent.svelte';
   import { DropdownDivider, DropdownHeader } from 'flowbite-svelte';
   import type { UserInfo } from '$lib/types/user-info';
 
   const maxBellNotifications = 5;
-  let dropdown: DropdownMenu;
-  export function toggleNotificationMenu() {
-    dropdown.toggleDropdown();
-  }
+  // let dropdown: DropdownMenu;
+  // export function toggleNotificationMenu() {
+  //   dropdown.toggleDropdown();
+  // }
 
   let notifications: Notification[] = [];
   $: {

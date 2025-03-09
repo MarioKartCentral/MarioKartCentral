@@ -324,6 +324,7 @@ const en_us: BaseTranslation = {
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
     ACCOUNT: 'Account',
+    SET_LANGUAGE_FAILED: 'Failed to set language',
     MOD_PANEL: {
       APPROVE_TEAMS: 'Approve Teams',
       TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
