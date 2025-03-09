@@ -194,7 +194,9 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
     ],
     TEAM_LEADER_BANNED: [
         permissions.CREATE_TEAM,
-        permissions.INVITE_TO_TEAM
+        permissions.INVITE_TO_TEAM,
+        team_permissions.REGISTER_TOURNAMENT,
+        team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
 }
 
