@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Notification } from '$lib/types/notification';
   import { have_unread_notification, user } from '$lib/stores/stores';
-  // import DropdownMenu from './DropdownMenu.svelte';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -11,10 +10,6 @@
   import type { UserInfo } from '$lib/types/user-info';
 
   const maxBellNotifications = 5;
-  // let dropdown: DropdownMenu;
-  // export function toggleNotificationMenu() {
-  //   dropdown.toggleDropdown();
-  // }
 
   let notifications: Notification[] = [];
   $: {
