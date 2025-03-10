@@ -3065,6 +3065,14 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​s​t​e​r
 			 */
 			REMOVE_ROSTER_FAILED: string
+			/**
+			 * S​i​g​n​ ​i​n​ ​o​r​ ​r​e​g​i​s​t​e​r​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
+			 */
+			SIGN_IN_REGISTER_TO_REGISTER: string
+			/**
+			 * P​l​e​a​s​e​ ​l​i​n​k​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​a​c​c​o​u​n​t​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
+			 */
+			LINK_DISCORD_TO_REGISTER: string
 		}
 		MANAGE: {
 			/**
@@ -7464,6 +7472,14 @@ export type TranslationFunctions = {
 			 * Failed to remove roster
 			 */
 			REMOVE_ROSTER_FAILED: () => LocalizedString
+			/**
+			 * Sign in or register to participate in tournaments on MKCentral.
+			 */
+			SIGN_IN_REGISTER_TO_REGISTER: () => LocalizedString
+			/**
+			 * Please link your Discord account to participate in tournaments on MKCentral.
+			 */
+			LINK_DISCORD_TO_REGISTER: () => LocalizedString
 		}
 		MANAGE: {
 			/**

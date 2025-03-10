@@ -804,6 +804,8 @@ const en_us: BaseTranslation = {
       REMOVE_ROSTER_CONFIRM: 'Are you sure you want to remove the roster {roster_name:string} from this squad?',
       ADD_ROSTER_FAILED: 'Failed to add roster',
       REMOVE_ROSTER_FAILED: 'Failed to remove roster',
+      SIGN_IN_REGISTER_TO_REGISTER: 'Sign in or register to participate in tournaments on MKCentral.',
+      LINK_DISCORD_TO_REGISTER: 'Please link your Discord account to participate in tournaments on MKCentral.',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Select Template',
