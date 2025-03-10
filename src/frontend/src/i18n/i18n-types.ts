@@ -642,6 +642,10 @@ type RootTranslation = {
 		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​F​a​i​l​e​d
 		 */
 		REGISTRATION_FAILED: string
+		/**
+		 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​l​o​g​g​e​d​ ​i​n​.
+		 */
+		ALREADY_LOGGED_IN: string
 	}
 	LOUNGE: {
 		/**
@@ -5147,6 +5151,10 @@ export type TranslationFunctions = {
 		 * Registration Failed
 		 */
 		REGISTRATION_FAILED: () => LocalizedString
+		/**
+		 * You are already logged in.
+		 */
+		ALREADY_LOGGED_IN: () => LocalizedString
 	}
 	LOUNGE: {
 		/**

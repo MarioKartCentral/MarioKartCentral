@@ -7,6 +7,7 @@ const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 function getEntriesForLocale(locale) {
   return [
     `/${locale}`,
+    `/${locale}/login`,
     `/${locale}/tournaments/details`,
     `/${locale}/tournaments/create`,
     `/${locale}/tournaments/create/select_template`,

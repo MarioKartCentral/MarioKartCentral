@@ -177,6 +177,7 @@ const fr: Translation = {
     LOGIN_FAILED: 'La connexion a échoué',
     LOGOUT_FAILED: 'La déconnexion a échoué',
     REGISTRATION_FAILED: "L'enregistrement a échoué",
+    ALREADY_LOGGED_IN: 'You are already logged in.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',

@@ -177,6 +177,7 @@ const ja: Translation = {
     LOGIN_FAILED: 'Login Failed',
     LOGOUT_FAILED: 'Logout Failed',
     REGISTRATION_FAILED: 'Registration Failed',
+    ALREADY_LOGGED_IN: 'You are already logged in.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
