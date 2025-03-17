@@ -70,6 +70,20 @@
             alert(`${$LL.PLAYERS.PROFILE.PROFILE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
+
+    async function syncDiscordAvatar() {
+        const endpoint = '/api/user/sync_discord_avatar';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const result = await response.json();
+        if (response.status === 200) {
+            window.location.reload(); // Refresh to show updated avatar
+        } else {
+            alert(`${$LL.DISCORD.SYNC_AVATAR_ERROR()}: ${result['title']}`);
+        }
+    }
 </script>
 
 <Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
@@ -115,6 +129,7 @@
         <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.COMMON.SAVE()}</Button>
       </div>
     </form>
+    <Button on:click={syncDiscordAvatar}>{$LL.DISCORD.SYNC_AVATAR()}</Button>
   {/if}
 </Section>
 

@@ -238,6 +238,22 @@ async function handleFrontend(request: Request, env: Env) {
   return response;
 }
 
+async function fetchFromImageBucket(url: URL, env: Env) {
+  url.protocol = "https";
+  // Strip /img/ prefix and use remaining path for S3 key
+  const key = url.pathname.substring(5); // length of "/img/"
+  url.pathname = `/mkc-img${key}`;
+  
+  const aws = new AwsClient({
+    accessKeyId: env.S3_ACCESS_KEY,
+    secretAccessKey: env.S3_SECRET_KEY,
+    service: "s3",
+    region: env.S3_REGION
+  });
+  
+  return await aws.fetch(url);
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
@@ -246,6 +262,8 @@ export default {
       return await handleApi(request, env);
     } else if (url.pathname.startsWith("/swagger")) {
       return await handleSwagger(request, env);
+    } else if (url.pathname.startsWith("/img/")) {
+      return await fetchFromImageBucket(url, env);
     } else {
       return await handleFrontend(request, env);
     }
