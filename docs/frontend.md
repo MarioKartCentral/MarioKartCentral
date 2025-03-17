@@ -226,23 +226,27 @@ SvelteKit uses two special component types for routing:
 ```html
 <!-- /src/routes/[lang]/tournaments/[id]/+page.svelte -->
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import type { Tournament } from '$lib/types/tournament';
     
-    // Access route parameters using $page.params
-    const tournamentId = $page.params.id;
-    let tournament: Tournament;
+    let tournamentId: string;
+    let tournament: Tournament | null = null;
 
-    // Fetch tournament data
-    async function loadTournament() {
+    onMount(() => {
+        tournamentId = $page.params.id;
         const response = await fetch(`/api/tournaments/${tournamentId}`);
         tournament = await response.json();
-    }
+    });
 </script>
 
 <div class="tournament-details">
-    <h1>{tournament.name}</h1>
-    <!-- Tournament content -->
+    {#if tournament}
+        <h1>{tournament.name}</h1>
+        <!-- Tournament content -->
+    {:else}
+        <p>Loading tournament details...</p>
+    {/if}
 </div>
 ```
 
@@ -288,45 +292,38 @@ Key points about `+layout.ts` in our statically rendered site:
 - It's useful for determining static properties like active navigation items, route validation, etc.
 - Values returned are embedded in the static HTML and JavaScript bundle
 
-#### Route Parameters and Navigation
+#### Route Parameters and Query Parameters
 
-SvelteKit provides several tools for working with routes:
+The `$page` store provides access to route parameters and query parameters.
 
 1. **Route Parameters**: Access URL parameters through the `$page.params` store:
 ```html
 <script lang="ts">
     import { page } from '$app/stores';
     
-    // For URL /en-us/tournaments/123:
-    const lang = $page.params.lang;      // 'en-us'
-    const tournamentId = $page.params.id; // '123'
+    // For URL /en-us/tournaments:
+    const lang = $page.params.lang; // 'en-us'
 </script>
 ```
+
+> **Important Note About Static Rendering**: Route parameters like `lang` are part of the file-based routing structure and are known at build time. This means they can be accessed in the top-level script without `onMount`, even in our statically rendered site. The actual values are determined during build time and embedded in the generated HTML and JavaScript.
 
 2. **Query Parameters**: Access query string parameters through `$page.url.searchParams`:
 ```html
 <script lang="ts">
+    import { onMount } from 'svelte';
     import { page } from '$app/stores';
     
     // For URL /en-us/tournaments?filter=active
-    const filter = $page.url.searchParams.get('filter'); // 'active'
-</script>
-```
-
-3. **Navigation**: Use the `<a>` element with dynamic URLs:
-```html
-<script lang="ts">
-    import { page } from '$app/stores';
+    let filter: string | null = null;
     
-    // Always include the language parameter in URLs
-    const lang = $page.params.lang;
+    onMount(() => {
+        filter = $page.url.searchParams.get('filter');
+    });
 </script>
-
-<nav>
-    <a href="/{lang}/tournaments">All Tournaments</a>
-    <a href="/{lang}/tournaments/{tournamentId}">Tournament Details</a>
-</nav>
 ```
+
+> **Query Parameters vs Route Parameters**: Unlike route parameters, query parameters are not known at build time and can only be accessed at runtime in the browser. This is why we must use `onMount` to access them, as they depend on the specific URL the user navigates to.
 
 #### API Routes
 
