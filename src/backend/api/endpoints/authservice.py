@@ -124,6 +124,12 @@ async def delete_discord_data(request: Request) -> JSONResponse:
     await handle(command)
     return JSONResponse({})
 
+@require_permission(permissions.LINK_DISCORD, check_denied_only=True)
+async def sync_discord_avatar(request: Request) -> JSONResponse:
+    command = SyncDiscordAvatarCommand(request.state.user.id)
+    avatar_path = await handle(command)
+    return JSONResponse({"avatar": avatar_path})
+
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
@@ -132,5 +138,6 @@ routes = [
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
     Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
-    Route('/api/user/delete_discord', delete_discord_data, methods=['POST'])
+    Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
+    Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST'])
 ]

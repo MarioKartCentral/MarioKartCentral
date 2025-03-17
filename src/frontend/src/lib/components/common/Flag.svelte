@@ -1,11 +1,26 @@
 <script lang="ts">
   export let country_code: string | null;
   export let size: "large" | "small" = "large"
+  
+  const flags = import.meta.glob<string>('../../assets/flags/*.png', { query: { url: true }, import: 'default' });
+  
+  const getFlag = async (code: string) => {
+    const path = `../../assets/flags/${code.toUpperCase()}.png`;
+    const module = await flags[path]?.();
+    return module;
+  }
+
+  let flagUrl = '';
+  
+  $: if (country_code) {
+    getFlag(country_code).then(url => {
+      flagUrl = url || '';
+    });
+  }
 </script>
 
 <span>
-  <!-- <img src={'/src/lib/assets/flags/' + country_code?.toUpperCase() + '.png'} alt={country_code} class="flag {size}" /> -->
-  <img src={'https://raw.githubusercontent.com/gosquared/flags/refs/heads/master/flags/flags-iso/flat/64/' + country_code?.toUpperCase() + '.png'} alt={country_code} class="flag {size}" />
+  <img src={flagUrl} alt={country_code} class="flag {size}" />
 </span>
 
 <style>

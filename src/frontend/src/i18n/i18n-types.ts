@@ -348,6 +348,14 @@ type RootTranslation = {
 		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​d​e​l​e​t​i​n​g​ ​D​i​s​c​o​r​d​ ​d​a​t​a
 		 */
 		DELETE_DATA_ERROR: string
+		/**
+		 * S​y​n​c​ ​A​v​a​t​a​r
+		 */
+		SYNC_AVATAR: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​s​y​n​c​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
+		 */
+		SYNC_AVATAR_ERROR: string
 	}
 	FRIEND_CODES: {
 		/**
@@ -4786,6 +4794,14 @@ export type TranslationFunctions = {
 		 * An error occurred while deleting Discord data
 		 */
 		DELETE_DATA_ERROR: () => LocalizedString
+		/**
+		 * Sync Avatar
+		 */
+		SYNC_AVATAR: () => LocalizedString
+		/**
+		 * Failed to sync Discord avatar
+		 */
+		SYNC_AVATAR_ERROR: () => LocalizedString
 	}
 	FRIEND_CODES: {
 		/**
