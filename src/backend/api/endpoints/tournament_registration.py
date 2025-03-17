@@ -367,7 +367,6 @@ async def my_registration(request: Request) -> JSONResponse:
         return JSONResponse(None)
     command = CheckIfSquadTournament(tournament_id)
     is_squad = await handle(command)
-    
     if is_squad:
         command = GetPlayerSquadRegCommand(tournament_id, request.state.user.player_id)
     else:

@@ -2,12 +2,12 @@
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import { page } from '$app/stores';
-  import Dropdown from './common/Dropdown.svelte';
-  import DropdownItem from './common/DropdownItem.svelte';
+  import Dropdown from '$lib/components/common/Dropdown.svelte';
+  import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import { NavLi } from 'flowbite-svelte';
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
-  import AlertCount from './common/AlertCount.svelte';
+  import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;

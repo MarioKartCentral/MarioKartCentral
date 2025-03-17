@@ -48,6 +48,10 @@
   background-color: #9755ab;
   border: 1px solid #892bad;
 }
+.hidden_badge {
+  background-color: #757575;
+  border: 1px solid #656565;
+}
 .fc_type_switch_badge {
   background-color: rgb(158, 35, 35);
   border: 1px solid rgb(112, 0, 0);

@@ -4,6 +4,7 @@
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
   import SeriesInfo from '$lib/components/tournaments/series/SeriesInfo.svelte';
   import LL from '$i18n/i18n-svelte';
+  import SeriesPosts from '$lib/components/tournaments/series/SeriesPosts.svelte';
 
   let id = 0;
   let series: TournamentSeries;
@@ -29,6 +30,7 @@
 
 {#if series}
   <SeriesInfo {series} />
+  <SeriesPosts {series}/>
 {:else if not_found}
   {$LL.TOURNAMENTS.SERIES.NOT_FOUND()}
 {/if}

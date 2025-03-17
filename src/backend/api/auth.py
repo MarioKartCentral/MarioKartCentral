@@ -5,7 +5,7 @@ from api.data import handle
 from api.utils.responses import ProblemResponse
 from common.data.commands import *
 from common.data.models import Problem
-from common.auth import tournament_permissions
+from common.auth import permissions, series_permissions, tournament_permissions
 
 def get_user_info[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
@@ -197,4 +197,36 @@ def check_tournament_visiblity[**P](handle_request: Callable[Concatenate[Request
             return await handle_request(request, *args, **kwargs)
         else:
             raise Problem("Insufficient permission", f"User does not have required permission \'{tournament_permissions.VIEW_HIDDEN_TOURNAMENT}\'", status=401)
+    return wrapper
+
+# used to see if a user can view hidden posts
+def check_post_privileges[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+        session_id = request.cookies.get("session", None)
+        if session_id is None:
+            request.state.user = None
+            request.state.is_privileged = False
+            return await handle_request(request, *args, **kwargs)
+        
+        user = await handle(GetUserIdFromSessionCommand(session_id))
+        request.state.user = user
+        if user is None:
+            request.state.is_privileged = False
+            return await handle_request(request, *args, **kwargs)
+
+        tournament_id = request.path_params.get('tournament_id', None)
+        if tournament_id:
+            user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, tournament_permissions.MANAGE_TOURNAMENT_POSTS, tournament_id=int(tournament_id)))
+            request.state.is_privileged = user_has_permission
+            return await handle_request(request, *args, **kwargs)
+        
+        series_id = request.path_params.get('series_id', None)
+        if series_id:
+            user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, series_permissions.MANAGE_SERIES_POSTS, series_id=int(series_id)))
+            request.state.is_privileged = user_has_permission
+            return await handle_request(request, *args, **kwargs)
+        
+        user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, permissions.MANAGE_POSTS))
+        request.state.is_privileged = user_has_permission
+        return await handle_request(request, *args, **kwargs)
     return wrapper

@@ -2,6 +2,7 @@ from .common import *
 from .auth import *
 from .system import *
 from .moderation import *
+from .posts import *
 from .players import *
 from .teams import *
 from .tournaments import *

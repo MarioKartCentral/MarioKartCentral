@@ -11,6 +11,7 @@
   import Accordion from '$lib/components/common/Accordion.svelte';
   import AccordionItem from '$lib/components/common/AccordionItem.svelte';
   import LL from '$i18n/i18n-svelte';
+  import TournamentPosts from '$lib/components/tournaments/TournamentPosts.svelte';
 
   let id = 0;
 
@@ -49,6 +50,7 @@
       </AccordionItem>
     </Accordion>
   </Section>
+  <TournamentPosts {tournament}/>
   <PlacementsDisplay {tournament}/>
   <TournamentRegisterPanel {tournament} />
   <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS()}>

@@ -46,53 +46,53 @@
     <TournamentInviteList {tournament} squads={getInvitedSquads()}/>
   {/if}
 {/if}
-  {#each registration.registrations.filter((r) => !r.player.is_invite) as reg}
-    <div class="registration">
-      {#if tournament.checkins_enabled}
-        <div class="section">
-          {#if tournament.checkins_open}
-            {#if !reg.player.is_checked_in}
-              <Button on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
-              <div>
-                {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
-              </div>
-            {:else}
-              <div class="flex">
-                <BadgeCheckSolid/>
-                <div>
-                  {$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}
-                </div>
-                {#if reg.squad}
-                  <div>
-                    ({reg.squad.players.filter((p) => p.is_checked_in).length}/{tournament.min_players_checkin})
-                  </div>
-                {/if}
-              </div>
-              <div>
-                <Button size="xs" on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
-              </div>
-            {/if}
+{#each registration.registrations.filter((r) => !r.player.is_invite) as reg}
+  <div class="registration">
+    {#if tournament.checkins_enabled}
+      <div class="section">
+        {#if tournament.checkins_open}
+          {#if !reg.player.is_checked_in}
+            <Button on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
+            <div>
+              {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
+            </div>
           {:else}
-            {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_CLOSED()}
+            <div class="flex">
+              <BadgeCheckSolid/>
+              <div>
+                {$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}
+              </div>
+              {#if reg.squad}
+                <div>
+                  ({reg.squad.players.filter((p) => p.is_checked_in).length}/{tournament.min_players_checkin})
+                </div>
+              {/if}
+            </div>
+            <div>
+              <Button size="xs" on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
+            </div>
           {/if}
+        {:else}
+          {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_CLOSED()}
+        {/if}
+      </div>
+    {/if}
+    {#if tournament.verification_required && ((reg.squad && !reg.squad.is_approved) || (!reg.squad && !reg.player.is_approved))}
+      <div class="section">
+        <div class="pending">
+          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
         </div>
-      {/if}
-      {#if tournament.verification_required && ((reg.squad && !reg.squad.is_approved) || (!reg.squad && !reg.player.is_approved))}
-        <div class="section">
-          <div class="pending">
-            {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
-          </div>
-          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
-        </div>
-      {/if}
-      {#if reg.squad}
-        <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
-      {:else}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
-        <TournamentPlayerList {tournament} players={[reg.player]} my_player={reg.player}/>
-      {/if}
-    </div>
-  {/each}
+        {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
+      </div>
+    {/if}
+    {#if reg.squad}
+      <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
+    {:else}
+      <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
+      <TournamentPlayerList {tournament} players={[reg.player]} my_player={reg.player}/>
+    {/if}
+  </div>
+{/each}
 
 <style>
   div.pending {
@@ -107,6 +107,7 @@
   }
   div.registration {
     padding-bottom: 10px;
+    margin-bottom: 10px;
     border-bottom: 1px white solid;
   }
 </style>

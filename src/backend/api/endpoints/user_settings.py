@@ -1,7 +1,7 @@
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
-from api.auth import require_logged_in, require_permission
+from api.auth import require_logged_in, require_permission, get_user_info
 from common.auth import permissions
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
@@ -44,9 +44,20 @@ async def edit_player_user_settings(request: Request, body: EditPlayerUserSettin
     await handle(command)
     return JSONResponse({})
     
+@bind_request_body(SetLanguageRequestData)
+@get_user_info
+async def edit_language(request: Request, body: SetLanguageRequestData) -> JSONResponse:
+    resp = JSONResponse({}, status_code=200)
+    resp.set_cookie('language', body.language)
+    if request.state.user:
+        command_body = EditUserSettingsRequestData(language=body.language)
+        command = EditUserSettingsCommand(request.state.user.id, command_body)
+        await handle(command)
+    return resp
 
 routes = [
     Route('/api/user/settings', get_settings),
     Route('/api/user/settings/edit', edit_settings, methods=["POST"]),
     Route('/api/user/settings/forceEdit', edit_player_user_settings, methods=["POST"]),
+    Route('/api/user/settings/editLanguage', edit_language, methods=["POST"]),
 ]

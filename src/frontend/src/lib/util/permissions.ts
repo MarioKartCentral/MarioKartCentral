@@ -163,6 +163,7 @@ export const permissions = {
   merge_teams: 'team_merge',
   manage_word_filter: 'word_filter_manage',
   edit_user: 'user_edit',
+  manage_posts: 'post_manage',
 };
 
 export const team_permissions = {
@@ -183,6 +184,7 @@ export const series_permissions = {
   edit_tournament_template: 'tournament_template_edit',
   manage_series_roles: 'series_roles_manage',
   edit_series: 'series_edit',
+  manage_series_posts: 'series_posts_manage',
 };
 
 export const tournament_permissions = {
@@ -193,6 +195,7 @@ export const tournament_permissions = {
   manage_placements: 'tournament_placements_manage',
   manage_tournament_roles: 'tournament_roles_manage',
   view_hidden_tournament: 'tournament_view_hidden',
+  manage_tournament_posts: 'tournament_posts_manage',
 };
 
 export const mod_panel_permissions = [

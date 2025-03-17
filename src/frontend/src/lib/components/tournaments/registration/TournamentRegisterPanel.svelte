@@ -29,54 +29,60 @@
     return fcs.filter((fc) => fc.type === game_fc_types[game]);
   }
 
-
   onMount(async () => {
     const res = await fetch(`/api/tournaments/${tournament.id}/myRegistration`);
     if (res.status === 200) {
       const body: MyTournamentRegistration = await res.json();
       registration = body;
-      console.log(registration);
     }
   });
 </script>
 
 <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}>
-  {#if registration}
-    {#if user_info.player}
-      <MyRegistration {registration} {tournament}/>
-    {/if}
+  {#if user_info.id === null}
+    <div class="link">
+      <a href="/{$page.params.lang}/login">
+        Sign in or register to participate in tournaments on MKCentral.
+      </a>
+    </div>
+  {:else if user_info.player === null}
+    <div class="link">
+      <a href="/{$page.params.lang}/player-signup"
+        >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
+      >
+    </div>
+  {:else if user_info.player.discord === null}
+    <div class="link">
+      <a href="/{$page.params.lang}/registry/players/edit-profile">
+        Please link your Discord account to participate in tournaments on MKCentral.
+      </a>
+    </div>
+  {:else if registration}
+    <MyRegistration {registration} {tournament}/>
     {#if !check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
       <div>
         {$LL.TOURNAMENTS.REGISTRATIONS.NO_PERMISSION_TO_REGISTER()}
       </div>
     {:else}
-      {#if tournament.teams_allowed}
-        <TeamTournamentRegister {tournament}/>
-      {/if}
-      {#if !registration.registrations.some((r) => !r.player.is_invite)}
-        {#if !check_registrations_open(tournament)}
-          <div>
-            {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS_CLOSED()}
-          </div>
-        {:else if user_info.player}
+      {#if check_registrations_open(tournament)}
+        {#if tournament.teams_allowed}
+          <TeamTournamentRegister {tournament}/>
+        {/if}
+        {#if !tournament.teams_only && !registration.registrations.some((r) => !r.player.is_invite)}
           {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-            {#if !tournament.teams_only}
-              <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
-              <SoloSquadTournamentRegister
-                {tournament}
-                friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
-              />
-            {/if}
+            <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
+            <SoloSquadTournamentRegister
+              {tournament}
+              friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
+            />
           {:else}
             {$LL.TOURNAMENTS.REGISTRATIONS.ADD_FC_TO_REGISTER({game: tournament.game})}
           {/if}
-        {:else}
-          <div>
-            <a href="/{$page.params.lang}/player-signup"
-              >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
-            >
-          </div>
         {/if}
+      {:else}
+        <div>
+          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS_CLOSED()}
+        </div>
       {/if}
     {/if}
   {/if}
@@ -89,3 +95,10 @@
     {/if}
   {/if}
 </Section>
+
+<style>
+  .link {
+    color: #03c744;
+    text-decoration: underline;
+  }
+</style>

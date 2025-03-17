@@ -939,6 +939,51 @@ class FilteredWords(TableModel):
             word TEXT NOT NULL
         )"""
     
+@dataclass
+class Post(TableModel):
+    id: int
+    title: str
+    is_public: bool
+    is_global: bool
+    creation_date: int
+    created_by: int | None
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS posts(
+            id INTEGER PRIMARY KEY,
+            title TEXT NOT NULL,
+            is_public BOOLEAN NOT NULL,
+            is_global BOOLEAN NOT NULL,
+            creation_date INTEGER NOT NULL,
+            created_by INTEGER REFERENCES players(id)
+        )"""
+    
+@dataclass
+class SeriesPost(TableModel):
+    series_id: int
+    post_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS series_posts(
+            series_id INTEGER NOT NULL REFERENCES tournament_series(id),
+            post_id INTEGER NOT NULL REFERENCES posts(id),
+            PRIMARY KEY (series_id, post_id)) WITHOUT ROWID"""
+    
+@dataclass
+class TournamentPost(TableModel):
+    tournament_id: int
+    post_id: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS tournament_posts(
+            tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
+            post_id INTEGER NOT NULL REFERENCES posts(id),
+            PRIMARY KEY (tournament_id, post_id)) WITHOUT ROWID"""
+
+    
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
@@ -948,4 +993,5 @@ all_tables : list[type[TableModel]] = [
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords]
+    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords,
+    Post, SeriesPost, TournamentPost]
