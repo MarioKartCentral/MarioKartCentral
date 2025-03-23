@@ -24,3 +24,7 @@ class SessionInfo:
     session_id: str
     persistent_session_id: str
     max_age: timedelta
+
+@dataclass
+class ConfirmEmailRequestData:
+    token_id: str

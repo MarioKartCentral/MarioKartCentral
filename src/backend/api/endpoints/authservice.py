@@ -82,6 +82,20 @@ async def log_out(request: Request) -> Response:
     resp.delete_cookie('session')
     return resp
 
+@require_logged_in
+async def send_confirmation_email(request: Request) -> Response:
+    command = SendEmailVerificationCommand(request.state.user.id, appsettings.MKC_EMAIL_ADDRESS,
+                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
+                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ConfirmEmailRequestData)
+async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSONResponse:
+    command = VerifyEmailCommand(body.token_id)
+    await handle(command)
+    return JSONResponse({})
+
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
     params = {
@@ -155,6 +169,8 @@ routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
     Route('/api/user/logout', log_out, methods=["POST"]),
+    Route('/api/user/send_confirmation_email', send_confirmation_email, methods=["POST"]),
+    Route('/api/user/confirm_email', confirm_email, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
