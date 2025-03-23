@@ -53,6 +53,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/registry/teams/mod/edit`,
     `/${locale}/registry/teams/mod/manage_rosters`,
     `/${locale}/registry/teams/transfers`,
+    `/${locale}/moderator/alt_detection`,
     `/${locale}/moderator/approve_player_names`,
     `/${locale}/moderator/approve_teams`,
     `/${locale}/moderator/approve_team_edits`,

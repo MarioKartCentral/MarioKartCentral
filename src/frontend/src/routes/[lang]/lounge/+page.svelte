@@ -14,7 +14,7 @@
   <h1>{$LL.LOUNGE.LOUNGE()}</h1>
   <h2>{$LL.GAMES.MK8DX()}</h2>
   <GameBadge game="mk8dx" />
-  <Section header={'MK8DX 150cc Lounge'}>
+  <Section header={'150cc Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={Logo150Animated} alt="150cc Lounge" />
       <div class="flex flex-col justify-start">
@@ -30,7 +30,7 @@
     </div>
   </Section>
 
-  <Section header={'MK8DX 200cc Lounge'}>
+  <Section header={'200cc Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
       <div class="flex flex-col justify-start">
@@ -48,7 +48,7 @@
 
   <h2>{$LL.GAMES.MKT()}</h2>
   <GameBadge game="mkt" />
-  <Section header={'MKTC Lounge'}>
+  <Section header={'Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={LogoMKTC} alt="MKTC Lounge" />
       <div class="flex flex-col justify-start">
@@ -66,7 +66,7 @@
 
   <h2>{$LL.GAMES.MKW()}</h2>
   <GameBadge game="mkw" />
-  <Section header={'MKW Lounge'}>
+  <Section header={'Lounge'}>
     <div class="flex flex-row">
       <img class="w-32 h-32" src={LogoMKW} alt="MKW Lounge" />
       <div class="flex flex-col justify-start">
