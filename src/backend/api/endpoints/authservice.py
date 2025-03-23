@@ -96,6 +96,29 @@ async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSON
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(ForgotPasswordRequestData)
+async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
+    command = SendPasswordResetEmailCommand(body.email, appsettings.MKC_EMAIL_ADDRESS,
+                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
+                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ResetPasswordTokenRequestData)
+async def reset_password_with_token(request: Request, body: ResetPasswordTokenRequestData) -> JSONResponse:
+    new_password_hash = pw_hasher.hash(body.new_password)
+    command = ResetPasswordWithTokenCommand(body.token_id, new_password_hash)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(ResetPasswordRequestData)
+@require_logged_in
+async def reset_password(request: Request, body: ResetPasswordRequestData):
+    new_pw_hash = pw_hasher.hash(body.new_password)
+    command = ResetPasswordCommand(request.state.user.id, body.old_password, new_pw_hash)
+    await handle(command)
+    return JSONResponse({})
+
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
     params = {
@@ -171,6 +194,9 @@ routes = [
     Route('/api/user/logout', log_out, methods=["POST"]),
     Route('/api/user/send_confirmation_email', send_confirmation_email, methods=["POST"]),
     Route('/api/user/confirm_email', confirm_email, methods=["POST"]),
+    Route('/api/user/forgot_password', forgot_password, methods=["POST"]),
+    Route('/api/user/reset_password_token', reset_password_with_token, methods=["POST"]),
+    Route('/api/user/reset_password', reset_password, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
