@@ -93,7 +93,7 @@ const fr: Translation = {
     DELETE_DATA_CONFIRM: 'Êtes-vous sûr de vouloir supprimer votre compte Discord de Mariokart Central ?',
     DELETE_DATA_ERROR: 'Une erreur est survenue lors de la suppression de votre compte Discord de Mariokart Central.',
     SYNC_AVATAR: "Synchroniser l'avatar",
-    SYNC_AVATAR_ERROR: "La synchronisation de l'avatar Discord a échoué"
+    SYNC_AVATAR_ERROR: "La synchronisation de l'avatar Discord a échoué",
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Code ami',

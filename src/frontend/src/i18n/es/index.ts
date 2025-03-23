@@ -93,7 +93,7 @@ const es: Translation = {
     DELETE_DATA_CONFIRM: 'Are you sure you would like to delete your Discord data?',
     DELETE_DATA_ERROR: 'An error occurred while deleting Discord data',
     SYNC_AVATAR: 'Sync Avatar',
-    SYNC_AVATAR_ERROR: 'Failed to sync Discord avatar'
+    SYNC_AVATAR_ERROR: 'Failed to sync Discord avatar',
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Friend Code',
