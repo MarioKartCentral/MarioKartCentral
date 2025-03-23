@@ -1,9 +1,7 @@
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
-import secrets
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route
+from starlette.background import BackgroundTask
 from oauthlib.oauth2 import WebApplicationClient
 from api.auth import require_logged_in, require_permission
 from api.data import handle
@@ -13,11 +11,6 @@ from common.auth import pw_hasher, permissions
 from common.data.commands import *
 from common.data.models import *
 from urllib.parse import urlparse
-
-@dataclass
-class LoginRequestData:
-    email: str
-    password: str
 
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
@@ -38,20 +31,23 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
                                                      mkc_user.user_roles, mkc_user.series_roles,
                                                      mkc_user.team_roles))
 
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
+    persistent_session_id = request.cookies.get('persistentSession', None)
+    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
+    if not ip_address:
+        ip_address = request.client.host if request.client else None
+    session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
-    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    async def log_ip_fingerprint():
+        if appsettings.ENABLE_IP_LOGGING:
+            await handle(LogUserIPCommand(user.id, ip_address))
+        await handle(LogFingerprintCommand(body.fingerprint))
+        
 
-    resp = JSONResponse({}, status_code=200)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    resp = JSONResponse({}, status_code=200, background=BackgroundTask(log_ip_fingerprint))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    if not persistent_session_id:
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
     return resp
-
-@dataclass
-class SignupRequestData:
-    email: str
-    password: str
 
 @bind_request_body(SignupRequestData)
 async def sign_up(request: Request, body: SignupRequestData) -> Response:
@@ -61,14 +57,21 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
     await handle(CreateUserSettingsCommand(user.id))
 
     # login user after registering
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
+    persistent_session_id = request.cookies.get('persistentSession', None)
+    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
+    if not ip_address:
+        ip_address = request.client.host if request.client else None
+    session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
-    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    async def log_ip_fingerprint():
+        if appsettings.ENABLE_IP_LOGGING:
+            await handle(LogUserIPCommand(user.id, ip_address))
+        await handle(LogFingerprintCommand(body.fingerprint))
 
-    resp = JSONResponse(user, status_code=201)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    resp = JSONResponse(user, status_code=201, background=BackgroundTask(log_ip_fingerprint))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    if not persistent_session_id:
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
     return resp
 
 @require_logged_in
