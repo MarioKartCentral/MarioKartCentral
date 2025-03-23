@@ -90,7 +90,19 @@ services:
       - mkc-db:/data
     ports:
       - 7000:8080
-      
+  mailpit:
+    image: axllent/mailpit
+    volumes:
+      - mkc-email:/data
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 volumes:
   mkc-db:
   mkc-s3:
+  mkc-email:
