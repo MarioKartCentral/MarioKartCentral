@@ -78,6 +78,9 @@ const ja: Translation = {
     BAGGER: 'Bagger',
     LANGUAGE: '言語',
     NO_PERMISSION: 'このページを閲覧する権限がありません。',
+    ORDINAL_SUFFIX: '{val|ordinalSuffix}',
+    DELETE: 'Delete',
+    NEW: 'New',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -118,6 +121,17 @@ const ja: Translation = {
     WELCOME: 'Welcome to Mario Kart Central!',
     SUMMARY:
       "マリオカートトーナメントのホームページです、 マリオカートトーナメントでは、カジュアルな大会から本格的な大会まで、あらゆるプレイヤーを対象としたトーナメントを開催しています！マリオカート8デラックスやツアーなど、様々な大会を毎週開催しています！",
+    YOU_PLACED: 'You placed: {placement|ordinalSuffix}', // TODO: if possible, update the file formatters.ts and implement ordinalSuffixJa()
+    LATEST_RESULTS: '最新結果',
+    VIEW_FULL_PLACEMENTS: 'View Full Placements',
+    LATEST_TOURNAMENTS: '最新トーナメント',
+    VIEW_ALL_TOURNAMENTS: 'View All Tournaments',
+    NEWEST_PLAYERS: '新規プレイヤー',
+    VIEW_ALL_PLAYERS: 'View All Players',
+    NEWEST_TEAMS: '新規チーム',
+    VIEW_ALL_TEAMS: 'View All Teams',
+    RECENT_TRANSACTIONS: 'Recent Transactions',
+    MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
   },
   INVITES: {
     TEAM_INVITES: 'チーム招待',
@@ -162,6 +176,8 @@ const ja: Translation = {
   MODERATOR: {
     MODERATOR: 'Moderator',
     PENDING_NAME_REQUESTS: '名前変更申請',
+    APPROVED_NAME_REQUESTS: 'Approved Player Name Requests',
+    DENIED_NAME_REQUESTS: 'Denied Player Name Requests',
     APPROVE: 'Approve?',
     DENY: 'Deny',
     NO_PENDING_NAME_REQUESTS: 'No pending name requests.',
@@ -170,9 +186,15 @@ const ja: Translation = {
     APPROVE_NAME_REQUEST_FAILED: '名前変更申請の承認に失敗しました',
     DENY_NAME_REQUEST_FAILED: '名前変更申請の否認に失敗しました',
     PENDING_TEAM_EDIT_REQUESTS: 'チーム編集申請',
+    APPROVED_TEAM_EDIT_REQUESTS: 'Approved Team Edit Requests',
+    DENIED_TEAM_EDIT_REQUESTS: 'Denied Team Edit Requests',
     NO_PENDING_TEAM_EDIT_REQUESTS: 'No pending team edit requests.',
+    TEAM_EDIT_COUNT: '{count} team {{edit|edits}}', //TODO: change edit/edits
     PENDING_ROSTER_EDIT_REQUESTS: 'Pending Roster Edit Requests',
-    NO_PENDING_ROSTER_EDIT_REQUESTS: 'No pending roster edit requests.',
+    APPROVED_ROSTER_EDIT_REQUESTS: 'Approved Roster Edit Requests',
+    DENIED_ROSTER_EDIT_REQUESTS: 'Denied Roster Edit Requests',
+    NO_ROSTER_EDIT_REQUESTS: 'No roster edit requests.',
+    ROSTER_EDIT_COUNT: '{count} roster {{edit|edits}}', //TODO: change edit/edits
     APPROVE_TEAM_EDIT_CONFIRM: 'このチーム編集申請を承認してもよろしいですか？',
     DENY_TEAM_EDIT_CONFIRM: 'このチーム編集申請を否認してもよろしいですか？',
     APPROVE_TEAM_EDIT_FAILED: 'チーム編集申請の承認に失敗しました',
@@ -272,6 +294,22 @@ const ja: Translation = {
     NOTIFICATIONS: '通知',
     MODERATOR: 'モデレーター',
     LOGIN_REGISTER: 'ログイン/プレイヤー登録',
+    ACCOUNT: 'Account',
+    MOD_PANEL: {
+      APPROVE_TEAMS: 'Approve Teams',
+      TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
+      APPROVE_TRANSFERS: 'Approve Transfers',
+      USER_ROLES: 'User Roles',
+      PLAYER_BANS: 'Player Bans',
+      PLAYER_NAME_CHANGES: 'Player Name Changes',
+      SHADOW_PLAYERS: 'Shadow Players',
+      PLAYER_CLAIMS: 'Player Claims',
+      MERGE_PLAYERS: 'Merge Players',
+      MERGE_TEAMS: 'Merge Teams',
+      FRIEND_CODE_CHANGES: 'Friend Code Changes',
+      WORD_FILTER: 'Word Filter',
+      MANAGE_USERS: 'Manage Users',
+    },
   },
   NOTIFICATION: {
     MARK_ALL_READ: 'すべて既読にする',
@@ -305,8 +343,8 @@ const ja: Translation = {
     '19': '{team_name|bold}のチーム名/タグの変更が承認されませんでした',
     '20': '{roster_name|bold}のチーム名/タグの変更が承認されました！',
     '21': '{roster_name|bold}のチーム名/タグの変更が承認されませんでした',
-    '22': 'モデレーターがあなたのプロフィールにフレンドコードを追加しました。 Game: {game|uppercase|bold}.',
-    '23': 'モデレーターがあなたのフレンドコードを変更しました。{game|uppercase|bold}',
+    '22': 'モデレーターがあなたのプロフィールにフレンドコードを追加しました。 Game: {type|uppercase|bold}',
+    '23': 'モデレーターがあなたのフレンドコードを変更しました。{type|uppercase|bold}',
     '24': 'モデレーターがあなたのメインフレンドコードを設定しました。',
     '25': '名前の変更が承認されました！',
     '26': '名前の変更が承認されませんでした',
@@ -616,6 +654,7 @@ const ja: Translation = {
       ELIGIBLE: 'Eligible?',
       REGISTRATION_DATE: '登録日',
       ADD_PLAYER: 'プレイヤー追加',
+      ADD_PLAYER_TO_SQUAD: 'スクワッド追加',
       REMOVE: '取消',
       UNREGISTER_SQUAD_CONFIRM: 'この大会からこのチームを登録取消してよろしいですか？',
       UNREGISTER_SQUAD_FAILED: '登録取消に失敗しました',
@@ -707,6 +746,13 @@ const ja: Translation = {
       MANUALLY_REGISTER_SQUAD: '手動でスクワット登録',
       MANUAL_REGISTRATION_SUCCESS: 'プレイヤーの大会登録に成功しました',
       MANUAL_REGISTRATION_FAILED: 'プレイヤーの大会登録に失敗しました',
+      MANAGE_ROSTERS: 'Manage Rosters',
+      ADD_ROSTER: 'Add Roster',
+      SELECT_A_ROSTER: 'Select a Roster...',
+      ADD_ROSTER_CONFIRM: 'Are you sure you want to add the roster {roster_name} to this squad?',
+      REMOVE_ROSTER_CONFIRM: 'Are you sure you want to remove the roster {roster_name} from this squad?',
+      ADD_ROSTER_FAILED: 'Failed to add roster',
+      REMOVE_ROSTER_FAILED: 'Failed to remove roster',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'テンプレート選択',
@@ -779,6 +825,13 @@ const ja: Translation = {
       SWITCH_TO_INTERACTIVE_INPUT: 'Switch to interactive input',
       RAW_INPUT_INSTRUCTIONS:
       '各行に大会登録IDと大会順位を半角空白区切りで入力してください。辞退者については順位の代わりに"DQ"と入力してください。コメントを追加したい場合は順位の後に半角空白を空けて入力してください。',
+      RAW_INPUT_PLAYER_ID: 'Raw input (player IDs)',
+      RAW_INPUT_PLAYER_ID_INSTRUCTIONS:
+        'On each line, enter the player IDs for each player in each squad, followed by their rank, separated by a space. For disqualified participants, enter DQ in place of the rank. This input does not support placement titles, you can use the interactive input to add them in after saving here.',
+      RAW_INPUT_PLAYER_ID_WARNING:
+        '警告：このページで「保存」をクリックすると、現在登録されているすべてのスクワッドが削除され、このボックスの入力に基づいて新しいスクワッドが作成されます。使用目的が明確でない限り、これを使用しないでください。',
+      RAW_INPUT_PLAYER_ID_CONFIRM:
+        '本当にプレースメントを保存しますか？これにより、現在登録されているすべてのスクワッドが削除されます。',
     },
     SERIES: {
       CREATE: '大会シリーズを作成する',
