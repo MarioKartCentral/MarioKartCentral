@@ -19,7 +19,8 @@ MERGE_PLAYERS = "player_merge"
 MERGE_TEAMS = "team_merge"
 MANAGE_WORD_FILTER = "word_filter_manage"
 EDIT_USER = "user_edit"
-IMPORT_V1_DATA = "import_v1_data"
+IMPORT_V1_DATA = 'import_v1_data'
+MANAGE_POSTS = "post_manage"
 VIEW_ALT_FLAGS = "alt_flag_view"
 
 permissions_by_id: dict[int, str] = {
@@ -64,6 +65,10 @@ permissions_by_id: dict[int, str] = {
     38: EDIT_USER,
     39: IMPORT_V1_DATA,
     40: VIEW_ALT_FLAGS,
+    41: MANAGE_POSTS,
+    42: series_permissions.MANAGE_SERIES_POSTS,
+    43: tournament_permissions.MANAGE_TOURNAMENT_POSTS,
+    
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }
