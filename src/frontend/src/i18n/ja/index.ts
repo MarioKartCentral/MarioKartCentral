@@ -64,7 +64,7 @@ const ja: Translation = {
     NO: 'No',
     SHOW: 'Show',
     HIDE: 'Hide',
-   HIDE_BUTTON: '(hide)',
+    HIDE_BUTTON: '(hide)',
     SHOW_BUTTON: '(show)',
     BACK: 'Back',
     ACTIONS: 'Actions',
