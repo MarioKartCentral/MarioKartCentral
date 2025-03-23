@@ -24,6 +24,15 @@ class Problem(Exception):
     status: int = 500
     data: dict[str, Any] | None = None
 
+    def __str__(self) -> str:
+        s = f"{self.title} (HTTP {self.status})"
+        if self.detail:
+            s += f"\n{self.detail}"
+        if self.data:
+            for k, v in self.data.items():
+                s += f"\n{k}: {v}"
+        return s
+
 
 Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt", "smk"]
 GameMode = Literal[

@@ -11,6 +11,7 @@ COMMAND_LOG_BUCKET = "mkc-commandlog"
 MKCV1_BUCKET = "mkc-v1data"
 POST_BUCKET = "mkc-posts"
 FINGERPRINT_BUCKET = "mkc-fingerprints"
+IMAGE_BUCKET = "mkc-img"
 
 @dataclass
 class S3Wrapper:

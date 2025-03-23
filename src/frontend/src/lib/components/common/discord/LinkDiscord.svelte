@@ -25,8 +25,7 @@
     });
 
     async function linkDiscord() {
-        let url = `/api/user/link_discord?page_url=${encodeURIComponent(window.location.href)}`;
-        window.location.replace(url);
+        window.location.assign("/api/user/link_discord");
     }
 
     async function refreshDiscordData() {
@@ -58,6 +57,21 @@
             alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
         }
     }
+
+    async function syncDiscordAvatar() {
+        const endpoint = '/api/user/sync_discord_avatar';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const result = await response.json();
+        if (response.status === 200) {
+            window.location.reload(); // Refresh to show updated avatar
+        } else {
+            alert(`${$LL.DISCORD.SYNC_AVATAR_ERROR()}: ${result['title']}`);
+        }
+    }
+
 </script>
 
 {#if user_info.id === null}
@@ -83,6 +97,11 @@
                             {$LL.DISCORD.REFRESH()}
                         </Button>
                     </div>
+                    <div class="disc_button">
+                        <Button size="xs" extra_classes="w-32" on:click={syncDiscordAvatar}>
+                            {$LL.DISCORD.SYNC_AVATAR()}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -96,7 +115,7 @@
         flex-wrap: wrap;
     }
     div.buttons {
-        max-width: 500px;
+        max-width: 600px;
     }
     div.section {
         margin: 5px 10px;

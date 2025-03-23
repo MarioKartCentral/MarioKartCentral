@@ -97,11 +97,6 @@
   {#if player.user_settings}
     <form method="post" on:submit|preventDefault={user_info.player?.id === player.id ? editProfile : forceEditProfile}>
       <div>
-        <label for="avatar_url">{$LL.PLAYERS.PROFILE.AVATAR_URL()}</label>
-        <br />
-        <input name="avatar_url" type="text" value={player.user_settings?.avatar ? player.user_settings.avatar : ''} />
-      </div>
-      <div>
         <label for="about_me">{$LL.PLAYERS.PROFILE.ABOUT_ME()}</label>
         <br />
         <textarea name="about_me">{player.user_settings?.about_me ? player.user_settings.about_me : ''}</textarea>
