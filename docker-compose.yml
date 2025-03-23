@@ -18,6 +18,7 @@ services:
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
       DISCORD_OAUTH_CALLBACK : http://localhost:5000/api/user/discord_callback
       ENABLE_DISCORD : ${ENABLE_DISCORD:-false}
+      ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
@@ -37,6 +38,7 @@ services:
       API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-1283454053937971304}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
+      ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
       PYTHONDONTWRITEBYTECODE : 1

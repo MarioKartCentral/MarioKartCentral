@@ -52,6 +52,7 @@
     color: white;
     border: none;
     outline: 0;
+    margin: auto;
   }
   dialog::backdrop {
     background: rgba(0, 0, 0, 0.5);
@@ -72,7 +73,8 @@
   }
   @media (min-width: 600px) {
     .container {
-      width: 400px;
+      min-width: 400px;
+      width: auto;
     }
   }
   .header {
@@ -82,6 +84,8 @@
   }
   .content {
     padding: 15px;
+    max-height: 500px;
+    overflow: auto;
   }
   .exit {
     position: absolute;
