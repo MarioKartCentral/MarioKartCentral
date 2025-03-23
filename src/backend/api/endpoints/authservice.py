@@ -105,7 +105,7 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
                 user_data.id, 
                 discord_auth_data, 
                 appsettings.DISCORD_CLIENT_ID, 
-                appsettings.DISCORD_CLIENT_SECRET, 
+                str(appsettings.DISCORD_CLIENT_SECRET), 
                 appsettings.ENV,
                 appsettings.DISCORD_OAUTH_CALLBACK 
             )
@@ -141,7 +141,7 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
 
 @require_logged_in
 async def delete_discord_data(request: Request) -> JSONResponse:
-    command = DeleteUserDiscordDataCommand(request.state.user.id, appsettings.DISCORD_CLIENT_ID, appsettings.DISCORD_CLIENT_SECRET)
+    command = DeleteUserDiscordDataCommand(request.state.user.id, appsettings.DISCORD_CLIENT_ID, str(appsettings.DISCORD_CLIENT_SECRET))
     await handle(command)
     return JSONResponse({})
 
@@ -160,5 +160,5 @@ routes = [
     Route('/api/user/my_discord', my_discord_data),
     Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
     Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
-    Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST'])
+    Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
 ]

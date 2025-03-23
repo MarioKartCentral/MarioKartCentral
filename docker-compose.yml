@@ -19,6 +19,11 @@ services:
       DISCORD_OAUTH_CALLBACK : http://localhost:5000/api/user/discord_callback
       ENABLE_DISCORD : ${ENABLE_DISCORD:-false}
       ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
+      MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
+      MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
+      MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
+      MKC_EMAIL_USERNAME: ${MKC_EMAIL_USERNAME:-admin}
+      MKC_EMAIL_PASSWORD: ${MKC_EMAIL_PASSWORD:-admin}
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
@@ -39,6 +44,11 @@ services:
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-1283454053937971304}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
       ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
+      MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
+      MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
+      MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
+      MKC_EMAIL_USERNAME: ${MKC_EMAIL_USERNAME:-admin}
+      MKC_EMAIL_PASSWORD: ${MKC_EMAIL_PASSWORD:-admin}
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
       PYTHONDONTWRITEBYTECODE : 1
