@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.auth import team_permissions
+from common.auth import team_permissions, permissions
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 from datetime import datetime, timezone
@@ -90,6 +90,19 @@ class GrantTeamRoleCommand(Command[None]):
                 row = await cursor.fetchone()
                 if row:
                     raise Problem(f"Player already has role {self.role}", status=400)
+                
+            # if player has create teams permission denied, don't let someone else grant them a team role either
+            async with db.execute("""
+                SELECT EXISTS (
+                    SELECT 1 FROM user_roles ur
+                    JOIN role_permissions rp ON ur.role_id = rp.role_id
+                    JOIN permissions p On rp.permission_id = p.id
+                    WHERE ur.user_id = ? AND p.name = ? AND rp.is_denied = 1
+                )""", (target_user_id, permissions.CREATE_TEAM)) as cursor:
+                row = await cursor.fetchone()
+                denied_team_perm = row is not None and bool(row[0])
+                if denied_team_perm:
+                    raise Problem("Player is not allowed to lead teams", status=401)
             
             # if we have the team_permissions.MANAGE_TEAM_ROLES global permission, bypass team role checks
             async with db.execute("""

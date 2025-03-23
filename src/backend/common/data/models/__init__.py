@@ -9,6 +9,7 @@ from .moderation import *
 from .notifications import *
 from .player_basic import *
 from .players import *
+from .posts import *
 from .roles import *
 from .squads import *
 from .teams import *

@@ -3,6 +3,8 @@
     import { page } from '$app/stores';
     import Button from './buttons/Button.svelte';
 
+    export let send_to: string | null = null;
+
     async function loginOrSignup(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         const data = new FormData(event.currentTarget);
         const { getFingerprint, getFingerprintData } = await import('@thumbmarkjs/thumbmarkjs');
@@ -28,6 +30,9 @@
             if(!isLogin) {
                 // don't use goto since we want to refresh the page state with logged in status
                 window.location.href = `/${$page.params.lang}/player-signup`;
+            }
+            else if(send_to !== null) {
+                window.location.href = send_to;
             }
             else {
                 window.location.reload();

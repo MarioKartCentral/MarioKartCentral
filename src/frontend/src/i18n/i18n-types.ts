@@ -517,6 +517,10 @@ type RootTranslation = {
 		 * M​o​r​e​ ​R​e​c​e​n​t​ ​T​r​a​n​s​a​c​t​i​o​n​s
 		 */
 		MORE_RECENT_TRANSACTIONS: string
+		/**
+		 * V​i​e​w​ ​a​l​l​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
+		 */
+		VIEW_ALL_ANNOUNCEMENTS: string
 	}
 	INVITES: {
 		/**
@@ -638,6 +642,10 @@ type RootTranslation = {
 		 * R​e​g​i​s​t​r​a​t​i​o​n​ ​F​a​i​l​e​d
 		 */
 		REGISTRATION_FAILED: string
+		/**
+		 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​l​o​g​g​e​d​ ​i​n​.
+		 */
+		ALREADY_LOGGED_IN: string
 	}
 	LOUNGE: {
 		/**
@@ -1237,6 +1245,10 @@ type RootTranslation = {
 		 * A​c​c​o​u​n​t
 		 */
 		ACCOUNT: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​s​e​t​ ​l​a​n​g​u​a​g​e
+		 */
+		SET_LANGUAGE_FAILED: string
 		MOD_PANEL: {
 			/**
 			 * A​p​p​r​o​v​e​ ​T​e​a​m​s
@@ -1986,6 +1998,69 @@ type RootTranslation = {
 		 * U​n​b​a​n​ ​D​a​t​e
 		 */
 		UNBAN_DATE: string
+	}
+	POSTS: {
+		/**
+		 * C​r​e​a​t​e​ ​P​o​s​t
+		 */
+		CREATE_POST: string
+		/**
+		 * E​d​i​t​ ​P​o​s​t
+		 */
+		EDIT_POST: string
+		/**
+		 * P​o​s​t​ ​T​i​t​l​e
+		 */
+		POST_TITLE: string
+		/**
+		 * V​i​s​i​b​i​l​i​t​y
+		 */
+		VISIBILITY: string
+		/**
+		 * P​u​b​l​i​c
+		 */
+		PUBLIC: string
+		/**
+		 * H​i​d​d​e​n
+		 */
+		HIDDEN: string
+		/**
+		 * C​o​n​t​e​n​t
+		 */
+		CONTENT: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​/​e​d​i​t​ ​p​o​s​t
+		 */
+		CREATE_EDIT_POST_FAILED: string
+		/**
+		 * {​c​o​u​n​t​}​ ​p​o​s​t​s
+		 * @param {number} count
+		 */
+		POST_COUNT: RequiredParams<'count'>
+		/**
+		 * A​n​n​o​u​n​c​e​m​e​n​t​s
+		 */
+		ANNOUNCEMENTS: string
+		/**
+		 * S​e​r​i​e​s​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
+		 */
+		SERIES_ANNOUNCEMENTS: string
+		/**
+		 * T​o​u​r​n​a​m​e​n​t​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
+		 */
+		TOURNAMENT_ANNOUNCEMENTS: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​H​o​m​e​p​a​g​e
+		 */
+		BACK_TO_HOMEPAGE: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
+		 */
+		BACK_TO_ANNOUNCEMENTS: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​P​o​s​t
+		 */
+		BACK_TO_POST: string
 	}
 	ROLES: {
 		/**
@@ -3026,6 +3101,14 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​r​e​m​o​v​e​ ​r​o​s​t​e​r
 			 */
 			REMOVE_ROSTER_FAILED: string
+			/**
+			 * S​i​g​n​ ​i​n​ ​o​r​ ​r​e​g​i​s​t​e​r​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
+			 */
+			SIGN_IN_REGISTER_TO_REGISTER: string
+			/**
+			 * P​l​e​a​s​e​ ​l​i​n​k​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​a​c​c​o​u​n​t​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
+			 */
+			LINK_DISCORD_TO_REGISTER: string
 		}
 		MANAGE: {
 			/**
@@ -4990,6 +5073,10 @@ export type TranslationFunctions = {
 		 * More Recent Transactions
 		 */
 		MORE_RECENT_TRANSACTIONS: () => LocalizedString
+		/**
+		 * View all Announcements
+		 */
+		VIEW_ALL_ANNOUNCEMENTS: () => LocalizedString
 	}
 	INVITES: {
 		/**
@@ -5108,6 +5195,10 @@ export type TranslationFunctions = {
 		 * Registration Failed
 		 */
 		REGISTRATION_FAILED: () => LocalizedString
+		/**
+		 * You are already logged in.
+		 */
+		ALREADY_LOGGED_IN: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
@@ -5696,6 +5787,10 @@ export type TranslationFunctions = {
 		 * Account
 		 */
 		ACCOUNT: () => LocalizedString
+		/**
+		 * Failed to set language
+		 */
+		SET_LANGUAGE_FAILED: () => LocalizedString
 		MOD_PANEL: {
 			/**
 			 * Approve Teams
@@ -6374,6 +6469,68 @@ export type TranslationFunctions = {
 		 * Unban Date
 		 */
 		UNBAN_DATE: () => LocalizedString
+	}
+	POSTS: {
+		/**
+		 * Create Post
+		 */
+		CREATE_POST: () => LocalizedString
+		/**
+		 * Edit Post
+		 */
+		EDIT_POST: () => LocalizedString
+		/**
+		 * Post Title
+		 */
+		POST_TITLE: () => LocalizedString
+		/**
+		 * Visibility
+		 */
+		VISIBILITY: () => LocalizedString
+		/**
+		 * Public
+		 */
+		PUBLIC: () => LocalizedString
+		/**
+		 * Hidden
+		 */
+		HIDDEN: () => LocalizedString
+		/**
+		 * Content
+		 */
+		CONTENT: () => LocalizedString
+		/**
+		 * Failed to create/edit post
+		 */
+		CREATE_EDIT_POST_FAILED: () => LocalizedString
+		/**
+		 * {count} posts
+		 */
+		POST_COUNT: (arg: { count: number }) => LocalizedString
+		/**
+		 * Announcements
+		 */
+		ANNOUNCEMENTS: () => LocalizedString
+		/**
+		 * Series Announcements
+		 */
+		SERIES_ANNOUNCEMENTS: () => LocalizedString
+		/**
+		 * Tournament Announcements
+		 */
+		TOURNAMENT_ANNOUNCEMENTS: () => LocalizedString
+		/**
+		 * Back to Homepage
+		 */
+		BACK_TO_HOMEPAGE: () => LocalizedString
+		/**
+		 * Back to Announcements
+		 */
+		BACK_TO_ANNOUNCEMENTS: () => LocalizedString
+		/**
+		 * Back to Post
+		 */
+		BACK_TO_POST: () => LocalizedString
 	}
 	ROLES: {
 		/**
@@ -7387,6 +7544,14 @@ export type TranslationFunctions = {
 			 * Failed to remove roster
 			 */
 			REMOVE_ROSTER_FAILED: () => LocalizedString
+			/**
+			 * Sign in or register to participate in tournaments on MKCentral.
+			 */
+			SIGN_IN_REGISTER_TO_REGISTER: () => LocalizedString
+			/**
+			 * Please link your Discord account to participate in tournaments on MKCentral.
+			 */
+			LINK_DISCORD_TO_REGISTER: () => LocalizedString
 		}
 		MANAGE: {
 			/**
