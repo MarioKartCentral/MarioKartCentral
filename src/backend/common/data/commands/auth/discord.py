@@ -1,9 +1,23 @@
 from datetime import timedelta, timezone
-from urllib.parse import urlparse
 import aiohttp
 import msgspec
 from common.data.commands import Command
 from common.data.models import *
+from common.data.s3 import IMAGE_BUCKET
+
+@dataclass
+class CreateFakeUserDiscordCommand(Command[None]):
+    user_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
+            await db.execute("""INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar,
+                                access_token, token_expires_on, refresh_token) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                                (self.user_id, 0, "test_user", 0,
+                                None, None, "access_token", 0,
+                                "refresh_token"))
+            await db.commit()
 
 @dataclass
 class LinkUserDiscordCommand(Command[None]):
@@ -11,28 +25,14 @@ class LinkUserDiscordCommand(Command[None]):
     data: DiscordAuthCallbackData
     discord_client_id: str
     discord_client_secret: str
-    environment: str | None
+    enable: str | None
+    discord_oauth_callback: str
 
     async def handle(self, db_wrapper, s3_wrapper):
-        # If we're in a dev environment, we don't want to require everyone to have a client secret just to use the discord functionality.
-        # Therefore, just make a fake user so we don't have to make any requests to the Discord API.
-        if self.environment == "Development":
-            async with db_wrapper.connect() as db:
-                await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
-                await db.execute("""INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar,
-                                    access_token, token_expires_on, refresh_token) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                                    (self.user_id, 0, "test_user", 0,
-                                    None, None, "access_token", 0,
-                                    "refresh_token"))
-                await db.commit()
-                return
-        # get the base URL to figure out the redirect URI
-        base_url = urlparse(self.data.state)._replace(path='', params='', query='').geturl()
-        redirect_uri = f'{base_url}/api/user/discord_callback'
         code = self.data.code
         body = {
             "code": code,
-            "redirect_uri": redirect_uri,
+            "redirect_uri": self.discord_oauth_callback,  # Use the full redirect URI directly
             "grant_type": 'authorization_code'
         }
         headers = {
@@ -43,16 +43,16 @@ class LinkUserDiscordCommand(Command[None]):
             async with session.post(f'{base_url}/oauth2/token', data=body, headers=headers, auth=aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)) as resp:
                 if int(resp.status/100) != 2:
                     raise Problem(f"Discord returned an error code while trying to authenticate: {resp.status}") 
-                r = await resp.json()
-                token_resp = msgspec.convert(r, type=DiscordAccessTokenResponse)
+                resp_bytes = await resp.content.read()
+                token_resp = msgspec.json.decode(resp_bytes, type=DiscordAccessTokenResponse)
             headers = {
                 'authorization': f'{token_resp.token_type} {token_resp.access_token}'
             }
             async with session.get(f'{base_url}/users/@me', headers=headers) as resp:
                 if int(resp.status/100) != 2:
                     raise Problem(f"Discord returned an error code while fetching user data: {resp.status}") 
-                r = await resp.json()
-                discord_user = msgspec.convert(r, type=DiscordUser)
+                resp_bytes = await resp.content.read()
+                discord_user = msgspec.json.decode(resp_bytes, type=DiscordUser)
         expires_in = timedelta(seconds=token_resp.expires_in)
         expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
         async with db_wrapper.connect() as db:
@@ -104,8 +104,8 @@ class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
                         raise Problem("Token is expired, please relink Discord account", status=400)
                     if int(resp.status/100) != 2:
                         raise Problem(f"Discord returned an error code while fetching user data: {resp.status}") 
-                    r = await resp.json()
-                    discord_user = msgspec.convert(r, type=DiscordUser)
+                    resp_bytes = await resp.content.read()
+                    discord_user = msgspec.json.decode(resp_bytes, type=DiscordUser)
                     await db.execute("UPDATE user_discords SET discord_id = ?, username = ?, discriminator = ?, global_name = ?, avatar = ? WHERE user_id = ?",
                                     (discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar,
                                      self.user_id))
@@ -180,8 +180,8 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
                     # if we don't get a 200 response, just ignore this token and move on to prevent errors
                     if int(resp.status/100) != 2:
                         continue
-                    r = await resp.json()
-                    token_resp = msgspec.convert(r, type=DiscordAccessTokenResponse)
+                    resp_bytes = await resp.content.read()
+                    token_resp = msgspec.json.decode(resp_bytes, type=DiscordAccessTokenResponse)
                     expires_in = timedelta(seconds=token_resp.expires_in)
                     expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
                     params = (token_resp.access_token, expires_on, token_resp.refresh_token, user_id)
@@ -220,7 +220,7 @@ class SyncDiscordAvatarCommand(Command[str | None]):
                 # Upload to S3
                 filename = f"avatars/{discord_id}_{avatar}.png"
                 await s3_wrapper.put_object(
-                    bucket_name="mkc-img", 
+                    bucket_name=IMAGE_BUCKET, 
                     key=filename, 
                     body=image_data,
                     acl="public-read"

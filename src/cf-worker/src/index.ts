@@ -13,6 +13,9 @@ export interface Env {
   S3_REGION: string;
   S3_BUCKET: string;
   S3_FOLDER: string;
+  S3_HOST: string;
+  S3_PORT: string | undefined;
+  S3_PROTOCOL: string;
 }
 
 const validLanguages : {[key: string]: boolean} = {
@@ -174,13 +177,16 @@ async function fetchFrontendFromS3(url: URL, env: Env) {
 
 async function fetchFrontend(request: Request, env: Env) {
   const url = new URL(request.url);
-  url.host = env.FRONTEND_HOST;
-  url.port = env.FRONTEND_PORT || "";
 
   let response : Response;
   if (env.FRONTEND_USE_S3) {
+    url.protocol = env.S3_PROTOCOL;
+    url.host = env.S3_HOST;
+    url.port = env.S3_PORT || "";
     response = await fetchFrontendFromS3(url, env);
   } else {
+    url.host = env.FRONTEND_HOST;
+    url.port = env.FRONTEND_PORT || "";
     response = await fetch(new Request(url.toString(), request));
   }
 
@@ -239,10 +245,12 @@ async function handleFrontend(request: Request, env: Env) {
 }
 
 async function fetchFromImageBucket(url: URL, env: Env) {
-  url.protocol = "https";
+  url.protocol = env.S3_PROTOCOL;
+  url.host = env.S3_HOST;
+  url.port = env.S3_PORT || "";
   // Strip /img/ prefix and use remaining path for S3 key
   const key = url.pathname.substring(5); // length of "/img/"
-  url.pathname = `/mkc-img${key}`;
+  url.pathname = `/mkc-img/${key}`;
   
   const aws = new AwsClient({
     accessKeyId: env.S3_ACCESS_KEY,
@@ -250,6 +258,8 @@ async function fetchFromImageBucket(url: URL, env: Env) {
     service: "s3",
     region: env.S3_REGION
   });
+
+  console.log(`Fetching image from S3: ${url.toString()}`);
   
   return await aws.fetch(url);
 }

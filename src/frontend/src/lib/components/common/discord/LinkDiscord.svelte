@@ -25,8 +25,7 @@
     });
 
     async function linkDiscord() {
-        let url = `/api/user/link_discord?page_url=${encodeURIComponent(window.location.href)}`;
-        window.location.replace(url);
+        window.location.assign("/api/user/link_discord");
     }
 
     async function refreshDiscordData() {
@@ -98,13 +97,11 @@
                             {$LL.DISCORD.REFRESH()}
                         </Button>
                     </div>
-                    {#if linked_account.avatar}
                     <div class="disc_button">
                         <Button size="xs" extra_classes="w-32" on:click={syncDiscordAvatar}>
                             {$LL.DISCORD.SYNC_AVATAR()}
                         </Button>
                     </div>
-                    {/if}
                 </div>
             </div>
         </div>
@@ -118,7 +115,7 @@
         flex-wrap: wrap;
     }
     div.buttons {
-        max-width: 500px;
+        max-width: 600px;
     }
     div.section {
         margin: 5px 10px;

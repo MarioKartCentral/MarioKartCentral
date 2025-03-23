@@ -10,6 +10,11 @@ SWAGGER_PORT = "8080"
 FRONTEND_USE_S3 = false
 FRONTEND_HOST = "frontend"
 FRONTEND_PORT = "8001"
+S3_PROTOCOL = "http"
+S3_HOST = "s3-emulator"
+S3_PORT = "9000"
+S3_ACCESS_KEY = "admin"
+S3_SECRET_KEY = "mkcadmin123"
 
 [env.production]
 name = "cf-worker"
@@ -18,8 +23,9 @@ name = "cf-worker"
 API_HOST = "mkc-api.vps.mariokartcentral-beta.com"
 API_PORT = ""
 FRONTEND_USE_S3 = true
-FRONTEND_HOST = "s3.us-west-1.wasabisys.com"
-FRONTEND_PORT = ""
+S3_PROTOCOL = "https"
+S3_HOST = "s3.us-west-1.wasabisys.com"
+S3_PORT = ""
 # S3_ACCESS_KEY = ""
 # S3_SECRET_KEY = ""
 S3_REGION = "us-west-1"
