@@ -131,7 +131,7 @@ const ja: Translation = {
   HOMEPAGE: {
     WELCOME: 'Welcome to Mario Kart Central!',
     SUMMARY:
-      "マリオカートトーナメントのホームページです、 マリオカートトーナメントでは、カジュアルな大会から本格的な大会まで、あらゆるプレイヤーを対象としたトーナメントを開催しています！マリオカート8デラックスやツアーなど、様々な大会を毎週開催しています！",
+      'マリオカートトーナメントのホームページです、 マリオカートトーナメントでは、カジュアルな大会から本格的な大会まで、あらゆるプレイヤーを対象としたトーナメントを開催しています！マリオカート8デラックスやツアーなど、様々な大会を毎週開催しています！',
     YOU_PLACED: 'You placed: {placement|ordinalSuffix}', // TODO: if possible, update the file formatters.ts and implement ordinalSuffixJa()
     LATEST_RESULTS: '最新結果',
     VIEW_FULL_PLACEMENTS: 'View Full Placements',
@@ -249,13 +249,12 @@ const ja: Translation = {
     MERGE_PLAYERS: 'Merge Players',
     SELECT_UNIQUE_PLAYERS: '異なるプレイヤーを二人選択してください',
     MERGE_PLAYERS_CONFIRM:
-      "{old_player}のデータをすべて{new_player}にマージしますか？ {old_player}は完全に削除されます",
+      '{old_player}のデータをすべて{new_player}にマージしますか？ {old_player}は完全に削除されます',
     MERGE_PLAYERS_SUCCESS: 'プレイヤーのマージに成功しました',
     MERGE_PLAYERS_FAILED: 'プレイヤーのマージに失敗しました',
     MERGE_TEAMS: 'Merge Teams',
     SELECT_UNIQUE_TEAMS: '異なるプレイヤーを二つ選択してください',
-    MERGE_TEAMS_CONFIRM:
-      "{old_team}のデータをすべて{new_team}にマージしますか？ {old_team}は完全に削除されます",
+    MERGE_TEAMS_CONFIRM: '{old_team}のデータをすべて{new_team}にマージしますか？ {old_team}は完全に削除されます',
     MERGE_TEAMS_SUCCESS: 'チームのマージに成功しました',
     MERGE_TEAMS_FAILED: 'チームのマージに失敗しました',
     OLD_TEAM: 'Old Team',
@@ -581,8 +580,7 @@ const ja: Translation = {
       ROSTER_TAG: 'Roster Tag',
       REQUEST_CHANGE_IN: 'チーム名/チームタグは {days} 日後に変更可能です。',
       NAME_TAG_CHANGE_PENDING: 'チーム名/チームタグの変更はMKCentralスタッフの承認待ちです:',
-      NAME_TAG_CHANGE_SUCCESS:
-        "チーム名/チームタグの変更リクエストがMKCentralスタッフに送信されました。",
+      NAME_TAG_CHANGE_SUCCESS: 'チーム名/チームタグの変更リクエストがMKCentralスタッフに送信されました。',
       NAME_TAG_CHANGE_FAILURE: 'チーム名/チームタグの変更リクエストに失敗しました。',
       EDIT_TEAM_SUCCESS: 'チームの編集が完了しました。',
       EDIT_TEAM_FAILURE: 'チームの編集に失敗しました。',
@@ -667,7 +665,7 @@ const ja: Translation = {
   },
   TIME_TRIALS: {
     DESCRIPTION:
-      "このページは現在作成中ですが、最終的にはすべてのタイムアタックのデータを集める予定です。現在、プレイヤーは他のいくつかのサイトにあるリーダーボードでタイムアタックの記録を見ることができます。ここはマリオカートタイムアタックの一覧です。ここでは、マリオカート8 デラックス、マリオカート8、マリオカート7、マリオカートWiiの最新ランキングを、ありとあらゆるカテゴリーで見ることができます。タイムを投稿して、自分の順位を確認しよう！",
+      'このページは現在作成中ですが、最終的にはすべてのタイムアタックのデータを集める予定です。現在、プレイヤーは他のいくつかのサイトにあるリーダーボードでタイムアタックの記録を見ることができます。ここはマリオカートタイムアタックの一覧です。ここでは、マリオカート8 デラックス、マリオカート8、マリオカート7、マリオカートWiiの最新ランキングを、ありとあらゆるカテゴリーで見ることができます。タイムを投稿して、自分の順位を確認しよう！',
   },
   TOURNAMENTS: {
     CREATE_TOURNAMENT: 'トーナメントを作成する',
@@ -807,7 +805,7 @@ const ja: Translation = {
       SELECT_REPRESENTATIVES: '{min_representatives}のキャプテン/代表者を選択してください',
       SELECT_MORE_PLAYERS: 'この大会に登録するには{count}人以上の{{プレイヤー|プレイヤー}}が必要です', //TODO: update "player" / "players"
       SELECT_LESS_PLAYERS:
-        "この大会の最大スクワット人数は{max_squad_size}人です、最低でも{count}人のプレイヤーを削除してください",
+        'この大会の最大スクワット人数は{max_squad_size}人です、最低でも{count}人のプレイヤーを削除してください',
       ADD_PLAYER_SELECT: 'プレイヤー登録...',
       MANUALLY_REGISTER_PLAYER: '手動でプレイヤー登録',
       MANUALLY_REGISTER_SQUAD: '手動でスクワット登録',
@@ -855,7 +853,7 @@ const ja: Translation = {
       TEAMS_ONLY: 'チームのみ？ (変更不可)',
       TEAM_MEMBERS_ONLY: 'チームメンバーのみ？ (変更不可)',
       MIN_REPRESENTATIVES: '# 必要な代表者数',
-      HOST_STATUS_REQUIRED: "ホストの有無 (変更不可)",
+      HOST_STATUS_REQUIRED: 'ホストの有無 (変更不可)',
       MII_NAME_REQUIRED: 'ゲーム/Mii名の有無 (変更不可)',
       REQUIRE_SINGLE_FC: '大会参加者にFCを1つ選ぶことを義務付ける (変更不可)',
       CHECKINS_ENABLED: 'チェックインを有効',
