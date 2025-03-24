@@ -140,3 +140,12 @@ class ResetPasswordCommand(Command[None]):
                     raise Problem("Old password is incorrect", status=401)
             await db.execute("UPDATE users SET password_hash = ?, force_password_reset = 0 WHERE id = ?", (self.new_password_hash, self.user_id))
             await db.commit()
+
+@dataclass
+class RemoveExpiredTokensCommand(Command[None]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            now = int(datetime.now(timezone.utc).timestamp())
+            await db.execute("DELETE FROM email_verifications WHERE expires_on < ?", (now,))
+            await db.execute("DELETE FROM password_resets WHERE expires_on < ?", (now,))
+            await db.commit()
