@@ -16,6 +16,11 @@ class UserAccountInfo(User):
     force_password_reset: bool
 
 @dataclass
+class UserLoginData(UserAccountInfo):
+    email: str
+    password_hash: str
+
+@dataclass
 class ModNotifications:
     pending_teams: int = 0
     pending_team_edits: int = 0
@@ -31,11 +36,6 @@ class UserPlayer(UserAccountInfo):
     series_roles: list[SeriesRole]
     tournament_roles: list[TournamentRole]
     mod_notifications: ModNotifications | None
-
-@dataclass
-class UserLoginData(UserAccountInfo):
-    email: str
-    password_hash: str
 
 @dataclass
 class PermissionsCheck:

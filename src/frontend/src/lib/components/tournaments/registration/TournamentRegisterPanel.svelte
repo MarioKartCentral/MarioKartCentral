@@ -41,13 +41,13 @@
 <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}>
   {#if user_info.id === null}
     <div class="link">
-      <a href="/{$page.params.lang}/login">
+      <a href="/{$page.params.lang}/user/login">
         Sign in or register to participate in tournaments on MKCentral.
       </a>
     </div>
   {:else if user_info.player === null}
     <div class="link">
-      <a href="/{$page.params.lang}/player-signup"
+      <a href="/{$page.params.lang}/user/player-signup"
         >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
       >
     </div>

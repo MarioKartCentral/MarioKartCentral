@@ -113,7 +113,9 @@ class ResetPasswordCommand(Command[None]):
                 if not row:
                     raise Problem("User not found", status=404)
                 correct_old_pw_hash = row[0]
-                if not pw_hasher.verify(correct_old_pw_hash, self.old_password):
+                try:
+                    pw_hasher.verify(correct_old_pw_hash, self.old_password)
+                except:
                     raise Problem("Old password is incorrect", status=401)
             await db.execute("UPDATE users SET password_hash = ?, force_password_reset = 0 WHERE id = ?", (self.new_password_hash, self.user_id))
             await db.commit()

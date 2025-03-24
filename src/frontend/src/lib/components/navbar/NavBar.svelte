@@ -90,7 +90,7 @@
           <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
         </Button>
         <Dropdown>
-          <DropdownItem href="/{$page.params.lang}/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
+          <DropdownItem href="/{$page.params.lang}/user/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else}

@@ -2,10 +2,14 @@
     import LL from '$i18n/i18n-svelte';
     import { page } from '$app/stores';
     import Button from './buttons/Button.svelte';
+    import type { UserAccountInfo } from '$lib/types/user-account-info';
 
     export let send_to: string | null = null;
 
+    let working = false; // used to prevent double clicking
+
     async function loginOrSignup(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const { getFingerprint, getFingerprintData } = await import('@thumbmarkjs/thumbmarkjs');
         const fingerprint = await getFingerprint();
@@ -25,11 +29,16 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
-
+        working = false;
         if (response.status < 300) {
+            const user: UserAccountInfo = await response.json();
+            if(user.force_password_reset) {
+                alert("You must reset your password before logging in. Check your email for a password reset link.");
+                return;
+            }
             if(!isLogin) {
                 // don't use goto since we want to refresh the page state with logged in status
-                window.location.href = `/${$page.params.lang}/player-signup`;
+                window.location.href = `/${$page.params.lang}/user/player-signup`;
             }
             else if(send_to !== null) {
                 window.location.href = send_to;
@@ -62,8 +71,8 @@
             </span>
             <input name="password" type="password" required/>
         </div>
-        <Button extra_classes="login-btn" type="submit">{$LL.NAVBAR.LOGIN()}</Button>
-        <Button extra_classes="register-btn" type="submit">{$LL.NAVBAR.REGISTER()}</Button>
+        <Button extra_classes="login-btn" type="submit" disabled={working}>{$LL.NAVBAR.LOGIN()}</Button>
+        <Button extra_classes="register-btn" type="submit" disabled={working}>{$LL.NAVBAR.REGISTER()}</Button>
     </form>
 </div>
 

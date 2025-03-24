@@ -7,7 +7,6 @@ const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 function getEntriesForLocale(locale) {
   return [
     `/${locale}`,
-    `/${locale}/login`,
     `/${locale}/tournaments/details`,
     `/${locale}/tournaments/create`,
     `/${locale}/tournaments/create/select_template`,
@@ -34,7 +33,6 @@ function getEntriesForLocale(locale) {
     `/${locale}/tournaments/templates`,
     `/${locale}/tournaments/templates/create`,
     `/${locale}/tournaments/templates/edit`,
-    `/${locale}/player-signup`,
     `/${locale}/posts`,
     `/${locale}/posts/create`,
     `/${locale}/posts/edit`,
@@ -68,7 +66,9 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/users`,
     `/${locale}/moderator/users/edit`,
     `/${locale}/moderator/word_filter`,
-    `/${locale}/notifications`,
+    `/${locale}/user/notifications`,
+    `/${locale}/user/login`,
+    `/${locale}/user/player-signup`,
   ];
 }
 

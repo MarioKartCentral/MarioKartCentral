@@ -16,8 +16,9 @@ from urllib.parse import urlencode
 async def log_in(request: Request, body: LoginRequestData) -> Response:
     user = await handle(GetUserDataFromEmailCommand(body.email))
     if user:
-        is_valid_password = pw_hasher.verify(user.password_hash, body.password)
-        if not is_valid_password:
+        try:
+            pw_hasher.verify(user.password_hash, body.password)
+        except:
             raise Problem("Invalid login details", status=401)
     else:
         # check MKC V1 data for the email/password combo if user can't be found in the database
@@ -30,7 +31,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
                                                      mkc_user.player_id, mkc_user.about_me,
                                                      mkc_user.user_roles, mkc_user.series_roles,
                                                      mkc_user.team_roles))
-        
+
     return_user = UserAccountInfo(user.id, user.player_id, user.email_confirmed, user.force_password_reset)
 
     # if the user is forced to reset their password, send them a password reset email but don't log them in.
@@ -194,7 +195,7 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
 
     # If they have not completed registration yet, redirect to registration page, otherwise edit profile page
     if not request.state.user.player_id:
-        redirect_path = "/player-signup"
+        redirect_path = "/user/player-signup"
     else:
         redirect_path = "/registry/players/edit-profile"
 
