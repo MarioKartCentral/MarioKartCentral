@@ -96,7 +96,7 @@
     {#if user_info.id !== null}
         You must be logged out to view this page.
     {:else if !working}
-        {#if token === null}
+        {#if token_expired || token === null}
             {#if token_expired}
                 <div class="option">
                     This password reset token is expired. You can request another password reset email with the form below.
