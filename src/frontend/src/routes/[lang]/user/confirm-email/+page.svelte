@@ -5,6 +5,7 @@
     import type { UserInfo } from '$lib/types/user-info';
     import { onMount } from "svelte";
     import { page } from "$app/stores";
+    import LL from "$i18n/i18n-svelte";
 
     let disable_button = false;
 
@@ -30,7 +31,7 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert("Successfully confirmed your email!");
+            alert($LL.LOGIN.EMAIL_CONFIRMATION_SUCCESS());
             if(user_info.player_id) {
                 window.location.href = `/${$page.params.lang}/`;
             }
@@ -39,7 +40,7 @@
             }
         }
         else {
-            alert(`Failed to confirm your email: ${result['title']}`);
+            alert(`${$LL.LOGIN.EMAIL_CONFIRMATION_FAILURE()}: ${result['title']}`);
         }
     });
 
@@ -52,34 +53,33 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert("Successfully sent confirmation email!");
+            alert($LL.LOGIN.SEND_CONFIRMATION_EMAIL_SUCCESS());
         }
         else {
-            alert(`Failed to send confirmation email: ${result['title']}`);
+            alert(`${$LL.LOGIN.SEND_CONFIRMATION_EMAIL_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
 
-<Section header="Confirm Email">
+<Section header={$LL.LOGIN.CONFIRM_EMAIL()}>
     {#if user_info.is_checked}
         {#if user_info.id === null}
             <div>
-                You are not logged in.
+                {$LL.COMMON.LOGIN_REQUIRED()}
             </div>
         {:else if user_info.email_confirmed}
             <div>
-                Your email is already confirmed.
+                {$LL.LOGIN.EMAIL_ALREADY_CONFIRMED()}
             </div>
         {:else}
             <div class="welcome section">
-                Welcome to Mario Kart Central!
+                {$LL.LOGIN.WELCOME_TO_MKC()}
             </div>
             <div class="section">
-                Before you can complete your player registration, you'll need to verify your email address. You should have received an email containing a link to confirm your email address; if you don't see the email, 
-                or the link has expired, you can click the button below to send another confirmation email.
+                {$LL.LOGIN.EMAIL_CONFIRMATION_REQUIRED()}
             </div>
             <div class="section">
-                <Button disabled={disable_button} on:click={send_confirmation_email}>Send confirmation email</Button>
+                <Button disabled={disable_button} on:click={send_confirmation_email}>{$LL.LOGIN.SEND_CONFIRMATION_EMAIL()}</Button>
             </div>
         {/if}
     {/if}

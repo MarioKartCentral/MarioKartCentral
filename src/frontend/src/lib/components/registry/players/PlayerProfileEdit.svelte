@@ -87,11 +87,11 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert("Successfully reset password!");
+            alert($LL.LOGIN.PASSWORD_RESET_SUCCESS());
             window.location.reload();
         }
         else {
-            alert(`Failed to reset password: ${result['title']}`);
+            alert(`${$LL.LOGIN.PASSWORD_RESET_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
@@ -115,7 +115,7 @@
     <Section header={$LL.DISCORD.DISCORD()}>
         <LinkDiscord/>
     </Section>
-    <Section header="Change Password">
+    <Section header={$LL.LOGIN.CHANGE_PASSWORD()}>
         <RegisterForm is_reset is_change bind:old_password={old_password} bind:password={new_password} on:submit={changePassword}/>
     </Section>
 {/if}

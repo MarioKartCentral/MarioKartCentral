@@ -94,7 +94,7 @@
             {#if user_info.email_confirmed}
               <DropdownItem href="/{$page.params.lang}/user/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
             {:else}
-              <DropdownItem href="/{$page.params.lang}/user/confirm-email">Confirm Email</DropdownItem>
+              <DropdownItem href="/{$page.params.lang}/user/confirm-email">{$LL.LOGIN.CONFIRM_EMAIL()}</DropdownItem>
             {/if}
             <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
           </Dropdown>

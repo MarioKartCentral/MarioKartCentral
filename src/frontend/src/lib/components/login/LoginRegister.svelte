@@ -3,27 +3,30 @@
     import { page } from '$app/stores';
     import Button from '$lib/components/common/buttons/Button.svelte';
     import type { UserAccountInfo } from '$lib/types/user-account-info';
+    import Tabs from '$lib/components/common/tabs/Tabs.svelte';
+    import TabItem from '$lib/components/common/tabs/TabItem.svelte';
+    import RegisterForm from './RegisterForm.svelte';
 
     export let send_to: string | null = null;
 
     let working = false; // used to prevent double clicking
 
-    async function loginOrSignup(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    let email = "";
+    let password = "";
+
+    async function loginOrSignup(isLogin: boolean) {
         working = true;
-        const data = new FormData(event.currentTarget);
         const { getFingerprint, getFingerprintData } = await import('@thumbmarkjs/thumbmarkjs');
         const fingerprint = await getFingerprint();
         const fingerprintData = await getFingerprintData();
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const payload = { 
-            email: data.get('email')!.toString(), 
-            password: data.get('password')!.toString(),
+            email: email, 
+            password: password,
             fingerprint: {hash: fingerprint, data: fingerprintData},
         };
 
-        const isLogin = event.submitter?.classList.contains('login-btn') ?? false;
         const endpoint = isLogin ? '/api/user/login' : '/api/user/signup';
-        console.log({ data, isLogin, endpoint });
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -33,7 +36,7 @@
         if (response.status < 300) {
             const user: UserAccountInfo = await response.json();
             if(user.force_password_reset) {
-                alert("You must reset your password before logging in. Check your email for a password reset link.");
+                alert($LL.LOGIN.PASSWORD_RESET_REQUIRED());
                 return;
             }
             if(!isLogin) {
@@ -57,35 +60,54 @@
     }
 </script>
 
-<div class="form">
-    <form method="post" on:submit|preventDefault={loginOrSignup}>
-        <div class="field">
-            <span class="item-label">
-                <label for="email">{$LL.LOGIN.EMAIL()}</label>
-            </span>
-            <input name="email" type="email" required/>
+<Tabs>
+    <TabItem open title="Login">
+        <div class="form">
+            <form method="post" on:submit|preventDefault={() => loginOrSignup(true)}>
+                <div class="option">
+                    <span class="item-label">
+                        <label for="email">{$LL.LOGIN.EMAIL()}</label>
+                    </span>
+                    <input name="email" type="email" required bind:value={email}/>
+                </div>
+                <div class="option">
+                    <span class="item-label">
+                        <label for="password">{$LL.LOGIN.PASSWORD()}</label>
+                    </span>
+                    <input name="password" type="password" required bind:value={password}/>
+                </div>
+                <div class="login-row">
+                    <Button extra_classes="login-btn" type="submit" disabled={working}>{$LL.NAVBAR.LOGIN()}</Button>
+                    <div>
+                        <a href="/{$page.params.lang}/user/reset-password">
+                            {$LL.LOGIN.FORGOT_PASSWORD()}
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="field">
-            <span class="item-label">
-                <label for="password">{$LL.LOGIN.PASSWORD()}</label>
-            </span>
-            <input name="password" type="password" required/>
-        </div>
-        <Button extra_classes="login-btn" type="submit" disabled={working}>{$LL.NAVBAR.LOGIN()}</Button>
-        <Button extra_classes="register-btn" type="submit" disabled={working}>{$LL.NAVBAR.REGISTER()}</Button>
-    </form>
-</div>
-
+    </TabItem>
+    <TabItem title="Register">
+        <RegisterForm bind:email={email} bind:password={password} on:submit={() => loginOrSignup(false)}/>
+    </TabItem>
+</Tabs>
 
 <style>
     div.form {
-        padding: 10px;
+        min-width: 400px;
     }
-    div.field {
-        margin-bottom: 5px;
+    div.option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    div.login-row {
+        display: flex;
+        gap: 20px;
+        align-items: center;
     }
     span.item-label {
         display: inline-block;
-        width: 100px;
+        width: 150px;
     }
 </style>

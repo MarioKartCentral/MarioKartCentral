@@ -298,6 +298,14 @@ type RootTranslation = {
 		 */
 		NO_PERMISSION: string
 		/**
+		 * Y​o​u​ ​m​u​s​t​ ​b​e​ ​l​o​g​g​e​d​ ​i​n​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+		 */
+		LOGIN_REQUIRED: string
+		/**
+		 * Y​o​u​ ​m​u​s​t​ ​b​e​ ​l​o​g​g​e​d​ ​o​u​t​ ​t​o​ ​v​i​e​w​ ​t​h​i​s​ ​p​a​g​e​.
+		 */
+		LOGOUT_REQUIRED: string
+		/**
 		 * {​v​a​l​|​o​r​d​i​n​a​l​S​u​f​f​i​x​}
 		 * @param {number} val
 		 */
@@ -635,6 +643,10 @@ type RootTranslation = {
 		 */
 		EMAIL: string
 		/**
+		 * E​m​a​i​l​ ​A​d​d​r​e​s​s
+		 */
+		EMAIL_ADDRESS: string
+		/**
 		 * P​a​s​s​w​o​r​d
 		 */
 		PASSWORD: string
@@ -654,6 +666,107 @@ type RootTranslation = {
 		 * Y​o​u​ ​a​r​e​ ​a​l​r​e​a​d​y​ ​l​o​g​g​e​d​ ​i​n​.
 		 */
 		ALREADY_LOGGED_IN: string
+		/**
+		 * Y​o​u​ ​m​u​s​t​ ​r​e​s​e​t​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​b​e​f​o​r​e​ ​l​o​g​g​i​n​g​ ​i​n​.​ ​C​h​e​c​k​ ​y​o​u​r​ ​e​m​a​i​l​ ​f​o​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​l​i​n​k​.
+		 */
+		PASSWORD_RESET_REQUIRED: string
+		/**
+		 * O​l​d​ ​P​a​s​s​w​o​r​d
+		 */
+		OLD_PASSWORD: string
+		/**
+		 * N​e​w​ ​P​a​s​s​w​o​r​d
+		 */
+		NEW_PASSWORD: string
+		/**
+		 * C​o​n​f​i​r​m​ ​P​a​s​s​w​o​r​d
+		 */
+		CONFIRM_PASSWORD: string
+		/**
+		 * P​a​s​s​w​o​r​d​ ​m​u​s​t​ ​b​e​ ​a​t​ ​l​e​a​s​t​ ​{​c​o​u​n​t​}​ ​c​h​a​r​a​c​t​e​r​s​!
+		 * @param {number} count
+		 */
+		PASSWORD_CHARACTER_WARNING: RequiredParams<'count'>
+		/**
+		 * P​a​s​s​w​o​r​d​s​ ​d​o​ ​n​o​t​ ​m​a​t​c​h​!
+		 */
+		PASSWORD_NO_MATCH: string
+		/**
+		 * C​h​a​n​g​e​ ​P​a​s​s​w​o​r​d
+		 */
+		CHANGE_PASSWORD: string
+		/**
+		 * R​e​s​e​t​ ​P​a​s​s​w​o​r​d
+		 */
+		RESET_PASSWORD: string
+		/**
+		 * R​e​g​i​s​t​e​r
+		 */
+		REGISTER: string
+		/**
+		 * C​o​n​f​i​r​m​ ​E​m​a​i​l
+		 */
+		CONFIRM_EMAIL: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​r​e​s​e​t​ ​p​a​s​s​w​o​r​d​!
+		 */
+		PASSWORD_RESET_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​r​e​s​e​t​ ​p​a​s​s​w​o​r​d
+		 */
+		PASSWORD_RESET_FAILURE: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​c​o​n​f​i​r​m​e​d​ ​y​o​u​r​ ​e​m​a​i​l​!
+		 */
+		EMAIL_CONFIRMATION_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​o​n​f​i​r​m​ ​y​o​u​r​ ​e​m​a​i​l
+		 */
+		EMAIL_CONFIRMATION_FAILURE: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​s​e​n​t​ ​c​o​n​f​i​r​m​a​t​i​o​n​ ​e​m​a​i​l​!
+		 */
+		SEND_CONFIRMATION_EMAIL_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​s​e​n​d​ ​c​o​n​f​i​r​m​a​t​i​o​n​ ​e​m​a​i​l
+		 */
+		SEND_CONFIRMATION_EMAIL_FAILURE: string
+		/**
+		 * Y​o​u​r​ ​e​m​a​i​l​ ​i​s​ ​a​l​r​e​a​d​y​ ​c​o​n​f​i​r​m​e​d​.
+		 */
+		EMAIL_ALREADY_CONFIRMED: string
+		/**
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 */
+		WELCOME_TO_MKC: string
+		/**
+		 * B​e​f​o​r​e​ ​y​o​u​ ​c​a​n​ ​c​o​m​p​l​e​t​e​ ​y​o​u​r​ ​p​l​a​y​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​,​ ​y​o​u​'​l​l​ ​n​e​e​d​ ​t​o​ ​v​e​r​i​f​y​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​.​ ​Y​o​u​ ​s​h​o​u​l​d​ ​h​a​v​e​ ​r​e​c​e​i​v​e​d​ ​a​n​ ​e​m​a​i​l​ ​c​o​n​t​a​i​n​i​n​g​ ​a​ ​l​i​n​k​ ​t​o​ ​c​o​n​f​i​r​m​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​;​ ​i​f​ ​y​o​u​ ​d​o​n​'​t​ ​s​e​e​ ​t​h​e​ ​e​m​a​i​l​,​ ​o​r​ ​t​h​e​ ​l​i​n​k​ ​h​a​s​ ​e​x​p​i​r​e​d​,​ ​y​o​u​ ​c​a​n​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​ ​t​o​ ​s​e​n​d​ ​a​n​o​t​h​e​r​ ​c​o​n​f​i​r​m​a​t​i​o​n​ ​e​m​a​i​l​.
+		 */
+		EMAIL_CONFIRMATION_REQUIRED: string
+		/**
+		 * S​e​n​d​ ​C​o​n​f​i​r​m​a​t​i​o​n​ ​E​m​a​i​l
+		 */
+		SEND_CONFIRMATION_EMAIL: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​s​e​n​t​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l​!
+		 */
+		SEND_PASSWORD_RESET_EMAIL_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​s​e​n​d​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l
+		 */
+		SEND_PASSWORD_RESET_EMAIL_FAILURE: string
+		/**
+		 * T​h​i​s​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​t​o​k​e​n​ ​i​s​ ​e​x​p​i​r​e​d​.​ ​Y​o​u​ ​c​a​n​ ​r​e​q​u​e​s​t​ ​a​n​o​t​h​e​r​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l​ ​w​i​t​h​ ​t​h​e​ ​f​o​r​m​ ​b​e​l​o​w​.
+		 */
+		PASSWORD_RESET_TOKEN_EXPIRED: string
+		/**
+		 * S​e​n​d​ ​P​a​s​s​w​o​r​d​ ​R​e​s​e​t​ ​E​m​a​i​l
+		 */
+		SEND_PASSWORD_RESET_EMAIL: string
+		/**
+		 * F​o​r​g​o​t​ ​p​a​s​s​w​o​r​d​?
+		 */
+		FORGOT_PASSWORD: string
 	}
 	LOUNGE: {
 		/**
@@ -4864,6 +4977,14 @@ export type TranslationFunctions = {
 		 */
 		NO_PERMISSION: () => LocalizedString
 		/**
+		 * You must be logged in to view this page.
+		 */
+		LOGIN_REQUIRED: () => LocalizedString
+		/**
+		 * You must be logged out to view this page.
+		 */
+		LOGOUT_REQUIRED: () => LocalizedString
+		/**
 		 * {val|ordinalSuffix}
 		 */
 		ORDINAL_SUFFIX: (arg: { val: number }) => LocalizedString
@@ -5196,6 +5317,10 @@ export type TranslationFunctions = {
 		 */
 		EMAIL: () => LocalizedString
 		/**
+		 * Email Address
+		 */
+		EMAIL_ADDRESS: () => LocalizedString
+		/**
 		 * Password
 		 */
 		PASSWORD: () => LocalizedString
@@ -5215,6 +5340,106 @@ export type TranslationFunctions = {
 		 * You are already logged in.
 		 */
 		ALREADY_LOGGED_IN: () => LocalizedString
+		/**
+		 * You must reset your password before logging in. Check your email for a password reset link.
+		 */
+		PASSWORD_RESET_REQUIRED: () => LocalizedString
+		/**
+		 * Old Password
+		 */
+		OLD_PASSWORD: () => LocalizedString
+		/**
+		 * New Password
+		 */
+		NEW_PASSWORD: () => LocalizedString
+		/**
+		 * Confirm Password
+		 */
+		CONFIRM_PASSWORD: () => LocalizedString
+		/**
+		 * Password must be at least {count} characters!
+		 */
+		PASSWORD_CHARACTER_WARNING: (arg: { count: number }) => LocalizedString
+		/**
+		 * Passwords do not match!
+		 */
+		PASSWORD_NO_MATCH: () => LocalizedString
+		/**
+		 * Change Password
+		 */
+		CHANGE_PASSWORD: () => LocalizedString
+		/**
+		 * Reset Password
+		 */
+		RESET_PASSWORD: () => LocalizedString
+		/**
+		 * Register
+		 */
+		REGISTER: () => LocalizedString
+		/**
+		 * Confirm Email
+		 */
+		CONFIRM_EMAIL: () => LocalizedString
+		/**
+		 * Successfully reset password!
+		 */
+		PASSWORD_RESET_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to reset password
+		 */
+		PASSWORD_RESET_FAILURE: () => LocalizedString
+		/**
+		 * Successfully confirmed your email!
+		 */
+		EMAIL_CONFIRMATION_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to confirm your email
+		 */
+		EMAIL_CONFIRMATION_FAILURE: () => LocalizedString
+		/**
+		 * Successfully sent confirmation email!
+		 */
+		SEND_CONFIRMATION_EMAIL_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to send confirmation email
+		 */
+		SEND_CONFIRMATION_EMAIL_FAILURE: () => LocalizedString
+		/**
+		 * Your email is already confirmed.
+		 */
+		EMAIL_ALREADY_CONFIRMED: () => LocalizedString
+		/**
+		 * Welcome to Mario Kart Central!
+		 */
+		WELCOME_TO_MKC: () => LocalizedString
+		/**
+		 * Before you can complete your player registration, you'll need to verify your email address. You should have received an email containing a link to confirm your email address; if you don't see the email, or the link has expired, you can click the button below to send another confirmation email.
+		 */
+		EMAIL_CONFIRMATION_REQUIRED: () => LocalizedString
+		/**
+		 * Send Confirmation Email
+		 */
+		SEND_CONFIRMATION_EMAIL: () => LocalizedString
+		/**
+		 * Successfully sent password reset email!
+		 */
+		SEND_PASSWORD_RESET_EMAIL_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to send password reset email
+		 */
+		SEND_PASSWORD_RESET_EMAIL_FAILURE: () => LocalizedString
+		/**
+		 * This password reset token is expired. You can request another password reset email with the form below.
+		 */
+		PASSWORD_RESET_TOKEN_EXPIRED: () => LocalizedString
+		/**
+		 * Send Password Reset Email
+		 */
+		SEND_PASSWORD_RESET_EMAIL: () => LocalizedString
+		/**
+		 * Forgot password?
+		 */
+		FORGOT_PASSWORD: () => LocalizedString
 	}
 	LOUNGE: {
 		/**

@@ -70,6 +70,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/user/notifications`,
     `/${locale}/user/login`,
     `/${locale}/user/player-signup`,
+    `/${locale}/user/reset-password`,
   ];
 }
 

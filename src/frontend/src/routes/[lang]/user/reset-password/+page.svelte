@@ -7,6 +7,7 @@
     import RegisterForm from "$lib/components/login/RegisterForm.svelte";
     import { user } from '$lib/stores/stores';
     import type { UserInfo } from '$lib/types/user-info';
+    import LL from "$i18n/i18n-svelte";
 
     let working = true;
     let token_expired = false;
@@ -62,11 +63,11 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert("Successfully reset password!");
+            alert($LL.LOGIN.PASSWORD_RESET_SUCCESS());
             window.location.href = `/${$page.params.lang}/`;
         }
         else {
-            alert(`Failed to reset password: ${result['title']}`);
+            alert(`${$LL.LOGIN.PASSWORD_RESET_FAILURE()}: ${result['title']}`);
         }
     }
 
@@ -83,35 +84,35 @@
         });
         const result = await response.json();
         if(response.status < 300) {
-            alert("Successfully sent password reset email!");
+            alert($LL.LOGIN.SEND_PASSWORD_RESET_EMAIL_SUCCESS());
             email_sent = true;
         }
         else {
-            alert(`Failed to send password reset email: ${result['title']}`);
+            alert(`${$LL.LOGIN.SEND_PASSWORD_RESET_EMAIL_FAILURE()}: ${result['title']}`);
         }
     }
 </script>
 
-<Section header="Reset Password">
+<Section header={$LL.LOGIN.RESET_PASSWORD()}>
     {#if user_info.id !== null}
-        You must be logged out to view this page.
+        {$LL.COMMON.LOGOUT_REQUIRED()}
     {:else if !working}
         {#if token_expired || token === null}
             {#if token_expired}
                 <div class="option">
-                    This password reset token is expired. You can request another password reset email with the form below.
+                    {$LL.LOGIN.PASSWORD_RESET_TOKEN_EXPIRED()}
                 </div>
             {/if}
             <div>
                 <form on:submit|preventDefault={send_reset_email}>
                     <div class="option">
                         <label for="email">
-                            Email Address
+                            {$LL.LOGIN.EMAIL_ADDRESS()}
                         </label>
                         <input type="email" name="email"/>
                     </div>
                     <div>
-                        <Button type="submit" disabled={email_sent}>Send Password Reset Email</Button>
+                        <Button type="submit" disabled={email_sent}>{$LL.LOGIN.SEND_PASSWORD_RESET_EMAIL()}</Button>
                     </div>
                 </form>
             </div>
