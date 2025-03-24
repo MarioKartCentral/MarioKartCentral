@@ -100,8 +100,11 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            row = await db.execute_insert("INSERT INTO users(email, password_hash, join_date, player_id) VALUES (?, ?, ?, ?)", 
-                                          (self.email, self.password_hash, self.join_date, self.player_id))
+            email_confirmed = True
+            force_password_reset = True
+            row = await db.execute_insert("""INSERT INTO users(email, password_hash, join_date, player_id, 
+                                          email_confirmed, force_password_reset) VALUES (?, ?, ?, ?, ?, ?)""", 
+                                          (self.email, self.password_hash, self.join_date, self.player_id, email_confirmed, force_password_reset))
             # TODO: Run queries to identify why user creation failed
             if row is None:
                 raise Problem("Failed to create user")
@@ -130,7 +133,7 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
             await db.executemany("""INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""", insert_series_roles)
             await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES(?, ?, ?)""", insert_team_roles)
             await db.commit()
-            return UserLoginData(user_id, self.player_id, self.email, self.password_hash)
+            return UserLoginData(user_id, self.player_id, email_confirmed, force_password_reset, self.email, self.password_hash)
 
 @save_to_command_log
 @dataclass

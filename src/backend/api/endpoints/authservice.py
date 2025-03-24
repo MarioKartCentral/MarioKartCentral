@@ -30,7 +30,19 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
                                                      mkc_user.player_id, mkc_user.about_me,
                                                      mkc_user.user_roles, mkc_user.series_roles,
                                                      mkc_user.team_roles))
+        
+    return_user = UserAccountInfo(user.id, user.player_id, user.email_confirmed, user.force_password_reset)
 
+    # if the user is forced to reset their password, send them a password reset email but don't log them in.
+    # return info about the user so the frontend can know what's going on
+    if user.force_password_reset:
+        async def send_password_reset():
+            command = SendPasswordResetEmailCommand(body.email, appsettings.MKC_EMAIL_ADDRESS,
+                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
+                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+            await handle(command)   
+        return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
+    
     persistent_session_id = request.cookies.get('persistentSession', None)
     ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
     if not ip_address:
@@ -42,8 +54,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
             await handle(LogUserIPCommand(user.id, ip_address))
         await handle(LogFingerprintCommand(body.fingerprint))
         
-
-    resp = JSONResponse({}, status_code=200, background=BackgroundTask(log_ip_fingerprint))
+    resp = JSONResponse(return_user, status_code=200, background=BackgroundTask(log_ip_fingerprint))
     resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
     if not persistent_session_id:
         resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
@@ -51,8 +62,29 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
 
 @bind_request_body(SignupRequestData)
 async def sign_up(request: Request, body: SignupRequestData) -> Response:
+    existing_user = await handle(GetUserDataFromEmailCommand(body.email))
+    if existing_user:
+        raise Problem("User with this email already exists", status=400)
     email = body.email # TODO: Email Verification
     password_hash = pw_hasher.hash(body.password)
+    # if this is a user from the old MKC site trying to create a new account,
+    # import all the data from their old MKC account, and send them a password
+    # reset email. don't log them in until their password is reset, just return the user info.
+    # the frontend will take care of telling them to reset their password from the response json
+    mkc_user = await handle(GetMKCV1UserCommand(body.email, body.password))
+    if mkc_user:
+        user = await handle(TransferMKCV1UserCommand(body.email, password_hash, mkc_user.register_date,
+                                                mkc_user.player_id, mkc_user.about_me,
+                                                mkc_user.user_roles, mkc_user.series_roles,
+                                                mkc_user.team_roles))
+        return_user = UserAccountInfo(user.id, user.player_id, user.email_confirmed, user.force_password_reset)
+        async def send_password_reset():
+            command = SendPasswordResetEmailCommand(body.email, appsettings.MKC_EMAIL_ADDRESS,
+                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
+                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+            await handle(command)   
+        return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
+        
     user = await handle(CreateUserCommand(email, password_hash))
     await handle(CreateUserSettingsCommand(user.id))
 
@@ -63,12 +95,16 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
         ip_address = request.client.host if request.client else None
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
-    async def log_ip_fingerprint():
+    # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
+    async def send_email_and_log():
+        await handle(SendEmailVerificationCommand(user.id, appsettings.MKC_EMAIL_ADDRESS,
+                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
+                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD)))
         if appsettings.ENABLE_IP_LOGGING:
             await handle(LogUserIPCommand(user.id, ip_address))
         await handle(LogFingerprintCommand(body.fingerprint))
 
-    resp = JSONResponse(user, status_code=201, background=BackgroundTask(log_ip_fingerprint))
+    resp = JSONResponse(user, status_code=201, background=BackgroundTask(send_email_and_log))
     resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
     if not persistent_session_id:
         resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))

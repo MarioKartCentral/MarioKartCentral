@@ -11,31 +11,30 @@ class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, player_id, password_hash FROM users WHERE email = ?", (self.email, )) as cursor:
+            async with db.execute("SELECT id, player_id, password_hash, email_confirmed, force_password_reset FROM users WHERE email = ?", (self.email, )) as cursor:
                 row = await cursor.fetchone()
-
-            if row is None:
-                return None
-            
-            return UserLoginData(int(row[0]), row[1], self.email, str(row[2]))
+                if row is None:
+                    return None
+                user_id, player_id, password_hash, email_confirmed, force_password_reset = row
+            return UserLoginData(user_id, player_id, email_confirmed, force_password_reset, self.email, password_hash)
 
 @dataclass
-class GetUserDataFromIdCommand(Command[User | None]):
+class GetUserDataFromIdCommand(Command[UserAccountInfo | None]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, player_id FROM users WHERE id = ?", (self.id, )) as cursor:
+            async with db.execute("SELECT id, player_id, email_confirmed, force_password_reset FROM users WHERE id = ?", (self.id, )) as cursor:
                 row = await cursor.fetchone()
 
             if row is None:
                 return None
-            
-            return User(int(row[0]), row[1])
+            user_id, player_id, email_confirmed, force_password_reset = row
+            return UserAccountInfo(user_id, player_id, bool(email_confirmed), bool(force_password_reset))
             
 @save_to_command_log     
 @dataclass
-class CreateUserCommand(Command[User]):
+class CreateUserCommand(Command[UserAccountInfo]):
     email: str
     password_hash: str
 
@@ -49,7 +48,7 @@ class CreateUserCommand(Command[User]):
                 raise Problem("Failed to create user")
 
             await db.commit()
-            return User(int(row[0]), None)
+            return UserAccountInfo(int(row[0]), None, False, False)
         
 @dataclass
 class GetPlayerIdForUserCommand(Command[int]):

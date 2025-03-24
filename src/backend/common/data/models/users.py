@@ -11,6 +11,11 @@ class User:
     player_id: int | None
 
 @dataclass
+class UserAccountInfo(User):
+    email_confirmed: bool
+    force_password_reset: bool
+
+@dataclass
 class ModNotifications:
     pending_teams: int = 0
     pending_team_edits: int = 0
@@ -19,9 +24,7 @@ class ModNotifications:
     pending_player_claims: int = 0
 
 @dataclass
-class UserPlayer:
-    id: int
-    player_id: int | None
+class UserPlayer(UserAccountInfo):
     player: PlayerDetailed | None
     user_roles: list[UserRole]
     team_roles: list[TeamRole]
@@ -30,7 +33,7 @@ class UserPlayer:
     mod_notifications: ModNotifications | None
 
 @dataclass
-class UserLoginData(User):
+class UserLoginData(UserAccountInfo):
     email: str
     password_hash: str
 
