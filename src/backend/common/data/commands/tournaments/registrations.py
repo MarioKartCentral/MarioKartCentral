@@ -451,9 +451,9 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                 game, teams_allowed = row
             # get squads that the player is either in or has been invited to
             async with db.execute("""SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads s
-                                  WHERE s.tournament_id = ? AND EXISTS (
-                                    SELECT p.id FROM tournament_players p
-                                    WHERE p.squad_id = s.id AND p.player_id = ?
+                                  WHERE s.tournament_id = ? AND s.id IN (
+                                    SELECT p.squad_id FROM tournament_players p
+                                    WHERE p.player_id = ?
                                   )
                                 """, (self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
@@ -471,9 +471,9 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                                     JOIN teams t ON tr.team_id = t.id
                                     WHERE tsr.squad_id IN (
                                         SELECT s.id FROM tournament_squads s
-                                        WHERE s.tournament_id = ? AND EXISTS (
-                                            SELECT p.id FROM tournament_players p
-                                            WHERE p.squad_id = s.id AND p.player_id = ?
+                                        WHERE s.tournament_id = ? AND s.id IN (
+                                            SELECT p.squad_id FROM tournament_players p
+                                            WHERE p.player_id = ?
                                         )
                                     )""", (self.tournament_id, self.player_id)) as cursor:
                     rows = await cursor.fetchall()
@@ -493,9 +493,9 @@ class GetPlayerSquadRegCommand(Command[MyTournamentRegistrationDetails]):
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
                                     WHERE t.tournament_id = ?
-                                    AND EXISTS (
-                                        SELECT p2.id FROM tournament_players p2
-                                        WHERE p2.squad_id = t.squad_id AND p2.player_id = ?
+                                    AND t.squad_id IN (
+                                        SELECT p2.squad_id FROM tournament_players p2
+                                        WHERE p2.player_id = ?
                                     )
                                     ORDER BY p.name COLLATE NOCASE""", (self.tournament_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()

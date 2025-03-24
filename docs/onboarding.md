@@ -57,3 +57,13 @@ After you have done this breakpoints should be working. Also after you have done
 
 ## Debugging the Svelte app
 Svelte's debugging story is not as good as Starlette's, but if you need to debug some javascript code you can place down a `debugger;` line in the code and the browser will allow you to debug from within the browser rather than from within VS Code.
+
+## Discord Integration
+If you wish to test discord integration locally, you will need to do the following: 
+1. Log in to the [Discord Developer Portal](https://discord.com/developers/applications)
+1. Create a new application. Name the app anything you want, e.g. "MKC Development" 
+1. After creating, go to the OAuth2 tab and copy your client ID and client secret to the `.env` file at the root of this repository. You may need to click "Reset Secret" to see the client secret
+1. On the same page, click "Add Redirect" and set it to `http://localhost:5000/api/user/discord_callback`
+1. Save your changes
+1. Ensure you have `ENABLE_DISCORD=true` in your `.env` file
+1. Restart the dev container to ensure the environment variables are applied

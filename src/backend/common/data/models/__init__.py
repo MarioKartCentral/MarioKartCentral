@@ -1,4 +1,5 @@
 # re-export all the models
+from .auth import *
 from .common import *
 from .command_log import *
 from .discord_integration import *
@@ -8,6 +9,7 @@ from .moderation import *
 from .notifications import *
 from .player_basic import *
 from .players import *
+from .posts import *
 from .roles import *
 from .squads import *
 from .teams import *

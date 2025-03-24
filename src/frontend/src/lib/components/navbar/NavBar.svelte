@@ -8,12 +8,13 @@
   import ModPanel from './ModPanel.svelte';
   import { mod_panel_permissions } from '$lib/util/permissions';
   import { Navbar, NavBrand, NavUl, NavLi, NavHamburger, Avatar, Button } from 'flowbite-svelte';
-  import Dropdown from './common/Dropdown.svelte';
-  import DropdownItem from './common/DropdownItem.svelte';
-  import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline, GlobeSolid } from 'flowbite-svelte-icons';
-  import AlertCount from './common/AlertCount.svelte';
+  import Dropdown from '$lib/components/common/Dropdown.svelte';
+  import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+  import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline } from 'flowbite-svelte-icons';
+  import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, series_permissions } from '$lib/util/permissions';
-  import LoginRegister from './common/LoginRegister.svelte';
+  import LoginRegister from '$lib/components/common/LoginRegister.svelte';
+  import LanguagePicker from '$lib/components/navbar/LanguagePicker.svelte';
   
   let notify: Notification;
 
@@ -68,7 +69,7 @@
       </div>
       <Notification bind:this={notify} />
       <div class="nav-user-bar cursor-pointer">
-        <GlobeSolid size="xl" class="text-gray-300"/>
+        <LanguagePicker/>
       </div>
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">

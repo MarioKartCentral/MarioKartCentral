@@ -92,6 +92,8 @@ const fr: Translation = {
     REFRESH_ERROR: "Une erreur est survenue lors de l'actualisation de votre compte Discord.",
     DELETE_DATA_CONFIRM: 'Êtes-vous sûr de vouloir supprimer votre compte Discord de Mariokart Central ?',
     DELETE_DATA_ERROR: 'Une erreur est survenue lors de la suppression de votre compte Discord de Mariokart Central.',
+    SYNC_AVATAR: "Synchroniser l'avatar",
+    SYNC_AVATAR_ERROR: "La synchronisation de l'avatar Discord a échoué",
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Code ami',
@@ -141,6 +143,7 @@ const fr: Translation = {
     VIEW_ALL_TEAMS: 'View All Teams',
     RECENT_TRANSACTIONS: 'Recent Transactions',
     MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
+    VIEW_ALL_ANNOUNCEMENTS: 'View all Announcements',
   },
   INVITES: {
     TEAM_INVITES: "Invitations d'équipe",
@@ -176,6 +179,7 @@ const fr: Translation = {
     LOGIN_FAILED: 'La connexion a échoué',
     LOGOUT_FAILED: 'La déconnexion a échoué',
     REGISTRATION_FAILED: "L'enregistrement a échoué",
+    ALREADY_LOGGED_IN: 'You are already logged in.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -283,6 +287,17 @@ const fr: Translation = {
       EDIT_USER: 'Edit User',
       EDIT_USER_HEADER: 'Edit User: ID {user_id}',
     },
+    ALT_DETECTION: {
+      ALT_FLAGS: 'Alt Flags',
+      PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      TABLE: {
+        PLAYERS: 'Players',
+        TYPE: 'Type',
+        SCORE: 'Score',
+        DATA: 'Data',
+        DETECTED_AT: 'Detected at',
+      },
+    },
   },
   MODES: {
     ALL: 'Tous les modes',
@@ -326,6 +341,7 @@ const fr: Translation = {
     MODERATOR: 'Modération',
     LOGIN_REGISTER: "Se connecter/S'inscrire",
     ACCOUNT: 'Account',
+    SET_LANGUAGE_FAILED: 'Failed to set language',
     MOD_PANEL: {
       APPROVE_TEAMS: 'Approve Teams',
       TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
@@ -340,6 +356,7 @@ const fr: Translation = {
       FRIEND_CODE_CHANGES: 'Friend Code Changes',
       WORD_FILTER: 'Word Filter',
       MANAGE_USERS: 'Manage Users',
+      ALT_DETECTION: 'Alt Detection',
     },
   },
   NOTIFICATION: {
@@ -510,6 +527,23 @@ const fr: Translation = {
     THIS_PLAYER_IS_BANNED:
       'Ce joueur a été <strong>banni</strong> et ne peut plus participer à des compétitions MKCentral.',
     UNBAN_DATE: 'Date de déban',
+  },
+  POSTS: {
+    CREATE_POST: 'Create Post',
+    EDIT_POST: 'Edit Post',
+    POST_TITLE: 'Post Title',
+    VISIBILITY: 'Visibility',
+    PUBLIC: 'Public',
+    HIDDEN: 'Hidden',
+    CONTENT: 'Content',
+    CREATE_EDIT_POST_FAILED: 'Failed to create/edit post',
+    POST_COUNT: '{count} posts',
+    ANNOUNCEMENTS: 'Announcements',
+    SERIES_ANNOUNCEMENTS: 'Series Announcements',
+    TOURNAMENT_ANNOUNCEMENTS: 'Tournament Announcements',
+    BACK_TO_HOMEPAGE: 'Back to Homepage',
+    BACK_TO_ANNOUNCEMENTS: 'Back to Announcements',
+    BACK_TO_POST: 'Back to Post',
   },
   ROLES: {
     USER_ROLES: "Rôles d'utilisateur",
@@ -787,6 +821,8 @@ const fr: Translation = {
       REMOVE_ROSTER_CONFIRM: 'Are you sure you want to remove the roster {roster_name} from this squad?',
       ADD_ROSTER_FAILED: 'Failed to add roster',
       REMOVE_ROSTER_FAILED: 'Failed to remove roster',
+      SIGN_IN_REGISTER_TO_REGISTER: 'Sign in or register to participate in tournaments on MKCentral.',
+      LINK_DISCORD_TO_REGISTER: 'Please link your Discord account to participate in tournaments on MKCentral.',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Sélection un template',

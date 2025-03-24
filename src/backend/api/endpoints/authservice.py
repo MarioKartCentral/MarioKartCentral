@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
-import secrets
+import traceback
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route
-from oauthlib.oauth2 import WebApplicationClient
+from starlette.background import BackgroundTask
 from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
@@ -12,12 +10,7 @@ from api import appsettings
 from common.auth import pw_hasher, permissions
 from common.data.commands import *
 from common.data.models import *
-from urllib.parse import urlparse
-
-@dataclass
-class LoginRequestData:
-    email: str
-    password: str
+from urllib.parse import urlencode
 
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
@@ -38,20 +31,23 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
                                                      mkc_user.user_roles, mkc_user.series_roles,
                                                      mkc_user.team_roles))
 
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
+    persistent_session_id = request.cookies.get('persistentSession', None)
+    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
+    if not ip_address:
+        ip_address = request.client.host if request.client else None
+    session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
-    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    async def log_ip_fingerprint():
+        if appsettings.ENABLE_IP_LOGGING:
+            await handle(LogUserIPCommand(user.id, ip_address))
+        await handle(LogFingerprintCommand(body.fingerprint))
+        
 
-    resp = JSONResponse({}, status_code=200)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    resp = JSONResponse({}, status_code=200, background=BackgroundTask(log_ip_fingerprint))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    if not persistent_session_id:
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
     return resp
-
-@dataclass
-class SignupRequestData:
-    email: str
-    password: str
 
 @bind_request_body(SignupRequestData)
 async def sign_up(request: Request, body: SignupRequestData) -> Response:
@@ -61,14 +57,21 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
     await handle(CreateUserSettingsCommand(user.id))
 
     # login user after registering
-    session_id = secrets.token_hex(16)
-    max_age = timedelta(days=365)
-    expiration_date = datetime.now(timezone.utc) + max_age
+    persistent_session_id = request.cookies.get('persistentSession', None)
+    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
+    if not ip_address:
+        ip_address = request.client.host if request.client else None
+    session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
-    await handle(CreateSessionCommand(session_id, user.id, int(expiration_date.timestamp())))
+    async def log_ip_fingerprint():
+        if appsettings.ENABLE_IP_LOGGING:
+            await handle(LogUserIPCommand(user.id, ip_address))
+        await handle(LogFingerprintCommand(body.fingerprint))
 
-    resp = JSONResponse(user, status_code=201)
-    resp.set_cookie('session', session_id, max_age=int(max_age.total_seconds()))
+    resp = JSONResponse(user, status_code=201, background=BackgroundTask(log_ip_fingerprint))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    if not persistent_session_id:
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
     return resp
 
 @require_logged_in
@@ -79,32 +82,50 @@ async def log_out(request: Request) -> Response:
     resp.delete_cookie('session')
     return resp
 
-@bind_request_query(LinkDiscordRequestData)
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
-async def link_discord(request: Request, data: LinkDiscordRequestData) -> Response:
-    client = WebApplicationClient(appsettings.DISCORD_CLIENT_ID)
-    # get the base URL to figure out the redirect URI
-    base_url = urlparse(data.page_url)._replace(path='', params='', query='').geturl()
-    redirect_uri = f'{base_url}/api/user/discord_callback'
-    authorization_url = "https://discord.com/oauth2/authorize"
-    url = client.prepare_request_uri( # type: ignore
-        authorization_url,
-        redirect_uri = redirect_uri,
-        scope = ['identify guilds'],
-        state = data.page_url # store the URL we came from in the state so we can redirect back there after linking
-    )
-    return RedirectResponse(url, 302) # type: ignore
+async def link_discord(request: Request) -> Response:
+    params = {
+        'client_id': appsettings.DISCORD_CLIENT_ID,
+        'redirect_uri': appsettings.DISCORD_OAUTH_CALLBACK,
+        'response_type': 'code',
+        'scope': 'identify guilds'
+    }
+    query_string = urlencode(params)
+    url = f"https://discord.com/oauth2/authorize?{query_string}"
+    return RedirectResponse(url, 302)
 
 @bind_request_query(DiscordAuthCallbackData)
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
-async def discord_callback(request: Request, data: DiscordAuthCallbackData) -> Response:
-    command = LinkUserDiscordCommand(request.state.user.id, data, appsettings.DISCORD_CLIENT_ID, appsettings.DISCORD_CLIENT_SECRET, appsettings.ENV)
-    await handle(command)
-    # state should contain the URL we were on before linking our discord account,
-    # so we should redirect them back there if it exists
-    if data.state:
-        return RedirectResponse(data.state, 302)
-    return JSONResponse({})
+async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallbackData) -> Response:
+    redirect_params = ""
+    user_data = request.state.user
+    try:
+        if appsettings.ENABLE_DISCORD:
+            command = LinkUserDiscordCommand(
+                user_data.id, 
+                discord_auth_data, 
+                appsettings.DISCORD_CLIENT_ID, 
+                appsettings.DISCORD_CLIENT_SECRET, 
+                appsettings.ENV,
+                appsettings.DISCORD_OAUTH_CALLBACK 
+            )
+        else:
+            command = CreateFakeUserDiscordCommand(user_data.id)
+        await handle(command)
+            
+    except Exception as e:
+        if isinstance(e, Problem):
+            print(f"Problem raised during Discord auth callback: {e}")
+        traceback.print_exc()
+        redirect_params = "?auth_failed=1"
+
+    # If they have not completed registration yet, redirect to registration page, otherwise edit profile page
+    if not request.state.user.player_id:
+        redirect_path = "/player-signup"
+    else:
+        redirect_path = "/registry/players/edit-profile"
+
+    return RedirectResponse(f"{redirect_path}{redirect_params}", 302)
 
 @require_logged_in
 async def my_discord_data(request: Request) -> Response:
@@ -124,6 +145,12 @@ async def delete_discord_data(request: Request) -> JSONResponse:
     await handle(command)
     return JSONResponse({})
 
+@require_permission(permissions.LINK_DISCORD, check_denied_only=True)
+async def sync_discord_avatar(request: Request) -> JSONResponse:
+    command = SyncDiscordAvatarCommand(request.state.user.id)
+    avatar_path = await handle(command)
+    return JSONResponse({"avatar": avatar_path})
+
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
@@ -132,5 +159,6 @@ routes = [
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
     Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
-    Route('/api/user/delete_discord', delete_discord_data, methods=['POST'])
+    Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
+    Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST'])
 ]

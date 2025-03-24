@@ -89,6 +89,8 @@ const en_us: BaseTranslation = {
     REFRESH_ERROR: 'An error occurred while refreshing Discord data',
     DELETE_DATA_CONFIRM: 'Are you sure you would like to delete your Discord data?',
     DELETE_DATA_ERROR: 'An error occurred while deleting Discord data',
+    SYNC_AVATAR: 'Sync Avatar',
+    SYNC_AVATAR_ERROR: 'Failed to sync Discord avatar',
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Friend Code',
@@ -138,6 +140,7 @@ const en_us: BaseTranslation = {
     VIEW_ALL_TEAMS: 'View All Teams',
     RECENT_TRANSACTIONS: 'Recent Transactions',
     MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
+    VIEW_ALL_ANNOUNCEMENTS: 'View all Announcements',
   },
   INVITES: {
     TEAM_INVITES: 'Team Invites',
@@ -173,6 +176,7 @@ const en_us: BaseTranslation = {
     LOGIN_FAILED: 'Login Failed',
     LOGOUT_FAILED: 'Logout Failed',
     REGISTRATION_FAILED: 'Registration Failed',
+    ALREADY_LOGGED_IN: 'You are already logged in.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -280,6 +284,17 @@ const en_us: BaseTranslation = {
       EDIT_USER: 'Edit User',
       EDIT_USER_HEADER: 'Edit User: ID {user_id:number}',
     },
+    ALT_DETECTION: {
+      ALT_FLAGS: 'Alt Flags',
+      PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      TABLE: {
+        PLAYERS: 'Players',
+        TYPE: 'Type',
+        SCORE: 'Score',
+        DATA: 'Data',
+        DETECTED_AT: 'Detected at',
+      },
+    },
   },
   MODES: {
     ALL: 'All Modes',
@@ -323,6 +338,7 @@ const en_us: BaseTranslation = {
     MODERATOR: 'Moderator',
     LOGIN_REGISTER: 'Login/Register',
     ACCOUNT: 'Account',
+    SET_LANGUAGE_FAILED: 'Failed to set language',
     MOD_PANEL: {
       APPROVE_TEAMS: 'Approve Teams',
       TEAM_NAME_TAG_CHANGES: 'Team Name/Tag Changes',
@@ -337,6 +353,7 @@ const en_us: BaseTranslation = {
       FRIEND_CODE_CHANGES: 'Friend Code Changes',
       WORD_FILTER: 'Word Filter',
       MANAGE_USERS: 'Manage Users',
+      ALT_DETECTION: 'Alt Detection',
     },
   },
   NOTIFICATION: {
@@ -506,6 +523,23 @@ const en_us: BaseTranslation = {
     SEARCH_BY_NAME: 'Search by Name',
     THIS_PLAYER_IS_BANNED: 'This player is <strong>banned</strong> and may not participate in MKCentral competitions.',
     UNBAN_DATE: 'Unban Date',
+  },
+  POSTS: {
+    CREATE_POST: 'Create Post',
+    EDIT_POST: 'Edit Post',
+    POST_TITLE: 'Post Title',
+    VISIBILITY: 'Visibility',
+    PUBLIC: 'Public',
+    HIDDEN: 'Hidden',
+    CONTENT: 'Content',
+    CREATE_EDIT_POST_FAILED: 'Failed to create/edit post',
+    POST_COUNT: '{count:number} posts',
+    ANNOUNCEMENTS: 'Announcements',
+    SERIES_ANNOUNCEMENTS: 'Series Announcements',
+    TOURNAMENT_ANNOUNCEMENTS: 'Tournament Announcements',
+    BACK_TO_HOMEPAGE: 'Back to Homepage',
+    BACK_TO_ANNOUNCEMENTS: 'Back to Announcements',
+    BACK_TO_POST: 'Back to Post',
   },
   ROLES: {
     USER_ROLES: 'User Roles',
@@ -784,6 +818,8 @@ const en_us: BaseTranslation = {
       REMOVE_ROSTER_CONFIRM: 'Are you sure you want to remove the roster {roster_name:string} from this squad?',
       ADD_ROSTER_FAILED: 'Failed to add roster',
       REMOVE_ROSTER_FAILED: 'Failed to remove roster',
+      SIGN_IN_REGISTER_TO_REGISTER: 'Sign in or register to participate in tournaments on MKCentral.',
+      LINK_DISCORD_TO_REGISTER: 'Please link your Discord account to participate in tournaments on MKCentral.',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Select Template',

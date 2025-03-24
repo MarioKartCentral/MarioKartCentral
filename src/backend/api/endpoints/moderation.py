@@ -24,8 +24,22 @@ async def list_friend_code_edits(request: Request, filter: FriendCodeEditFilter)
     edits = await handle(ListFriendCodeEditsCommand(filter))
     return JSONResponse(edits)
 
+@bind_request_query(AltFlagFilter)
+@require_permission(permissions.VIEW_ALT_FLAGS)
+async def list_alt_flags(request: Request, filter: AltFlagFilter) -> JSONResponse:
+    flags = await handle(ListAltFlagsCommand(filter))
+    return JSONResponse(flags)
+
+@bind_request_query(PlayerAltFlagRequestData)
+@require_permission(permissions.VIEW_ALT_FLAGS)
+async def view_player_alt_flags(request: Request, body: PlayerAltFlagRequestData) -> JSONResponse:
+    flags = await handle(ViewPlayerAltFlagsCommand(body.player_id))
+    return JSONResponse(flags)
+
 routes: list[Route] = [
     Route('/api/moderator/wordFilter/edit', edit_word_filter, methods=['POST']),
     Route('/api/moderator/wordFilter', view_word_filter),
-    Route('/api/moderator/friendCodeEdits', list_friend_code_edits)
+    Route('/api/moderator/friendCodeEdits', list_friend_code_edits),
+    Route('/api/moderator/altFlags', list_alt_flags),
+    Route('/api/moderator/playerAltFlags', view_player_alt_flags),
 ]

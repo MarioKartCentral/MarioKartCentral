@@ -1,10 +1,6 @@
 from dataclasses import dataclass
 
 @dataclass
-class LinkDiscordRequestData:
-    page_url: str | None = None
-
-@dataclass
 class DiscordAuthCallbackData:
     code: str
     state: str | None = None
