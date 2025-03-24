@@ -19,6 +19,7 @@ async def send_email(from_email: str, to_email: str, subject: str, content: str,
 @dataclass
 class SendEmailVerificationCommand(Command[None]):
     user_id: int
+    site_url: str
     from_email: str
     hostname: str
     port: int
@@ -41,7 +42,9 @@ class SendEmailVerificationCommand(Command[None]):
             await db.commit()
 
         subject = "Email Confirmation - Mario Kart Central"
-        content = f"Confirmation token: {token_id}"
+        content = f"Welcome to Mario Kart Central! Click the link below to confirm your email address.\
+                    \nThis link will expire in 60 minutes.\
+                    \n{self.site_url}/user/confirm-email?token={token_id}"
         await send_email(self.from_email, user_email, subject, content, self.hostname, self.port, self.username, self.password)
 
 @dataclass
@@ -62,6 +65,7 @@ class VerifyEmailCommand(Command[None]):
 @dataclass
 class SendPasswordResetEmailCommand(Command[None]):
     user_email: str
+    site_url: str
     from_email: str
     hostname: str
     port: int
@@ -81,8 +85,25 @@ class SendPasswordResetEmailCommand(Command[None]):
                              (token_id, user_id, expires_on))
             await db.commit()
         subject = "Password Reset - Mario Kart Central"
-        content = f"Reset token: {token_id}"
+        content = f"You requested a password reset on Mario Kart Central. You can reset your password by clicking the link below (expires in 60 minutes): \
+            \n{self.site_url}/user/reset-password?token={token_id}"
         await send_email(self.from_email, self.user_email, subject, content, self.hostname, self.port, self.username, self.password)
+
+@dataclass
+class GetUserInfoFromPasswordResetTokenCommand(Command[UserInfo]):
+    token_id: str
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT u.id, u.email, u.join_date FROM users u
+                                    JOIN password_resets p ON u.id = p.user_id
+                                    WHERE p.token_id = ?""", (self.token_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Token is expired", status=400)
+                user_id, email, join_date = row
+                user = UserInfo(user_id, email, join_date, None)
+                return user
 
 @dataclass
 class ResetPasswordWithTokenCommand(Command[None]):

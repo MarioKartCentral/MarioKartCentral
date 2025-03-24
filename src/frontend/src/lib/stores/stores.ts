@@ -4,6 +4,8 @@ import type { UserInfo } from '$lib/types/user-info';
 export const user = writable<UserInfo>({
   id: null,
   player_id: null,
+  email_confirmed: false,
+  force_password_reset: false,
   player: null,
   user_roles: [],
   team_roles: [],

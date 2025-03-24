@@ -13,7 +13,7 @@
   import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline } from 'flowbite-svelte-icons';
   import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, series_permissions } from '$lib/util/permissions';
-  import LoginRegister from '$lib/components/common/LoginRegister.svelte';
+  import LoginRegister from '$lib/components/login/LoginRegister.svelte';
   import LanguagePicker from '$lib/components/navbar/LanguagePicker.svelte';
   
   let notify: Notification;

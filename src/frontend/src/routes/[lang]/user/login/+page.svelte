@@ -1,5 +1,5 @@
 <script lang="ts">
-    import LoginRegister from "$lib/components/common/LoginRegister.svelte";
+    import LoginRegister from "$lib/components/login/LoginRegister.svelte";
     import type { UserInfo } from '$lib/types/user-info';
     import { user } from '$lib/stores/stores';
     import { page } from "$app/stores";

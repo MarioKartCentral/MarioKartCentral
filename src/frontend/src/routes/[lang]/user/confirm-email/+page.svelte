@@ -3,6 +3,8 @@
     import Section from "$lib/components/common/Section.svelte";
     import { user } from '$lib/stores/stores';
     import type { UserInfo } from '$lib/types/user-info';
+    import { onMount } from "svelte";
+    import { page } from "$app/stores";
 
     let disable_button = false;
 
@@ -10,6 +12,35 @@
 
     user.subscribe((value) => {
         user_info = value;
+    });
+
+    onMount(async() => {
+        let token = $page.url.searchParams.get('token');
+        if(token === null) {
+            return;
+        }
+        const payload = {
+            token_id: token,
+        };
+        const endpoint = `/api/user/confirm_email`;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if(response.status < 300) {
+            alert("Successfully confirmed your email!");
+            if(user_info.player_id) {
+                window.location.href = `/${$page.params.lang}/`;
+            }
+            else {
+                window.location.href = `/${$page.params.lang}/user/player-signup`;
+            }
+        }
+        else {
+            alert(`Failed to confirm your email: ${result['title']}`);
+        }
     });
 
     async function send_confirmation_email() {

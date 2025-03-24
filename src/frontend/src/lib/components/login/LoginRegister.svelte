@@ -1,7 +1,7 @@
 <script lang="ts">
     import LL from '$i18n/i18n-svelte';
     import { page } from '$app/stores';
-    import Button from './buttons/Button.svelte';
+    import Button from '$lib/components/common/buttons/Button.svelte';
     import type { UserAccountInfo } from '$lib/types/user-account-info';
 
     export let send_to: string | null = null;

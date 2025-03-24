@@ -38,7 +38,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
     # return info about the user so the frontend can know what's going on
     if user.force_password_reset:
         async def send_password_reset():
-            command = SendPasswordResetEmailCommand(body.email, appsettings.MKC_EMAIL_ADDRESS,
+            command = SendPasswordResetEmailCommand(body.email, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
                                            appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
                                            str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
             await handle(command)   
@@ -80,7 +80,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
                                                 mkc_user.team_roles))
         return_user = UserAccountInfo(user.id, user.player_id, user.email_confirmed, user.force_password_reset)
         async def send_password_reset():
-            command = SendPasswordResetEmailCommand(body.email, appsettings.MKC_EMAIL_ADDRESS,
+            command = SendPasswordResetEmailCommand(body.email, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
                                            appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
                                            str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
             await handle(command)   
@@ -98,7 +98,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
     async def send_email_and_log():
-        await handle(SendEmailVerificationCommand(user.id, appsettings.MKC_EMAIL_ADDRESS,
+        await handle(SendEmailVerificationCommand(user.id, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
                                            appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
                                            str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD)))
         if appsettings.ENABLE_IP_LOGGING:
@@ -121,7 +121,7 @@ async def log_out(request: Request) -> Response:
 
 @require_logged_in
 async def send_confirmation_email(request: Request) -> Response:
-    command = SendEmailVerificationCommand(request.state.user.id, appsettings.MKC_EMAIL_ADDRESS,
+    command = SendEmailVerificationCommand(request.state.user.id, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
                                            appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
                                            str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
     await handle(command)
@@ -135,11 +135,16 @@ async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSON
 
 @bind_request_body(ForgotPasswordRequestData)
 async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
-    command = SendPasswordResetEmailCommand(body.email, appsettings.MKC_EMAIL_ADDRESS,
+    command = SendPasswordResetEmailCommand(body.email, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
                                            appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
                                            str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
     await handle(command)
     return JSONResponse({})
+
+@bind_request_body(CheckPasswordTokenRequestData)
+async def check_password_reset_token(request: Request, body: CheckPasswordTokenRequestData) -> JSONResponse:
+    user_info = await handle(GetUserInfoFromPasswordResetTokenCommand(body.token_id))
+    return JSONResponse(user_info)
 
 @bind_request_body(ResetPasswordTokenRequestData)
 async def reset_password_with_token(request: Request, body: ResetPasswordTokenRequestData) -> JSONResponse:
@@ -232,6 +237,7 @@ routes = [
     Route('/api/user/send_confirmation_email', send_confirmation_email, methods=["POST"]),
     Route('/api/user/confirm_email', confirm_email, methods=["POST"]),
     Route('/api/user/forgot_password', forgot_password, methods=["POST"]),
+    Route('/api/user/check_password_token', check_password_reset_token, methods=["POST"]),
     Route('/api/user/reset_password_token', reset_password_with_token, methods=["POST"]),
     Route('/api/user/reset_password', reset_password, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
