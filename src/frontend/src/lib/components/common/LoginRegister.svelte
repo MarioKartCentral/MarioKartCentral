@@ -38,7 +38,7 @@
             }
             if(!isLogin) {
                 // don't use goto since we want to refresh the page state with logged in status
-                window.location.href = `/${$page.params.lang}/user/player-signup`;
+                window.location.href = `/${$page.params.lang}/user/confirm-email`;
             }
             else if(send_to !== null) {
                 window.location.href = send_to;
