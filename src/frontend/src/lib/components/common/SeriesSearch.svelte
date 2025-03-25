@@ -57,6 +57,9 @@
     if(series) {
       await get_series(series.id);
     }
+    else {
+      option = null;
+    }
     dispatch('change'); // do this so we can run an on:change handler in parent component
   }
 </script>

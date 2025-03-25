@@ -16,7 +16,6 @@
         reader.onloadend = () => {
             let result = reader.result as string | null;
             file = result ? result.split(',')[1] : result;
-            console.log(file);
         }
     }
 
