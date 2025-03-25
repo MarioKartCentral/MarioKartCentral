@@ -7,6 +7,7 @@
   import { user } from '$lib/stores/stores';
   import { check_tournament_permission, tournament_permissions, check_permission } from '$lib/util/permissions';
   import LL from '$i18n/i18n-svelte';
+  import type { CreateTournament } from '$lib/types/tournaments/create/create-tournament';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -14,6 +15,7 @@
   });
 
   let tournament: Tournament;
+  let data: CreateTournament;
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
@@ -22,13 +24,14 @@
     if (res.status === 200) {
       const body: Tournament = await res.json();
       tournament = body;
+      data = {...body, logo_file: null, remove_logo: false,};
     }
   });
 </script>
 
-{#if tournament}
+{#if tournament && data}
   {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
-    <CreateEditTournamentForm tournament_id={tournament.id} data={tournament} 
+    <CreateEditTournamentForm tournament_id={tournament.id} {data} 
     series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} />
   {:else}
     {$LL.COMMON.NO_PERMISSION()}

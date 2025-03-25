@@ -14,7 +14,6 @@ class TournamentDBFields():
     date_end: int
     use_series_description: bool
     series_stats_include: bool
-    logo: str | None
     use_series_logo: bool
     url: str | None
     registration_deadline: int | None
@@ -50,12 +49,14 @@ class TournamentS3Fields():
     ruleset: str
 
 @dataclass
-class CreateTournamentRequestData(TournamentDBFields, TournamentS3Fields): pass
+class CreateTournamentRequestData(TournamentDBFields, TournamentS3Fields): 
+    logo_file: str | None
 
 @dataclass
-class GetTournamentRequestData(CreateTournamentRequestData):
+class GetTournamentRequestData(TournamentDBFields, TournamentS3Fields):
     id: int
     is_deleted: bool
+    logo: str | None
     series_name: str | None = None
     series_url: str | None = None
     series_description: str | None = None
@@ -70,7 +71,6 @@ class EditTournamentRequestData():
     date_end: int
     use_series_description: bool
     series_stats_include: bool
-    logo: str | None
     use_series_logo: bool
     url: str | None
     registration_deadline: int | None
@@ -101,6 +101,9 @@ class EditTournamentRequestData():
     # s3-only fields below
     description: str
     ruleset: str
+    # logo fields
+    logo_file: str | None
+    remove_logo: bool
 
 @dataclass
 class TournamentDataMinimal():

@@ -8,7 +8,7 @@ class CheckWordFilterCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         # convert the request body into a string to check in the word filter
-        string_body = ','.join(str(x).lower() for x in self.request_body.values())
+        string_body = ','.join(str(v).lower() for k, v in self.request_body.items() if k != 'logo_file') # sometimes bad words are in base64
 
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT word FROM filtered_words WHERE ? LIKE '%'|| word ||'%'", (string_body,)) as cursor:
