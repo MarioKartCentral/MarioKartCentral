@@ -11,6 +11,10 @@
     });
 </script>
 
+<svelte:head>
+    <title>Login | Mario Kart Central</title>
+</svelte:head>
+
 {#if !user_info.id}
     <LoginRegister send_to="/{$page.params.lang}/"/>
 {:else}

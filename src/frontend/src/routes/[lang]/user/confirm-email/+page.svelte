@@ -61,6 +61,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Confirm Email | Mario Kart Central</title>
+</svelte:head>
+
 <Section header={$LL.LOGIN.CONFIRM_EMAIL()}>
     {#if user_info.is_checked}
         {#if user_info.id === null}

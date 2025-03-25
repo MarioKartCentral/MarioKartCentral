@@ -93,6 +93,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Reset Password | Mario Kart Central</title>
+</svelte:head>
+
 <Section header={$LL.LOGIN.RESET_PASSWORD()}>
     {#if user_info.id !== null}
         {$LL.COMMON.LOGOUT_REQUIRED()}
