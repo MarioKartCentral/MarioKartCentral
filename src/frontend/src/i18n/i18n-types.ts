@@ -318,6 +318,10 @@ type RootTranslation = {
 		 * N​e​w
 		 */
 		NEW: string
+		/**
+		 * U​p​l​o​a​d​ ​I​m​a​g​e
+		 */
+		UPLOAD_IMAGE: string
 	}
 	DISCORD: {
 		/**
@@ -3230,6 +3234,10 @@ type RootTranslation = {
 			 * P​l​e​a​s​e​ ​l​i​n​k​ ​y​o​u​r​ ​D​i​s​c​o​r​d​ ​a​c​c​o​u​n​t​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
 			 */
 			LINK_DISCORD_TO_REGISTER: string
+			/**
+			 * P​l​e​a​s​e​ ​c​o​n​f​i​r​m​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​n​d​ ​c​o​m​p​l​e​t​e​ ​t​h​e​ ​p​l​a​y​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
+			 */
+			CONFIRM_EMAIL_TO_REGISTER: string
 		}
 		MANAGE: {
 			/**
@@ -4996,6 +5004,10 @@ export type TranslationFunctions = {
 		 * New
 		 */
 		NEW: () => LocalizedString
+		/**
+		 * Upload Image
+		 */
+		UPLOAD_IMAGE: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -7793,6 +7805,10 @@ export type TranslationFunctions = {
 			 * Please link your Discord account to participate in tournaments on MKCentral.
 			 */
 			LINK_DISCORD_TO_REGISTER: () => LocalizedString
+			/**
+			 * Please confirm your email and complete the player registration to participate in tournaments on MKCentral.
+			 */
+			CONFIRM_EMAIL_TO_REGISTER: () => LocalizedString
 		}
 		MANAGE: {
 			/**

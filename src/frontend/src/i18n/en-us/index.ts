@@ -80,6 +80,7 @@ const en_us: BaseTranslation = {
     ORDINAL_SUFFIX: '{val:number|ordinalSuffix}', // 1 -> '1st' for example
     DELETE: 'Delete',
     NEW: 'New',
+    UPLOAD_IMAGE: 'Upload Image',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -851,6 +852,7 @@ const en_us: BaseTranslation = {
       REMOVE_ROSTER_FAILED: 'Failed to remove roster',
       SIGN_IN_REGISTER_TO_REGISTER: 'Sign in or register to participate in tournaments on MKCentral.',
       LINK_DISCORD_TO_REGISTER: 'Please link your Discord account to participate in tournaments on MKCentral.',
+      CONFIRM_EMAIL_TO_REGISTER: 'Please confirm your email and complete the player registration to participate in tournaments on MKCentral.',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Select Template',

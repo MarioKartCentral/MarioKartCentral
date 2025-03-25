@@ -1,6 +1,7 @@
 <script lang="ts">
     import Button from "./buttons/Button.svelte";
     import CancelButton from "./buttons/CancelButton.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let file: string | null; //base 64 representation of the file
     export let name: string;
@@ -38,7 +39,7 @@
 
 {#if !file_info}
     <input accept="image/png, image/jpeg" bind:files={file_list} name={name} type="file" bind:this={input}/>
-    <Button type="button" on:click={onClick}>Upload Image</Button>
+    <Button type="button" on:click={onClick}>{$LL.COMMON.UPLOAD_IMAGE()}</Button>
 {:else}
     <div class="file-info">
         <CancelButton on:click={() => file_list = null}/>
