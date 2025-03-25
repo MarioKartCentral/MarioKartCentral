@@ -20,9 +20,16 @@
         }
     }
 
-    $: {
-        if(file_list && file_list.length) {
-            file_info = file_list[0];
+    function verify_file(fl: FileList | null) {
+        if(fl && fl.length) {
+            file_info = fl[0];
+            if(file_info.size > 1024*1024) {
+                alert("Image must be below 1MB");
+                file_info = null;
+                file_list = null;
+                file = null;
+                return;
+            }
             to_base_64(file_info);
         }
         else {
@@ -30,6 +37,8 @@
             file = null;
         }
     }
+
+    $: verify_file(file_list);
 
     function onClick(event: MouseEvent) {
         event.preventDefault();
