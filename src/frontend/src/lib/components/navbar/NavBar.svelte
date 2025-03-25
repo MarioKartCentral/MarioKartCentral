@@ -31,8 +31,6 @@
 
   $: is_mod = mod_panel_permissions.some((p) => check_permission(user_info, p));
 
-  let min_desktop_px = 1100;
-
   user.subscribe((value) => {
     user_info = value;
     if (user_info.player?.user_settings && user_info.player?.user_settings.avatar) {
@@ -57,14 +55,14 @@
   }
 </script>
 
-<Navbar fluid={true} class="bg-primary-800" >
+<Navbar fluid={true} class="bg-primary-800">
   <div class="flex gap-5">
-    <NavHamburger bind:menu_hidden={menu_hidden} {min_desktop_px}/>
+    <NavHamburger bind:menu_hidden={menu_hidden}/>
     <NavBrand href="/{$page.params.lang}">
       <img src={logo} width="120px" alt="MKCentral Logo" />
     </NavBrand>
   </div>
-  <div class="flex items-center min-[{min_desktop_px}px]:order-2">
+  <div class="flex items-center desktop:order-2">
     <div class="nav-user-bar cursor-pointer relative">
       {#if unread_count}
         <BellSolid size="xl" class="text-yellow-400"/>
@@ -72,7 +70,6 @@
       {:else}
         <BellOutline size="xl" class="text-gray-300"/>
       {/if}
-      
     </div>
     <Notification bind:this={notify} />
     <div class="nav-user-bar cursor-pointer">
@@ -117,8 +114,8 @@
     {/if}
   </div>
   
-  <NavUlist bind:menu_hidden={menu_hidden} {min_desktop_px}>
-    <NavLi nav_name="TOURNAMENTS" has_dropdown {min_desktop_px}>
+  <NavUlist bind:menu_hidden={menu_hidden}>
+    <NavLi nav_name="TOURNAMENTS" has_dropdown>
       <a href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</a>
       <ChevronDownOutline class="inline"/>
     </NavLi>
@@ -129,9 +126,9 @@
         <DropdownItem href="/{$page.params.lang}/tournaments/templates">{$LL.NAVBAR.TOURNAMENT_TEMPLATES()}</DropdownItem>
       {/if}
     </Dropdown>
-    <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS" {min_desktop_px}>{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
-    <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE" {min_desktop_px}>{$LL.NAVBAR.LOUNGE()}</NavLi>
-    <NavLi nav_name="REGISTRY" has_dropdown {min_desktop_px}>
+    <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
+    <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>
+    <NavLi nav_name="REGISTRY" has_dropdown>
       {$LL.NAVBAR.REGISTRY()}
       <ChevronDownOutline class="inline"/>
     </NavLi>
@@ -140,9 +137,9 @@
       <DropdownItem href="/{$page.params.lang}/registry/teams">{$LL.NAVBAR.TEAMS()}</DropdownItem>
       <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">{$LL.NAVBAR.RECENT_TRANSCATIONS()}</DropdownItem>
     </Dropdown>
-    <NavLi href="http://discord.gg/Pgd8xr6" {min_desktop_px}>{$LL.NAVBAR.DISCORD()}</NavLi>
+    <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
     {#if is_mod}
-      <NavLi nav_name="MODERATOR" has_dropdown {min_desktop_px}>
+      <NavLi nav_name="MODERATOR" has_dropdown>
         {$LL.NAVBAR.MODERATOR()}
         {#if mod_action_count}
           <AlertCount count={mod_action_count}/>

@@ -4,7 +4,6 @@
     import type { NavbarLiType } from 'flowbite-svelte/NavUl.svelte';
     import { page } from '$app/stores';
   
-    export let min_desktop_px: number;
     export let nav_name = "";
     export let has_dropdown = false;
     export let href: string = '';
@@ -28,7 +27,7 @@
   
     $: active = navUrl ? href === navUrl : false;
   
-    $: liClass = twMerge(`block py-2 pe-4 ps-3 min-[${min_desktop_px}px]:p-0 rounded-sm min-[${min_desktop_px}px]:border-0`, 
+    $: liClass = twMerge(`block py-2 pe-4 ps-3 desktop:p-0 rounded-sm desktop:border-0`, 
         active ? activeClass ?? context.activeClass : nonActiveClass ?? context.nonActiveClass, $$props.class,
         has_dropdown ? "cursor-pointer" : "", checkSelectedNav(nav_name));
   </script>

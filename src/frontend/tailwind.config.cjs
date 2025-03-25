@@ -36,6 +36,9 @@ const config = {
           900: '#14532d',
         },
       },
+      screens: {
+        'desktop': '1100px',
+      }
     },
   },
 };
