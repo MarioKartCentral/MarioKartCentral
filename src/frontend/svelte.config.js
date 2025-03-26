@@ -67,8 +67,8 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/users/edit`,
     `/${locale}/moderator/word_filter`,
     `/${locale}/user/confirm-email`,
-    `/${locale}/user/notifications`,
     `/${locale}/user/login`,
+    `/${locale}/user/notifications`,
     `/${locale}/user/player-signup`,
     `/${locale}/user/reset-password`,
   ];
