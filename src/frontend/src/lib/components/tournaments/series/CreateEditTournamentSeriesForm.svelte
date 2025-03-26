@@ -119,9 +119,6 @@
         <label for="logo">{$LL.TOURNAMENTS.SERIES.SERIES_LOGO()}</label>
       </div>
       <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo}/>
-      <!-- <div>
-        <input type="text" name="logo" bind:value={data.logo} />
-      </div> -->
     </div>
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.EVENT_DEFAULTS()}>

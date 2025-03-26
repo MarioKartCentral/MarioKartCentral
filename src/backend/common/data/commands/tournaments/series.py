@@ -77,6 +77,9 @@ class EditSeriesCommand(Command[None]):
                 logo_filename = f"series_logos/{self.series_id}.png"
                 logo_data = base64.b64decode(b.logo_file)
                 await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+            elif b.remove_logo:
+                logo_filename = f"series_logos/{self.series_id}.png"
+                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
 @dataclass

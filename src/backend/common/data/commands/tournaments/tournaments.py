@@ -62,7 +62,7 @@ class CreateTournamentCommand(Command[int | None]):
                 await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             await db.commit()
         return tournament_id
-            
+          
 @save_to_command_log
 @dataclass
 class EditTournamentCommand(Command[None]):
