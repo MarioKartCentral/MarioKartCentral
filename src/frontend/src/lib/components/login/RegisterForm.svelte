@@ -53,7 +53,7 @@
             </span>
             <input name="confirm-password" type="password" minlength={min_length} maxlength=64 bind:value={confirm_password} required/>
         </div>
-        <div class="errors option">
+        <div class="errors">
             {#if password.length && password.length < min_length}
                 <div>
                     {$LL.LOGIN.PASSWORD_CHARACTER_WARNING({count: min_length})}
@@ -96,5 +96,7 @@
     }
     .errors {
         color: #FFCCCB;
+        margin-left: 5px;
+        margin-bottom: 10px;
     }
 </style>
