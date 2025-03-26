@@ -16,10 +16,13 @@ class CreatePlayerCommand(Command[Player]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
-                async with db.execute("SELECT player_id FROM users WHERE id = ?", (self.user_id,)) as cursor:
+                async with db.execute("SELECT player_id, email_confirmed FROM users WHERE id = ?", (self.user_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
-                    if row[0] is not None:
+                    player_id, email_confirmed = row
+                    if not bool(email_confirmed):
+                        raise Problem("You must confirm your email to complete the player signup")
+                    if player_id is not None:
                         raise Problem("Can only have one player per user", status=400)
             now = int(datetime.now(timezone.utc).timestamp())
             command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned, join_date) 

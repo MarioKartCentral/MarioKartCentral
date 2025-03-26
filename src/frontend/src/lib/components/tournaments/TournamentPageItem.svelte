@@ -69,15 +69,22 @@
     <div class="logo flex flex-col justify-center items-center text-center">
       {#if tournament.logo != null}
         <div class="font-bold">
-          <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
-            {#if tournament.series_name != null}
+          {#if tournament.series_name != null}
+            <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
               {tournament.series_name}
-            {/if}
-          </a>
+            </a>
+          {/if}
         </div>
-        <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
-          <img src={tournament.logo} alt={tournament.name} />
-        </a>
+        {#if tournament.series_id}
+          <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
+            <img src={tournament.logo} alt={tournament.name} />
+          </a>
+        {:else}
+          <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
+            <img src={tournament.logo} alt={tournament.name} />
+          </a>
+        {/if}
+        
       {/if}
     </div>
 

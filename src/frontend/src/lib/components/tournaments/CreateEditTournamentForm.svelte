@@ -54,7 +54,9 @@
     show_on_profiles: true,
     series_stats_include: false,
     verified_fc_required: false,
-    bagger_clause_enabled: false
+    bagger_clause_enabled: false,
+    logo_file: null,
+    remove_logo: false,
   };
 
   let is_edit = tournament_id ? true : false; // if we specified a tournament id, assume we're editing that tournament

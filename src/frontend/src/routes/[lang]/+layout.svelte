@@ -30,14 +30,7 @@
       }
       const body = await res.json();
       let me: UserInfo = {
-        id: body['id'],
-        player_id: body['player_id'],
-        player: body['player'],
-        user_roles: body['user_roles'],
-        team_roles: body['team_roles'],
-        series_roles: body['series_roles'],
-        tournament_roles: body['tournament_roles'],
-        mod_notifications: body['mod_notifications'],
+        ...body,
         is_checked: true,
       };
       user.set(me);

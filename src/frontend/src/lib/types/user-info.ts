@@ -32,6 +32,8 @@ type TournamentRole = UserRole & {
 export type UserInfo = {
   id: number | null;
   player_id: number | null;
+  email_confirmed: boolean;
+  force_password_reset: boolean;
   player: PlayerInfo | null;
   user_roles: UserRole[];
   team_roles: TeamRole[];

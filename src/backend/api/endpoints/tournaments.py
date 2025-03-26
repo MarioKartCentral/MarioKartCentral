@@ -39,10 +39,10 @@ async def tournament_list(request: Request, filter: TournamentFilter) -> JSONRes
     tournaments = await handle(command)
     return JSONResponse(tournaments)
 
-@bind_request_body(SeriesRequestData)
+@bind_request_body(CreateSeriesRequestData)
 @check_word_filter
 @require_permission(permissions.CREATE_SERIES)
-async def create_series(request: Request, body: SeriesRequestData) -> JSONResponse:
+async def create_series(request: Request, body: CreateSeriesRequestData) -> JSONResponse:
     command = CreateSeriesCommand(body)
     await handle(command)
     return JSONResponse({})

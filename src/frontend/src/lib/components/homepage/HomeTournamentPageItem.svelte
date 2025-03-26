@@ -23,9 +23,16 @@
         <div class="flex gap-[5px] mobile-center">
             <div class='flex items-center w-[25px] h-[25px]'>
                 {#if tournament.logo}
-                    <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
-                        <img src={tournament.logo} alt={tournament.name} />
-                    </a>
+                    {#if tournament.series_id}
+                        <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
+                            <img src={tournament.logo} alt={tournament.name} />
+                        </a>
+                    {:else}
+                        <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
+                            <img src={tournament.logo} alt={tournament.name} />
+                        </a>
+                    {/if}
+                    
                 {/if}
             </div>
             <h3>

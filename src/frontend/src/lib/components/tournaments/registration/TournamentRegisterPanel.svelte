@@ -41,20 +41,26 @@
 <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}>
   {#if user_info.id === null}
     <div class="link">
-      <a href="/{$page.params.lang}/login">
-        Sign in or register to participate in tournaments on MKCentral.
+      <a href="/{$page.params.lang}/user/login">
+        {$LL.TOURNAMENTS.REGISTRATIONS.SIGN_IN_REGISTER_TO_REGISTER()}
+      </a>
+    </div>
+  {:else if !user_info.email_confirmed}
+    <div class="link">
+      <a href="/{$page.params.lang}/user/confirm-email">
+        {$LL.TOURNAMENTS.REGISTRATIONS.CONFIRM_EMAIL_TO_REGISTER()}
       </a>
     </div>
   {:else if user_info.player === null}
     <div class="link">
-      <a href="/{$page.params.lang}/player-signup"
+      <a href="/{$page.params.lang}/user/player-signup"
         >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
       >
     </div>
   {:else if user_info.player.discord === null}
     <div class="link">
       <a href="/{$page.params.lang}/registry/players/edit-profile">
-        Please link your Discord account to participate in tournaments on MKCentral.
+        {$LL.TOURNAMENTS.REGISTRATIONS.LINK_DISCORD_TO_REGISTER()}
       </a>
     </div>
   {:else if registration}

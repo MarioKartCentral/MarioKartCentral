@@ -35,6 +35,9 @@ class S3Wrapper:
     async def put_object(self, bucket_name: str, key: str, body: bytes, acl: ObjectCannedACLType = "public-read"):
         await self.client.put_object(Bucket=bucket_name, Key=key, Body=body, ACL=acl)
 
+    async def delete_object(self, bucket_name: str, key: str):
+        await self.client.delete_object(Bucket=bucket_name, Key=key)
+
 @dataclass
 class S3WrapperManager:
     aws_secret_access_key: str

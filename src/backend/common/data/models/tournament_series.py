@@ -11,7 +11,6 @@ class SeriesDBFields():
     is_historical: bool
     is_public: bool
     short_description: str
-    logo: str | None
     organizer: str
     location: str | None
 
@@ -21,11 +20,12 @@ class SeriesS3Fields():
     ruleset: str
 
 @dataclass
-class SeriesRequestData(SeriesDBFields, SeriesS3Fields): pass
+class CreateSeriesRequestData(SeriesDBFields, SeriesS3Fields):
+    logo_file: str | None
     
 @dataclass
-class EditSeriesRequestData(SeriesRequestData):
-    series_id: int
+class EditSeriesRequestData(CreateSeriesRequestData):
+    remove_logo: bool
 
 @dataclass
 class SeriesBasic:

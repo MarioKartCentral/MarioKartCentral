@@ -7,3 +7,4 @@ from .players import *
 from .teams import *
 from .tournaments import *
 from .users import *
+from .emails import *

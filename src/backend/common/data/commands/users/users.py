@@ -11,31 +11,30 @@ class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, player_id, password_hash FROM users WHERE email = ?", (self.email, )) as cursor:
+            async with db.execute("SELECT id, player_id, password_hash, email_confirmed, force_password_reset FROM users WHERE email = ?", (self.email, )) as cursor:
                 row = await cursor.fetchone()
-
-            if row is None:
-                return None
-            
-            return UserLoginData(int(row[0]), row[1], self.email, str(row[2]))
+                if row is None:
+                    return None
+                user_id, player_id, password_hash, email_confirmed, force_password_reset = row
+            return UserLoginData(user_id, player_id, email_confirmed, force_password_reset, self.email, password_hash)
 
 @dataclass
-class GetUserDataFromIdCommand(Command[User | None]):
+class GetUserDataFromIdCommand(Command[UserAccountInfo | None]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, player_id FROM users WHERE id = ?", (self.id, )) as cursor:
+            async with db.execute("SELECT id, player_id, email_confirmed, force_password_reset FROM users WHERE id = ?", (self.id, )) as cursor:
                 row = await cursor.fetchone()
 
             if row is None:
                 return None
-            
-            return User(int(row[0]), row[1])
+            user_id, player_id, email_confirmed, force_password_reset = row
+            return UserAccountInfo(user_id, player_id, bool(email_confirmed), bool(force_password_reset))
             
 @save_to_command_log     
 @dataclass
-class CreateUserCommand(Command[User]):
+class CreateUserCommand(Command[UserAccountInfo]):
     email: str
     password_hash: str
 
@@ -49,7 +48,7 @@ class CreateUserCommand(Command[User]):
                 raise Problem("Failed to create user")
 
             await db.commit()
-            return User(int(row[0]), None)
+            return UserAccountInfo(int(row[0]), None, False, False)
         
 @dataclass
 class GetPlayerIdForUserCommand(Command[int]):
@@ -120,7 +119,8 @@ class ListUsersCommand(Command[UserList]):
                 variable_parameters.append(f"%{filter.name_or_email}%")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            query = f"""SELECT u.id, u.email, u.join_date, p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date
+            query = f"""SELECT u.id, u.email, u.join_date, u.email_confirmed, u.force_password_reset,
+                p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date
                 FROM users u
                 LEFT JOIN players p ON u.player_id = p.id
                 {where_clause}
@@ -130,12 +130,12 @@ class ListUsersCommand(Command[UserList]):
             async with db.execute(query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    user_id, email, u_join_date, player_id, name, country_code, is_hidden, is_shadow, is_banned, p_join_date = row
+                    user_id, email, u_join_date, email_confirmed, force_password_reset, player_id, name, country_code, is_hidden, is_shadow, is_banned, p_join_date = row
                     if player_id:
                         player = Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, p_join_date, None)
                     else:
                         player = None
-                    user = UserInfo(user_id, email, u_join_date, player)
+                    user = UserInfo(user_id, email, u_join_date, bool(email_confirmed), bool(force_password_reset), player)
                     users.append(user)
 
             count_query = f"""SELECT COUNT(*) FROM (
@@ -159,11 +159,11 @@ class ViewUserCommand(Command[UserInfo]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, email, join_date FROM users WHERE id = ?", (self.user_id,)) as cursor:
+            async with db.execute("SELECT player_id, email, join_date, email_confirmed, force_password_reset FROM users WHERE id = ?", (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("User not found", status=404)
-                player_id, email, u_join_date = row
+                player_id, email, u_join_date, email_confirmed, force_password_reset = row
             player = None
             if player_id:
                 async with db.execute("SELECT name, country_code, is_hidden, is_shadow, is_banned, join_date FROM players WHERE id = ?", (player_id,)) as cursor:
@@ -177,13 +177,16 @@ class ViewUserCommand(Command[UserInfo]):
                         discord_id, username, discriminator, global_name, avatar = row
                         discord = Discord(discord_id, username, discriminator, global_name, avatar)
                 player = Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, p_join_date, discord)
-            return UserInfo(self.user_id, email, u_join_date, player)
+            return UserInfo(self.user_id, email, u_join_date, bool(email_confirmed), bool(force_password_reset), player)
         
 @dataclass
 class EditUserCommand(Command[None]):
+    mod_user_id: int
     user_id: int
     email: str
     password_hash: str | None
+    email_confirmed: bool
+    force_password_reset: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -191,12 +194,40 @@ class EditUserCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("User not found", status=404)
+            
+            # users should only be able to edit users lower in the role hierarchy
+            # than them. editing yourself is an exception, since you are the same level in the
+            # role hierarchy as yourself
+            if self.mod_user_id != self.user_id:
+                async with db.execute("""
+                    WITH mod_highest_role AS (
+                        SELECT MIN(r.position) AS pos
+                        FROM roles r
+                        JOIN user_roles ur ON r.id = ur.role_id
+                        WHERE ur.user_id = ?
+                    ),
+                    user_highest_role AS (
+                        SELECT MIN(r.position) AS pos
+                        FROM roles r
+                        JOIN user_roles ur ON r.id = ur.role_id
+                        WHERE ur.user_id = ?
+                    )
+                    SELECT 1
+                    FROM mod_highest_role
+                    JOIN user_highest_role
+                    WHERE user_highest_role.pos IS NULL OR mod_highest_role.pos < user_highest_role.pos
+                    """, (self.mod_user_id, self.user_id)) as cursor:
+                    row = await cursor.fetchone()
+                    if row is None:
+                        raise Problem("Cannot edit users higher/equal in the role hierarchy to yourself", status=401)
+
             async with db.execute("SELECT id FROM users WHERE email = ? AND id != ?", (self.email, self.user_id)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Another user is already using this email", status=400)
             if self.password_hash:
-                await db.execute("UPDATE users SET email = ?, password_hash = ? WHERE id = ?", (self.email, self.password_hash, self.user_id))
+                await db.execute("UPDATE users SET email = ?, password_hash = ?, email_confirmed = ?, force_password_reset = ? WHERE id = ?", 
+                                 (self.email, self.password_hash, self.email_confirmed, self.force_password_reset, self.user_id))
             else:
-                await db.execute("UPDATE users SET email = ? WHERE id = ?", (self.email, self.user_id))
+                await db.execute("UPDATE users SET email = ?, email_confirmed = ?, force_password_reset = ? WHERE id = ?", (self.email, self.email_confirmed, self.force_password_reset, self.user_id))
             await db.commit()

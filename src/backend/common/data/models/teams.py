@@ -12,7 +12,7 @@ class RequestCreateTeamRequestData():
     description: str
     language: str
     color: int
-    logo: str | None
+    logo_file: str | None
     game: Game
     mode: GameMode
     is_recruiting: bool
@@ -31,7 +31,8 @@ class EditTeamRequestData():
     description: str
     language: str
     color: int
-    logo: str | None
+    logo_file: str | None
+    remove_logo: bool
     approval_status: Approval
     is_historical: bool
 
@@ -41,7 +42,8 @@ class ManagerEditTeamRequestData():
     description: str
     language: str
     color: int
-    logo: str | None
+    logo_file: str | None
+    remove_logo: bool
 
 @dataclass
 class RequestEditTeamRequestData():

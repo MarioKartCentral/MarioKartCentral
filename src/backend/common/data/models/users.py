@@ -11,6 +11,16 @@ class User:
     player_id: int | None
 
 @dataclass
+class UserAccountInfo(User):
+    email_confirmed: bool
+    force_password_reset: bool
+
+@dataclass
+class UserLoginData(UserAccountInfo):
+    email: str
+    password_hash: str
+
+@dataclass
 class ModNotifications:
     pending_teams: int = 0
     pending_team_edits: int = 0
@@ -19,20 +29,13 @@ class ModNotifications:
     pending_player_claims: int = 0
 
 @dataclass
-class UserPlayer:
-    id: int
-    player_id: int | None
+class UserPlayer(UserAccountInfo):
     player: PlayerDetailed | None
     user_roles: list[UserRole]
     team_roles: list[TeamRole]
     series_roles: list[SeriesRole]
     tournament_roles: list[TournamentRole]
     mod_notifications: ModNotifications | None
-
-@dataclass
-class UserLoginData(User):
-    email: str
-    password_hash: str
 
 @dataclass
 class PermissionsCheck:
@@ -56,12 +59,16 @@ class EditUserRequestData:
     user_id: int
     email: str
     password: str | None
+    email_confirmed: bool
+    force_password_reset: bool
 
 @dataclass
 class UserInfo:
     id: int
     email: str
     join_date: int
+    email_confirmed: bool
+    force_password_reset: bool
     player: Player | None
 
 @dataclass

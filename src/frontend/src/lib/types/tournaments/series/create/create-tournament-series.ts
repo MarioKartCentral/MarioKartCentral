@@ -10,6 +10,8 @@ export type CreateTournamentSeries = {
   short_description: string;
   description: string;
   logo: string | null;
+  logo_file: string | null;
+  remove_logo: boolean;
   ruleset: string;
   organizer: string;
   location: string | null;

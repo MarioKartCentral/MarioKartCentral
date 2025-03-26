@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { CreateTournament } from '$lib/types/tournaments/create/create-tournament';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
-  import Section from '../common/Section.svelte';
-  import SeriesSearch from '../common/SeriesSearch.svelte';
-  import GameModeSelect from '../common/GameModeSelect.svelte';
-  import MarkdownTextArea from '../common/MarkdownTextArea.svelte';
+  import Section from '$lib/components/common/Section.svelte';
+  import SeriesSearch from '$lib/components/common/SeriesSearch.svelte';
+  import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+  import MarkdownTextArea from '$lib/components/common/MarkdownTextArea.svelte';
   import LL from '$i18n/i18n-svelte';
+  import LogoUpload from '$lib/components/common/LogoUpload.svelte';
 
   export let data: CreateTournament;
   export let update_function: () => void; // function used to update data in the parent component
@@ -65,7 +66,8 @@
       data.use_series_logo = false;
     }
     if (data.use_series_logo) {
-      data.logo = null;
+      data.logo_file = null;
+      data.remove_logo = true;
     }
     if (data.game !== 'mkw' || !data.is_squad) {
       data.bagger_clause_enabled = false;
@@ -127,14 +129,12 @@
       </div>
     </div>
   {/if}
-  {#if !data.use_series_logo}
+  {#if !is_template && !data.use_series_logo}
     <div class="option">
       <div>
         <label for="logo">{$LL.TOURNAMENTS.MANAGE.LOGO()}</label>
       </div>
-      <div>
-        <input name="logo" type="text" bind:value={data.logo} />
-      </div>
+      <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo}/>
     </div>
   {/if}
 </Section>
@@ -461,7 +461,7 @@
       </div>
     </div>
   {/if}
-  <div class="option">
+  <div class="option hidden">
     <div>
       <label for="registration_cap">{$LL.TOURNAMENTS.MANAGE.REGISTRATION_CAP()}</label>
     </div>

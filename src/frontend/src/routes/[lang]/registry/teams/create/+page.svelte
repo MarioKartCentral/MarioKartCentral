@@ -10,6 +10,7 @@
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import { permissions, check_permission } from '$lib/util/permissions';
+  import LogoUpload from '$lib/components/common/LogoUpload.svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -17,6 +18,7 @@
   });
 
   let tag = "";
+  let logo_file = "";
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);
@@ -30,7 +32,7 @@
       name: data.get('name')?.toString(),
       tag: data.get('tag')?.toString(),
       color: Number(data.get('color')?.toString()),
-      logo: getOptionalValue('logo'),
+      logo_file: logo_file,
       language: data.get('language')?.toString(),
       description: getOptionalValue('description'),
       is_recruiting: getOptionalValue('recruiting') === 'true',
@@ -85,7 +87,7 @@
     </div>
     <div class="option">
       <label for="logo">{$LL.TEAMS.EDIT.TEAM_LOGO()}</label>
-      <input name="logo" type="text" />
+      <LogoUpload bind:file={logo_file}/>
     </div>
     
   </Section>

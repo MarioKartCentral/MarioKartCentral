@@ -7,6 +7,7 @@ from common.data.models import *
 from common.auth import tournament_permissions
 import common.data.s3 as s3
 from aiosqlite import Row
+import base64
 
 @save_to_command_log
 @dataclass
@@ -33,7 +34,6 @@ class CreateTournamentCommand(Command[int | None]):
 
         # store minimal data about each tournament in the SQLite DB
         async with db_wrapper.connect() as db:
-            
             cursor = await db.execute(
                 """INSERT INTO tournaments(
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, use_series_description, series_stats_include,
@@ -42,18 +42,27 @@ class CreateTournamentCommand(Command[int | None]):
                     is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.use_series_description,
-                b.series_stats_include, b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
+                b.series_stats_include, None, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open, b.min_players_checkin, 
                 b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives,
                 b.bagger_clause_enabled, b.use_series_ruleset, b.organizer, b.location))
             tournament_id = cursor.lastrowid
-            await db.commit()
 
-        s3_body = TournamentS3Fields(b.description, b.ruleset)
-        s3_message = bytes(msgspec.json.encode(s3_body))
-        await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
-        return tournament_id
+            logo_filename = f"tournament_logos/{tournament_id}.png"
+            logo_path = f"/img/{logo_filename}"
+            if b.logo_file:
+                await db.execute("UPDATE tournaments SET logo = ? WHERE id = ?", (logo_path, tournament_id))
             
+
+            s3_body = TournamentS3Fields(b.description, b.ruleset)
+            s3_message = bytes(msgspec.json.encode(s3_body))
+            await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
+            if b.logo_file:
+                logo_data = base64.b64decode(b.logo_file)
+                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+            await db.commit()
+        return tournament_id
+          
 @save_to_command_log
 @dataclass
 class EditTournamentCommand(Command[None]):
@@ -64,11 +73,15 @@ class EditTournamentCommand(Command[None]):
         b = self.body
         
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_squad, game FROM tournaments WHERE id = ?", (self.id,)) as cursor:
+            async with db.execute("SELECT is_squad, game, logo FROM tournaments WHERE id = ?", (self.id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=404)
-                is_squad, game = row
+                is_squad, game, logo_path = row
+            if b.logo_file:
+                logo_path = f"/img/tournament_logos/{self.id}.png"
+            elif b.remove_logo:
+                logo_path = None
             if b.series_id:
                 async with db.execute("SELECT id FROM tournament_series WHERE id = ?", (b.series_id,)) as cursor:
                     row = await cursor.fetchone()
@@ -124,20 +137,26 @@ class EditTournamentCommand(Command[None]):
                 min_representatives = ?
                 WHERE id = ?""",
                 (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
-                b.logo, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
+                logo_path, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
                 b.min_representatives, self.id))
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
-
+            
             s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
             await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
-
+            if b.logo_file:
+                logo_filename = f"tournament_logos/{self.id}.png"
+                logo_data = base64.b64decode(b.logo_file)
+                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+            elif b.remove_logo:
+                logo_filename = f"tournament_logos/{self.id}.png"
+                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
             await db.commit()
-
+            
 @dataclass
 class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int
@@ -147,14 +166,17 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
             db.row_factory = Row
             async with db.execute("""SELECT * FROM tournaments WHERE id = ?""", (self.id,)) as cursor:
                 row = await cursor.fetchone()
-                t = msgspec.convert(row, type=TournamentDBFields, strict=False)
                 if not row:
                     raise Problem("No tournament found", status=404)
-
-                s3_body = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
-                if s3_body is None:
-                    raise Problem('No tournament found', status=404)
-                s3_fields = msgspec.json.decode(s3_body, type=TournamentS3Fields)
+                t = msgspec.convert(row, type=TournamentDBFields, strict=False)
+            async with db.execute("SELECT logo FROM tournaments WHERE id = ?", (self.id,)) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                logo = row[0]
+            s3_body = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
+            if s3_body is None:
+                raise Problem('No tournament found', status=404)
+            s3_fields = msgspec.json.decode(s3_body, type=TournamentS3Fields)
 
             tournament_data = GetTournamentRequestData(id=self.id,
                                                        name=t.name,
@@ -168,7 +190,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                                                        description=s3_fields.description,
                                                        use_series_description=t.use_series_description,
                                                        series_stats_include=t.series_stats_include,
-                                                       logo=t.logo,
+                                                       logo=logo,
                                                        use_series_logo=t.use_series_logo,
                                                        url=t.url,
                                                        registration_deadline=t.registration_deadline,
