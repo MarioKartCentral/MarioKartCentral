@@ -37,8 +37,8 @@ const config = {
         },
       },
       screens: {
-        'desktop': '1100px',
-      }
+        desktop: '1100px',
+      },
     },
   },
 };

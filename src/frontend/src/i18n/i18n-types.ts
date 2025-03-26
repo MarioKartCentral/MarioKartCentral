@@ -318,10 +318,6 @@ type RootTranslation = {
 		 * N​e​w
 		 */
 		NEW: string
-		/**
-		 * U​p​l​o​a​d​ ​I​m​a​g​e
-		 */
-		UPLOAD_IMAGE: string
 	}
 	DISCORD: {
 		/**
@@ -541,6 +537,16 @@ type RootTranslation = {
 		 * V​i​e​w​ ​a​l​l​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: string
+	}
+	IMAGES: {
+		/**
+		 * U​p​l​o​a​d​ ​I​m​a​g​e
+		 */
+		UPLOAD_IMAGE: string
+		/**
+		 * I​m​a​g​e​s​ ​m​u​s​t​ ​b​e​ ​b​e​l​o​w​ ​1​M​B
+		 */
+		IMAGE_BELOW_1MB: string
 	}
 	INVITES: {
 		/**
@@ -5022,10 +5028,6 @@ export type TranslationFunctions = {
 		 * New
 		 */
 		NEW: () => LocalizedString
-		/**
-		 * Upload Image
-		 */
-		UPLOAD_IMAGE: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -5244,6 +5246,16 @@ export type TranslationFunctions = {
 		 * View all Announcements
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: () => LocalizedString
+	}
+	IMAGES: {
+		/**
+		 * Upload Image
+		 */
+		UPLOAD_IMAGE: () => LocalizedString
+		/**
+		 * Images must be below 1MB
+		 */
+		IMAGE_BELOW_1MB: () => LocalizedString
 	}
 	INVITES: {
 		/**

@@ -23,7 +23,7 @@
         if(fl && fl.length) {
             file_info = fl[0];
             if(file_info.size > 1024*1024) {
-                alert("Image must be below 1MB");
+                alert($LL.IMAGES.IMAGE_BELOW_1MB());
                 file_info = null;
                 file_list = null;
                 file = null;
@@ -47,7 +47,7 @@
 
 {#if !file_info}
     <input accept="image/png, image/jpeg" bind:files={file_list} name={name} type="file" bind:this={input}/>
-    <Button type="button" on:click={onClick}>{$LL.COMMON.UPLOAD_IMAGE()}</Button>
+    <Button type="button" on:click={onClick}>{$LL.IMAGES.UPLOAD_IMAGE()}</Button>
 {:else}
     <div class="file-info">
         <CancelButton on:click={() => file_list = null}/>
