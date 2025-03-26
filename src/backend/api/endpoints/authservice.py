@@ -22,7 +22,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
             raise Problem("Invalid login details", status=401)
     else:
         # check MKC V1 data for the email/password combo if user can't be found in the database
-        mkc_user = await handle(GetMKCV1UserCommand(body.email, body.password))
+        mkc_user = await handle(GetMKCV1UserCommand(body.email))
         password_hash = pw_hasher.hash(body.password)
         if mkc_user is None:
             raise Problem("User not found", status=404)
@@ -72,7 +72,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
     # import all the data from their old MKC account, and send them a password
     # reset email. don't log them in until their password is reset, just return the user info.
     # the frontend will take care of telling them to reset their password from the response json
-    mkc_user = await handle(GetMKCV1UserCommand(body.email, body.password))
+    mkc_user = await handle(GetMKCV1UserCommand(body.email))
     if mkc_user:
         user = await handle(TransferMKCV1UserCommand(body.email, password_hash, mkc_user.register_date,
                                                 mkc_user.player_id, mkc_user.about_me,

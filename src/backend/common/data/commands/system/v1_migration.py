@@ -71,7 +71,6 @@ class ValidateXenforoPasswordCommand(Command[bool]):
 @dataclass
 class GetMKCV1UserCommand(Command[NewMKCUser | None]):
     email: str
-    password: str
 
     async def handle(self, db_wrapper, s3_wrapper):
         user_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "users.json")
@@ -81,10 +80,6 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
         if self.email not in user_data.users:
             return None
         v1_user = user_data.users[self.email]
-        # in the future, we may want to just accept and return the user even if the password is incorrect,
-        # but require a password reset before you can use the site
-        if not bcrypt.checkpw(self.password.encode('utf-8'), v1_user.password_hash.encode('utf-8')):
-            raise Problem("Invalid login details", status=401)
         return v1_user
 
 @save_to_command_log
