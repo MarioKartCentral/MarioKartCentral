@@ -176,6 +176,7 @@ const ja: Translation = {
     JA: 'Japanese',
   },
   LOGIN: {
+    LOGIN: 'Login',
     LOGOUT: 'ログアウト',
     EMAIL: 'Eメール',
     EMAIL_ADDRESS: 'Email Address',

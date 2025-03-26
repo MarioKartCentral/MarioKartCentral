@@ -33,8 +33,9 @@
             body: JSON.stringify(payload),
         });
         working = false;
+        const result = await response.json();
         if (response.status < 300) {
-            const user: UserAccountInfo = await response.json();
+            const user: UserAccountInfo = result;
             if(user.force_password_reset) {
                 alert($LL.LOGIN.PASSWORD_RESET_REQUIRED());
                 return;
@@ -51,17 +52,17 @@
             }
         } else {
             if(isLogin) {
-                alert($LL.LOGIN.LOGIN_FAILED())
+                alert(`${$LL.LOGIN.LOGIN_FAILED()}: ${result['title']}`)
             }
             else {
-                alert($LL.LOGIN.REGISTRATION_FAILED())
+                alert(`${$LL.LOGIN.REGISTRATION_FAILED()}: ${result['title']}`)
             }
         }
     }
 </script>
 
 <Tabs>
-    <TabItem open title="Login">
+    <TabItem open title={$LL.LOGIN.LOGIN()}>
         <div class="form">
             <form method="post" on:submit|preventDefault={() => loginOrSignup(true)}>
                 <div class="option">
@@ -77,7 +78,7 @@
                     <input name="password" type="password" required bind:value={password}/>
                 </div>
                 <div class="login-row">
-                    <Button extra_classes="login-btn" type="submit" disabled={working}>{$LL.NAVBAR.LOGIN()}</Button>
+                    <Button extra_classes="login-btn" type="submit" disabled={working}>{$LL.LOGIN.LOGIN()}</Button>
                     <div>
                         <a href="/{$page.params.lang}/user/reset-password">
                             {$LL.LOGIN.FORGOT_PASSWORD()}
@@ -87,7 +88,7 @@
             </form>
         </div>
     </TabItem>
-    <TabItem title="Register">
+    <TabItem title={$LL.LOGIN.REGISTER()}>
         <RegisterForm bind:email={email} bind:password={password} on:submit={() => loginOrSignup(false)}/>
     </TabItem>
 </Tabs>

@@ -639,6 +639,10 @@ type RootTranslation = {
 	}
 	LOGIN: {
 		/**
+		 * L​o​g​i​n
+		 */
+		LOGIN: string
+		/**
 		 * L​o​g​o​u​t
 		 */
 		LOGOUT: string
@@ -5320,6 +5324,10 @@ export type TranslationFunctions = {
 		JA: () => LocalizedString
 	}
 	LOGIN: {
+		/**
+		 * Login
+		 */
+		LOGIN: () => LocalizedString
 		/**
 		 * Logout
 		 */

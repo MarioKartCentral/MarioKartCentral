@@ -176,6 +176,7 @@ const de: Translation = {
     JA: 'Japanese',
   },
   LOGIN: {
+    LOGIN: 'Login',
     LOGOUT: 'Logout',
     EMAIL: 'Email',
     EMAIL_ADDRESS: 'Email Address',

@@ -461,7 +461,7 @@
       </div>
     </div>
   {/if}
-  <div class="option">
+  <div class="option hidden">
     <div>
       <label for="registration_cap">{$LL.TOURNAMENTS.MANAGE.REGISTRATION_CAP()}</label>
     </div>

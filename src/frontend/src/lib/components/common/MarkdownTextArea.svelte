@@ -1,20 +1,33 @@
 <script lang="ts">
     import MarkdownBox from "./MarkdownBox.svelte";
+    import Tabs from "$lib/components/common/tabs/Tabs.svelte";
+    import TabItem from "$lib/components/common/tabs/TabItem.svelte";
 
     export let name: string;
     export let value: string;
     export let disabled = false;
 </script>
 
-<div>
-    <textarea name={name} bind:value={value} {disabled} on:change/>
-</div>
-<div>Preview</div>
-<div class="preview">
-    {#key value}
-        <MarkdownBox content={value} />
-    {/key}
-</div>
+
+<Tabs>
+  <TabItem open title="Input">
+    <div>
+        <textarea name={name} bind:value={value} {disabled} on:change/>
+    </div>
+    <div class="tutorial">
+      <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">
+        This text input supports Markdown. Click here for a list of basic Markdown syntax.
+      </a>
+    </div>
+  </TabItem>
+  <TabItem title="Preview">
+    <div class="preview">
+        {#key value}
+            <MarkdownBox content={value} />
+        {/key}
+    </div>
+  </TabItem>
+</Tabs>
 
 <style>
     textarea {
@@ -28,6 +41,11 @@
   div.preview {
     border: 1px solid white;
     padding: 10px;
-    min-height: 200px;
+    min-height: 250px;
+    max-height: 250px;
+    overflow: scroll;
+  }
+  div.tutorial {
+    color: lightgray;
   }
 </style>

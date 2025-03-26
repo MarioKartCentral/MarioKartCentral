@@ -176,6 +176,7 @@ const fr: Translation = {
     JA: 'Japonais',
   },
   LOGIN: {
+    LOGIN: 'Login',
     LOGOUT: 'Se Déconnecter',
     EMAIL: 'Adresse e-mail',
     EMAIL_ADDRESS: 'Email Address',
