@@ -9,6 +9,7 @@ from common.data.models.common import Problem, Game, GameMode
 from common.data.models.mkcv1 import *
 from common.data.models.users import UserLoginData
 from common.data.models.tournaments import TournamentS3Fields
+from common.data.models.tournament_series import SeriesS3Fields
 from common.data.commands import Command, save_to_command_log
 from common.auth import roles, series_roles, team_roles
 from datetime import datetime, timezone
@@ -642,7 +643,8 @@ class ConvertMKCV1DataCommand(Command[None]):
                                       s.organizer, s.location)
                                       for s in series_dict.values()])
             for series in series_dict.values():
-                s3_message = bytes(msgspec.json.encode(series))
+                s3_body = SeriesS3Fields(series.description, series.ruleset)
+                s3_message = bytes(msgspec.json.encode(s3_body))
                 await s3_wrapper.put_object(s3.SERIES_BUCKET, f'{series.id}.json', s3_message)
             
             await db.executemany("""INSERT INTO tournaments(id, name, game, mode, series_id, is_squad, registrations_open, date_start, date_end,

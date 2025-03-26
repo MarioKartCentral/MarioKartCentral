@@ -8,6 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import MarkdownTextArea from '$lib/components/common/MarkdownTextArea.svelte';
   import LL from '$i18n/i18n-svelte';
+  import LogoUpload from '$lib/components/common/LogoUpload.svelte';
 
   export let series_id: number | null = null;
   export let is_edit = false;
@@ -27,6 +28,8 @@
     description: '',
     ruleset: '',
     logo: null,
+    logo_file: null,
+    remove_logo: false,
   };
 
   onMount(async () => {
@@ -115,9 +118,10 @@
       <div>
         <label for="logo">{$LL.TOURNAMENTS.SERIES.SERIES_LOGO()}</label>
       </div>
-      <div>
+      <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo}/>
+      <!-- <div>
         <input type="text" name="logo" bind:value={data.logo} />
-      </div>
+      </div> -->
     </div>
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.EVENT_DEFAULTS()}>

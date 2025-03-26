@@ -56,10 +56,10 @@ class CreateTournamentCommand(Command[int | None]):
 
             s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
+            await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
             if b.logo_file:
                 logo_data = base64.b64decode(b.logo_file)
                 await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
-            await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
             await db.commit()
         return tournament_id
             
@@ -152,7 +152,6 @@ class EditTournamentCommand(Command[None]):
                 logo_filename = f"tournament_logos/{self.id}.png"
                 logo_data = base64.b64decode(b.logo_file)
                 await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
-                print('a')
             elif b.remove_logo:
                 logo_filename = f"tournament_logos/{self.id}.png"
                 await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
