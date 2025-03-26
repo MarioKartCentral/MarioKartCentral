@@ -38,7 +38,9 @@
         const payload = {
             user_id: id,
             email: edit_user.email,
-            password: change_password ? new_password : null
+            password: change_password ? new_password : null,
+            email_confirmed: edit_user.email_confirmed,
+            force_password_reset: edit_user.force_password_reset,
         };
         console.log(payload);
         const endpoint = '/api/user/edit';
@@ -72,7 +74,28 @@
                     <div>
                         <input type="email" bind:value={edit_user.email} required/>
                     </div>
-                    
+                </div>
+                <div class="option">
+                    <div class="label">
+                        <label for="email_confirmed">{$LL.MODERATOR.MANAGE_USERS.EMAIL_CONFIRMED()}</label>
+                    </div>
+                    <div>
+                        <select name="email_confirmed" bind:value={edit_user.email_confirmed}>
+                            <option value={true}>{$LL.MODERATOR.MANAGE_USERS.EMAIL_CONFIRMED_TRUE()}</option>
+                            <option value={false}>{$LL.MODERATOR.MANAGE_USERS.EMAIL_CONFIRMED_FALSE()}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="option">
+                    <div class="label">
+                        <label for="force_password_reset">{$LL.MODERATOR.MANAGE_USERS.FORCE_PASSWORD_RESET()}</label>
+                    </div>
+                    <div>
+                        <select name="force_password_reset" bind:value={edit_user.force_password_reset}>
+                            <option value={false}>{$LL.MODERATOR.MANAGE_USERS.FORCE_PASSWORD_RESET_FALSE()}</option>
+                            <option value={true}>{$LL.MODERATOR.MANAGE_USERS.FORCE_PASSWORD_RESET_TRUE()}</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="option">
                     <div class="label">
@@ -81,7 +104,7 @@
                         </label>
                     </div>
                     <div>
-                        <select bind:value={change_password}>
+                        <select bind:value={change_password} name="change_password">
                             <option value={false}>{$LL.MODERATOR.MANAGE_USERS.DO_NOT_CHANGE_PASSWORD()}</option>
                             <option value={true}>{$LL.MODERATOR.MANAGE_USERS.SET_NEW_PASSWORD()}</option>
                         </select>
@@ -106,7 +129,6 @@
                                     <div>
                                         {edit_user.player.name}
                                     </div>
-                                
                                 </div>
                             </a>
                         {:else}
@@ -143,7 +165,7 @@
         align-items: center;
     }
     div.label {
-        width: 100px;
+        width: 200px;
     }
     div.flex {
         display: flex;

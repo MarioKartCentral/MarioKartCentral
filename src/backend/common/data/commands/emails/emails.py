@@ -95,14 +95,14 @@ class GetUserInfoFromPasswordResetTokenCommand(Command[UserInfo]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT u.id, u.email, u.join_date FROM users u
+            async with db.execute("""SELECT u.id, u.email, u.join_date, u.email_confirmed, u.force_password_reset FROM users u
                                     JOIN password_resets p ON u.id = p.user_id
                                     WHERE p.token_id = ?""", (self.token_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Token is expired", status=400)
-                user_id, email, join_date = row
-                user = UserInfo(user_id, email, join_date, None)
+                user_id, email, join_date, email_confirmed, force_password_reset = row
+                user = UserInfo(user_id, email, join_date, bool(email_confirmed), bool(force_password_reset), None)
                 return user
 
 @dataclass

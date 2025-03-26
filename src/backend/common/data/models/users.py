@@ -59,12 +59,16 @@ class EditUserRequestData:
     user_id: int
     email: str
     password: str | None
+    email_confirmed: bool
+    force_password_reset: bool
 
 @dataclass
 class UserInfo:
     id: int
     email: str
     join_date: int
+    email_confirmed: bool
+    force_password_reset: bool
     player: Player | None
 
 @dataclass

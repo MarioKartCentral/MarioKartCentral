@@ -327,6 +327,12 @@ const de: Translation = {
       EDIT_USER_FAILED: 'Failed to edit user',
       EDIT_USER: 'Edit User',
       EDIT_USER_HEADER: 'Edit User: ID {user_id}',
+      EMAIL_CONFIRMED: 'Email Confirmed',
+      EMAIL_CONFIRMED_TRUE: 'Confirmed',
+      EMAIL_CONFIRMED_FALSE: 'Unconfirmed',
+      FORCE_PASSWORD_RESET: 'Force password reset?',
+      FORCE_PASSWORD_RESET_TRUE: 'Force password reset',
+      FORCE_PASSWORD_RESET_FALSE: 'Do not force',
     },
     ALT_DETECTION: {
       ALT_FLAGS: 'Alt Flags',

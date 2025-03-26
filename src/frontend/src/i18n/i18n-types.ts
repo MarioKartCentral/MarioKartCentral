@@ -1201,6 +1201,30 @@ type RootTranslation = {
 			 * @param {number} user_id
 			 */
 			EDIT_USER_HEADER: RequiredParams<'user_id'>
+			/**
+			 * E​m​a​i​l​ ​C​o​n​f​i​r​m​e​d
+			 */
+			EMAIL_CONFIRMED: string
+			/**
+			 * C​o​n​f​i​r​m​e​d
+			 */
+			EMAIL_CONFIRMED_TRUE: string
+			/**
+			 * U​n​c​o​n​f​i​r​m​e​d
+			 */
+			EMAIL_CONFIRMED_FALSE: string
+			/**
+			 * F​o​r​c​e​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​?
+			 */
+			FORCE_PASSWORD_RESET: string
+			/**
+			 * F​o​r​c​e​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t
+			 */
+			FORCE_PASSWORD_RESET_TRUE: string
+			/**
+			 * D​o​ ​n​o​t​ ​f​o​r​c​e
+			 */
+			FORCE_PASSWORD_RESET_FALSE: string
 		}
 		ALT_DETECTION: {
 			/**
@@ -5895,6 +5919,30 @@ export type TranslationFunctions = {
 			 * Edit User: ID {user_id}
 			 */
 			EDIT_USER_HEADER: (arg: { user_id: number }) => LocalizedString
+			/**
+			 * Email Confirmed
+			 */
+			EMAIL_CONFIRMED: () => LocalizedString
+			/**
+			 * Confirmed
+			 */
+			EMAIL_CONFIRMED_TRUE: () => LocalizedString
+			/**
+			 * Unconfirmed
+			 */
+			EMAIL_CONFIRMED_FALSE: () => LocalizedString
+			/**
+			 * Force password reset?
+			 */
+			FORCE_PASSWORD_RESET: () => LocalizedString
+			/**
+			 * Force password reset
+			 */
+			FORCE_PASSWORD_RESET_TRUE: () => LocalizedString
+			/**
+			 * Do not force
+			 */
+			FORCE_PASSWORD_RESET_FALSE: () => LocalizedString
 		}
 		ALT_DETECTION: {
 			/**
