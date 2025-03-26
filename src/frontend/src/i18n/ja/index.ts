@@ -219,6 +219,11 @@ const ja: Translation = {
     WEBSITE: 'ウェブサイト',
     DISCORD_INVITE: 'Discord招待リンク',
   },
+  MARKDOWN: {
+    INPUT: 'Input',
+    PREVIEW: 'Preview',
+    MARKDOWN_HELP: 'This text input supports Markdown. Click here for a list of basic Markdown syntax.',
+  },
   MODERATOR: {
     MODERATOR: 'Moderator',
     PENDING_NAME_REQUESTS: '名前変更申請',

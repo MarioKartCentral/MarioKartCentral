@@ -219,6 +219,11 @@ const fr: Translation = {
     WEBSITE: 'Site web',
     DISCORD_INVITE: 'Invitation Discord',
   },
+  MARKDOWN: {
+    INPUT: 'Input',
+    PREVIEW: 'Preview',
+    MARKDOWN_HELP: 'This text input supports Markdown. Click here for a list of basic Markdown syntax.',
+  },
   MODERATOR: {
     MODERATOR: 'Modérateur',
     PENDING_NAME_REQUESTS: 'Demande de changement de pseudo',

@@ -216,6 +216,11 @@ const en_us: BaseTranslation = {
     WEBSITE: 'Website',
     DISCORD_INVITE: 'Discord Invite',
   },
+  MARKDOWN: {
+    INPUT: 'Input',
+    PREVIEW: 'Preview',
+    MARKDOWN_HELP: 'This text input supports Markdown. Click here for a list of basic Markdown syntax.',
+  },
   MODERATOR: {
     MODERATOR: 'Moderator',
     PENDING_NAME_REQUESTS: 'Pending Player Name Requests',

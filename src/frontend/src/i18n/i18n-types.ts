@@ -790,6 +790,20 @@ type RootTranslation = {
 		 */
 		DISCORD_INVITE: string
 	}
+	MARKDOWN: {
+		/**
+		 * I​n​p​u​t
+		 */
+		INPUT: string
+		/**
+		 * P​r​e​v​i​e​w
+		 */
+		PREVIEW: string
+		/**
+		 * T​h​i​s​ ​t​e​x​t​ ​i​n​p​u​t​ ​s​u​p​p​o​r​t​s​ ​M​a​r​k​d​o​w​n​.​ ​C​l​i​c​k​ ​h​e​r​e​ ​f​o​r​ ​a​ ​l​i​s​t​ ​o​f​ ​b​a​s​i​c​ ​M​a​r​k​d​o​w​n​ ​s​y​n​t​a​x​.
+		 */
+		MARKDOWN_HELP: string
+	}
 	MODERATOR: {
 		/**
 		 * M​o​d​e​r​a​t​o​r
@@ -5474,6 +5488,20 @@ export type TranslationFunctions = {
 		 * Discord Invite
 		 */
 		DISCORD_INVITE: () => LocalizedString
+	}
+	MARKDOWN: {
+		/**
+		 * Input
+		 */
+		INPUT: () => LocalizedString
+		/**
+		 * Preview
+		 */
+		PREVIEW: () => LocalizedString
+		/**
+		 * This text input supports Markdown. Click here for a list of basic Markdown syntax.
+		 */
+		MARKDOWN_HELP: () => LocalizedString
 	}
 	MODERATOR: {
 		/**

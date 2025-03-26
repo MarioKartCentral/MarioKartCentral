@@ -2,6 +2,7 @@
     import MarkdownBox from "./MarkdownBox.svelte";
     import Tabs from "$lib/components/common/tabs/Tabs.svelte";
     import TabItem from "$lib/components/common/tabs/TabItem.svelte";
+    import LL from "$i18n/i18n-svelte";
 
     export let name: string;
     export let value: string;
@@ -10,17 +11,17 @@
 
 
 <Tabs>
-  <TabItem open title="Input">
+  <TabItem open title={$LL.MARKDOWN.INPUT()}>
     <div>
         <textarea name={name} bind:value={value} {disabled} on:change/>
     </div>
     <div class="tutorial">
       <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">
-        This text input supports Markdown. Click here for a list of basic Markdown syntax.
+        {$LL.MARKDOWN.MARKDOWN_HELP()}
       </a>
     </div>
   </TabItem>
-  <TabItem title="Preview">
+  <TabItem title={$LL.MARKDOWN.PREVIEW()}>
     <div class="preview">
         {#key value}
             <MarkdownBox content={value} />
