@@ -8,11 +8,11 @@
     export let is_change = false;
     export let is_reset = false;
 
-    const min_length = 14;
+    const min_length = 8;
 
     let confirm_password = "";
 
-    $: button_disabled = password.length < 14 || password != confirm_password;
+    $: button_disabled = password.length < 8 || password != confirm_password;
 </script>
 
 <div class="form">

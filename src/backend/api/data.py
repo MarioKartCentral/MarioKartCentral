@@ -3,7 +3,7 @@ from common.auth import pw_hasher
 from common.data.command_handler import CommandHandler
 from common.data.commands import *
 
-_command_handler = CommandHandler(appsettings.DB_PATH, str(appsettings.AWS_SECRET_ACCESS_KEY), appsettings.AWS_ACCESS_KEY_ID, appsettings.AWS_ENDPOINT_URL)
+_command_handler = CommandHandler(appsettings.DB_PATH, str(appsettings.S3_SECRET_KEY), appsettings.S3_ACCESS_KEY, appsettings.S3_ENDPOINT)
 
 async def handle[T](command: Command[T]) -> T:
     return await _command_handler.handle(command)

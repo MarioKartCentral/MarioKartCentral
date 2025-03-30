@@ -23,12 +23,14 @@ flowchart LR
     DB["**Database**<br>*SQLite*"]
     S3["**Object Storage**<br>*S3-Compatible*"]
     BGWorker["**Background Worker**<br>*Python*"]
+    Email["**Email Service**<br>*SES / SMTP*"]
 
     User --> Worker
     Worker --> Backend
     Worker --> Frontend
     Backend --> DB
     Backend --> S3
+    Backend --> Email
     BGWorker --> DB
 ```
 
@@ -66,6 +68,10 @@ The system consists of several key components that work together:
 - Assumes an S3-Compatible API, however in production we are using [Wasabi](https://wasabi.com/cloud-object-storage) rather than AWS
 - For details on how this integrates with the backend, see [Backend Architecture: Storage](backend.md#storage)
 
+### Email Service
+- Handles sending emails for account verification, password resets, and notifications
+- Supports both Amazon SES and SMTP delivery methods
+
 ### Background Worker
 - Python service for scheduled jobs
 - Does not expose any endpoints to users
@@ -88,17 +94,20 @@ flowchart LR
         SwaggerUI["**API Tester**<br>*Swagger UI*"]
         SQLiteWeb["**SQLite Browser**<br>*sqlite-web*"]
         BGWorker["**Background Worker**<br>*Python*"]
+        Mailpit["**Email Testing**<br>*Mailpit*"]
     end
 
     User -->|"localhost:5000"| Worker
     User -->|"localhost:9001"| S3
     User -->|"localhost:7000"| SQLiteWeb
+    User -->|"localhost:8025"| Mailpit
 
     Worker -->|"/api/*"| Backend
     Worker -->|"/*"| Frontend
     Worker -->|"/swagger/*"| SwaggerUI
     Backend --> DB
     Backend --> S3
+    Backend --> Mailpit
     SwaggerUI --> Backend
     SQLiteWeb --> DB
     BGWorker --> DB
@@ -111,6 +120,7 @@ In the local development environment, all services are orchestrated using [Docke
 - **Database**: The SQLite database is stored in the `mkc-db` docker volume
 - **Object Storage**: [MinIO](https://github.com/minio/minio) is used as an S3-compatible object storage that can be run locally
 - **Background Worker**: Python app hosted inside a docker container
+- **Email Service**: [Mailpit](https://mailpit.axllent.org/) captures all outgoing emails during development for testing without sending real emails
 
 In addition we have the following services running:
 - A web-based SQLite database browser for interacting with the database [sqlite-web](https://github.com/coleifer/sqlite-web)
@@ -122,6 +132,7 @@ The following routes are exposed for interacting with the development environmen
 - Swagger UI: http://localhost:5000/swagger/
 - SQLite Web: http://localhost:7000/
 - MinIO Console: http://localhost:9001/
+- Mailpit Email Interface: http://localhost:8025/
 
 For detailed setup instructions, see [Developer Onboarding](onboarding.md).
 
@@ -145,12 +156,17 @@ flowchart LR
         Assets["Assets Storage"]
         StaticSite["Static Frontend<br/>Prebuilt Svelte Site"]
     end
+    
+    subgraph "AWS"
+        SES["**Email Service**<br>*Amazon SES*"]
+    end
 
     User --> Worker
     Worker -->|"/api/*"| Backend
     Worker -->|"/*"| StaticSite
     Backend --> DB
     Backend --> Assets
+    Backend --> SES
     BGWorker --> DB
 ```
 
@@ -161,3 +177,4 @@ In production, we have a [Hetzner VPS](https://www.hetzner.com/cloud/) running [
 - **Database**: The SQLite database is stored on disk on the VPS
 - **Object Storage**: [Wasabi](https://wasabi.com/cloud-object-storage) is used for object storage
 - **Background Worker**: Python app hosted inside a docker container managed by Dokku
+- **Email Service**: Amazon Simple Email Service (SES) is used for sending emails

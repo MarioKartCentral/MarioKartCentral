@@ -8,9 +8,9 @@ def get_env_or_fail(env_name: str):
 
 
 DEBUG = os.getenv('DEBUG', "False").lower() == "true"
-AWS_ACCESS_KEY_ID = get_env_or_fail("S3_ACCESS_KEY")
-AWS_SECRET_ACCESS_KEY = get_env_or_fail("S3_SECRET_KEY")
-AWS_ENDPOINT_URL = get_env_or_fail("S3_ENDPOINT")
+S3_ACCESS_KEY = get_env_or_fail("S3_ACCESS_KEY")
+S3_SECRET_KEY = get_env_or_fail("S3_SECRET_KEY")
+S3_ENDPOINT = get_env_or_fail("S3_ENDPOINT")
 DB_PATH = get_env_or_fail("DB_PATH")
 DISCORD_CLIENT_ID = get_env_or_fail("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET = get_env_or_fail("DISCORD_CLIENT_SECRET")

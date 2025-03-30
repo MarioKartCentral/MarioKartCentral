@@ -12,6 +12,30 @@ from common.data.commands import *
 from common.data.models import *
 from urllib.parse import urlencode
 
+# Email configuration helper
+def create_email_config():
+    email_config = EmailServiceConfig(
+        from_email=appsettings.MKC_EMAIL_ADDRESS,
+        site_url=appsettings.SITE_URL,
+        use_ses=appsettings.USE_SES_FOR_EMAILS
+    )
+    
+    if appsettings.USE_SES_FOR_EMAILS:
+        email_config.ses_config = SESConfig(
+            access_key_id=appsettings.AWS_SES_ACCESS_KEY,
+            secret_access_key=str(appsettings.AWS_SES_SECRET_KEY),
+            region=appsettings.AWS_SES_REGION
+        )
+    else:
+        email_config.smtp_config = SMTPConfig(
+            hostname=appsettings.MKC_EMAIL_HOSTNAME,
+            port=appsettings.MKC_EMAIL_PORT,
+            username=str(appsettings.MKC_EMAIL_USERNAME) if appsettings.MKC_EMAIL_USERNAME else None,
+            password=str(appsettings.MKC_EMAIL_PASSWORD) if appsettings.MKC_EMAIL_PASSWORD else None
+        )
+    
+    return email_config
+
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
     user = await handle(GetUserDataFromEmailCommand(body.email))
@@ -38,9 +62,8 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
     # return info about the user so the frontend can know what's going on
     if user.force_password_reset:
         async def send_password_reset():
-            command = SendPasswordResetEmailCommand(body.email, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
-                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
-                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+            email_config = create_email_config()
+            command = SendPasswordResetEmailCommand(body.email, email_config)
             await handle(command)   
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
     
@@ -80,9 +103,8 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
                                                 mkc_user.team_roles))
         return_user = UserAccountInfo(user.id, user.player_id, user.email_confirmed, user.force_password_reset)
         async def send_password_reset():
-            command = SendPasswordResetEmailCommand(body.email, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
-                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
-                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+            email_config = create_email_config()
+            command = SendPasswordResetEmailCommand(body.email, email_config)
             await handle(command)   
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
         
@@ -98,9 +120,10 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
     async def send_email_and_log():
-        await handle(SendEmailVerificationCommand(user.id, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
-                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
-                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD)))
+        email_config = create_email_config()
+        command = SendEmailVerificationCommand(user.id, email_config)
+        await handle(command)
+        
         if appsettings.ENABLE_IP_LOGGING:
             await handle(LogUserIPCommand(user.id, ip_address))
         await handle(LogFingerprintCommand(body.fingerprint))
@@ -121,9 +144,8 @@ async def log_out(request: Request) -> Response:
 
 @require_logged_in
 async def send_confirmation_email(request: Request) -> Response:
-    command = SendEmailVerificationCommand(request.state.user.id, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
-                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
-                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+    email_config = create_email_config()
+    command = SendEmailVerificationCommand(request.state.user.id, email_config)
     await handle(command)
     return JSONResponse({})
 
@@ -135,9 +157,8 @@ async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSON
 
 @bind_request_body(ForgotPasswordRequestData)
 async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
-    command = SendPasswordResetEmailCommand(body.email, appsettings.SITE_URL, appsettings.MKC_EMAIL_ADDRESS,
-                                           appsettings.MKC_EMAIL_HOSTNAME, appsettings.MKC_EMAIL_PORT,
-                                           str(appsettings.MKC_EMAIL_USERNAME), str(appsettings.MKC_EMAIL_PASSWORD))
+    email_config = create_email_config()
+    command = SendPasswordResetEmailCommand(body.email, email_config)
     await handle(command)
     return JSONResponse({})
 

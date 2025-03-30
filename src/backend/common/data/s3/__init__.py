@@ -40,18 +40,18 @@ class S3Wrapper:
 
 @dataclass
 class S3WrapperManager:
-    aws_secret_access_key: str
-    aws_access_key_id: str
-    aws_endpoint_url: str
+    s3_secret_key: str
+    s3_access_key: str
+    s3_endpoint: str
     client: S3Client | None = None
 
     async def __aenter__(self) -> S3Wrapper:
         session = aiobotocore.session.get_session()
         self.client = await session.create_client( # pyright: ignore[reportUnknownMemberType]
             's3',
-            aws_secret_access_key=self.aws_secret_access_key,
-            aws_access_key_id=self.aws_access_key_id,
-            endpoint_url=self.aws_endpoint_url).__aenter__()
+            aws_secret_access_key=self.s3_secret_key,
+            aws_access_key_id=self.s3_access_key,
+            endpoint_url=self.s3_endpoint).__aenter__()
         return S3Wrapper(self.client)
 
     async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None):

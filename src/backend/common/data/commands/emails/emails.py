@@ -6,25 +6,77 @@ import aiosmtplib
 from email.message import EmailMessage
 import secrets
 from datetime import datetime, timezone, timedelta
+import aiobotocore.session
+from types_aiobotocore_ses import SESClient
+from types_aiobotocore_ses.type_defs import MessageTypeDef, DestinationTypeDef
+import html
 
-async def send_email(from_email: str, to_email: str, subject: str, content: str,
-                     hostname: str, port: int, username: str | None, password: str | None):
+
+async def send_email(to_email: str, subject: str, content: str, config: EmailServiceConfig):
+    """
+    Send email using either SMTP or Amazon SES based on configuration.
+    
+    If config.use_ses is True, AWS SES will be used. Otherwise, SMTP will be used.
+    """
     message = EmailMessage()
-    message["From"] = from_email
+    message["From"] = config.from_email
     message["To"] = to_email
     message["Subject"] = subject
     message.set_content(content)
-    await aiosmtplib.send(message, hostname=hostname, port=port, username=username, password=password)
+    
+    if config.use_ses and config.ses_config:
+        # Use AWS SES to send email
+        session = aiobotocore.session.get_session()
+        async with session.create_client('ses', 
+                                         region_name=config.ses_config.region,
+                                         aws_access_key_id=config.ses_config.access_key_id,
+                                         aws_secret_access_key=config.ses_config.secret_access_key) as client:
+            client_typed: SESClient = client  # Type hint for SES client
+            
+            # Format email content for SES
+            # Use the correct type definitions for SES
+            message_dict: MessageTypeDef = {
+                'Subject': {
+                    'Data': subject,
+                    'Charset': 'UTF-8'
+                },
+                'Body': {
+                    'Text': {
+                        'Data': content,
+                        'Charset': 'UTF-8'
+                    },
+                    'Html': {
+                        'Data': html.escape(content).replace('\n', '<br>'),
+                        'Charset': 'UTF-8'
+                    }
+                }
+            }
+            
+            destination: DestinationTypeDef = {
+                'ToAddresses': [to_email]
+            }
+            
+            # Send email via SES
+            await client_typed.send_email(
+                Source=config.from_email,
+                Destination=destination,
+                Message=message_dict
+            )
+    elif config.smtp_config:
+        # Use SMTP to send email
+        await aiosmtplib.send(message, 
+                              hostname=config.smtp_config.hostname, 
+                              port=config.smtp_config.port, 
+                              username=config.smtp_config.username, 
+                              password=config.smtp_config.password)
+    else:
+        raise ValueError("Neither SES nor SMTP configuration is complete. Please provide either valid SES or SMTP settings.")
+
 
 @dataclass
 class SendEmailVerificationCommand(Command[None]):
     user_id: int
-    site_url: str
-    from_email: str
-    hostname: str
-    port: int
-    username: str | None
-    password: str | None
+    email_config: EmailServiceConfig
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -44,8 +96,9 @@ class SendEmailVerificationCommand(Command[None]):
         subject = "Email Confirmation - Mario Kart Central"
         content = f"Welcome to Mario Kart Central! Click the link below to confirm your email address.\
                     \nThis link will expire in 60 minutes.\
-                    \n{self.site_url}/user/confirm-email?token={token_id}"
-        await send_email(self.from_email, user_email, subject, content, self.hostname, self.port, self.username, self.password)
+                    \n{self.email_config.site_url}/user/confirm-email?token={token_id}"
+        await send_email(user_email, subject, content, self.email_config)
+
 
 @dataclass
 class VerifyEmailCommand(Command[None]):
@@ -62,15 +115,11 @@ class VerifyEmailCommand(Command[None]):
             await db.execute("UPDATE users SET email_confirmed = 1 WHERE id = ?", (user_id,))
             await db.commit()
 
+
 @dataclass
 class SendPasswordResetEmailCommand(Command[None]):
     user_email: str
-    site_url: str
-    from_email: str
-    hostname: str
-    port: int
-    username: str | None
-    password: str | None
+    email_config: EmailServiceConfig
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
@@ -86,8 +135,9 @@ class SendPasswordResetEmailCommand(Command[None]):
             await db.commit()
         subject = "Password Reset - Mario Kart Central"
         content = f"You requested a password reset on Mario Kart Central. You can reset your password by clicking the link below (expires in 60 minutes): \
-            \n{self.site_url}/user/reset-password?token={token_id}"
-        await send_email(self.from_email, self.user_email, subject, content, self.hostname, self.port, self.username, self.password)
+            \n{self.email_config.site_url}/user/reset-password?token={token_id}"
+        await send_email(self.user_email, subject, content, self.email_config)
+
 
 @dataclass
 class GetUserInfoFromPasswordResetTokenCommand(Command[UserInfo]):
@@ -102,8 +152,10 @@ class GetUserInfoFromPasswordResetTokenCommand(Command[UserInfo]):
                 if not row:
                     raise Problem("Token is expired", status=400)
                 user_id, email, join_date, email_confirmed, force_password_reset = row
-                user = UserInfo(user_id, email, join_date, bool(email_confirmed), bool(force_password_reset), None)
+                user = UserInfo(user_id, email, join_date, bool(
+                    email_confirmed), bool(force_password_reset), None)
                 return user
+
 
 @dataclass
 class ResetPasswordWithTokenCommand(Command[None]):
@@ -120,6 +172,7 @@ class ResetPasswordWithTokenCommand(Command[None]):
             await db.execute("DELETE FROM password_resets WHERE token_id = ?", (self.token_id,))
             await db.execute("UPDATE users SET password_hash = ?, force_password_reset = 0 WHERE id = ?", (self.new_password_hash, user_id))
             await db.commit()
+
 
 @dataclass
 class ResetPasswordCommand(Command[None]):
@@ -140,6 +193,7 @@ class ResetPasswordCommand(Command[None]):
                     raise Problem("Old password is incorrect", status=401)
             await db.execute("UPDATE users SET password_hash = ?, force_password_reset = 0 WHERE id = ?", (self.new_password_hash, self.user_id))
             await db.commit()
+
 
 @dataclass
 class RemoveExpiredTokensCommand(Command[None]):

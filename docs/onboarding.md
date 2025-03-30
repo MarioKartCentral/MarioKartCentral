@@ -58,6 +58,9 @@ After you have done this breakpoints should be working. Also after you have done
 ## Debugging the Svelte app
 Svelte's debugging story is not as good as Starlette's, but if you need to debug some javascript code you can place down a `debugger;` line in the code and the browser will allow you to debug from within the browser rather than from within VS Code.
 
+## Testing Emails Locally
+The project includes Mailpit in the Docker Compose setup which captures all emails sent during local development. To access the Mailpit interface, open http://localhost:8025 in your browser.
+
 ## Discord Integration
 If you wish to test discord integration locally, you will need to do the following: 
 1. Log in to the [Discord Developer Portal](https://discord.com/developers/applications)
