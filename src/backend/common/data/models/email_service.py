@@ -6,15 +6,13 @@ class SMTPConfig:
     """SMTP email service configuration."""
     hostname: str
     port: int
-    username: Optional[str] = None
-    password: Optional[str] = None
 
 
 @dataclass
 class SESConfig:
     """Amazon SES email service configuration."""
-    access_key_id: str | None
-    secret_access_key: str | None
+    access_key_id: str
+    secret_access_key: str
     region: str
 
 

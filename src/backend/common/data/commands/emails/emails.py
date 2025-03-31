@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+
+from types_aiobotocore_ses import SESClient
 from common.data.commands import Command
 from common.data.models import *
 from common.auth import pw_hasher
@@ -7,7 +9,6 @@ from email.message import EmailMessage
 import secrets
 from datetime import datetime, timezone, timedelta
 import aiobotocore.session
-from types_aiobotocore_ses.type_defs import MessageTypeDef, DestinationTypeDef
 import html
 
 
@@ -24,49 +25,34 @@ async def send_email(to_email: str, subject: str, content: str, config: EmailSer
     message.set_content(content)
     
     if config.use_ses and config.ses_config:
-        # Use AWS SES to send email
         session = aiobotocore.session.get_session()
+        client: SESClient
         async with session.create_client('ses', # type: ignore
                                          region_name=config.ses_config.region,
                                          aws_access_key_id=config.ses_config.access_key_id,
-                                         aws_secret_access_key=config.ses_config.secret_access_key) as client: 
-            
-            # Format email content for SES
-            # Use the correct type definitions for SES
-            message_dict: MessageTypeDef = {
-                'Subject': {
-                    'Data': subject,
-                    'Charset': 'UTF-8'
-                },
-                'Body': {
-                    'Text': {
-                        'Data': content,
-                        'Charset': 'UTF-8'
-                    },
-                    'Html': {
-                        'Data': html.escape(content).replace('\n', '<br>'),
-                        'Charset': 'UTF-8'
-                    }
-                }
-            }
-
-            destination: DestinationTypeDef = {
-                'ToAddresses': [to_email]
-            }
-            
-            # Send email via SES
+                                         aws_secret_access_key=config.ses_config.secret_access_key) as client:         
             await client.send_email(
                 Source=config.from_email,
-                Destination=destination,
-                Message=message_dict
+                Destination={ 'ToAddresses': [to_email] },
+                Message={
+                    'Subject': {
+                        'Data': subject,
+                        'Charset': 'UTF-8'
+                    },
+                    'Body': {
+                        'Text': {
+                            'Data': content,
+                            'Charset': 'UTF-8'
+                        },
+                        'Html': {
+                            'Data': html.escape(content).replace('\n', '<br>'),
+                            'Charset': 'UTF-8'
+                        }
+                    }
+                }
             )
     elif config.smtp_config:
-        # Use SMTP to send email
-        await aiosmtplib.send(message, 
-                              hostname=config.smtp_config.hostname, 
-                              port=config.smtp_config.port, 
-                              username=config.smtp_config.username, 
-                              password=config.smtp_config.password)
+        await aiosmtplib.send(message, hostname=config.smtp_config.hostname, port=config.smtp_config.port)
     else:
         raise ValueError("Neither SES nor SMTP configuration is complete. Please provide either valid SES or SMTP settings.")
 

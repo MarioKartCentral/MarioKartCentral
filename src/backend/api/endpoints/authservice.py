@@ -21,18 +21,15 @@ def create_email_config():
     )
     
     if appsettings.USE_SES_FOR_EMAILS:
+        if not appsettings.AWS_SES_ACCESS_KEY or not appsettings.AWS_SES_SECRET_KEY:
+            raise Problem("AWS SES access key and secret key must be set if SES is used", status=500)
         email_config.ses_config = SESConfig(
             access_key_id=appsettings.AWS_SES_ACCESS_KEY,
             secret_access_key=str(appsettings.AWS_SES_SECRET_KEY),
             region=appsettings.AWS_SES_REGION
         )
     else:
-        email_config.smtp_config = SMTPConfig(
-            hostname=appsettings.MKC_EMAIL_HOSTNAME,
-            port=appsettings.MKC_EMAIL_PORT,
-            username=str(appsettings.MKC_EMAIL_USERNAME) if appsettings.MKC_EMAIL_USERNAME else None,
-            password=str(appsettings.MKC_EMAIL_PASSWORD) if appsettings.MKC_EMAIL_PASSWORD else None
-        )
+        email_config.smtp_config = SMTPConfig(hostname=appsettings.MKC_EMAIL_HOSTNAME, port=appsettings.MKC_EMAIL_PORT)
     
     return email_config
 

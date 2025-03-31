@@ -22,8 +22,6 @@ services:
       MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
       MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
       MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
-      MKC_EMAIL_USERNAME: ${MKC_EMAIL_USERNAME:-admin}
-      MKC_EMAIL_PASSWORD: ${MKC_EMAIL_PASSWORD:-admin}
       SITE_URL: ${SITE_URL:-http://localhost:5000}
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
@@ -51,8 +49,6 @@ services:
       MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
       MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
       MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
-      MKC_EMAIL_USERNAME: ${MKC_EMAIL_USERNAME:-admin}
-      MKC_EMAIL_PASSWORD: ${MKC_EMAIL_PASSWORD:-admin}
       SITE_URL: ${SITE_URL:-http://localhost:5000}
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
