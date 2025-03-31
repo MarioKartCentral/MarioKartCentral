@@ -13,8 +13,8 @@ class SMTPConfig:
 @dataclass
 class SESConfig:
     """Amazon SES email service configuration."""
-    access_key_id: str
-    secret_access_key: str
+    access_key_id: str | None
+    secret_access_key: str | None
     region: str
 
 

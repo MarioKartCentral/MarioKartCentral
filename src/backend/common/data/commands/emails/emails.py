@@ -7,7 +7,6 @@ from email.message import EmailMessage
 import secrets
 from datetime import datetime, timezone, timedelta
 import aiobotocore.session
-from types_aiobotocore_ses import SESClient
 from types_aiobotocore_ses.type_defs import MessageTypeDef, DestinationTypeDef
 import html
 
@@ -27,11 +26,10 @@ async def send_email(to_email: str, subject: str, content: str, config: EmailSer
     if config.use_ses and config.ses_config:
         # Use AWS SES to send email
         session = aiobotocore.session.get_session()
-        async with session.create_client('ses', 
+        async with session.create_client('ses', # type: ignore
                                          region_name=config.ses_config.region,
                                          aws_access_key_id=config.ses_config.access_key_id,
-                                         aws_secret_access_key=config.ses_config.secret_access_key) as client:
-            client_typed: SESClient = client  # Type hint for SES client
+                                         aws_secret_access_key=config.ses_config.secret_access_key) as client: 
             
             # Format email content for SES
             # Use the correct type definitions for SES
@@ -51,13 +49,13 @@ async def send_email(to_email: str, subject: str, content: str, config: EmailSer
                     }
                 }
             }
-            
+
             destination: DestinationTypeDef = {
                 'ToAddresses': [to_email]
             }
             
             # Send email via SES
-            await client_typed.send_email(
+            await client.send_email(
                 Source=config.from_email,
                 Destination=destination,
                 Message=message_dict
