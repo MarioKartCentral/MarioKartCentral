@@ -88,7 +88,7 @@
         <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
       {/if}
     {/each}
-    <DropdownItem href="/notifications"><div class="text-center">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</div></DropdownItem>
+    <DropdownItem href="/user/notifications"><div class="text-center">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</div></DropdownItem>
     {#if hasUnread}
       <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
       <DropdownItem on:click={makeAllNotificationsAsRead}><div class="text-center">{$LL.NOTIFICATION.MARK_ALL_READ()}</div></DropdownItem>

@@ -3,6 +3,8 @@ from datetime import timedelta, timezone
 from common.auth import team_roles
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+import common.data.s3 as s3
+import base64
 
 @save_to_command_log
 @dataclass
@@ -12,7 +14,7 @@ class CreateTeamCommand(Command[int | None]):
     description: str
     language: str
     color: int
-    logo: str | None
+    logo_file: str | None
     approval_status: Approval
     is_historical: bool
     game: str
@@ -40,14 +42,21 @@ class CreateTeamCommand(Command[int | None]):
                         raise Problem('An existing team already has this name or tag', status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, self.logo, self.approval_status,
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, None, self.approval_status,
                 self.is_historical)) as cursor:
                 team_id = cursor.lastrowid
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, None, None, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            logo_filename = f"team_logos/{team_id}.png"
+            logo_path = f"/img/{logo_filename}"
+            if self.logo_file:
+                await db.execute("UPDATE teams SET logo = ? WHERE id = ?", (logo_path, team_id))
             # give the team creator manager permissions if their id was specified
             if self.user_id is not None:
                 await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES (?, 0, ?)", (self.user_id, team_id))
+            if self.logo_file:
+                logo_data = base64.b64decode(self.logo_file)
+                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             await db.commit()
             return team_id
 
@@ -183,7 +192,8 @@ class EditTeamCommand(Command[None]):
     description: str
     language: str
     color: int
-    logo: str | None
+    logo_file: str | None
+    remove_logo: bool
     approval_status: Approval
     is_historical: bool
     is_privileged: bool
@@ -191,11 +201,15 @@ class EditTeamCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+            async with db.execute("SELECT name, tag, logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Team not found", status=404)
-                team_name, team_tag = row
+                team_name, team_tag, logo_path = row
+            if self.logo_file:
+                logo_path = f"/img/team_logos/{self.team_id}.png"
+            elif self.remove_logo:
+                logo_path = None
             await db.execute("""UPDATE teams SET name = ?,
                 tag = ?,
                 description = ?,
@@ -205,7 +219,7 @@ class EditTeamCommand(Command[None]):
                 approval_status = ?,
                 is_historical = ?
                 WHERE id = ?""",
-                (self.name, self.tag, self.description, self.language, self.color, self.logo, self.approval_status, self.is_historical, self.team_id))
+                (self.name, self.tag, self.description, self.language, self.color, logo_path, self.approval_status, self.is_historical, self.team_id))
             # add a team name/tag change log if we're changing one of those values
             if team_name != self.name or team_tag != self.tag:
                 now = int(datetime.now(timezone.utc).timestamp())
@@ -216,6 +230,13 @@ class EditTeamCommand(Command[None]):
                 await db.execute("UPDATE team_rosters SET approval_status = 'approved' WHERE team_id = ? AND approval_status = 'pending'", (self.team_id,))
             else:
                 await db.execute("UPDATE team_rosters SET approval_status = 'pending' WHERE team_id = ? AND approval_status = 'approved'", (self.team_id,))
+            if self.logo_file:
+                logo_filename = f"team_logos/{self.team_id}.png"
+                logo_data = base64.b64decode(self.logo_file)
+                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+            elif self.remove_logo:
+                logo_filename = f"team_logos/{self.team_id}.png"
+                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
 @save_to_command_log
@@ -241,21 +262,38 @@ class ManagerEditTeamCommand(Command[None]):
     description: str
     language: str
     color: int
-    logo: str | None
+    logo_file: str | None
+    remove_logo: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            async with db.execute("SELECT logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Team not found", status=404)
+                logo_path = row[0]
+            if self.logo_file:
+                logo_path = f"/img/team_logos/{self.team_id}.png"
+            elif self.remove_logo:
+                logo_path = None
             async with db.execute("""UPDATE teams SET
                 description = ?,
                 language = ?,
                 color = ?,
                 logo = ?
                 WHERE id = ?""",
-                (self.description, self.language, self.color, self.logo, self.team_id)) as cursor:
+                (self.description, self.language, self.color, logo_path, self.team_id)) as cursor:
                 updated_rows = cursor.rowcount
                 if updated_rows == 0:
                     raise Problem('No team found', status=404)
-                await db.commit()
+            if self.logo_file:
+                logo_filename = f"team_logos/{self.team_id}.png"
+                logo_data = base64.b64decode(self.logo_file)
+                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+            elif self.remove_logo:
+                logo_filename = f"team_logos/{self.team_id}.png"
+                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
+            await db.commit()
 
 @save_to_command_log
 @dataclass

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import LoginRegister from "$lib/components/common/LoginRegister.svelte";
+    import LoginRegister from "$lib/components/login/LoginRegister.svelte";
     import type { UserInfo } from '$lib/types/user-info';
     import { user } from '$lib/stores/stores';
     import { page } from "$app/stores";
@@ -10,6 +10,10 @@
         user_info = value;
     });
 </script>
+
+<svelte:head>
+    <title>Login | Mario Kart Central</title>
+</svelte:head>
 
 {#if !user_info.id}
     <LoginRegister send_to="/{$page.params.lang}/"/>

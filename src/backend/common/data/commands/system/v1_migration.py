@@ -9,6 +9,7 @@ from common.data.models.common import Problem, Game, GameMode
 from common.data.models.mkcv1 import *
 from common.data.models.users import UserLoginData
 from common.data.models.tournaments import TournamentS3Fields
+from common.data.models.tournament_series import SeriesS3Fields
 from common.data.commands import Command, save_to_command_log
 from common.auth import roles, series_roles, team_roles
 from datetime import datetime, timezone
@@ -70,7 +71,6 @@ class ValidateXenforoPasswordCommand(Command[bool]):
 @dataclass
 class GetMKCV1UserCommand(Command[NewMKCUser | None]):
     email: str
-    password: str
 
     async def handle(self, db_wrapper, s3_wrapper):
         user_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "users.json")
@@ -80,10 +80,6 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
         if self.email not in user_data.users:
             return None
         v1_user = user_data.users[self.email]
-        # in the future, we may want to just accept and return the user even if the password is incorrect,
-        # but require a password reset before you can use the site
-        if not bcrypt.checkpw(self.password.encode('utf-8'), v1_user.password_hash.encode('utf-8')):
-            raise Problem("Invalid login details", status=401)
         return v1_user
 
 @save_to_command_log
@@ -100,8 +96,11 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            row = await db.execute_insert("INSERT INTO users(email, password_hash, join_date, player_id) VALUES (?, ?, ?, ?)", 
-                                          (self.email, self.password_hash, self.join_date, self.player_id))
+            email_confirmed = True
+            force_password_reset = True
+            row = await db.execute_insert("""INSERT INTO users(email, password_hash, join_date, player_id, 
+                                          email_confirmed, force_password_reset) VALUES (?, ?, ?, ?, ?, ?)""", 
+                                          (self.email, self.password_hash, self.join_date, self.player_id, email_confirmed, force_password_reset))
             # TODO: Run queries to identify why user creation failed
             if row is None:
                 raise Problem("Failed to create user")
@@ -130,7 +129,7 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
             await db.executemany("""INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""", insert_series_roles)
             await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES(?, ?, ?)""", insert_team_roles)
             await db.commit()
-            return UserLoginData(user_id, self.player_id, self.email, self.password_hash)
+            return UserLoginData(user_id, self.player_id, email_confirmed, force_password_reset, self.email, self.password_hash)
 
 @save_to_command_log
 @dataclass
@@ -639,7 +638,8 @@ class ConvertMKCV1DataCommand(Command[None]):
                                       s.organizer, s.location)
                                       for s in series_dict.values()])
             for series in series_dict.values():
-                s3_message = bytes(msgspec.json.encode(series))
+                s3_body = SeriesS3Fields(series.description, series.ruleset)
+                s3_message = bytes(msgspec.json.encode(s3_body))
                 await s3_wrapper.put_object(s3.SERIES_BUCKET, f'{series.id}.json', s3_message)
             
             await db.executemany("""INSERT INTO tournaments(id, name, game, mode, series_id, is_squad, registrations_open, date_start, date_end,

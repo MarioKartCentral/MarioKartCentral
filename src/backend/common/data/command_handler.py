@@ -5,9 +5,9 @@ from common.data.db import DBWrapper
 from common.data.s3 import S3Wrapper, S3WrapperManager
 
 class CommandHandler:
-    def __init__(self, db_path: str, aws_secret_access_key: str, aws_access_key_id: str, aws_endpoint_url: str) -> None:
+    def __init__(self, db_path: str, s3_secret_key: str, s3_access_key: str, s3_endpoint: str) -> None:
         self._db_wrapper = DBWrapper(db_path)
-        self._s3_wrapper_manager = S3WrapperManager(str(aws_secret_access_key), aws_access_key_id, aws_endpoint_url)
+        self._s3_wrapper_manager = S3WrapperManager(str(s3_secret_key), s3_access_key, s3_endpoint)
         self._s3_wrapper : S3Wrapper | None = None # type: ignore
 
     async def __aenter__(self):
@@ -26,5 +26,4 @@ class CommandHandler:
         if needs_command_log(type(command)):
             await SaveToCommandLogCommand(command).handle(self._db_wrapper, self._s3_wrapper)
         return resp
-    
-        
+

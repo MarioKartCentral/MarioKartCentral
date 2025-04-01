@@ -19,10 +19,17 @@ services:
       DISCORD_OAUTH_CALLBACK : http://localhost:5000/api/user/discord_callback
       ENABLE_DISCORD : ${ENABLE_DISCORD:-false}
       ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
+      MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
+      MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
+      MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
+      SITE_URL: ${SITE_URL:-http://localhost:5000}
       PORT : 8000
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
       PYTHONDONTWRITEBYTECODE : 1 # this is to prevent __pycache__ files during development
+      AWS_SES_ACCESS_KEY: ${AWS_SES_ACCESS_KEY:-}
+      AWS_SES_SECRET_KEY: ${AWS_SES_SECRET_KEY:-}
+      USE_SES_FOR_EMAILS: ${USE_SES_FOR_EMAILS:-false}
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
@@ -39,6 +46,10 @@ services:
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-1283454053937971304}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
       ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
+      MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
+      MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
+      MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
+      SITE_URL: ${SITE_URL:-http://localhost:5000}
       DB_PATH : /var/lib/mkc-api/data/mkc.db
       ENV : Development
       PYTHONDONTWRITEBYTECODE : 1
@@ -90,7 +101,19 @@ services:
       - mkc-db:/data
     ports:
       - 7000:8080
-      
+  mailpit:
+    image: axllent/mailpit
+    volumes:
+      - mkc-email:/data
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 volumes:
   mkc-db:
   mkc-s3:
+  mkc-email:

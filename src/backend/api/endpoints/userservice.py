@@ -27,7 +27,7 @@ async def current_user_and_player(request: Request) -> JSONResponse:
     mod_notifications = None
     if len(user_roles) > 0:
         mod_notifications = await handle(GetModNotificationsCommand(user_roles))
-    return JSONResponse(UserPlayer(user.id, user.player_id, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications))
+    return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications))
 
 @require_logged_in
 async def player_invites(request: Request) -> JSONResponse:
@@ -48,7 +48,7 @@ async def edit_user(request: Request, body: EditUserRequestData) -> JSONResponse
         password_hash = pw_hasher.hash(body.password)
     else:
         password_hash = None
-    command = EditUserCommand(body.user_id, body.email, password_hash)
+    command = EditUserCommand(request.state.user.id, body.user_id, body.email, password_hash, body.email_confirmed, body.force_password_reset)
     await handle(command)
     return JSONResponse({})
 

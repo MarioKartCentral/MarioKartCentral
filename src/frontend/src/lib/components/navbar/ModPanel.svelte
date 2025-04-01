@@ -4,40 +4,17 @@
   import { page } from '$app/stores';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import { NavLi } from 'flowbite-svelte';
-  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
   import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, permissions } from '$lib/util/permissions';
 
   let user_info: UserInfo;
-  let unread_count = 0;
 
   user.subscribe((value) => {
     user_info = value;
-    let mod_notifs = value.mod_notifications
-    if(mod_notifs) {
-      unread_count = Object.values(mod_notifs).reduce((sum, a) => sum + a, 0);
-    }
   });
-
-  // underline a nav item if it's the section we're currently in
-  function checkSelectedNav(name: string) {
-    if($page.data.activeNavItem === name) {
-      return "text-white font-bold underline underline-offset-4";
-    }
-    return "";
-  }
 </script>
 
-<NavLi class="cursor-pointer {checkSelectedNav("MODERATOR")}">
-  {$LL.NAVBAR.MODERATOR()}
-  {#if unread_count}
-    <AlertCount count={unread_count}/>
-  {/if}
-  <ChevronDownOutline class="inline"/>
-  
-</NavLi>
 <Dropdown>
   {#if check_permission(user_info, permissions.manage_teams)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">

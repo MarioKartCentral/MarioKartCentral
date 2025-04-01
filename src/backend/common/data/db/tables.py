@@ -70,7 +70,36 @@ class User(TableModel):
             player_id INTEGER REFERENCES players(id),
             email TEXT UNIQUE,
             password_hash TEXT,
-            join_date INTEGER NOT NULL DEFAULT 0)"""
+            join_date INTEGER NOT NULL DEFAULT 0,
+            email_confirmed BOOLEAN NOT NULL DEFAULT 0,
+            force_password_reset BOOLEAN NOT NULL DEFAULT 0
+            )"""
+    
+@dataclass
+class EmailVerification(TableModel):
+    token_id: str
+    user_id: int
+    expires_on: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS email_verifications(
+            token_id TEXT PRIMARY KEY NOT NULL,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            expires_on INTEGER NOT NULL) WITHOUT ROWID"""
+
+@dataclass
+class PasswordReset(TableModel):
+    token_id: str
+    user_id: int
+    expires_on: int
+
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS password_resets(
+            token_id TEXT PRIMARY KEY NOT NULL,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            expires_on INTEGER NOT NULL) WITHOUT ROWID"""
 
 @dataclass
 class Session(TableModel):
@@ -1074,4 +1103,5 @@ all_tables : list[type[TableModel]] = [
     TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
     PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords,
-    Post, SeriesPost, TournamentPost, UserLogin, AltFlag, UserAltFlag, UserIP]
+    Post, SeriesPost, TournamentPost, UserLogin, AltFlag, UserAltFlag, UserIP,
+    EmailVerification, PasswordReset]

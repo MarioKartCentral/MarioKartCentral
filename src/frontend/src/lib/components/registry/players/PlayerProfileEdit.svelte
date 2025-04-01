@@ -11,6 +11,7 @@
     import type { UserInfo } from '$lib/types/user-info';
     import EditFriendCodes from './EditFriendCodes.svelte';
     import EditPlayerDetails from './EditPlayerDetails.svelte';
+    import RegisterForm from '$lib/components/login/RegisterForm.svelte';
 
     export let player: PlayerInfo;
 
@@ -70,6 +71,29 @@
             alert(`${$LL.PLAYERS.PROFILE.PROFILE_EDIT_FAILED()}: ${result['title']}`);
         }
     }
+
+    let old_password = "";
+    let new_password = "";
+    async function changePassword() {
+        const payload = {
+            old_password: old_password,
+            new_password: new_password,
+        };
+        const endpoint = '/api/user/reset_password';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if(response.status < 300) {
+            alert($LL.LOGIN.PASSWORD_RESET_SUCCESS());
+            window.location.reload();
+        }
+        else {
+            alert(`${$LL.LOGIN.PASSWORD_RESET_FAILURE()}: ${result['title']}`);
+        }
+    }
 </script>
 
 <Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
@@ -90,6 +114,9 @@
 {#if player.id === user_info.player?.id}
     <Section header={$LL.DISCORD.DISCORD()}>
         <LinkDiscord/>
+    </Section>
+    <Section header={$LL.LOGIN.CHANGE_PASSWORD()}>
+        <RegisterForm is_reset is_change bind:old_password={old_password} bind:password={new_password} on:submit={changePassword}/>
     </Section>
 {/if}
 
