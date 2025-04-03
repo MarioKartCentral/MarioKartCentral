@@ -51,15 +51,15 @@ export function sortFilterRosters(rosters: TeamRoster[], show_pending: boolean =
 }
 
 export const valid_games = ['mkworld', 'mk8dx', 'mk8', 'mkw', 'mkt', 'mk7', 'smk'];
-export const game_abbreviations: {[key: string]: string} = {
-  "mkworld": "MKWorld",
-  "mk8dx": "MK8DX",
-  "mk8": "MK8",
-  "mkw": "MKWii",
-  "mkt": "MKTour",
-  "mk7": "MK7",
-  "smk": "SMK",
-}
+export const game_abbreviations: { [key: string]: string } = {
+  mkworld: 'MKWorld',
+  mk8dx: 'MK8DX',
+  mk8: 'MK8',
+  mkw: 'MKWii',
+  mkt: 'MKTour',
+  mk7: 'MK7',
+  smk: 'SMK',
+};
 export const game_order: { [key: string]: number } = {
   mkworld: 0,
   mk8dx: 1,
@@ -87,10 +87,7 @@ export const fc_type_order: { [key: string]: number } = {
   '3ds': 4,
 };
 export const valid_modes: { [key: string]: string[] } = {
-  mkworld: [
-    '150cc',
-    '200cc',
-  ],
+  mkworld: ['150cc', '200cc'],
   mk8dx: [
     '150cc',
     '200cc',
