@@ -1,7 +1,5 @@
 
 from dataclasses import dataclass
-
-import bcrypt
 import msgspec
 from common.data import s3
 from common.data.s3 import S3Wrapper
@@ -49,24 +47,6 @@ class GetXenforoUserDataCommand(Command[XFUser | None]):
                 return user
 
         return None
-
-@dataclass
-class ValidateXenforoPasswordCommand(Command[bool]):
-    id: int
-    password: str
-
-    async def handle(self, db_wrapper, s3_wrapper):
-        xf_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "xf.json")
-        if xf_bytes is None:
-            raise Problem("MKC V1 data is not imported")
-        xf_data = msgspec.json.decode(xf_bytes, type=XenforoData)
-
-        for user_auth in xf_data.xf_user_authenticate:
-            if user_auth.user_id == self.id:
-                bcrypt_hash = user_auth.data[22:82] # data is in format 'a:1:{s:4:"hash",s:60:"$2y$...";}'
-                return bcrypt.checkpw(self.password.encode('utf-8'), bcrypt_hash.encode('utf-8'))
-        
-        return False
 
 @dataclass
 class GetMKCV1UserCommand(Command[NewMKCUser | None]):
@@ -144,20 +124,11 @@ class ConvertMKCV1DataCommand(Command[None]):
             raise Problem("MKC V1 data is not imported")
         xf_data = msgspec.json.decode(xf_bytes, type=XenforoData)
 
-        # since passwords are stored separately, first create a dict mapping user id to
-        # pw data
-        xf_auth_dict: dict[int, XFUserAuthenticate] = {}
-        for user_auth in xf_data.xf_user_authenticate:
-            xf_auth_dict[user_auth.user_id] = user_auth
-
         # store these in a dict so we can add player IDs + roles later from the MKCV1 data
         xf_dict: dict[int, NewMKCUser] = {}
         for user in xf_data.xf_user:
-            user_auth = xf_auth_dict.get(user.user_id, None)
-            if user_auth:
-                bcrypt_hash = user_auth.data[22:82] # data is in format 'a:1:{s:4:"hash",s:60:"$2y$...";}'
-                new_user = NewMKCUser(user.user_id, user.username, user.email, user.register_date, bcrypt_hash, None, None, [], [], [])
-                xf_dict[user.user_id] = new_user
+            new_user = NewMKCUser(user.user_id, user.username, user.email, user.register_date, None, None, [], [], [])
+            xf_dict[user.user_id] = new_user
         return xf_dict
     
     def get_player_info(self, mkc_data: MKCData, xf_dict: dict[int, NewMKCUser]):
