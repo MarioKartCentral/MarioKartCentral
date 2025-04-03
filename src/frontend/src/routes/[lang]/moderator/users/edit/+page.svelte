@@ -59,7 +59,7 @@
 </script>
 
 {#if check_permission(user_info, permissions.edit_user)}
-    {#if user}
+    {#if edit_user}
         <Section header={$LL.MODERATOR.MANAGE_USERS.BACK_TO_USER_LIST()}>
             <div slot="header_content">
                 <Button href="/{$page.params.lang}/moderator/users">{$LL.COMMON.BACK()}</Button>
