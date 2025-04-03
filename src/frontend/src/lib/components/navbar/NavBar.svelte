@@ -116,7 +116,7 @@
   
   <NavUlist bind:menu_hidden={menu_hidden}>
     <NavLi nav_name="TOURNAMENTS" has_dropdown>
-      <a href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</a>
+      {$LL.NAVBAR.TOURNAMENTS()}
       <ChevronDownOutline class="inline"/>
     </NavLi>
     <Dropdown>
