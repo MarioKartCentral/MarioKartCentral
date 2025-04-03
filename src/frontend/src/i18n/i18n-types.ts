@@ -432,7 +432,7 @@ type RootTranslation = {
 			 */
 			NNID: string
 			/**
-			 * M​K​W
+			 * M​K​W​i​i
 			 */
 			MKW: string
 			/**
@@ -478,6 +478,10 @@ type RootTranslation = {
 		 * S​u​p​e​r​ ​M​a​r​i​o​ ​K​a​r​t
 		 */
 		SMK: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​W​o​r​l​d
+		 */
+		MKWORLD: string
 	}
 	HOMEPAGE: {
 		/**
@@ -1830,7 +1834,7 @@ type RootTranslation = {
 			 */
 			MKT_FC: string
 			/**
-			 * M​K​W​ ​F​C
+			 * M​K​W​i​i​ ​F​C
 			 */
 			MKW_FC: string
 			/**
@@ -5166,7 +5170,7 @@ export type TranslationFunctions = {
 			 */
 			NNID: () => LocalizedString
 			/**
-			 * MKW
+			 * MKWii
 			 */
 			MKW: () => LocalizedString
 			/**
@@ -5212,6 +5216,10 @@ export type TranslationFunctions = {
 		 * Super Mario Kart
 		 */
 		SMK: () => LocalizedString
+		/**
+		 * Mario Kart World
+		 */
+		MKWORLD: () => LocalizedString
 	}
 	HOMEPAGE: {
 		/**
@@ -6480,7 +6488,7 @@ export type TranslationFunctions = {
 			 */
 			MKT_FC: () => LocalizedString
 			/**
-			 * MKW FC
+			 * MKWii FC
 			 */
 			MKW_FC: () => LocalizedString
 			/**

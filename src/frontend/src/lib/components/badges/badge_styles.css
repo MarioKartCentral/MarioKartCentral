@@ -19,35 +19,36 @@
   background-color: #00bd6e;
   border: 1px solid #047942;
 }
+
 .game_mkt_badge {
   background-color: #a1385d;
   border: 1px solid #8e1643;
 }
-
 .game_smk_badge {
   background-color: #52a3a3;
   border: 1px solid #247373;
 }
-
 .game_mkw_badge {
   background-color: #65bedc;
   border: 1px solid #57a2c8;
 }
-
 .game_mk7_badge {
   background-color: #ab5555;
   border: 1px solid #902a2a;
 }
-
 .game_mk8_badge {
   background-color: #5555ab;
   border: 1px solid #282887;
 }
-
 .game_mk8dx_badge {
   background-color: #9755ab;
   border: 1px solid #892bad;
 }
+.game_mkworld_badge {
+  background-color: #e89d13;
+  border: 1px solid #bb7f0f;
+}
+
 .hidden_badge {
   background-color: #757575;
   border: 1px solid #656565;

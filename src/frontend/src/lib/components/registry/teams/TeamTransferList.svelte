@@ -5,6 +5,7 @@
     import TransferList from "./TransferList.svelte";
     import { sortFilterRosters } from "$lib/util/util";
     import LL from "$i18n/i18n-svelte";
+    import { game_abbreviations } from "$lib/util/util";
 
     export let team: Team;
     let roster_id: number | null = null;
@@ -23,7 +24,7 @@
             <select bind:value={roster_id}>
                 <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
                 {#each sortFilterRosters(team.rosters) as roster}
-                    <option value={roster.id}>{roster.name} ({roster.game.toUpperCase()})</option>
+                    <option value={roster.id}>{roster.name} ({game_abbreviations[roster.game]})</option>
                 {/each}
             </select>
         </div>

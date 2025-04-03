@@ -34,7 +34,7 @@ class Problem(Exception):
         return s
 
 
-Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt", "smk"]
+Game = Literal["mkw", "mk7", "mk8", "mk8dx", "mkt", "smk", "mkworld"]
 GameMode = Literal[
     "150cc",
     "200cc",
@@ -52,6 +52,7 @@ GameMode = Literal[
 ]
 FriendCodeType = Literal["switch", "nnid", "3ds", "mkw", "mkt"]
 game_fc_map: dict[Game, FriendCodeType] = {
+                    "mkworld": "switch",
                     "mk8dx": "switch",
                     "mk7": "3ds",
                     "mk8": "nnid",
