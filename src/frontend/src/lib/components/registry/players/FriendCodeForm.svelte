@@ -99,7 +99,7 @@
                     <label for="description">{$LL.FRIEND_CODES.DESCRIPTION()}</label>
                 </div>
                 <div>
-                    <input name="description" placeholder={$LL.FRIEND_CODES.DESCRIPTION()} />
+                    <input name="description" placeholder={$LL.FRIEND_CODES.DESCRIPTION()} maxlength=200/>
                 </div>
             </div>
             <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>

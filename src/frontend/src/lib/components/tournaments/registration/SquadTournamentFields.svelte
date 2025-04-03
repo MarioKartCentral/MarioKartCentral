@@ -25,7 +25,7 @@
       <label for="squad_name">{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME()}</label>
     </span>
     
-    <input name="squad_name" value={squad_name} required pattern="^\S.*\S$|^\S$"/>
+    <input name="squad_name" value={squad_name} required pattern="^\S.*\S$|^\S$" maxlength=32/>
   </div>
 {/if}
 {#if tournament.squad_tag_required}

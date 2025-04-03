@@ -73,7 +73,7 @@
     </div>
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-      <input name="name" type="text" required pattern="^\S.*\S$|^\S$"/>
+      <input name="name" type="text" required pattern="^\S.*\S$|^\S$" maxlength=32/>
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
@@ -100,7 +100,7 @@
       <div>
         <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
       </div>
-      <textarea name="description" />
+      <textarea name="description" maxlength=200/>
     </div>
     <div class="option">
       <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>

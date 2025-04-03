@@ -135,7 +135,7 @@
               <LanguageSelect bind:language={team.language}/>
               <br />
               <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
-              <textarea name="description" value={team.description} />
+              <textarea name="description" value={team.description} maxlength=200/>
               <br />
           </Section>
           <Section header={$LL.COMMON.SUBMIT()}>
@@ -148,10 +148,10 @@
         <form method="post" on:submit|preventDefault={forceEditTeam}>
           <Section header={$LL.TEAMS.EDIT.TEAM_NAME_TAG()}>
             <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-            <input name="name" type="text" value={team.name} pattern="^\S.*\S$|^\S$" required />
+            <input name="name" type="text" value={team.name} pattern="^\S.*\S$|^\S$" required maxlength=32/>
             <br />
             <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-            <input name="tag" type="text" bind:value={team.tag} required />
+            <input name="tag" type="text" bind:value={team.tag} required maxlength=5/>
           </Section>
           <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
             <label for="color">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
@@ -165,7 +165,7 @@
             <LanguageSelect bind:language={team.language}/>
             <br />
             <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
-            <textarea name="description" value={team.description} />
+            <textarea name="description" value={team.description} maxlength=200/>
             <br />
           </Section>
           <Section header="Team Status">

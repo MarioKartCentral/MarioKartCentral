@@ -414,10 +414,10 @@
 <Dialog bind:this={force_edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
   <form method="post" on:submit|preventDefault={forceEditRoster}>
     <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-    <input name="name" type="text" value={roster.name} required pattern="^\S.*\S$|^\S$"/>
+    <input name="name" type="text" value={roster.name} required pattern="^\S.*\S$|^\S$" maxlength=32/>
     <br />
     <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-    <input name="tag" type="text" value={roster.tag} required pattern="^\S.*\S$|^\S$"/>
+    <input name="tag" type="text" value={roster.tag} required pattern="^\S.*\S$|^\S$" maxlength=5/>
     <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
     <select name="recruiting">
       <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
