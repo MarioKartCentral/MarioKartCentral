@@ -92,7 +92,7 @@
                 <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
               </div>
               <div>
-                <input name="name" type="text" pattern="^\S.*\S$|^\S$" required />
+                <input name="name" type="text" pattern="^\S.*\S$|^\S$" required maxlength=32/>
               </div>
             </div>
             <div class="option">
@@ -100,7 +100,7 @@
                 <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
               </div>
               <div>
-                <input name="tag" type="text" required />
+                <input name="tag" type="text" required maxlength=5/>
               </div>
             </div>
             <div class="option">

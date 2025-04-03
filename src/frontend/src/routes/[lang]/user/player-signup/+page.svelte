@@ -25,7 +25,7 @@
       if (fc === '') {
         continue;
       }
-      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), type: types[i], is_primary: true, description: null, is_verified: false, is_active: true });
+      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), type: types[i], is_primary: true, description: null, is_verified: false, is_active: true, creation_date: 0 });
     }
 
     const payload = {

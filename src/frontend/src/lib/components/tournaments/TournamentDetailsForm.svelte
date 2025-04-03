@@ -82,7 +82,7 @@
       <label for="tournament_name">{$LL.TOURNAMENTS.MANAGE.TOURNAMENT_NAME_REQUIRED()}</label>
     </div>
     <div>
-      <input name="tournament_name" class="tournament_name" type="text" bind:value={data.name} minlength="1" required />
+      <input name="tournament_name" class="tournament_name" type="text" bind:value={data.name} minlength="1" maxlength=64 required />
     </div>
   </div>
   <div class="option">

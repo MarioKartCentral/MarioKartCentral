@@ -78,11 +78,11 @@
     {:else}
         <div>
             <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-            <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
+            <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$" maxlength=32/>
         </div>
         <div>
             <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-            <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$"/>
+            <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$" maxlength=5/>
         </div>
         <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}

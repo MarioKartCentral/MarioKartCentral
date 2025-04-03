@@ -126,7 +126,7 @@
       <div>
         <label for="about_me">{$LL.PLAYERS.PROFILE.ABOUT_ME()}</label>
         <br />
-        <textarea name="about_me">{player.user_settings?.about_me ? player.user_settings.about_me : ''}</textarea>
+        <textarea name="about_me" maxlength=200>{player.user_settings?.about_me ? player.user_settings.about_me : ''}</textarea>
       </div>
       <div>
         <label for="language">{$LL.COMMON.LANGUAGE()}</label>

@@ -61,7 +61,7 @@
         <form method="POST" on:submit|preventDefault={requestNameChange}>
             <div class="option">
                 <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
-                <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
+                <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required maxlength=20/>
             </div>
             <Button type="submit">{$LL.PLAYERS.PROFILE.REQUEST_NAME_CHANGE()}</Button>
         </form>
@@ -77,7 +77,7 @@
     <form method="POST" on:submit|preventDefault={forceEditPlayer}>
         <div class="option">
             <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
-            <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required/>
+            <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required maxlength=20/>
         </div>
         <div class="option">
             <label for="country">{$LL.COMMON.COUNTRY()}</label>

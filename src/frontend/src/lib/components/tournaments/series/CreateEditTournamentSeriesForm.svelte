@@ -95,10 +95,10 @@
         <label for="series_name">{$LL.TOURNAMENTS.SERIES.SERIES_NAME()}</label>
       </div>
       <div>
-        <input type="text" name="series_name" bind:value={data.series_name} minlength="1" required />
+        <input type="text" name="series_name" bind:value={data.series_name} minlength="1" maxlength=64 required />
       </div>
     </div>
-    <div class="option">
+    <div class="option hidden">
       <div>
         <label for="url">{$LL.TOURNAMENTS.SERIES.SERIES_URL()}</label>
       </div>
@@ -140,7 +140,7 @@
           <label for="location">{$LL.TOURNAMENTS.MANAGE.LOCATION()}</label>
         </div>
         <div>
-          <input name="location" type="text" bind:value={data.location} />
+          <input name="location" type="text" bind:value={data.location} maxlength=64/>
         </div>
       </div>
     {/if}

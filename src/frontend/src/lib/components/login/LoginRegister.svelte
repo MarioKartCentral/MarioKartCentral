@@ -95,7 +95,7 @@
 
 <style>
     div.form {
-        min-width: 400px;
+        min-width: 300px;
     }
     div.option {
         display: flex;
