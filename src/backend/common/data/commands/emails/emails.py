@@ -5,12 +5,11 @@ from common.data.commands import Command
 from common.data.models import *
 from common.auth import pw_hasher
 import aiosmtplib
-from email.message import EmailMessage
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timezone, timedelta
 import aiobotocore.session
-import html
-
 
 async def send_email(to_email: str, subject: str, content: str, config: EmailServiceConfig):
     """
@@ -18,11 +17,6 @@ async def send_email(to_email: str, subject: str, content: str, config: EmailSer
     
     If config.use_ses is True, AWS SES will be used. Otherwise, SMTP will be used.
     """
-    message = EmailMessage()
-    message["From"] = config.from_email
-    message["To"] = to_email
-    message["Subject"] = subject
-    message.set_content(content)
     
     if config.use_ses and config.ses_config:
         session = aiobotocore.session.get_session()
@@ -40,18 +34,20 @@ async def send_email(to_email: str, subject: str, content: str, config: EmailSer
                         'Charset': 'UTF-8'
                     },
                     'Body': {
-                        'Text': {
-                            'Data': content,
-                            'Charset': 'UTF-8'
-                        },
                         'Html': {
-                            'Data': html.escape(content).replace('\n', '<br>'),
+                            'Data': content.replace('\n', '<br>'),
                             'Charset': 'UTF-8'
                         }
                     }
                 }
             )
     elif config.smtp_config:
+        message = MIMEMultipart("alternative")
+        message["From"] = config.from_email
+        message["To"] = to_email
+        message["Subject"] = subject
+        html_message = MIMEText(content, "html", "utf-8")
+        message.attach(html_message)
         await aiosmtplib.send(message, hostname=config.smtp_config.hostname, port=config.smtp_config.port)
     else:
         raise ValueError("Neither SES nor SMTP configuration is complete. Please provide either valid SES or SMTP settings.")
@@ -78,9 +74,9 @@ class SendEmailVerificationCommand(Command[None]):
             await db.commit()
 
         subject = "Email Confirmation - Mario Kart Central"
-        content = f"Welcome to Mario Kart Central! Click the link below to confirm your email address.\
+        content = f'Welcome to Mario Kart Central! Click the link below to confirm your email address.\
                     \nThis link will expire in 60 minutes.\
-                    \n{self.email_config.site_url}/user/confirm-email?token={token_id}"
+                    \n<a href="{self.email_config.site_url}/user/confirm-email?token={token_id}">Confirm Email</a>'
         await send_email(user_email, subject, content, self.email_config)
 
 
@@ -118,8 +114,8 @@ class SendPasswordResetEmailCommand(Command[None]):
                              (token_id, user_id, expires_on))
             await db.commit()
         subject = "Password Reset - Mario Kart Central"
-        content = f"You requested a password reset on Mario Kart Central. You can reset your password by clicking the link below (expires in 60 minutes): \
-            \n{self.email_config.site_url}/user/reset-password?token={token_id}"
+        content = f'You requested a password reset on Mario Kart Central. You can reset your password by clicking the link below (expires in 60 minutes): \
+            \n<a href="{self.email_config.site_url}/user/reset-password?token={token_id}">Reset Password</a>'
         await send_email(self.user_email, subject, content, self.email_config)
 
 
