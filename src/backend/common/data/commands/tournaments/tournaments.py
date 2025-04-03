@@ -227,13 +227,17 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
             if tournament_data.series_id:
                 s3_body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{tournament_data.series_id}.json')
                 if s3_body:
-                    series = msgspec.json.decode(s3_body, type=Series)
-                    tournament_data.series_name = series.series_name
-                    tournament_data.series_url = series.url
+                    async with db.execute("SELECT name, url, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
+                        row = await cursor.fetchone()
+                        assert row is not None
+                        series_name, series_url, series_logo = row
+                    series = msgspec.json.decode(s3_body, type=SeriesS3Fields)
+                    tournament_data.series_name = series_name
+                    tournament_data.series_url = series_url
                     tournament_data.series_description = series.description
                     tournament_data.series_ruleset = series.ruleset
                     if tournament_data.use_series_logo:
-                        tournament_data.logo = series.logo
+                        tournament_data.logo = series_logo
                    
         return tournament_data
 
