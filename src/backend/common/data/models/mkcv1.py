@@ -11,11 +11,6 @@ class XFUser:
     is_banned: Literal[0, 1]
 
 @dataclass
-class XFUserAuthenticate:
-    user_id: int
-    data: str # contains a serialized PHP object with a property called "hash" that contains a bcrypt hash of the user's password
-
-@dataclass
 class XFUserBan:
     user_id: int
     ban_date: int
@@ -25,7 +20,6 @@ class XFUserBan:
 @dataclass
 class XenforoData:
     xf_user: List[XFUser]
-    xf_user_authenticate: List[XFUserAuthenticate]
     xf_user_ban: List[XFUserBan]
 
 @dataclass
@@ -298,7 +292,6 @@ class NewMKCUser:
     username: str
     email: str
     register_date: int
-    password_hash: str
     player_id: int | None
     about_me: str | None
     user_roles: list[NewMKCUserRole]
