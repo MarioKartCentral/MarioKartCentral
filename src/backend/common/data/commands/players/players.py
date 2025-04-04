@@ -63,9 +63,9 @@ class CreatePlayerCommand(Command[Player]):
                     if row:
                         raise Problem("Another player is currently using this friend code for this game", status=400)
                     
-            friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description)
+            friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description, now)
                                   for friend_code in self.friend_codes]
-            await db.executemany("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            await db.executemany("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
             return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
