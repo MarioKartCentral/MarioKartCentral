@@ -119,6 +119,7 @@ class PlayerFilter:
     matching_fcs_only: bool = False
     include_shadow_players: bool = False
     sort_by_newest: bool | None = False
+    has_connected_user: bool | None = None
 
 @dataclass
 class PlayerRequestNameRequestData:

@@ -250,6 +250,21 @@ class ListPlayersCommand(Command[PlayerList]):
                 variable_parameters.append(filter.squad_id)
                 variable_parameters.append(None)
 
+            # if has_connected_user is true, we should only list players who have
+            # a user connected to them.
+            # if it's false, we only want players who do not have a user connected to them.
+            if filter.has_connected_user is not None:
+                if filter.has_connected_user:
+                    where_clauses.append("""p.id IN (
+                                            SELECT u.player_id FROM users u
+                                            WHERE u.player_id IS NOT NULL
+                                         )""")
+                else:
+                    where_clauses.append("""p.id NOT IN (
+                                            SELECT u.player_id FROM users u
+                                            WHERE u.player_id IS NOT NULL
+                                        )""")
+
             # some filters require us to check if a player has a matching friend code,
             # so we do that here
             if filter.friend_code or filter.name_or_fc or filter.fc_type:

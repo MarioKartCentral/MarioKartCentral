@@ -179,6 +179,8 @@ async def reset_password(request: Request, body: ResetPasswordRequestData):
     await handle(command)
     return JSONResponse({})
 
+
+
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
     params = {

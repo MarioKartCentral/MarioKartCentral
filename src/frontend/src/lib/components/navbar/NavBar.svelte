@@ -104,7 +104,7 @@
         </Dropdown>
       {:else}
         <Button size="sm">
-          {$LL.NAVBAR.LOGIN_REGISTER()}
+          {$LL.NAVBAR.LOGIN()}
           <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
         </Button>
         <Dropdown>
