@@ -410,17 +410,17 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
              """
             tournament_squads_query = f"""
                  SELECT
-                    ts.id,                    
-                    ts.tournament_id,
+                    ts.id,
+                    ts.tournament_id,           
                     ts.timestamp,
                     tsp.placement, 
                     tsp.placement_description, 
                     tsp.placement_lower_bound, 
                     tsp.is_disqualified,
+                    ts.id AS roster_id,
                     tr.name AS roster_name,
                     tr.tag AS roster_tag,
-                    tr.color AS roster_color,
-                    t.is AS team_id,
+                    t.id AS team_id,
                     t.name AS team_name,
                     t.tag AS team_tag,
                     t.color AS team_color
@@ -536,21 +536,18 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     (
                         id,
                         tournament_id,
-                        roster_id,
                         placement,
                         placement_description,
                         placement_lower_bound,
                         is_disqualified,
-                        name,
-                        tag,
-                        color,
                         timestamp,
-                        roster_name,
-                        roster_tag,
                         team_id,
                         team_name,
                         team_tag,
-                        team_color
+                        team_color,
+                        roster_id,
+                        roster_name,
+                        roster_tag
                     ) = row
 
                     # Get players for this squad
@@ -566,9 +563,9 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         player=None,
                         squad=TournamentSquadDetails(
                             id=id,
-                            name=name,
-                            tag=tag,
-                            color=color,
+                            name=roster_name,
+                            tag=roster_tag,
+                            color=team_color,
                             timestamp=timestamp,
                             is_registered=True,
                             is_approved=True,
