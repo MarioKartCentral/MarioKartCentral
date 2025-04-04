@@ -37,6 +37,8 @@ def create_email_config():
 async def log_in(request: Request, body: LoginRequestData) -> Response:
     user = await handle(GetUserDataFromEmailCommand(body.email))
     if user:
+        if user.password_hash is None:
+            raise Problem("Invalid login details", status=401)
         try:
             pw_hasher.verify(user.password_hash, body.password)
         except:
@@ -185,10 +187,7 @@ async def transfer_account(request: Request, body: TransferAccountRequestData):
     mkc_user = await handle(command)
     if not mkc_user:
         raise Problem("Old site account not found", status=404)
-    # it's impossible to log in with the password until the password has been reset from the email,
-    # but the account needs a password, so just use a default
-    password_hash = pw_hasher.hash("password") 
-    user = await handle(TransferMKCV1UserCommand(mkc_user.email, password_hash, mkc_user.register_date,
+    user = await handle(TransferMKCV1UserCommand(mkc_user.email, None, mkc_user.register_date,
         mkc_user.player_id, mkc_user.about_me,
         mkc_user.user_roles, mkc_user.series_roles,
         mkc_user.team_roles))

@@ -86,7 +86,7 @@ class GetMKCV1UserByPlayerIDCommand(Command[NewMKCUser | None]):
 @dataclass
 class TransferMKCV1UserCommand(Command[UserLoginData]):
     email: str
-    password_hash: str
+    password_hash: str | None
     join_date: int
     player_id: int | None
     about_me: str | None

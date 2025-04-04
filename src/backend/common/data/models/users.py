@@ -18,7 +18,7 @@ class UserAccountInfo(User):
 @dataclass
 class UserLoginData(UserAccountInfo):
     email: str
-    password_hash: str
+    password_hash: str | None
 
 @dataclass
 class ModNotifications:
