@@ -39,7 +39,7 @@
 </script>
 
 <svelte:head>
-    <title>Transfer Account | Mario Kart Central</title>
+    <title>Transfer Account | MKCentral</title>
 </svelte:head>
 
 {#if user_info.is_checked}

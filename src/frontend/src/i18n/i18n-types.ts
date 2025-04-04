@@ -485,7 +485,7 @@ type RootTranslation = {
 	}
 	HOMEPAGE: {
 		/**
-		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​K​C​e​n​t​r​a​l​!
 		 */
 		WELCOME: string
 		/**
@@ -754,7 +754,7 @@ type RootTranslation = {
 		 */
 		EMAIL_ALREADY_CONFIRMED: string
 		/**
-		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​K​C​e​n​t​r​a​l​!
 		 */
 		WELCOME_TO_MKC: string
 		/**
@@ -1986,7 +1986,7 @@ type RootTranslation = {
 		}
 		SHADOW_PLAYERS: {
 			/**
-			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
+			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​K​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
 			 */
 			UNCLAIMED_PLAYER_DESCRIPTION: string
 			/**
@@ -5251,7 +5251,7 @@ export type TranslationFunctions = {
 	}
 	HOMEPAGE: {
 		/**
-		 * Welcome to Mario Kart Central!
+		 * Welcome to MKCentral!
 		 */
 		WELCOME: () => LocalizedString
 		/**
@@ -5515,7 +5515,7 @@ export type TranslationFunctions = {
 		 */
 		EMAIL_ALREADY_CONFIRMED: () => LocalizedString
 		/**
-		 * Welcome to Mario Kart Central!
+		 * Welcome to MKCentral!
 		 */
 		WELCOME_TO_MKC: () => LocalizedString
 		/**
@@ -6668,7 +6668,7 @@ export type TranslationFunctions = {
 		}
 		SHADOW_PLAYERS: {
 			/**
-			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.
+			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at MKCentral. To request to claim this player, click the button below.
 			 */
 			UNCLAIMED_PLAYER_DESCRIPTION: () => LocalizedString
 			/**

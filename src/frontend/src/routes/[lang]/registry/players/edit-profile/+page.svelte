@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>{$LL.PLAYERS.PROFILE.EDIT_PROFILE()} | Mario Kart Central</title>
+  <title>{$LL.PLAYERS.PROFILE.EDIT_PROFILE()} | MKCentral</title>
 </svelte:head>
 
 {#if player}

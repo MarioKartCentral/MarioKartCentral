@@ -1,5 +1,5 @@
 {
-    "name": "Mario Kart Central",
+    "name": "MKCentral",
     "dockerComposeFile": [ "../docker-compose.yml", "docker-compose.yml" ],
     "service": "dev-environment",
     "workspaceFolder": "/workspace",

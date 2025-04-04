@@ -73,8 +73,8 @@ class SendEmailVerificationCommand(Command[None]):
                              (token_id, self.user_id, expires_on))
             await db.commit()
 
-        subject = "Email Confirmation - Mario Kart Central"
-        content = f'Welcome to Mario Kart Central! Click the link below to confirm your email address.\
+        subject = "Email Confirmation - MKCentral"
+        content = f'Welcome to MKCentral! Click the link below to confirm your email address.\
                     \nThis link will expire in 60 minutes.\
                     \n<a href="{self.email_config.site_url}/user/confirm-email?token={token_id}">Confirm Email</a>'
         await send_email(user_email, subject, content, self.email_config)
@@ -113,8 +113,8 @@ class SendPasswordResetEmailCommand(Command[None]):
             await db.execute("INSERT INTO password_resets(token_id, user_id, expires_on) VALUES(?, ?, ?)",
                              (token_id, user_id, expires_on))
             await db.commit()
-        subject = "Password Reset - Mario Kart Central"
-        content = f'You requested a password reset on Mario Kart Central. You can reset your password by clicking the link below (expires in 60 minutes): \
+        subject = "Password Reset - MKCentral"
+        content = f'You requested a password reset on MKCentral. You can reset your password by clicking the link below (expires in 60 minutes): \
             \n<a href="{self.email_config.site_url}/user/reset-password?token={token_id}">Reset Password</a>'
         await send_email(self.user_email, subject, content, self.email_config)
 

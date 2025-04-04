@@ -12,7 +12,7 @@
   - [Adding New Permissions](#adding-new-permissions)
 - [Security Considerations](#security-considerations)
 
-This document describes how user authentication and authorization are implemented throughout MarioKartCentral. It covers the permission system, role management, and security considerations that protect access to resources across the application.
+This document describes how user authentication and authorization are implemented throughout MKCentral. It covers the permission system, role management, and security considerations that protect access to resources across the application.
 
 ## Core Concepts
 

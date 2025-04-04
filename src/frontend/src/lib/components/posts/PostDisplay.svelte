@@ -53,7 +53,7 @@
 </script>
 
 <svelte:head>
-  <title>{post ? post.title : "Posts"} | Mario Kart Central</title>
+  <title>{post ? post.title : "Posts"} | MKCentral</title>
 </svelte:head>
 
 {#if post}

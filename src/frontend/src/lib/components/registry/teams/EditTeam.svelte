@@ -103,7 +103,7 @@
   </script>
   
   <svelte:head>
-    <title>{team_name} | Mario Kart Central</title>
+    <title>{team_name} | MKCentral</title>
   </svelte:head>
   
   {#if team}

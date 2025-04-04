@@ -132,7 +132,7 @@ const fr: Translation = {
     MKWORLD: 'Mario Kart World',
   },
   HOMEPAGE: {
-    WELCOME: 'Bienvenue Mario Kart Central!',
+    WELCOME: 'Bienvenue MKCentral!',
     SUMMARY:
       'Nous sommes le cœur des compétitions Mario Kart, où vous trouverez des tournois pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là ! Nous organisons des tournois sur Mario Kart 8 Deluxe, Tour, et plus encore, avec une variété de matchs qui ont lieu chaque semaine!',
     YOU_PLACED: 'You placed: {placement|ordinalSuffix}',
@@ -207,7 +207,7 @@ const fr: Translation = {
     SEND_CONFIRMATION_EMAIL_SUCCESS: 'Successfully sent confirmation email!',
     SEND_CONFIRMATION_EMAIL_FAILURE: 'Failed to send confirmation email',
     EMAIL_ALREADY_CONFIRMED: 'Your email is already confirmed.',
-    WELCOME_TO_MKC: 'Welcome to Mario Kart Central!',
+    WELCOME_TO_MKC: 'Welcome to MKCentral!',
     EMAIL_CONFIRMATION_REQUIRED:
       "Before you can complete your player registration, you'll need to verify your email address. You should have received an email containing a link to confirm your email address; if you don't see the email, or the link has expired, you can click the button below to send another confirmation email.",
     SEND_CONFIRMATION_EMAIL: 'Send Confirmation Email',
@@ -528,7 +528,7 @@ const fr: Translation = {
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
-        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.',
+        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at MKCentral. To request to claim this player, click the button below.',
       CLAIM_PLAYER: 'Claim Player',
       CLAIM_PLAYER_SUCCESS: 'Successfully sent a claim for this player to staff!',
       CLAIM_PLAYER_FAILED: 'Claiming player failed',
