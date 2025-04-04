@@ -5,6 +5,7 @@
   import SeriesInfo from '$lib/components/tournaments/series/SeriesInfo.svelte';
   import LL from '$i18n/i18n-svelte';
   import SeriesPosts from '$lib/components/tournaments/series/SeriesPosts.svelte';
+  import makeStats from '$lib/util/series_stats';
 
   let id = 0;
   let series: TournamentSeries;
@@ -14,13 +15,23 @@
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
     id = Number(param_id);
-    const res = await fetch(`/api/tournaments/series/${id}`);
+    const res = await fetch(`/api/tournaments/series/${id}/placements`);
     if (res.status !== 200) {
       not_found = true;
       return;
     }
     const body: TournamentSeries = await res.json();
     series = body;
+    console.log(series);
+
+    const originalArray = series
+    const scaleFactor = 1_000_000_0;
+    const bigArray = Array.from({ length: originalArray.length * scaleFactor }, (_, i) => 
+      originalArray[i % originalArray.length]
+    );
+    console.log(bigArray.length);
+    const stats = makeStats(bigArray);
+    console.log(stats);
   });
 </script>
 
