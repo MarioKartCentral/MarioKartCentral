@@ -20,7 +20,7 @@
     organizer: 'MKCentral',
     location: null,
     display_order: 0,
-    game: 'mk8dx',
+    game: 'mkworld',
     mode: '150cc',
     is_historical: false,
     is_public: true,

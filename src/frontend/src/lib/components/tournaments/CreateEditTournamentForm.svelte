@@ -23,7 +23,7 @@
     url: null,
     organizer: 'MKCentral',
     location: null,
-    game: 'mk8dx',
+    game: 'mkworld',
     mode: '150cc',
     is_squad: false,
     min_squad_size: null,
