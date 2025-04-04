@@ -48,5 +48,5 @@ class ResetPasswordRequestData:
     new_password: str
 
 @dataclass
-class TransferOldAccountRequestData:
+class TransferAccountRequestData:
     player_id: int

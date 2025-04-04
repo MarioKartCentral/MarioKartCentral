@@ -62,13 +62,13 @@
 </script>
 
 <Tabs>
-    <TabItem open title="Transfer">
+    <TabItem open title={$LL.LOGIN.TRANSFER()}>
         <div class="form">
             <div class="option">
-                If you had an account on the old MKCentral site, click the button below to transfer your account to the new site.
+                {$LL.LOGIN.TRANSFER_ACCOUNT_PROMPT()}
             </div>
             <div>
-                <Button href="/{$page.params.lang}/user/transfer-account">Transfer Account</Button>
+                <Button href="/{$page.params.lang}/user/transfer-account">{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
             </div>
         </div>
     </TabItem>

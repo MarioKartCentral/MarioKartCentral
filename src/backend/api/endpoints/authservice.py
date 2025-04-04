@@ -179,7 +179,24 @@ async def reset_password(request: Request, body: ResetPasswordRequestData):
     await handle(command)
     return JSONResponse({})
 
-
+@bind_request_body(TransferAccountRequestData)
+async def transfer_account(request: Request, body: TransferAccountRequestData):
+    command = GetMKCV1UserByPlayerIDCommand(body.player_id)
+    mkc_user = await handle(command)
+    if not mkc_user:
+        raise Problem("Old site account not found", status=404)
+    # it's impossible to log in with the password until the password has been reset from the email,
+    # but the account needs a password, so just use a default
+    password_hash = pw_hasher.hash("password") 
+    user = await handle(TransferMKCV1UserCommand(mkc_user.email, password_hash, mkc_user.register_date,
+        mkc_user.player_id, mkc_user.about_me,
+        mkc_user.user_roles, mkc_user.series_roles,
+        mkc_user.team_roles))
+    async def send_password_reset():
+        email_config = create_email_config()
+        command = SendPasswordResetEmailCommand(user.email, email_config)
+        await handle(command)
+    return JSONResponse({}, background=BackgroundTask(send_password_reset))
 
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
@@ -260,6 +277,7 @@ routes = [
     Route('/api/user/check_password_token', check_password_reset_token, methods=["POST"]),
     Route('/api/user/reset_password_token', reset_password_with_token, methods=["POST"]),
     Route('/api/user/reset_password', reset_password, methods=["POST"]),
+    Route('/api/user/transfer_account', transfer_account, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),

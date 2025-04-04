@@ -217,6 +217,16 @@ const de: Translation = {
       'This password reset token is expired. You can request another password reset email with the form below.',
     SEND_PASSWORD_RESET_EMAIL: 'Send Password Reset Email',
     FORGOT_PASSWORD: 'Forgot password?',
+    TRANSFER_ACCOUNT_PROMPT:
+      'If you had an account on the old MKCentral site, click the button below to transfer your account to the new site.',
+    TRANSFER_ACCOUNT: 'Transfer Account',
+    TRANSFER_ACCOUNT_HEADER: 'Transfer Account from Old MKCentral Site',
+    TRANSFER_ACCOUNT_DETAILS:
+      'If you had an account on the old MKCentral site, you can search for your registry name or friend code here and transfer your account from the old site to the new site. Alternatively, you can log in with the email linked to your account on the old site and it will automatically transfer your account.',
+    TRANSFER_ACCOUNT_SUCCESS:
+      'Successfully transferred your account to the new site! Please check the email linked to your account for a password reset email.',
+    TRANSFER_ACCOUNT_FAILED: 'Failed to transfer account',
+    TRANSFER: 'Transfer',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
