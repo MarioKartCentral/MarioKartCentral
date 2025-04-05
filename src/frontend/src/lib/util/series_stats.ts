@@ -10,22 +10,8 @@ export default function makeStats(tournaments) {
                     if (!rostersMap.has(roster_id)) {
                         rostersMap.set(roster_id, newRosterObject(roster))
                     }
-                    let gold = 0;
-                    let silver = 0;
-                    let bronze = 0;
-                    switch (placement) {
-                        case 1:
-                            gold++;
-                            break;
-                        case 2:
-                            silver++;
-                            break;
-                        case 3:
-                            bronze++;
-                            break;
-                        default:
-                            break;
-                    }
+                    const { gold, silver, bronze } = addMedals(placement.placement);
+                    console.log(gold, silver, bronze);
                     const r = rostersMap.get(roster_id);
                     r.gold += gold;
                     r.silver += silver;
@@ -36,24 +22,9 @@ export default function makeStats(tournaments) {
                 for (const player of placement.squad.players) {
                     const player_id = player.player_id;
                     if (!playersMap.has(player_id)) {
-                        playersMap.set(player_id, newPlayerObject(player))
+                        playersMap.set(player_id, newPlayerObject(player));
                     }
-                    let gold = 0;
-                    let silver = 0;
-                    let bronze = 0;
-                    switch (placement) {
-                        case 1:
-                            gold++;
-                            break;
-                        case 2:
-                            silver++;
-                            break;
-                        case 3:
-                            bronze++;
-                            break;
-                        default:
-                            break;
-                    }
+                    const { gold, silver, bronze } = addMedals(placement.placement);
                     const r = playersMap.get(player_id);
                     r.gold += gold;
                     r.silver += silver;
@@ -109,4 +80,24 @@ function newPlayerObject(player) {
         bronze: 0,
         participations: 0,
     };
+}
+
+function addMedals(placement) {
+    let gold = 0;
+    let silver = 0;
+    let bronze = 0;
+    switch (placement) {
+        case 1:
+            gold++;
+            break;
+        case 2:
+            silver++;
+            break;
+        case 3:
+            bronze++;
+            break;
+        default:
+            break;
+    }
+    return { gold, silver, bronze };
 }

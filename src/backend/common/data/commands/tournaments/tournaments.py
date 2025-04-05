@@ -412,18 +412,18 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                  SELECT
                     ts.id,
                     ts.tournament_id,           
-                    ts.timestamp,
                     tsp.placement, 
                     tsp.placement_description, 
                     tsp.placement_lower_bound, 
                     tsp.is_disqualified,
-                    ts.id AS roster_id,
-                    tr.name AS roster_name,
-                    tr.tag AS roster_tag,
+                    ts.timestamp,
                     t.id AS team_id,
                     t.name AS team_name,
                     t.tag AS team_tag,
-                    t.color AS team_color
+                    t.color AS team_color,
+                    tr.id AS roster_id,
+                    tr.name AS roster_name,
+                    tr.tag AS roster_tag
                     FROM tournament_squads ts
                     JOIN tournament_squad_placements tsp ON ts.id = tsp.squad_id
                     JOIN team_squad_registrations tsr ON ts.id = tsr.squad_id
@@ -509,7 +509,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement=placement,
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
-                        is_disqualified=is_disqualified,
+                        is_disqualified=is_disqualified == 1,
                         player=TournamentPlayerDetails(
                             id=id,
                             player_id=player_id,
@@ -559,7 +559,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement=placement,
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
-                        is_disqualified=is_disqualified,
+                        is_disqualified=is_disqualified == 1,
                         player=None,
                         squad=TournamentSquadDetails(
                             id=id,

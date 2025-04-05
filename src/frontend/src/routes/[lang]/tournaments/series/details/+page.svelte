@@ -24,13 +24,13 @@
     series = body;
     console.log(series);
 
-    const originalArray = series
-    const scaleFactor = 1_000_000_0;
-    const bigArray = Array.from({ length: originalArray.length * scaleFactor }, (_, i) => 
-      originalArray[i % originalArray.length]
-    );
-    console.log(bigArray.length);
-    const stats = makeStats(bigArray);
+    // const originalArray = series
+    // const scaleFactor = 1_000_000_0;
+    // const bigArray = Array.from({ length: originalArray.length * scaleFactor }, (_, i) => 
+    //   originalArray[i % originalArray.length]
+    // );
+    // console.log(bigArray.length);
+    const stats = makeStats(series);
     console.log(stats);
   });
 </script>
