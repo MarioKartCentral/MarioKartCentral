@@ -29,11 +29,13 @@
   });
 </script>
 
-{#if tournament && data}
+{#if user_info.is_checked}
   {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
-    <CreateEditTournamentForm tournament_id={tournament.id} {data} 
-    series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} />
+    {#if tournament && data}
+        <CreateEditTournamentForm tournament_id={tournament.id} {data} 
+        series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} /> 
+    {/if}
   {:else}
-    {$LL.COMMON.NO_PERMISSION()}
+      {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/if}

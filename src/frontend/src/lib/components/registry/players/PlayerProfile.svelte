@@ -102,11 +102,11 @@
     <div class="item">
       <DiscordDisplay discord={player.discord}/>
     </div>
-    <div class="about_me">
-      {#if player.user_settings && player.user_settings.about_me}
-        {player.user_settings.about_me}
-      {/if}
-    </div>
+    {#if player.user_settings && player.user_settings.about_me}
+      <div class="about_me">
+          {player.user_settings.about_me}
+      </div>
+    {/if}
   </div>
 </Section>
 
@@ -139,7 +139,10 @@
     align-self: flex-start;
     justify-content: center;
     max-width: 400px;
+    max-height: 200px;
+    overflow: hidden;
     word-break: break-word;
+    white-space: pre-line;
     @media(min-width: 800px) {
       margin-left: auto;
       margin-right: auto;

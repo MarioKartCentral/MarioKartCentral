@@ -4,7 +4,7 @@
 </script>
 
 <div class="container">
-  {#if header}
+  {#if header !== null}
     <div class="header bg-primary-800">
       <div class="header_element">
         {#if href}

@@ -240,7 +240,12 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
     else:
         redirect_path = "/registry/players/edit-profile"
 
-    return RedirectResponse(f"{redirect_path}{redirect_params}", 302)
+    async def sync_avatar():
+        if appsettings.ENABLE_DISCORD:
+            command = SyncDiscordAvatarCommand(request.state.user.id)
+            await handle(command)
+
+    return RedirectResponse(f"{redirect_path}{redirect_params}", 302, background=BackgroundTask(sync_avatar))
 
 @require_logged_in
 async def my_discord_data(request: Request) -> Response:
@@ -266,6 +271,13 @@ async def sync_discord_avatar(request: Request) -> JSONResponse:
     avatar_path = await handle(command)
     return JSONResponse({"avatar": avatar_path})
 
+@bind_request_body(RemovePlayerAvatarRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> JSONResponse:
+    command = RemoveDiscordAvatarCommand(body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
@@ -283,4 +295,5 @@ routes = [
     Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
     Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
+    Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
 ]

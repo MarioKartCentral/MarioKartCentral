@@ -14,6 +14,8 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.name) > 20:
+            raise Problem("Player name must be 20 characters or less", status=400)
         async with db_wrapper.connect() as db:
             if self.user_id is not None:
                 async with db.execute("SELECT player_id, email_confirmed FROM users WHERE id = ?", (self.user_id,)) as cursor:
@@ -56,6 +58,8 @@ class CreatePlayerCommand(Command[Player]):
                 match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
                 if friend_code.type != "nnid" and not match:
                     raise Problem(f"FC {friend_code.fc} of type {friend_code.type} is in incorrect format", status=400)
+                if friend_code.type == "nnid" and len(friend_code.fc) > 16:
+                    raise Problem("NNIDs must be 16 characters or less", status=400)
                 
                 # check if friend code is currently in use
                 async with db.execute("SELECT id FROM friend_codes WHERE fc = ? AND type = ? AND is_active = ?", (friend_code.fc, friend_code.type, True)) as cursor:
@@ -79,6 +83,8 @@ class UpdatePlayerCommand(Command[bool]):
     async def handle(self, db_wrapper, s3_wrapper) -> bool:
         data = self.data
         async with db_wrapper.connect() as db:
+            if len(self.data.name) > 20:
+                raise Problem("Player name must be 20 characters or less", status=400)
             async with db.execute("SELECT name FROM players WHERE id = ?", (data.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:

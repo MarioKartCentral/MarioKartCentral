@@ -364,6 +364,18 @@ type RootTranslation = {
 		 * F​a​i​l​e​d​ ​t​o​ ​s​y​n​c​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
 		 */
 		SYNC_AVATAR_ERROR: string
+		/**
+		 * D​e​l​e​t​e​ ​A​v​a​t​a​r
+		 */
+		DELETE_AVATAR: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​d​e​l​e​t​e​d​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
+		 */
+		DELETE_AVATAR_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​d​e​l​e​t​e​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
+		 */
+		DELETE_AVATAR_FAILED: string
 	}
 	FRIEND_CODES: {
 		/**
@@ -1923,6 +1935,14 @@ type RootTranslation = {
 			 * P​l​a​y​e​r​ ​N​o​t​e​s
 			 */
 			PLAYER_NOTES: string
+			/**
+			 * S​h​o​w​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+			 */
+			SHOW_PLAYER_NOTES: string
+			/**
+			 * H​i​d​e​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+			 */
+			HIDE_PLAYER_NOTES: string
 			/**
 			 * E​d​i​t​ ​P​l​a​y​e​r​ ​N​o​t​e​s
 			 */
@@ -5130,6 +5150,18 @@ export type TranslationFunctions = {
 		 * Failed to sync Discord avatar
 		 */
 		SYNC_AVATAR_ERROR: () => LocalizedString
+		/**
+		 * Delete Avatar
+		 */
+		DELETE_AVATAR: () => LocalizedString
+		/**
+		 * Successfully deleted Discord avatar
+		 */
+		DELETE_AVATAR_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to delete Discord avatar
+		 */
+		DELETE_AVATAR_FAILED: () => LocalizedString
 	}
 	FRIEND_CODES: {
 		/**
@@ -6605,6 +6637,14 @@ export type TranslationFunctions = {
 			 * Player Notes
 			 */
 			PLAYER_NOTES: () => LocalizedString
+			/**
+			 * Show Player Notes
+			 */
+			SHOW_PLAYER_NOTES: () => LocalizedString
+			/**
+			 * Hide Player Notes
+			 */
+			HIDE_PLAYER_NOTES: () => LocalizedString
 			/**
 			 * Edit Player Notes
 			 */

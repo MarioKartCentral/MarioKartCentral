@@ -4,6 +4,14 @@
     import TeamSearch from "$lib/components/common/TeamSearch.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import LL from "$i18n/i18n-svelte";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { check_permission, permissions } from "$lib/util/permissions";
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     let from_team: Team | null = null;
     let to_team: Team | null = null;
@@ -38,25 +46,33 @@
     }
 </script>
 
-<Section header={$LL.MODERATOR.MERGE_TEAMS()}>
-    <div class="option">
-        <div>
-            {$LL.MODERATOR.OLD_TEAM()}:
-        </div>
-        <TeamSearch bind:team={from_team}/>
-    </div>
-    
-    {#if from_team}
-        <div class="option">
-            <div>{$LL.MODERATOR.NEW_TEAM()}:</div>
-            <TeamSearch bind:team={to_team}/>
-        </div>
-        
+{#if user_info.is_checked}
+    {#if check_permission(user_info, permissions.merge_teams)}
+        <Section header={$LL.MODERATOR.MERGE_TEAMS()}>
+            <div class="option">
+                <div>
+                    {$LL.MODERATOR.OLD_TEAM()}:
+                </div>
+                <TeamSearch bind:team={from_team}/>
+            </div>
+            
+            {#if from_team}
+                <div class="option">
+                    <div>{$LL.MODERATOR.NEW_TEAM()}:</div>
+                    <TeamSearch bind:team={to_team}/>
+                </div>
+                
+            {/if}
+            {#if to_team}
+                <Button on:click={mergeTeams}>{$LL.MODERATOR.MERGE_TEAMS()}</Button>
+            {/if}
+        </Section>
+    {:else}
+        {$LL.COMMON.NO_PERMISSION()}
     {/if}
-    {#if to_team}
-        <Button on:click={mergeTeams}>{$LL.MODERATOR.MERGE_TEAMS()}</Button>
-    {/if}
-</Section>
+{/if}
+
+
 
 <style>
     div.option {

@@ -59,6 +59,10 @@ export const game_abbreviations: { [key: string]: string } = {
   mkt: 'MKTour',
   mk7: 'MK7',
   smk: 'SMK',
+  mk64: 'MK64',
+  mkdd: 'MKDD',
+  mksc: 'MKSC',
+  mkds: 'MKDS',
 };
 export const game_order: { [key: string]: number } = {
   mkworld: 0,

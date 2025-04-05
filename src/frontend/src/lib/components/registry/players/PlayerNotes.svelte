@@ -15,7 +15,7 @@
 <div>
     <h1 class="text-lg font-bold mb-1.5">{$LL.PLAYERS.PROFILE.PLAYER_NOTES()}</h1>
     {#if notes}
-        <div>{notes.notes}</div>
+        <div class="notes">{notes.notes}</div>
         <div class="text-sm text-slate-300 pt-1.5">
             {#if notes.edited_by}
                 <a href="/{$page.params.lang}/registry/players/profile?id={notes.edited_by.id}" class="hover:text-yellow-300">{notes.edited_by.name}</a>
@@ -27,3 +27,9 @@
         {$LL.COMMON.NONE()}
     {/if}
 </div>
+
+<style>
+    .notes {
+        white-space: pre-line;
+    }
+</style>

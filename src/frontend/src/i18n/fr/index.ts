@@ -96,6 +96,9 @@ const fr: Translation = {
     DELETE_DATA_ERROR: 'Une erreur est survenue lors de la suppression de votre compte Discord de Mariokart Central.',
     SYNC_AVATAR: "Synchroniser l'avatar",
     SYNC_AVATAR_ERROR: "La synchronisation de l'avatar Discord a échoué",
+    DELETE_AVATAR: 'Delete Avatar',
+    DELETE_AVATAR_SUCCESS: 'Successfully deleted Discord avatar',
+    DELETE_AVATAR_FAILED: 'Failed to delete Discord avatar',
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Code ami',
@@ -509,6 +512,8 @@ const fr: Translation = {
       THEME: 'Thème',
       TIMEZONE: 'Fuseau Horaire',
       PLAYER_NOTES: 'Notes du joueur',
+      SHOW_PLAYER_NOTES: 'Show Player Notes',
+      HIDE_PLAYER_NOTES: 'Hide Player Notes',
       EDIT_PLAYER_NOTES: 'Modifier la note du joueur',
       CLEAR: 'Effacer',
       TEAMS: 'Équipes:',
