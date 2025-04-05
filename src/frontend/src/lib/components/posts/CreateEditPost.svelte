@@ -62,13 +62,13 @@
         <div class="option">
             <label for="title">{$LL.POSTS.POST_TITLE()}</label>
             <div>
-                <input name="title" bind:value={title}/>
+                <input name="title" bind:value={title} required/>
             </div>
         </div>
         <div class="option">
             <label for="is_public">{$LL.POSTS.VISIBILITY()}</label>
             <div>
-                <select name="is_public" bind:value={is_public}>
+                <select name="is_public" bind:value={is_public} required>
                     <option value={true}>
                         {$LL.POSTS.PUBLIC()}
                     </option>

@@ -144,6 +144,7 @@ class DeleteUserDiscordDataCommand(Command[None]):
                         if resp.status != 401 and int(resp.status/100) != 2:
                             raise Problem(f"Discord returned an error code: {resp.status}") 
             await db.execute("DELETE FROM user_discords WHERE user_id = ?", (self.user_id,))
+            await db.execute("UPDATE user_settings SET avatar = NULL WHERE user_id = ?", (self.user_id,))
             await db.commit()
 
 @dataclass
@@ -234,3 +235,27 @@ class SyncDiscordAvatarCommand(Command[str | None]):
                 )
                 await db.commit()
                 return avatar_path
+            
+@dataclass
+class RemoveDiscordAvatarCommand(Command[None]):
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User not found", status=404)
+                user_id = row[0]
+            async with db.execute("SELECT avatar FROM user_settings WHERE user_id = ?", (user_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User settings not found", status=404)
+                avatar_path: str | None = row[0]
+            if avatar_path is None:
+                raise Problem("User has no avatar", status=400)
+            filename = avatar_path.removeprefix("/img/")
+            await s3_wrapper.delete_object(IMAGE_BUCKET, key=filename)
+            await db.execute("UPDATE user_settings SET avatar = NULL WHERE user_id = ?", (user_id,))
+            await db.execute("UPDATE user_discords SET avatar = NULL WHERE user_id = ?", (user_id,))
+            await db.commit()

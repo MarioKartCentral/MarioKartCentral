@@ -74,8 +74,14 @@
       filtered_solo_placements = filtered_solo_placements.filter((item) => {
         return from && item.date_start >= Date.parse(from) / 1000;
       });
+      filtered_team_placements = filtered_team_placements.filter((item) => {
+        return from && item.date_start >= Date.parse(from) / 1000;
+      });
     }
     if (to) {
+      filtered_solo_placements = filtered_solo_placements.filter((item) => {
+        return to && item.date_end <= Date.parse(to) / 1000;
+      });
       filtered_team_placements = filtered_team_placements.filter((item) => {
         return to && item.date_end <= Date.parse(to) / 1000;
       });
@@ -118,7 +124,7 @@
         </div>
       </form>
       <!-- Solo Tournaments -->
-      {#if solo_placements.length > 0}
+      {#if filtered_solo_placements.length > 0}
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.SOLO_TOURNAMENTS()}</h2>
         <div>
           <Table>
@@ -132,7 +138,7 @@
             </thead>
             <tbody>
               {#each filtered_solo_placements as placement, i}
-                <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
+                <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
                   <td>
                     <a
                       class="hover:text-emerald-400"
@@ -178,7 +184,7 @@
       {/if}
 
       <!-- Team Tournaments -->
-      {#if team_placements.length > 0}
+      {#if filtered_team_placements.length > 0}
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2>
         <div>
           <Table>
@@ -192,7 +198,7 @@
             </thead>
             <tbody>
               {#each filtered_team_placements as placement, i}
-                <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
+                <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
                   <td>
                     <a
                       class="hover:text-emerald-400"

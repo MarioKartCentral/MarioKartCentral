@@ -96,6 +96,9 @@ const de: Translation = {
     DELETE_DATA_ERROR: 'An error occurred while deleting Discord data',
     SYNC_AVATAR: 'Sync Avatar',
     SYNC_AVATAR_ERROR: 'Failed to sync Discord avatar',
+    DELETE_AVATAR: 'Delete Avatar',
+    DELETE_AVATAR_SUCCESS: 'Successfully deleted Discord avatar',
+    DELETE_AVATAR_FAILED: 'Failed to delete Discord avatar',
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Friend Code',
@@ -510,6 +513,8 @@ const de: Translation = {
       TEAMS: 'Teams:',
       TIMEZONE: 'Timezone',
       PLAYER_NOTES: 'Player Notes',
+      SHOW_PLAYER_NOTES: 'Show Player Notes',
+      HIDE_PLAYER_NOTES: 'Hide Player Notes',
       EDIT_PLAYER_NOTES: 'Edit Player Notes',
       CLEAR: 'Clear',
       BACK_TO_PROFILE: 'Back to Profile',

@@ -94,6 +94,26 @@
             alert(`${$LL.LOGIN.PASSWORD_RESET_FAILURE()}: ${result['title']}`);
         }
     }
+
+    async function deleteAvatar() {
+        const payload = {
+            player_id: player.id,
+        };
+        const endpoint = '/api/user/delete_discord_avatar';
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+        if(response.status < 300) {
+            alert($LL.DISCORD.DELETE_AVATAR_SUCCESS());
+            window.location.reload();
+        }
+        else {
+            alert(`${$LL.DISCORD.DELETE_AVATAR_FAILED()}: ${result['title']}`);
+        }
+    }
 </script>
 
 <Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
@@ -111,6 +131,11 @@
     </Section>
 {/if}
 
+{#if check_permission(user_info, permissions.edit_player)}
+    <Section header={$LL.DISCORD.DELETE_AVATAR()}>
+        <Button on:click={deleteAvatar}>{$LL.DISCORD.DELETE_AVATAR()}</Button>
+    </Section>
+{/if}
 {#if player.id === user_info.player?.id}
     <Section header={$LL.DISCORD.DISCORD()}>
         <LinkDiscord/>
@@ -119,6 +144,7 @@
         <RegisterForm is_reset is_change bind:old_password={old_password} bind:password={new_password} on:submit={changePassword}/>
     </Section>
 {/if}
+
 
 <Section header={$LL.PLAYERS.PROFILE.EDIT_PROFILE()}>
   {#if player.user_settings}

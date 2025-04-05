@@ -50,3 +50,7 @@ class ResetPasswordRequestData:
 @dataclass
 class TransferAccountRequestData:
     player_id: int
+
+@dataclass
+class RemovePlayerAvatarRequestData:
+    player_id: int

@@ -48,6 +48,22 @@
   background-color: #e89d13;
   border: 1px solid #bb7f0f;
 }
+.game_mk64_badge {
+  background-color: #8f1919;
+  border: 1px solid #701717;
+}
+.game_mksc_badge {
+  background-color: #334979;
+  border: 1px solid #1c2944;
+}
+.game_mkdd_badge {
+  background-color: #943636;
+  border: 1px solid #612222;
+}
+.game_mkds_badge {
+  background-color: #757575;
+  border: 1px solid #585858;
+}
 
 .hidden_badge {
   background-color: #757575;

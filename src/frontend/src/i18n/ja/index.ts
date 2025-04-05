@@ -96,6 +96,9 @@ const ja: Translation = {
     DELETE_DATA_ERROR: 'Discordデータの削除中にエラーが発生しました',
     SYNC_AVATAR: 'アイコン同期',
     SYNC_AVATAR_ERROR: 'Discordのアイコン同期に失敗しました',
+    DELETE_AVATAR: 'Delete Avatar',
+    DELETE_AVATAR_SUCCESS: 'Successfully deleted Discord avatar',
+    DELETE_AVATAR_FAILED: 'Failed to delete Discord avatar',
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'フレンドコード',
@@ -509,6 +512,8 @@ const ja: Translation = {
       TEAMS: 'Teams:',
       TIMEZONE: 'Timezone',
       PLAYER_NOTES: 'Player Notes',
+      SHOW_PLAYER_NOTES: 'Show Player Notes',
+      HIDE_PLAYER_NOTES: 'Hide Player Notes',
       EDIT_PLAYER_NOTES: 'Edit Player Notes',
       CLEAR: 'Clear',
       BACK_TO_PROFILE: 'プロフィールに戻る',

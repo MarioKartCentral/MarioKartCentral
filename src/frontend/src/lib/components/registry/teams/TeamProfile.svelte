@@ -91,6 +91,9 @@
     justify-content: center;
     max-width: 400px;
     word-break: break-word;
+    white-space: pre-line;
+    max-height: 200px;
+    overflow: hidden;
     @media(min-width: 800px) {
       justify-content: left;
       margin-left: auto;
