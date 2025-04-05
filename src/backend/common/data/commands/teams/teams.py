@@ -34,6 +34,12 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem(f"Invalid game (valid games: {', '.join(valid_game_modes.keys())})", status=400)
             if self.mode not in valid_game_modes[self.game]:
                 raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
+            if len(self.name) > 32:
+                raise Problem("Team name must be 32 characters or less", status=400)
+            if len(self.tag) > 5:
+                raise Problem("Team tag must be 5 characters or less", status=400)
+            if len(self.description) > 200:
+                raise Problem("Team description must be 200 characters or less", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
             if not self.is_privileged:
                 async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ? AND is_active = 0", (self.name, self.tag)) as cursor:
@@ -201,6 +207,12 @@ class EditTeamCommand(Command[None]):
     mod_player_id: int | None
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.name) > 32:
+            raise Problem("Team name must be 32 characters or less", status=400)
+        if len(self.tag) > 5:
+            raise Problem("Team tag must be 5 characters or less", status=400)
+        if len(self.description) > 200:
+            raise Problem("Team description must be 200 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -267,6 +279,8 @@ class ManagerEditTeamCommand(Command[None]):
     remove_logo: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.description) > 200:
+            raise Problem("Team description must be 200 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -304,6 +318,10 @@ class RequestEditTeamCommand(Command[None]):
     tag: str
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.name) > 32:
+            raise Problem("Team name must be 32 characters or less", status=400)
+        if len(self.tag) > 5:
+            raise Problem("Team tag must be 5 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()

@@ -5,6 +5,14 @@
     import Section from "$lib/components/common/Section.svelte";
     import LL from "$i18n/i18n-svelte";
     import AltFlags from "$lib/components/moderator/AltFlags.svelte";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { check_permission, permissions } from "$lib/util/permissions";
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     let flags: AltFlag[] = [];
 
@@ -25,11 +33,16 @@
     onMount(fetchData);
 </script>
 
-<Section header={$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}>
-    {#if totalFlags}
-        <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
-        <AltFlags {flags}/>
-        <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+{#if user_info.is_checked}
+    {#if check_permission(user_info, permissions.view_alt_flags)}
+        <Section header={$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}>
+            {#if totalFlags}
+                <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+                <AltFlags {flags}/>
+                <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+            {/if}
+        </Section>
+    {:else}
+        {$LL.COMMON.NO_PERMISSION()}
     {/if}
-</Section>
-
+{/if}

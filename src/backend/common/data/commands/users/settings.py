@@ -57,6 +57,9 @@ class EditUserSettingsCommand(Command[bool]):
         set_value(data.color_scheme, "color_scheme")
         set_value(data.timezone, "timezone")
 
+        if data.about_me and len(data.about_me) > 200:
+            raise Problem("About me must be 200 characters or less", status=400)
+
         if not set_clauses:
             raise Problem("Bad request body", detail="There are no values to set")
 
