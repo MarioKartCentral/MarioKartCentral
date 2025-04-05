@@ -45,6 +45,7 @@ export function makeStats(tournaments) {
     const playersArray = Array.from(playersMap, ([key, value]) => ({
         player_id: key,
         name: value.name,
+        country_code: value.country_code,
         gold: value.gold,
         silver: value.silver,
         bronze: value.bronze,
@@ -75,6 +76,7 @@ function newPlayerObject(player) {
     return {
         player_id: player.player_id,
         name: player.name,
+        country_code: player.country_code,
         gold: 0,
         silver: 0,
         bronze: 0,
