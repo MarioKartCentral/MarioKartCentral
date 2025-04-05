@@ -5,6 +5,7 @@
   import Logo200 from '$lib/assets/logo_lounge200.png';
   import LogoMKW from '$lib/assets/logo_loungemkw.jpg';
   import LogoMKTC from '$lib/assets/logo_loungemktc.png';
+  import LogoMK7 from '$lib/assets/logo_loungemk7.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
@@ -75,6 +76,20 @@
         </div>
         <div class="mb-2 mx-2">
           <Button size="lg" color="blue" href="https://discord.gg/mkw">
+            <DiscordSolid class="mr-2" />{$LL.LOUNGE.DISCORD_INVITE()}</Button
+          >
+        </div>
+      </div>
+    </div>
+  </Section>
+  <h2>{$LL.GAMES.MK7()}</h2>
+  <GameBadge game="mk7" />
+  <Section header={'Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={LogoMK7} alt="MK7 Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <Button size="lg" color="blue" href="https://discord.gg/cZZp9DdQ5e">
             <DiscordSolid class="mr-2" />{$LL.LOUNGE.DISCORD_INVITE()}</Button
           >
         </div>
