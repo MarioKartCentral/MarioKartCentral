@@ -153,7 +153,12 @@
                   </td>
                   {#if placement.squad_name}
                     <td class="mobile-hide">
-                      {placement.squad_name}
+                      <a
+                        class="hover:text-emerald-400"
+                        href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
+                      >
+                        {placement.squad_name}
+                      </a>
                     </td>
                   {:else if placement.partners != null}
                     <td class="mobile-hide">
@@ -221,7 +226,11 @@
                           {placement.squad_name}
                         </a>
                       {:else}
-                        {placement.squad_name}
+                        <a
+                          class="hover:text-emerald-400"
+                          href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                          {placement.squad_name}
+                        </a>
                       {/if}
                     </td>
                   {:else}
