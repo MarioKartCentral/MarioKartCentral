@@ -26,7 +26,7 @@
   - [Build Process](#build-process)
   - [Testing](#testing)
 
-This document details the frontend architecture of the MarioKartCentral application, covering the technology choices, code organization, and implementation patterns.
+This document details the frontend architecture of the MKCentral application, covering the technology choices, code organization, and implementation patterns.
 
 ## Overview
 

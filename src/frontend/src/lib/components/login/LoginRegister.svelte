@@ -62,7 +62,17 @@
 </script>
 
 <Tabs>
-    <TabItem open title={$LL.LOGIN.LOGIN()}>
+    <TabItem open title={$LL.LOGIN.TRANSFER()}>
+        <div class="form">
+            <div class="option">
+                {$LL.LOGIN.TRANSFER_ACCOUNT_PROMPT()}
+            </div>
+            <div>
+                <Button href="/{$page.params.lang}/user/transfer-account">{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
+            </div>
+        </div>
+    </TabItem>
+    <TabItem title={$LL.LOGIN.LOGIN()}>
         <div class="form">
             <form method="post" on:submit|preventDefault={() => loginOrSignup(true)}>
                 <div class="option">
@@ -95,7 +105,7 @@
 
 <style>
     div.form {
-        min-width: 300px;
+        width: 300px;
     }
     div.option {
         display: flex;

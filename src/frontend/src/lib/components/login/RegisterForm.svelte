@@ -83,7 +83,7 @@
 
 <style>
     .form {
-        min-width: 300px;
+        width: 300px;
     }
     span.item-label {
         display: inline-block;

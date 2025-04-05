@@ -432,7 +432,7 @@ type RootTranslation = {
 			 */
 			NNID: string
 			/**
-			 * M​K​W
+			 * M​K​W​i​i
 			 */
 			MKW: string
 			/**
@@ -478,10 +478,14 @@ type RootTranslation = {
 		 * S​u​p​e​r​ ​M​a​r​i​o​ ​K​a​r​t
 		 */
 		SMK: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​W​o​r​l​d
+		 */
+		MKWORLD: string
 	}
 	HOMEPAGE: {
 		/**
-		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​K​C​e​n​t​r​a​l​!
 		 */
 		WELCOME: string
 		/**
@@ -750,7 +754,7 @@ type RootTranslation = {
 		 */
 		EMAIL_ALREADY_CONFIRMED: string
 		/**
-		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​K​C​e​n​t​r​a​l​!
 		 */
 		WELCOME_TO_MKC: string
 		/**
@@ -781,6 +785,34 @@ type RootTranslation = {
 		 * F​o​r​g​o​t​ ​p​a​s​s​w​o​r​d​?
 		 */
 		FORGOT_PASSWORD: string
+		/**
+		 * I​f​ ​y​o​u​ ​h​a​d​ ​a​n​ ​a​c​c​o​u​n​t​ ​o​n​ ​t​h​e​ ​o​l​d​ ​M​K​C​e​n​t​r​a​l​ ​s​i​t​e​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​ ​t​o​ ​t​r​a​n​s​f​e​r​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​t​o​ ​t​h​e​ ​n​e​w​ ​s​i​t​e​.
+		 */
+		TRANSFER_ACCOUNT_PROMPT: string
+		/**
+		 * T​r​a​n​s​f​e​r​ ​A​c​c​o​u​n​t
+		 */
+		TRANSFER_ACCOUNT: string
+		/**
+		 * T​r​a​n​s​f​e​r​ ​A​c​c​o​u​n​t​ ​f​r​o​m​ ​O​l​d​ ​M​K​C​e​n​t​r​a​l​ ​S​i​t​e
+		 */
+		TRANSFER_ACCOUNT_HEADER: string
+		/**
+		 * I​f​ ​y​o​u​ ​h​a​d​ ​a​n​ ​a​c​c​o​u​n​t​ ​o​n​ ​t​h​e​ ​o​l​d​ ​M​K​C​e​n​t​r​a​l​ ​s​i​t​e​,​ ​y​o​u​ ​c​a​n​ ​s​e​a​r​c​h​ ​f​o​r​ ​y​o​u​r​ ​r​e​g​i​s​t​r​y​ ​n​a​m​e​ ​o​r​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​h​e​r​e​ ​a​n​d​ ​t​r​a​n​s​f​e​r​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​f​r​o​m​ ​t​h​e​ ​o​l​d​ ​s​i​t​e​ ​t​o​ ​t​h​e​ ​n​e​w​ ​s​i​t​e​.​ ​A​l​t​e​r​n​a​t​i​v​e​l​y​,​ ​y​o​u​ ​c​a​n​ ​l​o​g​ ​i​n​ ​w​i​t​h​ ​t​h​e​ ​e​m​a​i​l​ ​l​i​n​k​e​d​ ​t​o​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​o​n​ ​t​h​e​ ​o​l​d​ ​s​i​t​e​ ​a​n​d​ ​i​t​ ​w​i​l​l​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​t​r​a​n​s​f​e​r​ ​y​o​u​r​ ​a​c​c​o​u​n​t​.
+		 */
+		TRANSFER_ACCOUNT_DETAILS: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​t​r​a​n​s​f​e​r​r​e​d​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​t​o​ ​t​h​e​ ​n​e​w​ ​s​i​t​e​!​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​t​h​e​ ​e​m​a​i​l​ ​l​i​n​k​e​d​ ​t​o​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​f​o​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l​.
+		 */
+		TRANSFER_ACCOUNT_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​t​r​a​n​s​f​e​r​ ​a​c​c​o​u​n​t
+		 */
+		TRANSFER_ACCOUNT_FAILED: string
+		/**
+		 * T​r​a​n​s​f​e​r
+		 */
+		TRANSFER: string
 	}
 	LOUNGE: {
 		/**
@@ -1830,7 +1862,7 @@ type RootTranslation = {
 			 */
 			MKT_FC: string
 			/**
-			 * M​K​W​ ​F​C
+			 * M​K​W​i​i​ ​F​C
 			 */
 			MKW_FC: string
 			/**
@@ -1954,7 +1986,7 @@ type RootTranslation = {
 		}
 		SHADOW_PLAYERS: {
 			/**
-			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
+			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​K​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
 			 */
 			UNCLAIMED_PLAYER_DESCRIPTION: string
 			/**
@@ -5166,7 +5198,7 @@ export type TranslationFunctions = {
 			 */
 			NNID: () => LocalizedString
 			/**
-			 * MKW
+			 * MKWii
 			 */
 			MKW: () => LocalizedString
 			/**
@@ -5212,10 +5244,14 @@ export type TranslationFunctions = {
 		 * Super Mario Kart
 		 */
 		SMK: () => LocalizedString
+		/**
+		 * Mario Kart World
+		 */
+		MKWORLD: () => LocalizedString
 	}
 	HOMEPAGE: {
 		/**
-		 * Welcome to Mario Kart Central!
+		 * Welcome to MKCentral!
 		 */
 		WELCOME: () => LocalizedString
 		/**
@@ -5479,7 +5515,7 @@ export type TranslationFunctions = {
 		 */
 		EMAIL_ALREADY_CONFIRMED: () => LocalizedString
 		/**
-		 * Welcome to Mario Kart Central!
+		 * Welcome to MKCentral!
 		 */
 		WELCOME_TO_MKC: () => LocalizedString
 		/**
@@ -5510,6 +5546,34 @@ export type TranslationFunctions = {
 		 * Forgot password?
 		 */
 		FORGOT_PASSWORD: () => LocalizedString
+		/**
+		 * If you had an account on the old MKCentral site, click the button below to transfer your account to the new site.
+		 */
+		TRANSFER_ACCOUNT_PROMPT: () => LocalizedString
+		/**
+		 * Transfer Account
+		 */
+		TRANSFER_ACCOUNT: () => LocalizedString
+		/**
+		 * Transfer Account from Old MKCentral Site
+		 */
+		TRANSFER_ACCOUNT_HEADER: () => LocalizedString
+		/**
+		 * If you had an account on the old MKCentral site, you can search for your registry name or friend code here and transfer your account from the old site to the new site. Alternatively, you can log in with the email linked to your account on the old site and it will automatically transfer your account.
+		 */
+		TRANSFER_ACCOUNT_DETAILS: () => LocalizedString
+		/**
+		 * Successfully transferred your account to the new site! Please check the email linked to your account for a password reset email.
+		 */
+		TRANSFER_ACCOUNT_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to transfer account
+		 */
+		TRANSFER_ACCOUNT_FAILED: () => LocalizedString
+		/**
+		 * Transfer
+		 */
+		TRANSFER: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
@@ -6480,7 +6544,7 @@ export type TranslationFunctions = {
 			 */
 			MKT_FC: () => LocalizedString
 			/**
-			 * MKW FC
+			 * MKWii FC
 			 */
 			MKW_FC: () => LocalizedString
 			/**
@@ -6604,7 +6668,7 @@ export type TranslationFunctions = {
 		}
 		SHADOW_PLAYERS: {
 			/**
-			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.
+			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at MKCentral. To request to claim this player, click the button below.
 			 */
 			UNCLAIMED_PLAYER_DESCRIPTION: () => LocalizedString
 			/**

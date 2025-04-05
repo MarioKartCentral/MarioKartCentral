@@ -46,3 +46,7 @@ class ResetPasswordTokenRequestData:
 class ResetPasswordRequestData:
     old_password: str
     new_password: str
+
+@dataclass
+class TransferAccountRequestData:
+    player_id: int

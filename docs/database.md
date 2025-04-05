@@ -26,7 +26,7 @@
   - [Migration Limitations](#migration-limitations)
   - [Developer Guidelines](#developer-guidelines)
 
-The Mario Kart Central database is built on SQLite and organized into several logical components. This document outlines the core database structures and their relationships.
+The MKCentral database is built on SQLite and organized into several logical components. This document outlines the core database structures and their relationships.
 
 ## Overview 
 

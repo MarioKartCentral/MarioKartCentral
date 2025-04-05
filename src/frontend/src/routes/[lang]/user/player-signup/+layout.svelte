@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Player Signup | Mario Kart Central</title>
+  <title>Player Signup | MKCentral</title>
 </svelte:head>
 
 <slot />

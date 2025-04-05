@@ -83,7 +83,7 @@
 <form on:submit|preventDefault={fetchData}>
   <div class="flex">
     <div class="option">
-      <GameModeSelect all_option hide_labels inline bind:game={filters.game} bind:mode={filters.mode}/>
+      <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode}/>
     </div>
     <div class="option">
       <input class="search" bind:value={filters.name} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>

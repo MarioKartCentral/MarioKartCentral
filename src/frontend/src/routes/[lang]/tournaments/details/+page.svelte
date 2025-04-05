@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-  <title>{tournament_name} | Mario Kart Central</title>
+  <title>{tournament_name} | MKCentral</title>
 </svelte:head>
 
 {#if tournament}

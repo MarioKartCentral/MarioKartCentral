@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-    <title>Confirm Email | Mario Kart Central</title>
+    <title>Confirm Email | MKCentral</title>
 </svelte:head>
 
 <Section header={$LL.LOGIN.CONFIRM_EMAIL()}>

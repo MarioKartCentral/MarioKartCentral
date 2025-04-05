@@ -1,6 +1,6 @@
 # Developer Onboarding Guide
 
-This guide will help you set up your development environment for contributing to Mario Kart Central. For a complete understanding of the system architecture, see [Architecture Overview](architecture.md) after completing this guide.
+This guide will help you set up your development environment for contributing to MKCentral. For a complete understanding of the system architecture, see [Architecture Overview](architecture.md) after completing this guide.
 
 ## Operating system
 Since we will be running our apps inside linux containers, and we are also going to use a ubuntu dev container for the dev environment, it is easiest if we clone the repo onto a unix-based machine. For Windows users, you should install WSL for this purpose using [these instructions](https://docs.microsoft.com/en-us/windows/wsl/setup/environment). 

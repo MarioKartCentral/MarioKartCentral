@@ -548,3 +548,7 @@ class NewMKCTournamentTemplate:
 @dataclass
 class NewMKCUserData:
     users: dict[str, NewMKCUser] # key: email
+
+@dataclass
+class NewMKCUserDataByPlayer:
+    users: dict[int, NewMKCUser] # key: player id

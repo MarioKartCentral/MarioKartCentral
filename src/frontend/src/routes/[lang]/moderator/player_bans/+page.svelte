@@ -117,7 +117,7 @@
 </script>
 
 <svelte:head>
-  <title>Player Bans | Mario Kart Central</title>
+  <title>Player Bans | MKCentral</title>
 </svelte:head>
 
 {#if check_permission(user_info, permissions.ban_player)}

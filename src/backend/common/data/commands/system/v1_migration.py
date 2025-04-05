@@ -61,12 +61,32 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
             return None
         v1_user = user_data.users[self.email]
         return v1_user
+    
+@dataclass
+class GetMKCV1UserByPlayerIDCommand(Command[NewMKCUser | None]):
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        # if there's a user with the player id already, just return None
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    return None
+        user_bytes = await s3_wrapper.get_object(s3.MKCV1_BUCKET, "users_by_player_id.json")
+        if user_bytes is None:
+            return None
+        user_data = msgspec.json.decode(user_bytes, type=NewMKCUserDataByPlayer)
+        if self.player_id not in user_data.users:
+            return None
+        v1_user = user_data.users[self.player_id]
+        return v1_user
 
 @save_to_command_log
 @dataclass
 class TransferMKCV1UserCommand(Command[UserLoginData]):
     email: str
-    password_hash: str
+    password_hash: str | None
     join_date: int
     player_id: int | None
     about_me: str | None
@@ -667,3 +687,8 @@ class ConvertMKCV1DataCommand(Command[None]):
         user_data = NewMKCUserData(new_users)
         s3_message = bytes(msgspec.json.encode(user_data))
         await s3_wrapper.put_object(s3.MKCV1_BUCKET, f'users.json', s3_message)
+
+        new_users_by_player = {u.player_id: u for u in xf_dict.values() if u.player_id is not None}
+        user_data = NewMKCUserDataByPlayer(new_users_by_player)
+        s3_message = bytes(msgspec.json.encode(user_data))
+        await s3_wrapper.put_object(s3.MKCV1_BUCKET, f'users_by_player_id.json', s3_message)

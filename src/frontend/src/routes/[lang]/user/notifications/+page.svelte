@@ -96,7 +96,7 @@
 </script>
 
 <svelte:head>
-  <title>Notifications | Mario Kart Central</title>
+  <title>Notifications | MKCentral</title>
 </svelte:head>
 
 {#if user_info.is_checked}

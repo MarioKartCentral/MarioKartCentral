@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Tournament Series | Mario Kart Central</title>
+  <title>Tournament Series | MKCentral</title>
 </svelte:head>
 
 <slot />

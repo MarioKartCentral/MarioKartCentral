@@ -115,7 +115,7 @@ const fr: Translation = {
       ALL: 'All FC Types',
       SWITCH: 'Switch',
       NNID: 'NNID',
-      MKW: 'MKW',
+      MKW: 'MKWii',
       MKT: 'MKT',
       '3DS': '3DS',
     },
@@ -129,9 +129,10 @@ const fr: Translation = {
     MKT: 'Mario Kart Tour',
     MK7: 'Mario Kart 7',
     SMK: 'Super Mario Kart',
+    MKWORLD: 'Mario Kart World',
   },
   HOMEPAGE: {
-    WELCOME: 'Bienvenue Mario Kart Central!',
+    WELCOME: 'Bienvenue MKCentral!',
     SUMMARY:
       'Nous sommes le cœur des compétitions Mario Kart, où vous trouverez des tournois pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là ! Nous organisons des tournois sur Mario Kart 8 Deluxe, Tour, et plus encore, avec une variété de matchs qui ont lieu chaque semaine!',
     YOU_PLACED: 'You placed: {placement|ordinalSuffix}',
@@ -206,7 +207,7 @@ const fr: Translation = {
     SEND_CONFIRMATION_EMAIL_SUCCESS: 'Successfully sent confirmation email!',
     SEND_CONFIRMATION_EMAIL_FAILURE: 'Failed to send confirmation email',
     EMAIL_ALREADY_CONFIRMED: 'Your email is already confirmed.',
-    WELCOME_TO_MKC: 'Welcome to Mario Kart Central!',
+    WELCOME_TO_MKC: 'Welcome to MKCentral!',
     EMAIL_CONFIRMATION_REQUIRED:
       "Before you can complete your player registration, you'll need to verify your email address. You should have received an email containing a link to confirm your email address; if you don't see the email, or the link has expired, you can click the button below to send another confirmation email.",
     SEND_CONFIRMATION_EMAIL: 'Send Confirmation Email',
@@ -216,6 +217,16 @@ const fr: Translation = {
       'This password reset token is expired. You can request another password reset email with the form below.',
     SEND_PASSWORD_RESET_EMAIL: 'Send Password Reset Email',
     FORGOT_PASSWORD: 'Forgot password?',
+    TRANSFER_ACCOUNT_PROMPT:
+      'If you had an account on the old MKCentral site, click the button below to transfer your account to the new site.',
+    TRANSFER_ACCOUNT: 'Transfer Account',
+    TRANSFER_ACCOUNT_HEADER: 'Transfer Account from Old MKCentral Site',
+    TRANSFER_ACCOUNT_DETAILS:
+      'If you had an account on the old MKCentral site, you can search for your registry name or friend code here and transfer your account from the old site to the new site. Alternatively, you can log in with the email linked to your account on the old site and it will automatically transfer your account.',
+    TRANSFER_ACCOUNT_SUCCESS:
+      'Successfully transferred your account to the new site! Please check the email linked to your account for a password reset email.',
+    TRANSFER_ACCOUNT_FAILED: 'Failed to transfer account',
+    TRANSFER: 'Transfer',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -482,7 +493,7 @@ const fr: Translation = {
       ALREADY_REGISTERED: 'Vous êtes déjà inscrits',
       SWITCH_FC: 'Code ami Switch',
       MKT_FC: 'Code ami MKT',
-      MKW_FC: 'Code ami MKW',
+      MKW_FC: 'Code ami MKWii',
       '3DS_FC': 'Code ami 3DS',
       NNID: 'Nintendo Network ID',
       REGISTER: "S'enregistrer",
@@ -517,7 +528,7 @@ const fr: Translation = {
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
-        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.',
+        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at MKCentral. To request to claim this player, click the button below.',
       CLAIM_PLAYER: 'Claim Player',
       CLAIM_PLAYER_SUCCESS: 'Successfully sent a claim for this player to staff!',
       CLAIM_PLAYER_FAILED: 'Claiming player failed',

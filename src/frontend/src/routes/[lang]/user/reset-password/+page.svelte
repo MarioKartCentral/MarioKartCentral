@@ -94,7 +94,7 @@
 </script>
 
 <svelte:head>
-    <title>Reset Password | Mario Kart Central</title>
+    <title>Reset Password | MKCentral</title>
 </svelte:head>
 
 <Section header={$LL.LOGIN.RESET_PASSWORD()}>

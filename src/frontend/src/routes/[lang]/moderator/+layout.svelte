@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Moderator | Mario Kart Central</title>
+  <title>Moderator | MKCentral</title>
 </svelte:head>
 
 <slot />
