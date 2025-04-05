@@ -52,7 +52,7 @@
     }
     if (to) {
       filtered_team_placements = filtered_team_placements.filter((item) => {
-        return item.date_end <= Date.parse(to) / 1000;
+        return item.date_end <= Date.parse(String(to)) / 1000;
       });
     }
 
@@ -84,9 +84,6 @@
           </div>
         </div>
       </form>
-
-      <!-- Team Tournaments -->
-      <!-- <h2 class="text-2xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2> -->
       <div>
         <Table>
           <thead>
@@ -99,7 +96,7 @@
           </thead>
           <tbody>
             {#each filtered_team_placements as placement, i}
-              <tr class="row-{i % 2} {placement.placement ? podium_style[placement.placement] : ''}">
+              <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
                 <td>
                   <a
                     class="hover:text-emerald-400"
