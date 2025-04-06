@@ -5,4 +5,5 @@ export type UserSettings = {
   language: string;
   color_scheme: string;
   timezone: string;
+  hide_discord: boolean;
 };

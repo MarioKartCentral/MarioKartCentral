@@ -26,14 +26,14 @@ class GetUserSettingsCommand(Command[UserSettings | None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT avatar, about_me, language, 
-                color_scheme, timezone FROM user_settings WHERE user_id = ?""", (self.user_id,)) as cursor:
+                color_scheme, timezone, hide_discord FROM user_settings WHERE user_id = ?""", (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     return None
                 
-        avatar, about_me, language, color_scheme, timezone = row
+        avatar, about_me, language, color_scheme, timezone, hide_discord = row
 
-        return UserSettings(self.user_id, avatar, about_me, language, color_scheme, timezone)
+        return UserSettings(self.user_id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
     
 @save_to_command_log
 @dataclass
@@ -56,6 +56,7 @@ class EditUserSettingsCommand(Command[bool]):
         set_value(data.language, "language")
         set_value(data.color_scheme, "color_scheme")
         set_value(data.timezone, "timezone")
+        set_value(data.hide_discord, "hide_discord")
 
         if data.about_me and len(data.about_me) > 200:
             raise Problem("About me must be 200 characters or less", status=400)
@@ -102,6 +103,7 @@ class EditPlayerUserSettingsCommand(Command[None]):
             set_value(data.language, "language")
             set_value(data.color_scheme, "color_scheme")
             set_value(data.timezone, "timezone")
+            set_value(data.hide_discord, "hide_discord")
 
             if not set_clauses:
                 raise Problem("Bad request body", detail="There are no values to set")
