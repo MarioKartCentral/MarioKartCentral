@@ -130,7 +130,6 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    /* justify-content: center; */
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
@@ -162,16 +161,6 @@
       "h";
     } 
   }
-  /* div.user_details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    grid-column-start: 2;
-    @media(min-width:1024px) {
-      justify-content: left;
-    }
-    
-  } */
   div.name {
     font-size: 1.5em;
     width: max-content;
