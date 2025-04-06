@@ -2003,6 +2003,10 @@ type RootTranslation = {
 			 * N​a​m​e​ ​C​h​a​n​g​e​ ​H​i​s​t​o​r​y
 			 */
 			NAME_CHANGE_HISTORY: string
+			/**
+			 * M​a​k​e​ ​D​i​s​c​o​r​d​ ​i​n​f​o​ ​p​u​b​l​i​c​l​y​ ​v​i​s​i​b​l​e​?
+			 */
+			SHOW_DISCORD_INFO: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -6705,6 +6709,10 @@ export type TranslationFunctions = {
 			 * Name Change History
 			 */
 			NAME_CHANGE_HISTORY: () => LocalizedString
+			/**
+			 * Make Discord info publicly visible?
+			 */
+			SHOW_DISCORD_INFO: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**

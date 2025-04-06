@@ -134,7 +134,7 @@
     z-index: 1;
   }
   div.table-inner {
-    max-height: 100px;
+    max-height: 150px;
     overflow-y: scroll;
   }
   tr {

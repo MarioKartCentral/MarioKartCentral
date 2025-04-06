@@ -530,6 +530,7 @@ const fr: Translation = {
       PLAYER_NOT_FOUND: 'Le joueur est introuvable',
       REGISTRATION_DATE: 'Registered',
       NAME_CHANGE_HISTORY: 'Name Change History',
+      SHOW_DISCORD_INFO: 'Make Discord info publicly visible?',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:

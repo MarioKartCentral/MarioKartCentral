@@ -1,7 +1,6 @@
 <script lang="ts">
     import type { TeamTransfer, TransferList } from "$lib/types/team-transfer";
     import Dialog from "$lib/components/common/Dialog.svelte";
-    import Table from "$lib/components/common/Table.svelte";
     import { onMount } from "svelte";
     import { locale } from "$i18n/i18n-svelte";
     import Flag from "$lib/components/common/Flag.svelte";
@@ -132,7 +131,7 @@
 
 
 <form on:submit|preventDefault={search}>
-    <div class="flex">
+    <div class="top">
         {#if !team_id}
             <GameModeSelect bind:game={game} bind:mode={mode} flex all_option hide_labels inline is_team/>
         {/if}
@@ -147,58 +146,37 @@
         <div class="option">
             <Button type="submit">{$LL.COMMON.FILTER()}</Button>
         </div>
-        
     </div>
 </form>
 
 {#if transfers.length}
     <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
-    <Table>
-        <col class="country"/>
-        <col class="name" />
-        <col class="gamemode mobile-hide"/>
-        <col class="between" />
-        <col class="date mobile-hide" />
-        {#if approval_status === "pending"}
-            <col class="approve" />
-        {/if}
-        <thead>
-        <tr>
-            <th></th>
-            <th>{$LL.COMMON.PLAYER()}</th>
-            <th class="mobile-hide">{$LL.COMMON.GAME_MODE()}</th>
-            <th></th>
-            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-            {#if approval_status === "pending"}
-                <th>{$LL.MODERATOR.APPROVE()}</th>
-            {/if}
-        </tr>
-        </thead>
-        <tbody>
-        {#each transfers as transfer, i}
-            <tr class="row-{i % 2}">
-            <td>
-                <Flag country_code={transfer.player_country_code}/>
-            </td>
-            <td>
-                <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
-                    {transfer.player_name}
-                    {#if transfer.is_bagger_clause}
-                        <BaggerBadge/>
-                    {/if}
-                </a>
-            </td>
-            <td class="mobile-hide">
-                <GameBadge game={transfer.game}/>
-                <ModeBadge mode={transfer.mode}/>
-            </td>
-            <td>
-                <div class="flex">
+    <div class="transfers">
+        {#each transfers as transfer}
+            <div class="row">
+                <div class="date field">
+                    {new Date(transfer.date * 1000).toLocaleString($locale, options)}
+                </div>
+                <div class="left field">
+                    <div class="flag">
+                        <Flag country_code={transfer.player_country_code}/>
+                    </div>
+                    <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
+                        {transfer.player_name}
+                        {#if transfer.is_bagger_clause}
+                            <BaggerBadge/>
+                        {/if}
+                    </a>
+                </div>
+                <div class="badges field">
+                    <GameBadge game={transfer.game}/>
+                    <ModeBadge mode={transfer.mode}/>
+                </div>
+                <div class="right field">
                     {#if transfer.roster_leave}
                         <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}">
                             <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color}/>
                         </a>
-                        
                     {:else}
                         {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
@@ -211,19 +189,15 @@
                         {$LL.TEAMS.TRANSFERS.NO_TEAM()}
                     {/if}
                 </div>
-                
-            </td>
-            <td class="mobile-hide">{new Date(transfer.date * 1000).toLocaleString($locale, options)}</td>
-            {#if approval_status === "pending"}
-                <td>
-                    <ConfirmButton on:click={() => approveTransfer(transfer)}/>
-                    <CancelButton on:click={() => denyDialog(transfer)}/>
-                </td>
-            {/if}
-            </tr>
+                {#if approval_status === "pending"}
+                    <div class="approve field">
+                        <ConfirmButton on:click={() => approveTransfer(transfer)}/>
+                        <CancelButton on:click={() => denyDialog(transfer)}/>
+                    </div>
+                {/if}
+            </div>
         {/each}
-        </tbody>
-    </Table>
+    </div>
     <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData}/>
 {:else}
     {$LL.TEAMS.TRANSFERS.NO_TRANSFERS()}
@@ -242,28 +216,55 @@
 </Dialog>
 
 <style>
-    div.flex {
+    .transfers {
         display: flex;
-        align-items: center;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 5px;
     }
-    col.country {
-        width: 15%;
+    .top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
     }
-    col.name {
-        width: 20%;
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.9rem;
+        background-color: rgba(255, 255, 255, 0.15);
+        padding: 12px;
+        min-height: 75px;
     }
-    col.gamemode {
-        width: 15%;
+    .row:nth-child(odd) {
+        background-color: rgba(210, 210, 210, 0.15);
     }
-    col.between {
-        width: 20%;
+    .flag {
+        zoom: 85%;
     }
-    col.date {
-        width: 15%;
+    .date {
+        min-width: 200px;
     }
-    col.approve {
-        width: 15%;
+    .field {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+    }
+    .left {
+        min-width: 200px;
+    }
+    .right {
+        min-width: 300px;
+    }
+    .badges {
+        min-width: 200px;
+    }
+    .approve {
+        min-width: 100px;
     }
   </style>

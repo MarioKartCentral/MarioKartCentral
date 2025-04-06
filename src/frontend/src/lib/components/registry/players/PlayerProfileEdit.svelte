@@ -28,7 +28,8 @@
             about_me: data.get('about_me')?.toString(),
             language: data.get('language')?.toString(),
             color_scheme: 'light',
-            timezone: 'utc'
+            timezone: 'utc',
+            hide_discord: data.get('hide_discord') === "true",
         };
         const endpoint = '/api/user/settings/edit';
         const response = await fetch(endpoint, {
@@ -54,7 +55,8 @@
             about_me: data.get('about_me')?.toString(),
             language: data.get('language')?.toString(),
             color_scheme: 'light',
-            timezone: 'utc'
+            timezone: 'utc',
+            hide_discord: data.get('hide_discord') === "true",
         };
         const endpoint = '/api/user/settings/forceEdit';
         const response = await fetch(endpoint, {
@@ -145,19 +147,26 @@
     </Section>
 {/if}
 
-
 <Section header={$LL.PLAYERS.PROFILE.EDIT_PROFILE()}>
   {#if player.user_settings}
     <form method="post" on:submit|preventDefault={user_info.player?.id === player.id ? editProfile : forceEditProfile}>
-      <div>
+      <div class="option">
         <label for="about_me">{$LL.PLAYERS.PROFILE.ABOUT_ME()}</label>
         <br />
         <textarea name="about_me" maxlength=200>{player.user_settings?.about_me ? player.user_settings.about_me : ''}</textarea>
       </div>
-      <div>
+      <div class="option">
         <label for="language">{$LL.COMMON.LANGUAGE()}</label>
         <br />
         <LanguageSelect bind:language={player.user_settings.language}/>
+      </div>
+      <div class="option">
+        <label for="hide_discord">{$LL.PLAYERS.PROFILE.SHOW_DISCORD_INFO()}</label>
+        <br/>
+        <select name="hide_discord" bind:value={player.user_settings.hide_discord}>
+            <option value={false}>{$LL.COMMON.SHOW()}</option>
+            <option value={true}>{$LL.COMMON.HIDE()}</option>
+        </select>
       </div>
       <div class="button">
         <Button type="submit" disabled={!check_permission(user_info, permissions.edit_profile, true)}>{$LL.COMMON.SAVE()}</Button>
@@ -173,5 +182,11 @@
   textarea {
     width: 100%;
     height: 150px;
+  }
+  label {
+    width: max-content;
+  }
+  div.option {
+    margin-bottom: 10px;
   }
 </style>

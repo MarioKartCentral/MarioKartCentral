@@ -17,6 +17,7 @@
   import FCTypeBadge from '$lib/components/badges/FCTypeBadge.svelte';
   import RoleBadge from '$lib/components/badges/RoleBadge.svelte';
   import PlayerNameHistory from '$lib/components/registry/players/PlayerNameHistory.svelte';
+  import { permissions, check_permission } from '$lib/util/permissions';
 
   let user_info: UserInfo;
 
@@ -109,12 +110,13 @@
               </div>
             {/each}
           </div>
-          
         </div>
       {/if}
-      <div class="item centered" style="grid-area: g;">
-        <DiscordDisplay discord={player.discord}/>
-      </div>
+      {#if !player.user_settings || !player.user_settings.hide_discord || check_permission(user_info, permissions.edit_player)}
+        <div class="item centered" style="grid-area: g;">
+          <DiscordDisplay discord={player.discord}/>
+        </div>
+      {/if}
       {#if player.user_settings && player.user_settings.about_me}
         <div class="about_me" style="grid-area: h;">
             {player.user_settings.about_me}

@@ -466,6 +466,10 @@ class ListTeamsCommand(Command[TeamList]):
                     where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
                     variable_parameters.extend([f"%{filter_value}%", f"%{filter_value}%"])
 
+            if filter.name_or_tag is not None:
+                where_clauses.append("(t.name LIKE ? OR t.tag LIKE ? OR r.name LIKE ? OR r.tag LIKE ?)")
+                variable_parameters.extend([f"%{filter.name_or_tag}%"]*4)
+
             append_team_roster_like_filter(filter.name, "name")
             append_team_roster_like_filter(filter.tag, "tag")
             append_equal_filter(filter.game, "r.game")

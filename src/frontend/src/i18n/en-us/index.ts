@@ -527,6 +527,7 @@ const en_us: BaseTranslation = {
       PLAYER_NOT_FOUND: 'Player not found',
       REGISTRATION_DATE: 'Registered',
       NAME_CHANGE_HISTORY: 'Name Change History',
+      SHOW_DISCORD_INFO: 'Make Discord info publicly visible?',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:

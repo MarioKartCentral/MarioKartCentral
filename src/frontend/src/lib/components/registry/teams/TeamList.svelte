@@ -32,7 +32,7 @@
   type TeamFilter = {
     game: string | null;
     mode: string | null;
-    name: string | null;
+    name_or_tag: string | null;
     is_historical: boolean;
     is_active: boolean | null;
     page: number;
@@ -41,7 +41,7 @@
   let filters: TeamFilter = {
     game: null,
     mode: null,
-    name: null,
+    name_or_tag: null,
     is_historical: false,
     is_active: null,
     page: 1,
@@ -86,7 +86,7 @@
       <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode}/>
     </div>
     <div class="option">
-      <input class="search" bind:value={filters.name} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
+      <input class="search" bind:value={filters.name_or_tag} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
     </div>
     <div class="option">
       <select bind:value={filters.is_historical}>

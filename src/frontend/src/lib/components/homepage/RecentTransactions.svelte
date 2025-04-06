@@ -50,8 +50,8 @@
                             </a>
                         </div>
                         <div class="badges">
-                            <GameBadge game={transfer.game} style='font-size: 0.95rem; width: 85px;' />
-                            <ModeBadge mode={transfer.mode} style='font-size: 0.95rem; width: 85px;' />
+                            <GameBadge game={transfer.game}/>
+                            <ModeBadge mode={transfer.mode}/>
                         </div>
                     </div>
                     <div class="right">
@@ -96,9 +96,10 @@
     .right {
         display: flex;
         align-items: center;
+        margin-top: auto;
         gap: 5px;
     }
     .badges {
-        zoom: 85%;
+        zoom: 90%;
     }
 </style>
