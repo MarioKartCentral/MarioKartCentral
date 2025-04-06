@@ -176,11 +176,6 @@
     font-size: 1.5em;
     width: max-content;
   }
-  div.discord {
-    display: flex;
-    justify-content: center;
-    /* width: max-content; */
-  }
   div.about_me {
     display: flex;
     grid-column-start: 3;
