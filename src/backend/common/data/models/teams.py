@@ -283,6 +283,7 @@ class KickPlayerRequestData():
 class TeamFilter():
     name: str | None = None
     tag: str | None = None
+    name_or_tag: str | None = None
     game: Game | None = None
     mode: GameMode | None = None
     language: str | None = None
