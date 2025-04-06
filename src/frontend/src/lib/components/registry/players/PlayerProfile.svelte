@@ -12,12 +12,13 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import DiscordDisplay from '$lib/components/common/discord/DiscordDisplay.svelte';
-  import { fc_type_order } from '$lib/util/util';
+  import { game_order, mode_order, fc_type_order } from '$lib/util/util';
   import { locale } from '$i18n/i18n-svelte';
   import FCTypeBadge from '$lib/components/badges/FCTypeBadge.svelte';
   import RoleBadge from '$lib/components/badges/RoleBadge.svelte';
   import PlayerNameHistory from '$lib/components/registry/players/PlayerNameHistory.svelte';
   import { permissions, check_permission } from '$lib/util/permissions';
+  import type { PlayerRoster } from '$lib/types/player-roster';
 
   let user_info: UserInfo;
 
@@ -35,6 +36,11 @@
   const options: Intl.DateTimeFormatOptions = {
     dateStyle: 'medium',
   };
+
+  function sort_rosters(rosters: PlayerRoster[]) {
+    const mode_sorted = rosters.toSorted((a, b) => mode_order[a.mode] - mode_order[b.mode]);
+    return mode_sorted.toSorted((a, b) => game_order[a.game] - game_order[b.game]);
+  }
 </script>
 
 <Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
@@ -83,7 +89,7 @@
               <b>{$LL.PLAYERS.PROFILE.TEAMS()}</b>
             </div>
             
-            {#each player.rosters as r}
+            {#each sort_rosters(player.rosters) as r}
               <div class="teams">
                 <div class="badges">
                   <GameBadge game={r.game}/>

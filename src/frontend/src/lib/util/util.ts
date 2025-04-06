@@ -73,6 +73,21 @@ export const game_order: { [key: string]: number } = {
   mk7: 5,
   smk: 6,
 };
+export const mode_order: { [key: string]: number } = {
+  '150cc': 0,
+  '200cc': 1,
+  mixed_battle: 2,
+  balloon_battle: 3,
+  shine_thief: 4,
+  bobomb_blast: 5,
+  coin_runners: 6,
+  renegade_roundup: 7,
+  match_race: 8,
+  mixed: 9,
+  rt: 10,
+  ct: 11,
+  vsrace: 12,
+};
 export const fc_types = ['switch', 'nnid', 'mkw', 'mkt', '3ds'];
 export const game_fc_types: { [key: string]: string } = {
   mkworld: 'switch',
