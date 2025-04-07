@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from common.data.models.tournaments import CreateTournamentRequestData
+from common.data.models.tournaments import TournamentDBFields, TournamentS3Fields
 
 @dataclass
-class TournamentTemplateRequestData(CreateTournamentRequestData):
+class TournamentTemplateRequestData(TournamentDBFields, TournamentS3Fields):
     template_name: str
 
 @dataclass

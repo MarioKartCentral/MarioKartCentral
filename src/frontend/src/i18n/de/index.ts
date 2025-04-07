@@ -83,6 +83,8 @@ const de: Translation = {
     ORDINAL_SUFFIX: '{val|ordinalSuffix}',
     DELETE: 'Delete',
     NEW: 'New',
+    SORT_BY_ALPHABETICAL: 'Alphabetical',
+    SORT_BY_NEWEST: 'Newest',
   },
   DISCORD: {
     DISCORD: 'Discord',

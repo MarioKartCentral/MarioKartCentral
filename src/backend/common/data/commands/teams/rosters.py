@@ -42,6 +42,10 @@ class CreateRosterCommand(Command[None]):
     approval_status: Approval
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if self.name:
+            self.name = self.name.strip()
+        if self.tag:
+            self.tag = self.tag.strip()
         if self.name and len(self.name) > 32:
             raise Problem("Roster name must be 32 characters or less", status=400)
         if self.tag and len(self.tag) > 5:
@@ -91,6 +95,8 @@ class EditRosterCommand(Command[None]):
     mod_player_id: int | None
 
     async def handle(self, db_wrapper, s3_wrapper):
+        self.name = self.name.strip()
+        self.tag = self.tag.strip()
         if self.name and len(self.name) > 32:
             raise Problem("Roster name must be 32 characters or less", status=400)
         if self.tag and len(self.tag) > 5:
@@ -194,8 +200,8 @@ class RequestEditRosterCommand(Command[None]):
             raise Problem("Roster name must be 32 characters or less", status=400)
         if len(self.tag) > 5:
             raise Problem("Roster tag must be 5 characters or less", status=400)
-        name = self.name
-        tag = self.tag
+        name = self.name.strip()
+        tag = self.tag.strip()
         async with db_wrapper.connect() as db:
             # check if this roster has made a request in the last 90 days
             async with db.execute("SELECT date FROM roster_edits WHERE roster_id = ? AND date > ? AND approval_status != 'denied' LIMIT 1",

@@ -85,7 +85,7 @@
   .content {
     padding: 15px;
     max-height: 500px;
-    overflow: auto;
+    overflow: visible;
   }
   .exit {
     position: absolute;

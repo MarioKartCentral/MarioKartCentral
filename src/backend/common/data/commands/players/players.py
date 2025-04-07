@@ -93,7 +93,7 @@ class UpdatePlayerCommand(Command[bool]):
             update_query = """UPDATE players 
             SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?
             WHERE id = ?"""
-            params = (data.name, data.country_code, data.is_hidden, data.is_shadow, data.player_id)
+            params = (data.name.strip(), data.country_code, data.is_hidden, data.is_shadow, data.player_id)
 
             async with db.execute(update_query, params) as cursor:
                 if cursor.rowcount != 1:
@@ -101,7 +101,7 @@ class UpdatePlayerCommand(Command[bool]):
             if curr_name != data.name:
                 now = int(datetime.now(timezone.utc).timestamp())
                 await db.execute("""INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status, handled_by)
-                                    VALUES(?, ?, ?, ?, ?, ?)""", (data.player_id, curr_name, data.name, now, "approved", self.mod_player_id))
+                                    VALUES(?, ?, ?, ?, ?, ?)""", (data.player_id, curr_name, data.name.strip(), now, "approved", self.mod_player_id))
 
             await db.commit()
             return True

@@ -318,6 +318,14 @@ type RootTranslation = {
 		 * N​e​w
 		 */
 		NEW: string
+		/**
+		 * A​l​p​h​a​b​e​t​i​c​a​l
+		 */
+		SORT_BY_ALPHABETICAL: string
+		/**
+		 * N​e​w​e​s​t
+		 */
+		SORT_BY_NEWEST: string
 	}
 	DISCORD: {
 		/**
@@ -5108,6 +5116,14 @@ export type TranslationFunctions = {
 		 * New
 		 */
 		NEW: () => LocalizedString
+		/**
+		 * Alphabetical
+		 */
+		SORT_BY_ALPHABETICAL: () => LocalizedString
+		/**
+		 * Newest
+		 */
+		SORT_BY_NEWEST: () => LocalizedString
 	}
 	DISCORD: {
 		/**

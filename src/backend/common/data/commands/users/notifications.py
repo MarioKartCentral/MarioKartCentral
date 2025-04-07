@@ -141,7 +141,7 @@ class GetPlayerNameCommand(Command[str]):
                 return row[0]
 
 @dataclass
-class GetUserIdFromPlayerIdCommand(Command[int]):
+class GetUserIdFromPlayerIdCommand(Command[int | None]):
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -149,7 +149,7 @@ class GetUserIdFromPlayerIdCommand(Command[int]):
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
-                    raise Problem("Dispatching notification failed to query user id", status=500)
+                    return None
                 return int(row[0])
             
 @dataclass

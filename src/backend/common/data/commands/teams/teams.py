@@ -232,12 +232,12 @@ class EditTeamCommand(Command[None]):
                 approval_status = ?,
                 is_historical = ?
                 WHERE id = ?""",
-                (self.name, self.tag, self.description, self.language, self.color, logo_path, self.approval_status, self.is_historical, self.team_id))
+                (self.name.strip(), self.tag.strip(), self.description, self.language, self.color, logo_path, self.approval_status, self.is_historical, self.team_id))
             # add a team name/tag change log if we're changing one of those values
             if team_name != self.name or team_tag != self.tag:
                 now = int(datetime.now(timezone.utc).timestamp())
                 await db.execute("""INSERT INTO team_edits(team_id, old_name, new_name, old_tag, new_tag, date, approval_status, handled_by)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, team_name, self.name, team_tag, self.tag, now, "approved", self.mod_player_id))
+                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, team_name, self.name.strip(), team_tag.strip(), self.tag, now, "approved", self.mod_player_id))
             # if team is approved, approve all rosters that are pending; if team is not approved, change all approved rosters to pending
             if self.approval_status == "approved":
                 await db.execute("UPDATE team_rosters SET approval_status = 'approved' WHERE team_id = ? AND approval_status = 'pending'", (self.team_id,))

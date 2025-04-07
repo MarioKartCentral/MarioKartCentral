@@ -22,6 +22,8 @@ class SetSoloPlacementsCommand(Command[None]):
         curr_placement = 1
         curr_bound = None
         for i, placement in enumerate(sorted_placements):
+            if placement.placement_description and len(placement.placement_description) > 32:
+                raise Problem("Placement descriptions must be 32 characters or less", status=400)
             if placement.placement is None:
                 if not placement.is_disqualified:
                     raise Problem("Cannot have null placement value when not disqualified", status=400)
@@ -82,6 +84,8 @@ class SetSquadPlacementsCommand(Command[None]):
         curr_placement = 1
         curr_bound = None
         for i, placement in enumerate(sorted_placements):
+            if placement.placement_description and len(placement.placement_description) > 32:
+                raise Problem("Placement descriptions must be 32 characters or less", status=400)
             if placement.placement is None:
                 if not placement.is_disqualified:
                     raise Problem("Cannot have null placement value when not disqualified", status=400)
@@ -146,6 +150,8 @@ class SetSquadPlacementsFromPlayerIDsCommand(Command[None]):
         curr_placement = 1
         curr_bound = None
         for i, placement in enumerate(sorted_placements):
+            if placement.placement_description and len(placement.placement_description) > 32:
+                raise Problem("Placement descriptions must be 32 characters or less", status=400)
             if placement.placement is None:
                 if not placement.is_disqualified:
                     raise Problem("Cannot have null placement value when not disqualified", status=400)

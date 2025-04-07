@@ -8,6 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Input from '$lib/components/common/Input.svelte';
 
   let user_info: UserInfo;
 
@@ -65,7 +66,7 @@
         <span class="item-label">
           <label for="name">{$LL.COMMON.NAME()}</label>
         </span>
-        <input name="name" type="name" minlength="2" pattern="^\S.*\S$|^\S$" />
+        <Input name="name" type="name" minlength={2} no_white_space />
       </div>
       <div class="field">
         <span class="item-label">

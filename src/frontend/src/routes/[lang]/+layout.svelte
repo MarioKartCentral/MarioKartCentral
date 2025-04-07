@@ -41,7 +41,7 @@
 <header>
   <NavBar />
 </header>
-<div class="container md:mx-auto">
+<div class="container mx-auto">
   <main>
     <slot />
   </main>
