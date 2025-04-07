@@ -11,6 +11,7 @@
     import type { UserInfo } from '$lib/types/user-info';
     import { check_team_permission, team_permissions } from '$lib/util/permissions';
     import { sortFilterRosters } from '$lib/util/util';
+    import Input from '$lib/components/common/Input.svelte';
 
     export let is_mod = false;
   
@@ -92,7 +93,7 @@
                 <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
               </div>
               <div>
-                <input name="name" type="text" pattern="^\S.*\S$|^\S$" required maxlength=32/>
+                <Input name="name" type="text" required maxlength={32} no_white_space/>
               </div>
             </div>
             <div class="option">

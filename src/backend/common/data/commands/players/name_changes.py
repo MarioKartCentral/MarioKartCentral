@@ -26,7 +26,7 @@ class RequestEditPlayerNameCommand(Command[None]):
                     raise Problem("Player has requested name change in the last 90 days", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status) VALUES (?, ?, ?, ?, ?)", 
-                             (self.player_id, curr_name, self.name, creation_date, "pending"))
+                             (self.player_id, curr_name, self.name.strip(), creation_date, "pending"))
             await db.commit()
                     
 @dataclass

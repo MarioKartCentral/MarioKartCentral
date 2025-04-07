@@ -3,6 +3,7 @@
     import CountrySelect from "$lib/components/common/CountrySelect.svelte";
     import type { PlayerInfo } from "$lib/types/player-info";
     import LL from "$i18n/i18n-svelte";
+    import Input from "$lib/components/common/Input.svelte";
 
     export let player: PlayerInfo;
     export let is_privileged = false;
@@ -61,7 +62,7 @@
         <form method="POST" on:submit|preventDefault={requestNameChange}>
             <div class="option">
                 <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
-                <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required maxlength=20/>
+                <Input name="name" value={player.name} required maxlength={20} no_white_space/>
             </div>
             <Button type="submit">{$LL.PLAYERS.PROFILE.REQUEST_NAME_CHANGE()}</Button>
         </form>
@@ -77,7 +78,7 @@
     <form method="POST" on:submit|preventDefault={forceEditPlayer}>
         <div class="option">
             <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
-            <input name="name" value={player.name} pattern="^\S.*\S$|^\S$" required maxlength=20/>
+            <Input name="name" value={player.name} required maxlength={20} no_white_space/>
         </div>
         <div class="option">
             <label for="country">{$LL.COMMON.COUNTRY()}</label>

@@ -24,6 +24,7 @@
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import { page } from '$app/stores';
   import { game_fc_types } from '$lib/util/util';
+  import Input from '$lib/components/common/Input.svelte';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -414,10 +415,10 @@
 <Dialog bind:this={force_edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
   <form method="post" on:submit|preventDefault={forceEditRoster}>
     <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-    <input name="name" type="text" value={roster.name} required pattern="^\S.*\S$|^\S$" maxlength=32/>
+    <Input name="name" type="text" value={roster.name} required maxlength={32} no_white_space/>
     <br />
     <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-    <input name="tag" type="text" value={roster.tag} required pattern="^\S.*\S$|^\S$" maxlength=5/>
+    <Input name="tag" type="text" value={roster.tag} required maxlength={5} no_white_space/>
     <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
     <select name="recruiting">
       <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>

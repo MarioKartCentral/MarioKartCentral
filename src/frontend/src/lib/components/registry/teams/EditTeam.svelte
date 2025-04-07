@@ -12,6 +12,7 @@
     import type { UserInfo } from '$lib/types/user-info';
     import { user } from '$lib/stores/stores';
     import LogoUpload from '$lib/components/common/LogoUpload.svelte';
+    import Input from '$lib/components/common/Input.svelte';
 
     export let is_mod = false;
   
@@ -148,10 +149,10 @@
         <form method="post" on:submit|preventDefault={forceEditTeam}>
           <Section header={$LL.TEAMS.EDIT.TEAM_NAME_TAG()}>
             <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-            <input name="name" type="text" value={team.name} pattern="^\S.*\S$|^\S$" required maxlength=32/>
+            <Input name="name" type="text" value={team.name} required maxlength={32} no_white_space/>
             <br />
             <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-            <input name="tag" type="text" bind:value={team.tag} required maxlength=5/>
+            <Input name="tag" type="text" bind:value={team.tag} required maxlength={5} no_white_space/>
           </Section>
           <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
             <label for="color">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>

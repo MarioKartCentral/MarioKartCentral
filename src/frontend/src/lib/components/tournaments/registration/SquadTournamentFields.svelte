@@ -2,6 +2,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import ColorSelect from '$lib/components/common/ColorSelect.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Input from '$lib/components/common/Input.svelte';
 
   export let tournament: Tournament;
   export let squad_color: number | null = null;
@@ -24,8 +25,7 @@
     <span class="item-label">
       <label for="squad_name">{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME()}</label>
     </span>
-    
-    <input name="squad_name" value={squad_name} required pattern="^\S.*\S$|^\S$" maxlength=32/>
+    <Input name="squad_name" value={squad_name} required no_white_space maxlength={32}/>
   </div>
 {/if}
 {#if tournament.squad_tag_required}
@@ -33,7 +33,7 @@
     <span class="item-label">
       <label for="squad_tag">{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG()}</label>
     </span>
-    <input name="squad_tag" maxlength=5 bind:value={entered_tag} required pattern="^\S.*\S$|^\S$"/>
+    <Input name="squad_tag" maxlength={5} bind:value={entered_tag} required no_white_space/>
   </div>
 {/if}
 
