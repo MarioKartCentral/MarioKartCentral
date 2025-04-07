@@ -117,4 +117,8 @@
   col.join_date {
     width: 30%;
   }
+  .banned_name {
+    opacity: 0.7;
+    text-decoration: line-through;
+  }
 </style>
