@@ -39,7 +39,7 @@
   /* Alternating row background colors: in an each block,
         put the class name as row-{i%2} */
   table :global(tr.row-1) {
-    background-color: #374151;
+    background-color: rgb(55, 65, 81);
   }
   
   /* Style for a table row containing the logged in user */
