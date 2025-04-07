@@ -21,8 +21,8 @@
     <div class="flex flex-col justify-evenly">
         <!-- logo and name -->
         <div class="flex gap-[5px] mobile-center">
-            <div class='flex items-center w-[25px] h-[25px]'>
-                {#if tournament.logo}
+            {#if tournament.logo}
+                <div class='flex items-center w-[25px] h-[25px]'>
                     {#if tournament.series_id}
                         <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
                             <img src={tournament.logo} alt={tournament.name} />
@@ -32,9 +32,8 @@
                             <img src={tournament.logo} alt={tournament.name} />
                         </a>
                     {/if}
-                    
-                {/if}
-            </div>
+                </div>
+            {/if}
             <h3>
                 <a
                     class="text-lg font-bold hover:text-emerald-400 p-1"
