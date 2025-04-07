@@ -54,7 +54,7 @@
   <title>{team_name} | MKCentral</title>
 </svelte:head>
 
-{#if team}
+{#if team && user_info.is_checked}
   {#if team.approval_status === 'approved' || check_team_permission(user_info, team_permissions.edit_team_info, team.id)}
     {#if check_permission(user_info, permissions.manage_teams)}
       <Section header={$LL.NAVBAR.MODERATOR()}>

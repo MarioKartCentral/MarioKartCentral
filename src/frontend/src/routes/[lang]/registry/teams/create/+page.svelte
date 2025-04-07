@@ -55,7 +55,7 @@
     if (response.status < 300) {
       let team_id = result['id'];
       if(team_id) {
-        goto(`/${$page.params.lang}/registry/teams/profile?id=${team_id}`);
+        window.location.href = `/${$page.params.lang}/registry/teams/profile?id=${team_id}`;
       }
       else {
         goto(`/${$page.params.lang}/registry/teams`);
