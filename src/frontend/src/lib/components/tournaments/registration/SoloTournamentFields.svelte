@@ -5,6 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import LL from '$i18n/i18n-svelte';
+  import Input from '$lib/components/common/Input.svelte';
 
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
@@ -37,7 +38,7 @@
     <span class="item-label">
       <label for="mii_name">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_MII_NAME()}</label>
     </span>
-    <input name="mii_name" maxlength={tournament.game === 'mkt' ? 12 : 10} value={mii_name} required pattern="^\S.*\S$|^\S$"/>
+    <Input name="mii_name" maxlength={tournament.game === 'mkt' ? 12 : 10} value={mii_name} required no_white_space/>
   </div>
 {/if}
 {#if tournament.host_status_required}
