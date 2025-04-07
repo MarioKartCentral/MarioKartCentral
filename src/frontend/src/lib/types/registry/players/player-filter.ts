@@ -4,4 +4,5 @@ export type PlayerFilter = {
   country: string | null;
   fc: string | null;
   name_or_fc: string | null;
+  sort_by_newest: boolean;
 };
