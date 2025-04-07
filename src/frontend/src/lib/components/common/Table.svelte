@@ -48,7 +48,7 @@
   }
   /* Style for a table row containing the logged in user */
   table :global(tr.me) {
-    background-color: theme('colors.primary.800'/ 30%) ;
+    background-color: theme('colors.primary.500'/ 30%) ;
   }
 
   @media(max-width: 1024px) {
