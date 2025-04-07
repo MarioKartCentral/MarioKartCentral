@@ -7,7 +7,7 @@
     export let required = false;
     export let disabled = false;
     export let no_white_space = false;
-    const pattern_exp = new RegExp(/^\S.*\S$/);
+    const pattern_exp = new RegExp(/^\S(?:.*\S)?$/);
 </script>
 
 <input {name} {minlength} {maxlength} {value} {type} {required} {disabled} pattern={no_white_space ? pattern_exp.source : null}/>
