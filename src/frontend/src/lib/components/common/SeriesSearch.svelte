@@ -72,7 +72,14 @@
         <Table show_padding={false}>
           {#each results as result}
             <tr on:click={() => set_option(result)}>
-              {result.series_name}
+              <td>
+                {#if result.logo}
+                  <img src={result.logo} alt={result.series_name}/>
+                {/if}
+              </td>
+              <td>
+                {result.series_name}
+              </td>
             </tr>
           {/each}
         </Table>
@@ -97,14 +104,18 @@
     width: 100%;
   }
   div.table {
+    display: block;
     position: absolute;
     width: 100%;
-    max-height: 80px;
+    max-height: 100px;
     overflow-y: scroll;
     background-color: black;
     font-size: 1.5em;
   }
   tr {
     cursor: pointer;
+  }
+  img {
+    max-height: 20px;
   }
 </style>
