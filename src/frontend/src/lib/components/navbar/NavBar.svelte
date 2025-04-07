@@ -115,6 +115,15 @@
   </div>
   
   <NavUlist bind:menu_hidden={menu_hidden}>
+    <NavLi nav_name="REGISTRY" has_dropdown>
+      {$LL.NAVBAR.REGISTRY()}
+      <ChevronDownOutline class="inline"/>
+    </NavLi>
+    <Dropdown>
+      <DropdownItem href="/{$page.params.lang}/registry/players">{$LL.NAVBAR.PLAYERS()}</DropdownItem>
+      <DropdownItem href="/{$page.params.lang}/registry/teams">{$LL.NAVBAR.TEAMS()}</DropdownItem>
+      <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">{$LL.NAVBAR.RECENT_TRANSCATIONS()}</DropdownItem>
+    </Dropdown>
     <NavLi nav_name="TOURNAMENTS" has_dropdown>
       {$LL.NAVBAR.TOURNAMENTS()}
       <ChevronDownOutline class="inline"/>
@@ -128,15 +137,7 @@
     </Dropdown>
     <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>
-    <NavLi nav_name="REGISTRY" has_dropdown>
-      {$LL.NAVBAR.REGISTRY()}
-      <ChevronDownOutline class="inline"/>
-    </NavLi>
-    <Dropdown>
-      <DropdownItem href="/{$page.params.lang}/registry/players">{$LL.NAVBAR.PLAYERS()}</DropdownItem>
-      <DropdownItem href="/{$page.params.lang}/registry/teams">{$LL.NAVBAR.TEAMS()}</DropdownItem>
-      <DropdownItem href="/{$page.params.lang}/registry/teams/transfers">{$LL.NAVBAR.RECENT_TRANSCATIONS()}</DropdownItem>
-    </Dropdown>
+    
     <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
     {#if is_mod}
       <NavLi nav_name="MODERATOR" has_dropdown>
