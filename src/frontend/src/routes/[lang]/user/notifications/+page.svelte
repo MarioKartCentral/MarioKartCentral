@@ -89,9 +89,11 @@
     dropdownOpenStatus[id] = false
   }
 
-  async function handleClick(id: number, link: string) {
-    await changeReadStatus(id, true)
-    goto(link)
+  async function handleClick(id: number, link: string, is_read: boolean) {
+    if(!is_read) {
+      await changeReadStatus(id, true);
+    }
+    goto(link);
   }
 </script>
 
@@ -117,7 +119,7 @@
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
       {/if}
       {#each notificationList as { id, type, content_id, content_args, link, created_date, is_read}}
-        <button class="content-wrapper hover:bg-primary-700" on:click={() => handleClick(id, link)}>
+        <button class="content-wrapper hover:bg-primary-700" on:click={() => handleClick(id, link, is_read)}>
           <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
         </button>
         <button>

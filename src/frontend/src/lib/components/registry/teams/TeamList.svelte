@@ -35,6 +35,7 @@
     name_or_tag: string | null;
     is_historical: boolean;
     is_active: boolean | null;
+    sort_by_newest: boolean;
     page: number;
   }
 
@@ -44,6 +45,7 @@
     name_or_tag: null,
     is_historical: false,
     is_active: null,
+    sort_by_newest: false,
     page: 1,
   }
 
@@ -92,6 +94,12 @@
       <select bind:value={filters.is_historical}>
         <option value={false}>{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
         <option value={true}>{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
+      </select>
+    </div>
+    <div class="option">
+      <select bind:value={filters.sort_by_newest}>
+        <option value={false}>{$LL.COMMON.SORT_BY_ALPHABETICAL()}</option>
+        <option value={true}>{$LL.COMMON.SORT_BY_NEWEST()}</option>
       </select>
     </div>
     <div class="option">

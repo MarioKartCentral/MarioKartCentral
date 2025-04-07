@@ -101,7 +101,7 @@
                 <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
               </div>
               <div>
-                <input name="tag" type="text" required maxlength=5/>
+                <Input name="tag" type="text" required maxlength={5}/>
               </div>
             </div>
             <div class="option">
@@ -128,9 +128,6 @@
     display: inline-block;
     width: 150px;
     margin-right: 10px;
-  }
-  input {
-    width: 200px;
   }
   .option {
     margin-bottom: 10px;

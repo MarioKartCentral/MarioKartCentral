@@ -80,6 +80,8 @@ const en_us: BaseTranslation = {
     ORDINAL_SUFFIX: '{val:number|ordinalSuffix}', // 1 -> '1st' for example
     DELETE: 'Delete',
     NEW: 'New',
+    SORT_BY_ALPHABETICAL: 'Alphabetical',
+    SORT_BY_NEWEST: 'Newest',
   },
   DISCORD: {
     DISCORD: 'Discord',

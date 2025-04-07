@@ -108,7 +108,7 @@
     <div class="description {is_homepage ? 'hidden' : ''}">
         {#if placement.placement}
             {#if is_edit}
-                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()}/>
+                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()} maxlength=32/>
             {:else if placement.description}
                 {placement.description}
             {/if}
