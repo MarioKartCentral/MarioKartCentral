@@ -92,7 +92,7 @@
         justify-content: space-between;
         background-color: rgba(29, 33, 33, 0.8);
         padding: 12px 10px;
-        margin: 5px auto;
+        margin: auto;
     }
     .container:nth-child(odd) {
         background-color: rgba(33, 39, 39, 0.8);
