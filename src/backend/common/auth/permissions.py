@@ -68,7 +68,7 @@ permissions_by_id: dict[int, str] = {
     41: MANAGE_POSTS,
     42: series_permissions.MANAGE_SERIES_POSTS,
     43: tournament_permissions.MANAGE_TOURNAMENT_POSTS,
-    
+    44: series_permissions.VIEW_HIDDEN_SERIES,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

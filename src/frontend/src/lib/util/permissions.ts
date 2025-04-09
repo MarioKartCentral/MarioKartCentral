@@ -197,6 +197,7 @@ export const series_permissions = {
   manage_series_roles: 'series_roles_manage',
   edit_series: 'series_edit',
   manage_series_posts: 'series_posts_manage',
+  view_hidden_series: 'series_view_hidden',
 };
 
 export const tournament_permissions = {
