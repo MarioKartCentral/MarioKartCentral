@@ -833,6 +833,22 @@ type RootTranslation = {
 		 * T​r​a​n​s​f​e​r
 		 */
 		TRANSFER: string
+		/**
+		 * C​h​a​n​g​e​ ​E​m​a​i​l
+		 */
+		CHANGE_EMAIL: string
+		/**
+		 * N​e​w​ ​E​m​a​i​l
+		 */
+		NEW_EMAIL: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​c​h​a​n​g​e​d​ ​y​o​u​r​ ​e​m​a​i​l​.​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​i​n​b​o​x​ ​f​o​r​ ​a​ ​c​o​n​f​i​r​m​a​t​i​o​n​ ​e​m​a​i​l​.
+		 */
+		CHANGE_EMAIL_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​h​a​n​g​e​ ​e​m​a​i​l
+		 */
+		CHANGE_EMAIL_FAILED: string
 	}
 	LOUNGE: {
 		/**
@@ -5642,6 +5658,22 @@ export type TranslationFunctions = {
 		 * Transfer
 		 */
 		TRANSFER: () => LocalizedString
+		/**
+		 * Change Email
+		 */
+		CHANGE_EMAIL: () => LocalizedString
+		/**
+		 * New Email
+		 */
+		NEW_EMAIL: () => LocalizedString
+		/**
+		 * Successfully changed your email. Please check your inbox for a confirmation email.
+		 */
+		CHANGE_EMAIL_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to change email
+		 */
+		CHANGE_EMAIL_FAILED: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
