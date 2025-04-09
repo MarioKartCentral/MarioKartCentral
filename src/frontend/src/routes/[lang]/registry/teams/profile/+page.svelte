@@ -88,7 +88,9 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAMS.PROFILE.ROSTERS()}>
-      <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
+      <div class="filter">
+        <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
+      </div>
       {#key game}
         {#key mode}
           {#each filter_team_page_rosters(team) as roster}
@@ -107,3 +109,9 @@
 {:else if not_found}
     {$LL.TEAMS.PROFILE.TEAM_NOT_FOUND()}
 {/if}
+
+<style>
+  .filter {
+    margin-bottom: 10px;
+  }
+</style>
