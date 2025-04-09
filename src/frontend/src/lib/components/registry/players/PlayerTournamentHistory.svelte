@@ -159,13 +159,17 @@
                     </td>
                   {:else if placement.partners != null}
                     <td class="mobile-hide">
-                      {#each placement.partners as partner}
-                        <div class="flex flex-row">
+                      <div class="flex flex-row">
+                        {#each placement.partners as partner, i}
                           <div>
-                            <PlayerName player_id={partner.player_id} name={partner.player_name} />
+                            {#if i + 1 < placement.partners.length}
+                              <PlayerName player_id={partner.player_id} name="{partner.player_name}," />
+                            {:else}
+                              <PlayerName player_id={partner.player_id} name={partner.player_name}/>
+                            {/if}
                           </div>
-                        </div>
-                      {/each}
+                        {/each}
+                      </div>
                     </td>
                   {:else}
                     <td></td>
