@@ -19,7 +19,6 @@
   let team_placements: PlayerTournamentPlacement[] = [];
   let filtered_solo_placements: PlayerTournamentPlacement[] = [];
   let filtered_team_placements: PlayerTournamentPlacement[] = [];
-  // Default 'silver' from PlacementsDisplay.svelte is less readable than I'd like
   let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'silver', 3: 'bronze' };
 
   function toDate(unix_timestamp: number) {
@@ -141,7 +140,6 @@
                 <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
                   <td>
                     <a
-                      class="hover:text-emerald-400"
                       href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
                     >
                       {placement.tournament_name}
@@ -154,7 +152,6 @@
                   {#if placement.squad_name}
                     <td class="mobile-hide">
                       <a
-                        class="hover:text-emerald-400"
                         href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
                       >
                         {placement.squad_name}
@@ -164,7 +161,7 @@
                     <td class="mobile-hide">
                       {#each placement.partners as partner}
                         <div class="flex flex-row">
-                          <div class="hover:text-emerald-400">
+                          <div>
                             <PlayerName player_id={partner.player_id} name={partner.player_name} />
                           </div>
                         </div>
@@ -206,7 +203,6 @@
                 <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
                   <td>
                     <a
-                      class="hover:text-emerald-400"
                       href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
                     >
                       {placement.tournament_name}
@@ -220,14 +216,12 @@
                     <td class="mobile-hide">
                       {#if placement.team_id}
                         <a
-                          class="hover:text-emerald-400"
                           href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
                         >
                           {placement.squad_name}
                         </a>
                       {:else}
                         <a
-                          class="hover:text-emerald-400"
                           href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                           {placement.squad_name}
                         </a>
@@ -256,7 +250,7 @@
 
 <style>
   .gold {
-    background-color: rgba(255, 253, 108, 0.25);
+    background-color: rgba(255, 254, 149, 0.30);
     color: #fffab0;
   }
   .silver {
@@ -264,7 +258,7 @@
     color: #dcfffc;
   }
   .bronze {
-    background-color: rgba(255, 158, 110, 0.25);
+    background-color: rgba(255, 158, 110, 0.30);
     color: #ffcbae;
   }
 </style>

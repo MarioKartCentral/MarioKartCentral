@@ -35,7 +35,7 @@
       <div class="name">
         <h3>
           <a
-            class="text-lg font-bold hover:text-emerald-400 p-1"
+            class="text-lg font-bold p-1"
             href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
             >{tournament.name}
           </a>

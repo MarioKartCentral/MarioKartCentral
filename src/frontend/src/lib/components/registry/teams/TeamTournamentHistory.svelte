@@ -17,8 +17,7 @@
   let to: string | null = null;
   let team_placements: TeamTournamentPlacement[] = [];
   let filtered_team_placements: TeamTournamentPlacement[] = [];
-  // Default 'silver' from PlacementsDisplay.svelte is less readable than I'd like
-  let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'bg-slate-400/60', 3: 'bronze' };
+  let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'silver', 3: 'bronze' };
 
   function toDate(unix_timestamp: number) {
     return new Date(unix_timestamp * 1000).toLocaleDateString();
@@ -99,7 +98,6 @@
               <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
                 <td>
                   <a
-                    class="hover:text-emerald-400"
                     href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
                   >
                     {placement.tournament_name}
@@ -108,7 +106,6 @@
                 {#if placement.team_id != null && placement.team_name != null}
                   <td class="mobile-hide">
                     <a
-                      class="hover:text-emerald-400"
                       href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
                     >
                       {placement.team_name}
@@ -140,12 +137,15 @@
 
 <style>
   .gold {
-    background-color: rgba(250, 209, 5, 0.6);
+    background-color: rgba(255, 254, 149, 0.30);
+    color: #fffab0;
   }
   .silver {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(195, 255, 255, 0.3);
+    color: #dcfffc;
   }
   .bronze {
-    background-color: rgba(255, 136, 0, 0.5);
+    background-color: rgba(255, 158, 110, 0.30);
+    color: #ffcbae;
   }
 </style>

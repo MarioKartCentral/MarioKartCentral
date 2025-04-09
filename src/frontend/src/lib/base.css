@@ -143,3 +143,6 @@ option {
 input::placeholder {
   color: lightgrey;
 }
+a:hover {
+  color: theme('colors.primary.300');
+}
