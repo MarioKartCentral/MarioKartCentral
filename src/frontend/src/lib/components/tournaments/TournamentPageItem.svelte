@@ -42,6 +42,11 @@
         </h3>
       </div>
       <div class="flex flex-row gap-4">
+        <div class="badges flex flex-col p-1">
+          <GameBadge game={tournament.game} />
+          <ModeBadge mode={tournament.mode} />
+          <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
+        </div>
         <div class="dates">
           <div class="date-item">
             <b>
@@ -57,11 +62,7 @@
             </b>
           </div>
         </div>
-        <div class="badges flex flex-col p-1">
-          <GameBadge game={tournament.game} />
-          <ModeBadge mode={tournament.mode} />
-          <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
-        </div>
+        
       </div>
     </div>
     <!-- Logo Section -->
