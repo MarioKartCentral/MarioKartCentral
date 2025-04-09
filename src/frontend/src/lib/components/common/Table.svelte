@@ -25,7 +25,7 @@
     background-color: theme('colors.primary.800');
   }
   table :global(tr) {
-    border-top: 1px solid rgb(0, 128, 0, 0.5);
+    border-top: 1px solid theme('colors.primary.600' / 30%);
   }
   
   table :global(th) {

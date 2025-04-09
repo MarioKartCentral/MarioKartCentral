@@ -122,9 +122,9 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        border-bottom: 1px solid black;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
+        border-bottom: 1px solid theme('colors.primary.600' / 30%);
+        border-left: 1px solid theme('colors.primary.600' / 30%);
+        border-right: 1px solid theme('colors.primary.600' / 30%);
         padding: 5px;
         font-size: 80%;
     }
