@@ -137,14 +137,14 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        margin-bottom: 10px;
+        /* margin-bottom: 10px; */
     }
     input {
         width: 200px;
     }
     div.centered {
         text-align: center;
-        margin: auto auto 10px auto;
+        margin: 10px auto 10px auto;
     }
     label {
         margin-left: 5px;

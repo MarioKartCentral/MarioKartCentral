@@ -177,9 +177,10 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    gap: 5px;
   }
   .option {
-    margin-right: 10px;
+    /* margin-right: 10px; */
   }
   input {
     width: 250px;
