@@ -738,6 +738,7 @@ const ja: Translation = {
       'このページは現在作成中ですが、最終的にはすべてのタイムアタックのデータを集める予定です。現在、プレイヤーは他のいくつかのサイトにあるリーダーボードでタイムアタックの記録を見ることができます。ここはマリオカートタイムアタックの一覧です。ここでは、マリオカート8 デラックス、マリオカート8、マリオカート7、マリオカートWiiの最新ランキングを、ありとあらゆるカテゴリーで見ることができます。タイムを投稿して、自分の順位を確認しよう！',
   },
   TOURNAMENTS: {
+    TOURNAMENT: 'Tournament',
     CREATE_TOURNAMENT: 'トーナメントを作成する',
     SEARCH_FOR_TOURNAMENTS: 'トーナメントを検索する',
     SHOW_HIDDEN_PRIVATE_TOURNAMENTS: '非公開のトーナメントを表示する',
@@ -763,6 +764,10 @@ const ja: Translation = {
       TOURNAMENT_HISTORY: '過去のトーナメント',
       SOLO_TOURNAMENTS: 'トーナメント(個人形式)',
       TEAM_TOURNAMENTS: 'トーナメント(チーム形式)',
+      PARTNERS: 'Partners',
+      PLACEMENT: 'Placement',
+      TEAM: 'Team',
+      DISQUALIFIED: 'Disqualified',
     },
     INFO: {
       INFO: 'トーナメントの詳細',

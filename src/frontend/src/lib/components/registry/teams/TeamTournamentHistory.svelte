@@ -68,18 +68,20 @@
   <Section header={$LL.TOURNAMENTS.HISTORY.TOURNAMENT_HISTORY()}>
     <div class="w-full m-auto">
       <form on:submit|preventDefault={filterData}>
-        <div class="flex flex-row flex-wrap items-center justify-center">
-          <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
-          <div class="flex flex-col">
-            <div class="ml-1">
-              <input class="w-44" name="from" type="date" bind:value={from} />
+        <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+          <GameModeSelect bind:game bind:mode all_option hide_labels is_team inline/>
+          <div class="flex flex-row flex-wrap items-center justify-center gap-2">
+            <div class="flex flex-row items-center">
+              <div class="w-12 mx-2">{$LL.COMMON.FROM()}</div>
+              <input class="w-48" name="from" type="date" bind:value={from} />
             </div>
-            <div class="ml-1">
-              <input class="w-44" name="to" type="date" bind:value={to} />
+            <div class="flex flex-row items-center">
+              <div class="w-12 mx-2">{$LL.COMMON.TO()}</div>
+              <input class="w-48" name="to" type="date" bind:value={to} />
             </div>
           </div>
           <div class="ml-1 my-2">
-            <Button type="submit">Filter</Button>
+            <Button type="submit">{$LL.COMMON.FILTER()}</Button>
           </div>
         </div>
       </form>
@@ -87,10 +89,10 @@
         <Table>
           <thead>
             <tr>
-              <th>Tournament</th>
-              <th class="mobile-hide">Team</th>
-              <th class="mobile-hide">Date</th>
-              <th>Placement</th>
+              <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
+              <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.TEAM()}</th>
+              <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+              <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
             </tr>
           </thead>
           <tbody>
@@ -120,7 +122,7 @@
                 </td>
                 <td>
                   {#if placement.is_disqualified}
-                    Disqualified
+                    {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
                   {:else}
                     {placement.placement ? $LL.COMMON.ORDINAL_SUFFIX({val: placement.placement}) : '-'}
                     {placement.placement_description ? ' - ' + placement.placement_description : ''}
