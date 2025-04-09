@@ -10,32 +10,37 @@
   export let series: TournamentSeriesBasic;
 </script>
 
-<Section header={series.series_name} href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
-  <div class="container">
-    {#if series.logo}
-      <div class="img">
-        <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
-          <img src={series.logo} alt={series.series_name} />
-        </a>
+<div class={series.is_public ? "" : "unpublished"}>
+  <Section header="{series.series_name} {series.is_public ? "" : `(${$LL.TOURNAMENTS.UNPUBLISHED()})`}" href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
+    <div class="container">
+      {#if series.logo}
+        <div class="img">
+          <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
+            <img src={series.logo} alt={series.series_name} />
+          </a>
+        </div>
+      {/if}
+      <div class="flex">
+        <div class="inner">
+          <GameBadge game={series.game} />
+        </div>
+        <div class="inner">
+          <ModeBadge mode={series.mode} />
+        </div>
       </div>
-    {/if}
-    <div class="flex">
-      <div class="inner">
-        <GameBadge game={series.game} />
-      </div>
-      <div class="inner">
-        <ModeBadge mode={series.mode} />
+      <div class="description">
+        <MarkdownBox content={series.short_description} />
+        <hr />
+        <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
       </div>
     </div>
-    <div class="description">
-      <MarkdownBox content={series.short_description} />
-      <hr />
-      <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
-    </div>
-  </div>
-</Section>
+  </Section>
+</div>
 
 <style>
+  .unpublished {
+    opacity: 0.5;
+  }
   .container {
     width: 100%;
   }

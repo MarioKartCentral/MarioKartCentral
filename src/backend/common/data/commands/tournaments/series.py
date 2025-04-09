@@ -4,7 +4,8 @@ from typing import Any
 import msgspec
 
 from common.data.commands import Command, save_to_command_log
-from common.data.models import Problem, Series, SeriesBasic, SeriesFilter, EditSeriesRequestData, CreateSeriesRequestData, SeriesS3Fields
+from common.data.models import Problem, Series, SeriesBasic, SeriesFilter, EditSeriesRequestData, CreateSeriesRequestData, SeriesS3Fields, User
+from common.auth import series_permissions
 import common.data.s3 as s3
 import base64
 
@@ -105,6 +106,7 @@ class GetSeriesDataCommand(Command[Series]):
 @dataclass
 class GetSeriesListCommand(Command[list[SeriesBasic]]):
     filter: SeriesFilter
+    user: User | None
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
@@ -124,9 +126,34 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
 
             append_equal_filter(filter.game, "game")
             append_equal_filter(filter.mode, "mode")
-            append_equal_filter(filter.is_public, "is_public")
+            #append_equal_filter(filter.is_public, "is_public")
             append_equal_filter(filter.is_historical, "is_historical")
             append_like_filter(filter.name, "name")
+
+            if not filter.is_public and self.user:
+                series_check = f"""
+                    id IN (
+                        SELECT DISTINCT ur.series_id
+                        FROM series_roles r
+                        JOIN user_series_roles ur ON ur.role_id = r.id
+                        JOIN series_role_permissions rp ON rp.role_id = r.id
+                        JOIN series_permissions p on rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ?
+                    )"""
+                global_check = f"""
+                    0 IN (
+                        SELECT DISTINCT rp.is_denied
+                        FROM roles r
+                        JOIN user_roles ur ON ur.role_id = r.id
+                        JOIN role_permissions rp ON rp.role_id = r.id
+                        JOIN permissions p on rp.permission_id = p.id
+                        WHERE ur.user_id = ? AND p.name = ?
+                    )"""
+                final_check = f"(is_public = 1 OR {series_check} OR {global_check})"
+                where_clauses.append(final_check)
+                variable_parameters.extend([self.user.id, series_permissions.VIEW_HIDDEN_SERIES, self.user.id, series_permissions.VIEW_HIDDEN_SERIES])
+            else:
+                where_clauses.append("is_public = 1")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
 
@@ -141,3 +168,16 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
                     series.append(SeriesBasic(series_id, series_name, url, display_order, game, mode, 
                                               bool(is_historical), bool(is_public), short_description, logo, organizer, location))
             return series
+        
+@dataclass
+class CheckSeriesVisibilityCommand(Command[bool]):
+    series_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(readonly=True) as db:
+            async with db.execute("SELECT is_public FROM tournament_series WHERE id = ?", (self.series_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Series not found", status=404)
+                is_viewable = row[0]
+                return bool(is_viewable)
