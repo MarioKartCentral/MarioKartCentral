@@ -129,19 +129,22 @@
         font-size: 80%;
     }
     div.gold {
-        background-color: rgba(250, 209, 5, 0.6);
+        background-color: rgba(255, 253, 108, 0.25);
+        color: #fffab0;
     }
     div.silver {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(195, 255, 255, 0.3);
+        color: #dcfffc;
     }
     div.bronze {
-        background-color: rgba(255, 136, 0, 0.5);
+        background-color: rgba(255, 158, 110, 0.25);
+        color: #ffcbae;
     }
     div.other {
         background-color: rgba(255, 255, 255, 0.15);
     }
     div.dq {
-        background-color: rgba(250, 5, 5, 0.6);
+        background-color: rgba(255, 0, 0, 0.2);
     }
     .pointer {
         cursor: pointer;

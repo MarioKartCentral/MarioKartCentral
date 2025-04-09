@@ -20,7 +20,7 @@
   let filtered_solo_placements: PlayerTournamentPlacement[] = [];
   let filtered_team_placements: PlayerTournamentPlacement[] = [];
   // Default 'silver' from PlacementsDisplay.svelte is less readable than I'd like
-  let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'bg-slate-400/60', 3: 'bronze' };
+  let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'silver', 3: 'bronze' };
 
   function toDate(unix_timestamp: number) {
     return new Date(unix_timestamp * 1000).toLocaleDateString();
@@ -256,12 +256,15 @@
 
 <style>
   .gold {
-    background-color: rgba(250, 209, 5, 0.6);
+    background-color: rgba(255, 253, 108, 0.25);
+    color: #fffab0;
   }
   .silver {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(195, 255, 255, 0.3);
+    color: #dcfffc;
   }
   .bronze {
-    background-color: rgba(255, 136, 0, 0.5);
+    background-color: rgba(255, 158, 110, 0.25);
+    color: #ffcbae;
   }
 </style>

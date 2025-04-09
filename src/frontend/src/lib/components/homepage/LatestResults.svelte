@@ -40,7 +40,7 @@
         }
         tmp.sort((a, b) => sort_placement_list(a, b));
         playerPlacement = getPlayerPlacement(tmp);
-        placement_list = tmp.slice(0, 10);
+        placement_list = tmp.slice(0, 16);
     }
 
     function getPlayerPlacement(list: PlacementOrganizer[]) {
@@ -100,7 +100,7 @@
                 {$LL.HOMEPAGE.YOU_PLACED({placement: playerPlacement})}
             </div>
         {/if}
-        <div class="flex flex-col {playerPlacement ? 'mt-[14px] gap-[1px]' : 'mt-[13px] gap-[4px]'}">
+        <div class="flex flex-col {playerPlacement ? 'mt-[14px]' : 'mt-[13px]'}">
             {#each placement_list as placement}
                 <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
             {/each}
