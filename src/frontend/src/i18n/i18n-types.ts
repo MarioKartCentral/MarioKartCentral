@@ -3754,6 +3754,18 @@ type RootTranslation = {
 			 * S​e​r​i​e​s​ ​R​o​l​e​s
 			 */
 			SERIES_ROLES: string
+			/**
+			 * A​l​l​ ​S​e​r​i​e​s
+			 */
+			ALL_SERIES: string
+			/**
+			 * A​c​t​i​v​e​ ​S​e​r​i​e​s
+			 */
+			ACTIVE_SERIES: string
+			/**
+			 * H​i​s​t​o​r​i​c​a​l​ ​S​e​r​i​e​s
+			 */
+			HISTORICAL_SERIES: string
 		}
 		TEMPLATES: {
 			/**
@@ -8435,6 +8447,18 @@ export type TranslationFunctions = {
 			 * Series Roles
 			 */
 			SERIES_ROLES: () => LocalizedString
+			/**
+			 * All Series
+			 */
+			ALL_SERIES: () => LocalizedString
+			/**
+			 * Active Series
+			 */
+			ACTIVE_SERIES: () => LocalizedString
+			/**
+			 * Historical Series
+			 */
+			HISTORICAL_SERIES: () => LocalizedString
 		}
 		TEMPLATES: {
 			/**

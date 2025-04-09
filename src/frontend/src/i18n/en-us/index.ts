@@ -997,6 +997,9 @@ const en_us: BaseTranslation = {
       BACK_TO_SERIES_LISTING: 'Back to Series Listing',
       MANAGE_TEMPLATES: 'Manage Templates',
       SERIES_ROLES: 'Series Roles',
+      ALL_SERIES: 'All Series',
+      ACTIVE_SERIES: 'Active Series',
+      HISTORICAL_SERIES: 'Historical Series',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Tournament Templates',

@@ -997,6 +997,9 @@ const ja: Translation = {
       BACK_TO_SERIES_LISTING: '大会シリーズ一覧に戻る',
       MANAGE_TEMPLATES: 'テンプレート管理',
       SERIES_ROLES: 'シリーズ権限',
+      ALL_SERIES: 'All Series',
+      ACTIVE_SERIES: 'Active Series',
+      HISTORICAL_SERIES: 'Historical Series',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: '大会テンプレート',

@@ -1000,6 +1000,9 @@ const fr: Translation = {
       BACK_TO_SERIES_LISTING: 'Retour à la liste des compétitions',
       MANAGE_TEMPLATES: 'Gérer les templates',
       SERIES_ROLES: 'Rôles de la compétition',
+      ALL_SERIES: 'All Series',
+      ACTIVE_SERIES: 'Active Series',
+      HISTORICAL_SERIES: 'Historical Series',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Templates de tournoi',

@@ -157,7 +157,8 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
 
-            series_query = f"SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location FROM tournament_series {where_clause}"
+            series_query = f"""SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location 
+                                    FROM tournament_series {where_clause} ORDER BY display_order ASC"""
 
             series: list[SeriesBasic] = []
             async with db.execute(series_query, variable_parameters) as cursor:
