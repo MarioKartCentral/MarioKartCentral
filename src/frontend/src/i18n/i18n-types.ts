@@ -3766,6 +3766,10 @@ type RootTranslation = {
 			 * H​i​s​t​o​r​i​c​a​l​ ​S​e​r​i​e​s
 			 */
 			HISTORICAL_SERIES: string
+			/**
+			 * D​i​s​c​o​r​d​ ​I​n​v​i​t​e​ ​L​i​n​k
+			 */
+			SERIES_DISCORD_INVITE: string
 		}
 		TEMPLATES: {
 			/**
@@ -8459,6 +8463,10 @@ export type TranslationFunctions = {
 			 * Historical Series
 			 */
 			HISTORICAL_SERIES: () => LocalizedString
+			/**
+			 * Discord Invite Link
+			 */
+			SERIES_DISCORD_INVITE: () => LocalizedString
 		}
 		TEMPLATES: {
 			/**

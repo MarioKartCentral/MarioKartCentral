@@ -222,7 +222,8 @@ class TournamentSeries(TableModel):
             short_description TEXT NOT NULL,
             logo TEXT,
             organizer TEXT NOT NULL,
-            location TEXT
+            location TEXT,
+            discord_invite TEXT
             )"""
 
 @dataclass

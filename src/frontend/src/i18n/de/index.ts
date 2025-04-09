@@ -1002,6 +1002,7 @@ const de: Translation = {
       ALL_SERIES: 'All Series',
       ACTIVE_SERIES: 'Active Series',
       HISTORICAL_SERIES: 'Historical Series',
+      SERIES_DISCORD_INVITE: 'Discord Invite Link',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Tournament Templates',

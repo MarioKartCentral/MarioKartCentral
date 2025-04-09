@@ -6,6 +6,7 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import LL from '$i18n/i18n-svelte';
+  import DiscordInviteButton from '$lib/components/common/buttons/DiscordInviteButton.svelte';
 
   export let series: TournamentSeriesBasic;
 </script>
@@ -33,6 +34,11 @@
         <hr />
         <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
       </div>
+      {#if series.discord_invite}
+        <div class="invite">
+          <DiscordInviteButton href={series.discord_invite}/>
+        </div>
+      {/if}
     </div>
   </Section>
 </div>
@@ -46,8 +52,9 @@
   }
   img {
     margin: auto;
-    max-width: 300px;
-    max-height: 200px;
+    max-width: 150px;
+    max-height: 150px;
+    margin-bottom: 10px;
     width: 100%;
   }
   .flex {
@@ -62,6 +69,10 @@
   .description {
     max-width: 600px;
     margin: auto;
+  }
+  .invite {
+    display: flex;
+    justify-content: center;
   }
   hr {
     margin: 10px 0;

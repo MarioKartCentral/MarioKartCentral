@@ -19,10 +19,10 @@ class CreateSeriesCommand(Command[None]):
         # store minimal data about each series in the SQLite DB
         async with db_wrapper.connect() as db:
             cursor = await db.execute(
-                """INSERT INTO tournament_series(name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO tournament_series(name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location, discord_invite)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.short_description, None,
-                 b.organizer, b.location))
+                 b.organizer, b.location, b.discord_invite))
             series_id = cursor.lastrowid
             logo_filename = f"series_logos/{series_id}.png"
             logo_path = f"/img/{logo_filename}"
@@ -66,10 +66,11 @@ class EditSeriesCommand(Command[None]):
                 short_description = ?,
                 logo = ?,
                 organizer = ?,
-                location = ?
+                location = ?,
+                discord_invite = ?
                 WHERE id = ?""",
                 (b.series_name, b.url, b.display_order, b.game, b.mode, b.is_historical, b.is_public, b.short_description, logo_path, b.organizer, b.location,
-                 self.series_id))
+                 b.discord_invite, self.series_id))
 
             s3_body = SeriesS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
@@ -90,17 +91,17 @@ class GetSeriesDataCommand(Command[Series]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description,
-                                    logo, organizer, location FROM tournament_series WHERE id = ?""", (self.series_id,)) as cursor:
+                                    logo, organizer, location, discord_invite FROM tournament_series WHERE id = ?""", (self.series_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Series not found", status=404)
-                series_id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location = row
+                series_id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location, discord_invite = row
         body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{self.series_id}.json')
         if body is None:
             raise Problem('No series found', status=404)
         s3_data = msgspec.json.decode(body, type=SeriesS3Fields)
         series = Series(series_id, name, url, display_order, game, mode, bool(is_historical), bool(is_public),
-                        short_description, logo, organizer, location, s3_data.description, s3_data.ruleset)
+                        short_description, logo, organizer, location, discord_invite, s3_data.description, s3_data.ruleset)
         return series
 
 @dataclass
@@ -126,7 +127,6 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
 
             append_equal_filter(filter.game, "game")
             append_equal_filter(filter.mode, "mode")
-            #append_equal_filter(filter.is_public, "is_public")
             append_equal_filter(filter.is_historical, "is_historical")
             append_like_filter(filter.name, "name")
 
@@ -157,7 +157,8 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
 
-            series_query = f"""SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location 
+            series_query = f"""SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location,
+                                    discord_invite 
                                     FROM tournament_series {where_clause} ORDER BY display_order ASC"""
 
             series: list[SeriesBasic] = []
@@ -165,9 +166,10 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (series_id, series_name, url, display_order, game, mode, is_historical, 
-                     is_public, short_description, logo, organizer, location) = row
+                     is_public, short_description, logo, organizer, location, discord_invite) = row
                     series.append(SeriesBasic(series_id, series_name, url, display_order, game, mode, 
-                                              bool(is_historical), bool(is_public), short_description, logo, organizer, location))
+                                              bool(is_historical), bool(is_public), short_description, logo, organizer, location,
+                                              discord_invite))
             return series
         
 @dataclass
