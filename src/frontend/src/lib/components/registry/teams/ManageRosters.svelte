@@ -81,40 +81,40 @@
         <TeamRosterManage {roster} {is_mod}/>
       {/each}
     {/if}
-    {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
+    {#if check_team_permission(user_info, team_permissions.create_rosters, id)}
       <Section header={$LL.TEAMS.EDIT.NEW_ROSTER()}>
         <form method="post" on:submit|preventDefault={createRoster}>
-            <div class="option">
-              <GameModeSelect flex required is_team/>
+          <div class="option">
+            <GameModeSelect flex required is_team/>
+          </div>
+          
+          <div class="option">
+            <div>
+              <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
             </div>
-            
-            <div class="option">
-              <div>
-                <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-              </div>
-              <div>
-                <Input name="name" type="text" required maxlength={32} no_white_space/>
-              </div>
+            <div>
+              <Input name="name" type="text" required maxlength={32} no_white_space/>
             </div>
-            <div class="option">
-              <div>
-                <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-              </div>
-              <div>
-                <Input name="tag" type="text" required maxlength={5}/>
-              </div>
+          </div>
+          <div class="option">
+            <div>
+              <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
             </div>
-            <div class="option">
-              <div>
-                <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
-              </div>
-              <div>
-                <select name="recruiting">
-                  <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-                  <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
-                </select>
-              </div>
+            <div>
+              <Input name="tag" type="text" required maxlength={5}/>
             </div>
+          </div>
+          <div class="option">
+            <div>
+              <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
+            </div>
+            <div>
+              <select name="recruiting">
+                <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+                <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+              </select>
+            </div>
+          </div>
           <div>
             <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
           </div>
