@@ -197,6 +197,18 @@ async def transfer_account(request: Request, body: TransferAccountRequestData):
         await handle(command)
     return JSONResponse({}, background=BackgroundTask(send_password_reset))
 
+@bind_request_body(ChangeEmailRequestData)
+@require_logged_in
+async def change_email(request: Request, body: ChangeEmailRequestData):
+    command = ChangeEmailCommand(request.state.user.id, body.new_email, body.password)
+    await handle(command)
+
+    async def send_confirmation_email():
+        email_config = create_email_config()
+        command = SendEmailVerificationCommand(request.state.user.id, email_config)
+        await handle(command)
+    return JSONResponse({}, background=BackgroundTask(send_confirmation_email))
+
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
     params = {
@@ -289,6 +301,7 @@ routes = [
     Route('/api/user/reset_password_token', reset_password_with_token, methods=["POST"]),
     Route('/api/user/reset_password', reset_password, methods=["POST"]),
     Route('/api/user/transfer_account', transfer_account, methods=["POST"]),
+    Route('/api/user/change_email', change_email, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),

@@ -232,6 +232,10 @@ const fr: Translation = {
       'Successfully transferred your account to the new site! Please check the email linked to your account for a password reset email.',
     TRANSFER_ACCOUNT_FAILED: 'Failed to transfer account',
     TRANSFER: 'Transfer',
+    CHANGE_EMAIL: 'Change Email',
+    NEW_EMAIL: 'New Email',
+    CHANGE_EMAIL_SUCCESS: 'Successfully changed your email. Please check your inbox for a confirmation email.',
+    CHANGE_EMAIL_FAILED: 'Failed to change email',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -1000,6 +1004,10 @@ const fr: Translation = {
       BACK_TO_SERIES_LISTING: 'Retour à la liste des compétitions',
       MANAGE_TEMPLATES: 'Gérer les templates',
       SERIES_ROLES: 'Rôles de la compétition',
+      ALL_SERIES: 'All Series',
+      ACTIVE_SERIES: 'Active Series',
+      HISTORICAL_SERIES: 'Historical Series',
+      SERIES_DISCORD_INVITE: 'Discord Invite Link',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Templates de tournoi',

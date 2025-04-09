@@ -79,7 +79,7 @@
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">
           <Avatar size='sm' src={avatar_url}/>
-          <div class="username">
+          <div class="username hidden sm:block">
             {user_info.player.name}
           </div>
         </div>
@@ -156,6 +156,10 @@
   .username {
     color: white;
     padding-left: 10px;
+    text-overflow: ellipsis;
+    max-width: 100px;
+    text-wrap: nowrap;
+    overflow: hidden;
   }
   .nav-user-bar {
     margin-left: 10px;

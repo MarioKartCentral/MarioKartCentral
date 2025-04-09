@@ -40,13 +40,18 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem("Team tag must be 5 characters or less", status=400)
             if len(self.description) > 200:
                 raise Problem("Team description must be 200 characters or less", status=400)
-            # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
+            # we don't want users to be able to create teams that share the same name/tag as another team for this game, but it should be possible if moderators wish
             if not self.is_privileged:
-                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ? AND is_active = 0", (self.name, self.tag)) as cursor:
+                async with db.execute("""SELECT COUNT(r.id) 
+                                      FROM team_rosters r
+                                      JOIN teams t ON r.team_id = t.id
+                                      WHERE (r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
+                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?)) 
+                                      AND game = ? AND mode = ? AND is_active = 1""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
-                        raise Problem('An existing team already has this name or tag', status=400)
+                        raise Problem('An existing team for this game/mode already has this name or tag', status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, None, self.approval_status,

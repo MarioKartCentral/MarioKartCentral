@@ -79,6 +79,29 @@ class SendEmailVerificationCommand(Command[None]):
                     \n<a href="{self.email_config.site_url}/user/confirm-email?token={token_id}">Confirm Email</a>'
         await send_email(user_email, subject, content, self.email_config)
 
+@dataclass
+class ChangeEmailCommand(Command[None]):
+    user_id: int
+    new_email: str
+    password: str
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT password_hash FROM users WHERE id = ?", (self.user_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("User not found", status=404)
+                password_hash = row[0]
+            try:
+                pw_hasher.verify(password_hash, self.password)
+            except:
+                raise Problem("Password is incorrect", status=401)
+            async with db.execute("SELECT email FROM users WHERE email = ? AND id != ?", (self.new_email, self.user_id)) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    raise Problem("Email is used by another user", status=400)
+            await db.execute("UPDATE users SET email = ?, email_confirmed = 0 WHERE id = ?", (self.new_email, self.user_id))
+            await db.commit()
 
 @dataclass
 class VerifyEmailCommand(Command[None]):
