@@ -467,8 +467,11 @@ class ConvertMKCV1DataCommand(Command[None]):
                     # we want to only add roster members that were registered for the tournament the whole way through
                     if tournament.registration_deadline and member.join_date > tournament.registration_deadline:
                         continue
-                    if member.leave_date and member.leave_date < tournament.date_end:
-                        continue
+                    if member.leave_date:
+                        if tournament.registration_deadline and member.leave_date < tournament.registration_deadline:
+                            continue
+                        if member.leave_date < tournament.date_start:
+                            continue
                     # on the new site players can just unregister themselves from the tournament instead of opting out.
                     # therefore just skip over any members that are opted out
                     if (reg.id, member.player_id) in optouts:

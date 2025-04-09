@@ -7,6 +7,7 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';  
   import LL from '$i18n/i18n-svelte';
   import { sortFilterRosters } from '$lib/util/util';
+  import { page } from '$app/stores';
 
   export let team: Team;
 </script>
@@ -26,10 +27,12 @@
     {#each sortFilterRosters(team.rosters) as roster, i}
       <tr class="row-{i % 2}">
         <td>
-          <TagBadge tag={roster.tag} color={roster.color} />
+          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+            <TagBadge tag={roster.tag} color={roster.color} />
+          </a>
         </td>
         <td>
-          {roster.name}
+          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{roster.name}</a>
         </td>
         <td>     
           <GameBadge game={roster.game} />

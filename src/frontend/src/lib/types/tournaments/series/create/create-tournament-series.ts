@@ -15,4 +15,5 @@ export type CreateTournamentSeries = {
   ruleset: string;
   organizer: string;
   location: string | null;
+  discord_invite: string | null;
 };

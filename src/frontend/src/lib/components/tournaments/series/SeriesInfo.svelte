@@ -8,6 +8,7 @@
   import { check_series_permission, series_permissions } from '$lib/util/permissions';
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import LL from '$i18n/i18n-svelte';
+  import DiscordInviteButton from '$lib/components/common/buttons/DiscordInviteButton.svelte';
 
   export let series: TournamentSeries;
 
@@ -45,6 +46,12 @@
     <div class="series-name">
       {series.series_name}
     </div>
+    {#if series.discord_invite}
+      <div class="invite">
+        <DiscordInviteButton href={series.discord_invite}/>
+      </div>
+    {/if}
+    
     <MarkdownBox content={series.description ? series.description : series.short_description} />
   </div>
 </Section>
@@ -62,6 +69,9 @@
     margin: auto;
     font-weight: bold;
     font-size: 30px;
+    text-align: center;
+  }
+  .invite {
     text-align: center;
   }
 </style>

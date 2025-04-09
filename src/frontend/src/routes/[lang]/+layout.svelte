@@ -67,11 +67,5 @@
     flex: 1 0;
     padding-top: 30px;
     padding-bottom: 30px;
-    padding-left: 50px;
-    padding-right: 50px;
-    @media(max-width: 800px) {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
   }
 </style>

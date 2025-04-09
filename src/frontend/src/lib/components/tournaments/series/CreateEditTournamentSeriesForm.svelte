@@ -30,6 +30,7 @@
     logo: null,
     logo_file: null,
     remove_logo: false,
+    discord_invite: null,
   };
 
   onMount(async () => {
@@ -112,6 +113,14 @@
       </div>
       <div>
         <input type="number" name="display_order" bind:value={data.display_order} min="0" required />
+      </div>
+    </div>
+    <div class="option">
+      <div>
+        <label for="discord_invite">{$LL.TOURNAMENTS.SERIES.SERIES_DISCORD_INVITE()}</label>
+      </div>
+      <div>
+        <input type="text" name="discord_invite" bind:value={data.discord_invite}/>
       </div>
     </div>
     <div class="logo">

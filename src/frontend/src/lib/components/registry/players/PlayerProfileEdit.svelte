@@ -12,6 +12,7 @@
     import EditFriendCodes from './EditFriendCodes.svelte';
     import EditPlayerDetails from './EditPlayerDetails.svelte';
     import RegisterForm from '$lib/components/login/RegisterForm.svelte';
+    import ChangeEmail from '$lib/components/login/ChangeEmail.svelte';
 
     export let player: PlayerInfo;
 
@@ -141,6 +142,9 @@
 {#if player.id === user_info.player?.id}
     <Section header={$LL.DISCORD.DISCORD()}>
         <LinkDiscord/>
+    </Section>
+    <Section header={$LL.LOGIN.CHANGE_EMAIL()}>
+        <ChangeEmail/>
     </Section>
     <Section header={$LL.LOGIN.CHANGE_PASSWORD()}>
         <RegisterForm is_reset is_change bind:old_password={old_password} bind:password={new_password} on:submit={changePassword}/>

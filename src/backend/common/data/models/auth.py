@@ -54,3 +54,8 @@ class TransferAccountRequestData:
 @dataclass
 class RemovePlayerAvatarRequestData:
     player_id: int
+
+@dataclass
+class ChangeEmailRequestData:
+    new_email: str
+    password: str

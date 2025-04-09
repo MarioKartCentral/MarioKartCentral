@@ -6,6 +6,7 @@ EDIT_TOURNAMENT_TEMPLATE = "tournament_template_edit"
 MANAGE_SERIES_ROLES = "series_roles_manage"
 EDIT_SERIES = "series_edit"
 MANAGE_SERIES_POSTS = "series_posts_manage"
+VIEW_HIDDEN_SERIES = "series_view_hidden"
 
 permissions_by_id = {
     0: CREATE_TOURNAMENT,
@@ -22,6 +23,7 @@ permissions_by_id = {
     11: tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
     12: MANAGE_SERIES_POSTS,
     13: tournament_permissions.MANAGE_TOURNAMENT_POSTS,
+    14: VIEW_HIDDEN_SERIES,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }
