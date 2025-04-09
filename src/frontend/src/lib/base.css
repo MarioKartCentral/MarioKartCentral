@@ -131,9 +131,11 @@ input,
 textarea,
 select,
 input[type] {
-  background-color: theme('colors.primary.400'/ 30%);
+  background-color: theme('colors.primary.500'/ 40%);
   color: white;
   padding: 5px;
+  border-color: #6B7280;
+  border-width: 1px;
 }
 option {
   color: black;
