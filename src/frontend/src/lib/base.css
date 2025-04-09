@@ -131,6 +131,13 @@ input,
 textarea,
 select,
 input[type] {
-  color: black;
+  background-color: theme('colors.primary.400'/ 30%);
+  color: white;
   padding: 5px;
+}
+option {
+  color: black;
+}
+input::placeholder {
+  color: lightgrey;
 }
