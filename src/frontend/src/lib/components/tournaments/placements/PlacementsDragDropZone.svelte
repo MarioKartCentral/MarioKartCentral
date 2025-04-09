@@ -146,8 +146,6 @@
                 p.description = null;
                 p.tie = false;
                 p.bounded = false;
-                p.placement_lower_bound = null;
-                p.is_disqualified = false;
             }
         }
         placement_list = placement_list;
