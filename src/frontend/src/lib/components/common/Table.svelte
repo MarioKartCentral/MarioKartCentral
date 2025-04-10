@@ -15,7 +15,6 @@
     padding: 10px;
   }
   table {
-    background-color: #4b5563;
     border-collapse: collapse;
     width: 100%;
     font-size: small;
@@ -23,10 +22,10 @@
     word-break: break-word;
   }
   table :global(thead) {
-    background-color: theme('colors.primary.700');
+    background-color: theme('colors.primary.800');
   }
   table :global(tr) {
-    border-top: 1px solid rgb(0, 128, 0, 0.5);
+    border-top: 1px solid theme('colors.primary.600' / 30%);
   }
   
   table :global(th) {
@@ -38,13 +37,18 @@
   }
   /* Alternating row background colors: in an each block,
         put the class name as row-{i%2} */
-  table :global(tr.row-1) {
-    background-color: #374151;
+  table :global(tr) {
+    background-color: rgba(235, 255, 255, 0.15);
   }
-  
+  table :global(tr.row-1) {
+    background-color: rgba(235, 255, 255, 0.1);
+  }
+  table :global(tr.inner) {
+    background-color: rgba(235, 255, 255, 0.05);
+  }
   /* Style for a table row containing the logged in user */
   table :global(tr.me) {
-    background-color: theme('colors.primary.800'/ 30%) ;
+    background-color: theme('colors.primary.200'/ 30%) ;
   }
 
   @media(max-width: 1024px) {

@@ -122,26 +122,29 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        border-bottom: 1px solid black;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
+        border-bottom: 1px solid theme('colors.primary.600' / 30%);
+        border-left: 1px solid theme('colors.primary.600' / 30%);
+        border-right: 1px solid theme('colors.primary.600' / 30%);
         padding: 5px;
         font-size: 80%;
     }
     div.gold {
-        background-color: rgba(250, 209, 5, 0.6);
+        background-color: rgba(255, 254, 149, 0.30);
+        color: #fffab0;
     }
     div.silver {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(195, 255, 255, 0.3);
+        color: #dcfffc;
     }
     div.bronze {
-        background-color: rgba(255, 136, 0, 0.5);
+        background-color: rgba(255, 158, 110, 0.30);
+        color: #ffcbae;
     }
     div.other {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.1);
     }
     div.dq {
-        background-color: rgba(250, 5, 5, 0.6);
+        background-color: rgba(255, 0, 0, 0.2);
     }
     .pointer {
         cursor: pointer;

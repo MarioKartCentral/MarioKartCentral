@@ -30,7 +30,7 @@
             <div class="mt-[10px] mb-[5px] h-[20px] text-center">
                 {#if link && linkText}
                     <a
-                        class="hover:text-emerald-400 p-1 font-medium"
+                        class="p-1 font-medium"
                         href={link}>
                         {linkText}
                     </a>

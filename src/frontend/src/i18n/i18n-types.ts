@@ -2762,6 +2762,10 @@ type RootTranslation = {
 	}
 	TOURNAMENTS: {
 		/**
+		 * T​o​u​r​n​a​m​e​n​t
+		 */
+		TOURNAMENT: string
+		/**
 		 * C​r​e​a​t​e​ ​T​o​u​r​n​a​m​e​n​t
 		 */
 		CREATE_TOURNAMENT: string
@@ -2859,6 +2863,22 @@ type RootTranslation = {
 			 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
 			 */
 			TEAM_TOURNAMENTS: string
+			/**
+			 * P​a​r​t​n​e​r​s
+			 */
+			PARTNERS: string
+			/**
+			 * P​l​a​c​e​m​e​n​t
+			 */
+			PLACEMENT: string
+			/**
+			 * T​e​a​m
+			 */
+			TEAM: string
+			/**
+			 * D​i​s​q​u​a​l​i​f​i​e​d
+			 */
+			DISQUALIFIED: string
 		}
 		INFO: {
 			/**
@@ -7493,6 +7513,10 @@ export type TranslationFunctions = {
 	}
 	TOURNAMENTS: {
 		/**
+		 * Tournament
+		 */
+		TOURNAMENT: () => LocalizedString
+		/**
 		 * Create Tournament
 		 */
 		CREATE_TOURNAMENT: () => LocalizedString
@@ -7589,6 +7613,22 @@ export type TranslationFunctions = {
 			 * Team Tournaments
 			 */
 			TEAM_TOURNAMENTS: () => LocalizedString
+			/**
+			 * Partners
+			 */
+			PARTNERS: () => LocalizedString
+			/**
+			 * Placement
+			 */
+			PLACEMENT: () => LocalizedString
+			/**
+			 * Team
+			 */
+			TEAM: () => LocalizedString
+			/**
+			 * Disqualified
+			 */
+			DISQUALIFIED: () => LocalizedString
 		}
 		INFO: {
 			/**

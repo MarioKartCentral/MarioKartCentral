@@ -154,7 +154,7 @@
         </td>
       </tr>
       {#if squad_data[squad.id].display_players}
-        <tr class="row-{i % 2}">
+        <tr class="inner">
           <td colspan="10">
             <TournamentPlayerList {tournament} players={squad.players} />
           </td>

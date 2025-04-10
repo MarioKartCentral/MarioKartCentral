@@ -76,7 +76,6 @@
               <tr class="row-{i % 2}">
                 <td>
                   <a
-                    class="hover:text-emerald-400"
                     href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}"
                   >
                     <!-- prefer roster name, but use team name as fallback -->

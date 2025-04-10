@@ -740,6 +740,7 @@ const de: Translation = {
       "This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!",
   },
   TOURNAMENTS: {
+    TOURNAMENT: 'Tournament',
     CREATE_TOURNAMENT: 'Create Tournament',
     SEARCH_FOR_TOURNAMENTS: 'Search for tournaments...',
     SHOW_HIDDEN_PRIVATE_TOURNAMENTS: 'Show hidden/private tournaments',
@@ -765,6 +766,10 @@ const de: Translation = {
       TOURNAMENT_HISTORY: 'Tournament History',
       SOLO_TOURNAMENTS: 'Solo Tournaments',
       TEAM_TOURNAMENTS: 'Team Tournaments',
+      PARTNERS: 'Partners',
+      PLACEMENT: 'Placement',
+      TEAM: 'Team',
+      DISQUALIFIED: 'Disqualified',
     },
     INFO: {
       INFO: 'Tournament Info',

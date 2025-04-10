@@ -21,6 +21,6 @@
     | undefined = undefined;
 </script>
 
-<Button pill={circle} class="{extra_classes} {circle ? '!p-2' : ''}" on:click {size} {href} {type} {disabled} {color}>
+<Button pill={circle} class="{extra_classes} {circle ? '!p-2' : ''} hover:text-white" on:click {size} {href} {type} {disabled} {color}>
   <slot />
 </Button>

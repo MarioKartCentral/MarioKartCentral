@@ -67,5 +67,7 @@
     flex: 1 0;
     padding-top: 30px;
     padding-bottom: 30px;
+    padding-left: 5px;
+    padding-right: 5px;
   }
 </style>

@@ -35,7 +35,7 @@
       <div class="name">
         <h3>
           <a
-            class="text-lg font-bold hover:text-emerald-400 p-1"
+            class="text-lg font-bold p-1"
             href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
             >{tournament.name}
           </a>
@@ -116,7 +116,7 @@
     background-color: rgba(29, 33, 33, 0.8);
     padding-top: 10px;
     padding-bottom: 10px;
-    margin: 10px auto 10px auto;
+    margin: 5px auto 5px auto;
   }
   .container:nth-child(odd) {
     background-color: rgba(33, 39, 39, 0.8);

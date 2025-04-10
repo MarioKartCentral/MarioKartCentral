@@ -142,7 +142,7 @@
         </td>
       </tr>
       {#if show_rosters[team.id]}
-        <tr class="row-{i % 2}">
+        <tr class="inner">
           <td colspan="10">
             <RosterList {team} />
           </td>
@@ -177,9 +177,7 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-  }
-  .option {
-    margin-right: 10px;
+    gap: 5px;
   }
   input {
     width: 250px;
