@@ -192,7 +192,7 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
         player_name = await handle(GetPlayerNameCommand(player_id))
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
         content_args = {'player_name': player_name, 'tournament_name': data.tournament_name}
-        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_INVITE_ACCEPTED , content_args, f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
+        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.TOURNAMENT_INVITE_ACCEPTED , content_args, f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
 
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
@@ -213,7 +213,7 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.squad_id))
         player_name = await handle(GetPlayerNameCommand(player_id))
         content_args = {'player_name': player_name, 'squad_name': data.squad_name or data.tournament_name}
-        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.DECLINE_SQUAD_INVITE , content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
+        await handle(DispatchNotificationCommand([data.captain_user_id], notifications.DECLINE_SQUAD_INVITE , content_args, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
