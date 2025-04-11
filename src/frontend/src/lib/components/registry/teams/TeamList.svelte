@@ -77,12 +77,17 @@
     }
   }
 
+  async function search() {
+    filters.page = 1;
+    await fetchData();
+  }
+
   onMount(async () => {
-    fetchData();
+    await fetchData();
   });
 </script>
 
-<form on:submit|preventDefault={fetchData}>
+<form on:submit|preventDefault={search}>
   <div class="flex">
     <div class="option">
       <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode}/>

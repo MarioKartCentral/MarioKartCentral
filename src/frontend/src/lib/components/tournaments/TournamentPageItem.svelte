@@ -4,6 +4,7 @@
   import TypeBadge from '../badges/TypeBadge.svelte';
   import ModeBadge from '../badges/ModeBadge.svelte';
   import GameBadge from '../badges/GameBadge.svelte';
+  import OrganizerBadge from '../badges/OrganizerBadge.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   export let tournament: TournamentListItem;
   import LL from '$i18n/i18n-svelte';
@@ -46,6 +47,7 @@
           <GameBadge game={tournament.game} />
           <ModeBadge mode={tournament.mode} />
           <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
+          <OrganizerBadge organizer={tournament.organizer}/>
         </div>
         <div class="dates">
           <div class="date-item">

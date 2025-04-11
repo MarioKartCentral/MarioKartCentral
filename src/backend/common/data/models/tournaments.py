@@ -120,6 +120,7 @@ class TournamentDataBasic(TournamentDataMinimal):
     use_series_logo: bool
     is_viewable: bool
     is_public: bool
+    organizer: str
 
 @dataclass
 class TournamentList:

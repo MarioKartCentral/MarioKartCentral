@@ -123,7 +123,7 @@
       <th>
         {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
         <button class="show-players" on:click={toggle_all_players}>
-          ({all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()})
+          {all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
         </button>
       </th>
       <th>{$LL.INVITES.ACCEPT()}</th>

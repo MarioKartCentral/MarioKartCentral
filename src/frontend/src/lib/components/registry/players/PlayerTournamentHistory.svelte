@@ -127,6 +127,10 @@
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.SOLO_TOURNAMENTS()}</h2>
         <div>
           <Table>
+            <col class="tournament"/>
+            <col class="date mobile-hide"/>
+            <col class="team mobile-hide"/>
+            <col class="placement"/>
             <thead>
               <tr>
                 <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
@@ -194,6 +198,10 @@
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2>
         <div>
           <Table>
+            <col class="tournament"/>
+            <col class="team mobile-hide"/>
+            <col class="date mobile-hide"/>
+            <col class="placement"/>
             <thead>
               <tr>
                 <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
@@ -253,6 +261,18 @@
 {/if}
 
 <style>
+  col.tournament {
+    width: 30%;
+  }
+  col.team {
+    width: 30%;
+  }
+  col.date {
+    width: 20%;
+  }
+  col.placement {
+    width: 20%;
+  }
   .gold {
     background-color: rgba(255, 254, 149, 0.30);
     color: #fffab0;

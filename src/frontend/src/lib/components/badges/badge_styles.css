@@ -142,6 +142,15 @@
   border: 1px solid #4b4b4b;
 }
 
+.organizer_affiliate_badge {
+  background-color: #d45612;
+  border: 1px solid #73300b;
+}
+.organizer_lan_badge {
+  background-color: #d49312;
+  border: 1px solid #73510b;
+}
+
 .primary {
   background-color: #029dbd;
   border: 1px solid #027d99;

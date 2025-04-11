@@ -7,13 +7,13 @@
   import Notification from './Notification.svelte';
   import ModPanel from './ModPanel.svelte';
   import { mod_panel_permissions } from '$lib/util/permissions';
-  import { Navbar, NavBrand, Avatar, Button } from 'flowbite-svelte';
+  import { Navbar, NavBrand, Avatar } from 'flowbite-svelte';
   import NavHamburger from './NavHamburger.svelte';
   import NavLi from './NavLi.svelte';
   import NavUlist from './NavUlist.svelte';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import { ChevronDownOutline, ChevronDownSolid, BellSolid, BellOutline } from 'flowbite-svelte-icons';
+  import { ChevronDownOutline, BellSolid, BellOutline } from 'flowbite-svelte-icons';
   import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, series_permissions } from '$lib/util/permissions';
   import LoginRegister from '$lib/components/login/LoginRegister.svelte';
@@ -56,10 +56,10 @@
 </script>
 
 <Navbar fluid={true} class="bg-primary-800">
-  <div class="flex gap-5">
+  <div class="flex gap-2 items-center">
     <NavHamburger bind:menu_hidden={menu_hidden}/>
     <NavBrand href="/{$page.params.lang}">
-      <img src={logo} width="120px" alt="MKCentral Logo" />
+      <img src={logo} class="w-24 desktop:w-32" alt="MKCentral Logo" />
     </NavBrand>
   </div>
   <div class="flex items-center desktop:order-2">
@@ -72,7 +72,7 @@
       {/if}
     </div>
     <Notification bind:this={notify} />
-    <div class="nav-user-bar cursor-pointer">
+    <div class="nav-user-bar cursor-pointer hidden sm:block">
       <LanguagePicker/>
     </div>
     {#if user_info.is_checked}
@@ -90,10 +90,9 @@
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
-        <Button size="sm">
-          {$LL.NAVBAR.ACCOUNT()}
-          <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
-        </Button>
+        <div class="flex items-center cursor-pointer nav-user-bar font-bold">
+          <Avatar size='sm'/>
+        </div>
         <Dropdown>
           {#if user_info.email_confirmed}
             <DropdownItem href="/{$page.params.lang}/user/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
@@ -103,10 +102,9 @@
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else}
-        <Button size="sm">
-          {$LL.NAVBAR.LOGIN()}
-          <ChevronDownSolid class="w-3 h-3 ms-2 text-white dark:text-white" />
-        </Button>
+        <div class="flex items-center cursor-pointer nav-user-bar font-bold">
+          <Avatar size='sm'/>
+        </div>
         <Dropdown>
           <LoginRegister/>
         </Dropdown>
