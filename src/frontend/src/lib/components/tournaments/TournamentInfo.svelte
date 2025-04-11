@@ -99,10 +99,6 @@
     text-align: center;
     margin: auto auto auto auto;
   }
-  .wrapper {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
   img {
     display: block;
     margin-left: auto;
