@@ -4,7 +4,6 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
-  import logo from '$lib/assets/logo.png';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
@@ -28,7 +27,7 @@
 
   export let player: PlayerInfo;
 
-  let avatar_url = logo;
+  let avatar_url = '';
   if (player.user_settings && player.user_settings.avatar) {
     avatar_url = player.user_settings.avatar;
   }
