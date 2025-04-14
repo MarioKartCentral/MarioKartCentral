@@ -7,6 +7,9 @@ from starlette.background import BackgroundTasks
 from api.data import handle
 from common.data.commands import *
 from api import appsettings
+from ratelimit.types import ASGIApp, Scope, Receive, Send
+from ratelimit import RateLimitMiddleware, Rule
+from ratelimit.backends.simple import MemoryBackend
 
 class ProblemHandlingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
@@ -41,3 +44,39 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
             tasks.add_task(log)
             response.background = tasks
         return response
+
+class RateLimitByIPMiddleware:
+    async def auth_function(self, scope: Scope):
+        ip_address = scope.get('CF-Connecting-IP', None)
+        if not ip_address:
+            ip_address = scope['client'][0]
+        print(ip_address)
+        return ip_address, 'default'
+    
+    def on_blocked(self, retry_after: int):
+        async def inside_on_blocked(scope: Scope, receive: Receive, send: Send):
+            raise Problem(f"You have been rate limited, try again in {retry_after} seconds", status=429)
+        return inside_on_blocked
+    
+    def __init__(self, app: ASGIApp):
+        self.app = app
+        self.rate_limit = RateLimitMiddleware(
+            self.app,
+            self.auth_function,
+            MemoryBackend(),
+            config={
+                r"/api/user/signup": [Rule(minute=3, hour=10)],
+                r"/api/user/send_confirmation_email": [Rule(minute=3, hour=10)],
+                r"/api/user/forgot_password": [Rule(minute=3, hour=10)],
+                r"/api/user/transfer_account": [Rule(minute=3, hour=10)],
+                r"/api/user/change_email": [Rule(minute=3, hour=10)],
+                r"/api/user/refresh_discord": [Rule(minute=3, hour=10)],
+                r"/api/user/discord_callback": [Rule(minute=3, hour=10)],
+                r"/api/user/sync_discord_avatar": [Rule(minute=3, hour=10)],
+            },
+            on_blocked=self.on_blocked
+        )
+    
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        await self.rate_limit(scope, receive, send)
+        await self.app(scope, receive, send)
