@@ -50,7 +50,6 @@ class RateLimitByIPMiddleware:
         ip_address = scope.get('CF-Connecting-IP', None)
         if not ip_address:
             ip_address = scope['client'][0]
-        print(ip_address)
         return ip_address, 'default'
     
     def on_blocked(self, retry_after: int):
