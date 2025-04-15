@@ -7,6 +7,7 @@
     export let old_password = "";
     export let is_change = false;
     export let is_reset = false;
+    export let working = false;
 
     const min_length = 8;
 
@@ -66,7 +67,7 @@
             {/if}
         </div>
         <div>
-            <Button type="submit" disabled={button_disabled}>
+            <Button type="submit" disabled={button_disabled} {working}>
                 {#if is_change}
                     {$LL.LOGIN.CHANGE_PASSWORD()}
                 {:else if is_reset}

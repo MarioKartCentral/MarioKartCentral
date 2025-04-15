@@ -326,6 +326,10 @@ type RootTranslation = {
 		 * N​e​w​e​s​t
 		 */
 		SORT_BY_NEWEST: string
+		/**
+		 * W​o​r​k​i​n​g​.​.​.
+		 */
+		WORKING: string
 	}
 	DISCORD: {
 		/**
@@ -5176,6 +5180,10 @@ export type TranslationFunctions = {
 		 * Newest
 		 */
 		SORT_BY_NEWEST: () => LocalizedString
+		/**
+		 * Working...
+		 */
+		WORKING: () => LocalizedString
 	}
 	DISCORD: {
 		/**

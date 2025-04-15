@@ -65,7 +65,7 @@ class CreatePlayerCommand(Command[Player]):
                 async with db.execute("SELECT id FROM friend_codes WHERE fc = ? AND type = ? AND is_active = ?", (friend_code.fc, friend_code.type, True)) as cursor:
                     row = await cursor.fetchone()
                     if row:
-                        raise Problem("Another player is currently using this friend code for this game", status=400)
+                        raise Problem(f"Another player is currently using this {friend_code.type} friend code", status=400)
                     
             friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description, now)
                                   for friend_code in self.friend_codes]

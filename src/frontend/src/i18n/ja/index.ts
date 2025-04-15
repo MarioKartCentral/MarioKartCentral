@@ -85,6 +85,7 @@ const ja: Translation = {
     NEW: 'New',
     SORT_BY_ALPHABETICAL: 'Alphabetical',
     SORT_BY_NEWEST: 'Newest',
+    WORKING: 'Working...',
   },
   DISCORD: {
     DISCORD: 'Discord',
