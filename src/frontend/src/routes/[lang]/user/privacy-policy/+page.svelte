@@ -3,7 +3,7 @@
 </script>
 
 <Section header="Privacy Policy">
-    <p>We are Mario Kart Central ("we", "our", "us"). We’re committed to protecting and respecting your privacy. If you have questions about your personal information please <a href="/forums/index.php?misc/contact">contact us</a>.</p>
+    <p>We are Mario Kart Central ("we", "our", "us"). We’re committed to protecting and respecting your privacy. If you have questions about your personal information please contact us.</p>
 
     <h2>What information we hold about you</h2>
     <p>The type of data that we collect and process includes:</p>
@@ -38,10 +38,10 @@
 
     <h2>Cookie policy</h2>
     <p>Cookies are small text files which are set by us on your computer which allow us to provide certain functionality on our site, such as being able to log in, or remembering certain preferences.</p>
-    <p>We have a detailed cookie policy and more information about the cookies that we set on <a href="/forums/index.php?help/cookies">this page</a>.</p>
+    <p>We have a detailed cookie policy and more information about the cookies that we set on this page.</p>
 
     <h2>Rights</h2>
-    <p>You have a right to access the personal data we hold about you or obtain a copy of it. To do so please <a href="/forums/index.php?misc/contact">contact us</a>. If you believe that the information we hold for you is incomplete or inaccurate, you may <a href="/forums/index.php?misc/contact">contact us</a> to ask us to complete or correct that information.</p>
+    <p>You have a right to access the personal data we hold about you or obtain a copy of it. To do so please contact us. If you believe that the information we hold for you is incomplete or inaccurate, you may contact us to ask us to complete or correct that information.</p>
     <p>You also have the right to request that your account be deleted, however, to ensure completeness of our event records, your messages, posts, and registry data will remain even if this is done. By signing up, you accept any data you submit may not be deleted.</p>
 
     <h2>Acceptance of this policy</h2>
@@ -51,5 +51,5 @@
     <p>We may make changes to this policy at any time. You may be asked to review and re-accept the information in this policy if it changes in the future.</p>
 
     <h2>CAPTCHA privacy policy</h2>
-    <p>This site is protected by hCaptcha and its <a href="https://hcaptcha.com/privacy" target="_blank">privacy policy</a> and <a href="https://hcaptcha.com/terms" target="_blank">terms of service</a> apply.</p>
+    <p>This site is protected by hCaptcha and its privacy policy and terms of service apply.</p>
 </Section>

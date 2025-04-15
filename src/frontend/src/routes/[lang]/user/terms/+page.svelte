@@ -35,7 +35,7 @@
 
     <p>These terms may be changed at any time without notice. Users of MKCentral are subject to the modified terms when they are changed.</p>
 
-    <p>If you do not agree with these terms, please do not register or use the Service. Use of the Service and/or participation in Mario Kart Central tournaments constitutes acceptance of these terms. If you wish to deactivate your account, please <a href="https://discord.gg/x2Q2339rhV">contact us</a>.</p>
+    <p>If you do not agree with these terms, please do not register or use the Service. Use of the Service and/or participation in Mario Kart Central tournaments constitutes acceptance of these terms. If you wish to deactivate your account, please contact us.</p>
 
     - 
 
@@ -71,5 +71,5 @@
 
     <p>これらの条件は、予告なしにいつでも変更される場合があります。MKCentral のユーザーは、変更された条件に従う必要があります。</p>
 
-    <p>これらの条件に同意しない場合は、サービスに登録または使用しないでください。サービスの使用および/または Mario Kart Central トーナメントへの参加は、これらの条件に同意したものとみなされます。アカウントを無効にしたい場合は、<a href="https://discord.gg/x2Q2339rhV">お問い合わせください</a>。</p>
+    <p>これらの条件に同意しない場合は、サービスに登録または使用しないでください。サービスの使用および/または Mario Kart Central トーナメントへの参加は、これらの条件に同意したものとみなされます。アカウントを無効にしたい場合は、お問い合わせください。</p>
 </Section>
