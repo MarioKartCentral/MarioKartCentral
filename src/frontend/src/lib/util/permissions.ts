@@ -221,4 +221,5 @@ export const mod_panel_permissions = [
   permissions.manage_shadow_players,
   permissions.merge_players,
   permissions.merge_teams,
+  permissions.view_alt_flags,
 ];
