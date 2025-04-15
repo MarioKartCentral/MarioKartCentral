@@ -105,15 +105,17 @@
 
 <style>
     div.form {
-        width: 300px;
+        max-width: 350px;
     }
     div.option {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         margin-bottom: 10px;
     }
     div.login-row {
         display: flex;
+        flex-wrap: wrap;
         gap: 20px;
         align-items: center;
     }
