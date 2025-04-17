@@ -22,6 +22,7 @@
       </div>
     </div>
   </Section>
+  <hr/>
   <GameBadge game= "mk8dx" />
   <GameBadge game= "mk7" />
   <GameBadge game= "mkw" />
@@ -39,6 +40,7 @@
       </div>
     </div>
   </Section>
+  <hr/>
   <GameBadge game= "mkworld" />
   <GameBadge game= "mk8dx" />
   <GameBadge game = "mk8" />
@@ -58,6 +60,7 @@
       </div>
     </div>
   </Section>
+  <hr/>
   <GameBadge game= "mk8dx" />
   <Section header={'DLC Leaderboards'}>
     <div class="flex flex-row">
@@ -72,6 +75,7 @@
       </div>
     </div>
   </Section>
+  <hr/>
   <GameBadge game= "mk8dx" />
   <Section header={'No Item Leaderboards'}>
     <div class="flex flex-row">
@@ -94,6 +98,9 @@
     margin: 20px auto 20px auto;
   }
   .disclaimer {
+    margin-bottom: 20px;
+  }
+  hr {
     margin-bottom: 20px;
   }
 </style>
