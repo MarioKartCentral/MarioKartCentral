@@ -13,6 +13,7 @@
 
     let days_until_change = 0;
     let days_between_changes = 90;
+    let working = false;
 
     onMount(async() => {
         const res = await fetch(`/api/registry/teams/${roster.team_id}/rosterEditRequests/${roster.id}`);
@@ -32,6 +33,7 @@
     });
 
     async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             roster_id: roster.id,
@@ -46,6 +48,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -85,7 +88,7 @@
             <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
             <Input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} maxlength={5} no_white_space/>
         </div>
-        <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+        <Button type="submit" disabled={days_until_change > 0} {working}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}
 </form>
 

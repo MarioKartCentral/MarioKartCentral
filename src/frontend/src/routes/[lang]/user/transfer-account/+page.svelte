@@ -18,6 +18,7 @@
 
     async function transfer_account() {
         if(!player) return;
+        working = true;
         const payload = {
             player_id: player.id,
         };
@@ -27,6 +28,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if(response.status < 300) {
             alert($LL.LOGIN.TRANSFER_ACCOUNT_SUCCESS());
@@ -52,7 +54,7 @@
             </div>
             {#if player}
                 <div>
-                    <Button disabled={working} on:click={transfer_account}>{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
+                    <Button {working} on:click={transfer_account}>{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
                 </div>
             {/if}
         </Section>

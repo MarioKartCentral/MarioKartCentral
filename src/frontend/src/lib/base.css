@@ -63,6 +63,9 @@ option {
 input::placeholder {
   color: lightgrey;
 }
+input[type='checkbox']:checked {
+  background-color: theme('colors.primary.500'/ 40%);
+}
 a:hover {
   color: theme('colors.primary.300');
 }

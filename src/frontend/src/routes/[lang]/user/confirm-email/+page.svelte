@@ -7,7 +7,7 @@
     import { page } from "$app/stores";
     import LL from "$i18n/i18n-svelte";
 
-    let disable_button = false;
+    let working = false;
 
     let user_info: UserInfo;
 
@@ -45,13 +45,14 @@
     });
 
     async function send_confirmation_email() {
-        disable_button = true;
+        working = true;
         const endpoint = `/api/user/send_confirmation_email`;
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
         });
         const result = await response.json();
+        working = false;
         if(response.status < 300) {
             alert($LL.LOGIN.SEND_CONFIRMATION_EMAIL_SUCCESS());
         }
@@ -83,7 +84,7 @@
                 {$LL.LOGIN.EMAIL_CONFIRMATION_REQUIRED()}
             </div>
             <div class="section">
-                <Button disabled={disable_button} on:click={send_confirmation_email}>{$LL.LOGIN.SEND_CONFIRMATION_EMAIL()}</Button>
+                <Button {working} on:click={send_confirmation_email}>{$LL.LOGIN.SEND_CONFIRMATION_EMAIL()}</Button>
             </div>
         {/if}
     {/if}

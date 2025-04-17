@@ -2,8 +2,9 @@ from dataclasses import dataclass
 
 @dataclass
 class DiscordAuthCallbackData:
-    code: str
+    code: str | None = None
     state: str | None = None
+    error: str | None = None
 
 @dataclass
 class DiscordAccessTokenResponse:

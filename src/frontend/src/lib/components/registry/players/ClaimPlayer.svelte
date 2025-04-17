@@ -5,8 +5,10 @@
     import LL from "$i18n/i18n-svelte";
 
     export let player: PlayerInfo;
+    let working = false;
 
     async function claimPlayer() {
+        working = true;
         const payload = {
             player_id: player.id
         };
@@ -16,6 +18,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             alert($LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER_SUCCESS());
@@ -32,7 +35,7 @@
         {$LL.PLAYERS.SHADOW_PLAYERS.UNCLAIMED_PLAYER_DESCRIPTION()}
     </div>
     <div class="claim-button">
-        <Button on:click={claimPlayer}>{$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER()}</Button>
+        <Button {working} on:click={claimPlayer}>{$LL.PLAYERS.SHADOW_PLAYERS.CLAIM_PLAYER()}</Button>
     </div>
     
 </Section>

@@ -14,50 +14,53 @@
     };
 </script>
 
-<Table>
-    <col class="players">
-    <col class="type">
-    <col class="score">
-    <col class="data mobile-hide">
-    <col class="date mobile-hide">
-    <thead>
-        <tr>
-            <th>{$LL.MODERATOR.ALT_DETECTION.TABLE.PLAYERS()}</th>
-            <th>{$LL.MODERATOR.ALT_DETECTION.TABLE.TYPE()}</th>
-            <th>{$LL.MODERATOR.ALT_DETECTION.TABLE.SCORE()}</th>
-            <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DATA()}</th>
-            <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DETECTED_AT()}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each flags as flag}
+{#if flags.length}
+    <Table>
+        <col class="players">
+        <col class="type">
+        <col class="score">
+        <col class="data mobile-hide">
+        <col class="date mobile-hide">
+        <thead>
             <tr>
-                <td>
-                    {#each flag.players as player}
-                        <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">
-                            <div class="player-name">
-                                <Flag country_code={player.country_code}/>
-                                {player.name}
-                            </div>
-                        </a>
-                    {/each}
-                </td>
-                <td>
-                    {flag.type}
-                </td>
-                <td>
-                    {flag.score}
-                </td>
-                <td class="mobile-hide">
-                    {flag.data}
-                </td>
-                <td class="mobile-hide">
-                    {new Date(flag.date * 1000).toLocaleString($locale, options)}
-                </td>
+                <th>{$LL.MODERATOR.ALT_DETECTION.TABLE.PLAYERS()}</th>
+                <th>{$LL.MODERATOR.ALT_DETECTION.TABLE.TYPE()}</th>
+                <th>{$LL.MODERATOR.ALT_DETECTION.TABLE.SCORE()}</th>
+                <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DATA()}</th>
+                <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DETECTED_AT()}</th>
             </tr>
-        {/each}
-    </tbody>
-</Table>
+        </thead>
+        <tbody>
+            {#each flags as flag}
+                <tr>
+                    <td>
+                        {#each flag.players as player}
+                            <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">
+                                <div class="player-name">
+                                    <Flag country_code={player.country_code}/>
+                                    {player.name}
+                                </div>
+                            </a>
+                        {/each}
+                    </td>
+                    <td>
+                        {flag.type}
+                    </td>
+                    <td>
+                        {flag.score}
+                    </td>
+                    <td class="mobile-hide">
+                        {flag.data}
+                    </td>
+                    <td class="mobile-hide">
+                        {new Date(flag.date * 1000).toLocaleString($locale, options)}
+                    </td>
+                </tr>
+            {/each}
+        </tbody>
+    </Table>
+{/if}
+
 
 <style>
     col.players {

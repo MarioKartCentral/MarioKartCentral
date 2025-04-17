@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Button } from 'flowbite-svelte';
+  import { Button, Spinner } from 'flowbite-svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let href: string | undefined = undefined;
   export let circle = false;
@@ -19,8 +20,16 @@
     | 'alternative'
     | 'none'
     | undefined = undefined;
+  export let working = false;
 </script>
 
-<Button pill={circle} class="{extra_classes} {circle ? '!p-2' : ''} hover:text-white" on:click {size} {href} {type} {disabled} {color}>
-  <slot />
+<Button pill={circle} class="{extra_classes} {circle ? '!p-2' : ''} hover:text-white" on:click {size} {href} {type} disabled={working || disabled} {color}>
+  {#if working}
+    <div class="flex gap-2 items-center">
+      <Spinner size=4/>
+      {$LL.COMMON.WORKING()}
+    </div>
+  {:else}
+    <slot />
+  {/if}
 </Button>

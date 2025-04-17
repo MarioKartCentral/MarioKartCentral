@@ -24,6 +24,8 @@
     user.subscribe((value) => {
       user_info = value;
     });
+
+    let working = false;
   
     onMount(async () => {
       let param_id = $page.url.searchParams.get('id');
@@ -37,6 +39,7 @@
     });
   
     async function createRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+      working = true;
       const data = new FormData(event.currentTarget);
       function getOptionalValue(name: string) {
         return data.get(name) ? data.get(name)?.toString() : '';
@@ -49,13 +52,13 @@
         tag: data.get('tag')?.toString(),
         is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
       };
-      console.log(payload);
       const endpoint = '/api/registry/teams/requestCreateRoster';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      working = false;
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
@@ -116,7 +119,7 @@
             </div>
           </div>
           <div>
-            <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+            <Button type="submit" {working}>{$LL.COMMON.SUBMIT()}</Button>
           </div>
         </form>
       </Section>

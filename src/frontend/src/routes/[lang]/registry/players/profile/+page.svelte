@@ -41,6 +41,13 @@
 
   $: player_name = player ? player.name : 'Registry';
 
+  const mod_permissions = [
+    permissions.ban_player,
+    permissions.edit_player,
+    permissions.view_alt_flags,
+    permissions.edit_user,
+  ]
+
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
     id = Number(param_id);
@@ -81,7 +88,7 @@
     <PlayerProfileBan ban_info={player.ban_info} />
   {/if}
 
-  {#if check_permission(user_info, permissions.ban_player) || check_permission(user_info, permissions.edit_player)}
+  {#if mod_permissions.some(p => check_permission(user_info, p))}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
         {#if check_permission(user_info, permissions.ban_player)}

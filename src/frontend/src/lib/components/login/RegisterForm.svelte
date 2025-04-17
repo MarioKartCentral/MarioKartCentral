@@ -1,18 +1,22 @@
 <script lang="ts">
     import LL from "$i18n/i18n-svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
+    import { page } from "$app/stores";
 
     export let email = "";
     export let password = "";
     export let old_password = "";
     export let is_change = false;
     export let is_reset = false;
+    export let working = false;
 
     const min_length = 8;
 
     let confirm_password = "";
+    let agree_terms = false;
+    let agree_policy = false;
 
-    $: button_disabled = password.length < 8 || password != confirm_password;
+    $: button_disabled = password.length < 8 || password != confirm_password || (!is_change && (!agree_terms || !agree_policy));
 </script>
 
 <div class="form">
@@ -53,6 +57,28 @@
             </span>
             <input name="confirm-password" type="password" minlength={min_length} maxlength=64 bind:value={confirm_password} required/>
         </div>
+        {#if !is_change}
+            <div class="option">
+                <span class="agree-terms">
+                    <input name="terms" type="checkbox" bind:checked={agree_terms}/>
+                </span>
+                <div class="terms-label">
+                    <a href="/{$page.params.lang}/user/terms" target="_blank">
+                        {$LL.LOGIN.AGREE_TO_TERMS()}
+                    </a>
+                </div>
+            </div>
+            <div class="option">
+                <span class="agree-terms">
+                    <input name="privacy" type="checkbox" bind:checked={agree_policy}/>
+                </span>
+                <div class="terms-label">
+                    <a href="/{$page.params.lang}/user/privacy-policy" target="_blank">
+                        {$LL.LOGIN.AGREE_TO_PRIVACY_POLICY()}
+                    </a>
+                </div>
+            </div>
+        {/if}
         <div class="errors">
             {#if password.length && password.length < min_length}
                 <div>
@@ -66,7 +92,7 @@
             {/if}
         </div>
         <div>
-            <Button type="submit" disabled={button_disabled}>
+            <Button type="submit" disabled={button_disabled} {working}>
                 {#if is_change}
                     {$LL.LOGIN.CHANGE_PASSWORD()}
                 {:else if is_reset}
@@ -83,7 +109,7 @@
 
 <style>
     .form {
-        width: 300px;
+        max-width: 350px;
     }
     span.item-label {
         display: inline-block;
@@ -91,6 +117,7 @@
     }
     .option {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         margin-bottom: 10px;
     }
@@ -98,5 +125,8 @@
         color: #FFCCCB;
         margin-left: 5px;
         margin-bottom: 10px;
+    }
+    span.agree-terms {
+        margin-right: 10px;
     }
 </style>

@@ -46,12 +46,19 @@ class CreateTeamCommand(Command[int | None]):
                                       FROM team_rosters r
                                       JOIN teams t ON r.team_id = t.id
                                       WHERE (r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
-                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?)) 
+                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?) 
                                       AND game = ? AND mode = ? AND is_active = 1""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
                         raise Problem('An existing team for this game/mode already has this name or tag', status=400)
+            if not self.is_privileged and self.user_id is not None:
+                async with db.execute("""SELECT t.id FROM teams t
+                                        JOIN user_team_roles ut ON t.id = ut.team_id
+                                        WHERE t.approval_status = 'pending' AND ut.user_id = ?""", (self.user_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        raise Problem("You already have a pending team in the approval queue; you must wait for a staff member to approve/deny this team before creating another team", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, None, self.approval_status,

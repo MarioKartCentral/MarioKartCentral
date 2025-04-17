@@ -20,8 +20,10 @@
 
   let tag = "";
   let logo_file = "";
+  let working = false;
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const data = new FormData(event.currentTarget);
     function getOptionalValue(name: string) {
       return data.get(name) ? data.get(name)?.toString() : '';
@@ -51,6 +53,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       let team_id = result['id'];
@@ -131,7 +134,7 @@
     </Section>
   {/if}
   <Section header={$LL.COMMON.SUBMIT()}>
-    <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+    <Button type="submit" {working}>{$LL.COMMON.SUBMIT()}</Button>
   </Section>
 </form>
 

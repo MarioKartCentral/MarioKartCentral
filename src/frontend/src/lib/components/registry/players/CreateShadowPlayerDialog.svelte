@@ -5,12 +5,14 @@
     import LL from "$i18n/i18n-svelte";
 
     let player_dialog: Dialog;
+    let working = false;
 
     export function open() {
         player_dialog.open();
     }
 
     async function createPlayer(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             name: data.get('shadow_name')!.toString(),
@@ -23,6 +25,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if(response.status < 300) {
             alert($LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER_SUCCESS());
@@ -45,7 +48,7 @@
             <CountrySelect is_required/>
         </div>
         <div class="option">
-            <Button type="submit">{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
+            <Button {working} type="submit">{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
         </div>
     </form>
 </Dialog>

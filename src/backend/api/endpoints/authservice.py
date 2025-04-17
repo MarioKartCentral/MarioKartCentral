@@ -226,6 +226,14 @@ async def link_discord(request: Request) -> Response:
 async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallbackData) -> Response:
     redirect_params = ""
     user_data = request.state.user
+    # If they have not completed registration yet, redirect to registration page, otherwise edit profile page
+    if not request.state.user.player_id:
+        redirect_path = "/user/player-signup"
+    else:
+        redirect_path = "/registry/players/edit-profile"
+    if discord_auth_data.error:
+        return RedirectResponse(f"{redirect_path}{redirect_params}", 302)
+    assert discord_auth_data.code is not None
     try:
         if appsettings.ENABLE_DISCORD:
             command = LinkUserDiscordCommand(
@@ -245,12 +253,6 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
             print(f"Problem raised during Discord auth callback: {e}")
         traceback.print_exc()
         redirect_params = "?auth_failed=1"
-
-    # If they have not completed registration yet, redirect to registration page, otherwise edit profile page
-    if not request.state.user.player_id:
-        redirect_path = "/user/player-signup"
-    else:
-        redirect_path = "/registry/players/edit-profile"
 
     async def sync_avatar():
         if appsettings.ENABLE_DISCORD:

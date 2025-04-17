@@ -326,6 +326,10 @@ type RootTranslation = {
 		 * N​e​w​e​s​t
 		 */
 		SORT_BY_NEWEST: string
+		/**
+		 * W​o​r​k​i​n​g​.​.​.
+		 */
+		WORKING: string
 	}
 	DISCORD: {
 		/**
@@ -849,6 +853,14 @@ type RootTranslation = {
 		 * F​a​i​l​e​d​ ​t​o​ ​c​h​a​n​g​e​ ​e​m​a​i​l
 		 */
 		CHANGE_EMAIL_FAILED: string
+		/**
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​T​e​r​m​s​ ​o​f​ ​S​e​r​v​i​c​e​.
+		 */
+		AGREE_TO_TERMS: string
+		/**
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​.
+		 */
+		AGREE_TO_PRIVACY_POLICY: string
 	}
 	LOUNGE: {
 		/**
@@ -5176,6 +5188,10 @@ export type TranslationFunctions = {
 		 * Newest
 		 */
 		SORT_BY_NEWEST: () => LocalizedString
+		/**
+		 * Working...
+		 */
+		WORKING: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -5694,6 +5710,14 @@ export type TranslationFunctions = {
 		 * Failed to change email
 		 */
 		CHANGE_EMAIL_FAILED: () => LocalizedString
+		/**
+		 * I agree to the MKCentral Terms of Service.
+		 */
+		AGREE_TO_TERMS: () => LocalizedString
+		/**
+		 * I agree to the MKCentral Privacy Policy.
+		 */
+		AGREE_TO_PRIVACY_POLICY: () => LocalizedString
 	}
 	LOUNGE: {
 		/**

@@ -44,10 +44,13 @@
     }
   });
 
+  let working = false;
+
   function updateData() {
     data = data;
   }
   async function createSeries() {
+    working = true;
     let payload = data;
     console.log(payload);
     const endpoint = '/api/tournaments/series/create';
@@ -56,6 +59,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       goto(`/${$page.params.lang}/tournaments/series`);
@@ -65,6 +69,7 @@
     }
   }
   async function editSeries() {
+    working = true;
     data.series_id = series_id;
     let payload = data;
     console.log(payload);
@@ -74,6 +79,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       goto(`/${$page.params.lang}/tournaments/series/details?id=${series_id}`);
@@ -195,7 +201,7 @@
     </div>
   </Section>
   <Section header={$LL.COMMON.SUBMIT()}>
-    <Button type="submit">{is_edit ? $LL.TOURNAMENTS.SERIES.EDIT() : $LL.TOURNAMENTS.SERIES.CREATE()}</Button>
+    <Button type="submit" {working}>{is_edit ? $LL.TOURNAMENTS.SERIES.EDIT() : $LL.TOURNAMENTS.SERIES.CREATE()}</Button>
   </Section>
 </form>
 

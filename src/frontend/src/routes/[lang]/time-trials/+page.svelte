@@ -10,6 +10,19 @@
     This page is currently a work in progress. For now,
     players can find leaderboards on several other sites.
   </div>
+  <GameBadge game="mkworld"/>
+  <Section header="Mario Kart World Time Trials">
+    <div class="flex flex-row">
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <Button size="lg" color="blue" href="https://discord.gg/6gDAPxvqh7">
+            <DiscordSolid class="mr-2" />Discord </Button
+          >
+        </div>
+      </div>
+    </div>
+  </Section>
+  <hr/>
   <GameBadge game= "mk8dx" />
   <GameBadge game= "mk7" />
   <GameBadge game= "mkw" />
@@ -27,6 +40,8 @@
       </div>
     </div>
   </Section>
+  <hr/>
+  <GameBadge game= "mkworld" />
   <GameBadge game= "mk8dx" />
   <GameBadge game = "mk8" />
   <GameBadge game= "mk7" />
@@ -45,6 +60,7 @@
       </div>
     </div>
   </Section>
+  <hr/>
   <GameBadge game= "mk8dx" />
   <Section header={'DLC Leaderboards'}>
     <div class="flex flex-row">
@@ -59,6 +75,7 @@
       </div>
     </div>
   </Section>
+  <hr/>
   <GameBadge game= "mk8dx" />
   <Section header={'No Item Leaderboards'}>
     <div class="flex flex-row">
@@ -81,6 +98,9 @@
     margin: 20px auto 20px auto;
   }
   .disclaimer {
+    margin-bottom: 20px;
+  }
+  hr {
     margin-bottom: 20px;
   }
 </style>

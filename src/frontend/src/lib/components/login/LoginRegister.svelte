@@ -88,7 +88,7 @@
                     <input name="password" type="password" required bind:value={password}/>
                 </div>
                 <div class="login-row">
-                    <Button extra_classes="login-btn" type="submit" disabled={working}>{$LL.LOGIN.LOGIN()}</Button>
+                    <Button extra_classes="login-btn" type="submit" {working}>{$LL.LOGIN.LOGIN()}</Button>
                     <div>
                         <a href="/{$page.params.lang}/user/reset-password">
                             {$LL.LOGIN.FORGOT_PASSWORD()}
@@ -99,21 +99,23 @@
         </div>
     </TabItem>
     <TabItem title={$LL.LOGIN.REGISTER()}>
-        <RegisterForm bind:email={email} bind:password={password} on:submit={() => loginOrSignup(false)}/>
+        <RegisterForm bind:email={email} bind:password={password} {working} on:submit={() => loginOrSignup(false)}/>
     </TabItem>
 </Tabs>
 
 <style>
     div.form {
-        width: 300px;
+        max-width: 350px;
     }
     div.option {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         margin-bottom: 10px;
     }
     div.login-row {
         display: flex;
+        flex-wrap: wrap;
         gap: 20px;
         align-items: center;
     }

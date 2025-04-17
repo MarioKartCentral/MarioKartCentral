@@ -19,6 +19,7 @@
   let all_toggle_on = false;
   let accept_dialog: Dialog;
   let curr_invite: TournamentSquad;
+  let working = false;
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -51,6 +52,7 @@
     if (!curr_invite) {
       return;
     }
+    working = true;
     const formData = new FormData(event.currentTarget);
     let selected_fc_id = formData.get('selected_fc_id');
     let mii_name = formData.get('mii_name');
@@ -62,12 +64,12 @@
       squad_id: curr_invite.id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/acceptInvite`;
-    console.log(payload);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -178,7 +180,7 @@
       {/if}
       <br />
       <div>
-        <Button type="submit">{$LL.INVITES.ACCEPT()}</Button>
+        <Button {working} type="submit">{$LL.INVITES.ACCEPT()}</Button>
         <Button type="button" on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
       </div>
     {/if}

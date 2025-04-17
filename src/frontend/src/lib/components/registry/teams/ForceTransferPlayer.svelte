@@ -11,6 +11,7 @@
     let from_roster: PlayerRoster | null = null;
     let to_roster: TeamRoster | null = null;
     let is_bagger: boolean = false;
+    let working = false;
 
     $: is_bagger = from_roster ? from_roster.is_bagger_clause : is_bagger;
 
@@ -44,6 +45,7 @@
         if(!player || !to_roster) {
             return;
         }
+        working = true;
         const payload = {
             player_id: player.id,
             roster_id: to_roster.id,
@@ -57,6 +59,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         console.log(payload);
         const result = await res.json();
         if (res.status < 300) {
@@ -108,7 +111,7 @@
             </div>
         {/if}
         {#if to_roster}
-            <Button on:click={transferPlayer}>{$LL.MODERATOR.TRANSFER_PLAYER()}</Button>
+            <Button on:click={transferPlayer} {working}>{$LL.MODERATOR.TRANSFER_PLAYER()}</Button>
         {/if}
     </div>
 {/if}
