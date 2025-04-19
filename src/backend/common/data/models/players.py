@@ -115,7 +115,7 @@ class PlayerFilter:
     discord_id: str | None = None
     detailed: bool | None = None
     page: int | None = None
-    squad_id: int | None = None
+    registration_id: int | None = None
     matching_fcs_only: bool = False
     include_shadow_players: bool = False
     sort_by_newest: bool | None = False

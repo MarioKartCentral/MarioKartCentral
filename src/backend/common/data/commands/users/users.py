@@ -87,7 +87,7 @@ class GetInvitesForPlayerCommand(Command[PlayerInvites]):
             async with db.execute("""SELECT i.id, i.tournament_id, i.timestamp, i.is_bagger_clause, s.name, s.tag, s.color,
                                     t.name, t.game, t.mode
                                     FROM tournament_players i
-                                    JOIN tournament_squads s ON i.squad_id = s.id
+                                    JOIN tournament_registrations s ON i.registration_id = s.id
                                     JOIN tournaments t ON i.tournament_id = t.id
                                     WHERE i.is_invite = 1 AND i.player_id = ?
                                     AND t.registrations_open = 1""", (self.player_id,)) as cursor:

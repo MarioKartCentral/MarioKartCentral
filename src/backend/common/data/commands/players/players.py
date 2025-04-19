@@ -248,13 +248,13 @@ class ListPlayersCommand(Command[PlayerList]):
             append_equal_filter(filter.discord_id, "d.discord_id")
 
             # make sure that player is in a team roster which is linked to the passed-in squad ID
-            if filter.squad_id is not None:
+            if filter.registration_id is not None:
                 where_clauses.append(f"""p.id IN (
                                      SELECT m.player_id FROM team_members m
                                      JOIN team_squad_registrations r ON r.roster_id = m.roster_id
-                                     WHERE r.squad_id IS ? AND m.leave_date IS ?
+                                     WHERE r.registration_id IS ? AND m.leave_date IS ?
                 )""")
-                variable_parameters.append(filter.squad_id)
+                variable_parameters.append(filter.registration_id)
                 variable_parameters.append(None)
 
             # if has_connected_user is true, we should only list players who have

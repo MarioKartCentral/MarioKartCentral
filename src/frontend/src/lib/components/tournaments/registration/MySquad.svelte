@@ -44,7 +44,7 @@
       return;
     }
     const payload = {
-      squad_id: my_player.squad_id,
+      registration_id: my_player.registration_id,
       player_id: player.id,
       is_representative: false,
       is_bagger_clause: invite_as_bagger
@@ -73,7 +73,7 @@
       return;
     }
     const payload = {
-      squad_id: my_player.squad_id,
+      registration_id: my_player.registration_id,
     };
     console.log(payload);
     const endpoint = `/api/tournaments/${tournament.id}/unregisterSquad`;
@@ -96,7 +96,7 @@
     let squad_name = formData.get('squad_name');
     let squad_tag = formData.get('squad_tag');
     const payload = {
-      squad_id: squad.id,
+      registration_id: squad.id,
       squad_color: Number(squad_color),
       squad_name: squad_name,
       squad_tag: squad_tag,
@@ -117,7 +117,11 @@
   }
 </script>
 
-<div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD()}</div>
+{#if tournament.is_squad}
+  <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD()}</div>
+{:else}
+  <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
+{/if}
 <div>
   {#if tournament.squad_tag_required}
     <TagBadge tag={squad.tag} color={squad.color}/>
@@ -126,9 +130,11 @@
     {squad.name}
   {/if}
 </div>
-<div>
-  {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registered_players.length})}
-</div>
+{#if tournament.is_squad}
+  <div>
+    {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registered_players.length})}
+  </div>
+{/if}
 <TournamentPlayerList {tournament} players={registered_players} {my_player}/>
 
 {#if invited_players.length > 0}
@@ -147,7 +153,7 @@
       <PlayerSearch
         bind:player={invite_player}
         fc_type={game_fc_types[tournament.game]}
-        squad_id={tournament.team_members_only ? my_player.squad_id : null}
+        registration_id={tournament.team_members_only ? my_player.registration_id : null}
       />
     </div>
     {#if invite_player}

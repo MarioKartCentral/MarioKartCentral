@@ -11,7 +11,7 @@ class RegisterPlayerRequestData:
 @dataclass
 class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     player_id: int
-    squad_id: int | None = None
+    registration_id: int | None = None
     is_squad_captain: bool = False
     is_invite: bool = False
     is_checked_in: bool = False
@@ -24,7 +24,7 @@ class EditMyRegistrationRequestData():
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
-    squad_id: int | None
+    registration_id: int
 
 @dataclass
 class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
@@ -40,13 +40,13 @@ class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
 class TournamentPlayerDetailsShort():
     player_id: int
     player_name: str
-    squad_id: int
+    registration_id: int
 
 @dataclass
 class TournamentPlayerDetails():
     id: int
     player_id: int
-    squad_id: int | None
+    registration_id: int
     timestamp: int
     is_checked_in: bool
     is_approved: bool
@@ -67,4 +67,4 @@ class TournamentRegistrationFilter():
 
 @dataclass
 class TournamentCheckinRequestData():
-    squad_id: int | None
+    registration_id: int

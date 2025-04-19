@@ -42,7 +42,7 @@
       return;
     }
     const payload = {
-      squad_id: player.squad_id,
+      registration_id: player.registration_id,
       player_id: player.player_id
     };
     console.log(payload);
@@ -66,7 +66,7 @@
       return;
     }
     const payload = {
-      squad_id: player.squad_id,
+      registration_id: player.registration_id,
       player_id: player.player_id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/kickPlayer`;
@@ -90,7 +90,7 @@
       return;
     }
     const payload = {
-      squad_id: player.squad_id,
+      registration_id: player.registration_id,
       player_id: player.player_id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/makeCaptain`;
@@ -110,7 +110,7 @@
 
   async function addRepresentative(player: TournamentPlayer) {
     const payload = {
-      squad_id: player.squad_id,
+      registration_id: player.registration_id,
       player_id: player.player_id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/addRepresentative`;
@@ -130,7 +130,7 @@
 
   async function removeRepresentative(player: TournamentPlayer) {
     const payload = {
-      squad_id: player.squad_id,
+      registration_id: player.registration_id,
       player_id: player.player_id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/removeRepresentative`;
@@ -161,7 +161,7 @@
       return;
     }
     const payload = {
-      squad_id: my_player.squad_id,
+      registration_id: my_player.registration_id,
     };
     console.log(payload);
     const endpoint = `/api/tournaments/${tournament.id}/unregister`;
@@ -256,7 +256,7 @@
                 {/if}
                 <DropdownItem on:click={unregister}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER()}</DropdownItem>
               </Dropdown>
-            {:else if my_player?.is_squad_captain && my_player?.squad_id === player.squad_id && check_registrations_open(tournament)}
+            {:else if my_player?.is_squad_captain && my_player?.registration_id === player.registration_id && check_registrations_open(tournament)}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
                 <DropdownItem on:click={() => kickPlayer(player)}>

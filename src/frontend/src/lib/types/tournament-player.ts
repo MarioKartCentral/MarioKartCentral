@@ -4,7 +4,7 @@ import type { Discord } from './discord';
 export type TournamentPlayer = {
   id: number;
   player_id: number;
-  squad_id: number | null;
+  registration_id: number | null;
   timestamp: number;
   is_checked_in: boolean;
   is_approved: boolean;
@@ -24,5 +24,5 @@ export type TournamentPlayer = {
 export type TournamentPlayerDetailsShort = {
   player_id: number;
   player_name: string;
-  squad_id: number;
+  registration_id: number;
 };

@@ -256,13 +256,14 @@ erDiagram
 ```mermaid
 erDiagram
     %% Registration
-    Tournament ||--o{ TournamentSquad : "hosts"
-    TournamentSquad ||--o{ TournamentPlayer : "includes"
+    Tournament ||--o{ TournamentRegistration : "hosts"
+    TournamentRegistration ||--o{ TournamentPlayer : "includes"
     Player ||--o{ TournamentPlayer : "competes"
 ```
 
-**TournamentSquad**
-- Manages team-based tournament participation
+**TournamentRegistration**
+- Catch-all for solo, squad, team registrations for tournaments
+- Manages tournament participation
 - Represents groups competing together
 
 **TournamentPlayer**
@@ -274,18 +275,13 @@ erDiagram
 ```mermaid
 erDiagram
     %% Placements
-    Tournament ||--o{ TournamentSoloPlacements : "ranks"
-    Tournament ||--o{ TournamentSquadPlacements : "ranks"
-    TournamentSquad ||--|| TournamentSquadPlacements : "achieves"
+    Tournament ||--o{ TournamentPlacements : "ranks"
+    TournamentRegistration ||--|| TournamentPlacements : "achieves"
 ```
 
-**TournamentSoloPlacements**
-- Records individual tournament results
-- Tracks player performance in solo events
-
-**TournamentSquadPlacements**
-- Manages team-based tournament results
-- Captures squad performance metrics
+**TournamentPlacements**
+- Records tournament results
+- Tracks player/squad/team performance in events
 
 ## Administrative Systems
 

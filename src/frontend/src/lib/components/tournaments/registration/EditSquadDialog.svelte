@@ -24,7 +24,7 @@
         let squad_tag = formData.get('squad_tag');
         let is_approved = formData.get('is_approved');
         const payload = {
-            squad_id: squad.id,
+            registration_id: squad.id,
             squad_color: Number(squad_color),
             squad_name: squad_name,
             squad_tag: squad_tag,
@@ -50,7 +50,7 @@
         let squad_name = formData.get('squad_name');
         let squad_tag = formData.get('squad_tag');
         const payload = {
-            squad_id: squad.id,
+            registration_id: squad.id,
             squad_color: Number(squad_color),
             squad_name: squad_name,
             squad_tag: squad_tag,

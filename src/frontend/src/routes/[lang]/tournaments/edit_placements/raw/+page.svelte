@@ -113,9 +113,7 @@
     <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
         <div slot="header_content">
             <Button href="/{$page.params.lang}/tournaments/edit_placements?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_INTERACTIVE_INPUT()}</Button>
-            {#if placements.is_squad}
-                <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
-            {/if}
+            <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
         </div>
         <div>
             {$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_INSTRUCTIONS()}

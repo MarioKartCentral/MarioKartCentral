@@ -2,7 +2,7 @@ import type { TournamentSquad } from '../tournament-squad';
 import type { TournamentPlayer } from '../tournament-player';
 
 export type RegistrationDetails = {
-  squad: TournamentSquad | null;
+  squad: TournamentSquad;
   player: TournamentPlayer;
 };
 

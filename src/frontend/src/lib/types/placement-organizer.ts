@@ -10,5 +10,5 @@ export type PlacementOrganizer = {
   placement_lower_bound: number | null;
   is_disqualified: boolean;
   player: TournamentPlayer | null;
-  squad: TournamentSquad | null;
+  squad: TournamentSquad;
 };

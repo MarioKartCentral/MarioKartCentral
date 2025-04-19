@@ -42,7 +42,7 @@
         let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER_CONFIRM({roster_name: roster.name}));
         if(!conf) return;
             const payload = {
-            squad_id: squad.id,
+            registration_id: squad.id,
             roster_id: roster.id
         }
         const endpoint = is_privileged ? `/api/tournaments/${tournament.id}/forceAddRosterToSquad` : `/api/tournaments/${tournament.id}/addRosterToSquad`;
@@ -63,7 +63,7 @@
         let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.REMOVE_ROSTER_CONFIRM({roster_name: String(roster.roster_name)}));
         if(!conf) return;
             const payload = {
-            squad_id: squad.id,
+            registration_id: squad.id,
             roster_id: roster.roster_id
         }
         const endpoint = is_privileged ? `/api/tournaments/${tournament.id}/forceRemoveRosterFromSquad` : `/api/tournaments/${tournament.id}/removeRosterFromSquad`;

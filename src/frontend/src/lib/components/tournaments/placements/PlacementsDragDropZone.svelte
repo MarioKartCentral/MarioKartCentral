@@ -8,7 +8,6 @@
     import LL from "$i18n/i18n-svelte";
 
     export let tournament_id: number;
-    export let is_squad: boolean;
     export let placements: TournamentPlacement[];
     export let is_placements = true;
 
@@ -166,7 +165,7 @@
 
 <section class="zone" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
     {#each placement_list as p(p.id)}
-        <PlacementItem placement={p} {is_squad} is_edit={true} on:change={updatePlacements} on:dq={handleDQ}/>
+        <PlacementItem placement={p} is_edit={true} on:change={updatePlacements} on:dq={handleDQ}/>
     {/each}
     
 </section>

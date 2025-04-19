@@ -8,9 +8,11 @@
 </script>
 
 <div class="flex">
-    <div>
-        <TagBadge tag={squad.tag} color={squad.color}/>
-    </div>
+    {#if squad.tag || squad.players.length > 4}
+        <div>
+            <TagBadge tag={squad.tag} color={squad.color}/>
+        </div>
+    {/if}
     
     {#if squad.name}
         <div>
