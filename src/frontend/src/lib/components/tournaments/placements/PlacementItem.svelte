@@ -1,8 +1,6 @@
 <script lang="ts">
-    import Flag from "$lib/components/common/Flag.svelte";
     import type { PlacementOrganizer } from "$lib/types/placement-organizer";
     import SquadPlacementDisplay from "./SquadPlacementDisplay.svelte";
-    import { page } from "$app/stores";
     import { createEventDispatcher } from "svelte";
     import Dropdown from "$lib/components/common/Dropdown.svelte";
     import DropdownItem from "$lib/components/common/DropdownItem.svelte";
@@ -12,7 +10,6 @@
     const dispatch = createEventDispatcher();
 
     export let placement: PlacementOrganizer;
-    export let is_squad: boolean;
     export let is_edit: boolean;
     export let is_homepage = false;
 
@@ -77,14 +74,7 @@
         {getPlacementText(placement)}
     </div>
     <div class="info">
-        {#if !is_squad && placement.player}
-            <a href="/{$page.params.lang}/registry/players/profile?id={placement.player.player_id}">
-                <Flag country_code={placement.player.country_code} size="small"/>
-                {placement.player.name}
-            </a>
-        {:else if is_squad && placement.squad}
-            <SquadPlacementDisplay squad={placement.squad}/>
-        {/if}
+        <SquadPlacementDisplay squad={placement.squad}/>
     </div>
     {#if is_edit}
         <div class="actions">

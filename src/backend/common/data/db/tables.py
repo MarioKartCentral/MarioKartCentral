@@ -356,7 +356,7 @@ class TournamentPlayer(TableModel):
     id: int
     player_id: int
     tournament_id: int
-    registration_id: int | None
+    registration_id: int
     is_squad_captain: bool
     timestamp: int
     is_checked_in: bool
@@ -374,7 +374,7 @@ class TournamentPlayer(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            registration_id INTEGER REFERENCES tournament_registrations(id),
+            registration_id INTEGER NOT NULL REFERENCES tournament_registrations(id),
             is_squad_captain BOOLEAN NOT NULL,
             timestamp INTEGER NOT NULL,
             is_checked_in BOOLEAN NOT NULL,
@@ -388,29 +388,7 @@ class TournamentPlayer(TableModel):
             )"""
     
 @dataclass
-class TournamentSoloPlacements(TableModel):
-    id: int
-    tournament_id: int
-    player_id: int
-    placement: int
-    placement_description: str | None
-    placement_lower_bound: int | None
-    is_disqualified: bool
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS tournament_solo_placements(
-            id INTEGER PRIMARY KEY,
-            tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            player_id INTEGER NOT NULL REFERENCES tournament_players(id),
-            placement INTEGER,
-            placement_description TEXT,
-            placement_lower_bound INTEGER,
-            is_disqualified BOOLEAN NOT NULL
-        )"""
-    
-@dataclass
-class TournamentSquadPlacements(TableModel):
+class TournamentPlacements(TableModel):
     id: int
     tournament_id: int
     registration_id: int
@@ -421,7 +399,7 @@ class TournamentSquadPlacements(TableModel):
 
     @staticmethod
     def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS tournament_squad_placements(
+        return """CREATE TABLE IF NOT EXISTS tournament_placements(
             id INTEGER PRIMARY KEY,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
             registration_id INTEGER NOT NULL REFERENCES tournament_registrations(id),
@@ -1099,7 +1077,7 @@ class UserIP(TableModel):
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentRegistration, TournamentPlayer,
-    TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
+    TournamentPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,

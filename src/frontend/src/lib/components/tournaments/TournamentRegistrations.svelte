@@ -26,22 +26,7 @@
     user_info = value;
   });
 
-  onMount(async () => {
-    const res = await fetch(`/api/tournaments/${tournament.id}/registrations?is_approved=true`);
-    if (res.status < 300) {
-      const body = await res.json();
-      if (tournament.is_squad) {
-        tournament_squads = body;
-        registration_count = tournament_squads.length;
-      } else {
-        tournament_players = body;
-        registration_count = tournament_players.length;
-      }
-      registrations_loaded = true;
-    }
-  });
-
-  async function filter_registrations() {
+  async function fetchData() {
     let eligible_only = false;
     let hosts_only = false;
     let is_approved = true;
@@ -59,23 +44,28 @@
     const res = await fetch(url);
     if (res.status < 300) {
       const body = await res.json();
-      console.log(body);
-      if (tournament.is_squad) {
-        tournament_squads = body;
-        registration_count = tournament_squads.length;
-      } else {
-        tournament_players = body;
-        registration_count = tournament_players.length;
+      tournament_squads = body;
+      registration_count = tournament_squads.length;
+      console.log(tournament_squads);
+      if(!tournament.is_squad) {
+        tournament_players = tournament_squads.flatMap((squad) => squad.players);
+        
       }
       show_all = false;
+      registrations_loaded = true;
     }
   }
+
+  onMount(async () => {
+    await fetchData();
+  });
+
 </script>
 
 <div>
   {#if registrations_loaded}
     <div>
-      <select bind:value={setting} on:change={filter_registrations}>
+      <select bind:value={setting} on:change={fetchData}>
         <option value={'any'}>
           {$LL.TOURNAMENTS.REGISTRATIONS.ALL_REGISTRATIONS({is_squad: tournament.is_squad})}
         </option>

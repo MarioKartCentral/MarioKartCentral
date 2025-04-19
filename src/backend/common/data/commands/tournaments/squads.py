@@ -342,7 +342,8 @@ class UnregisterSquadCommand(Command[None]):
         async with db_wrapper.connect() as db:
             await db.execute("DELETE FROM tournament_players WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
             await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
-            await db.execute("UPDATE tournament_registrations SET is_registered = 0 WHERE id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
+            await db.execute("DELETE FROM tournament_placements WHERE registration_id = ?", (self.registration_id,))
+            await db.execute("DELETE FROM tournament_registrations WHERE id = ?", (self.registration_id,))
             await db.commit()
 
 @dataclass

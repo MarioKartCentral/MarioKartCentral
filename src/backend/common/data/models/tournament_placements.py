@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.data.models import TournamentPlayerDetails, TournamentSquadDetails
+from common.data.models import TournamentSquadDetails
 from common.data.models.tournament_registrations import TournamentPlayerDetailsShort
 
 @dataclass
@@ -20,13 +20,11 @@ class TournamentPlacementFromPlayerIDs():
 
 @dataclass
 class TournamentPlacementDetailed(TournamentPlacement):
-    player: TournamentPlayerDetails | None
-    squad: TournamentSquadDetails | None
+    squad: TournamentSquadDetails
 
 @dataclass
 class TournamentPlacementList():
     tournament_id: int
-    is_squad: bool
     placements: list[TournamentPlacementDetailed]
     unplaced: list[TournamentPlacementDetailed]
 
@@ -36,7 +34,7 @@ class PlayerTournamentPlacement():
     tournament_name: str
     game: str
     mode: str
-    registration_id: int | None
+    registration_id: int
     squad_name: str | None
     team_id: int | None
     date_start: int

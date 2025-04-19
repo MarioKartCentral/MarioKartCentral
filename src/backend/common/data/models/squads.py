@@ -63,7 +63,7 @@ class DeclineInviteRequestData():
 
 @dataclass
 class UnregisterPlayerRequestData():
-    registration_id: int | None
+    registration_id: int
 
 @dataclass
 class StaffUnregisterPlayerRequestData(UnregisterPlayerRequestData):
@@ -88,10 +88,9 @@ class TournamentSquadDetails():
     players: list[SquadPlayerDetails]
     rosters: list[RosterBasic]
 
-
 @dataclass
 class MyTournamentRegistration():
-    squad: TournamentSquadDetails | None
+    squad: TournamentSquadDetails
     player: TournamentPlayerDetails
 
 @dataclass

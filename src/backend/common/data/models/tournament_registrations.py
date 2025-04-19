@@ -24,7 +24,7 @@ class EditMyRegistrationRequestData():
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
-    registration_id: int | None
+    registration_id: int
 
 @dataclass
 class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
@@ -46,7 +46,7 @@ class TournamentPlayerDetailsShort():
 class TournamentPlayerDetails():
     id: int
     player_id: int
-    registration_id: int | None
+    registration_id: int
     timestamp: int
     is_checked_in: bool
     is_approved: bool
@@ -67,4 +67,4 @@ class TournamentRegistrationFilter():
 
 @dataclass
 class TournamentCheckinRequestData():
-    registration_id: int | None
+    registration_id: int

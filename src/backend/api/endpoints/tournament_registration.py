@@ -367,13 +367,7 @@ async def view_squad(request: Request) -> JSONResponse:
 @check_tournament_visiblity
 async def list_registrations(request: Request, body: TournamentRegistrationFilter) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
-    command = CheckIfSquadTournament(tournament_id)
-    is_squad = await handle(command)
-    if is_squad:
-        print(body.is_approved)
-        command = GetSquadRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only, body.hosts_only, body.is_approved)
-    else:
-        command = GetFFARegistrationsCommand(tournament_id, body.eligible_only, body.hosts_only, body.is_approved)
+    command = GetTournamentRegistrationsCommand(tournament_id, body.registered_only, body.eligible_only, body.hosts_only, body.is_approved)
     registrations = await handle(command)
     return JSONResponse(registrations)
 
@@ -383,12 +377,7 @@ async def my_registration(request: Request) -> JSONResponse:
     player_id = request.state.user.player_id
     if not player_id:
         return JSONResponse(None)
-    command = CheckIfSquadTournament(tournament_id)
-    is_squad = await handle(command)
-    if is_squad:
-        command = GetPlayerSquadRegCommand(tournament_id, request.state.user.player_id)
-    else:
-        command = GetPlayerSoloRegCommand(tournament_id, request.state.user.player_id)
+    command = GetPlayerRegistrationCommand(tournament_id, request.state.user.player_id)
     registrations = await handle(command)
     return JSONResponse(registrations)
 

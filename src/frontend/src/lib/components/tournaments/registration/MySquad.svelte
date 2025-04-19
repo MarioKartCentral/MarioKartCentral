@@ -117,7 +117,11 @@
   }
 </script>
 
-<div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD()}</div>
+{#if tournament.is_squad}
+  <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD()}</div>
+{:else}
+  <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
+{/if}
 <div>
   {#if tournament.squad_tag_required}
     <TagBadge tag={squad.tag} color={squad.color}/>
@@ -126,9 +130,11 @@
     {squad.name}
   {/if}
 </div>
-<div>
-  {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registered_players.length})}
-</div>
+{#if tournament.is_squad}
+  <div>
+    {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registered_players.length})}
+  </div>
+{/if}
 <TournamentPlayerList {tournament} players={registered_players} {my_player}/>
 
 {#if invited_players.length > 0}

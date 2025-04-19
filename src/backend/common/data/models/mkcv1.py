@@ -463,7 +463,7 @@ class NewMKCTournamentPlayer:
     id: int
     player_id: int
     tournament_id: int
-    registration_id: int | None
+    registration_id: int
     is_squad_captain: bool
     timestamp: int
     is_checked_in: bool

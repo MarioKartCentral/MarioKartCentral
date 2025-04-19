@@ -3,7 +3,6 @@
   import type { Tournament } from '$lib/types/tournament';
   import TournamentInviteList from './TournamentInviteList.svelte';
   import MySquad from './MySquad.svelte';
-  import TournamentPlayerList from '../TournamentPlayerList.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { BadgeCheckSolid } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
@@ -85,12 +84,7 @@
         {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
       </div>
     {/if}
-    {#if reg.squad}
-      <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
-    {:else}
-      <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
-      <TournamentPlayerList {tournament} players={[reg.player]} my_player={reg.player}/>
-    {/if}
+    <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
   </div>
 {/each}
 
