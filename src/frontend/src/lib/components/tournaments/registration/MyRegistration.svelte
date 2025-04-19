@@ -20,7 +20,7 @@
   async function toggleCheckin(reg: RegistrationDetails) {
     const payload = {
       tournament_id: tournament.id,
-      squad_id: reg.player.squad_id,
+      registration_id: reg.player.registration_id,
       player_id: reg.player.player_id
     }
     const endpoint = `/api/tournaments/${tournament.id}/toggleCheckin`;

@@ -328,7 +328,7 @@ class TournamentTemplate(TableModel):
             series_id INTEGER REFERENCES tournament_series(id))"""
 
 @dataclass
-class TournamentSquad(TableModel):
+class TournamentRegistration(TableModel):
     id: int
     name: str | None
     tag: str | None
@@ -340,7 +340,7 @@ class TournamentSquad(TableModel):
 
     @staticmethod
     def get_create_table_command():
-        return """CREATE TABLE IF NOT EXISTS tournament_squads(
+        return """CREATE TABLE IF NOT EXISTS tournament_registrations(
             id INTEGER PRIMARY KEY,
             name TEXT,
             tag TEXT,
@@ -356,7 +356,7 @@ class TournamentPlayer(TableModel):
     id: int
     player_id: int
     tournament_id: int
-    squad_id: int | None
+    registration_id: int | None
     is_squad_captain: bool
     timestamp: int
     is_checked_in: bool
@@ -374,7 +374,7 @@ class TournamentPlayer(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            squad_id INTEGER REFERENCES tournament_squads(id),
+            registration_id INTEGER REFERENCES tournament_registrations(id),
             is_squad_captain BOOLEAN NOT NULL,
             timestamp INTEGER NOT NULL,
             is_checked_in BOOLEAN NOT NULL,
@@ -413,7 +413,7 @@ class TournamentSoloPlacements(TableModel):
 class TournamentSquadPlacements(TableModel):
     id: int
     tournament_id: int
-    squad_id: int
+    registration_id: int
     placement: int
     placement_description: str | None
     placement_lower_bound: int | None
@@ -424,7 +424,7 @@ class TournamentSquadPlacements(TableModel):
         return """CREATE TABLE IF NOT EXISTS tournament_squad_placements(
             id INTEGER PRIMARY KEY,
             tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
-            squad_id INTEGER NOT NULL REFERENCES tournament_squads(id),
+            registration_id INTEGER NOT NULL REFERENCES tournament_registrations(id),
             placement INTEGER,
             placement_description TEXT,
             placement_lower_bound INTEGER,
@@ -513,16 +513,16 @@ class TeamMember(TableModel):
 @dataclass
 class TeamSquadRegistration(TableModel):
     roster_id: int
-    squad_id: int
+    registration_id: int
     tournament_id: int
 
     @staticmethod
     def get_create_table_command() -> str:
         return """CREATE TABLE IF NOT EXISTS team_squad_registrations(
             roster_id INTEGER NOT NULL,
-            squad_id INTEGER NOT NULL,
+            registration_id INTEGER NOT NULL,
             tournament_id INTEGER NOT NULL,
-            PRIMARY KEY (roster_id, squad_id, tournament_id)
+            PRIMARY KEY (roster_id, registration_id, tournament_id)
             ) WITHOUT ROWID
             """
 
@@ -1098,7 +1098,7 @@ class UserIP(TableModel):
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
-    TournamentSeries, Tournament, TournamentTemplate, TournamentSquad, TournamentPlayer,
+    TournamentSeries, Tournament, TournamentTemplate, TournamentRegistration, TournamentPlayer,
     TournamentSoloPlacements, TournamentSquadPlacements, Team, TeamRoster, TeamMember, 
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 

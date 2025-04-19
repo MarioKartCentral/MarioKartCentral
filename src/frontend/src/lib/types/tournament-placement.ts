@@ -34,7 +34,7 @@ export type PlayerTournamentPlacement = {
   tournament_name: string;
   game: string;
   mode: string;
-  squad_id: number | null;
+  registration_id: number | null;
   squad_name: string | null;
   team_id: number | null;
   date_start: number;

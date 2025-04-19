@@ -123,7 +123,7 @@ class SetSquadPlacementsCommand(Command[None]):
             params = [(self.tournament_id, p.registration_id, p.placement, p.placement_description, p.placement_lower_bound, p.is_disqualified) for p in b]
             await db.execute("DELETE FROM tournament_squad_placements WHERE tournament_id = ?", (self.tournament_id,))
             await db.executemany("""INSERT INTO tournament_squad_placements(
-                                    tournament_id, squad_id, placement, placement_description, placement_lower_bound, is_disqualified
+                                    tournament_id, registration_id, placement, placement_description, placement_lower_bound, is_disqualified
                                     ) VALUES (?, ?, ?, ?, ?, ?)""", params)
             await db.commit()
 
@@ -192,22 +192,22 @@ class SetSquadPlacementsFromPlayerIDsCommand(Command[None]):
         async with db_wrapper.connect() as db:
             await db.execute("DELETE FROM tournament_squad_placements WHERE tournament_id = ?", (self.tournament_id,))
             await db.execute("DELETE FROM tournament_players WHERE tournament_id = ?", (self.tournament_id,))
-            await db.execute("DELETE FROM tournament_squads WHERE tournament_id = ?", (self.tournament_id,))
+            await db.execute("DELETE FROM tournament_registrations WHERE tournament_id = ?", (self.tournament_id,))
             for placement in sorted_placements:
-                async with db.execute("""INSERT INTO tournament_squads(color, timestamp, tournament_id, is_registered, is_approved)
+                async with db.execute("""INSERT INTO tournament_registrations(color, timestamp, tournament_id, is_registered, is_approved)
                                     VALUES(?, ?, ?, ?, ?)""", (0, now, self.tournament_id, True, True)) as cursor:
-                    squad_id = cursor.lastrowid
-                    if squad_id:
-                        squad_dict[squad_id] = placement
+                    registration_id = cursor.lastrowid
+                    if registration_id:
+                        squad_dict[registration_id] = placement
 
-            player_rows = [(player_id, self.tournament_id, squad_id, False, now, False, None, False, False, None, False, False, True) 
-                           for squad_id, placement in squad_dict.items() for player_id in placement.player_ids]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in,
+            player_rows = [(player_id, self.tournament_id, registration_id, False, now, False, None, False, False, None, False, False, True) 
+                           for registration_id, placement in squad_dict.items() for player_id in placement.player_ids]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in,
                                     mii_name, can_host, is_invite, selected_fc_id, is_representative, is_bagger_clause, is_approved)
                                     VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", player_rows)
-            placement_rows = [(self.tournament_id, squad_id, placement.placement, placement.placement_description,
-                               placement.placement_lower_bound, placement.is_disqualified) for squad_id, placement in squad_dict.items()]
-            await db.executemany("""INSERT INTO tournament_squad_placements(tournament_id, squad_id, placement, placement_description, 
+            placement_rows = [(self.tournament_id, registration_id, placement.placement, placement.placement_description,
+                               placement.placement_lower_bound, placement.is_disqualified) for registration_id, placement in squad_dict.items()]
+            await db.executemany("""INSERT INTO tournament_squad_placements(tournament_id, registration_id, placement, placement_description, 
                                  placement_lower_bound, is_disqualified) VALUES(?, ?, ?, ?, ?, ?)""", placement_rows)
             await db.commit()
 
@@ -235,7 +235,7 @@ class GetSquadPlacementsCommand(Command[TournamentPlacementList]):
     async def handle(self, db_wrapper, s3_wrapper):
         squad_dict = {squad.id: squad for squad in self.squads}
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT squad_id, placement, placement_description, placement_lower_bound, is_disqualified FROM tournament_squad_placements WHERE tournament_id = ? ORDER BY placement", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT registration_id, placement, placement_description, placement_lower_bound, is_disqualified FROM tournament_squad_placements WHERE tournament_id = ? ORDER BY placement", (self.tournament_id,)) as cursor:
                 rows = await cursor.fetchall()
                 placed_squads: list[TournamentPlacementDetailed] = []
                 for row in rows:
@@ -270,7 +270,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 LEFT JOIN tournament_solo_placements as tsp 
                 ON tp.id = tsp.player_id
                 WHERE t.show_on_profiles = 1
-                AND tp.squad_id IS NULL
+                AND tp.registration_id IS NULL
                 AND t.teams_only = 0
                 AND tp.player_id = ?
                 """, (self.player_id,)) as cursor:
@@ -286,11 +286,11 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 FROM tournament_players as tp 
                 INNER JOIN tournaments as t
                 ON tp.tournament_id = t.id
-                JOIN tournament_squads s ON s.id = tp.squad_id
+                JOIN tournament_registrations s ON s.id = tp.registration_id
                 LEFT JOIN tournament_squad_placements as tsp 
-                ON s.id = tsp.squad_id
+                ON s.id = tsp.registration_id
                 WHERE t.show_on_profiles = 1
-                AND tp.squad_id IS NOT NULL
+                AND tp.registration_id IS NOT NULL
                 AND t.teams_allowed = 0
                 AND t.min_squad_size <= 4
                 AND tp.player_id = ?
@@ -298,32 +298,32 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    tournament_id, tournament_name, game, mode, squad_id, squad_name, date_start, date_end, placement, placement_description, is_disqualified = row
-                    squad_placement = PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, squad_name, None, date_start, date_end, placement, placement_description, is_disqualified, [])
-                    squad_dict[squad_id] = squad_placement
+                    tournament_id, tournament_name, game, mode, registration_id, squad_name, date_start, date_end, placement, placement_description, is_disqualified = row
+                    squad_placement = PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, registration_id, squad_name, None, date_start, date_end, placement, placement_description, is_disqualified, [])
+                    squad_dict[registration_id] = squad_placement
                     tournament_solo_and_squad_results.append(squad_placement)
 
             # Get partner information
             async with db.execute("""
-                SELECT tp.player_id, p.name, tp.squad_id
+                SELECT tp.player_id, p.name, tp.registration_id
                 FROM tournament_players as tp
                 INNER JOIN tournament_squad_placements as tsp
-                ON tp.squad_id = tsp.squad_id
-                INNER JOIN tournament_squads as ts
-                ON tsp.squad_id = ts.id
+                ON tp.registration_id = tsp.registration_id
+                INNER JOIN tournament_registrations as ts
+                ON tsp.registration_id = ts.id
                 INNER JOIN players as p
                 ON p.id = tp.player_id
-                WHERE tsp.squad_id 
-                IN (SELECT squad_id FROM tournament_players WHERE player_id = ?)
-                AND tsp.squad_id NOT IN (SELECT squad_id FROM team_squad_registrations)
+                WHERE tsp.registration_id 
+                IN (SELECT registration_id FROM tournament_players WHERE player_id = ?)
+                AND tsp.registration_id NOT IN (SELECT registration_id FROM team_squad_registrations)
                 AND tp.player_id <> ?;
                 """, (self.player_id,self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, squad_id = row
-                    if squad_id in squad_dict:
-                        partner_details = TournamentPlayerDetailsShort(player_id, player_name, squad_id)
-                        squad_dict[squad_id].partners.append(partner_details)
+                    player_id, player_name, registration_id = row
+                    if registration_id in squad_dict:
+                        partner_details = TournamentPlayerDetailsShort(player_id, player_name, registration_id)
+                        squad_dict[registration_id].partners.append(partner_details)
 
             # Team placements (either tournaments which allow teams or tournaments with squad size >4)
             async with db.execute("""
@@ -331,17 +331,17 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 FROM tournament_players as tp 
                 INNER JOIN tournaments as t
                 ON tp.tournament_id = t.id 
-                JOIN tournament_squads s ON s.id = tp.squad_id
+                JOIN tournament_registrations s ON s.id = tp.registration_id
                 LEFT JOIN tournament_squad_placements as tsp 
-                ON tp.squad_id = tsp.squad_id
+                ON tp.registration_id = tsp.registration_id
                 LEFT JOIN team_squad_registrations as tsr
-                ON s.id = tsr.squad_id
+                ON s.id = tsr.registration_id
                 LEFT JOIN team_rosters as tr ON
                 tsr.roster_id = tr.id
                 LEFT JOIN teams
                 ON tr.team_id = teams.id
                 WHERE t.show_on_profiles = 1
-                AND tp.squad_id IS NOT NULL
+                AND tp.registration_id IS NOT NULL
                 AND tp.player_id = ?
                 AND s.is_registered = 1
                 AND (t.teams_allowed = 1 OR t.min_squad_size > 4)
@@ -349,13 +349,13 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (tournament_id, tournament_name, game, mode, squad_id, squad_name, roster_name, team_id, team_name,
+                    (tournament_id, tournament_name, game, mode, registration_id, squad_name, roster_name, team_id, team_name,
                       date_start, date_end, placement, placement_description, is_disqualified) = row
                     if roster_name:
                         squad_name = roster_name
                     elif team_name:
                         squad_name = team_name
-                    tournament_team_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, squad_id, 
+                    tournament_team_results.append(PlayerTournamentPlacement(tournament_id, tournament_name, game, mode, registration_id, 
                                                                              squad_name, team_id, date_start, date_end, placement, placement_description, is_disqualified, []))
                 results = PlayerTournamentResults(tournament_solo_and_squad_results, tournament_team_results)
                 return results
@@ -375,11 +375,11 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
             async with db.execute("""
                 SELECT DISTINCT t.id as "tournament_id", t.name as "tournament_name", t.game, t.mode, teams.id as "team_id", teams.name as "team_name", t.date_start, t.date_end, tsp.placement, tsp.placement_description, tsp.is_disqualified
                 FROM tournaments as t
-                JOIN tournament_squads s ON s.tournament_id = t.id
+                JOIN tournament_registrations s ON s.tournament_id = t.id
                 INNER JOIN team_squad_registrations as tsr
-                ON tsr.squad_id = s.id
+                ON tsr.registration_id = s.id
                 LEFT JOIN tournament_squad_placements as tsp 
-                ON tsr.squad_id = tsp.squad_id
+                ON tsr.registration_id = tsp.registration_id
                 INNER JOIN team_rosters as tr ON
                 tsr.roster_id = tr.id
                 INNER JOIN teams

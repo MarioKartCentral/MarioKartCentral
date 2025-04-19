@@ -33,7 +33,7 @@
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
             can_host: can_host === 'true',
-            squad_id: player.squad_id,
+            registration_id: player.registration_id,
             player_id: player.player_id,
             is_squad_captain: is_squad_captain !== null ? is_squad_captain === "true" : null,
             is_invite: Boolean(player.is_invite),
@@ -66,7 +66,7 @@
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
             can_host: can_host === 'true',
-            squad_id: player.squad_id,
+            registration_id: player.registration_id,
         };
         const endpoint = `/api/tournaments/${tournament.id}/editMyRegistration`;
         console.log(payload);

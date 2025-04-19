@@ -657,24 +657,24 @@ class ConvertMKCV1DataCommand(Command[None]):
                 await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament.id}.json', s3_message)
 
             # tournament registrations
-            await db.executemany("""INSERT INTO tournament_squads(id, name, tag, color, timestamp, tournament_id, is_registered, is_approved)
+            await db.executemany("""INSERT INTO tournament_registrations(id, name, tag, color, timestamp, tournament_id, is_registered, is_approved)
                                     VALUES(?, ?, ?, ?, ?, ?, ?, ?)""",
                                     [(s.id, s.name, s.tag, s.color, s.timestamp, s.tournament_id, s.is_registered, s.is_approved) for s in new_squads])
-            await db.executemany("""INSERT INTO tournament_players(id, player_id, tournament_id, squad_id, is_squad_captain, timestamp,
+            await db.executemany("""INSERT INTO tournament_players(id, player_id, tournament_id, registration_id, is_squad_captain, timestamp,
                                     is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative, is_bagger_clause,
                                     is_approved) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                                    [(p.id, p.player_id, p.tournament_id, p.squad_id, p.is_squad_captain, p.timestamp,
+                                    [(p.id, p.player_id, p.tournament_id, p.registration_id, p.is_squad_captain, p.timestamp,
                                       p.is_checked_in, p.mii_name, p.can_host, p.is_invite, p.selected_fc_id, p.is_representative,
                                       False, p.is_approved) for p in new_tournament_players])
-            await db.executemany("""INSERT INTO team_squad_registrations(roster_id, squad_id, tournament_id)
-                                    VALUES(?, ?, ?)""", [(r.roster_id, r.squad_id, r.tournament_id) for r in roster_squad_links])
+            await db.executemany("""INSERT INTO team_squad_registrations(roster_id, registration_id, tournament_id)
+                                    VALUES(?, ?, ?)""", [(r.roster_id, r.registration_id, r.tournament_id) for r in roster_squad_links])
             
             # tournament placements
             await db.executemany("""INSERT INTO tournament_solo_placements(tournament_id, player_id, placement, placement_description, placement_lower_bound, is_disqualified)
                                     VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.player_id, p.placement, p.placement_description, p.placement_lower_bound,
                                                                    p.is_disqualified) for p in solo_placements])
-            await db.executemany("""INSERT INTO tournament_squad_placements(tournament_id, squad_id, placement, placement_description, placement_lower_bound, is_disqualified)
-                                 VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.squad_id, p.placement, p.placement_description, p.placement_lower_bound,
+            await db.executemany("""INSERT INTO tournament_squad_placements(tournament_id, registration_id, placement, placement_description, placement_lower_bound, is_disqualified)
+                                 VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.registration_id, p.placement, p.placement_description, p.placement_lower_bound,
                                                                    p.is_disqualified) for p in squad_placements])
 
             # tournament templates

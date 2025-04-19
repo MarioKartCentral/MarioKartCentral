@@ -62,29 +62,29 @@ class CreateSquadCommand(Command[None]):
                     selected_fc_id = None
                     
             # check if player has already registered for the tournament
-            async with db.execute("SELECT squad_id FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0 AND is_bagger_clause = ?", 
+            async with db.execute("SELECT registration_id FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0 AND is_bagger_clause = ?", 
                                   (self.captain_player_id, self.tournament_id, self.is_bagger_clause)) as cursor:
                 row = await cursor.fetchone()
-                existing_squad_id = None
+                existing_registration_id = None
                 if row:
-                    existing_squad_id = row[0]
-            if existing_squad_id is not None:
+                    existing_registration_id = row[0]
+            if existing_registration_id is not None:
                 # make sure player's squad isn't withdrawn before giving error
-                async with db.execute("SELECT is_registered FROM tournament_squads WHERE id IS ?", (existing_squad_id,)) as cursor:
+                async with db.execute("SELECT is_registered FROM tournament_registrations WHERE id IS ?", (existing_registration_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     squad_is_registered = row[0]
                     if squad_is_registered == 1:
                         raise Problem('Player is already registered for this tournament', status=400)
                     
-            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
+            async with db.execute("""INSERT INTO tournament_registrations(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
-                squad_id = cursor.lastrowid
+                registration_id = cursor.lastrowid
             await db.commit()
             
-            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                              is_representative, is_bagger_clause, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, squad_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, False,
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, registration_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, False,
                 selected_fc_id, False, self.is_bagger_clause, self.is_approved))
             await db.commit()
 
@@ -205,31 +205,31 @@ class RegisterTeamTournamentCommand(Command[int | None]):
                                   status=400)
             
             timestamp = int(datetime.now(timezone.utc).timestamp())
-            async with db.execute("""INSERT INTO tournament_squads(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
+            async with db.execute("""INSERT INTO tournament_registrations(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
-                squad_id = cursor.lastrowid
+                registration_id = cursor.lastrowid
             await db.commit()
             
             # link our rosters to this tournament squad
-            team_squad_rows = [(roster, squad_id, self.tournament_id) for roster in self.roster_ids]
-            await db.executemany("INSERT INTO team_squad_registrations(roster_id, squad_id, tournament_id) VALUES (?, ?, ?)", team_squad_rows)
+            team_squad_rows = [(roster, registration_id, self.tournament_id) for roster in self.roster_ids]
+            await db.executemany("INSERT INTO team_squad_registrations(roster_id, registration_id, tournament_id) VALUES (?, ?, ?)", team_squad_rows)
 
             # add all our players to the squad
             queries_parameters: list[Iterable[Any]] = []
             for player in self.players:
-                queries_parameters.append((player.player_id, self.tournament_id, squad_id, player.is_captain, timestamp, False, None, False, False, None, player.is_representative,
+                queries_parameters.append((player.player_id, self.tournament_id, registration_id, player.is_captain, timestamp, False, None, False, False, None, player.is_representative,
                                            player.is_bagger_clause, self.is_approved))
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                                     is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", queries_parameters)
             await db.commit()
-            return squad_id
+            return registration_id
 
 @save_to_command_log
 @dataclass
 class EditSquadCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     squad_name: str | None
     squad_tag: str | None
     squad_color: int | None
@@ -238,7 +238,7 @@ class EditSquadCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_approved, name, tag, color, is_registered FROM tournament_squads WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id)) as cursor:
+            async with db.execute("SELECT is_approved, name, tag, color, is_registered FROM tournament_registrations WHERE id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Squad not found", status=400)
@@ -248,32 +248,32 @@ class EditSquadCommand(Command[None]):
             tag = curr_tag if self.squad_tag is None else self.squad_tag
             color = curr_color if self.squad_color is None else self.squad_color
             is_registered = curr_registered if self.is_registered is None else self.is_registered
-            async with db.execute("UPDATE tournament_squads SET name = ?, tag = ?, color = ?, is_registered = ?, is_approved = ? WHERE id = ? AND tournament_id = ?",
-                (name, tag, color, is_registered, is_approved, self.squad_id, self.tournament_id)) as cursor:
+            async with db.execute("UPDATE tournament_registrations SET name = ?, tag = ?, color = ?, is_registered = ?, is_approved = ? WHERE id = ? AND tournament_id = ?",
+                (name, tag, color, is_registered, is_approved, self.registration_id, self.tournament_id)) as cursor:
                 updated_rows = cursor.rowcount
                 if updated_rows == 0:
                     raise Problem("Squad not found", status=404)
             # unregister all players if squad is being withdrawn
             if not is_registered:
-                await db.execute("DELETE FROM tournament_players WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
+                await db.execute("DELETE FROM tournament_players WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
             await db.commit()
 
 @dataclass
 class CheckSquadCaptainPermissionsCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     captain_player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             # check captain's permissions
-            async with db.execute("SELECT squad_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", 
+            async with db.execute("SELECT registration_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", 
                 (self.captain_player_id, self.tournament_id, False)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("You are not registered for this tournament", status=400)
-                captain_squad_id, is_squad_captain = row
-                if captain_squad_id != self.squad_id:
+                captain_registration_id, is_squad_captain = row
+                if captain_registration_id != self.registration_id:
                     raise Problem("You are not registered for this squad", status=400)
                 if is_squad_captain == 0:
                     raise Problem("You are not captain of this squad", status=400)
@@ -281,94 +281,94 @@ class CheckSquadCaptainPermissionsCommand(Command[None]):
 @dataclass
 class ChangeSquadCaptainCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     new_captain_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ? AND is_invite = ?",
-                                  (self.tournament_id, self.squad_id, self.new_captain_id, False)) as cursor:
+            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
+                                  (self.tournament_id, self.registration_id, self.new_captain_id, False)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Specified player is not in this squad", status=400)
-            await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND squad_id = ?",
-                             (False, self.tournament_id, self.squad_id))
-            await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
-                             (True, self.tournament_id, self.squad_id, self.new_captain_id))
+            await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND registration_id = ?",
+                             (False, self.tournament_id, self.registration_id))
+            await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND registration_id = ? AND player_id = ?",
+                             (True, self.tournament_id, self.registration_id, self.new_captain_id))
             await db.commit()
 
 @dataclass
 class AddRepresentativeCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ? AND is_invite = ?",
-                                  (self.tournament_id, self.squad_id, self.player_id, False)) as cursor:
+            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
+                                  (self.tournament_id, self.registration_id, self.player_id, False)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Specified player is not in this squad", status=400)
                 
-            await db.execute("UPDATE tournament_players SET is_representative = 1 WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
-                             (self.tournament_id, self.squad_id, self.player_id))
+            await db.execute("UPDATE tournament_players SET is_representative = 1 WHERE tournament_id = ? AND registration_id = ? AND player_id = ?",
+                             (self.tournament_id, self.registration_id, self.player_id))
             await db.commit()
 
 @dataclass
 class RemoveRepresentativeCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND squad_id = ? AND player_id = ? AND is_invite = ?",
-                                  (self.tournament_id, self.squad_id, self.player_id, False)) as cursor:
+            async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
+                                  (self.tournament_id, self.registration_id, self.player_id, False)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Specified player is not in this squad", status=400)
                 
-            await db.execute("UPDATE tournament_players SET is_representative = 0 WHERE tournament_id = ? AND squad_id = ? AND player_id = ?",
-                             (self.tournament_id, self.squad_id, self.player_id))
+            await db.execute("UPDATE tournament_players SET is_representative = 0 WHERE tournament_id = ? AND registration_id = ? AND player_id = ?",
+                             (self.tournament_id, self.registration_id, self.player_id))
             await db.commit()
 
 @dataclass
 class UnregisterSquadCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            await db.execute("DELETE FROM tournament_players WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
-            await db.execute("DELETE FROM team_squad_registrations WHERE squad_id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
-            await db.execute("UPDATE tournament_squads SET is_registered = 0 WHERE id = ? AND tournament_id = ?", (self.squad_id, self.tournament_id))
+            await db.execute("DELETE FROM tournament_players WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
+            await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
+            await db.execute("UPDATE tournament_registrations SET is_registered = 0 WHERE id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
             await db.commit()
 
 @dataclass
 class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_squads WHERE tournament_id = ? AND id = ?",
-                (self.tournament_id, self.squad_id)) as cursor:
+            async with db.execute("SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_registrations WHERE tournament_id = ? AND id = ?",
+                (self.tournament_id, self.registration_id)) as cursor:
                 squad_row = await cursor.fetchone()
                 if not squad_row:
                     raise Problem("Squad not found", status=404)
-                squad_id, name, tag, color, timestamp, is_registered, squad_is_approved = squad_row
+                registration_id, name, tag, color, timestamp, is_registered, squad_is_approved = squad_row
 
             rosters: list[RosterBasic] = []
             # get teams connected to squads
-            async with db.execute("""SELECT tsr.squad_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+            async with db.execute("""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
                                   FROM team_squad_registrations tsr
                                   JOIN team_rosters tr ON tsr.roster_id = tr.id
                                   JOIN teams t ON tr.team_id = t.id
-                                  WHERE tsr.squad_id = ?""", (self.squad_id,)) as cursor:
+                                  WHERE tsr.registration_id = ?""", (self.registration_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    squad_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
+                    registration_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
                     roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
                     rosters.append(roster)
 
@@ -379,8 +379,8 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                                     JOIN players p on t.player_id = p.id
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    WHERE t.squad_id IS ?""",
-                                    (self.squad_id,)) as cursor:
+                                    WHERE t.registration_id IS ?""",
+                                    (self.registration_id,)) as cursor:
                 player_rows = await cursor.fetchall()
                 players: list[SquadPlayerDetails] = []
                 player_dict: dict[int, SquadPlayerDetails] = {} # creating a dictionary of players so we can add their FCs to them later
@@ -392,7 +392,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    curr_player = SquadPlayerDetails(reg_id, player_id, self.squad_id, player_timestamp, is_checked_in, player_is_approved, mii_name, can_host,
+                    curr_player = SquadPlayerDetails(reg_id, player_id, self.registration_id, player_timestamp, is_checked_in, player_is_approved, mii_name, can_host,
                         player_name, country, player_discord, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
                     players.append(curr_player)
 
@@ -413,12 +413,12 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 for row in rows:
                     player_id, fc = row
                     player_dict[player_id].friend_codes.append(fc)
-            return TournamentSquadDetails(squad_id, name, tag, color, timestamp, is_registered, squad_is_approved, players, rosters)
+            return TournamentSquadDetails(registration_id, name, tag, color, timestamp, is_registered, squad_is_approved, players, rosters)
         
 @dataclass
 class AddRosterToSquadCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     roster_id: int
     captain_player_id: int | None
     is_privileged: bool = False
@@ -434,7 +434,7 @@ class AddRosterToSquadCommand(Command[None]):
                 raise Problem("Cannot add rosters to a squad if teams are not allowed", status=400)
             if not self.is_privileged and not registrations_open:
                 raise Problem("This tournament's registrations are closed", status=400)
-            async with db.execute("SELECT id FROM tournament_squads WHERE id = ?", (self.squad_id,)) as cursor:
+            async with db.execute("SELECT id FROM tournament_registrations WHERE id = ?", (self.registration_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Squad not found", status=404)
@@ -462,7 +462,7 @@ class AddRosterToSquadCommand(Command[None]):
                     if not row:
                         raise Problem("You do not have permissions to register this roster for a tournament", status=400)
                 
-            async with db.execute("SELECT squad_id FROM team_squad_registrations WHERE tournament_id = ? AND roster_id = ?", (self.tournament_id, self.roster_id)) as cursor:
+            async with db.execute("SELECT registration_id FROM team_squad_registrations WHERE tournament_id = ? AND roster_id = ?", (self.tournament_id, self.roster_id)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("This roster is already registered for this tournament", status=400)
@@ -477,10 +477,10 @@ class AddRosterToSquadCommand(Command[None]):
                                     )
                                   """, (self.roster_id, self.tournament_id, False)) as cursor:
                 rows = await cursor.fetchall()
-                new_players = [(row[0], self.tournament_id, self.squad_id, False, now, False, None, False, False, None, False, False) for row in rows]
+                new_players = [(row[0], self.tournament_id, self.registration_id, False, now, False, None, False, False, None, False, False) for row in rows]
             
-            await db.execute("INSERT INTO team_squad_registrations(roster_id, squad_id, tournament_id) VALUES(?, ?, ?)", (self.roster_id, self.squad_id, self.tournament_id))
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in,
+            await db.execute("INSERT INTO team_squad_registrations(roster_id, registration_id, tournament_id) VALUES(?, ?, ?)", (self.roster_id, self.registration_id, self.tournament_id))
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in,
                                 mii_name, can_host, is_invite, selected_fc_id, is_representative, is_approved)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (new_players))
             await db.commit()
@@ -488,7 +488,7 @@ class AddRosterToSquadCommand(Command[None]):
 @dataclass
 class RemoveRosterFromSquadCommand(Command[None]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
     roster_id: int
     captain_player_id: int | None
     is_privileged: bool = False
@@ -504,7 +504,7 @@ class RemoveRosterFromSquadCommand(Command[None]):
             if not self.is_privileged and not registrations_open:
                 raise Problem("This tournament's registrations are closed", status=400)
             
-            async with db.execute("SELECT id FROM tournament_squads WHERE id = ?", (self.squad_id,)) as cursor:
+            async with db.execute("SELECT id FROM tournament_registrations WHERE id = ?", (self.registration_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Squad not found", status=404)
@@ -512,26 +512,26 @@ class RemoveRosterFromSquadCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Team roster not found", status=404)
-            async with db.execute("SELECT squad_id FROM team_squad_registrations WHERE squad_id = ? AND roster_id = ?", (self.squad_id, self.roster_id)) as cursor:
+            async with db.execute("SELECT registration_id FROM team_squad_registrations WHERE registration_id = ? AND roster_id = ?", (self.registration_id, self.roster_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("This roster is not linked with this squad", status=400)
                 
             # prevent squad captain from unregistering themself accidentally
             if not self.is_privileged:
-                async with db.execute("""SELECT id FROM tournament_players WHERE squad_id = ? AND player_id = ? AND tournament_id = ? AND player_id IN (
+                async with db.execute("""SELECT id FROM tournament_players WHERE registration_id = ? AND player_id = ? AND tournament_id = ? AND player_id IN (
                                         SELECT player_id FROM team_members WHERE roster_id = ? AND leave_date IS NULL
-                                      )""", (self.squad_id, self.captain_player_id, self.tournament_id, self.roster_id)) as cursor:
+                                      )""", (self.registration_id, self.captain_player_id, self.tournament_id, self.roster_id)) as cursor:
                     row = await cursor.fetchone()
                     if row:
                         raise Problem("You cannot remove this roster from this squad as it would unregister yourself from the tournament.", status=400)
                 
-            await db.execute("DELETE FROM team_squad_registrations WHERE roster_id = ? AND squad_id = ? AND tournament_id = ?", (self.roster_id, self.squad_id, self.tournament_id))
+            await db.execute("DELETE FROM team_squad_registrations WHERE roster_id = ? AND registration_id = ? AND tournament_id = ?", (self.roster_id, self.registration_id, self.tournament_id))
 
             # if the tournament is teams only, players from the removed roster should be removed from the squad
             if teams_only:
-                await db.execute("""DELETE FROM tournament_players WHERE squad_id = ? AND tournament_id = ? AND player_id IN (
+                await db.execute("""DELETE FROM tournament_players WHERE registration_id = ? AND tournament_id = ? AND player_id IN (
                                         SELECT player_id FROM team_members WHERE roster_id = ? AND leave_date IS NULL
-                                    )""", (self.squad_id, self.tournament_id, self.roster_id))
+                                    )""", (self.registration_id, self.tournament_id, self.roster_id))
                 
             await db.commit()

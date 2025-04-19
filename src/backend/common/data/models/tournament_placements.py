@@ -36,7 +36,7 @@ class PlayerTournamentPlacement():
     tournament_name: str
     game: str
     mode: str
-    squad_id: int | None
+    registration_id: int | None
     squad_name: str | None
     team_id: int | None
     date_start: int

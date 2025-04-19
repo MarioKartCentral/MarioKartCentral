@@ -44,7 +44,7 @@
       return;
     }
     const payload = {
-      squad_id: my_player.squad_id,
+      registration_id: my_player.registration_id,
       player_id: player.id,
       is_representative: false,
       is_bagger_clause: invite_as_bagger
@@ -73,7 +73,7 @@
       return;
     }
     const payload = {
-      squad_id: my_player.squad_id,
+      registration_id: my_player.registration_id,
     };
     console.log(payload);
     const endpoint = `/api/tournaments/${tournament.id}/unregisterSquad`;
@@ -96,7 +96,7 @@
     let squad_name = formData.get('squad_name');
     let squad_tag = formData.get('squad_tag');
     const payload = {
-      squad_id: squad.id,
+      registration_id: squad.id,
       squad_color: Number(squad_color),
       squad_name: squad_name,
       squad_tag: squad_tag,
@@ -147,7 +147,7 @@
       <PlayerSearch
         bind:player={invite_player}
         fc_type={game_fc_types[tournament.game]}
-        squad_id={tournament.team_members_only ? my_player.squad_id : null}
+        registration_id={tournament.team_members_only ? my_player.registration_id : null}
       />
     </div>
     {#if invite_player}

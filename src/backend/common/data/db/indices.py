@@ -39,15 +39,15 @@ class UserTournamentRolesExpiresOn(IndexModel):
 class TournamentSquadsTournamentID(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
-        return """CREATE INDEX IF NOT EXISTS tournament_squads_tournament_id
-            ON tournament_squads (tournament_id)"""
+        return """CREATE INDEX IF NOT EXISTS tournament_registrations_tournament_id
+            ON tournament_registrations (tournament_id)"""
     
 @dataclass
 class TournamentPlayersTournamentIDSquadID(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
-        return """CREATE INDEX IF NOT EXISTS tournament_players_tournament_id_squad_id
-            ON tournament_players (tournament_id, squad_id)"""
+        return """CREATE INDEX IF NOT EXISTS tournament_players_tournament_id_registration_id
+            ON tournament_players (tournament_id, registration_id)"""
     
 @dataclass
 class FriendCodesType(IndexModel):
