@@ -219,6 +219,8 @@ class EditPlayerRegistrationCommand(Command[None]):
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND registration_id = ?",
                         (self.tournament_id, self.player_id, old_registration_id))
                     
+            if self.is_approved is not None and not is_squad:
+                await db.execute("UPDATE tournament_registrations SET is_approved = ? WHERE id = ?", (self.is_approved, self.registration_id))
             # if we're making this player the captain, make sure no one else is captain
             if is_squad_captain:
                 await db.execute("UPDATE tournament_players SET is_squad_captain = ? WHERE tournament_id = ? AND registration_id = ? AND player_id != ?",
@@ -283,23 +285,28 @@ class GetTournamentRegistrationsCommand(Command[list[TournamentSquadDetails]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed FROM tournaments WHERE id = ?",
+            async with db.execute("SELECT is_squad, game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed FROM tournaments WHERE id = ?",
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=400)
-                game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed = row
+                is_squad, game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed = row
             where_clauses = ["tournament_id = ?"]
             variable_parameters = [self.tournament_id]
             # get only squads which have not withdrawn from the tournament
             if self.registered_only:
                 where_clauses.append("is_registered = 1")
-            # get only squads which have the minimum number of players
+            
             if self.eligible_only:
+                # get squads with the minimum number of players
                 if min_squad_size:
                     where_clauses.append("t.min_squad_size <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.registration_id = s.id AND p.is_invite = 0)")
-                if bool(checkins_enabled) and min_players_checkin is not None:
-                    where_clauses.append("t.min_players_checkin <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.registration_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
+                # get squads with the minimum number of checked in players
+                if bool(checkins_enabled):
+                    if not is_squad:
+                        where_clauses.append("1 <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.registration_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
+                    elif min_players_checkin is not None:
+                        where_clauses.append("t.min_players_checkin <= (SELECT COUNT(*) FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.registration_id = s.id AND p.is_invite = 0 AND p.is_checked_in = 1)")
             if self.hosts_only:
                 where_clauses.append("EXISTS (SELECT p.id FROM tournament_players p WHERE p.tournament_id = s.tournament_id AND p.registration_id = s.id AND p.can_host = 1)")
             if self.is_approved is not None and bool(verification_required):

@@ -69,7 +69,7 @@
         <option value={'any'}>
           {$LL.TOURNAMENTS.REGISTRATIONS.ALL_REGISTRATIONS({is_squad: tournament.is_squad})}
         </option>
-        {#if tournament.is_squad}
+        {#if tournament.is_squad || tournament.checkins_enabled}
           <option value={'eligible'}>{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE_ONLY()}</option>
         {/if}
         {#if tournament.host_status_required}
