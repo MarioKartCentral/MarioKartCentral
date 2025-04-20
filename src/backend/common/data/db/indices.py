@@ -70,8 +70,15 @@ class TournamentSquadPlacementsTournamentID(IndexModel):
         return """CREATE INDEX IF NOT EXISTS tournament_placements_tournament_id
             ON tournament_placements(tournament_id)"""
     
+@dataclass
+class TeamMembersRosterID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS team_members_roster_id
+            ON team_members(roster_id)"""
+    
 all_indices : list[type[IndexModel]] = [
     UserRolesExpiresOn, UserTeamRolesExpiresOn, UserSeriesRolesExpiresOn, UserTournamentRolesExpiresOn,
     TournamentSquadsTournamentID, TournamentPlayersTournamentIDSquadID, FriendCodesType, FriendCodesPlayerID,
-    TournamentSquadPlacementsTournamentID,
+    TournamentSquadPlacementsTournamentID, TeamMembersRosterID
 ]
