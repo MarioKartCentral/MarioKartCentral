@@ -478,12 +478,12 @@ class AddRosterToSquadCommand(Command[None]):
                                     )
                                   """, (self.roster_id, self.tournament_id, False)) as cursor:
                 rows = await cursor.fetchall()
-                new_players = [(row[0], self.tournament_id, self.registration_id, False, now, False, None, False, False, None, False, False) for row in rows]
+                new_players = [(row[0], self.tournament_id, self.registration_id, False, now, False, None, False, False, None, False, False, False) for row in rows]
             
             await db.execute("INSERT INTO team_squad_registrations(roster_id, registration_id, tournament_id) VALUES(?, ?, ?)", (self.roster_id, self.registration_id, self.tournament_id))
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in,
-                                mii_name, can_host, is_invite, selected_fc_id, is_representative, is_approved)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (new_players))
+                                mii_name, can_host, is_invite, selected_fc_id, is_representative, is_approved, is_bagger_clause)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (new_players))
             await db.commit()
 
 @dataclass

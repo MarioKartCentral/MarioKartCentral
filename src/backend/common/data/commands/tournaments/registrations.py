@@ -247,24 +247,24 @@ class UnregisterPlayerCommand(Command[None]):
                 registrations_open = row[0]
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so players cannot be unregistered from this tournament", status=400)
-            async with db.execute("SELECT is_squad_captain FROM tournament_players WHERE tournament_id = ? AND registration_id iS ? AND player_id = ?",
+            async with db.execute("SELECT is_squad_captain, is_invite FROM tournament_players WHERE tournament_id = ? AND registration_id iS ? AND player_id = ?",
                                   (self.tournament_id, self.registration_id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player is not registered for this tournament", status=400)
-                is_squad_captain = row[0]
+                is_squad_captain, player_is_invite = row
 
             # we should unregister a squad if it has no members remaining after this player is unregistered
-            async with db.execute("SELECT count(*) FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND is_invite = 0", (self.tournament_id, self.registration_id)) as cursor:
+            async with db.execute("SELECT count(*) FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND is_invite = 0", (self.tournament_id, self.registration_id)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 num_squad_players = row[0]
             # disallow players from leaving their squad as captain if there is more than 1 player
             if is_squad_captain and num_squad_players > 1:
                 raise Problem("Please unregister your current squad or give captain to another player in your squad before unregistering for this tournament", status=400)
-            if num_squad_players == 1:
+            if num_squad_players == 1 and not player_is_invite:
                 # delete any invites as well
-                await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND is_invite = 1", (self.tournament_id, self.registration_id))
+                await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND is_invite = 1 AND player_id != ?", (self.tournament_id, self.registration_id, self.player_id))
                 await db.execute("DELETE FROM tournament_placements WHERE registration_id = ?", (self.registration_id,))
                 await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ?", (self.registration_id,))
                 await db.execute("DELETE FROM tournament_registrations WHERE id = ?", (self.registration_id,))
