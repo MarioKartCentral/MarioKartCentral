@@ -16,7 +16,6 @@ export function makeStats(tournaments) {
                     r.bronze += bronze;
                     r.appearances++;
                 }
-
                 for (const player of placement.squad.players) {
                     const player_id = player.player_id;
                     if (!playersMap.has(player_id)) {
@@ -29,6 +28,19 @@ export function makeStats(tournaments) {
                     r.bronze += bronze;
                     r.appearances++;
                 }
+            } else {
+                const player = placement.player
+                const player_id = placement.player.player_id;
+                if (!playersMap.has(player_id)) {
+                    playersMap.set(player_id, newPlayerObject(player));
+                }
+                const { gold, silver, bronze } = addMedals(placement.placement);
+                const r = playersMap.get(player_id);
+                r.gold += gold;
+                r.silver += silver;
+                r.bronze += bronze;
+                r.appearances++;
+
             }
         }
     }
