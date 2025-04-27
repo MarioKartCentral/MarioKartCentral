@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
+from common.auth import team_permissions
 
 @save_to_command_log
 @dataclass
@@ -402,33 +403,78 @@ class GetPlayerRegistrationCommand(Command[MyTournamentRegistrationDetails]):
                 if not row:
                     raise Problem("Tournament not found", status=400)
                 game, teams_allowed = row
-            # get squads that the player is either in or has been invited to
-            async with db.execute("""SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_registrations s
-                                  WHERE s.tournament_id = ? AND s.id IN (
+            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [])
+            # in addition to having a matching tournament ID,
+            # we also check that we are either a member of the squad,
+            # or that we have register tournament permissions for at least one roster connected
+            # to the squad.
+            where_clause = """WHERE s.tournament_id = ? AND (
+                                s.id IN (
                                     SELECT p.registration_id FROM tournament_players p
                                     WHERE p.player_id = ?
-                                  )
-                                """, (self.tournament_id, self.player_id)) as cursor:
+                                ) OR s.id IN (
+                                    SELECT tsr.registration_id FROM team_squad_registrations tsr
+                                    JOIN team_rosters r ON tsr.roster_id = r.id
+                                    JOIN teams t ON r.team_id = t.id
+                                    JOIN user_team_roles utr ON utr.team_id = t.id
+                                    JOIN users u ON utr.user_id = u.id
+                                    JOIN team_role_permissions trp ON trp.role_id = utr.role_id
+                                    JOIN team_permissions tp ON trp.permission_id = tp.id
+                                    WHERE tp.name = ? AND u.player_id = ?
+                                )
+                            )"""
+            variable_parameters = (self.tournament_id, self.player_id, team_permissions.REGISTER_TOURNAMENT, self.player_id)
+            # get squads that the player is either in, has been invited to, or has team permissions for
+            # is_squad_captain: whether the player is either actually captain of the squad, or they have register tournament permissions
+            #   for at least one roster in the squad.
+            # is_invite: just checks if the player is invited, it's put in the main registration class for convenience on the frontend
+            async with db.execute(f"""SELECT id, name, tag, color, timestamp, is_registered, is_approved,
+                                    CASE
+                                        WHEN (
+                                            s.id IN (
+                                                SELECT p.registration_id FROM tournament_players p
+                                                WHERE p.player_id = ? AND p.is_squad_captain = 1
+                                            )
+                                            OR
+                                            s.id IN (
+                                                SELECT tsr.registration_id FROM team_squad_registrations tsr
+                                                JOIN team_rosters r ON tsr.roster_id = r.id
+                                                JOIN teams t ON r.team_id = t.id
+                                                JOIN user_team_roles utr ON utr.team_id = t.id
+                                                JOIN users u ON utr.user_id = u.id
+                                                JOIN team_role_permissions trp ON trp.role_id = utr.role_id
+                                                JOIN team_permissions tp ON trp.permission_id = tp.id
+                                                WHERE tp.name = ? AND u.player_id = ?
+                                            )
+                                        ) THEN 1 ELSE 0
+                                    END AS is_squad_captain,
+                                    CASE
+                                        WHEN (
+                                            s.id IN (
+                                                SELECT p.registration_id FROM tournament_players p
+                                                WHERE p.player_id = ? AND p.is_invite = 1
+                                            )
+                                        ) THEN 1 ELSE 0
+                                    END as is_invite
+                                    FROM tournament_registrations s
+                                  {where_clause}""", (self.player_id, team_permissions.REGISTER_TOURNAMENT, self.player_id, self.player_id, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 squads: dict[int, TournamentSquadDetails] = {}
                 for row in rows:
-                    registration_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved = row
+                    registration_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, is_squad_captain, is_invite = row
                     curr_squad = TournamentSquadDetails(registration_id, squad_name, squad_tag, squad_color, squad_timestamp, is_registered, is_approved, [], [])
                     squads[registration_id] = curr_squad
-
+                    details.registrations.append(MyTournamentRegistration(curr_squad, None, bool(is_squad_captain), bool(is_invite)))
             # get teams connected to squads
             if teams_allowed:
-                async with db.execute("""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+                async with db.execute(f"""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
                                     FROM team_squad_registrations tsr
                                     JOIN team_rosters tr ON tsr.roster_id = tr.id
                                     JOIN teams t ON tr.team_id = t.id
                                     WHERE tsr.registration_id IN (
                                         SELECT s.id FROM tournament_registrations s
-                                        WHERE s.tournament_id = ? AND s.id IN (
-                                            SELECT p.registration_id FROM tournament_players p
-                                            WHERE p.player_id = ?
-                                        )
-                                    )""", (self.tournament_id, self.player_id)) as cursor:
+                                        {where_clause}
+                                    )""", variable_parameters) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         registration_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
@@ -438,19 +484,18 @@ class GetPlayerRegistrationCommand(Command[MyTournamentRegistrationDetails]):
                             squad.rosters.append(roster)
 
             # get all players from squads that the requested player is in
-            async with db.execute("""SELECT t.id, t.player_id, t.registration_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
+            async with db.execute(f"""SELECT t.id, t.player_id, t.registration_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, p.name, p.country_code, 
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
                                     LEFT JOIN users u ON u.player_id = p.id
                                     LEFT JOIN user_discords d ON u.id = d.user_id
-                                    WHERE t.tournament_id = ?
-                                    AND t.registration_id IN (
-                                        SELECT p2.registration_id FROM tournament_players p2
-                                        WHERE p2.player_id = ?
+                                    WHERE t.registration_id IN (
+                                        SELECT s.id FROM tournament_registrations s
+                                        {where_clause}
                                     )
-                                    ORDER BY p.name COLLATE NOCASE""", (self.tournament_id, self.player_id)) as cursor:
+                                    ORDER BY p.name COLLATE NOCASE""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 player_fc_dict: dict[int, list[FriendCode]] = {} # create a dictionary of player fcs so we can give all players their FCs
                 for row in rows:
@@ -473,27 +518,28 @@ class GetPlayerRegistrationCommand(Command[MyTournamentRegistrationDetails]):
             fc_type = game_fc_map[game]
             fc_query = f"""SELECT id, player_id, type, fc, is_verified, is_primary, description, is_active, creation_date FROM friend_codes f WHERE f.type = ? AND player_id IN (
                             SELECT t.player_id FROM tournament_players t WHERE t.tournament_id = ? AND t.registration_id IN (
-                                SELECT p2.registration_id FROM tournament_players p2
-                                WHERE p2.player_id = ?
+                                SELECT s.id FROM tournament_registrations s
+                                {where_clause}
                             )
                         )"""
-            async with db.execute(fc_query, (fc_type, self.tournament_id, self.player_id)) as cursor:
+            async with db.execute(fc_query, (fc_type, self.tournament_id, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, type, fc, is_verified, is_primary, description, is_active, creation_date = row
                     player_fc_dict[player_id].append(FriendCode(fc_id, fc, type, player_id, bool(is_verified), bool(is_primary), creation_date, description,
                                                                 bool(is_active)))
 
-            details = MyTournamentRegistrationDetails(self.player_id, self.tournament_id, [])
             # finally, set all players' friend codes.
             # we need to do this at the end because some players might have two registration entries
             # (ex. if a player is invited to two different squads), so we need to make sure both of their
             # registrations have all their friend codes attached.
-            for squad in squads.values():
-                for player in squad.players:
+            # also, if any of the players in a squad match our own player ID, set reg.player to them
+            # for ease of access in the frontend
+            for reg in details.registrations:
+                for player in reg.squad.players:
                     player.friend_codes = player_fc_dict[player.player_id]
                     if player.player_id == self.player_id:
-                        details.registrations.append(MyTournamentRegistration(squad, player))
+                        reg.player = player
         return details
 
 @dataclass

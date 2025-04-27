@@ -3,7 +3,9 @@ import type { TournamentPlayer } from '../tournament-player';
 
 export type RegistrationDetails = {
   squad: TournamentSquad;
-  player: TournamentPlayer;
+  player: TournamentPlayer | null;
+  is_squad_captain: boolean;
+  is_invite: boolean;
 };
 
 export type MyTournamentRegistration = {

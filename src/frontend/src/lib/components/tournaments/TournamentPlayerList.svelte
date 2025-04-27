@@ -13,12 +13,13 @@
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import EditPlayerRegistration from './registration/EditPlayerRegistration.svelte';
   import FriendCodeDisplay from '../common/FriendCodeDisplay.svelte';
+  import type { RegistrationDetails } from '$lib/types/tournaments/my-tournament-registration';
   import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
   export let players: TournamentPlayer[];
   export let is_privileged = false;
-  export let my_player: TournamentPlayer | null = null;
+  export let registration: RegistrationDetails | null = null;
   export let exclude_invites = true;
 
   let user_info: UserInfo;
@@ -149,10 +150,10 @@
   }
 
   async function unregister() {
-    if (!my_player) {
+    if (!registration || !registration.player) {
       return;
     }
-    if (my_player.is_squad_captain) {
+    if (registration.player.is_squad_captain) {
       alert($LL.TOURNAMENTS.REGISTRATIONS.CAPTAIN_UNREGISTER_ERROR());
       return;
     }
@@ -161,7 +162,7 @@
       return;
     }
     const payload = {
-      registration_id: my_player.registration_id,
+      registration_id: registration.squad.id,
     };
     console.log(payload);
     const endpoint = `/api/tournaments/${tournament.id}/unregister`;
@@ -192,7 +193,7 @@
   {#if tournament.checkins_enabled}
     <col class="is-checked-in mobile-hide"/>
   {/if}
-  {#if is_privileged || my_player}
+  {#if is_privileged || registration}
     <col class="actions"/>
   {/if}
   <thead>
@@ -209,7 +210,7 @@
       {#if tournament.checkins_enabled}
         <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}</th>
       {/if}
-      {#if is_privileged || my_player}
+      {#if is_privileged || registration}
         <th/>
       {/if}
     </tr>
@@ -239,7 +240,7 @@
           <td class="mobile-hide">{player.is_checked_in ? 'Yes' : 'No'}</td>
         {/if}
         
-        {#if is_privileged || my_player}
+        {#if is_privileged || registration}
           <td>
             {#if is_privileged}
               <ChevronDownSolid class="cursor-pointer"/>
@@ -247,16 +248,19 @@
                 <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
                 <DropdownItem on:click={() => unregisterPlayer(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
               </Dropdown>
-            {:else if my_player?.player_id === player.player_id && check_registrations_open(tournament)}
+            {:else if user_info.player_id === player.player_id && check_registrations_open(tournament)}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
                 {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
                   (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
                   <DropdownItem on:click={() => edit_reg_dialog.open(player)}>{$LL.COMMON.EDIT()}</DropdownItem>
                 {/if}
+                {#if registration && registration.is_squad_captain && registration.squad.id === player.registration_id && !player.is_squad_captain}
+                  <DropdownItem on:click={() => makeCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem>
+                {/if}
                 <DropdownItem on:click={unregister}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER()}</DropdownItem>
               </Dropdown>
-            {:else if my_player?.is_squad_captain && my_player?.registration_id === player.registration_id && check_registrations_open(tournament)}
+            {:else if registration && registration.is_squad_captain && registration.squad.id === player.registration_id && check_registrations_open(tournament)}
               <ChevronDownSolid class="cursor-pointer"/>
               <Dropdown>
                 <DropdownItem on:click={() => kickPlayer(player)}>
@@ -275,9 +279,7 @@
               </Dropdown>
             {/if}
           </td>
-          
         {/if}
-        
       </tr>
     {/each}
   </tbody>

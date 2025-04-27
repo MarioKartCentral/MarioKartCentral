@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { MyTournamentRegistration, RegistrationDetails } from '$lib/types/tournaments/my-tournament-registration';
+  import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
   import type { Tournament } from '$lib/types/tournament';
+  import type { TournamentPlayer } from '$lib/types/tournament-player';
   import TournamentInviteList from './TournamentInviteList.svelte';
   import MySquad from './MySquad.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
@@ -11,16 +12,16 @@
   export let tournament: Tournament;
 
   function getInvitedSquads() {
-    let invite_registrations = registration.registrations.filter((r) => r.player.is_invite);
-    // this line is mostly for the linter to know that none of the squad values will be null
-    return invite_registrations.map((r) => r.squad).filter((s) => s !== null);
+    let invite_registrations = registration.registrations.filter((r) => r.is_invite);
+    return invite_registrations.map((r) => r.squad);
   }
 
-  async function toggleCheckin(reg: RegistrationDetails) {
+  async function toggleCheckin(player: TournamentPlayer | null) {
+    if(!player) return;
     const payload = {
       tournament_id: tournament.id,
-      registration_id: reg.player.registration_id,
-      player_id: reg.player.player_id
+      registration_id: player.registration_id,
+      player_id: player.player_id
     }
     const endpoint = `/api/tournaments/${tournament.id}/toggleCheckin`;
     const response = await fetch(endpoint, {
@@ -45,17 +46,17 @@
     <TournamentInviteList {tournament} squads={getInvitedSquads()}/>
   {/if}
 {/if}
-{#each registration.registrations.filter((r) => !r.player.is_invite) as reg}
+{#each registration.registrations.filter((r) => !r.is_invite) as reg}
   <div class="registration">
     {#if tournament.checkins_enabled}
       <div class="section">
         {#if tournament.checkins_open}
-          {#if !reg.player.is_checked_in}
-            <Button on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
+          {#if reg.player && !reg.player.is_checked_in}
+            <Button on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
             <div>
               {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
             </div>
-          {:else}
+          {:else if reg.player}
             <div class="flex">
               <BadgeCheckSolid/>
               <div>
@@ -68,7 +69,7 @@
               {/if}
             </div>
             <div>
-              <Button size="xs" on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
+              <Button size="xs" on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
             </div>
           {/if}
         {:else}
@@ -76,7 +77,7 @@
         {/if}
       </div>
     {/if}
-    {#if tournament.verification_required && ((reg.squad && !reg.squad.is_approved) || (!reg.squad && !reg.player.is_approved))}
+    {#if tournament.verification_required && (!reg.squad.is_approved) || (reg.player && !reg.player.is_approved)}
       <div class="section">
         <div class="pending">
           {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
@@ -84,7 +85,7 @@
         {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
       </div>
     {/if}
-    <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
+    <MySquad {tournament} registration={reg}/>
   </div>
 {/each}
 

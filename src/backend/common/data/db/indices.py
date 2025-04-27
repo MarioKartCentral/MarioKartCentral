@@ -50,6 +50,13 @@ class TournamentPlayersTournamentIDSquadID(IndexModel):
             ON tournament_players (tournament_id, registration_id)"""
     
 @dataclass
+class TournamentPlayersPlayerID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS tournament_players_player_id
+            ON tournament_players(player_id)"""
+    
+@dataclass
 class FriendCodesType(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:

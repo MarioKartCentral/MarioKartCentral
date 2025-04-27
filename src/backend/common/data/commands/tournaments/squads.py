@@ -123,7 +123,7 @@ class RegisterTeamTournamentCommand(Command[int | None]):
                 if len(self.players) and len(captains) != 1:
                     raise Problem(f"Exactly one player must be selected as a captain, but you have selected {len(captains)} captains", status=400)
                 representatives = [p.player_id for p in self.players if p.is_captain or p.is_representative]
-                if len(representatives) < min_representatives:
+                if min_representatives and len(representatives) < min_representatives:
                     raise Problem(f'Must have at least {min_representatives} representatives for this tournament', status=400)
                 baggers = [p.player_id for p in self.players if p.is_bagger_clause]
                 if len(baggers) and not bool(bagger_clause_enabled):
@@ -267,15 +267,28 @@ class CheckSquadCaptainPermissionsCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             # check captain's permissions
-            async with db.execute("SELECT registration_id, is_squad_captain FROM tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = ?", 
-                (self.captain_player_id, self.tournament_id, False)) as cursor:
+            # whether they are actually in the squad and are captain,
+            # or if they have register_tournament permissions for a roster
+            # linked to that squad
+            async with db.execute("""SELECT s.id FROM tournament_registrations s
+                WHERE s.id = ? AND s.tournament_id = ? AND (
+                    s.id IN (
+                        SELECT p.registration_id FROM tournament_players p
+                        WHERE p.player_id = ? AND p.is_squad_captain = 1
+                    )
+                    OR s.id IN (
+                        SELECT tsr.registration_id FROM team_squad_registrations tsr
+                        JOIN team_rosters r ON tsr.roster_id = r.id
+                        JOIN teams t ON r.team_id = t.id
+                        JOIN user_team_roles utr ON utr.team_id = t.id
+                        JOIN users u ON utr.user_id = u.id
+                        JOIN team_role_permissions trp ON trp.role_id = utr.role_id
+                        JOIN team_permissions tp ON trp.permission_id = tp.id
+                        WHERE tp.name = ? AND u.player_id = ?
+                    )
+                )""", (self.registration_id, self.tournament_id, self.captain_player_id, team_permissions.REGISTER_TOURNAMENT, self.captain_player_id)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
-                    raise Problem("You are not registered for this tournament", status=400)
-                captain_registration_id, is_squad_captain = row
-                if captain_registration_id != self.registration_id:
-                    raise Problem("You are not registered for this squad", status=400)
-                if is_squad_captain == 0:
                     raise Problem("You are not captain of this squad", status=400)
                 
 @dataclass

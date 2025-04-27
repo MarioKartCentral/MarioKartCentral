@@ -91,7 +91,9 @@ class TournamentSquadDetails():
 @dataclass
 class MyTournamentRegistration():
     squad: TournamentSquadDetails
-    player: TournamentPlayerDetails
+    player: TournamentPlayerDetails | None
+    is_squad_captain: bool
+    is_invite: bool
 
 @dataclass
 class MyTournamentRegistrationDetails():
