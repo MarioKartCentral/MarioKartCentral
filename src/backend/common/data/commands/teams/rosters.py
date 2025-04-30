@@ -483,7 +483,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                 m.roster_id IN (
                                   SELECT tr.id
                                   {rosters_query}
-                                )""", variable_parameters) as cursor:
+                                ) ORDER BY p.name COLLATE NOCASE""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (player_id, name, country_code, is_banned, 
@@ -505,18 +505,17 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                   FROM friend_codes f
                                   JOIN players p ON f.player_id = p.id
                                   JOIN team_members m ON p.id = m.player_id
-                                  WHERE f.type = ? AND m.roster_id IN (
+                                  WHERE f.type = ? AND m.leave_date IS NULL AND m.roster_id IN (
                                     SELECT tr.id
                                     {rosters_query}
                                   )""", (fc_type, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, type, fc, is_verified, is_primary, is_active, creation_date = row
-                    player_fcs = fc_dict.get(player_id, None)
-                    if player_fcs:
+                    player_fcs = fc_dict.get(int(player_id), None)
+                    if player_fcs is not None:
                         player_fcs.append(FriendCode(fc_id, fc, type, player_id, bool(is_verified), bool(is_primary), creation_date, is_active=bool(is_active)))
             return rosters
-        
 
 @save_to_command_log
 @dataclass
