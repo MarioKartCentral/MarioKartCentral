@@ -16,15 +16,13 @@ async def on_startup():
 
     # Initialize DBs
     if appsettings.RESET_DATABASE:
-        await handle(ResetDbCommand(db_name='main'))
-        await handle(ResetDbCommand(db_name='sessions'))
-        await handle(ResetDbCommand(db_name='auth'))
-        await handle(ResetDbCommand(db_name='user_activity'))
+        for db_name in db_paths.keys():
+            await handle(ResetDbCommand(db_name=db_name))
     await handle(UpdateDbSchemaCommand())
 
     # Seed DB
     hashed_pw = pw_hasher.hash(str(appsettings.ADMIN_PASSWORD))
-    await handle(SeedMainDatabaseCommand(appsettings.ADMIN_EMAIL, hashed_pw))
+    await handle(SeedDatabasesCommand(appsettings.ADMIN_EMAIL, hashed_pw))
 
     # Initialize S3
     if appsettings.ENV == "Development":

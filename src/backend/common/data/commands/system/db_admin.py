@@ -129,7 +129,7 @@ class UpdateDbSchemaCommand(Command[None]):
             
 
 @dataclass
-class SeedMainDatabaseCommand(Command[None]):
+class SeedDatabasesCommand(Command[None]):
     admin_email: str
     hashed_pw: str
 
