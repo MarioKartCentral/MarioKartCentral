@@ -1,11 +1,5 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-
-class IndexModel(ABC):
-    @staticmethod
-    @abstractmethod
-    def get_create_index_command() -> str:
-        pass
+from common.data.db.common import IndexModel
 
 @dataclass
 class UserRolesExpiresOn(IndexModel):

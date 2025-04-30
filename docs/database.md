@@ -1,26 +1,28 @@
 # Database Schema
 
 - [Overview](#overview)
-  - [Design Considerations](#design-considerations)
+  - [Database Structure](#database-structure)
   - [Database Principles](#database-principles)
-- [Core Identity System](#core-identity-system)
-  - [User vs. Player Distinction](#user-vs-player-distinction)
-  - [User Management Tables](#user-management-tables)
-  - [Player Identity Tables](#player-identity-tables)
-- [Player History and Moderation](#player-history-and-moderation)
-  - [Change Management Tables](#change-management-tables)
-  - [Moderation Tables](#moderation-tables)
-- [Role-Based Access Control](#role-based-access-control)
-  - [Role Structure Tables](#role-structure-tables)
-- [Team System](#team-system)
-  - [Team Organization Tables](#team-organization-tables)
-  - [Team Management Tables](#team-management-tables)
-- [Tournament System](#tournament-system)
-  - [Tournament Structure Tables](#tournament-structure-tables)
-  - [Tournament Participation Tables](#tournament-participation-tables)
-  - [Tournament Results Tables](#tournament-results-tables)
-- [Administrative Systems](#administrative-systems)
+- [Main Database (main.db)](#main-database-maindb)
+  - [Player Identity System](#player-identity-system)
+  - [Player History and Moderation](#player-history-and-moderation)
+  - [Role-Based Access Control](#role-based-access-control)
+  - [Team System](#team-system)
+    - [Team Organization Tables](#team-organization-tables)
+    - [Team Management Tables](#team-management-tables)
+  - [Tournament System](#tournament-system)
+    - [Tournament Structure Tables](#tournament-structure-tables)
+    - [Tournament Participation Tables](#tournament-participation-tables)
+    - [Tournament Results Tables](#tournament-results-tables)
   - [Administrative Tables](#administrative-tables)
+- [Authentication Database (auth.db)](#authentication-database-authdb)
+  - [User Management Tables](#user-management-tables)
+- [Discord Tokens Database (discord_tokens.db)](#discord-tokens-database-discord_tokensdb)
+- [User Activity Database (user_activity.db)](#user-activity-database-user_activitydb)
+- [Sessions Database (sessions.db)](#sessions-database-sessionsdb)
+- [Alt Flags Database (alt_flags.db)](#alt-flags-database-alt_flagsdb)
+- [Player Notes Database (player_notes.db)](#player-notes-database-player_notesdb)
+- [Command Logs Database (command_logs.db)](#command-logs-database-command_logsdb)
 - [Database Migrations](#database-migrations)
   - [Migration Capabilities](#migration-capabilities)
   - [Migration Limitations](#migration-limitations)
@@ -31,6 +33,18 @@ The MKCentral database is built on SQLite and organized into several logical com
 ## Overview 
 
 The schema is defined through Python dataclasses in [`/src/backend/common/data/db/tables.py`](/src/backend/common/data/db/tables.py) and automatically migrated on startup to ensure schema and code stays in sync. For implementation details of the backend services using this schema, see [Backend Architecture](backend.md).
+
+### Database Structure
+
+The MKCentral database is physically split into multiple separate SQLite files to reduce the risk of security incidents and ensure that sensitive information cannot be accessed from non-sensitive requests:
+
+1. **`main.db`**: Core application data (players, teams, tournaments, etc.)
+2. **`auth.db`**: Authentication data (credentials, verification tokens)
+3. **`sessions.db`**: Active user sessions and authentication state
+4. **`discord_tokens.db`**: OAuth tokens for Discord integration
+5. **`user_activity.db`**: User login history and IP tracking information
+
+For details on working with these databases, see [Backend Architecture](backend.md#working-with-multiple-databases).
 
 ### Design Considerations
 
@@ -48,23 +62,9 @@ The schema is defined through Python dataclasses in [`/src/backend/common/data/d
 - Database indices are defined in [`/src/backend/common/data/db/indices.py`](/src/backend/common/data/db/indices.py)
 - Direct SQL queries are used (no ORM) with parameterized statements
 
-## Core Identity System
-
-```mermaid
-erDiagram
-    %% Authentication
-    User ||--o| Session : "authenticates"
-    User ||--o| UserSettings : "configures"
-    User ||--o| UserDiscord : "links"
-    
-    %% Identity
-    User ||--o| Player : "represents"
-    Player ||--o{ FriendCode : "owns"
-```
-
 ### User vs. Player Distinction
 
-The system maintains a careful separation between authentication accounts (Users) and game identities (Players):
+The system maintains a careful separation between authentication accounts (Users) and public identities (Players):
 
 - **User**: Represents an authenticated account on the website with login credentials
 - **Player**: Represents a public identity within the Mario Kart community
@@ -74,23 +74,20 @@ This separation exists because:
 2. We track players who haven't created user accounts (imported from tournament data)
 3. The distinction allows for cleaner permission modeling
 
-### User Management Tables
 
-**User**
-- Core account table storing authentication credentials
-- Links to one Player record for users who are also players
-- Primary key for permission assignments
 
-**UserSettings**
-- Stores user preferences and profile customization options
+## Main Database (main.db)
 
-**Session**
-- Tracks active login sessions for authenticated users
+### Player Identity System
 
-**UserDiscord**
-- Manages Discord integration for communication features
-
-### Player Identity Tables
+```mermaid
+erDiagram
+    User ||--o| Player : "represents"
+    User ||--o| UserSettings : "configures"
+    User ||--o| UserDiscord : "links"
+    Player ||--o{ FriendCode : "owns"
+    Player ||--o{ PlayerClaim : "claims"
+```
 
 **Player**
 - Contains public gaming profile with display name and region
@@ -104,7 +101,13 @@ This separation exists because:
 **PlayerClaim**
 - Manages the process of claiming ownership of imported profiles
 
-## Player History and Moderation
+**UserSettings**
+- Stores user preferences and profile customization options
+
+**UserDiscord**
+- Manages Discord integration for communication features
+
+### Player History and Moderation
 
 ```mermaid
 erDiagram
@@ -115,10 +118,9 @@ erDiagram
     %% Moderation
     Player ||--o| PlayerBans : "restricts"
     Player ||--o{ PlayerBansHistorical : "tracks"
-    Player ||--o| PlayerNotes : "annotates"
 ```
 
-### Change Management Tables
+#### Change Management Tables
 
 **PlayerNameEdit**
 - Tracks all player name change requests
@@ -128,7 +130,7 @@ erDiagram
 - Records modifications to player friend codes
 - Preserves history of code changes and validation status
 
-### Moderation Tables
+#### Moderation Tables
 
 **PlayerBans**
 - Manages active player restrictions within the system
@@ -138,11 +140,7 @@ erDiagram
 - Archives completed or expired ban records
 - Provides historical context for moderation decisions
 
-**PlayerNotes**
-- Provides staff-only documentation about players
-- Supports internal communication for moderation purposes
-
-## Role-Based Access Control
+### Role-Based Access Control
 
 ```mermaid
 erDiagram
@@ -177,7 +175,7 @@ Each scope (global, team, series, tournament) implements:
 
 For complete details on how these tables are used, see [Authentication & Authorization](auth.md).
 
-## Team System
+### Team System
 
 ```mermaid
 erDiagram
@@ -185,9 +183,11 @@ erDiagram
     Team ||--o{ TeamRoster : "organizes"
     TeamRoster ||--o{ TeamMember : "includes"
     Player ||--o{ TeamMember : "joins"
+    TeamRoster ||--o{ TeamSquadRegistration : "registers"
+    TournamentSquad ||--o{ TeamSquadRegistration : "includes"
 ```
 
-### Team Organization Tables
+#### Team Organization Tables
 
 **Team**
 - Top-level organization entity for competitive play
@@ -201,7 +201,7 @@ erDiagram
 - Records player participation in specific rosters
 - Tracks membership status and special designations
 
-### Team Management Tables
+#### Team Management Tables
 
 ```mermaid
 erDiagram
@@ -209,6 +209,7 @@ erDiagram
     Team ||--o{ TeamEdit : "changes"
     TeamRoster ||--o{ RosterEdit : "modifies"
     TeamRoster ||--o{ TeamTransfer : "processes"
+    Player ||--o{ TeamTransfer : "participates"
 ```
 
 **TeamEdit**
@@ -223,17 +224,18 @@ erDiagram
 - Processes player movement between rosters
 - Records player transfers and their approval state
 
-## Tournament System
+### Tournament System
 
 ```mermaid
 erDiagram
     %% Structure
     TournamentSeries ||--o{ Tournament : "contains"
     TournamentSeries ||--o{ TournamentTemplate : "defines"
-    Tournament ||--|| TournamentS3Fields : "describes"
+    Tournament ||--o{ Post : "contains"
+    TournamentSeries ||--o{ Post : "features"
 ```
 
-### Tournament Structure Tables
+#### Tournament Structure Tables
 
 **TournamentSeries**
 - Groups related tournaments into logical series
@@ -243,15 +245,15 @@ erDiagram
 - Represents individual competition instance
 - Core entity for tournament management
 
-**TournamentS3Fields**
-- References to S3 objects containing tournament descriptions and rulesets
-- S3 files follow naming convention `{id}.json`
-
 **TournamentTemplate**
 - Stores reusable tournament configurations
 - Streamlines creation of recurring events
 
-### Tournament Participation Tables
+**Post**
+- Contains news or announcement content
+- Can be associated with tournaments or series
+
+#### Tournament Participation Tables
 
 ```mermaid
 erDiagram
@@ -259,6 +261,7 @@ erDiagram
     Tournament ||--o{ TournamentSquad : "hosts"
     TournamentSquad ||--o{ TournamentPlayer : "includes"
     Player ||--o{ TournamentPlayer : "competes"
+    TournamentPlayer ||--o{ FriendCode : "uses"
 ```
 
 **TournamentSquad**
@@ -269,7 +272,7 @@ erDiagram
 - Records individual tournament participation
 - Links players to their competitive squads
 
-### Tournament Results Tables
+#### Tournament Results Tables
 
 ```mermaid
 erDiagram
@@ -277,6 +280,7 @@ erDiagram
     Tournament ||--o{ TournamentSoloPlacements : "ranks"
     Tournament ||--o{ TournamentSquadPlacements : "ranks"
     TournamentSquad ||--|| TournamentSquadPlacements : "achieves"
+    TournamentPlayer ||--|| TournamentSoloPlacements : "achieves"
 ```
 
 **TournamentSoloPlacements**
@@ -287,29 +291,125 @@ erDiagram
 - Manages team-based tournament results
 - Captures squad performance metrics
 
-## Administrative Systems
+### Administrative Tables
 
 ```mermaid
 erDiagram
-    CommandLog
+    Player ||--o{ Notifications : "receives"
     FilteredWords
-    User ||--o{ Notifications : "receives"
 ```
-
-### Administrative Tables
 
 **FilteredWords**
 - Simple list of words and phrases to be filtered from user content
 - Standalone table with no relationships to other entities
 
+**Notifications**
+- Handles user communication within the system
+- Manages delivery of various notification types
+
+## Authentication Database (auth.db)
+
+```mermaid
+erDiagram
+    UserAuth ||--o{ EmailVerification : "confirms"
+    UserAuth ||--o{ PasswordReset : "resets"
+    UserAuth ||--o| Player : "represents"
+```
+
+**UserAuth**
+- Core account table storing authentication credentials (email, password_hash)
+- Links to one Player record for users who are also players
+- Primary key for permission assignments
+- Contains email confirmation and password reset status flags
+
+**EmailVerification**
+- Stores tokens for email verification process
+- Includes expiration timestamps for security
+
+**PasswordReset**
+- Manages password reset tokens
+- Includes expiration timestamps for security
+
+## Discord Tokens Database (discord_tokens.db)
+
+```mermaid
+erDiagram
+    User ||--o| DiscordTokens : "authenticates"
+```
+
+**DiscordTokens**
+- Stores sensitive Discord OAuth2 tokens separate from the main database
+- Contains access_token, refresh_token, and expiration timestamps
+- Used for Discord API interactions and profile synchronization
+- Separated for enhanced security of authentication credentials
+
+## User Activity Database (user_activity.db)
+
+```mermaid
+erDiagram
+    User ||--o{ UserLogin : "tracks"
+    User ||--o{ UserIP : "tracks"
+```
+
+**UserLogin**
+- Records user login history and session information
+- Includes timestamps, login status, and device information
+- Used for security monitoring and activity auditing
+
+**UserIP**
+- Stores IP addresses associated with user sessions
+- Used for security monitoring and detecting suspicious access patterns
+- Separated from main database for privacy and data minimization
+
+## Sessions Database (sessions.db)
+
+```mermaid
+erDiagram
+    Session ||--o{ User : "authenticates"
+```
+
+**Session**
+- Tracks active login sessions for authenticated users
+- Contains session_id, user_id, and expiration timestamp
+- Stored in a separate database for performance and isolation
+
+## Alt Flags Database (alt_flags.db)
+
+```mermaid
+erDiagram
+    Player ||--o{ UserAltFlag : "flags"
+    AltFlag ||--o{ UserAltFlag : "assigns"
+```
+
+**AltFlag** and **UserAltFlag**
+- System for tracking potential alternate accounts
+- Used for moderation and player identity verification
+- Separated to isolate user identity correlation data
+
+## Player Notes Database (player_notes.db)
+
+```mermaid
+erDiagram
+    Player ||--o| PlayerNotes : "annotates"
+```
+
+**PlayerNotes**
+- Provides staff-only documentation about players
+- Supports internal communication for moderation purposes
+- Separated to isolate sensitive player information from main database
+
+## Command Logs Database (command_logs.db)
+
+```mermaid
+erDiagram
+    CommandLog
+```
+
 **CommandLog**
 - Temporary storage for recent system commands
 - Periodically archived to S3 for long-term storage
 - Used for auditing and potential data recovery
-
-**Notifications**
-- Handles user communication within the system
-- Manages delivery of various notification types
+- Separated for performance and data isolation reasons
 
 ## Database Migrations
 
@@ -337,7 +437,7 @@ There are important limitations to the automatic migration:
 
 ### Developer Guidelines
 
-When working with the database:
+When working with the database schema:
 
 1. **Adding Tables**:
    - Define new tables as dataclasses in [`/src/backend/common/data/db/tables.py`](/src/backend/common/data/db/tables.py)
@@ -349,13 +449,4 @@ When working with the database:
    - If a column must be removed, implement a custom migration script
    - Test migrations thoroughly before deployment
 
-3. **Querying Best Practices**:
-   - Always use parameterized queries (never string concatenation)
-   - Include appropriate indices for frequently filtered fields
-   - Keep queries simple and focused
-   - Remember we don't use an ORM - all queries are direct SQL
-
-4. **Transaction Management**:
-   - Use transactions for related operations
-   - Keep transactions short to avoid blocking
-   - Handle exceptions appropriately to avoid unclosed transactions
+For guidelines on querying and transaction management, see [Backend Architecture](backend.md#querying-best-practices).

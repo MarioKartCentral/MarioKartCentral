@@ -18,7 +18,7 @@ class SaveToCommandLogCommand(Command[None]):
         command_name = type(self.command).__name__
         command_serialized = msgspec.json.encode(self.command).decode("utf-8")
 
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='command_logs') as db:
             await db.execute_insert(
                 "INSERT INTO command_log(type, data) VALUES (?, ?)", 
                 (command_name, command_serialized))
@@ -33,7 +33,7 @@ class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
         if after_id is None:
             after_id = 0
 
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='command_logs') as db:
             rows = await db.execute_fetchall(
                 "SELECT id, type, data, timestamp FROM command_log WHERE id > ? ORDER BY id ASC", 
                 (after_id,))
@@ -183,6 +183,6 @@ class ClearCommandLogUpToIdCommand(Command[None]):
     id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='command_logs') as db:
             await db.execute("DELETE FROM command_log WHERE id < ?", (self.id,))
             await db.commit()
