@@ -77,7 +77,7 @@
         {/if}
       </div>
     {/if}
-    {#if tournament.verification_required && (!reg.squad.is_approved) || (reg.player && !reg.player.is_approved)}
+    {#if tournament.verification_required && ((!reg.squad.is_approved) || (reg.player && !reg.player.is_approved))}
       <div class="section">
         <div class="pending">
           {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
