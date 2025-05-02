@@ -11,6 +11,8 @@
   export let registration: MyTournamentRegistration;
   export let tournament: Tournament;
 
+  let working = false;
+
   function getInvitedSquads() {
     let invite_registrations = registration.registrations.filter((r) => r.is_invite);
     return invite_registrations.map((r) => r.squad);
@@ -18,6 +20,7 @@
 
   async function toggleCheckin(player: TournamentPlayer | null) {
     if(!player) return;
+    working = true;
     const payload = {
       tournament_id: tournament.id,
       registration_id: player.registration_id,
@@ -29,6 +32,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -52,7 +56,7 @@
       <div class="section">
         {#if tournament.checkins_open}
           {#if reg.player && !reg.player.is_checked_in}
-            <Button on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
+            <Button {working} on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
             <div>
               {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
             </div>
@@ -69,7 +73,7 @@
               {/if}
             </div>
             <div>
-              <Button size="xs" on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
+              <Button {working} size="xs" on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
             </div>
           {/if}
         {:else}

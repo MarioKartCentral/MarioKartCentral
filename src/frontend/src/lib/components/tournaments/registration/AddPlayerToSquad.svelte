@@ -13,6 +13,7 @@
     export let tournament: Tournament;
     let player: PlayerInfo | null = null;
     let squad: TournamentSquad;
+    let working = false;
 
     let add_player_dialog: Dialog;
 
@@ -24,6 +25,7 @@
 
     async function addPlayer(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         if(!squad || !player) return;
+        working = true;
         const formData = new FormData(event.currentTarget);
         let selected_fc_id = formData.get('selected_fc_id');
         let mii_name = formData.get('mii_name');
@@ -56,6 +58,7 @@
         if (response.status < 300) {
             window.location.reload();
         } else {
+            working = false;
             alert(`${$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_FAILED()}: ${result['title']}`);
         }
     }
@@ -69,7 +72,7 @@
                 <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>
                 <TournamentStaffFields {tournament} squad_exists={true}/>
                 <div class="confirm">
-                    <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</Button>
+                    <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</Button>
                     <Button type="button" on:click={add_player_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
                 </div>
             </form>

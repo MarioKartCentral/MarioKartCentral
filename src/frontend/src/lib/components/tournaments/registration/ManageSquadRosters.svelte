@@ -41,7 +41,7 @@
         }
         let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER_CONFIRM({roster_name: roster.name}));
         if(!conf) return;
-            const payload = {
+        const payload = {
             registration_id: squad.id,
             roster_id: roster.id
         }

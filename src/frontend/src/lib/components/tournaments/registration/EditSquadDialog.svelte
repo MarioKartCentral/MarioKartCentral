@@ -11,6 +11,7 @@
 
     let edit_squad_dialog: Dialog;
     let squad: TournamentSquad;
+    let working = false;
     
     export function open(selected_squad: TournamentSquad) {
         squad = selected_squad;
@@ -18,6 +19,7 @@
     }
 
     async function editSquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const formData = new FormData(event.currentTarget);
         let squad_color = formData.get('squad_color');
         let squad_name = formData.get('squad_name');
@@ -36,6 +38,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -45,6 +48,7 @@
     }
 
     async function editMySquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const formData = new FormData(event.currentTarget);
         let squad_color = formData.get('squad_color');
         let squad_name = formData.get('squad_name');
@@ -61,6 +65,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -86,7 +91,7 @@
                 </div>
             {/if}
             <div>
-                <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
+                <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
                 <Button type="button" on:click={edit_squad_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
             </div>
         </form>

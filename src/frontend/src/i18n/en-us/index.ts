@@ -82,6 +82,7 @@ const en_us: BaseTranslation = {
     NEW: 'New',
     SORT_BY_ALPHABETICAL: 'Alphabetical',
     SORT_BY_NEWEST: 'Newest',
+    WORKING: 'Working...',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -233,6 +234,8 @@ const en_us: BaseTranslation = {
     NEW_EMAIL: 'New Email',
     CHANGE_EMAIL_SUCCESS: 'Successfully changed your email. Please check your inbox for a confirmation email.',
     CHANGE_EMAIL_FAILED: 'Failed to change email',
+    AGREE_TO_TERMS: 'I agree to the MKCentral Terms of Service.',
+    AGREE_TO_PRIVACY_POLICY: 'I agree to the MKCentral Privacy Policy.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',

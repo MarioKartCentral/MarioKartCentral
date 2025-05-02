@@ -28,6 +28,8 @@
   let registered_players = registration.squad.players.filter((p) => !p.is_invite);
   let invited_players = registration.squad.players.filter((p) => p.is_invite);
 
+  let working = false;
+
   let user_info: UserInfo;
   user.subscribe((value) => {
     user_info = value;
@@ -37,10 +39,10 @@
     if (!player) {
       return;
     }
-
     if (!registration.is_squad_captain) {
       return;
     }
+    working = true;
     const payload = {
       registration_id: registration.squad.id,
       player_id: player.id,
@@ -53,6 +55,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -87,6 +90,7 @@
   }
 
   async function editSquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const formData = new FormData(event.currentTarget);
     let squad_color = formData.get('squad_color');
     let squad_name = formData.get('squad_name');
@@ -103,6 +107,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -164,7 +169,7 @@
         </div>
       {/if}
       <div class="section">
-        <Button on:click={() => invitePlayer(invite_player)}>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYER()}</Button>
+        <Button {working} on:click={() => invitePlayer(invite_player)}>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYER()}</Button>
       </div>
     {/if}
   {/if}
@@ -185,7 +190,7 @@
     <SquadTournamentFields {tournament} squad_color={registration.squad.color} squad_name={registration.squad.name} squad_tag={registration.squad.tag} />
     <br />
     <div>
-      <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
+      <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
       <Button type="button" on:click={edit_squad_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </form>
