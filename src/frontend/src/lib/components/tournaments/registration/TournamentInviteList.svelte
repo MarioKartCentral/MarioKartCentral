@@ -32,8 +32,8 @@
     squad_data[squad.id] = { display_players: false, date: new Date(squad.timestamp * 1000) };
   }
 
-  function toggle_show_players(squad_id: number) {
-    squad_data[squad_id].display_players = !squad_data[squad_id].display_players;
+  function toggle_show_players(registration_id: number) {
+    squad_data[registration_id].display_players = !squad_data[registration_id].display_players;
   }
 
   function toggle_all_players() {
@@ -61,7 +61,7 @@
       selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
       mii_name: mii_name,
       can_host: can_host === 'true',
-      squad_id: curr_invite.id,
+      registration_id: curr_invite.id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/acceptInvite`;
     const response = await fetch(endpoint, {
@@ -85,7 +85,7 @@
       return;
     }
     const payload = {
-      squad_id: squad.id,
+      registration_id: squad.id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/declineInvite`;
     console.log(payload);

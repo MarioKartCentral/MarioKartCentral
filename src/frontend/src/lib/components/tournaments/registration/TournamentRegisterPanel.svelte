@@ -75,7 +75,7 @@
         {#if tournament.teams_allowed}
           <TeamTournamentRegister {tournament}/>
         {/if}
-        {#if !tournament.teams_only && !registration.registrations.some((r) => !r.player.is_invite)}
+        {#if !tournament.teams_only && !registration.registrations.some((r) => !r.is_invite)}
           {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
             <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
             <SoloSquadTournamentRegister

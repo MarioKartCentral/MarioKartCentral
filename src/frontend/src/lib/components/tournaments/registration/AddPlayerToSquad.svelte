@@ -39,7 +39,7 @@
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
             can_host: can_host === 'true',
-            squad_id: squad.id,
+            registration_id: squad.id,
             player_id: player.id,
             is_squad_captain: is_squad_captain === "true",
             is_representative: is_representative === "true",
