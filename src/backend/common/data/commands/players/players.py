@@ -65,7 +65,7 @@ class CreatePlayerCommand(Command[Player]):
                 async with db.execute("SELECT id FROM friend_codes WHERE fc = ? AND type = ? AND is_active = ?", (friend_code.fc, friend_code.type, True)) as cursor:
                     row = await cursor.fetchone()
                     if row:
-                        raise Problem("Another player is currently using this friend code for this game", status=400)
+                        raise Problem(f"Another player is currently using this {friend_code.type} friend code", status=400)
                     
             friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description, now)
                                   for friend_code in self.friend_codes]
@@ -250,13 +250,13 @@ class ListPlayersCommand(Command[PlayerList]):
             append_equal_filter(filter.discord_id, "d.discord_id")
 
             # make sure that player is in a team roster which is linked to the passed-in squad ID
-            if filter.squad_id is not None:
+            if filter.registration_id is not None:
                 where_clauses.append(f"""p.id IN (
                                      SELECT m.player_id FROM team_members m
                                      JOIN team_squad_registrations r ON r.roster_id = m.roster_id
-                                     WHERE r.squad_id IS ? AND m.leave_date IS ?
+                                     WHERE r.registration_id IS ? AND m.leave_date IS ?
                 )""")
-                variable_parameters.append(filter.squad_id)
+                variable_parameters.append(filter.registration_id)
                 variable_parameters.append(None)
 
             # if has_connected_user is true, we should only list players who have

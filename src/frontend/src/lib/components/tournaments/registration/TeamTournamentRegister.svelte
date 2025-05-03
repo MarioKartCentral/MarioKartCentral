@@ -32,6 +32,7 @@
   let players: TeamTournamentPlayer[] = [];
 
   let squad_color = 1;
+  let working = false;
 
   let selected_player: RosterPlayer | null = null;
   $: unselected_rosters = rosters.filter((r) => !selected_rosters.includes(r));
@@ -148,6 +149,7 @@
   }
 
   async function register() {
+    working = true;
     const payload = {
       squad_color: squad_color,
       squad_name: selected_rosters[0].name,
@@ -156,12 +158,12 @@
       players: players
     };
     const endpoint = `/api/tournaments/${tournament.id}/${is_privileged ? 'forceRegisterTeam' : 'registerTeam'}`;
-    console.log(payload);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -296,7 +298,7 @@
             {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_LESS_PLAYERS({max_squad_size: tournament.max_squad_size, count: tournament.max_squad_size - players.length})}
           </div>
         {/if}
-        <Button on:click={register} disabled={!can_register}>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
+        <Button on:click={register} {working} disabled={!can_register}>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
       </div>
     {/if}
   </div>

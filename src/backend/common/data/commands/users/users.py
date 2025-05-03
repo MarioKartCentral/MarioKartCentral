@@ -89,32 +89,28 @@ class GetInvitesForPlayerCommand(Command[PlayerInvites]):
         team_invites: list[TeamInvite] = []
         tournament_invites: list[TournamentInvite] = []
         async with db_wrapper.connect(readonly=True) as db:
-            fetch_team_invites_query = '''
-                SELECT i.id, i.date, i.is_bagger_clause, t.id, t.name, t.tag, t.color, r.id, r.name, r.tag, r.game, r.mode
-                FROM team_transfers i
-                JOIN team_rosters r ON i.roster_id = r.id
-                JOIN teams t ON r.team_id = t.id
-                WHERE i.player_id = :player_id AND i.is_accepted = 0
-            '''
-            async with db.execute(fetch_team_invites_query, {"player_id": self.player_id}) as cursor:
-                async for (invite_id, date, is_bagger_clause, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, game, mode) in cursor:
-                    roster_name = roster_name or team_name
-                    roster_tag = roster_tag or team_tag
-                    invite = TeamInvite(invite_id, date, bool(is_bagger_clause), team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, game, mode)
-                    team_invites.append(invite)
-
-            fetch_tournament_invites_query = '''
-                SELECT i.id, i.tournament_id, i.timestamp, i.is_bagger_clause, s.name, s.tag, s.color, t.name, t.game, t.mode
-                FROM tournament_players i
-                JOIN tournament_squads s ON i.squad_id = s.id
-                JOIN tournaments t ON i.tournament_id = t.id
-                WHERE i.is_invite = 1 AND i.player_id = :player_id
-                AND t.registrations_open = 1
-            '''
-            async with db.execute(fetch_tournament_invites_query, {"player_id": self.player_id}) as cursor:
-                async for (invite_id, tournament_id, timestamp, is_bagger_clause, squad_name, squad_tag, squad_color, tournament_name, game, mode) in cursor:
-                    invite = TournamentInvite(invite_id, tournament_id, timestamp, bool(is_bagger_clause), squad_name, squad_tag, squad_color, tournament_name, game, mode)
-                    tournament_invites.append(invite)
+            async with db.execute("""SELECT i.id, i.date, i.is_bagger_clause, t.id, t.name, t.tag, t.color, r.id, r.name, r.tag, r.game, r.mode
+                                    FROM team_transfers i
+                                    JOIN team_rosters r ON i.roster_id = r.id
+                                    JOIN teams t ON r.team_id = t.id
+                                    WHERE i.player_id = ? AND i.is_accepted = 0""", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    invite_id, date, is_bagger_clause, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, game, mode = row
+                    roster_name = roster_name if roster_name is not None else team_name
+                    roster_tag = roster_tag if roster_tag is not None else team_tag
+                    team_invites.append(TeamInvite(invite_id, date, bool(is_bagger_clause), team_id, team_name, team_tag,
+                                                   team_color, roster_id, roster_name, roster_tag, game, mode))
+            async with db.execute("""SELECT i.id, i.tournament_id, i.timestamp, i.is_bagger_clause, s.name, s.tag, s.color,
+                                    t.name, t.game, t.mode
+                                    FROM tournament_players i
+                                    JOIN tournament_registrations s ON i.registration_id = s.id
+                                    JOIN tournaments t ON i.tournament_id = t.id
+                                    WHERE i.is_invite = 1 AND i.player_id = ?
+                                    AND t.registrations_open = 1""", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    tournament_invites.append(TournamentInvite(*row))
         return PlayerInvites(self.player_id, team_invites, tournament_invites)
     
 @dataclass

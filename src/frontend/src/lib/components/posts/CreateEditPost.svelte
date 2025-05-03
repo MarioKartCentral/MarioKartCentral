@@ -15,6 +15,7 @@
     let title = "";
     let is_public = true;
     let content = "";
+    let working = false;
 
     onMount(async() => {
         if(!id) return;
@@ -30,6 +31,7 @@
     });
 
     async function createEditPost(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const formData = new FormData(event.currentTarget);
         const payload = {
             title: formData.get("title"),
@@ -44,6 +46,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             let new_id = result["id"];
@@ -82,7 +85,7 @@
             <label for="content">{$LL.POSTS.CONTENT()}</label>
             <MarkdownTextArea name="content" bind:value={content}/>
         </div>
-        <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+        <Button {working} type="submit">{$LL.COMMON.SUBMIT()}</Button>
     </form>
 </Section>
 

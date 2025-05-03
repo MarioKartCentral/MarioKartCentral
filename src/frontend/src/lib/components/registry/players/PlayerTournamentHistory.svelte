@@ -224,7 +224,7 @@
                     {toDate(placement.date_start)}
                     {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
                   </td>
-                  {#if placement.squad_id != null && placement.squad_name != null}
+                  {#if placement.registration_id != null && placement.squad_name != null}
                     <td class="mobile-hide">
                       {#if placement.team_id}
                         <a

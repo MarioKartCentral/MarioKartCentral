@@ -27,6 +27,7 @@
     let decline_dialog: Dialog;
     let curr_invite: TeamInvite;
     let leave_roster_id: number | null = null;
+    let working = false;
 
     const options: Intl.DateTimeFormatOptions = {
         dateStyle: 'short',
@@ -57,8 +58,10 @@
     $: leaveable_rosters = curr_invite ? getLeaveableRosters(curr_invite) : [];
 
     async function acceptInvite(invite: TeamInvite) {
+        working = true;
         if(leaveable_rosters.length && !leave_roster_id) {
             alert($LL.INVITES.SELECT_LEAVE_ROSTER_ERROR());
+            working = false;
             return;
         }
         accept_dialog.close();
@@ -71,6 +74,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await res.json();
         if (res.status < 300) {
             alert($LL.INVITES.ACCEPT_TEAM_INVITE_SUCCESS({roster_name: invite.roster_name}));
@@ -80,6 +84,7 @@
         }
     }
     async function declineInvite(invite: TeamInvite) {
+        working = true;
         decline_dialog.close();
         const payload = {
             invite_id: invite.invite_id,
@@ -89,6 +94,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await res.json();
         if (res.status < 300) {
             window.location.reload();
@@ -157,16 +163,16 @@
       </select>
     {/if}
     <div class="accept">
-      <Button on:click={() => acceptInvite(curr_invite)}>{$LL.INVITES.ACCEPT()}</Button>
-      <Button on:click={accept_dialog.close}>Cancel</Button>
+      <Button {working} on:click={() => acceptInvite(curr_invite)}>{$LL.INVITES.ACCEPT()}</Button>
+      <Button on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </Dialog>
   
-  <Dialog bind:this={decline_dialog} header="Decline Team Invite">
+  <Dialog bind:this={decline_dialog} header={$LL.INVITES.DECLINE()}>
     {$LL.INVITES.DECLINE_TEAM_INVITE_CONFIRM({roster_name: curr_invite?.roster_name})}
     <br /><br />
     <div class="accept">
-      <Button on:click={() => declineInvite(curr_invite)}>{$LL.INVITES.DECLINE()}</Button>
+      <Button {working} on:click={() => declineInvite(curr_invite)}>{$LL.INVITES.DECLINE()}</Button>
       <Button on:click={decline_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </Dialog>
