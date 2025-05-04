@@ -41,6 +41,7 @@ class MKCEventRegistration:
     updated_at: str # timestamp
     player_can_host: Literal[0, 1]
     team_id: int | None
+    secondary_team_id: int | None
     mii_name: str | None
     squad_id: int | None
     checked_in: Literal[0, 1]
