@@ -6,6 +6,7 @@
     import { user } from "$lib/stores/stores";
     import type { UserInfo } from "$lib/types/user-info";
     import LL from "$i18n/i18n-svelte";
+    import { page } from "$app/stores";
 
     let user_info: UserInfo;
 
@@ -32,6 +33,7 @@
         const result = await response.json();
         if(response.status < 300) {
             alert($LL.LOGIN.TRANSFER_ACCOUNT_SUCCESS());
+            window.location.href = `/${$page.params.lang}/`;
         }
         else {
             alert(`${$LL.LOGIN.TRANSFER_ACCOUNT_FAILED()}: ${result['title']}`);
