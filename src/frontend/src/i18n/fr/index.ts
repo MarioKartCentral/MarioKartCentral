@@ -694,6 +694,7 @@ const fr: Translation = {
       HISTORICAL_TEAMS: 'Historical Teams',
       SEARCH_BY: "Rechercher par nom d'équipe ou de roster...",
       TEAM_COUNT: '{count} équipes',
+      ACTIVE_TEAMS_MIN_PLAYERS: 'Active Teams with {count}+ players',
     },
     PROFILE: {
       TEAM_PROFILE: "Profil de l'Équipe",

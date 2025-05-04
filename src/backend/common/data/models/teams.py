@@ -290,6 +290,7 @@ class TeamFilter():
     is_recruiting: bool | None = None
     is_historical: bool | None = None
     is_active: bool | None = None
+    min_player_count: int | None = None
     sort_by_newest: bool | None = False
     page: int | None = None
 

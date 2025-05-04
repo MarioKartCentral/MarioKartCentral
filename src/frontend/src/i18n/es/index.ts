@@ -693,6 +693,7 @@ const es: Translation = {
       HISTORICAL_TEAMS: 'Historical Teams',
       SEARCH_BY: 'Search by team or roster name...',
       TEAM_COUNT: '{count} teams',
+      ACTIVE_TEAMS_MIN_PLAYERS: 'Active Teams with {count}+ players',
     },
     PROFILE: {
       TEAM_PROFILE: 'Team Profile',

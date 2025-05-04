@@ -508,6 +508,16 @@ class ListTeamsCommand(Command[TeamList]):
                 where_clauses.append(historical_clause)
                 variable_parameters.append(filter.is_historical)
 
+            if filter.min_player_count:
+                player_count_query = """SELECT r.team_id
+                                    FROM team_members m
+                                    JOIN team_rosters r ON m.roster_id = r.id
+                                    WHERE m.leave_date IS NULL AND r.is_active = 1
+                                    GROUP BY r.team_id
+                                    HAVING COUNT(r.team_id) >= ?"""
+                where_clauses.append(f"t.id IN ({player_count_query})")
+                variable_parameters.append(filter.min_player_count)
+
             if self.approval_status:
                 append_equal_filter(self.approval_status, "t.approval_status")
                 append_equal_filter(self.approval_status, "r.approval_status")

@@ -2615,6 +2615,11 @@ type RootTranslation = {
 			 * @param {number} count
 			 */
 			TEAM_COUNT: RequiredParams<'count'>
+			/**
+			 * A​c​t​i​v​e​ ​T​e​a​m​s​ ​w​i​t​h​ ​{​c​o​u​n​t​}​+​ ​p​l​a​y​e​r​s
+			 * @param {number} count
+			 */
+			ACTIVE_TEAMS_MIN_PLAYERS: RequiredParams<'count'>
 		}
 		PROFILE: {
 			/**
@@ -7379,6 +7384,10 @@ export type TranslationFunctions = {
 			 * {count} teams
 			 */
 			TEAM_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Active Teams with {count}+ players
+			 */
+			ACTIVE_TEAMS_MIN_PLAYERS: (arg: { count: number }) => LocalizedString
 		}
 		PROFILE: {
 			/**
