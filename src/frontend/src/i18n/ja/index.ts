@@ -691,6 +691,7 @@ const ja: Translation = {
       HISTORICAL_TEAMS: '休止中のチーム',
       SEARCH_BY: 'Search by team or roster name...',
       TEAM_COUNT: '{count} チーム',
+      ACTIVE_TEAMS_MIN_PLAYERS: 'Active Teams with {count}+ players',
     },
     PROFILE: {
       TEAM_PROFILE: 'チームプロフィール',

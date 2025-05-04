@@ -95,16 +95,22 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
     team_roles: list[NewMKCTeamRole]
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='main', attach=["auth"]) as db:
             email_confirmed = True
             force_password_reset = True
-            row = await db.execute_insert("""INSERT INTO users(email, password_hash, join_date, player_id, 
-                                          email_confirmed, force_password_reset) VALUES (?, ?, ?, ?, ?, ?)""", 
-                                          (self.email, self.password_hash, self.join_date, self.player_id, email_confirmed, force_password_reset))
-            # TODO: Run queries to identify why user creation failed
-            if row is None:
-                raise Problem("Failed to create user")
+            row = await db.execute_insert("INSERT INTO users(join_date, player_id) VALUES(:join_date, :player_id)", 
+                                          {"join_date": self.join_date, "player_id": self.player_id})
+            if row is None or not row[0]:
+                raise Problem("Failed to generate user ID from main table")
+            
             user_id = int(row[0])
+
+            insert_query = '''
+                INSERT INTO auth.user_auth(user_id, email, password_hash, email_confirmed, force_password_reset)
+                VALUES(:user_id, :email, :password_hash, :email_confirmed, :force_password_reset)
+            '''
+            await db.execute_insert(insert_query, {"user_id": user_id, "email": self.email, "password_hash": self.password_hash,
+                                                   "email_confirmed": email_confirmed, "force_password_reset": force_password_reset})
 
             is_banned = False
             expiration_date: int | None = None

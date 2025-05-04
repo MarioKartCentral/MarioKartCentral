@@ -35,6 +35,7 @@
     name_or_tag: string | null;
     is_historical: boolean;
     is_active: boolean | null;
+    min_player_count: number | null;
     sort_by_newest: boolean;
     page: number;
   }
@@ -46,7 +47,25 @@
     is_historical: false,
     is_active: null,
     sort_by_newest: false,
+    min_player_count: null,
     page: 1,
+  }
+
+  const min_players = 6;
+  let active_historical_filter = "min_players";
+  $: {
+    if(active_historical_filter === "min_players") {
+      filters.min_player_count = min_players;
+      filters.is_historical = false;
+    }
+    else if (active_historical_filter === "active") {
+      filters.min_player_count = null;
+      filters.is_historical = false;
+    }
+    else {
+      filters.min_player_count = null;
+      filters.is_historical = true;
+    }
   }
 
   async function fetchData() {
@@ -96,9 +115,10 @@
       <input class="search" bind:value={filters.name_or_tag} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
     </div>
     <div class="option">
-      <select bind:value={filters.is_historical}>
-        <option value={false}>{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
-        <option value={true}>{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
+      <select bind:value={active_historical_filter}>
+        <option value="min_players">{$LL.TEAMS.LIST.ACTIVE_TEAMS_MIN_PLAYERS({count: min_players})}</option>
+        <option value="active">{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
+        <option value="historical">{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
       </select>
     </div>
     <div class="option">
