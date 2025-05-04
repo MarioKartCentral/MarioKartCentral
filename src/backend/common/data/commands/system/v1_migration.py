@@ -467,6 +467,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                 # link up our team roster with the created squad
                 roster_squad_link = NewMKCRosterSquadLink(roster.id, new_squad.id, tournament.id)
                 roster_squad_links.append(roster_squad_link)
+                
                 for member in roster.members:
                     # we want to only add roster members that were registered for the tournament the whole way through
                     if tournament.registration_deadline and member.join_date > tournament.registration_deadline:
@@ -486,6 +487,30 @@ class ConvertMKCV1DataCommand(Command[None]):
                                                         timestamp, False, None, False, False, None, is_representative, bool(reg.verified))
                     new_tournament_players.append(new_player)
                     tournament_player_id += 1
+                if reg.secondary_team_id:
+                    secondary_team = team_dict[reg.secondary_team_id]
+                    secondary_roster = secondary_team.rosters[roster_mode]
+                    secondary_roster_squad_link = NewMKCRosterSquadLink(secondary_roster.id, new_squad.id, tournament.id)
+                    roster_squad_links.append(secondary_roster_squad_link)
+                    for member in secondary_roster.members:
+                        # we want to only add roster members that were registered for the tournament the whole way through
+                        if tournament.registration_deadline and member.join_date > tournament.registration_deadline:
+                            continue
+                        if member.leave_date:
+                            if tournament.registration_deadline and member.leave_date < tournament.registration_deadline:
+                                continue
+                            if member.leave_date < tournament.date_start:
+                                continue
+                        # on the new site players can just unregister themselves from the tournament instead of opting out.
+                        # therefore just skip over any members that are opted out
+                        if (reg.id, member.player_id) in optouts:
+                            continue
+                        # set a player as representative for their squad if they are one for the event registration
+                        is_representative = (reg.id, member.player_id) in team_representatives
+                        new_player = NewMKCTournamentPlayer(tournament_player_id, member.player_id, tournament.id, new_squad.id, False,
+                                                            timestamp, False, None, False, False, None, is_representative, bool(reg.verified))
+                        new_tournament_players.append(new_player)
+                        tournament_player_id += 1
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
                     placement_value = None if placement.disqualified else (placement.placement_upper_bound if placement.placement_upper_bound else placement.placement)
