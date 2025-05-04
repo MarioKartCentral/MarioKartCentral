@@ -1,11 +1,5 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-
-class TableModel(ABC):
-    @staticmethod
-    @abstractmethod
-    def get_create_table_command() -> str:
-        pass
+from common.data.db.common import TableModel
 
 @dataclass
 class Player(TableModel):
@@ -58,9 +52,7 @@ class FriendCode(TableModel):
 @dataclass
 class User(TableModel):
     id: int
-    player_id: int
-    email: str
-    password_hash: str
+    player_id: int | None
     join_date: int
 
     @staticmethod
@@ -68,52 +60,9 @@ class User(TableModel):
         return """CREATE TABLE IF NOT EXISTS users(
             id INTEGER PRIMARY KEY,
             player_id INTEGER REFERENCES players(id),
-            email TEXT UNIQUE,
-            password_hash TEXT,
-            join_date INTEGER NOT NULL DEFAULT 0,
-            email_confirmed BOOLEAN NOT NULL DEFAULT 0,
-            force_password_reset BOOLEAN NOT NULL DEFAULT 0
+            join_date INTEGER NOT NULL DEFAULT 0
             )"""
-    
-@dataclass
-class EmailVerification(TableModel):
-    token_id: str
-    user_id: int
-    expires_on: int
 
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS email_verifications(
-            token_id TEXT PRIMARY KEY NOT NULL,
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            expires_on INTEGER NOT NULL) WITHOUT ROWID"""
-
-@dataclass
-class PasswordReset(TableModel):
-    token_id: str
-    user_id: int
-    expires_on: int
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS password_resets(
-            token_id TEXT PRIMARY KEY NOT NULL,
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            expires_on INTEGER NOT NULL) WITHOUT ROWID"""
-
-@dataclass
-class Session(TableModel):
-    session_id: str
-    user_id: int
-    expires_on: int
-
-    @staticmethod
-    def get_create_table_command():
-        return """CREATE TABLE IF NOT EXISTS sessions(
-            session_id TEXT PRIMARY KEY NOT NULL,
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            expires_on INTEGER NOT NULL) WITHOUT ROWID"""
-    
 @dataclass
 class UserDiscord(TableModel):
     user_id: int
@@ -122,9 +71,6 @@ class UserDiscord(TableModel):
     discriminator: str
     global_name: str | None
     avatar: str | None
-    access_token: str
-    token_expires_on: int
-    refresh_token: str
 
     @staticmethod
     def get_create_table_command() -> str:
@@ -134,10 +80,7 @@ class UserDiscord(TableModel):
         username TEXT NOT NULL,
         discriminator TEXT NOT NULL,
         global_name TEXT,
-        avatar TEXT,
-        access_token TEXT NOT NULL,
-        token_expires_on INTEGER NOT NULL,
-        refresh_token TEXT NOT NULL
+        avatar TEXT
         )"""
 
 @dataclass
@@ -816,20 +759,7 @@ class Notifications(TableModel):
             created_date INTEGER NOT NULL,
             is_read INTEGER DEFAULT 0 NOT NULL)"""
 
-@dataclass
-class CommandLog(TableModel):
-    id: int
-    type: str
-    data: str
-    timestamp: int
 
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS command_log(
-        id INTEGER PRIMARY KEY autoincrement,
-        type TEXT NOT NULL,
-        data TEXT NOT NULL,
-        timestamp INTEGER NOT NULL DEFAULT (cast(strftime('%s','now') as int)))"""
 
 @dataclass
 class PlayerBans(TableModel):
@@ -921,21 +851,7 @@ class PlayerClaim(TableModel):
         )"""
 
     
-@dataclass
-class PlayerNotes(TableModel):
-    player_id: int
-    notes: str
-    edited_by: int
-    date: int
 
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS player_notes (
-            player_id INTEGER PRIMARY KEY REFERENCES players(id),
-            notes TEXT NOT NULL,
-            edited_by INTEGER NOT NULL REFERENCES users(id),
-            date INTEGER NOT NULL
-            )"""
     
 @dataclass
 class FilteredWords(TableModel):
@@ -993,96 +909,16 @@ class TournamentPost(TableModel):
             post_id INTEGER NOT NULL REFERENCES posts(id),
             PRIMARY KEY (tournament_id, post_id)) WITHOUT ROWID"""
 
-class UserLogin(TableModel):
-    id: int
-    user_id: int
-    ip: str
-    session_id: str
-    persistent_session_id: str
-    fingerprint: str
-    had_persistent_session: bool
-    date: int
-    logout_date: int | None
 
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS user_logins(
-            id INTEGER PRIMARY KEY,
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            ip TEXT NOT NULL,
-            session_id TEXT NOT NULL,
-            persistent_session_id TEXT NOT NULL,
-            fingerprint TEXT NOT NULL,
-            had_persistent_session BOOLEAN NOT NULL,
-            date INTEGER NOT NULL,
-            logout_date INTEGER
-        )"""
-    
-@dataclass
-class AltFlag(TableModel):
-    id: int
-    type: str
-    data: str
-    score: int
-    date: int
-    login_id: int | None
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS alt_flags(
-            id INTEGER PRIMARY KEY,
-            type TEXT NOT NULL,
-            data TEXT NOT NULL,
-            score INTEGER NOT NULL,
-            date INTEGER NOT NULL,
-            login_id INTEGER REFERENCES user_logins(id)
-        )"""
-    
-@dataclass
-class UserAltFlag(TableModel):
-    user_id: int
-    flag_id: int
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS user_alt_flags(
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            flag_id INTEGER NOT NULL REFERENCES alt_flags(id),
-            PRIMARY KEY (user_id, flag_id)) WITHOUT ROWID"""
-
-@dataclass
-class UserIP(TableModel):
-    user_id: int
-    ip_address: str
-    date_earliest: int
-    date_latest: int
-    times: int
-    is_mobile: bool
-    is_vpn: bool
-    is_checked: bool
-
-    @staticmethod
-    def get_create_table_command() -> str:
-        return """CREATE TABLE IF NOT EXISTS user_ips(
-            user_id INTEGER NOT NULL REFERENCES users(id),
-            ip_address TEXT NOT NULL,
-            date_earliest INTEGER NOT NULL,
-            date_latest INTEGER NOT NULL,
-            times INTEGER NOT NULL,
-            is_mobile BOOLEAN NOT NULL,
-            is_vpn BOOLEAN NOT NULL,
-            is_checked BOOLEAN NOT NULL,
-            PRIMARY KEY(user_id, ip_address)) WITHOUT ROWID"""
     
 all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, Session, UserDiscord, Role, Permission, UserRole, RolePermission, 
+    Player, FriendCode, User, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentRegistration, TournamentPlayer,
-    TournamentPlacements, Team, TeamRoster, TeamMember, 
+    TournamentPlacements, Team, TeamRoster, TeamMember,
     TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
     SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
     TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
     TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
-    UserSettings, Notifications, CommandLog, PlayerBans, PlayerBansHistorical,
-    PlayerNameEdit, PlayerNotes, PlayerClaim, FilteredWords,
-    Post, SeriesPost, TournamentPost, UserLogin, AltFlag, UserAltFlag, UserIP,
-    EmailVerification, PasswordReset]
+    UserSettings, Notifications, PlayerBans, PlayerBansHistorical,
+    PlayerNameEdit, PlayerClaim, FilteredWords,
+    Post, SeriesPost, TournamentPost]

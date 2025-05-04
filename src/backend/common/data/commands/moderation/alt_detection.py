@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Dict
 from common.data.commands import Command
 from common.data.models import *
 import msgspec
@@ -12,15 +13,17 @@ class LogUserIPCommand(Command[None]):
     ip_address: str | None
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='user_activity') as db:
             now = int(datetime.now(timezone.utc).timestamp())
             ip = self.ip_address if self.ip_address else "0.0.0.0"
-            async with db.execute("UPDATE user_ips SET date_latest = ?, times = times + 1 WHERE user_id = ? AND ip_address = ?",
-                                  (now, self.user_id, ip)) as cursor:
+            async with db.execute("UPDATE user_ips SET date_latest = :date_latest, times = times + 1 WHERE user_id = :user_id AND ip_address = :ip_address",
+                                  {"date_latest": now, "user_id": self.user_id, "ip_address": ip}) as cursor:
                 row_count = cursor.rowcount
             if not row_count:
                 await db.execute("""INSERT INTO user_ips(user_id, ip_address, date_earliest, date_latest, times, is_mobile, is_vpn, is_checked)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.user_id, ip, now, now, 1, False, False, False))
+                                    VALUES(:user_id, :ip_address, :date_earliest, :date_latest, :times, :is_mobile, :is_vpn, :is_checked)""", 
+                                {"user_id": self.user_id, "ip_address": ip, "date_earliest": now, "date_latest": now, 
+                                 "times": 1, "is_mobile": False, "is_vpn": False, "is_checked": False})
             await db.commit()
 
 @dataclass
@@ -36,8 +39,8 @@ class CheckIPsCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         limit = 2000 # rate limit of 100 ips/request * 45 requests/min, 2000 just to be safe
         ips: list[IPInfoBasic] = []
-        async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT user_id, ip_address FROM user_ips WHERE is_checked = 0 LIMIT ?", (limit,)) as cursor:
+        async with db_wrapper.connect(db_name='user_activity', readonly=True) as db:
+            async with db.execute("SELECT user_id, ip_address FROM user_ips WHERE is_checked = 0 LIMIT :limit", {"limit": limit}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     user_id, ip = row
@@ -59,9 +62,10 @@ class CheckIPsCommand(Command[None]):
                     response_data.extend(body)
         
         # updating appropriate rows in the database
-        query_parameters = [(response_data[i].mobile, response_data[i].proxy, ips[i].user_id, ips[i].ip_address) for i in range(len(ips))]
-        async with db_wrapper.connect() as db:
-            await db.executemany("UPDATE user_ips SET is_mobile = ?, is_vpn = ?, is_checked = 1 WHERE user_id = ? AND ip_address = ?",
+        query_parameters: List[Dict[str, Any]] = [{"is_mobile": response_data[i].mobile, "is_vpn": response_data[i].proxy, 
+                            "user_id": ips[i].user_id, "ip_address": ips[i].ip_address} for i in range(len(ips))]
+        async with db_wrapper.connect(db_name='user_activity') as db:
+            await db.executemany("UPDATE user_ips SET is_mobile = :is_mobile, is_vpn = :is_vpn, is_checked = 1 WHERE user_id = :user_id AND ip_address = :ip_address",
                                  query_parameters)
             await db.commit()
 
@@ -70,7 +74,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
     filter: AltFlagFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect(readonly=True) as db:
+        async with db_wrapper.connect(db_name="main", attach=["user_activity", "alt_flags"], readonly=True) as db:
             limit = 20
             offset = 0
 
@@ -79,8 +83,8 @@ class ListAltFlagsCommand(Command[AltFlagList]):
 
             # get alt flag info
             flag_dict: dict[int, AltFlag] = {}
-            flag_query = """FROM alt_flags f
-                            LEFT JOIN user_logins l ON f.login_id = l.id
+            flag_query = """FROM alt_flags.alt_flags f
+                            LEFT JOIN user_activity.user_logins l ON f.login_id = l.id
                             """
             async with db.execute(f"SELECT f.id, f.type, f.data, f.score, f.date, l.fingerprint {flag_query} ORDER BY f.date DESC LIMIT ? OFFSET ?",
                                   (limit, offset)) as cursor:
@@ -92,7 +96,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
             
             # get player info
             async with db.execute(f"""SELECT p.id, p.name, p.country_code, uf.flag_id
-                                    FROM user_alt_flags uf
+                                    FROM alt_flags.user_alt_flags uf
                                     JOIN users u ON uf.user_id = u.id
                                     JOIN players p ON u.player_id = p.id
                                     WHERE uf.flag_id IN (
@@ -123,13 +127,13 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         # get alt flag info
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name="main", attach=["user_activity", "alt_flags"]) as db:
             flag_dict: dict[int, AltFlag] = {}
-            flag_query = """FROM alt_flags f
-                            LEFT JOIN user_logins l ON f.login_id = l.id
+            flag_query = """FROM alt_flags.alt_flags f
+                            LEFT JOIN user_activity.user_logins l ON f.login_id = l.id
                             WHERE f.id IN (
                                 SELECT uf.flag_id
-                                FROM user_alt_flags uf
+                                FROM alt_flags.user_alt_flags uf
                                 JOIN users u ON uf.user_id = u.id
                                 JOIN players p ON u.player_id = p.id
                                 WHERE p.id = ?
@@ -144,7 +148,7 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
 
             # get player info
             async with db.execute(f"""SELECT p.id, p.name, p.country_code, uf.flag_id
-                                    FROM user_alt_flags uf
+                                    FROM alt_flags.user_alt_flags uf
                                     JOIN users u ON uf.user_id = u.id
                                     JOIN players p ON u.player_id = p.id
                                     WHERE uf.flag_id IN (

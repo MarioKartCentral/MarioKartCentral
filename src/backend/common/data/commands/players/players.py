@@ -183,20 +183,22 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 
             notes = None
             if self.include_notes:
-                async with db.execute("SELECT notes, edited_by, date FROM player_notes WHERE player_id = ?", (self.id,)) as cursor:
-                    row = await cursor.fetchone()
-                    if row:
-                        player_notes, edited_by, date = row
-                        query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date FROM players p 
-                            JOIN users u ON u.player_id = p.id
-                            WHERE u.id = ?"""
-                        async with db.execute(query, (edited_by,)) as cursor:
-                            player_row = await cursor.fetchone()
-                            edited_by =  None
-                            if player_row:
-                                p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date = player_row
-                                edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
-                            notes = PlayerNotes(player_notes, edited_by, date)
+                # Connect to main database and attach player_notes
+                async with db_wrapper.connect(db_name='main', attach=['player_notes']) as db_with_notes:
+                    async with db_with_notes.execute("SELECT notes, edited_by, date FROM player_notes.player_notes WHERE player_id = ?", (self.id,)) as cursor:
+                        row = await cursor.fetchone()
+                        if row:
+                            player_notes, edited_by, date = row
+                            query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date FROM players p 
+                                JOIN users u ON u.player_id = p.id
+                                WHERE u.id = ?"""
+                            async with db_with_notes.execute(query, (edited_by,)) as cursor:
+                                player_row = await cursor.fetchone()
+                                edited_by = None
+                                if player_row:
+                                    p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date = player_row
+                                    edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
+                                notes = PlayerNotes(player_notes, edited_by, date)
 
             roles: list[PlayerRole] = []
             if user:
