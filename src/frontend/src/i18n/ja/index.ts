@@ -676,8 +676,7 @@ const ja: Translation = {
       TEAM_ROLE_ADD_FAILED: '役職の付与に失敗しました。',
       TEAM_ROLE_REMOVE_CONFIRM: '{player_name} から {team_role} の役職を外してもよろしいでしょうか？',
       TEAM_ROLE_REMOVE_FAILED: '役職の解除に失敗しました。',
-      ROSTER_NAME_TAG_CHANGE_SUCCESS:
-        "roster名/tagの変更申請はMKCentralのスタッフに送信され、承認されました。",
+      ROSTER_NAME_TAG_CHANGE_SUCCESS: 'roster名/tagの変更申請はMKCentralのスタッフに送信され、承認されました。',
       ROSTER_NAME_TAG_CHANGE_FAILURE: 'roster名/tagの変更申請に失敗しました',
     },
     LIST: {
@@ -899,8 +898,7 @@ const ja: Translation = {
       REMOVE_ROSTER_FAILED: 'rosterの削除に失敗しました',
       SIGN_IN_REGISTER_TO_REGISTER: 'MKCentralで大会に参加するには、サインインするか登録する必要があります',
       LINK_DISCORD_TO_REGISTER: 'MKCentralの大会に参加するには、Discordアカウントと連携して下さい。',
-      CONFIRM_EMAIL_TO_REGISTER:
-        'MKCentralの大会に参加するには、Eメールを確認し、プレイヤー登録を完了してください。',
+      CONFIRM_EMAIL_TO_REGISTER: 'MKCentralの大会に参加するには、Eメールを確認し、プレイヤー登録を完了してください。',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'テンプレート選択',
