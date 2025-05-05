@@ -141,9 +141,9 @@ const ja: Translation = {
     WELCOME: 'Welcome to MKCentral!',
     SUMMARY:
       'マリオカートトーナメントのホームページです、 マリオカートトーナメントでは、カジュアルな大会から本格的な大会まで、あらゆるプレイヤーを対象としたトーナメントを開催しています！マリオカート8デラックスやツアーなど、様々な大会を毎週開催しています！',
-    YOU_PLACED: 'You placed: {placement|ordinalSuffix}', // TODO: if possible, update the file formatters.ts and implement ordinalSuffixJa()
+    YOU_PLACED: 'あなたの順位: {placement|ordinalSuffix}', // TODO: if possible, update the file formatters.ts and implement ordinalSuffixJa()
     LATEST_RESULTS: '最新結果',
-    VIEW_FULL_PLACEMENTS: 'View Full Placements',
+    VIEW_FULL_PLACEMENTS: '全順位表示',
     LATEST_TOURNAMENTS: '最新トーナメント',
     VIEW_ALL_TOURNAMENTS: '全大会表示',
     NEWEST_PLAYERS: '新規プレイヤー',
