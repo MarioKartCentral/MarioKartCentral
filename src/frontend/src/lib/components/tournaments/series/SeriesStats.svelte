@@ -1,6 +1,8 @@
 <script lang="ts">
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import Section from '$lib/components/common/Section.svelte';
   import Table from '$lib/components/common/Table.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
   import { sortByMedals, sortByAppearances } from '$lib/util/series_stats';
   export let stats;
   let stats_mode = 'team_medals';
@@ -27,16 +29,16 @@
   }
 </script>
 
-<div>
+<Section header="Stats">
   <div style="background-color: darkcyan;">
     Teams :
-    <button on:click={() => handleTeamMedalsClick()}> Medals </button>
-    <button on:click={() => handleTeamAppearancesClick()}> Appearances </button>
+    <Button type="submit" on:click={() => handleTeamMedalsClick()}>Podium Finishes</Button>
+    <Button type="submit" on:click={() => handleTeamAppearancesClick()}>Tournament Appearances</Button>
   </div>
   <div style="background-color: darkblue;">
     Players :
-    <button on:click={() => handlePlayerMedalsClick()}> Medals </button>
-    <button on:click={() => handlePlayerAppearancesClick()}> Appearances </button>
+    <Button on:click={() => handlePlayerMedalsClick()}>Podium Finishes</Button>
+    <Button on:click={() => handlePlayerAppearancesClick()}>Tournament Appearances</Button>
   </div>
 
   {#if stats_mode === 'team_medals'}
@@ -115,6 +117,6 @@
       {/each}
     </Table>
   {/if}
-</div>
+</Section>
 
 <style></style>

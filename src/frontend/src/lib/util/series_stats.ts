@@ -1,162 +1,147 @@
 export function makeStats(tournaments) {
     const rostersMap = new Map();
     const playersMap = new Map();
+
     for (const tournament of tournaments) {
         for (const placement of tournament.placements) {
+            const placementResult = placement.placement;
+
             if (tournament.is_squad) {
                 for (const roster of placement.squad.rosters) {
-                    const roster_id = roster.roster_id;
-                    if (!rostersMap.has(roster_id)) {
-                        rostersMap.set(roster_id, newRosterObject(roster))
-                    }
-                    const { gold, silver, bronze } = addMedals(placement.placement);
-                    const r = rostersMap.get(roster_id);
-                    r.gold += gold;
-                    r.silver += silver;
-                    r.bronze += bronze;
-                    r.appearances++;
+                    updateStats(rostersMap, roster.roster_id, () => newRosterObject(roster), placementResult);
                 }
+
                 for (const player of placement.squad.players) {
-                    const player_id = player.player_id;
-                    if (!playersMap.has(player_id)) {
-                        playersMap.set(player_id, newPlayerObject(player));
-                    }
-                    const { gold, silver, bronze } = addMedals(placement.placement);
-                    const r = playersMap.get(player_id);
-                    r.gold += gold;
-                    r.silver += silver;
-                    r.bronze += bronze;
-                    r.appearances++;
+                    updateStats(playersMap, player.player_id, () => newPlayerObject(player), placementResult);
                 }
             } else {
-                const player = placement.player
-                const player_id = placement.player.player_id;
-                if (!playersMap.has(player_id)) {
-                    playersMap.set(player_id, newPlayerObject(player));
-                }
-                const { gold, silver, bronze } = addMedals(placement.placement);
-                const r = playersMap.get(player_id);
-                r.gold += gold;
-                r.silver += silver;
-                r.bronze += bronze;
-                r.appearances++;
-
+                const player = placement.player;
+                updateStats(playersMap, player.player_id, () => newPlayerObject(player), placementResult);
             }
         }
     }
-    const rostersArray = Array.from(rostersMap, ([key, value]) => ({
-        roster_id: key,
-        name: value.name,
-        tag: value.tag,
-        color: value.color,
-        gold: value.gold,
-        silver: value.silver,
-        bronze: value.bronze,
-        appearances: value.appearances
+
+    const rostersArray = Array.from(rostersMap.entries()).map(([roster_id, value]) => ({
+        ...value,
+        roster_id
     }));
-    const playersArray = Array.from(playersMap, ([key, value]) => ({
-        player_id: key,
-        name: value.name,
-        country_code: value.country_code,
-        gold: value.gold,
-        silver: value.silver,
-        bronze: value.bronze,
-        appearances: value.appearances
+
+    const playersArray = Array.from(playersMap.entries()).map(([player_id, value]) => ({
+        ...value,
+        player_id
     }));
+
     addRankings(rostersArray);
     addRankings(playersArray);
+
     return {
-        rostersArray: rostersArray,
-        playersArray: playersArray
+        rostersArray,
+        playersArray
     };
+}
+
+// === Shared Utility Functions ===
+
+function updateStats(map, id, createFn, placement) {
+    if (!map.has(id)) {
+        map.set(id, createFn());
+    }
+
+    const { gold, silver, bronze } = getMedals(placement);
+    const obj = map.get(id);
+
+    obj.gold += gold;
+    obj.silver += silver;
+    obj.bronze += bronze;
+    obj.appearances++;
 }
 
 function newRosterObject(roster) {
     return {
-        roster_id: roster.roster_id,
         name: roster.roster_name,
         tag: roster.roster_tag,
         color: roster.team_color,
         gold: 0,
         silver: 0,
         bronze: 0,
-        appearances: 0,
+        appearances: 0
     };
 }
 
 function newPlayerObject(player) {
     return {
-        player_id: player.player_id,
         name: player.name,
         country_code: player.country_code,
         gold: 0,
         silver: 0,
         bronze: 0,
-        appearances: 0,
+        appearances: 0
     };
 }
 
-function addMedals(placement) {
-    let gold = 0;
-    let silver = 0;
-    let bronze = 0;
-    switch (placement) {
-        case 1:
-            gold++;
-            break;
-        case 2:
-            silver++;
-            break;
-        case 3:
-            bronze++;
-            break;
-        default:
-            break;
-    }
-    return { gold, silver, bronze };
-}
-function addRankings(array) {
-    addMedalsRankings(array);
-    addAppearanceRankings(array);
+// === Medal Helpers ===
+
+const medalsCache = new Map();
+
+function getMedals(placement) {
+    if (medalsCache.has(placement)) return medalsCache.get(placement);
+
+    const medals = { gold: 0, silver: 0, bronze: 0 };
+
+    if (placement === 1) medals.gold++;
+    else if (placement === 2) medals.silver++;
+    else if (placement === 3) medals.bronze++;
+
+    medalsCache.set(placement, medals);
+    return medals;
 }
 
-function addMedalsRankings(array) {
-    array = sortByMedals(array);
+// === Ranking Helpers ===
+
+function addRankings(array) {
+    addMedalsRanking(array);
+    addAppearancesRanking(array);
+}
+
+function addMedalsRanking(array) {
+    array.sort(compareMedals);
+
     for (let i = 0; i < array.length; i++) {
         array[i].medals_placement = i + 1;
-        if (i > 0 && array[i - 1].gold === array[i].gold && array[i - 1].silver === array[i].silver && array[i - 1].bronze === array[i].bronze) {
+        if (
+            i > 0 &&
+            array[i].gold === array[i - 1].gold &&
+            array[i].silver === array[i - 1].silver &&
+            array[i].bronze === array[i - 1].bronze
+        ) {
             array[i].medals_placement = array[i - 1].medals_placement;
         }
     }
-    return array;
 }
 
-function addAppearanceRankings(array) {
-    array = sortByAppearances(array);
+function addAppearancesRanking(array) {
+    array.sort((a, b) => b.appearances - a.appearances);
+
     for (let i = 0; i < array.length; i++) {
         array[i].appearances_placement = i + 1;
-        if (i > 0 && array[i - 1].appearances === array[i].appearances) {
+        if (i > 0 && array[i].appearances === array[i - 1].appearances) {
             array[i].appearances_placement = array[i - 1].appearances_placement;
         }
     }
-    console.log(array)
-    return array;
+}
+
+// === Sorting Utilities ===
+
+export function compareMedals(a, b) {
+    if (a.gold !== b.gold) return b.gold - a.gold;
+    if (a.silver !== b.silver) return b.silver - a.silver;
+    return b.bronze - a.bronze;
 }
 
 export function sortByMedals(array) {
-    return array.sort((a, b) => {
-        if (a.gold !== b.gold) {
-            return b.gold - a.gold;
-        }
-        if (a.silver !== b.silver) {
-            return b.silver - a.silver
-        };
-        return b.bronze - a.bronze;
-    });
+    return array.sort(compareMedals);
 }
 
 export function sortByAppearances(array) {
-    return array.sort((a, b) => {
-        return b.appearances - a.appearances;
-    })
+    return array.sort((a, b) => b.appearances - a.appearances);
 }
