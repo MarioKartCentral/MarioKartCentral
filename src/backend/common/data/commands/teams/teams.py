@@ -489,24 +489,7 @@ class ListTeamsCommand(Command[TeamList]):
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
             append_equal_filter(filter.is_active, "r.is_active")
-
-            # query that determines if a team has at least 1 member in an active roster
-            member_query = """SELECT t.id
-                                FROM teams t
-                                JOIN team_rosters r ON t.id = r.team_id
-                                JOIN team_members m ON m.roster_id = r.id
-                                WHERE m.leave_date IS NULL AND r.is_active = 1
-                            """
-            # we should include teams which have 0 members but aren't listed as historical in this filter
-            if filter.is_historical is True:
-                historical_clause = f"(t.is_historical = ? OR t.id NOT IN ({member_query}))"
-                where_clauses.append(historical_clause)
-                variable_parameters.append(filter.is_historical)
-            # require that teams have at least 1 member
-            elif filter.is_historical is False:
-                historical_clause = f"(t.is_historical = ? AND t.id IN ({member_query}))"
-                where_clauses.append(historical_clause)
-                variable_parameters.append(filter.is_historical)
+            append_equal_filter(filter.is_historical, "t.is_historical")
 
             if filter.min_player_count:
                 player_count_query = """SELECT r.team_id
