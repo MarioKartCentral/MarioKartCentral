@@ -16,9 +16,9 @@ class CreatePlayerCommand(Command[Player]):
     async def handle(self, db_wrapper, s3_wrapper):
         if len(self.name) > 20:
             raise Problem("Player name must be 20 characters or less", status=400)
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='main', attach=['auth']) as db:
             if self.user_id is not None:
-                async with db.execute("SELECT player_id, email_confirmed FROM users WHERE id = ?", (self.user_id,)) as cursor:
+                async with db.execute("SELECT u.player_id, ua.email_confirmed FROM users u JOIN user_auth ua ON u.id = ua.user_id WHERE id = ?", (self.user_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     player_id, email_confirmed = row
