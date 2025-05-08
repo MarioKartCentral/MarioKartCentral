@@ -44,5 +44,20 @@ class PasswordReset(TableModel):
             token_id TEXT PRIMARY KEY NOT NULL,
             user_id INTEGER NOT NULL,
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
+    
+@dataclass
+class APIToken(TableModel):
+    token_id: str
+    user_id: int
+    name: str
 
-auth_tables: list[type[TableModel]] = [UserAuth, EmailVerification, PasswordReset]
+    @staticmethod
+    def get_create_table_command() -> str:
+        return """CREATE TABLE IF NOT EXISTS api_tokens(
+            token_id TEXT PRIMARY KEY NOT NULL,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL
+            ) WITHOUT ROWID
+        """
+
+auth_tables: list[type[TableModel]] = [UserAuth, EmailVerification, PasswordReset, APIToken]

@@ -8,14 +8,14 @@ from common.data.models import UserPlayer, EditUserRequestData
 from common.data.models.common import Problem
 from common.auth import pw_hasher
 
-@require_logged_in
+@require_logged_in()
 async def current_user(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
     if user is None:
         raise Problem("User is not logged in", status=401)
     return JSONResponse(user)
 
-@require_logged_in
+@require_logged_in()
 async def current_user_and_player(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
     if user is None:
@@ -29,7 +29,7 @@ async def current_user_and_player(request: Request) -> JSONResponse:
         mod_notifications = await handle(GetModNotificationsCommand(user_roles))
     return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications))
 
-@require_logged_in
+@require_logged_in()
 async def player_invites(request: Request) -> JSONResponse:
     invites = await handle(GetInvitesForPlayerCommand(request.state.user.player_id))
     return JSONResponse(invites)

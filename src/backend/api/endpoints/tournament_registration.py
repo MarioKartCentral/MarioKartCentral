@@ -207,7 +207,7 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(DeclineInviteRequestData)
-@require_logged_in
+@require_logged_in()
 async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JSONResponse:
     async def notify():
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.registration_id))
@@ -243,7 +243,7 @@ async def remove_player_from_squad(request: Request, body: KickSquadPlayerReques
 
 # used when a player unregisters themself from the tournament
 @bind_request_body(UnregisterPlayerRequestData)
-@require_logged_in
+@require_logged_in()
 async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
@@ -329,7 +329,7 @@ async def remove_team_representative(request: Request, body: MakeCaptainRequestD
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(UnregisterSquadRequestData)
-@require_logged_in
+@require_logged_in()
 async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
@@ -371,7 +371,7 @@ async def list_registrations(request: Request, body: TournamentRegistrationFilte
     registrations = await handle(command)
     return JSONResponse(registrations)
 
-@require_logged_in
+@require_logged_in()
 async def my_registration(request: Request) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id

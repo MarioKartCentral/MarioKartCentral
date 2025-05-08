@@ -59,3 +59,18 @@ class RemovePlayerAvatarRequestData:
 class ChangeEmailRequestData:
     new_email: str
     password: str
+
+@dataclass
+class CreateAPITokenRequestData:
+    user_id: int
+    name: str
+
+@dataclass
+class APIToken:
+    user_id: int
+    token_id: str
+    name: str
+
+@dataclass
+class DeleteAPITokenRequestData:
+    token_id: str
