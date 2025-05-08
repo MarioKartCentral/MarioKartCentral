@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>User | MK Central</title>
+    <title>User | MKCentral</title>
 </svelte:head>
 
 <slot/>
