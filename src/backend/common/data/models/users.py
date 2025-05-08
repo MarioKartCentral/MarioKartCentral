@@ -4,6 +4,7 @@ from common.data.models.players import PlayerDetailed, Player
 from common.data.models.teams import TeamInvite
 from common.data.models.tournaments import TournamentInvite
 from common.data.models.roles import UserRole, TeamRole, SeriesRole, TournamentRole
+from common.data.models.auth import APIToken
 
 @dataclass
 class User:
@@ -36,6 +37,7 @@ class UserPlayer(UserAccountInfo):
     series_roles: list[SeriesRole]
     tournament_roles: list[TournamentRole]
     mod_notifications: ModNotifications | None
+    token_count: int
 
 @dataclass
 class PermissionsCheck:
@@ -70,6 +72,10 @@ class UserInfo:
     email_confirmed: bool
     force_password_reset: bool
     player: Player | None
+
+@dataclass
+class UserInfoDetailed(UserInfo):
+    tokens: list[APIToken]
 
 @dataclass
 class UserList:

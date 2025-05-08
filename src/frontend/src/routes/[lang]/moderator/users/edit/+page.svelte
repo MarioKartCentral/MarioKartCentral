@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import type { User } from "$lib/types/user";
+    import type { UserDetailed } from "$lib/types/user";
     import { page } from "$app/stores";
     import Section from "$lib/components/common/Section.svelte";
     import Flag from "$lib/components/common/Flag.svelte";
@@ -10,10 +10,11 @@
     import { user } from "$lib/stores/stores";
     import { check_permission, permissions } from "$lib/util/permissions";
     import LL from "$i18n/i18n-svelte";
+    import ApiTokenDisplay from "$lib/components/user/APITokenDisplay.svelte";
 
     let id: number | null = null;
     let user_found = true;
-    let edit_user: User;
+    let edit_user: UserDetailed;
     let change_password = false;
     let new_password = "";
 
@@ -30,7 +31,7 @@
             user_found = false;
             return;
         }
-        const body: User = await res.json();
+        const body: UserDetailed = await res.json();
         edit_user = body;
     });
 
@@ -54,6 +55,28 @@
             window.location.reload();
         } else {
             alert(`${$LL.MODERATOR.MANAGE_USERS.EDIT_USER_FAILED()}: ${result['title']}`);
+        }
+    }
+
+    let token_name = '';
+    let working = false;
+    async function createToken() {
+        working = true;
+        const payload = {
+            name: token_name,
+        };
+        const endpoint = `/api/user/${edit_user.id}/create_api_token`;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        working = false;
+        const result = await response.json();
+        if (response.status < 300) {
+            window.location.reload();
+        } else {
+            alert(`${$LL.API_TOKENS.CREATE_TOKEN_FAILED()}: ${result['title']}`);
         }
     }
 </script>
@@ -151,6 +174,15 @@
                 </div>
             </form>
         </Section>
+        <Section header={$LL.API_TOKENS.API_TOKENS()}>
+            <div class="flex gap-2 mb-5">
+                <input class="token-name" bind:value={token_name} placeholder={$LL.API_TOKENS.TOKEN_NAME_HERE()}/>
+                <Button on:click={createToken} disabled={!token_name.length} {working}>{$LL.API_TOKENS.CREATE_TOKEN()}</Button>
+            </div>
+            {#each edit_user.tokens as token}
+                <ApiTokenDisplay {token} is_privileged={true}/>
+            {/each}
+        </Section>
     {:else if !user_found}
         {$LL.MODERATOR.MANAGE_USERS.USER_NOT_FOUND()}
     {/if}
@@ -174,5 +206,8 @@
     }
     div.change_password {
         margin-top: 10px;
+    }
+    input.token-name {
+        width: 250px;
     }
 </style>

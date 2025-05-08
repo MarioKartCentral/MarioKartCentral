@@ -295,7 +295,8 @@ async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarReques
 @bind_request_body(CreateAPITokenRequestData)
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
 async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> JSONResponse:
-    command = CreateAPITokenCommand(body.user_id, request.state.user.id, body.name)
+    user_id = request.path_params['user_id']
+    command = CreateAPITokenCommand(user_id, request.state.user.id, body.name)
     await handle(command)
     return JSONResponse({})
 
@@ -347,9 +348,9 @@ routes = [
     Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
     Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
-    Route('/api/user/create_api_token', create_api_token, methods=["POST"]),
+    Route('/api/user/{user_id:int}/create_api_token', create_api_token, methods=["POST"]),
     Route('/api/user/{user_id:int}/user_api_tokens', user_api_tokens),
-    Route('/api/user/api_tokens', my_api_tokens),
     Route('/api/user/{user_id:int}/delete_api_token', mod_delete_api_token, methods=["POST"]),
+    Route('/api/user/api_tokens', my_api_tokens),
     Route('/api/user/delete_api_token', delete_api_token, methods=["POST"]),
 ]

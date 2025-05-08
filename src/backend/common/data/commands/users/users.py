@@ -162,7 +162,7 @@ class ListUsersCommand(Command[UserList]):
         return UserList(users, user_count, page_count)
 
 @dataclass
-class ViewUserCommand(Command[UserInfo]):
+class ViewUserCommand(Command[UserInfoDetailed]):
     user_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -191,7 +191,13 @@ class ViewUserCommand(Command[UserInfo]):
                     if discord_id is not None:
                         discord = Discord(discord_id, discord_username, discord_discriminator, discord_global_name, discord_avatar)
                     player = Player(player_id, player_name, country_code, bool(is_hidden_int), bool(is_shadow_int), bool(is_banned_int), player_join_date, discord)
-                return UserInfo(user_id, email, join_date, bool(email_confirmed_int), bool(force_password_reset_int), player)
+            async with db.execute("SELECT token_id, name FROM auth.api_tokens WHERE user_id = ?", (self.user_id,)) as cursor:
+                rows = await cursor.fetchall()
+                tokens: list[APIToken] = []
+                for row in rows:
+                    token_id, token_name = row
+                    tokens.append(APIToken(user_id, token_id, token_name))
+                return UserInfoDetailed(user_id, email, join_date, bool(email_confirmed_int), bool(force_password_reset_int), player, tokens)
 
 @dataclass
 class EditUserCommand(Command[None]):

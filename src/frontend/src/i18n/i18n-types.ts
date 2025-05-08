@@ -331,6 +331,37 @@ type RootTranslation = {
 		 */
 		WORKING: string
 	}
+	API_TOKENS: {
+		/**
+		 * A​P​I​ ​T​o​k​e​n​s
+		 */
+		API_TOKENS: string
+		/**
+		 * T​o​k​e​n​ ​N​a​m​e​:
+		 */
+		TOKEN_NAME: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​e​ ​t​o​k​e​n​ ​w​i​t​h​ ​n​a​m​e​ ​{​n​a​m​e​}​?​ ​A​n​y​ ​a​p​p​l​i​c​a​t​i​o​n​s​ ​t​h​a​t​ ​u​s​e​ ​t​h​i​s​ ​t​o​k​e​n​ ​w​i​l​l​ ​b​e​c​o​m​e​ ​u​n​a​u​t​h​o​r​i​z​e​d​.
+		 * @param {string} name
+		 */
+		DELETE_TOKEN_CONFIRM: RequiredParams<'name'>
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​d​e​l​e​t​e​ ​A​P​I​ ​t​o​k​e​n
+		 */
+		DELETE_TOKEN_FAILED: string
+		/**
+		 * C​r​e​a​t​e​ ​A​P​I​ ​T​o​k​e​n
+		 */
+		CREATE_TOKEN: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​ ​A​P​I​ ​t​o​k​e​n
+		 */
+		CREATE_TOKEN_FAILED: string
+		/**
+		 * N​a​m​e​ ​y​o​u​r​ ​n​e​w​ ​A​P​I​ ​t​o​k​e​n​.​.​.
+		 */
+		TOKEN_NAME_HERE: string
+	}
 	DISCORD: {
 		/**
 		 * D​i​s​c​o​r​d
@@ -5197,6 +5228,36 @@ export type TranslationFunctions = {
 		 * Working...
 		 */
 		WORKING: () => LocalizedString
+	}
+	API_TOKENS: {
+		/**
+		 * API Tokens
+		 */
+		API_TOKENS: () => LocalizedString
+		/**
+		 * Token Name:
+		 */
+		TOKEN_NAME: () => LocalizedString
+		/**
+		 * Are you sure you want to delete the token with name {name}? Any applications that use this token will become unauthorized.
+		 */
+		DELETE_TOKEN_CONFIRM: (arg: { name: string }) => LocalizedString
+		/**
+		 * Failed to delete API token
+		 */
+		DELETE_TOKEN_FAILED: () => LocalizedString
+		/**
+		 * Create API Token
+		 */
+		CREATE_TOKEN: () => LocalizedString
+		/**
+		 * Failed to create API token
+		 */
+		CREATE_TOKEN_FAILED: () => LocalizedString
+		/**
+		 * Name your new API token...
+		 */
+		TOKEN_NAME_HERE: () => LocalizedString
 	}
 	DISCORD: {
 		/**

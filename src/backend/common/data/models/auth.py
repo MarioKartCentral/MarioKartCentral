@@ -62,7 +62,6 @@ class ChangeEmailRequestData:
 
 @dataclass
 class CreateAPITokenRequestData:
-    user_id: int
     name: str
 
 @dataclass
