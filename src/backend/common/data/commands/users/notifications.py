@@ -141,7 +141,7 @@ class GetPlayerNameCommand(Command[str]):
                 return row[0]
 
 @dataclass
-class GetUserIdFromPlayerIdCommand(Command[int]):
+class GetUserIdFromPlayerIdCommand(Command[int | None]):
     player_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
@@ -149,7 +149,7 @@ class GetUserIdFromPlayerIdCommand(Command[int]):
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
-                    raise Problem("Dispatching notification failed to query user id", status=500)
+                    return None
                 return int(row[0])
             
 @dataclass
@@ -219,16 +219,16 @@ class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
 @dataclass
 class GetNotificationSquadDataCommand(Command[NotificationDataTournamentSquad]):
     tournament_id: int
-    squad_id: int
+    registration_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT s.name, t.name, u.id FROM tournament_players tp 
                 JOIN users u ON tp.player_id = u.player_id 
-                JOIN tournament_squads s ON s.id = tp.squad_id 
+                JOIN tournament_registrations s ON s.id = tp.registration_id 
                 JOIN tournaments t ON t.id = tp.tournament_id 
-                WHERE t.id = ? AND tp.squad_id = ? AND tp.is_squad_captain = TRUE"""
-            async with db.execute(query, (self.tournament_id, self.squad_id)) as cursor:
+                WHERE t.id = ? AND tp.registration_id = ? AND tp.is_squad_captain = TRUE"""
+            async with db.execute(query, (self.tournament_id, self.registration_id)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Dispatching notification failed to query squad data", status=500)

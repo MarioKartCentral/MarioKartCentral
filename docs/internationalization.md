@@ -1,6 +1,6 @@
 # Internationalization (i18n)
 
-This document explains the internationalization system used in Mario Kart Central and provides guidance for developers working with translations.
+This document explains the internationalization system used in MKCentral and provides guidance for developers working with translations.
 
 ## Table of Contents
 - [Supported Languages](#supported-languages)
@@ -43,7 +43,7 @@ The i18n system consists of these main components:
 4. **Language preference storage** in browser cookies
 
 ## Frontend Translation System
-MarioKartCentral uses [typesafe-i18n](https://github.com/ivanhofer/typesafe-i18n) for type-safe translations in the frontend. This library provides strong type checking to prevent common i18n mistakes and ensures all translations have the required parameters.
+MKCentral uses [typesafe-i18n](https://github.com/ivanhofer/typesafe-i18n) for type-safe translations in the frontend. This library provides strong type checking to prevent common i18n mistakes and ensures all translations have the required parameters.
 
 ### Translation Files Structure
 Translation files are organized under `/src/frontend/src/i18n/` with each language having its own directory:
@@ -144,8 +144,8 @@ const formatScore = (score: PlayerScore): string => {
 ### Language in URL Path
 All site URLs include the language code as the first path segment:
 ```
-https://mariokartcentral.com/en-us/tournaments
-https://mariokartcentral.com/fr/players
+https://mkcentral.com/en-us/tournaments
+https://mkcentral.com/fr/players
 ```
 
 This pattern provides:
@@ -373,7 +373,7 @@ export default en_gb;
 This approach is useful for minimizing duplication between similar languages while still ensuring type safety.
 
 ## Translation Workflow
-When working with translations in the MarioKartCentral project:
+When working with translations in the MKCentral project:
 1. **Always update the base language first** - The `en-us` locale defines the structure for all other languages
 2. **Run the generator after any changes** - Run `npx typesafe-i18n` to regenerate type definitions
 3. **CI/CD integration** - When running in CI environments, use `npx typesafe-i18n --no-watch` to generate types once without watching for changes

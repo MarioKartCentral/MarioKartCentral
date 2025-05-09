@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-    <title>Login | Mario Kart Central</title>
+    <title>Login | MKCentral</title>
 </svelte:head>
 
 {#if !user_info.id}

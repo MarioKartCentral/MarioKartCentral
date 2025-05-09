@@ -41,7 +41,7 @@
             {/if}
         </div>
         {#each show_all ? placement_list : placement_list.slice(0, num_display) as placement}
-            <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false}/>
+            <PlacementItem {placement} is_edit={false}/>
         {/each}
     </Section>
 {/if}

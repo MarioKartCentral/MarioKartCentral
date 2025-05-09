@@ -50,7 +50,7 @@
 </script>
 
 <svelte:head>
-  <title>{series_name} | Mario Kart Central</title>
+  <title>{series_name} | MKCentral</title>
 </svelte:head>
 
 {#if series}

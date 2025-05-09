@@ -16,14 +16,18 @@
     });
 </script>
 
-<Section header={$LL.MODERATOR.SHADOW_PLAYERS()}>
-    <div slot="header_content">
-        {#if check_permission(user_info, permissions.manage_shadow_players)}
-            <Button on:click={dialog.open}>{$LL.MODERATOR.CREATE_SHADOW_PLAYER()}</Button>
-        {/if}
-    </div>
-    
-    <PlayerList is_shadow={true}/>
-</Section>
+{#if user_info.is_checked}
+    {#if check_permission(user_info, permissions.manage_shadow_players)}
+        <Section header={$LL.MODERATOR.SHADOW_PLAYERS()}>
+            <div slot="header_content">
+                <Button on:click={dialog.open}>{$LL.MODERATOR.CREATE_SHADOW_PLAYER()}</Button>
+            </div>
+            <PlayerList is_shadow={true}/>
+        </Section>
+    {:else}
+        {$LL.COMMON.NO_PERMISSION()}
+    {/if}
+{/if}
+
 
 <CreateShadowPlayerDialog bind:this={dialog}/>

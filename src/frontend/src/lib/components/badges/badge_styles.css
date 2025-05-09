@@ -19,35 +19,52 @@
   background-color: #00bd6e;
   border: 1px solid #047942;
 }
+
 .game_mkt_badge {
   background-color: #a1385d;
   border: 1px solid #8e1643;
 }
-
 .game_smk_badge {
   background-color: #52a3a3;
   border: 1px solid #247373;
 }
-
 .game_mkw_badge {
   background-color: #65bedc;
   border: 1px solid #57a2c8;
 }
-
 .game_mk7_badge {
   background-color: #ab5555;
   border: 1px solid #902a2a;
 }
-
 .game_mk8_badge {
   background-color: #5555ab;
   border: 1px solid #282887;
 }
-
 .game_mk8dx_badge {
   background-color: #9755ab;
   border: 1px solid #892bad;
 }
+.game_mkworld_badge {
+  background-color: #e89d13;
+  border: 1px solid #bb7f0f;
+}
+.game_mk64_badge {
+  background-color: #8f1919;
+  border: 1px solid #701717;
+}
+.game_mksc_badge {
+  background-color: #334979;
+  border: 1px solid #1c2944;
+}
+.game_mkdd_badge {
+  background-color: #943636;
+  border: 1px solid #612222;
+}
+.game_mkds_badge {
+  background-color: #757575;
+  border: 1px solid #585858;
+}
+
 .hidden_badge {
   background-color: #757575;
   border: 1px solid #656565;
@@ -123,6 +140,15 @@
 .not_recruiting_badge {
   background-color: #7f7f80;
   border: 1px solid #4b4b4b;
+}
+
+.organizer_affiliate_badge {
+  background-color: #d45612;
+  border: 1px solid #73300b;
+}
+.organizer_lan_badge {
+  background-color: #d49312;
+  border: 1px solid #73510b;
 }
 
 .primary {

@@ -88,16 +88,6 @@ class EditTournamentCommand(Command[None]):
                     if not row:
                         raise Problem("Series with provided ID cannot be found", status=404)
             # check for invalid body parameters
-            if not is_squad and b.teams_allowed:
-                raise Problem('Individual tournaments cannot have teams linked', status=400)
-            if not b.teams_allowed and (b.teams_only or b.team_members_only):
-                raise Problem('Non-team tournaments cannot have teams_only, team_members_only, min_representatives enabled', status=400)
-            if not is_squad and (b.min_squad_size or b.max_squad_size or b.squad_tag_required or b.squad_name_required):
-                raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
-            if b.teams_allowed and (b.mii_name_required or b.host_status_required):
-                raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
-            if b.teams_allowed and (not b.squad_tag_required or not b.squad_name_required):
-                raise Problem('Team tournaments must require a squad tag/name', status=400)
             if not b.series_id and b.use_series_logo:
                 raise Problem('Cannot use series logo if no series is selected', status=400)
             if b.bagger_clause_enabled and not (game == 'mkw' and is_squad):
@@ -116,15 +106,8 @@ class EditTournamentCommand(Command[None]):
                 url = ?,
                 registration_deadline = ?,
                 registration_cap = ?,
-                teams_allowed = ?,
-                teams_only = ?,
-                team_members_only = ?,
                 min_squad_size = ?,
                 max_squad_size = ?,
-                squad_tag_required = ?,
-                squad_name_required = ?,
-                mii_name_required = ?,
-                host_status_required = ?,
                 checkins_enabled = ?,
                 checkins_open = ?,
                 min_players_checkin = ?,
@@ -134,13 +117,15 @@ class EditTournamentCommand(Command[None]):
                 is_public = ?,
                 is_deleted = ?,
                 show_on_profiles = ?,
-                min_representatives = ?
+                min_representatives = ?,
+                organizer = ?,
+                location = ?
                 WHERE id = ?""",
                 (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
-                logo_path, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
-                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open,
+                logo_path, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.min_squad_size,
+                b.max_squad_size, b.checkins_enabled, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
-                b.min_representatives, self.id))
+                b.min_representatives, b.organizer, b.location, self.id))
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
@@ -324,7 +309,7 @@ class GetTournamentListCommand(Command[TournamentList]):
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             tournaments_query = f"""SELECT t.id, t.name, t.game, t.mode, t.date_start, t.date_end, t.is_squad, t.registrations_open, 
-                                        t.teams_allowed, t.logo, t.use_series_logo, t.is_viewable, t.is_public,
+                                        t.teams_allowed, t.logo, t.use_series_logo, t.is_viewable, t.is_public, t.organizer,
                                         s.id, s.name, s.url, s.short_description, s.logo
                                         FROM tournaments t
                                         LEFT JOIN tournament_series s ON t.series_id = s.id
@@ -336,12 +321,12 @@ class GetTournamentListCommand(Command[TournamentList]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (tournament_id, name, game, mode, date_start, date_end, is_squad, registrations_open,
-                      teams_allowed, logo, use_series_logo, is_viewable, is_public,
+                      teams_allowed, logo, use_series_logo, is_viewable, is_public, organizer,
                       series_id, series_name, series_url, series_short_description, series_logo) = row
                     if bool(use_series_logo):
                         logo = series_logo
                     tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_short_description,
-                        bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable), bool(is_public)))
+                        bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable), bool(is_public), organizer))
 
             count_query = f"SELECT COUNT(*) FROM tournaments t {where_clause}"
             page_count: int = 0

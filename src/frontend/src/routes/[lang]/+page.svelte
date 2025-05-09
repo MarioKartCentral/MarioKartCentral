@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-  <title>Mario Kart Central</title>
+  <title>MKCentral</title>
 </svelte:head>
 
 <div class="welcome">

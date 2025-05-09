@@ -23,7 +23,7 @@
     url: null,
     organizer: 'MKCentral',
     location: null,
-    game: 'mk8dx',
+    game: 'mkworld',
     mode: '150cc',
     is_squad: false,
     min_squad_size: null,
@@ -61,6 +61,7 @@
 
   let is_edit = tournament_id ? true : false; // if we specified a tournament id, assume we're editing that tournament
   let data_retrieved = false; // wait to generate form before data is gotten from API, if any
+  let working = false;
 
   function updateData() {
     data = data;
@@ -80,6 +81,7 @@
   });
 
   async function createTournament(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const formData = new FormData(event.currentTarget);
     function getDate(name: string) {
       let date_form = formData.get(name);
@@ -95,6 +97,7 @@
     let registration_deadline: number | null = getDate('registration_deadline');
     if (date_start && date_end && date_start > date_end) {
       alert($LL.TOURNAMENTS.MANAGE.START_BEFORE_END_DATE());
+      working = false;
       return;
     }
     data.date_start = Number(date_start);
@@ -109,6 +112,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       let new_id = result["id"];
@@ -123,6 +127,7 @@
     if (!tournament_id) {
       return;
     }
+    working = true;
     const formData = new FormData(event.currentTarget);
     function getDate(name: string) {
       let date_form = formData.get(name);
@@ -138,6 +143,7 @@
     let registration_deadline: number | null = getDate('registration_deadline');
     if (date_start && date_end && date_start > date_end) {
       alert($LL.TOURNAMENTS.MANAGE.START_BEFORE_END_DATE());
+      working = false;
       return;
     }
     data.date_start = Number(date_start);
@@ -152,6 +158,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       goto(`/${$page.params.lang}/tournaments/details?id=${tournament_id}`);
@@ -167,7 +174,7 @@
     <Section header={is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()} />
     <TournamentDetailsForm {data} update_function={updateData} {is_edit} {series_restrict} />
     <Section header="Submit">
-      <Button type="submit">{is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()}</Button>
+      <Button type="submit" {working}>{is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()}</Button>
     </Section>
   </form>
 {/if}

@@ -11,6 +11,7 @@
 
     const options: Intl.DateTimeFormatOptions = {
         dateStyle: 'medium',
+        timeStyle: 'short',
     };
 </script>
 

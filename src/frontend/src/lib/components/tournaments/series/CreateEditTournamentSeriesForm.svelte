@@ -20,7 +20,7 @@
     organizer: 'MKCentral',
     location: null,
     display_order: 0,
-    game: 'mk8dx',
+    game: 'mkworld',
     mode: '150cc',
     is_historical: false,
     is_public: true,
@@ -30,6 +30,7 @@
     logo: null,
     logo_file: null,
     remove_logo: false,
+    discord_invite: null,
   };
 
   onMount(async () => {
@@ -43,10 +44,13 @@
     }
   });
 
+  let working = false;
+
   function updateData() {
     data = data;
   }
   async function createSeries() {
+    working = true;
     let payload = data;
     console.log(payload);
     const endpoint = '/api/tournaments/series/create';
@@ -55,6 +59,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       goto(`/${$page.params.lang}/tournaments/series`);
@@ -64,6 +69,7 @@
     }
   }
   async function editSeries() {
+    working = true;
     data.series_id = series_id;
     let payload = data;
     console.log(payload);
@@ -73,6 +79,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       goto(`/${$page.params.lang}/tournaments/series/details?id=${series_id}`);
@@ -112,6 +119,14 @@
       </div>
       <div>
         <input type="number" name="display_order" bind:value={data.display_order} min="0" required />
+      </div>
+    </div>
+    <div class="option">
+      <div>
+        <label for="discord_invite">{$LL.TOURNAMENTS.SERIES.SERIES_DISCORD_INVITE()}</label>
+      </div>
+      <div>
+        <input type="text" name="discord_invite" bind:value={data.discord_invite}/>
       </div>
     </div>
     <div class="logo">
@@ -186,7 +201,7 @@
     </div>
   </Section>
   <Section header={$LL.COMMON.SUBMIT()}>
-    <Button type="submit">{is_edit ? $LL.TOURNAMENTS.SERIES.EDIT() : $LL.TOURNAMENTS.SERIES.CREATE()}</Button>
+    <Button type="submit" {working}>{is_edit ? $LL.TOURNAMENTS.SERIES.EDIT() : $LL.TOURNAMENTS.SERIES.CREATE()}</Button>
   </Section>
 </form>
 

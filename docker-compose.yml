@@ -9,40 +9,41 @@ services:
       - 8000:8000
       - 5678:5678
     environment:
-      S3_ACCESS_KEY : ${MINIO_ROOT_USER:-admin}
-      S3_SECRET_KEY : ${MINIO_ROOT_PASSWORD:-mkcadmin123}
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-admin}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-mkcadmin123}
       S3_ENDPOINT: http://s3-emulator:9000/
-      API_ADMIN_EMAIL : ${API_ADMIN_EMAIL:-admin@admin.com}
-      API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
+      API_ADMIN_EMAIL: ${API_ADMIN_EMAIL:-admin@admin.com}
+      API_ADMIN_PASSWORD: ${API_ADMIN_PASSWORD:-admin}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-1283454053937971304}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
-      DISCORD_OAUTH_CALLBACK : http://localhost:5000/api/user/discord_callback
-      ENABLE_DISCORD : ${ENABLE_DISCORD:-false}
+      DISCORD_OAUTH_CALLBACK: http://localhost:5000/api/user/discord_callback
+      ENABLE_DISCORD: ${ENABLE_DISCORD:-false}
       ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
       MKC_EMAIL_ADDRESS: ${MKC_EMAIL_ADDRESS:-test@test.com}
       MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
       MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
       SITE_URL: ${SITE_URL:-http://localhost:5000}
-      PORT : 8000
-      DB_PATH : /var/lib/mkc-api/data/mkc.db
-      ENV : Development
-      PYTHONDONTWRITEBYTECODE : 1 # this is to prevent __pycache__ files during development
+      PORT: 8000
+      DB_DIRECTORY: /var/lib/mkc-api/data
+      ENV: Development
+      PYTHONDONTWRITEBYTECODE: 1 # this is to prevent __pycache__ files during development
       AWS_SES_ACCESS_KEY: ${AWS_SES_ACCESS_KEY:-}
       AWS_SES_SECRET_KEY: ${AWS_SES_SECRET_KEY:-}
       USE_SES_FOR_EMAILS: ${USE_SES_FOR_EMAILS:-false}
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
+
   worker:
     build:
       context: ./src/backend/
       dockerfile: worker.Dockerfile
     environment:
-      S3_ACCESS_KEY : ${MINIO_ROOT_USER:-admin}
-      S3_SECRET_KEY : ${MINIO_ROOT_PASSWORD:-mkcadmin123}
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-admin}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-mkcadmin123}
       S3_ENDPOINT: http://s3-emulator:9000/
-      API_ADMIN_EMAIL : ${API_ADMIN_EMAIL:-admin@admin.com}
-      API_ADMIN_PASSWORD : ${API_ADMIN_PASSWORD:-admin}
+      API_ADMIN_EMAIL: ${API_ADMIN_EMAIL:-admin@admin.com}
+      API_ADMIN_PASSWORD: ${API_ADMIN_PASSWORD:-admin}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-1283454053937971304}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-0}
       ENABLE_IP_LOGGING: ${ENABLE_IP_LOGGING:-true}
@@ -50,25 +51,28 @@ services:
       MKC_EMAIL_HOSTNAME: ${MKC_EMAIL_HOSTNAME:-mailpit}
       MKC_EMAIL_PORT: ${MKC_EMAIL_PORT:-1025}
       SITE_URL: ${SITE_URL:-http://localhost:5000}
-      DB_PATH : /var/lib/mkc-api/data/mkc.db
-      ENV : Development
-      PYTHONDONTWRITEBYTECODE : 1
-      PYTHONUNBUFFERED : 1
+      DB_DIRECTORY: /var/lib/mkc-api/data
+      ENV: Development
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
+
   frontend:
     build: ./src/frontend
     ports:
       - 8001:8001
     volumes:
       - ./src/frontend:/usr/src/app
+
   cf-worker:
     build: ./src/cf-worker
     ports:
       - 5000:5000
     volumes:
       - ./src/cf-worker:/usr/src/app
+
   s3-emulator:
     command: server /s3/data --console-address ":9001"
     image: minio/minio
@@ -78,13 +82,14 @@ services:
     volumes:
       - mkc-s3:/s3/data
     environment:
-      MINIO_ROOT_USER : ${MINIO_ROOT_USER:-admin}
-      MINIO_ROOT_PASSWORD : ${MINIO_ROOT_PASSWORD:-mkcadmin123}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-mkcadmin123}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
+
   swagger:
     image: 'swaggerapi/swagger-ui'
     environment:
@@ -93,6 +98,7 @@ services:
       - PERSIST_AUTHORIZATION=true
     ports:
       - 80:8080
+
   sqlite-web:
     image: 'coleifer/sqlite-web'
     environment:
@@ -101,6 +107,7 @@ services:
       - mkc-db:/data
     ports:
       - 7000:8080
+
   mailpit:
     image: axllent/mailpit
     volumes:
@@ -113,6 +120,7 @@ services:
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
 volumes:
   mkc-db:
   mkc-s3:

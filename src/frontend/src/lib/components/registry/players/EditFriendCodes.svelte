@@ -10,6 +10,7 @@
 
     export let player: PlayerInfo;
     export let is_privileged = false;
+    let working = false;
 
     let add_fc_dialog: Dialog;
     let edit_fc_dialog: Dialog;
@@ -24,8 +25,8 @@
     }
 
     async function edit_fc_privileged(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
-        console.log(data.get('is_primary'));
         const payload = {
             player_id: player.id,
             id: selected_fc?.id,
@@ -41,6 +42,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
 
         if (response.status < 300) {
@@ -51,19 +53,20 @@
     }
 
     async function edit_fc(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             id: selected_fc?.id,
             is_primary: data.get('is_primary') ? true : false,
             description: data.get('description')?.toString(),
         };
-        console.log(payload);
         const endpoint = '/api/registry/editFriendCode';
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
 
         if (response.status < 300) {
@@ -132,7 +135,7 @@
                         </div>
                     </div>
                 {/if}
-                <Button type="submit">{$LL.COMMON.EDIT()}</Button>
+                <Button {working} type="submit">{$LL.COMMON.EDIT()}</Button>
             </div>
         </form>
     {/if}

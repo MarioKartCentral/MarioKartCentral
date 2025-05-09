@@ -4,6 +4,14 @@
     import PlayerSearch from "$lib/components/common/PlayerSearch.svelte";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import LL from "$i18n/i18n-svelte";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { permissions, check_permission } from "$lib/util/permissions";
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     let from_player: PlayerInfo | null = null;
     let to_player: PlayerInfo | null = null;
@@ -38,27 +46,35 @@
     }
 </script>
 
-<Section header={$LL.MODERATOR.MERGE_PLAYERS()}>
-    <div class="option">
-        <div>
-            {$LL.MODERATOR.OLD_PLAYER()}:
-        </div>
-        <PlayerSearch bind:player={from_player}/>
-    </div>
-    
-    {#if from_player}
-        <div class="option">
-            <div>
-                {$LL.MODERATOR.NEW_PLAYER()}
+{#if user_info.is_checked}
+    {#if check_permission(user_info, permissions.merge_players)}
+        <Section header={$LL.MODERATOR.MERGE_PLAYERS()}>
+            <div class="option">
+                <div>
+                    {$LL.MODERATOR.OLD_PLAYER()}:
+                </div>
+                <PlayerSearch bind:player={from_player}/>
             </div>
-            <PlayerSearch bind:player={to_player}/>
-        </div>
-        
+            
+            {#if from_player}
+                <div class="option">
+                    <div>
+                        {$LL.MODERATOR.NEW_PLAYER()}
+                    </div>
+                    <PlayerSearch bind:player={to_player}/>
+                </div>
+                
+            {/if}
+            {#if to_player}
+                <Button on:click={mergePlayers}>{$LL.MODERATOR.MERGE_PLAYERS()}</Button>
+            {/if}
+        </Section>
+    {:else}
+        {$LL.COMMON.NO_PERMISSION()}
     {/if}
-    {#if to_player}
-        <Button on:click={mergePlayers}>{$LL.MODERATOR.MERGE_PLAYERS()}</Button>
-    {/if}
-</Section>
+{/if}
+
+
 
 <style>
     div.option {

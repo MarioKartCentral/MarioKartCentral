@@ -100,7 +100,7 @@
                     {$LL.ROLES.ADD_PLAYER()}
                 </div>
                 <div class="addplayer">
-                    <PlayerSearch bind:player={selected_player}/>
+                    <PlayerSearch bind:player={selected_player} has_connected_user/>
                     {#if selected_player !== null}
                         {#if is_expirable_role()}
                             <label for="expires_on">{$LL.ROLES.UNTIL()}</label>
@@ -164,7 +164,7 @@
         flex-direction: column;
     }
     div.addplayer {
-        min-width: 300px;
+        min-width: 350px;
         display: flex;
         gap: 10px;
     }

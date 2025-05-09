@@ -318,6 +318,18 @@ type RootTranslation = {
 		 * N​e​w
 		 */
 		NEW: string
+		/**
+		 * A​l​p​h​a​b​e​t​i​c​a​l
+		 */
+		SORT_BY_ALPHABETICAL: string
+		/**
+		 * N​e​w​e​s​t
+		 */
+		SORT_BY_NEWEST: string
+		/**
+		 * W​o​r​k​i​n​g​.​.​.
+		 */
+		WORKING: string
 	}
 	DISCORD: {
 		/**
@@ -364,6 +376,18 @@ type RootTranslation = {
 		 * F​a​i​l​e​d​ ​t​o​ ​s​y​n​c​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
 		 */
 		SYNC_AVATAR_ERROR: string
+		/**
+		 * D​e​l​e​t​e​ ​A​v​a​t​a​r
+		 */
+		DELETE_AVATAR: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​d​e​l​e​t​e​d​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
+		 */
+		DELETE_AVATAR_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​d​e​l​e​t​e​ ​D​i​s​c​o​r​d​ ​a​v​a​t​a​r
+		 */
+		DELETE_AVATAR_FAILED: string
 	}
 	FRIEND_CODES: {
 		/**
@@ -432,7 +456,7 @@ type RootTranslation = {
 			 */
 			NNID: string
 			/**
-			 * M​K​W
+			 * M​K​W​i​i
 			 */
 			MKW: string
 			/**
@@ -478,10 +502,14 @@ type RootTranslation = {
 		 * S​u​p​e​r​ ​M​a​r​i​o​ ​K​a​r​t
 		 */
 		SMK: string
+		/**
+		 * M​a​r​i​o​ ​K​a​r​t​ ​W​o​r​l​d
+		 */
+		MKWORLD: string
 	}
 	HOMEPAGE: {
 		/**
-		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​K​C​e​n​t​r​a​l​!
 		 */
 		WELCOME: string
 		/**
@@ -750,7 +778,7 @@ type RootTranslation = {
 		 */
 		EMAIL_ALREADY_CONFIRMED: string
 		/**
-		 * W​e​l​c​o​m​e​ ​t​o​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​!
+		 * W​e​l​c​o​m​e​ ​t​o​ ​M​K​C​e​n​t​r​a​l​!
 		 */
 		WELCOME_TO_MKC: string
 		/**
@@ -781,6 +809,58 @@ type RootTranslation = {
 		 * F​o​r​g​o​t​ ​p​a​s​s​w​o​r​d​?
 		 */
 		FORGOT_PASSWORD: string
+		/**
+		 * I​f​ ​y​o​u​ ​h​a​d​ ​a​n​ ​a​c​c​o​u​n​t​ ​o​n​ ​t​h​e​ ​o​l​d​ ​M​K​C​e​n​t​r​a​l​ ​s​i​t​e​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​ ​t​o​ ​t​r​a​n​s​f​e​r​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​t​o​ ​t​h​e​ ​n​e​w​ ​s​i​t​e​.
+		 */
+		TRANSFER_ACCOUNT_PROMPT: string
+		/**
+		 * T​r​a​n​s​f​e​r​ ​A​c​c​o​u​n​t
+		 */
+		TRANSFER_ACCOUNT: string
+		/**
+		 * T​r​a​n​s​f​e​r​ ​A​c​c​o​u​n​t​ ​f​r​o​m​ ​O​l​d​ ​M​K​C​e​n​t​r​a​l​ ​S​i​t​e
+		 */
+		TRANSFER_ACCOUNT_HEADER: string
+		/**
+		 * I​f​ ​y​o​u​ ​h​a​d​ ​a​n​ ​a​c​c​o​u​n​t​ ​o​n​ ​t​h​e​ ​o​l​d​ ​M​K​C​e​n​t​r​a​l​ ​s​i​t​e​,​ ​y​o​u​ ​c​a​n​ ​s​e​a​r​c​h​ ​f​o​r​ ​y​o​u​r​ ​r​e​g​i​s​t​r​y​ ​n​a​m​e​ ​o​r​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​h​e​r​e​ ​a​n​d​ ​t​r​a​n​s​f​e​r​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​f​r​o​m​ ​t​h​e​ ​o​l​d​ ​s​i​t​e​ ​t​o​ ​t​h​e​ ​n​e​w​ ​s​i​t​e​.​ ​A​l​t​e​r​n​a​t​i​v​e​l​y​,​ ​y​o​u​ ​c​a​n​ ​l​o​g​ ​i​n​ ​w​i​t​h​ ​t​h​e​ ​e​m​a​i​l​ ​l​i​n​k​e​d​ ​t​o​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​o​n​ ​t​h​e​ ​o​l​d​ ​s​i​t​e​ ​a​n​d​ ​i​t​ ​w​i​l​l​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​t​r​a​n​s​f​e​r​ ​y​o​u​r​ ​a​c​c​o​u​n​t​.
+		 */
+		TRANSFER_ACCOUNT_DETAILS: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​t​r​a​n​s​f​e​r​r​e​d​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​t​o​ ​t​h​e​ ​n​e​w​ ​s​i​t​e​!​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​t​h​e​ ​e​m​a​i​l​ ​l​i​n​k​e​d​ ​t​o​ ​y​o​u​r​ ​a​c​c​o​u​n​t​ ​f​o​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l​.
+		 */
+		TRANSFER_ACCOUNT_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​t​r​a​n​s​f​e​r​ ​a​c​c​o​u​n​t
+		 */
+		TRANSFER_ACCOUNT_FAILED: string
+		/**
+		 * T​r​a​n​s​f​e​r
+		 */
+		TRANSFER: string
+		/**
+		 * C​h​a​n​g​e​ ​E​m​a​i​l
+		 */
+		CHANGE_EMAIL: string
+		/**
+		 * N​e​w​ ​E​m​a​i​l
+		 */
+		NEW_EMAIL: string
+		/**
+		 * S​u​c​c​e​s​s​f​u​l​l​y​ ​c​h​a​n​g​e​d​ ​y​o​u​r​ ​e​m​a​i​l​.​ ​P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​i​n​b​o​x​ ​f​o​r​ ​a​ ​c​o​n​f​i​r​m​a​t​i​o​n​ ​e​m​a​i​l​.
+		 */
+		CHANGE_EMAIL_SUCCESS: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​h​a​n​g​e​ ​e​m​a​i​l
+		 */
+		CHANGE_EMAIL_FAILED: string
+		/**
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​T​e​r​m​s​ ​o​f​ ​S​e​r​v​i​c​e​.
+		 */
+		AGREE_TO_TERMS: string
+		/**
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​.
+		 */
+		AGREE_TO_PRIVACY_POLICY: string
 	}
 	LOUNGE: {
 		/**
@@ -1830,7 +1910,7 @@ type RootTranslation = {
 			 */
 			MKT_FC: string
 			/**
-			 * M​K​W​ ​F​C
+			 * M​K​W​i​i​ ​F​C
 			 */
 			MKW_FC: string
 			/**
@@ -1892,6 +1972,14 @@ type RootTranslation = {
 			 */
 			PLAYER_NOTES: string
 			/**
+			 * S​h​o​w​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+			 */
+			SHOW_PLAYER_NOTES: string
+			/**
+			 * H​i​d​e​ ​P​l​a​y​e​r​ ​N​o​t​e​s
+			 */
+			HIDE_PLAYER_NOTES: string
+			/**
 			 * E​d​i​t​ ​P​l​a​y​e​r​ ​N​o​t​e​s
 			 */
 			EDIT_PLAYER_NOTES: string
@@ -1951,10 +2039,14 @@ type RootTranslation = {
 			 * N​a​m​e​ ​C​h​a​n​g​e​ ​H​i​s​t​o​r​y
 			 */
 			NAME_CHANGE_HISTORY: string
+			/**
+			 * M​a​k​e​ ​D​i​s​c​o​r​d​ ​i​n​f​o​ ​p​u​b​l​i​c​l​y​ ​v​i​s​i​b​l​e​?
+			 */
+			SHOW_DISCORD_INFO: string
 		}
 		SHADOW_PLAYERS: {
 			/**
-			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​a​r​i​o​ ​K​a​r​t​ ​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
+			 * T​h​i​s​ ​i​s​ ​a​n​ ​u​n​c​l​a​i​m​e​d​ ​p​l​a​y​e​r​,​ ​m​e​a​n​i​n​g​ ​t​h​a​t​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​h​a​s​ ​p​a​r​t​i​c​i​p​a​t​e​d​ ​i​n​ ​p​a​s​t​ ​t​o​u​r​n​a​m​e​n​t​s​,​ ​b​u​t​ ​d​o​e​s​ ​n​o​t​ ​h​a​v​e​ ​a​ ​u​s​e​r​ ​a​c​c​o​u​n​t​ ​a​t​ ​M​K​C​e​n​t​r​a​l​.​ ​T​o​ ​r​e​q​u​e​s​t​ ​t​o​ ​c​l​a​i​m​ ​t​h​i​s​ ​p​l​a​y​e​r​,​ ​c​l​i​c​k​ ​t​h​e​ ​b​u​t​t​o​n​ ​b​e​l​o​w​.
 			 */
 			UNCLAIMED_PLAYER_DESCRIPTION: string
 			/**
@@ -2523,6 +2615,11 @@ type RootTranslation = {
 			 * @param {number} count
 			 */
 			TEAM_COUNT: RequiredParams<'count'>
+			/**
+			 * A​c​t​i​v​e​ ​T​e​a​m​s​ ​w​i​t​h​ ​{​c​o​u​n​t​}​+​ ​p​l​a​y​e​r​s
+			 * @param {number} count
+			 */
+			ACTIVE_TEAMS_MIN_PLAYERS: RequiredParams<'count'>
 		}
 		PROFILE: {
 			/**
@@ -2682,6 +2779,10 @@ type RootTranslation = {
 	}
 	TOURNAMENTS: {
 		/**
+		 * T​o​u​r​n​a​m​e​n​t
+		 */
+		TOURNAMENT: string
+		/**
 		 * C​r​e​a​t​e​ ​T​o​u​r​n​a​m​e​n​t
 		 */
 		CREATE_TOURNAMENT: string
@@ -2779,6 +2880,22 @@ type RootTranslation = {
 			 * T​e​a​m​ ​T​o​u​r​n​a​m​e​n​t​s
 			 */
 			TEAM_TOURNAMENTS: string
+			/**
+			 * P​a​r​t​n​e​r​s
+			 */
+			PARTNERS: string
+			/**
+			 * P​l​a​c​e​m​e​n​t
+			 */
+			PLACEMENT: string
+			/**
+			 * T​e​a​m
+			 */
+			TEAM: string
+			/**
+			 * D​i​s​q​u​a​l​i​f​i​e​d
+			 */
+			DISQUALIFIED: string
 		}
 		INFO: {
 			/**
@@ -3690,6 +3807,22 @@ type RootTranslation = {
 			 * S​e​r​i​e​s​ ​R​o​l​e​s
 			 */
 			SERIES_ROLES: string
+			/**
+			 * A​l​l​ ​S​e​r​i​e​s
+			 */
+			ALL_SERIES: string
+			/**
+			 * A​c​t​i​v​e​ ​S​e​r​i​e​s
+			 */
+			ACTIVE_SERIES: string
+			/**
+			 * H​i​s​t​o​r​i​c​a​l​ ​S​e​r​i​e​s
+			 */
+			HISTORICAL_SERIES: string
+			/**
+			 * D​i​s​c​o​r​d​ ​I​n​v​i​t​e​ ​L​i​n​k
+			 */
+			SERIES_DISCORD_INVITE: string
 		}
 		TEMPLATES: {
 			/**
@@ -5052,6 +5185,18 @@ export type TranslationFunctions = {
 		 * New
 		 */
 		NEW: () => LocalizedString
+		/**
+		 * Alphabetical
+		 */
+		SORT_BY_ALPHABETICAL: () => LocalizedString
+		/**
+		 * Newest
+		 */
+		SORT_BY_NEWEST: () => LocalizedString
+		/**
+		 * Working...
+		 */
+		WORKING: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -5098,6 +5243,18 @@ export type TranslationFunctions = {
 		 * Failed to sync Discord avatar
 		 */
 		SYNC_AVATAR_ERROR: () => LocalizedString
+		/**
+		 * Delete Avatar
+		 */
+		DELETE_AVATAR: () => LocalizedString
+		/**
+		 * Successfully deleted Discord avatar
+		 */
+		DELETE_AVATAR_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to delete Discord avatar
+		 */
+		DELETE_AVATAR_FAILED: () => LocalizedString
 	}
 	FRIEND_CODES: {
 		/**
@@ -5166,7 +5323,7 @@ export type TranslationFunctions = {
 			 */
 			NNID: () => LocalizedString
 			/**
-			 * MKW
+			 * MKWii
 			 */
 			MKW: () => LocalizedString
 			/**
@@ -5212,10 +5369,14 @@ export type TranslationFunctions = {
 		 * Super Mario Kart
 		 */
 		SMK: () => LocalizedString
+		/**
+		 * Mario Kart World
+		 */
+		MKWORLD: () => LocalizedString
 	}
 	HOMEPAGE: {
 		/**
-		 * Welcome to Mario Kart Central!
+		 * Welcome to MKCentral!
 		 */
 		WELCOME: () => LocalizedString
 		/**
@@ -5479,7 +5640,7 @@ export type TranslationFunctions = {
 		 */
 		EMAIL_ALREADY_CONFIRMED: () => LocalizedString
 		/**
-		 * Welcome to Mario Kart Central!
+		 * Welcome to MKCentral!
 		 */
 		WELCOME_TO_MKC: () => LocalizedString
 		/**
@@ -5510,6 +5671,58 @@ export type TranslationFunctions = {
 		 * Forgot password?
 		 */
 		FORGOT_PASSWORD: () => LocalizedString
+		/**
+		 * If you had an account on the old MKCentral site, click the button below to transfer your account to the new site.
+		 */
+		TRANSFER_ACCOUNT_PROMPT: () => LocalizedString
+		/**
+		 * Transfer Account
+		 */
+		TRANSFER_ACCOUNT: () => LocalizedString
+		/**
+		 * Transfer Account from Old MKCentral Site
+		 */
+		TRANSFER_ACCOUNT_HEADER: () => LocalizedString
+		/**
+		 * If you had an account on the old MKCentral site, you can search for your registry name or friend code here and transfer your account from the old site to the new site. Alternatively, you can log in with the email linked to your account on the old site and it will automatically transfer your account.
+		 */
+		TRANSFER_ACCOUNT_DETAILS: () => LocalizedString
+		/**
+		 * Successfully transferred your account to the new site! Please check the email linked to your account for a password reset email.
+		 */
+		TRANSFER_ACCOUNT_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to transfer account
+		 */
+		TRANSFER_ACCOUNT_FAILED: () => LocalizedString
+		/**
+		 * Transfer
+		 */
+		TRANSFER: () => LocalizedString
+		/**
+		 * Change Email
+		 */
+		CHANGE_EMAIL: () => LocalizedString
+		/**
+		 * New Email
+		 */
+		NEW_EMAIL: () => LocalizedString
+		/**
+		 * Successfully changed your email. Please check your inbox for a confirmation email.
+		 */
+		CHANGE_EMAIL_SUCCESS: () => LocalizedString
+		/**
+		 * Failed to change email
+		 */
+		CHANGE_EMAIL_FAILED: () => LocalizedString
+		/**
+		 * I agree to the MKCentral Terms of Service.
+		 */
+		AGREE_TO_TERMS: () => LocalizedString
+		/**
+		 * I agree to the MKCentral Privacy Policy.
+		 */
+		AGREE_TO_PRIVACY_POLICY: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
@@ -6480,7 +6693,7 @@ export type TranslationFunctions = {
 			 */
 			MKT_FC: () => LocalizedString
 			/**
-			 * MKW FC
+			 * MKWii FC
 			 */
 			MKW_FC: () => LocalizedString
 			/**
@@ -6542,6 +6755,14 @@ export type TranslationFunctions = {
 			 */
 			PLAYER_NOTES: () => LocalizedString
 			/**
+			 * Show Player Notes
+			 */
+			SHOW_PLAYER_NOTES: () => LocalizedString
+			/**
+			 * Hide Player Notes
+			 */
+			HIDE_PLAYER_NOTES: () => LocalizedString
+			/**
 			 * Edit Player Notes
 			 */
 			EDIT_PLAYER_NOTES: () => LocalizedString
@@ -6601,10 +6822,14 @@ export type TranslationFunctions = {
 			 * Name Change History
 			 */
 			NAME_CHANGE_HISTORY: () => LocalizedString
+			/**
+			 * Make Discord info publicly visible?
+			 */
+			SHOW_DISCORD_INFO: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**
-			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.
+			 * This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at MKCentral. To request to claim this player, click the button below.
 			 */
 			UNCLAIMED_PLAYER_DESCRIPTION: () => LocalizedString
 			/**
@@ -7159,6 +7384,10 @@ export type TranslationFunctions = {
 			 * {count} teams
 			 */
 			TEAM_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Active Teams with {count}+ players
+			 */
+			ACTIVE_TEAMS_MIN_PLAYERS: (arg: { count: number }) => LocalizedString
 		}
 		PROFILE: {
 			/**
@@ -7317,6 +7546,10 @@ export type TranslationFunctions = {
 	}
 	TOURNAMENTS: {
 		/**
+		 * Tournament
+		 */
+		TOURNAMENT: () => LocalizedString
+		/**
 		 * Create Tournament
 		 */
 		CREATE_TOURNAMENT: () => LocalizedString
@@ -7413,6 +7646,22 @@ export type TranslationFunctions = {
 			 * Team Tournaments
 			 */
 			TEAM_TOURNAMENTS: () => LocalizedString
+			/**
+			 * Partners
+			 */
+			PARTNERS: () => LocalizedString
+			/**
+			 * Placement
+			 */
+			PLACEMENT: () => LocalizedString
+			/**
+			 * Team
+			 */
+			TEAM: () => LocalizedString
+			/**
+			 * Disqualified
+			 */
+			DISQUALIFIED: () => LocalizedString
 		}
 		INFO: {
 			/**
@@ -8307,6 +8556,22 @@ export type TranslationFunctions = {
 			 * Series Roles
 			 */
 			SERIES_ROLES: () => LocalizedString
+			/**
+			 * All Series
+			 */
+			ALL_SERIES: () => LocalizedString
+			/**
+			 * Active Series
+			 */
+			ACTIVE_SERIES: () => LocalizedString
+			/**
+			 * Historical Series
+			 */
+			HISTORICAL_SERIES: () => LocalizedString
+			/**
+			 * Discord Invite Link
+			 */
+			SERIES_DISCORD_INVITE: () => LocalizedString
 		}
 		TEMPLATES: {
 			/**

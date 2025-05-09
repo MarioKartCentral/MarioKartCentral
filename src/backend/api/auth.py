@@ -164,6 +164,37 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool 
         return wrapper
     return has_permission_decorator
 
+def check_series_visibility[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+        series_id = request.path_params.get("series_id", None)
+        if series_id is None:
+            series_id = request.query_params.get("series_id", None)
+        if series_id is None and request.method == "POST":
+            body = await request.json()
+            series_id = body.get("series_id", None)
+        if series_id is None:
+            raise Problem("No series ID specified", status=400)
+
+        is_public = await handle(CheckSeriesVisibilityCommand(int(series_id)))
+        if is_public:
+            return await handle_request(request, *args, **kwargs)
+        
+        session_id = request.cookies.get("session", None)
+        if session_id is None:
+            raise Problem("Not logged in", status=401)
+        
+        user = await handle(GetUserIdFromSessionCommand(session_id))
+        if user is None:
+            resp = ProblemResponse(Problem("Not logged in", status=401))
+            resp.delete_cookie("session")
+            return resp
+        user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, series_permissions.VIEW_HIDDEN_SERIES, series_id=int(series_id)))
+        if user_has_permission:
+            return await handle_request(request, *args, **kwargs)
+        else:
+            raise Problem("Insufficient permission", f"User does not have required permission \'{series_permissions.VIEW_HIDDEN_SERIES}\'", status=401)
+    return wrapper
+
 def check_tournament_visiblity[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
         tournament_id = request.path_params.get("tournament_id", None)

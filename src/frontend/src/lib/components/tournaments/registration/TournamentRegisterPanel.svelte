@@ -15,6 +15,7 @@
   import ForceRegisterSoloSquad from './ForceRegisterSoloSquad.svelte';
   import LL from '$i18n/i18n-svelte';
   import { game_fc_types } from '$lib/util/util';
+  import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let tournament: Tournament;
 
@@ -40,28 +41,28 @@
 
 <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}>
   {#if user_info.id === null}
-    <div class="link">
-      <a href="/{$page.params.lang}/user/login">
+    <div>
+      <Button href="/{$page.params.lang}/user/login">
         {$LL.TOURNAMENTS.REGISTRATIONS.SIGN_IN_REGISTER_TO_REGISTER()}
-      </a>
+      </Button>
     </div>
   {:else if !user_info.email_confirmed}
-    <div class="link">
-      <a href="/{$page.params.lang}/user/confirm-email">
+    <div>
+      <Button href="/{$page.params.lang}/user/confirm-email">
         {$LL.TOURNAMENTS.REGISTRATIONS.CONFIRM_EMAIL_TO_REGISTER()}
-      </a>
+      </Button>
     </div>
   {:else if user_info.player === null}
-    <div class="link">
-      <a href="/{$page.params.lang}/user/player-signup"
-        >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</a
+    <div>
+      <Button href="/{$page.params.lang}/user/player-signup"
+        >{$LL.TOURNAMENTS.REGISTRATIONS.COMPLETE_REGISTRATION_TO_REGISTER()}</Button
       >
     </div>
   {:else if user_info.player.discord === null}
-    <div class="link">
-      <a href="/{$page.params.lang}/registry/players/edit-profile">
+    <div>
+      <Button href="/{$page.params.lang}/registry/players/edit-profile">
         {$LL.TOURNAMENTS.REGISTRATIONS.LINK_DISCORD_TO_REGISTER()}
-      </a>
+      </Button>
     </div>
   {:else if registration}
     <MyRegistration {registration} {tournament}/>
@@ -74,7 +75,7 @@
         {#if tournament.teams_allowed}
           <TeamTournamentRegister {tournament}/>
         {/if}
-        {#if !tournament.teams_only && !registration.registrations.some((r) => !r.player.is_invite)}
+        {#if !tournament.teams_only && !registration.registrations.some((r) => !r.is_invite)}
           {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
             <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
             <SoloSquadTournamentRegister
@@ -101,10 +102,3 @@
     {/if}
   {/if}
 </Section>
-
-<style>
-  .link {
-    color: #03c744;
-    text-decoration: underline;
-  }
-</style>

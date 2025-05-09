@@ -1,8 +1,6 @@
 <script lang="ts">
-    import Flag from "$lib/components/common/Flag.svelte";
     import type { PlacementOrganizer } from "$lib/types/placement-organizer";
     import SquadPlacementDisplay from "./SquadPlacementDisplay.svelte";
-    import { page } from "$app/stores";
     import { createEventDispatcher } from "svelte";
     import Dropdown from "$lib/components/common/Dropdown.svelte";
     import DropdownItem from "$lib/components/common/DropdownItem.svelte";
@@ -12,7 +10,6 @@
     const dispatch = createEventDispatcher();
 
     export let placement: PlacementOrganizer;
-    export let is_squad: boolean;
     export let is_edit: boolean;
     export let is_homepage = false;
 
@@ -77,14 +74,7 @@
         {getPlacementText(placement)}
     </div>
     <div class="info">
-        {#if !is_squad && placement.player}
-            <a href="/{$page.params.lang}/registry/players/profile?id={placement.player.player_id}">
-                <Flag country_code={placement.player.country_code} size="small"/>
-                {placement.player.name}
-            </a>
-        {:else if is_squad && placement.squad}
-            <SquadPlacementDisplay squad={placement.squad}/>
-        {/if}
+        <SquadPlacementDisplay squad={placement.squad}/>
     </div>
     {#if is_edit}
         <div class="actions">
@@ -108,7 +98,7 @@
     <div class="description {is_homepage ? 'hidden' : ''}">
         {#if placement.placement}
             {#if is_edit}
-                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()}/>
+                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()} maxlength=32/>
             {:else if placement.description}
                 {placement.description}
             {/if}
@@ -122,26 +112,29 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        border-bottom: 1px solid black;
-        border-left: 1px solid black;
-        border-right: 1px solid black;
+        border-bottom: 1px solid theme('colors.primary.600' / 30%);
+        border-left: 1px solid theme('colors.primary.600' / 30%);
+        border-right: 1px solid theme('colors.primary.600' / 30%);
         padding: 5px;
         font-size: 80%;
     }
     div.gold {
-        background-color: rgba(250, 209, 5, 0.6);
+        background-color: rgba(255, 254, 149, 0.30);
+        color: #fffab0;
     }
     div.silver {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(195, 255, 255, 0.3);
+        color: #dcfffc;
     }
     div.bronze {
-        background-color: rgba(255, 136, 0, 0.5);
+        background-color: rgba(255, 158, 110, 0.30);
+        color: #ffcbae;
     }
     div.other {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.1);
     }
     div.dq {
-        background-color: rgba(250, 5, 5, 0.6);
+        background-color: rgba(255, 0, 0, 0.2);
     }
     .pointer {
         cursor: pointer;

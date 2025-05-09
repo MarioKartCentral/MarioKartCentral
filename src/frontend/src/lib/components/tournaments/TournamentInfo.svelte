@@ -8,6 +8,7 @@
   import GameBadge from '../badges/GameBadge.svelte';
   import TypeBadge from '../badges/TypeBadge.svelte';
   import ModeBadge from '../badges/ModeBadge.svelte';
+  import OrganizerBadge from '../badges/OrganizerBadge.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import LL from '$i18n/i18n-svelte';
@@ -58,6 +59,7 @@
       <GameBadge game={tournament.game}/>
       <ModeBadge mode={tournament.mode}/>
       <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
+      <OrganizerBadge organizer={tournament.organizer}/>
     </div>
     
   </div>
@@ -98,10 +100,6 @@
   .centered {
     text-align: center;
     margin: auto auto auto auto;
-  }
-  .wrapper {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
   }
   img {
     display: block;

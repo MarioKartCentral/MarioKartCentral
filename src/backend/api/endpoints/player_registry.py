@@ -77,6 +77,8 @@ async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSON
 async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        if user_id is None:
+            return
         await handle(DispatchNotificationCommand([user_id], notifications.FORCE_ADD_FRIEND_CODE, {'type': body.type}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = CreateFriendCodeCommand(body.player_id, body.fc, body.type, False, body.is_primary, True, body.description, True)
@@ -90,6 +92,8 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
     async def notify():
         type = await handle(GetTypeFromPlayerFCCommand(body.id))
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        if user_id is None:
+            return
         await handle(DispatchNotificationCommand([user_id], notifications.FORCE_EDIT_FRIEND_CODE, {'type': type}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     mod_player_id = request.state.user.player_id
@@ -118,6 +122,8 @@ async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestDat
 async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        if user_id is None:
+            return
         await handle(DispatchNotificationCommand([user_id], notifications.FORCE_PRIMARY_FRIEND_CODE, {}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = SetPrimaryFCCommand(body.id, body.player_id)

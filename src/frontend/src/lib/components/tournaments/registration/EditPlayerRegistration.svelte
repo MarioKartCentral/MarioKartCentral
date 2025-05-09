@@ -10,6 +10,7 @@
     export let tournament: Tournament;
     let player: TournamentPlayer;
     let is_privileged = false;
+    let working = false;
 
     let edit_reg_dialog: Dialog;
 
@@ -20,6 +21,7 @@
     }
 
     async function editRegistration(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const formData = new FormData(event.currentTarget);
         let selected_fc_id = formData.get('selected_fc_id');
         let mii_name = formData.get('mii_name');
@@ -33,7 +35,7 @@
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
             can_host: can_host === 'true',
-            squad_id: player.squad_id,
+            registration_id: player.registration_id,
             player_id: player.player_id,
             is_squad_captain: is_squad_captain !== null ? is_squad_captain === "true" : null,
             is_invite: Boolean(player.is_invite),
@@ -43,12 +45,12 @@
             is_approved: is_approved !== null ? is_approved === "true" : null,
         };
         const endpoint = `/api/tournaments/${tournament.id}/editRegistration`;
-        console.log(payload);
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -58,6 +60,7 @@
     }
 
     async function editMyRegistration(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const formData = new FormData(event.currentTarget);
         let selected_fc_id = formData.get('selected_fc_id');
         let mii_name = formData.get('mii_name');
@@ -66,15 +69,15 @@
             selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
             mii_name: mii_name,
             can_host: can_host === 'true',
-            squad_id: player.squad_id,
+            registration_id: player.registration_id,
         };
         const endpoint = `/api/tournaments/${tournament.id}/editMyRegistration`;
-        console.log(payload);
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -98,7 +101,7 @@
                 <TournamentStaffFields {tournament} {player} squad_exists={true}/>
             {/if}
             <div class="confirm">
-                <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_REGISTRATION()}</Button>
+                <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_REGISTRATION()}</Button>
                 <Button type="button" on:click={edit_reg_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
             </div>
         </form>

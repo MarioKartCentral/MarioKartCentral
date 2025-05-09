@@ -41,7 +41,7 @@
 <header>
   <NavBar />
 </header>
-<div class="container md:mx-auto">
+<div class="container mx-auto">
   <main>
     <slot />
   </main>
@@ -67,11 +67,7 @@
     flex: 1 0;
     padding-top: 30px;
     padding-bottom: 30px;
-    padding-left: 50px;
-    padding-right: 50px;
-    @media(max-width: 800px) {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
+    padding-left: 5px;
+    padding-right: 5px;
   }
 </style>

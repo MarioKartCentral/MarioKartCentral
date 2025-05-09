@@ -11,6 +11,7 @@
     import type { UserInfo } from '$lib/types/user-info';
     import { check_team_permission, team_permissions } from '$lib/util/permissions';
     import { sortFilterRosters } from '$lib/util/util';
+    import Input from '$lib/components/common/Input.svelte';
 
     export let is_mod = false;
   
@@ -23,6 +24,8 @@
     user.subscribe((value) => {
       user_info = value;
     });
+
+    let working = false;
   
     onMount(async () => {
       let param_id = $page.url.searchParams.get('id');
@@ -36,6 +39,7 @@
     });
   
     async function createRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+      working = true;
       const data = new FormData(event.currentTarget);
       function getOptionalValue(name: string) {
         return data.get(name) ? data.get(name)?.toString() : '';
@@ -48,13 +52,13 @@
         tag: data.get('tag')?.toString(),
         is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
       };
-      console.log(payload);
       const endpoint = '/api/registry/teams/requestCreateRoster';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      working = false;
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
@@ -66,7 +70,7 @@
   </script>
   
   <svelte:head>
-    <title>{team_name} | Mario Kart Central</title>
+    <title>{team_name} | MKCentral</title>
   </svelte:head>
   
   {#if team}
@@ -80,42 +84,42 @@
         <TeamRosterManage {roster} {is_mod}/>
       {/each}
     {/if}
-    {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
+    {#if check_team_permission(user_info, team_permissions.create_rosters, id)}
       <Section header={$LL.TEAMS.EDIT.NEW_ROSTER()}>
         <form method="post" on:submit|preventDefault={createRoster}>
-            <div class="option">
-              <GameModeSelect flex required is_team/>
+          <div class="option">
+            <GameModeSelect flex required is_team/>
+          </div>
+          
+          <div class="option">
+            <div>
+              <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
             </div>
-            
-            <div class="option">
-              <div>
-                <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-              </div>
-              <div>
-                <input name="name" type="text" pattern="^\S.*\S$|^\S$" required maxlength=32/>
-              </div>
+            <div>
+              <Input name="name" type="text" required maxlength={32} no_white_space/>
             </div>
-            <div class="option">
-              <div>
-                <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-              </div>
-              <div>
-                <input name="tag" type="text" required maxlength=5/>
-              </div>
+          </div>
+          <div class="option">
+            <div>
+              <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
             </div>
-            <div class="option">
-              <div>
-                <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
-              </div>
-              <div>
-                <select name="recruiting">
-                  <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-                  <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
-                </select>
-              </div>
+            <div>
+              <Input name="tag" type="text" required maxlength={5}/>
             </div>
+          </div>
+          <div class="option">
+            <div>
+              <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
+            </div>
+            <div>
+              <select name="recruiting">
+                <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+                <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+              </select>
+            </div>
+          </div>
           <div>
-            <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+            <Button type="submit" {working}>{$LL.COMMON.SUBMIT()}</Button>
           </div>
         </form>
       </Section>
@@ -127,9 +131,6 @@
     display: inline-block;
     width: 150px;
     margin-right: 10px;
-  }
-  input {
-    width: 200px;
   }
   .option {
     margin-bottom: 10px;

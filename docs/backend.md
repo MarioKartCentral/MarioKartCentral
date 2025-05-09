@@ -109,6 +109,50 @@ Note: Commands that handle sensitive data (like password hashes or auth tokens) 
 
 Commands are organized by domain (auth, players, teams, etc) and both the `api` and `worker` projects expose a `handle` function to execute commands with the necessary dependencies.
 
+#### Working with the Database
+
+The `db_wrapper.connect()` method provides database access to commands:
+
+```python
+# Basic database connection
+async with db_wrapper.connect() as db:
+    async with db.execute("SELECT * FROM players WHERE id = :id", {"id": 123}) as cursor:
+        player = await cursor.fetchone()
+```
+
+**Working with Multiple Databases:**
+
+For operations requiring access to multiple databases, use the `attach` parameter:
+
+```python
+# Connect to 'main' and attach 'auth' database
+async with db_wrapper.connect(db_name='main', attach=['auth']) as db:
+    # Query joining players (main) and user_auth (auth)
+    await db.execute("""
+        SELECT p.name, ua.email
+        FROM players p
+        JOIN auth.user_auth ua ON p.id = ua.user_id
+        WHERE p.id = :player_id
+    """, {"player_id": 123})
+```
+
+**Transactions:**
+
+We have autocommit set to `False` by default, so if you modify data with an insert, update, or delete command, you must call `db.commit()` to persist the changes.
+This also means that if you make multiple changes before calling `commit()`, then they will all be part of the same transaction. If any of them fail, the entire transaction will be rolled back.
+
+```python
+async with db_wrapper.connect() as db:
+    await db.execute("UPDATE players SET name = :name WHERE id = :id", {"name": "New Name", "id": 123})
+    await db.commit()
+```
+
+**Best Practices for Database Operations:**
+
+- Always use parameterized queries to prevent SQL injection
+- Use named parameters (`:name`) instead of positional parameters for clarity
+- Keep transactions short to avoid blocking other operations
+
 ## Backend API ([`/src/backend/api`](/src/backend/api/))
 
 The API service is built with Starlette and handles all user interactions with the system. It demonstrates several key architectural patterns:

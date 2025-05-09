@@ -3,8 +3,8 @@
   export let href: string | null = null;
 </script>
 
-<div class="container">
-  {#if header}
+<div class="section-container">
+  {#if header !== null}
     <div class="header bg-primary-800">
       <div class="header_element">
         {#if href}
@@ -31,7 +31,7 @@
   h2 {
     font-size: 20px;
   }
-  .container {
+  .section-container {
     max-width: 1200px;
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);

@@ -28,7 +28,7 @@ class ForceCreateSquadRequestData(CreateSquadRequestData):
 
 @dataclass
 class EditMySquadRequestData:
-    squad_id: int
+    registration_id: int
     squad_name: str | None
     squad_tag: str | None
     squad_color: int | None
@@ -40,30 +40,30 @@ class EditSquadRequestData(EditMySquadRequestData):
 
 @dataclass
 class InvitePlayerRequestData:
-    squad_id: int
+    registration_id: int
     player_id: int
     is_representative: bool = False
     is_bagger_clause: bool = False
 
 @dataclass
 class KickSquadPlayerRequestData:
-    squad_id: int
+    registration_id: int
     player_id: int
 
 @dataclass
 class AcceptInviteRequestData():
-    squad_id: int
+    registration_id: int
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
 
 @dataclass
 class DeclineInviteRequestData():
-    squad_id: int
+    registration_id: int
 
 @dataclass
 class UnregisterPlayerRequestData():
-    squad_id: int | None
+    registration_id: int
 
 @dataclass
 class StaffUnregisterPlayerRequestData(UnregisterPlayerRequestData):
@@ -88,11 +88,12 @@ class TournamentSquadDetails():
     players: list[SquadPlayerDetails]
     rosters: list[RosterBasic]
 
-
 @dataclass
 class MyTournamentRegistration():
-    squad: TournamentSquadDetails | None
-    player: TournamentPlayerDetails
+    squad: TournamentSquadDetails
+    player: TournamentPlayerDetails | None
+    is_squad_captain: bool
+    is_invite: bool
 
 @dataclass
 class MyTournamentRegistrationDetails():
@@ -102,12 +103,12 @@ class MyTournamentRegistrationDetails():
 
 @dataclass
 class MakeCaptainRequestData():
-    squad_id: int
+    registration_id: int
     player_id: int
 
 @dataclass
 class UnregisterSquadRequestData():
-    squad_id: int
+    registration_id: int
 
 @dataclass
 class TeamTournamentPlayer():
@@ -126,5 +127,5 @@ class RegisterTeamRequestData():
 
 @dataclass
 class AddRemoveRosterRequestData:
-    squad_id: int
+    registration_id: int
     roster_id: int

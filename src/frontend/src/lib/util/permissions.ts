@@ -197,6 +197,7 @@ export const series_permissions = {
   manage_series_roles: 'series_roles_manage',
   edit_series: 'series_edit',
   manage_series_posts: 'series_posts_manage',
+  view_hidden_series: 'series_view_hidden',
 };
 
 export const tournament_permissions = {
@@ -220,4 +221,5 @@ export const mod_panel_permissions = [
   permissions.manage_shadow_players,
   permissions.merge_players,
   permissions.merge_teams,
+  permissions.view_alt_flags,
 ];

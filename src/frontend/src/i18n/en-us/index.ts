@@ -80,6 +80,9 @@ const en_us: BaseTranslation = {
     ORDINAL_SUFFIX: '{val:number|ordinalSuffix}', // 1 -> '1st' for example
     DELETE: 'Delete',
     NEW: 'New',
+    SORT_BY_ALPHABETICAL: 'Alphabetical',
+    SORT_BY_NEWEST: 'Newest',
+    WORKING: 'Working...',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -93,6 +96,9 @@ const en_us: BaseTranslation = {
     DELETE_DATA_ERROR: 'An error occurred while deleting Discord data',
     SYNC_AVATAR: 'Sync Avatar',
     SYNC_AVATAR_ERROR: 'Failed to sync Discord avatar',
+    DELETE_AVATAR: 'Delete Avatar',
+    DELETE_AVATAR_SUCCESS: 'Successfully deleted Discord avatar',
+    DELETE_AVATAR_FAILED: 'Failed to delete Discord avatar',
   },
   FRIEND_CODES: {
     FRIEND_CODE: 'Friend Code',
@@ -112,7 +118,7 @@ const en_us: BaseTranslation = {
       ALL: 'All FC Types',
       SWITCH: 'Switch',
       NNID: 'NNID',
-      MKW: 'MKW',
+      MKW: 'MKWii',
       MKT: 'MKT',
       '3DS': '3DS',
     },
@@ -126,9 +132,10 @@ const en_us: BaseTranslation = {
     MKT: 'Mario Kart Tour',
     MK7: 'Mario Kart 7',
     SMK: 'Super Mario Kart',
+    MKWORLD: 'Mario Kart World',
   },
   HOMEPAGE: {
-    WELCOME: 'Welcome to Mario Kart Central!',
+    WELCOME: 'Welcome to MKCentral!',
     SUMMARY:
       "We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!",
     YOU_PLACED: 'You placed: {placement:number|ordinalSuffix}',
@@ -203,7 +210,7 @@ const en_us: BaseTranslation = {
     SEND_CONFIRMATION_EMAIL_SUCCESS: 'Successfully sent confirmation email!',
     SEND_CONFIRMATION_EMAIL_FAILURE: 'Failed to send confirmation email',
     EMAIL_ALREADY_CONFIRMED: 'Your email is already confirmed.',
-    WELCOME_TO_MKC: 'Welcome to Mario Kart Central!',
+    WELCOME_TO_MKC: 'Welcome to MKCentral!',
     EMAIL_CONFIRMATION_REQUIRED:
       "Before you can complete your player registration, you'll need to verify your email address. You should have received an email containing a link to confirm your email address; if you don't see the email, or the link has expired, you can click the button below to send another confirmation email.",
     SEND_CONFIRMATION_EMAIL: 'Send Confirmation Email',
@@ -213,6 +220,22 @@ const en_us: BaseTranslation = {
       'This password reset token is expired. You can request another password reset email with the form below.',
     SEND_PASSWORD_RESET_EMAIL: 'Send Password Reset Email',
     FORGOT_PASSWORD: 'Forgot password?',
+    TRANSFER_ACCOUNT_PROMPT:
+      'If you had an account on the old MKCentral site, click the button below to transfer your account to the new site.',
+    TRANSFER_ACCOUNT: 'Transfer Account',
+    TRANSFER_ACCOUNT_HEADER: 'Transfer Account from Old MKCentral Site',
+    TRANSFER_ACCOUNT_DETAILS:
+      'If you had an account on the old MKCentral site, you can search for your registry name or friend code here and transfer your account from the old site to the new site. Alternatively, you can log in with the email linked to your account on the old site and it will automatically transfer your account.',
+    TRANSFER_ACCOUNT_SUCCESS:
+      'Successfully transferred your account to the new site! Please check the email linked to your account for a password reset email.',
+    TRANSFER_ACCOUNT_FAILED: 'Failed to transfer account',
+    TRANSFER: 'Transfer',
+    CHANGE_EMAIL: 'Change Email',
+    NEW_EMAIL: 'New Email',
+    CHANGE_EMAIL_SUCCESS: 'Successfully changed your email. Please check your inbox for a confirmation email.',
+    CHANGE_EMAIL_FAILED: 'Failed to change email',
+    AGREE_TO_TERMS: 'I agree to the MKCentral Terms of Service.',
+    AGREE_TO_PRIVACY_POLICY: 'I agree to the MKCentral Privacy Policy.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -479,7 +502,7 @@ const en_us: BaseTranslation = {
       ALREADY_REGISTERED: 'You are already registered.',
       SWITCH_FC: 'Switch FC',
       MKT_FC: 'MKT FC',
-      MKW_FC: 'MKW FC',
+      MKW_FC: 'MKWii FC',
       '3DS_FC': '3DS FC',
       NNID: 'Nintendo Network ID',
       REGISTER: 'Register',
@@ -496,6 +519,8 @@ const en_us: BaseTranslation = {
       TEAMS: 'Teams:',
       TIMEZONE: 'Timezone',
       PLAYER_NOTES: 'Player Notes',
+      SHOW_PLAYER_NOTES: 'Show Player Notes',
+      HIDE_PLAYER_NOTES: 'Hide Player Notes',
       EDIT_PLAYER_NOTES: 'Edit Player Notes',
       CLEAR: 'Clear',
       BACK_TO_PROFILE: 'Back to Profile',
@@ -511,10 +536,11 @@ const en_us: BaseTranslation = {
       PLAYER_NOT_FOUND: 'Player not found',
       REGISTRATION_DATE: 'Registered',
       NAME_CHANGE_HISTORY: 'Name Change History',
+      SHOW_DISCORD_INFO: 'Make Discord info publicly visible?',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
-        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at Mario Kart Central. To request to claim this player, click the button below.',
+        'This is an unclaimed player, meaning that this player has participated in past tournaments, but does not have a user account at MKCentral. To request to claim this player, click the button below.',
       CLAIM_PLAYER: 'Claim Player',
       CLAIM_PLAYER_SUCCESS: 'Successfully sent a claim for this player to staff!',
       CLAIM_PLAYER_FAILED: 'Claiming player failed',
@@ -665,6 +691,7 @@ const en_us: BaseTranslation = {
       HISTORICAL_TEAMS: 'Historical Teams',
       SEARCH_BY: 'Search by team or roster name...',
       TEAM_COUNT: '{count:number} teams',
+      ACTIVE_TEAMS_MIN_PLAYERS: 'Active Teams with {count:number}+ players',
     },
     PROFILE: {
       TEAM_PROFILE: 'Team Profile',
@@ -715,6 +742,7 @@ const en_us: BaseTranslation = {
       "This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!",
   },
   TOURNAMENTS: {
+    TOURNAMENT: 'Tournament',
     CREATE_TOURNAMENT: 'Create Tournament',
     SEARCH_FOR_TOURNAMENTS: 'Search for tournaments...',
     SHOW_HIDDEN_PRIVATE_TOURNAMENTS: 'Show hidden/private tournaments',
@@ -740,6 +768,10 @@ const en_us: BaseTranslation = {
       TOURNAMENT_HISTORY: 'Tournament History',
       SOLO_TOURNAMENTS: 'Solo Tournaments',
       TEAM_TOURNAMENTS: 'Team Tournaments',
+      PARTNERS: 'Partners',
+      PLACEMENT: 'Placement',
+      TEAM: 'Team',
+      DISQUALIFIED: 'Disqualified',
     },
     INFO: {
       INFO: 'Tournament Info',
@@ -978,6 +1010,10 @@ const en_us: BaseTranslation = {
       BACK_TO_SERIES_LISTING: 'Back to Series Listing',
       MANAGE_TEMPLATES: 'Manage Templates',
       SERIES_ROLES: 'Series Roles',
+      ALL_SERIES: 'All Series',
+      ACTIVE_SERIES: 'Active Series',
+      HISTORICAL_SERIES: 'Historical Series',
+      SERIES_DISCORD_INVITE: 'Discord Invite Link',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Tournament Templates',

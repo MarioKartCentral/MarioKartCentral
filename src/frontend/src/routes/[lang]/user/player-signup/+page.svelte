@@ -8,6 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Input from '$lib/components/common/Input.svelte';
 
   let user_info: UserInfo;
 
@@ -15,7 +16,10 @@
     user_info = value;
   });
 
+  let working = false;
+
   async function register(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const data = new FormData(event.currentTarget);
     const fc_labels = ['switch_fc', 'mkt_fc', 'mkw_fc', '3ds_fc', 'nnid'];
     const types = ['switch', 'mkt', 'mkw', '3ds', 'nnid'];
@@ -42,8 +46,8 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
-
     if (response.status < 300) {
       goto('/');
       alert($LL.PLAYERS.PLAYER_SIGNUP.REGISTER_SUCCESS());
@@ -55,6 +59,8 @@
 
 {#if user_info.player_id !== null}
   {$LL.PLAYERS.PLAYER_SIGNUP.ALREADY_REGISTERED()}
+{:else if user_info.id === null}
+  {$LL.COMMON.LOGIN_REQUIRED()}
 {:else}
   <Section header={$LL.DISCORD.DISCORD()}>
     <LinkDiscord/>
@@ -65,7 +71,7 @@
         <span class="item-label">
           <label for="name">{$LL.COMMON.NAME()}</label>
         </span>
-        <input name="name" type="name" minlength="2" pattern="^\S.*\S$|^\S$" />
+        <Input name="name" type="name" minlength={2} no_white_space />
       </div>
       <div class="field">
         <span class="item-label">
@@ -103,7 +109,7 @@
         </span>
         <input name="nnid" placeholder='NNID'/>
       </div>
-      <Button type="submit">{$LL.PLAYERS.PLAYER_SIGNUP.REGISTER()}</Button>
+      <Button type="submit" {working}>{$LL.PLAYERS.PLAYER_SIGNUP.REGISTER()}</Button>
     </form>
   </Section>
 {/if}

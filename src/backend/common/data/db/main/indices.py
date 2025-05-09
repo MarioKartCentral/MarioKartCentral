@@ -1,11 +1,5 @@
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
-
-class IndexModel(ABC):
-    @staticmethod
-    @abstractmethod
-    def get_create_index_command() -> str:
-        pass
+from common.data.db.common import IndexModel
 
 @dataclass
 class UserRolesExpiresOn(IndexModel):
@@ -39,15 +33,22 @@ class UserTournamentRolesExpiresOn(IndexModel):
 class TournamentSquadsTournamentID(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
-        return """CREATE INDEX IF NOT EXISTS tournament_squads_tournament_id
-            ON tournament_squads (tournament_id)"""
+        return """CREATE INDEX IF NOT EXISTS tournament_registrations_tournament_id
+            ON tournament_registrations (tournament_id)"""
     
 @dataclass
 class TournamentPlayersTournamentIDSquadID(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
-        return """CREATE INDEX IF NOT EXISTS tournament_players_tournament_id_squad_id
-            ON tournament_players (tournament_id, squad_id)"""
+        return """CREATE INDEX IF NOT EXISTS tournament_players_tournament_id_registration_id
+            ON tournament_players (tournament_id, registration_id)"""
+    
+@dataclass
+class TournamentPlayersPlayerID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS tournament_players_player_id
+            ON tournament_players(player_id)"""
     
 @dataclass
 class FriendCodesType(IndexModel):
@@ -62,24 +63,23 @@ class FriendCodesPlayerID(IndexModel):
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS friend_codes_player_id
             ON friend_codes (player_id)"""
-
-@dataclass
-class TournamentSoloPlacementsTournamentID(IndexModel):
-    @staticmethod
-    def get_create_index_command() -> str:
-        return """CREATE INDEX IF NOT EXISTS tournament_solo_placements_tournament_id
-            ON tournament_solo_placements(tournament_id)"""
     
 @dataclass
 class TournamentSquadPlacementsTournamentID(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
-        return """CREATE INDEX IF NOT EXISTS tournament_squad_placements_tournament_id
-            ON tournament_squad_placements(tournament_id)"""
+        return """CREATE INDEX IF NOT EXISTS tournament_placements_tournament_id
+            ON tournament_placements(tournament_id)"""
     
-
+@dataclass
+class TeamMembersRosterID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS team_members_roster_id
+            ON team_members(roster_id)"""
+    
 all_indices : list[type[IndexModel]] = [
     UserRolesExpiresOn, UserTeamRolesExpiresOn, UserSeriesRolesExpiresOn, UserTournamentRolesExpiresOn,
     TournamentSquadsTournamentID, TournamentPlayersTournamentIDSquadID, FriendCodesType, FriendCodesPlayerID,
-    TournamentSoloPlacementsTournamentID, TournamentSquadPlacementsTournamentID
+    TournamentSquadPlacementsTournamentID, TeamMembersRosterID
 ]

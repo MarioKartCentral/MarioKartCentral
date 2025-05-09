@@ -24,6 +24,7 @@
     country: null,
     fc: null,
     name_or_fc: null,
+    sort_by_newest: false,
   };
 
   async function fetchData() {
@@ -40,6 +41,9 @@
     }
     if(is_shadow !== null) {
       url += `&is_shadow=${is_shadow}`;
+    }
+    if(filters.sort_by_newest) {
+      url += `&sort_by_newest=${filters.sort_by_newest}`;
     }
     url += '&page=' + currentPage;
     console.log(url);
@@ -69,6 +73,10 @@
   <div class="flex">
     <FCTypeSelect all_option hide_labels bind:type={filters.fc_type}/>
     <CountrySelect bind:value={filters.country} is_filter={true}/>
+    <select bind:value={filters.sort_by_newest}>
+      <option value={false}>{$LL.COMMON.SORT_BY_ALPHABETICAL()}</option>
+      <option value={true}>{$LL.COMMON.SORT_BY_NEWEST()}</option>
+    </select>
     <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} />
     <Button type="submit">{$LL.COMMON.SEARCH()}</Button>
   </div>
