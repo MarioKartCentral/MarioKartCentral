@@ -384,44 +384,45 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tp.player_id,
                     p.name,
                     p.country_code,
-                    tsp.placement,
-                    tsp.placement_description,
-                    tsp.placement_lower_bound,
-                    tsp.is_disqualified
+                    pla.placement,
+                    pla.placement_description,
+                    pla.placement_lower_bound,
+                    pla.is_disqualified
                     FROM tournament_players tp
-                    JOIN tournament_solo_placements tsp ON tp.id = tsp.player_id
+                    JOIN tournament_registrations tr ON tp.registration_id = tr.id
+                    JOIN tournament_placements pla ON tr.id = pla.registration_id
                     JOIN players p ON tp.player_id = p.id
                     WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE  t.series_id = ? AND t.is_squad = FALSE)  
              """
             tournament_squads_query = f"""
                  SELECT
-                    ts.id,
-                    ts.tournament_id,           
-                    tsp.placement, 
-                    tsp.placement_description, 
-                    tsp.placement_lower_bound, 
-                    tsp.is_disqualified,
-                    ts.timestamp,
+                    tr.id,
+                    tr.tournament_id,           
+                    pla.placement, 
+                    pla.placement_description, 
+                    pla.placement_lower_bound, 
+                    pla.is_disqualified,
+                    tr.timestamp,
                     t.id AS team_id,
                     t.name AS team_name,
                     t.tag AS team_tag,
                     t.color AS team_color,
-                    tr.id AS roster_id,
-                    tr.name AS roster_name,
-                    tr.tag AS roster_tag
-                    FROM tournament_squads ts
-                    JOIN tournament_squad_placements tsp ON ts.id = tsp.squad_id
-                    JOIN team_squad_registrations tsr ON ts.id = tsr.squad_id
-                    JOIN team_rosters tr ON tr.id = tsr.roster_id
-                    JOIN teams t ON tr.team_id = t.id
-                    WHERE ts.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = TRUE)  
+                    rosters.id AS roster_id,
+                    rosters.name AS roster_name,
+                    rosters.tag AS roster_tag
+                    FROM tournament_registrations tr
+                    JOIN tournament_placements pla ON pla.registration_id = tr.id
+                    JOIN team_squad_registrations tsr ON tr.id = tsr.registration_id
+                    JOIN team_rosters rosters ON rosters.id = tsr.roster_id
+                    JOIN teams t ON rosters.team_id = t.id
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = TRUE)  
             """
             squad_players_query = f"""
                 SELECT 
                     tp.id,
                     tp.tournament_id,
                     tp.player_id,
-                    tp.squad_id,
+                    tp.registration_id,
                     p.name,
                     p.country_code
                     FROM tournament_players tp
@@ -441,7 +442,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         id, name, game, mode, date_start, date_end, series_id,
                         None, None, None, is_squad, registrations_open,
                         teams_allowed, logo, use_series_logo, is_viewable,
-                        is_public, []
+                        is_public, "", []
                     )
                     tournaments.append(tournament)
                     placements[tournament.id] = tournament.placements
@@ -454,7 +455,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     player = SquadPlayerDetails(
                         id=id,
                         player_id=player_id,
-                        squad_id=squad_id,
+                        registration_id=0,
                         timestamp=0,
                         is_checked_in=True,
                         is_approved=True,
@@ -490,27 +491,40 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         is_disqualified
                     ) = row
                     placement = TournamentPlacementDetailed(
-                        registration_id =id,
+                        registration_id=id,
                         placement=placement,
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
                         is_disqualified=is_disqualified == 1,
-                        player=TournamentPlayerDetails(
+                        squad=TournamentSquadDetails(
                             id=id,
-                            player_id=player_id,
-                            squad_id=None,
+                            name="",
+                            tag="",
+                            color=1,
                             timestamp=0,
-                            is_checked_in=True,
+                            is_registered=True,
                             is_approved=True,
-                            mii_name="mii",
-                            can_host=False,
-                            name=name,
-                            country_code=country_code,
-                            discord=None,
-                            selected_fc_id=None,
-                            friend_codes=[]
-                        ),
-                        squad=None
+                            players=[SquadPlayerDetails(
+                                id=id,
+                                player_id=player_id,
+                                registration_id=0,
+                                timestamp=0,
+                                is_checked_in=True,
+                                is_approved=True,
+                                mii_name="mii",
+                                can_host=False,
+                                name=name,
+                                country_code=country_code,
+                                discord=None,
+                                selected_fc_id=None,
+                                friend_codes=[],
+                                is_squad_captain=True,
+                                is_representative=True,
+                                is_invite=True,
+                                is_bagger_clause=False
+                            )],
+                            rosters=[]
+                        )
                     )
                     placements[tournament_id].append(placement)
 
@@ -545,7 +559,6 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
                         is_disqualified=is_disqualified == 1,
-                        player=None,
                         squad=TournamentSquadDetails(
                             id=id,
                             name=roster_name,
