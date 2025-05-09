@@ -102,7 +102,7 @@ services:
   sqlite-web:
     image: 'coleifer/sqlite-web'
     environment:
-      - SQLITE_DATABASE=/data/mkc.db
+      - SQLITE_DATABASE=/data/main.db
     volumes:
       - mkc-db:/data
     ports:
