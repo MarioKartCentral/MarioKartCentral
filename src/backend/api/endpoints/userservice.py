@@ -57,7 +57,8 @@ async def edit_user(request: Request, body: EditUserRequestData) -> JSONResponse
 @require_permission(permissions.EDIT_USER)
 async def view_user(request: Request) -> JSONResponse:
     user_id = request.path_params['user_id']
-    command = ViewUserCommand(user_id)
+    mod_user_id = request.state.user.id
+    command = ViewUserCommand(user_id, mod_user_id)
     user = await handle(command)
     return JSONResponse(user)
 
