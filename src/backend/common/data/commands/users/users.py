@@ -164,6 +164,7 @@ class ListUsersCommand(Command[UserList]):
 @dataclass
 class ViewUserCommand(Command[UserInfoDetailed]):
     user_id: int
+    mod_user_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(db_name='main', attach=["auth"], readonly=True) as db:
@@ -191,13 +192,30 @@ class ViewUserCommand(Command[UserInfoDetailed]):
                     if discord_id is not None:
                         discord = Discord(discord_id, discord_username, discord_discriminator, discord_global_name, discord_avatar)
                     player = Player(player_id, player_name, country_code, bool(is_hidden_int), bool(is_shadow_int), bool(is_banned_int), player_join_date, discord)
-            async with db.execute("SELECT token_id, name FROM auth.api_tokens WHERE user_id = ?", (self.user_id,)) as cursor:
-                rows = await cursor.fetchall()
-                tokens: list[APIToken] = []
-                for row in rows:
-                    token_id, token_name = row
-                    tokens.append(APIToken(user_id, token_id, token_name))
-                return UserInfoDetailed(user_id, email, join_date, bool(email_confirmed_int), bool(force_password_reset_int), player, tokens)
+
+            # admins should only be able to view API tokens for users with lower permissions than themselves (or themselves)
+            is_privileged = True
+            if self.mod_user_id != self.user_id:
+                perm_query = """
+                    WITH mh AS (SELECT MIN(r.position) AS pos FROM roles r JOIN user_roles ur ON r.id=ur.role_id WHERE ur.user_id=:mod_user_id),
+                         uh AS (SELECT MIN(r.position) AS pos FROM roles r JOIN user_roles ur ON r.id=ur.role_id WHERE ur.user_id=:user_id)
+                    SELECT EXISTS(SELECT 1 FROM mh JOIN uh WHERE uh.pos IS NULL OR mh.pos < uh.pos)
+                """
+                async with db.execute(perm_query, {"mod_user_id": self.mod_user_id, "user_id": self.user_id}) as cursor:
+                    row = await cursor.fetchone()
+                    if not row or not row[0]:
+                        is_privileged = False
+
+            tokens: list[APIToken] = []
+            if is_privileged:
+                async with db.execute("SELECT token_id, name FROM auth.api_tokens WHERE user_id = ?", (self.user_id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    
+                    for row in rows:
+                        token_id, token_name = row
+                        tokens.append(APIToken(user_id, token_id, token_name))
+                        
+            return UserInfoDetailed(user_id, email, join_date, bool(email_confirmed_int), bool(force_password_reset_int), player, tokens)
 
 @dataclass
 class EditUserCommand(Command[None]):
