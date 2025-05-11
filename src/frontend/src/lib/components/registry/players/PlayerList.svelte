@@ -102,6 +102,12 @@
           <tr class="row-{i % 2}">
             <td><Flag country_code={player.country_code} /></td>
             <td>
+              {#if player.is_hidden}
+                <span class="hidden_player">[{$LL.PLAYERS.LIST.HIDDEN()}]</span>
+              {/if}
+              {#if player.is_shadow}
+                <span class="shadow_player">[{$LL.PLAYERS.LIST.SHADOW()}]</span>
+              {/if}
               <a href="/{$page.params.lang}/registry/players/profile?id={player.id}" class={player.is_banned ? 'banned_name' : ''}>{player.name}</a>
             </td>
             <td class="mobile-hide">

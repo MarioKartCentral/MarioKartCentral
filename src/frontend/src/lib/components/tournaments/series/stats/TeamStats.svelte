@@ -7,25 +7,25 @@
   export let rostersArray: any[];
 
   function getColorClass(roster) {
-    if(stats_mode === 'team_medals') {
-      if(roster.medals_placement === 1) {
+    if (stats_mode === 'team_medals') {
+      if (roster.medals_placement === 1) {
         return 'gold_row';
       }
-      if(roster.medals_placement === 2) {
+      if (roster.medals_placement === 2) {
         return 'silver_row';
       }
-      if(roster.medals_placement === 3) {
-        return 'bronze_row'
+      if (roster.medals_placement === 3) {
+        return 'bronze_row';
       }
     } else {
-      if(roster.appearances_placement === 1) {
+      if (roster.appearances_placement === 1) {
         return 'gold_row';
       }
-      if(roster.appearances_placement === 2) {
+      if (roster.appearances_placement === 2) {
         return 'silver_row';
       }
-      if(roster.appearances_placement === 3) {
-        return 'bronze_row'
+      if (roster.appearances_placement === 3) {
+        return 'bronze_row';
       }
       return '';
     }
@@ -51,24 +51,26 @@
           <th></th>
           <th></th>
           {#if stats_mode === 'team_medals'}
-            <th>👑</th><th>🥈</th><th>🥉</th>
+            <th class="text_center">👑</th><th class="text_center">🥈</th><th class="text_center">🥉</th>
           {:else}
-            <th class="appearance bold_td">Appearances</th>
+            <th class="text_center bold_td">Appearances</th>
           {/if}
         </tr>
       </thead>
       {#each rostersArray as roster}
         {#if (stats_mode === 'team_medals' && (roster.gold > 0 || roster.silver > 0 || roster.bronze > 0)) || (stats_mode === 'team_appearances' && roster.appearances_placement < 25)}
           <tr class={getColorClass(roster)}>
-            <td>{stats_mode === 'team_medals' ? roster.medals_placement : roster.appearances_placement}</td>
+            <td class="text_center bold_td"
+              >{stats_mode === 'team_medals' ? roster.medals_placement : roster.appearances_placement}</td
+            >
             <td><TagBadge tag={roster.tag} color={roster.color} /></td>
             <td>{roster.name}</td>
             {#if stats_mode === 'team_medals'}
-              <td class="bold_td">{roster.gold > 0 ? roster.gold : '-'}</td>
-              <td class="bold_td">{roster.silver > 0 ? roster.silver : '-'}</td>
-              <td class="bold_td">{roster.bronze > 0 ? roster.bronze : '-'}</td>
+              <td class="text_center bold_td">{roster.gold > 0 ? roster.gold : '-'}</td>
+              <td class="text_center bold_td">{roster.silver > 0 ? roster.silver : '-'}</td>
+              <td class="text_center bold_td">{roster.bronze > 0 ? roster.bronze : '-'}</td>
             {:else}
-              <td class="appearance bold_td">{roster.appearances}</td>
+              <td class="text_center bold_td">{roster.appearances}</td>
             {/if}
           </tr>
         {/if}
@@ -107,23 +109,23 @@
     width: 192px;
   }
 
-  .appearance {
+  .text_center {
     text-align: center;
   }
 
   .gold_row {
     color: #fffab0;
-    background-color: rgba(255,253,108,.25);
+    background-color: rgba(255, 253, 108, 0.25);
   }
 
   .silver_row {
     color: #dddddd;
-    background-color: rgba(195,255,255,.25);
+    background-color: rgba(195, 255, 255, 0.25);
   }
 
   .bronze_row {
     color: #ffcbae;
-    background-color: rgba(255,158,110,.25);
+    background-color: rgba(255, 158, 110, 0.25);
   }
 
   .bold_td {

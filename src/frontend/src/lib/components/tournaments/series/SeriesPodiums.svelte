@@ -21,7 +21,7 @@
     day: 'numeric',
   };
 
-  function getMedail(placement: number) {
+  function getMedal(placement: number) {
     if (placement === 1) {
       return '👑';
     }
@@ -36,13 +36,13 @@
 
   function getColor(placement: number) {
     if (placement === 1) {
-      return 'gold';
+      return 'gold_color';
     }
     if (placement === 2) {
-      return 'silver';
+      return 'silver_color';
     }
     if (placement === 3) {
-      return 'brown';
+      return 'brown_color';
     }
     return 'white';
   }
@@ -75,11 +75,11 @@
               <td class="right">
                 {#each tournament.placements as placement}
                   {#if placement.placement < 4}
-                    <span style="color:{getColor(placement.placement)}">
+                    <span class={getColor(placement.placement) + " bold"}>
                       <a
                         href={`/${$page.params.lang}/tournaments/squads?id=${placement.squad.id}&tournament_id=${tournament.id}`}
                       >
-                        {'   ' + getMedail(placement.placement) + ' ' + placement.squad.name}
+                        {'   ' + getMedal(placement.placement) + ' ' + placement.squad.name}
                       </a>
                     </span>
                   {/if}
@@ -108,10 +108,12 @@
             </td>
             <td class="right">
               {#each tournament.placements as placement}
-                <span style="color:{getColor(placement.placement)}">
-                  <a href={`/${$page.params.lang}/registry/player?id=${placement.player.id}`}>
-                    {'   ' + getMedail(placement.placement) + ' ' + placement.player.name}
-                  </a>
+                <span class={getColor(placement.placement) + " bold"}>
+                  {#each placement.squad.players as player}
+                    <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
+                      {'   ' + getMedal(placement.placement) + ' ' + player.name}
+                    </a>
+                  {/each}
                 </span>
               {/each}
             </td>
@@ -131,5 +133,21 @@
   }
   .right {
     text-align: right;
+  }
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .gold_color {
+    color: #e1c15e;
+  }
+
+  .silver_color {
+    color: #b8cde1;
+  }
+
+  .brown_color {
+    color: #d17f26;
   }
 </style>

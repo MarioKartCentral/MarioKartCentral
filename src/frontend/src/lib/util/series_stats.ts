@@ -2,20 +2,16 @@ export function makeStats(tournaments) {
     const rostersMap = new Map();
     const playersMap = new Map();
 
+    console.log('Tournaments:', tournaments);
+
     for (const tournament of tournaments) {
         for (const placement of tournament.placements) {
             const placementResult = placement.placement;
+            for (const roster of placement.squad.rosters) {
+                updateStats(rostersMap, roster.roster_id, () => newRosterObject(roster), placementResult);
+            }
 
-            if (tournament.is_squad) {
-                for (const roster of placement.squad.rosters) {
-                    updateStats(rostersMap, roster.roster_id, () => newRosterObject(roster), placementResult);
-                }
-
-                for (const player of placement.squad.players) {
-                    updateStats(playersMap, player.player_id, () => newPlayerObject(player), placementResult);
-                }
-            } else {
-                const player = placement.player;
+            for (const player of placement.squad.players) {
                 updateStats(playersMap, player.player_id, () => newPlayerObject(player), placementResult);
             }
         }
