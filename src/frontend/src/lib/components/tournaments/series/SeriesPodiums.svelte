@@ -2,7 +2,6 @@
   import LL from '$i18n/i18n-svelte';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
-  import TournamentInfo from '../TournamentInfo.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import TypeBadge from '$lib/components/badges/TypeBadge.svelte';
@@ -32,6 +31,13 @@
       return '🥉';
     }
     return '🐢';
+  }
+
+  function getString(placement: any) {
+    if (placement.squad.players.length > 4) {
+      return placement.squad.name;
+    }
+    return placement.squad.players.map((player) => player.name).join(' / ');
   }
 
   function getColor(placement: number) {
@@ -75,11 +81,12 @@
               <td class="right">
                 {#each tournament.placements as placement}
                   {#if placement.placement < 4}
-                    <span class={getColor(placement.placement) + " bold"}>
+                    
+                    <span class={getColor(placement.placement) + ' bold'}>
                       <a
-                        href={`/${$page.params.lang}/tournaments/squads?id=${placement.squad.id}&tournament_id=${tournament.id}`}
+                        href={`/${$page.params.lang}/tournaments/details?id=${tournament.id}`}
                       >
-                        {'   ' + getMedal(placement.placement) + ' ' + placement.squad.name}
+                        {'   ' + getMedal(placement.placement) + ' ' + getString(placement)}
                       </a>
                     </span>
                   {/if}
@@ -108,7 +115,7 @@
             </td>
             <td class="right">
               {#each tournament.placements as placement}
-                <span class={getColor(placement.placement) + " bold"}>
+                <span class={getColor(placement.placement) + ' bold'}>
                   {#each placement.squad.players as player}
                     <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
                       {'   ' + getMedal(placement.placement) + ' ' + player.name}

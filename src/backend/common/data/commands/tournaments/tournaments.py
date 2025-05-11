@@ -389,9 +389,9 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     pla.placement_lower_bound,
                     pla.is_disqualified
                     FROM tournament_players tp
-                    JOIN tournament_registrations tr ON tp.registration_id = tr.id
-                    JOIN tournament_placements pla ON tr.id = pla.registration_id
-                    JOIN players p ON tp.player_id = p.id
+                    LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
+                    LEFT JOIN tournament_placements pla ON tr.id = pla.registration_id
+                    LEFT JOIN players p ON tp.player_id = p.id
                     WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE  t.series_id = ? AND t.is_squad = FALSE)  
              """
             tournament_squads_query = f"""
@@ -411,10 +411,10 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     rosters.name AS roster_name,
                     rosters.tag AS roster_tag
                     FROM tournament_registrations tr
-                    JOIN tournament_placements pla ON pla.registration_id = tr.id
-                    JOIN team_squad_registrations tsr ON tr.id = tsr.registration_id
-                    JOIN team_rosters rosters ON rosters.id = tsr.roster_id
-                    JOIN teams t ON rosters.team_id = t.id
+                    LEFT JOIN tournament_placements pla ON pla.registration_id = tr.id
+                    LEFT JOIN team_squad_registrations tsr ON tr.id = tsr.registration_id
+                    LEFT JOIN team_rosters rosters ON rosters.id = tsr.roster_id
+                    LEFT JOIN teams t ON rosters.team_id = t.id
                     WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = TRUE)  
             """
             squad_players_query = f"""
@@ -426,7 +426,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.name,
                     p.country_code
                     FROM tournament_players tp
-                    JOIN players p ON tp.player_id = p.id
+                    LEFT JOIN players p ON tp.player_id = p.id
                     WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE  t.series_id = ? AND t.is_squad = TRUE)  
             """
             tournaments: list[TournamentWithPlacements] = []

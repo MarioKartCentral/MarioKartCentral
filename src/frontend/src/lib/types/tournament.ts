@@ -49,3 +49,10 @@ export type Tournament = {
   series_description: string | null;
   series_ruleset: string | null;
 } & TournamentBasic;
+
+export enum StatsMode {
+  TEAM_MEDALS = 'team_medals',
+  TEAM_APPEARANCES = 'team_appearances',
+  PLAYER_MEDALS = 'player_medals',
+  PLAYER_APPEARANCES = 'player_appearances',
+}

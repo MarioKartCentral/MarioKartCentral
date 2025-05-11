@@ -2,12 +2,13 @@
 <script lang="ts">
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import Table from '$lib/components/common/Table.svelte';
+  import { StatsMode } from '$lib/types/tournament';
 
-  export let stats_mode: 'team_medals' | 'team_appearances';
+  export let stats_mode: StatsMode;
   export let rostersArray: any[];
 
   function getColorClass(roster) {
-    if (stats_mode === 'team_medals') {
+    if (stats_mode === StatsMode.TEAM_MEDALS) {
       if (roster.medals_placement === 1) {
         return 'gold_row';
       }
@@ -38,7 +39,7 @@
       <col class="placement" />
       <col class="tag" />
       <col class="name" />
-      {#if stats_mode === 'team_medals'}
+      {#if stats_mode === StatsMode.TEAM_MEDALS}
         <col class="medals" />
         <col class="medals" />
         <col class="medals" />
@@ -50,7 +51,7 @@
           <th></th>
           <th></th>
           <th></th>
-          {#if stats_mode === 'team_medals'}
+          {#if stats_mode === StatsMode.TEAM_MEDALS}
             <th class="text_center">👑</th><th class="text_center">🥈</th><th class="text_center">🥉</th>
           {:else}
             <th class="text_center bold_td">Appearances</th>
@@ -58,14 +59,14 @@
         </tr>
       </thead>
       {#each rostersArray as roster}
-        {#if (stats_mode === 'team_medals' && (roster.gold > 0 || roster.silver > 0 || roster.bronze > 0)) || (stats_mode === 'team_appearances' && roster.appearances_placement < 25)}
+        {#if (stats_mode === StatsMode.TEAM_MEDALS && (roster.gold > 0 || roster.silver > 0 || roster.bronze > 0)) || (stats_mode === StatsMode.TEAM_APPEARANCES && roster.appearances_placement < 25)}
           <tr class={getColorClass(roster)}>
             <td class="text_center bold_td"
-              >{stats_mode === 'team_medals' ? roster.medals_placement : roster.appearances_placement}</td
+              >{stats_mode === StatsMode.TEAM_MEDALS ? roster.medals_placement : roster.appearances_placement}</td
             >
             <td><TagBadge tag={roster.tag} color={roster.color} /></td>
             <td>{roster.name}</td>
-            {#if stats_mode === 'team_medals'}
+            {#if stats_mode === StatsMode.TEAM_MEDALS}
               <td class="text_center bold_td">{roster.gold > 0 ? roster.gold : '-'}</td>
               <td class="text_center bold_td">{roster.silver > 0 ? roster.silver : '-'}</td>
               <td class="text_center bold_td">{roster.bronze > 0 ? roster.bronze : '-'}</td>

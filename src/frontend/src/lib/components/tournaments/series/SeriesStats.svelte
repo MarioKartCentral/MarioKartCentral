@@ -4,17 +4,11 @@
   import TeamStats from '$lib/components/tournaments/series/stats/TeamStats.svelte';
   import PlayerStats from '$lib/components/tournaments/series/stats/PlayerStats.svelte';
   import { sortByMedals, sortByAppearances } from '$lib/util/series_stats';
+  import { StatsMode } from '$lib/types/tournament';
 
   export let stats;
 
-  enum StatsMode {
-    TEAM_MEDALS = 'team_medals',
-    TEAM_APPEARANCES = 'team_appearances',
-    PLAYER_MEDALS = 'player_medals',
-    PLAYER_APPEARANCES = 'player_appearances',
-  }
-
-  let stats_mode: StatsMode = StatsMode.TEAM_MEDALS;
+  let stats_mode: StatsMode = stats.rostersArray.length > 1 ? StatsMode.TEAM_MEDALS : StatsMode.PLAYER_MEDALS;
 
   $: sortedRosters =
     stats_mode === StatsMode.TEAM_MEDALS ? sortByMedals(stats.rostersArray) : sortByAppearances(stats.rostersArray);

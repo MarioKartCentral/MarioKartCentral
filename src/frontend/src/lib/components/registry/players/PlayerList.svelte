@@ -99,7 +99,7 @@
       </thead>
       <tbody>
         {#each players as player, i}
-          <tr class="row-{i % 2}">
+          <tr class={getColorClass(player)}>
             <td><Flag country_code={player.country_code} /></td>
             <td>
               {#if player.is_hidden}

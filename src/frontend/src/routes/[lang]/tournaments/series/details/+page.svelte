@@ -35,7 +35,6 @@
     console.log(body1)
     series = body1;
     tournaments = body2;
-    console.log("tournaments : ", tournaments);
 
     // const originalArray = body2
     // const scaleFactor = 50_000_000;
