@@ -17,7 +17,7 @@ class CreateTournamentCommand(Command[int | None]):
     async def handle(self, db_wrapper, s3_wrapper):
         b = self.body
         # check for invalid body parameters
-        if not b.is_squad and b.teams_allowed:
+        if not b.i   and b.teams_allowed:
             raise Problem('Individual tournaments cannot have teams linked', status=400)
         if not b.teams_allowed and (b.teams_only or b.team_members_only):
             raise Problem('Non-team tournaments cannot have teams_only, team_members_only, min_representatives enabled', status=400)
@@ -371,6 +371,12 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
+
+        # First try to get from S3 cache
+        s3_body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'series_tournaments_{self.series_id}.json')
+        if s3_body:
+            return msgspec.json.decode(s3_body, type=list[TournamentWithPlacements])
+        
         async with db_wrapper.connect(readonly=True) as db:
             series_id = self.series_id
             tournaments_query = f"""
@@ -440,7 +446,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public = row
                     tournament = TournamentWithPlacements(
                         id, name, game, mode, date_start, date_end, series_id,
-                        None, None, None, is_squad, registrations_open,
+                        None, None, None, bool(is_squad), registrations_open,
                         teams_allowed, logo, use_series_logo, is_viewable,
                         is_public, "", []
                     )
@@ -580,5 +586,12 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         )
                     )
                     placements[tournament_id].append(placement)
+                    
+                # Store the result in S3 cache
+                await s3_wrapper.put_object(
+                    s3.SERIES_BUCKET,
+                    f'series_tournaments_{self.series_id}.json',
+                    msgspec.json.encode(tournaments)
+                )
 
             return tournaments
