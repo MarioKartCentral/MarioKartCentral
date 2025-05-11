@@ -17,7 +17,7 @@ class CreateTournamentCommand(Command[int | None]):
     async def handle(self, db_wrapper, s3_wrapper):
         b = self.body
         # check for invalid body parameters
-        if not b.i   and b.teams_allowed:
+        if not b.is_squad and b.teams_allowed:
             raise Problem('Individual tournaments cannot have teams linked', status=400)
         if not b.teams_allowed and (b.teams_only or b.team_members_only):
             raise Problem('Non-team tournaments cannot have teams_only, team_members_only, min_representatives enabled', status=400)
