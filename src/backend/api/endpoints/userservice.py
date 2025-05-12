@@ -25,10 +25,11 @@ async def current_user_and_player(request: Request) -> JSONResponse:
         player = await handle(GetPlayerDetailedCommand(user.player_id))
     user_roles, team_roles, series_roles, tournament_roles = await handle(GetUserRolePermissionsCommand(user.id))
     mod_notifications = None
+    token_count = 0
     if len(user_roles) > 0:
         mod_notifications = await handle(GetModNotificationsCommand(user_roles))
-    tokens = await handle(GetUserAPITokensCommand(user.id))
-    token_count = len(tokens)
+        tokens = await handle(GetUserAPITokensCommand(user.id))
+        token_count = len(tokens)
     return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications, token_count))
 
 @require_logged_in()
