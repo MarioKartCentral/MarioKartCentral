@@ -3,7 +3,7 @@
 </script>
 
 <Section header="Privacy Policy">
-    <p>We are Mario Kart Central ("we", "our", "us"). We’re committed to protecting and respecting your privacy. If you have questions about your personal information please contact us.</p>
+    <p>We are MKCentral ("we", "our", "us"). We’re committed to protecting and respecting your privacy. If you have questions about your personal information please contact us.</p>
 
     <h2>What information we hold about you</h2>
     <p>The type of data that we collect and process includes:</p>

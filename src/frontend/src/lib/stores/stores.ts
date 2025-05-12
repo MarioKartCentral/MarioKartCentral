@@ -12,6 +12,7 @@ export const user = writable<UserInfo>({
   series_roles: [],
   tournament_roles: [],
   mod_notifications: null,
+  token_count: 0,
   is_checked: false,
 });
 

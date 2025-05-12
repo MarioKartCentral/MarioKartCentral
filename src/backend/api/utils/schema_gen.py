@@ -136,9 +136,19 @@ class SchemaGenerator(BaseSchemaGenerator):
                     "type": "apiKey",
                     "in": "cookie",
                     "name": "session"
+                },
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT",
                 }
-            }
+            },
         }
+        schema["security"] = [
+            {
+                "bearerAuth": [],
+            }
+        ]
         return schema
 
 schemas = SchemaGenerator()

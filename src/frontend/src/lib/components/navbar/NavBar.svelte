@@ -87,6 +87,9 @@
           <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">{$LL.NAVBAR.PROFILE()}</DropdownItem>
           <DropdownItem href="/{$page.params.lang}/registry/players/edit-profile">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</DropdownItem>
           <DropdownItem href="/{$page.params.lang}/registry/invites">{$LL.PLAYERS.PROFILE.INVITES()}</DropdownItem>
+          {#if user_info.token_count}
+            <DropdownItem href="/{$page.params.lang}/user/api-tokens">{$LL.API_TOKENS.API_TOKENS()}</DropdownItem>
+          {/if}
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
@@ -98,6 +101,9 @@
             <DropdownItem href="/{$page.params.lang}/user/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
           {:else}
             <DropdownItem href="/{$page.params.lang}/user/confirm-email">{$LL.LOGIN.CONFIRM_EMAIL()}</DropdownItem>
+          {/if}
+          {#if user_info.token_count}
+            <DropdownItem href="/{$page.params.lang}/user/api-tokens">{$LL.API_TOKENS.API_TOKENS()}</DropdownItem>
           {/if}
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
