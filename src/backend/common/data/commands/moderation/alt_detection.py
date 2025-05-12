@@ -166,6 +166,7 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 JOIN alt_flags.user_alt_flags uf ON f.id = uf.flag_id
                 LEFT JOIN user_activity.user_logins l ON f.login_id = l.id
                 WHERE uf.user_id = :user_id
+                ORDER BY f.date DESC
             """
             async with db.execute(get_player_flags_command, {"user_id": user_id}) as cursor:
                 rows = await cursor.fetchall()
