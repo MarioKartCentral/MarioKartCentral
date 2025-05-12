@@ -15,14 +15,16 @@ class SaveToCommandLogCommand(Command[None]):
     command: Command[Any]
 
     async def handle(self, db_wrapper, s3_wrapper):
-        command_name = type(self.command).__name__
-        command_serialized = msgspec.json.encode(self.command).decode("utf-8")
+        # disable command log for now while it has some issues
+        pass
+        # command_name = type(self.command).__name__
+        # command_serialized = msgspec.json.encode(self.command).decode("utf-8")
 
-        async with db_wrapper.connect(db_name='command_logs') as db:
-            await db.execute_insert(
-                "INSERT INTO command_log(type, data) VALUES (?, ?)", 
-                (command_name, command_serialized))
-            await db.commit()
+        # async with db_wrapper.connect(db_name='command_logs') as db:
+        #     await db.execute_insert(
+        #         "INSERT INTO command_log(type, data) VALUES (?, ?)", 
+        #         (command_name, command_serialized))
+        #     await db.commit()
 
 @dataclass
 class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
