@@ -131,7 +131,7 @@ class SaveToHistoricalCommandLogsCommand(Command[None]):
                 next_command_datetime = datetime.fromtimestamp(next_command.timestamp, timezone.utc)
                 last_index_entry = HistoricalCommandLogIndexEntry(
                     f"{next_command_datetime.strftime('%Y-%m-%d_%H-%M-%S')}_{next_command.id}.json",
-                    next_command.id,
+                    (next_command_file * COMMAND_LOGS_PER_FILE),
                     next_command_datetime)
                 index.append(last_index_entry)
                 update_index = True
