@@ -31,7 +31,7 @@ class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
     async def handle(self, db_wrapper, s3_wrapper):
         after_id = self.after_id
         if after_id is None:
-            after_id = 0
+            after_id = -1
 
         async with db_wrapper.connect(db_name='command_logs') as db:
             rows = await db.execute_fetchall(
