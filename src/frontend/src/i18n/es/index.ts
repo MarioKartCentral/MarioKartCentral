@@ -87,6 +87,16 @@ const es: Translation = {
     SORT_BY_NEWEST: 'Más recientes',
     WORKING: 'En proceso...',
   },
+  API_TOKENS: {
+    API_TOKENS: 'API Tokens',
+    TOKEN_NAME: 'Token Name:',
+    DELETE_TOKEN_CONFIRM:
+      'Are you sure you want to delete the token with name {name}? Any applications that use this token will become unauthorized.',
+    DELETE_TOKEN_FAILED: 'Failed to delete API token',
+    CREATE_TOKEN: 'Create API Token',
+    CREATE_TOKEN_FAILED: 'Failed to create API token',
+    TOKEN_NAME_HERE: 'Name your new API token...',
+  },
   DISCORD: {
     DISCORD: 'Discord',
     SIGN_IN_REGISTER_TO_LINK: 'Inicia sesión o regístrate para vincular tu cuenta de Discord',

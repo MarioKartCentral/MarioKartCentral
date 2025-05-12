@@ -40,5 +40,6 @@ export type UserInfo = {
   series_roles: SeriesRole[];
   tournament_roles: TournamentRole[];
   mod_notifications: ModNotifications | null;
+  token_count: number;
   is_checked: boolean;
 };

@@ -259,7 +259,7 @@ async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(DeclineRosterInviteRequestData)
-@require_logged_in
+@require_logged_in()
 async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> JSONResponse:
     async def notify():
         content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
@@ -276,7 +276,7 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(LeaveRosterRequestData)
-@require_logged_in
+@require_logged_in()
 async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResponse:
     async def notify():
         player_id = request.state.user.player_id
@@ -463,7 +463,7 @@ async def deny_roster(request: Request) -> JSONResponse:
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_query(RegisterableRostersRequestData)
-@require_logged_in
+@require_logged_in()
 async def list_registerable_rosters(request: Request, body: RegisterableRostersRequestData) -> JSONResponse:
     user = request.state.user.id
     command = GetRegisterableRostersCommand(user, body.tournament_id, body.game, body.mode)

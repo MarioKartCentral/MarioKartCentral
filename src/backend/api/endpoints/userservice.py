@@ -8,14 +8,14 @@ from common.data.models import UserPlayer, EditUserRequestData
 from common.data.models.common import Problem
 from common.auth import pw_hasher
 
-@require_logged_in
+@require_logged_in()
 async def current_user(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
     if user is None:
         raise Problem("User is not logged in", status=401)
     return JSONResponse(user)
 
-@require_logged_in
+@require_logged_in()
 async def current_user_and_player(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
     if user is None:
@@ -25,11 +25,14 @@ async def current_user_and_player(request: Request) -> JSONResponse:
         player = await handle(GetPlayerDetailedCommand(user.player_id))
     user_roles, team_roles, series_roles, tournament_roles = await handle(GetUserRolePermissionsCommand(user.id))
     mod_notifications = None
+    token_count = 0
     if len(user_roles) > 0:
         mod_notifications = await handle(GetModNotificationsCommand(user_roles))
-    return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications))
+        tokens = await handle(GetUserAPITokensCommand(user.id))
+        token_count = len(tokens)
+    return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications, token_count))
 
-@require_logged_in
+@require_logged_in()
 async def player_invites(request: Request) -> JSONResponse:
     invites = await handle(GetInvitesForPlayerCommand(request.state.user.player_id))
     return JSONResponse(invites)
@@ -55,7 +58,8 @@ async def edit_user(request: Request, body: EditUserRequestData) -> JSONResponse
 @require_permission(permissions.EDIT_USER)
 async def view_user(request: Request) -> JSONResponse:
     user_id = request.path_params['user_id']
-    command = ViewUserCommand(user_id)
+    mod_user_id = request.state.user.id
+    command = ViewUserCommand(user_id, mod_user_id)
     user = await handle(command)
     return JSONResponse(user)
 
