@@ -9,7 +9,7 @@ from api.utils.word_filter import check_word_filter
 from common.data.commands import *
 from common.data.models import Problem, EditUserSettingsRequestData
 
-@require_logged_in
+@require_logged_in()
 async def get_settings(request: Request) -> Response:
     command = GetUserSettingsCommand(request.state.user.id)
     user_settings = await handle(command)

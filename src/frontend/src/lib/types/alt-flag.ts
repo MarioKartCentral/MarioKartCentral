@@ -3,6 +3,7 @@ import type { PlayerBasic } from './player';
 export type AltFlag = {
   id: number;
   type: string;
+  flag_key: string;
   data: string;
   score: number;
   date: number;

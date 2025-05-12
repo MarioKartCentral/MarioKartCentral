@@ -53,7 +53,7 @@ class S3Wrapper:
         except Exception:
             return None
 
-    async def put_object(self, bucket_name: str, key: str, body: bytes, acl: ObjectCannedACLType = "public-read"):
+    async def put_object(self, bucket_name: str, key: str, body: bytes, acl: ObjectCannedACLType = "private"):
         await self.client.put_object(Bucket=bucket_name, Key=key, Body=body, ACL=acl)
 
     async def delete_object(self, bucket_name: str, key: str):

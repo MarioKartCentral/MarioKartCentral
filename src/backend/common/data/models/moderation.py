@@ -30,6 +30,7 @@ class PlayerAltFlagRequestData:
 class AltFlag:
     id: int
     type: str
+    flag_key: str
     data: str
     score: int
     date: int

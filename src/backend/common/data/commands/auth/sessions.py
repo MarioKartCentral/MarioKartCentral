@@ -49,14 +49,15 @@ class CreateSessionCommand(Command[SessionInfo]):
         expiration_date = current_date + max_age
         current_timestamp = int(current_date.timestamp())
 
-        persistent_session_id = self.persistent_session_id
-        if not persistent_session_id:
-            persistent_session_id = secrets.token_hex(16)
+        persistent_session_id = self.persistent_session_id or secrets.token_hex(16)
         had_persistent_session = self.persistent_session_id is not None
-        ip = self.ip_address if self.ip_address else "0.0.0.0"
+        ip = self.ip_address or "0.0.0.0"
 
         async with db_wrapper.connect(db_name='sessions') as db:
-            session_command = "INSERT INTO sessions(session_id, user_id, expires_on) VALUES (:session_id, :user_id, :expires_on)"
+            session_command = """
+                INSERT INTO sessions(session_id, user_id, expires_on) 
+                VALUES (:session_id, :user_id, :expires_on)
+            """
             session_params: Dict[str, Any] = {
                 "session_id": session_id, 
                 "user_id": self.user_id, 
@@ -68,13 +69,34 @@ class CreateSessionCommand(Command[SessionInfo]):
             await db.commit()
         
         async with db_wrapper.connect(db_name='user_activity') as db:
+            ip_query_command = """
+                SELECT id FROM ip_addresses WHERE ip_address = :ip
+            """
+            ip_address_id = None
+            async with db.execute(ip_query_command, {"ip": ip}) as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    ip_address_id = row[0]
+            
+            if ip_address_id is None:
+                ip_insert_command = """
+                    INSERT INTO ip_addresses(ip_address, is_mobile, is_vpn, is_checked)
+                    VALUES(:ip, 0, 0, 0)
+                """
+                async with db.execute(ip_insert_command, {"ip": ip}) as cursor:
+                    if cursor.rowcount != 1:
+                        raise Problem("Failed to insert IP address")
+                    
+                    ip_address_id = cursor.lastrowid
+                await db.commit()
+                
             login_command = """
-                INSERT INTO user_logins(user_id, ip, session_id, persistent_session_id, fingerprint, had_persistent_session, date)
-                VALUES(:user_id, :ip, :session_id, :persistent_session_id, :fingerprint, :had_persistent_session, :date)
+                INSERT INTO user_logins(user_id, ip_address_id, session_id, persistent_session_id, fingerprint, had_persistent_session, date)
+                VALUES(:user_id, :ip_address_id, :session_id, :persistent_session_id, :fingerprint, :had_persistent_session, :date)
             """
             login_params: Dict[str, Any] = {
                 "user_id": self.user_id, 
-                "ip": ip, 
+                "ip_address_id": ip_address_id, 
                 "session_id": session_id, 
                 "persistent_session_id": persistent_session_id, 
                 "fingerprint": self.fingerprint.hash,

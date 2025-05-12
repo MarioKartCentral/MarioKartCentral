@@ -6,6 +6,7 @@ from common.data.db.common import TableModel
 class AltFlag(TableModel):
     id: int
     type: str
+    flag_key: str
     data: str
     score: int
     date: int
@@ -16,10 +17,12 @@ class AltFlag(TableModel):
         return """CREATE TABLE IF NOT EXISTS alt_flags(
             id INTEGER PRIMARY KEY,
             type TEXT NOT NULL,
+            flag_key TEXT NOT NULL,
             data TEXT NOT NULL,
             score INTEGER NOT NULL,
             date INTEGER NOT NULL,
-            login_id INTEGER
+            login_id INTEGER,
+            UNIQUE(type, flag_key)
         )"""
     
 @dataclass

@@ -14,7 +14,7 @@ import common.data.notifications as notifications
 
 @bind_request_body(CreatePlayerRequestData)
 @check_word_filter
-@require_logged_in
+@require_logged_in()
 async def create_player(request: Request, body: CreatePlayerRequestData) -> Response:
     command = CreatePlayerCommand(request.state.user.id, body.name, body.country_code, body.friend_codes, False, False)
     player = await handle(command)
@@ -111,14 +111,14 @@ async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSO
     return JSONResponse({})
 
 @bind_request_body(EditPrimaryFriendCodeRequestData)
-@require_logged_in
+@require_logged_in()
 async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestData) -> JSONResponse:
     command = SetPrimaryFCCommand(body.id, request.state.user.player_id)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(ModEditPrimaryFriendCodeRequestData)
-@require_logged_in
+@require_logged_in()
 async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
@@ -180,7 +180,7 @@ async def get_player_transfer_history(request: Request) -> JSONResponse:
     return JSONResponse(result)
 
 @bind_request_body(ClaimPlayerRequestData)
-@require_logged_in
+@require_logged_in()
 async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONResponse:
     command = ClaimPlayerCommand(request.state.user.player_id, body.player_id)
     await handle(command)

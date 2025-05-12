@@ -5,7 +5,7 @@ from api.data import on_startup, on_shutdown
 from api.endpoints import (authservice, roleservice, userservice, tournaments, 
                            tournament_registration, tournament_placements, player_registry, player_bans, 
                            team_registry, user_settings, notifications, moderation, mkcv1importer, posts)
-from api.utils.middleware import ProblemHandlingMiddleware, IPLoggingMiddleware, RateLimitByIPMiddleware
+from api.utils.middleware import IPLoggingMiddleware, RateLimitByIPMiddleware, exception_handlers
 from api.utils.schema_gen import schema_route
 
 if appsettings.DEBUG:
@@ -33,9 +33,8 @@ routes = [
 
 
 middleware = [
-    Middleware(ProblemHandlingMiddleware),
     Middleware(IPLoggingMiddleware),
     Middleware(RateLimitByIPMiddleware),
 ]
 
-app = Starlette(debug=True, routes=routes, on_startup=[on_startup], on_shutdown=[on_shutdown], middleware=middleware)
+app = Starlette(routes=routes, on_startup=[on_startup], on_shutdown=[on_shutdown], middleware=middleware, exception_handlers=exception_handlers)

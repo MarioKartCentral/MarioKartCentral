@@ -1,5 +1,7 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+import traceback
+import time
 from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
@@ -14,11 +16,15 @@ class JobRunner:
     def start(self):
         async def run_with_error_handler():
             try:
+                start = time.time()
+                print(f"Job '{self._job.name}' started")
                 await self._job.run()
-            except Exception as ex:
+                end = time.time()
+                elapsed = timedelta(seconds=end - start)
+                print(f"Job '{self._job.name}' completed in {elapsed}")
+            except Exception:
                 print(f"Job '{self._job.name}' failed")
-                print(ex)
-                raise
+                traceback.print_exc()
     
         self._longer_than_delay = False
         self._last_run = datetime.now(timezone.utc)
@@ -26,7 +32,6 @@ class JobRunner:
 
     def tick(self):
         if self._last_run is None or self._task is None:
-            print(f"Job '{self._job.name}' started")
             self.start()
             return
         

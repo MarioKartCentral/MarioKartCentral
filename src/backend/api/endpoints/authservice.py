@@ -35,6 +35,7 @@ def create_email_config():
 
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
+    time = datetime.now(timezone.utc)
     user = await handle(GetUserDataFromEmailCommand(body.email))
     if user:
         if user.password_hash is None:
@@ -67,14 +68,13 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
     
     persistent_session_id = request.cookies.get('persistentSession', None)
-    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-    if not ip_address:
-        ip_address = request.client.host if request.client else None
+    ip_address: str | None = request.state.ip_address
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     async def log_ip_fingerprint():
         if appsettings.ENABLE_IP_LOGGING:
-            await handle(LogUserIPCommand(user.id, ip_address))
+            referer = request.headers.get('Referer', None)
+            await handle(EnqueueUserActivityCommand(user.id, ip_address, request.url.path, time, referer))
         await handle(LogFingerprintCommand(body.fingerprint))
         
     resp = JSONResponse(return_user, status_code=200, background=BackgroundTask(log_ip_fingerprint))
@@ -85,6 +85,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
 
 @bind_request_body(SignupRequestData)
 async def sign_up(request: Request, body: SignupRequestData) -> Response:
+    time = datetime.now(timezone.utc)
     existing_user = await handle(GetUserDataFromEmailCommand(body.email))
     if existing_user:
         raise Problem("User with this email already exists", status=400)
@@ -112,9 +113,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # login user after registering
     persistent_session_id = request.cookies.get('persistentSession', None)
-    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-    if not ip_address:
-        ip_address = request.client.host if request.client else None
+    ip_address: str | None = request.state.ip_address
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
@@ -124,7 +123,8 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
         await handle(command)
         
         if appsettings.ENABLE_IP_LOGGING:
-            await handle(LogUserIPCommand(user.id, ip_address))
+            referer = request.headers.get('Referer', None)
+            await handle(EnqueueUserActivityCommand(user.id, ip_address, request.url.path, time, referer))
         await handle(LogFingerprintCommand(body.fingerprint))
 
     resp = JSONResponse(user, status_code=201, background=BackgroundTask(send_email_and_log))
@@ -133,7 +133,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
         resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
     return resp
 
-@require_logged_in
+@require_logged_in(session_only=True)
 async def log_out(request: Request) -> Response:
     session_id = request.state.session_id
     await handle(DeleteSessionCommand(session_id))
@@ -141,7 +141,7 @@ async def log_out(request: Request) -> Response:
     resp.delete_cookie('session')
     return resp
 
-@require_logged_in
+@require_logged_in()
 async def send_confirmation_email(request: Request) -> Response:
     email_config = create_email_config()
     command = SendEmailVerificationCommand(request.state.user.id, email_config)
@@ -174,7 +174,7 @@ async def reset_password_with_token(request: Request, body: ResetPasswordTokenRe
     return JSONResponse({})
 
 @bind_request_body(ResetPasswordRequestData)
-@require_logged_in
+@require_logged_in()
 async def reset_password(request: Request, body: ResetPasswordRequestData):
     new_pw_hash = pw_hasher.hash(body.new_password)
     command = ResetPasswordCommand(request.state.user.id, body.old_password, new_pw_hash)
@@ -198,7 +198,7 @@ async def transfer_account(request: Request, body: TransferAccountRequestData):
     return JSONResponse({}, background=BackgroundTask(send_password_reset))
 
 @bind_request_body(ChangeEmailRequestData)
-@require_logged_in
+@require_logged_in()
 async def change_email(request: Request, body: ChangeEmailRequestData):
     command = ChangeEmailCommand(request.state.user.id, body.new_email, body.password)
     await handle(command)
@@ -261,7 +261,7 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
 
     return RedirectResponse(f"{redirect_path}{redirect_params}", 302, background=BackgroundTask(sync_avatar))
 
-@require_logged_in
+@require_logged_in()
 async def my_discord_data(request: Request) -> Response:
     command = GetUserDiscordCommand(request.state.user.id)
     discord_data = await handle(command)
@@ -273,7 +273,7 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
     discord_data = await handle(command)
     return JSONResponse(discord_data)
 
-@require_logged_in
+@require_logged_in()
 async def delete_discord_data(request: Request) -> JSONResponse:
     command = DeleteUserDiscordDataCommand(request.state.user.id, appsettings.DISCORD_CLIENT_ID, str(appsettings.DISCORD_CLIENT_SECRET))
     await handle(command)
@@ -289,6 +289,43 @@ async def sync_discord_avatar(request: Request) -> JSONResponse:
 @require_permission(permissions.EDIT_PLAYER)
 async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> JSONResponse:
     command = RemoveDiscordAvatarCommand(body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(CreateAPITokenRequestData)
+@require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
+async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> JSONResponse:
+    user_id = request.path_params['user_id']
+    command = CreateAPITokenCommand(user_id, request.state.user.id, body.name)
+    await handle(command)
+    return JSONResponse({})
+
+@require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
+async def user_api_tokens(request: Request) -> JSONResponse:
+    user_id = request.path_params['user_id']
+    command = GetUserAPITokensCommand(int(user_id))
+    tokens = await handle(command)
+    return JSONResponse(tokens)
+
+@require_logged_in(session_only=True)
+async def my_api_tokens(request: Request) -> JSONResponse:
+    command = GetUserAPITokensCommand(request.state.user.id)
+    tokens = await handle(command)
+    return JSONResponse(tokens)
+
+@bind_request_body(DeleteAPITokenRequestData)
+@require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
+async def mod_delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+    user_id = request.path_params['user_id']
+    command = DeleteAPITokenCommand(body.token_id, user_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(DeleteAPITokenRequestData)
+@require_logged_in(session_only=True)
+async def delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+    user_id = request.state.user.id
+    command = DeleteAPITokenCommand(body.token_id, user_id)
     await handle(command)
     return JSONResponse({})
 
@@ -311,4 +348,9 @@ routes = [
     Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
     Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
+    Route('/api/user/{user_id:int}/create_api_token', create_api_token, methods=["POST"]),
+    Route('/api/user/{user_id:int}/user_api_tokens', user_api_tokens),
+    Route('/api/user/{user_id:int}/delete_api_token', mod_delete_api_token, methods=["POST"]),
+    Route('/api/user/api_tokens', my_api_tokens),
+    Route('/api/user/delete_api_token', delete_api_token, methods=["POST"]),
 ]

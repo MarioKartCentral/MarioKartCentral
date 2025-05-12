@@ -15,14 +15,16 @@ class SaveToCommandLogCommand(Command[None]):
     command: Command[Any]
 
     async def handle(self, db_wrapper, s3_wrapper):
-        command_name = type(self.command).__name__
-        command_serialized = msgspec.json.encode(self.command).decode("utf-8")
+        # disable command log for now while it has some issues
+        pass
+        # command_name = type(self.command).__name__
+        # command_serialized = msgspec.json.encode(self.command).decode("utf-8")
 
-        async with db_wrapper.connect(db_name='command_logs') as db:
-            await db.execute_insert(
-                "INSERT INTO command_log(type, data) VALUES (?, ?)", 
-                (command_name, command_serialized))
-            await db.commit()
+        # async with db_wrapper.connect(db_name='command_logs') as db:
+        #     await db.execute_insert(
+        #         "INSERT INTO command_log(type, data) VALUES (?, ?)", 
+        #         (command_name, command_serialized))
+        #     await db.commit()
 
 @dataclass
 class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
@@ -31,7 +33,7 @@ class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
     async def handle(self, db_wrapper, s3_wrapper):
         after_id = self.after_id
         if after_id is None:
-            after_id = 0
+            after_id = -1
 
         async with db_wrapper.connect(db_name='command_logs') as db:
             rows = await db.execute_fetchall(
@@ -131,7 +133,7 @@ class SaveToHistoricalCommandLogsCommand(Command[None]):
                 next_command_datetime = datetime.fromtimestamp(next_command.timestamp, timezone.utc)
                 last_index_entry = HistoricalCommandLogIndexEntry(
                     f"{next_command_datetime.strftime('%Y-%m-%d_%H-%M-%S')}_{next_command.id}.json",
-                    next_command.id,
+                    (next_command_file * COMMAND_LOGS_PER_FILE),
                     next_command_datetime)
                 index.append(last_index_entry)
                 update_index = True
