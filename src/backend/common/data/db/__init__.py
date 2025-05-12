@@ -10,6 +10,7 @@ from common.data.db.sessions import schema as sessions_db
 from common.data.db.auth import schema as auth_db
 from common.data.db.discord_tokens import schema as discord_tokens_db
 from common.data.db.user_activity import schema as user_activity_db
+from common.data.db.user_activity_queue import schema as user_activity_queue_db
 from common.data.db.alt_flags import schema as alt_flags_db
 from common.data.db.player_notes import schema as player_notes_db
 from common.data.db.command_logs import schema as command_logs_db
@@ -20,6 +21,7 @@ all_dbs: Dict[str, DatabaseSchema] = {
     auth_db.db_name: auth_db,
     discord_tokens_db.db_name: discord_tokens_db,
     user_activity_db.db_name: user_activity_db,
+    user_activity_queue_db.db_name: user_activity_queue_db,
     alt_flags_db.db_name: alt_flags_db,
     player_notes_db.db_name: player_notes_db,
     command_logs_db.db_name: command_logs_db

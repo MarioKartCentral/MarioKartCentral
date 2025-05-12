@@ -910,6 +910,23 @@ class TournamentPost(TableModel):
             PRIMARY KEY (tournament_id, post_id)) WITHOUT ROWID"""
 
 
+@dataclass
+class JobState(TableModel):
+    id: int
+    job_name: str
+    state: str
+    updated_on: int
+    
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS job_states(
+            id INTEGER PRIMARY KEY,
+            job_name TEXT NOT NULL UNIQUE,
+            state TEXT NOT NULL,
+            updated_on INTEGER NOT NULL
+        )"""
+
+
     
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, UserDiscord, Role, Permission, UserRole, RolePermission, 
@@ -921,4 +938,4 @@ all_tables : list[type[TableModel]] = [
     TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, PlayerBans, PlayerBansHistorical,
     PlayerNameEdit, PlayerClaim, FilteredWords,
-    Post, SeriesPost, TournamentPost]
+    Post, SeriesPost, TournamentPost, JobState]

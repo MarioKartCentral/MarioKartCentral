@@ -13,7 +13,7 @@ class UserAuth(TableModel):
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS user_auth(
             user_id INTEGER PRIMARY KEY NOT NULL,
-            email TEXT UNIQUE,
+            email TEXT COLLATE NOCASE UNIQUE,
             password_hash TEXT,
             email_confirmed BOOLEAN NOT NULL DEFAULT 0,
             force_password_reset BOOLEAN NOT NULL DEFAULT 0

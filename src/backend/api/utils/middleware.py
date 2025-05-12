@@ -23,26 +23,58 @@ class ProblemHandlingMiddleware(BaseHTTPMiddleware):
         
 class IPLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
+        time = datetime.now(timezone.utc)
+        path = request.url.path
+        
+        should_log = appsettings.ENABLE_IP_LOGGING and (
+            request.method == "POST" or
+            path == "/api/user/me" or 
+            path == "/api/user/me/player"
+        ) 
+        
         response = await call_next(request)
-        async def log():
+        
+        async def log_activity():
             if not appsettings.ENABLE_IP_LOGGING:
                 return
-            session_id = request.cookies.get("session", None)
-            if not session_id:
-                return
-            user = await handle(GetUserIdFromSessionCommand(session_id))
-            if not user:
-                return
+            
+            # Try to get user from request.state first (might be set by auth middleware)
+            user = getattr(request.state, 'user', None)
+            if user is None:
+                # If not available, check session and get user info
+                session_id = request.cookies.get("session", None)
+                if not session_id:
+                    return
+                    
+                user = await handle(GetUserIdFromSessionCommand(session_id))
+                if not user:
+                    return
+                
             ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
             if not ip_address:
                 ip_address = request.client.host if request.client else None
-            await handle(LogUserIPCommand(user.id, ip_address))
-        if request.method == "POST":
+            
+            # Get referer header if available
+            referer = request.headers.get('Referer', None)
+                
+            # Log to activity queue instead of directly processing
+            await handle(EnqueueUserActivityCommand(
+                user_id=user.id,
+                ip_address=ip_address,
+                path=path,
+                timestamp=time,
+                referer=referer
+            ))
+        
+        # Only log for POST requests and specific endpoints
+        if should_log:
             tasks = BackgroundTasks()
             if response.background:
                 tasks.add_task(response.background)
-            tasks.add_task(log)
+                
+            tasks.add_task(log_activity)
             response.background = tasks
+            
         return response
 
 class RateLimitByIPMiddleware:

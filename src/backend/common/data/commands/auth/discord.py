@@ -55,7 +55,7 @@ class LinkUserDiscordCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         code = self.data.code
-        body: dict[str, str | None] = {
+        body: dict[str, Any] = {
             "code": code,
             "redirect_uri": self.discord_oauth_callback,
             "grant_type": 'authorization_code'
