@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import timezone
 
 import msgspec
 
@@ -372,10 +373,19 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
 
     async def handle(self, db_wrapper, s3_wrapper):
 
-        # First try to get from S3 cache
-        s3_body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'series_tournaments_{self.series_id}.json')
-        if s3_body:
-            return msgspec.json.decode(s3_body, type=list[TournamentWithPlacements])
+        cache_key = f'series_tournaments_{self.series_id}.json'
+        s3_object = await s3_wrapper.get_object_metadata_and_body(s3.SERIES_BUCKET, cache_key)
+
+        if s3_object:
+            last_modified = s3_object['LastModified']
+            s3_body = s3_object['Body']
+
+            now = datetime.now(timezone.utc)
+            if (now - datetime.fromisoformat(str(last_modified)).replace(tzinfo=timezone.utc)) < timedelta(hours=1):
+                return msgspec.json.decode(s3_body if isinstance(s3_body, bytes) else str(s3_body).encode('utf-8'), type=list[TournamentWithPlacements])
+
+        async with db_wrapper.connect(readonly=True) as db:
+            series_id = self.series_id
         
         async with db_wrapper.connect(readonly=True) as db:
             series_id = self.series_id
@@ -393,7 +403,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     pla.placement,
                     pla.placement_description,
                     pla.placement_lower_bound,
-                    pla.is_disqualified
+                    pla.is_disqualified,
+                    tr.color
                     FROM tournament_players tp
                     LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
                     LEFT JOIN tournament_placements pla ON tr.id = pla.registration_id
@@ -446,9 +457,9 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public = row
                     tournament = TournamentWithPlacements(
                         id, name, game, mode, date_start, date_end, series_id,
-                        None, None, None, bool(is_squad), registrations_open,
-                        teams_allowed, logo, use_series_logo, is_viewable,
-                        is_public, "", []
+                        None, None, None, bool(is_squad), bool(registrations_open),
+                        bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable),
+                        bool(is_public), "", []
                     )
                     tournaments.append(tournament)
                     placements[tournament.id] = tournament.placements
@@ -494,19 +505,21 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement,
                         placement_description,
                         placement_lower_bound,
-                        is_disqualified
+                        is_disqualified,
+                        color
                     ) = row
+                    color = color if color is not None else 1
                     placement = TournamentPlacementDetailed(
                         registration_id=id,
                         placement=placement,
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
-                        is_disqualified=is_disqualified == 1,
+                        is_disqualified=bool(is_disqualified),
                         squad=TournamentSquadDetails(
                             id=id,
                             name="",
                             tag="",
-                            color=1,
+                            color=color,
                             timestamp=0,
                             is_registered=True,
                             is_approved=True,
@@ -554,6 +567,13 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         roster_name,
                         roster_tag
                     ) = row
+                    team_id = team_id if team_id is not None else 1
+                    team_color = team_color if team_color is not None else 1
+                    team_tag = roster_tag if roster_tag is not None else ""
+                    team_name = roster_name if roster_name is not None else ""
+                    roster_id = roster_id if roster_id is not None else 1
+                    roster_name = roster_name if roster_name is not None else ""
+                    roster_tag = roster_tag if roster_tag is not None else ""
 
                     # Get players for this squad
                     squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [
@@ -564,7 +584,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement=placement,
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
-                        is_disqualified=is_disqualified == 1,
+                        is_disqualified=bool(is_disqualified),
                         squad=TournamentSquadDetails(
                             id=id,
                             name=roster_name,
@@ -586,7 +606,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         )
                     )
                     placements[tournament_id].append(placement)
-                    
+                
                 # Store the result in S3 cache
                 await s3_wrapper.put_object(
                     s3.SERIES_BUCKET,

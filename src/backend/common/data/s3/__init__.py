@@ -3,6 +3,8 @@ from types import TracebackType
 import aiobotocore.session
 from types_aiobotocore_s3 import S3Client
 from types_aiobotocore_s3.literals import ObjectCannedACLType
+from datetime import datetime
+from typing import Optional
 
 TOURNAMENTS_BUCKET = "mkc-tournaments"
 TEMPLATES_BUCKET = "mkc-templates"
@@ -32,11 +34,33 @@ class S3Wrapper:
         except self.client.exceptions.NoSuchKey:
             return None
 
+    async def get_object_metadata_and_body(self, bucket_name: str, key: str) -> dict[str, object] | None:
+        try:
+            head_response = await self.client.head_object(Bucket=bucket_name, Key=key)
+            last_modified: datetime = head_response['LastModified']
+
+            get_response = await self.client.get_object(Bucket=bucket_name, Key=key)
+            async with get_response["Body"] as stream:
+                body = await stream.read()
+
+            return {
+                "LastModified": last_modified,
+                "Body": body
+            }
+
+        except self.client.exceptions.NoSuchKey:
+            return None
+        except Exception:
+            return None
+
     async def put_object(self, bucket_name: str, key: str, body: bytes, acl: ObjectCannedACLType = "public-read"):
         await self.client.put_object(Bucket=bucket_name, Key=key, Body=body, ACL=acl)
 
     async def delete_object(self, bucket_name: str, key: str):
         await self.client.delete_object(Bucket=bucket_name, Key=key)
+    
+
+
 
 @dataclass
 class S3WrapperManager:
