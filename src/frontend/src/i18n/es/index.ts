@@ -127,6 +127,7 @@ const es: Translation = {
     SELECTED_FC: 'Clave de amigo seleccionada:',
     OTHER_FCS: 'Otras claves de amigo:',
     SELECT_TYPE: 'Selecciona un tipo de clave de amigo...',
+    EDIT_FC_TOOLTIP: 'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'Todos los tipos de código de amigo',
       SWITCH: 'Switch',

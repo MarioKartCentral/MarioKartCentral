@@ -127,6 +127,7 @@ const ja: Translation = {
     SELECTED_FC: 'フレンドコード選択:',
     OTHER_FCS: 'その他フレンドコード:',
     SELECT_TYPE: '機種選択...',
+    EDIT_FC_TOOLTIP: 'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'All FC Types',
       SWITCH: 'Switch',

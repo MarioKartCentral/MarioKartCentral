@@ -473,6 +473,10 @@ type RootTranslation = {
 		 * S​e​l​e​c​t​ ​a​ ​F​C​ ​t​y​p​e​.​.​.
 		 */
 		SELECT_TYPE: string
+		/**
+		 * T​o​ ​e​d​i​t​ ​t​h​e​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​i​t​s​e​l​f​ ​o​r​ ​t​o​ ​a​d​d​ ​a​ ​n​e​w​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​p​a​s​t​ ​t​h​e​ ​l​i​m​i​t​,​ ​m​a​k​e​ ​a​ ​t​i​c​k​e​t​ ​i​n​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​.
+		 */
+		EDIT_FC_TOOLTIP: string
 		TYPES: {
 			/**
 			 * A​l​l​ ​F​C​ ​T​y​p​e​s
@@ -5370,6 +5374,10 @@ export type TranslationFunctions = {
 		 * Select a FC type...
 		 */
 		SELECT_TYPE: () => LocalizedString
+		/**
+		 * To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.
+		 */
+		EDIT_FC_TOOLTIP: () => LocalizedString
 		TYPES: {
 			/**
 			 * All FC Types

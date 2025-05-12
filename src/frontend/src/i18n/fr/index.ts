@@ -127,6 +127,7 @@ const fr: Translation = {
     SELECTED_FC: 'Code ami selectioné :',
     OTHER_FCS: 'Autres code amis :',
     SELECT_TYPE: 'Select a FC type...',
+    EDIT_FC_TOOLTIP: 'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'All FC Types',
       SWITCH: 'Switch',
