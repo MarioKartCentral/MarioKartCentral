@@ -34,6 +34,7 @@ class IPAddress(TableModel):
     ip_address: str
     is_mobile: bool
     is_vpn: bool
+    country: str
     is_checked: bool
     checked_at: int | None
 

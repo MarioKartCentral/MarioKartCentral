@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Any
 from common.data.commands import Command
 from common.data.models import *
 import msgspec
@@ -14,6 +14,18 @@ class LogFingerprintCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         fingerprint_bytes = msgspec.json.encode(self.fingerprint.data)
         await s3_wrapper.put_object(s3.FINGERPRINT_BUCKET, f"{self.fingerprint.hash}.json", fingerprint_bytes)
+
+@dataclass
+class GetFingerprintDataCommand(Command[Fingerprint]):
+    fingerprint_hash: str
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        fingerprint_bytes = await s3_wrapper.get_object(s3.FINGERPRINT_BUCKET, f"{self.fingerprint_hash}.json")
+        if not fingerprint_bytes:
+            raise Problem("Fingerprint not found", status=404)
+        fingerprint_data = msgspec.json.decode(fingerprint_bytes, type=dict[Any, Any])
+        fingerprint = Fingerprint(self.fingerprint_hash, fingerprint_data)
+        return fingerprint
 
 @dataclass
 class CheckIPsCommand(Command[None]):
@@ -184,3 +196,107 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                         flag.users.append(AltFlagUser(user_id, current_player))
             
             return list(flag_dict.values())
+        
+@dataclass
+class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
+    player_id: int
+    has_ip_permission: bool
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        logins: list[UserLogin] = []
+        async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
+            async with db.execute("""SELECT ul.id, ul.user_id, ul.ip_address_id,
+                                    ul.fingerprint, ul.had_persistent_session, ul.date,
+                                    ul.logout_date, ip.ip_address, ip.is_mobile,
+                                    ip.is_vpn, ip.country
+                                    FROM players p
+                                    JOIN users u ON u.player_id = p.id
+                                    JOIN user_activity.user_logins ul ON u.id = ul.user_id
+                                    JOIN user_activity.ip_addresses ip ON ul.ip_address_id = ip.id
+                                    WHERE p.id = ? ORDER BY ul.date DESC""", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (login_id, user_id, ip_address_id, fingerprint, had_persistent_session, login_date,
+                        logout_date, ip_address, is_mobile, is_vpn, ip_country) = row
+                    if not self.has_ip_permission:
+                        ip_address = None
+                    ip = IPAddress(ip_address_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country)
+                    login = UserLogin(login_id, user_id, fingerprint, bool(had_persistent_session), login_date, logout_date, ip)
+                    logins.append(login)
+        return PlayerUserLogins(self.player_id, logins)
+
+@dataclass
+class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
+    player_id: int
+    has_ip_permission: bool
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        ips: list[UserIPTimeRange] = []
+        async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
+            async with db.execute("""SELECT tr.id, tr.date_earliest, tr.date_latest, tr.times,
+                                    uip.user_id, ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn,
+                                    ip.country
+                                    FROM players p
+                                    JOIN users u ON u.player_id = p.id
+                                    JOIN user_activity.user_ips uip ON u.id = uip.user_id
+                                    JOIN user_activity.user_ip_time_ranges tr ON uip.id = tr.user_ip_id
+                                    JOIN user_activity.ip_addresses ip ON uip.ip_address_id = ip.id
+                                    WHERE p.id = ? ORDER BY tr.date_latest DESC""", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (time_range_id, date_earliest, date_latest, times, user_id, ip_id, ip_address,
+                     is_mobile, is_vpn, country) = row
+                    if not self.has_ip_permission:
+                        ip_address = None
+                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), country)
+                    time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
+                    ips.append(time_range)
+                ip_history = PlayerIPHistory(self.player_id, ips)
+                return ip_history
+            
+@dataclass
+class ViewHistoryForIPCommand(Command[IPHistory]):
+    ip_id: int
+    has_ip_permission: bool
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        time_ranges: list[PlayerIPTimeRange] = []
+        async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
+            async with db.execute("""SELECT ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn,
+                                    ip.country, uip.user_id, tr.id, tr.date_earliest,
+                                    tr.date_latest, tr.times, p.id, p.name, p.country_code
+                                    FROM user_activity.ip_addresses ip
+                                    JOIN user_activity.user_ips uip ON ip.id = uip.ip_address_id
+                                    JOIN user_activity.user_ip_time_ranges tr ON uip.id = tr.user_ip_id
+                                    JOIN users u ON uip.user_id = u.id
+                                    LEFT JOIN players p ON u.player_id = p.id
+                                    WHERE ip.id = ? ORDER BY tr.date_latest DESC""",
+                                    (self.ip_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (ip_id, ip_address, is_mobile, is_vpn, ip_country, user_id, time_range_id,
+                        date_earliest, date_latest, times, player_id, player_name, player_country) = row
+                    if not self.has_ip_permission:
+                        ip_address = None
+                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country)
+                    ip_time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
+                    player = None
+                    if player_id:
+                        player = PlayerBasic(player_id, player_name, player_country)
+                    player_time_range = PlayerIPTimeRange(ip_time_range, player)
+                    time_ranges.append(player_time_range)
+        ip_history = IPHistory(self.ip_id, time_ranges)
+        return ip_history
+    
+@dataclass
+class GetIPIDFromAddressCommand(Command[int]):
+    ip_address: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(db_name='user_activity') as db:
+            async with db.execute("SELECT id FROM ip_addresses WHERE ip_address = ?", (self.ip_address,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("IP not found", status=404)
+                ip_id = row[0]
+                return ip_id

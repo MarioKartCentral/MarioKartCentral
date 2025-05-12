@@ -48,3 +48,50 @@ class AltFlagList:
     flags: list[AltFlag]
     count: int
     page_count: int
+
+@dataclass
+class IPAddress:
+    id: int
+    ip_address: str | None # can be null if user doesnt have permissions
+    is_mobile: bool
+    is_vpn: bool
+    country: str | None
+
+@dataclass
+class UserLogin:
+    id: int
+    user_id: int
+    fingerprint: str
+    had_persistent_session: bool
+    date: int
+    logout_date: int | None
+    ip_address: IPAddress
+
+@dataclass
+class PlayerUserLogins:
+    player_id: int
+    logins: list[UserLogin]
+
+@dataclass
+class UserIPTimeRange:
+    id: int
+    user_id: int
+    ip_address: IPAddress
+    date_earliest: int
+    date_latest: int
+    times: int
+
+@dataclass
+class PlayerIPHistory:
+    player_id: int
+    ips: list[UserIPTimeRange]
+
+@dataclass
+class PlayerIPTimeRange:
+    time_range: UserIPTimeRange
+    player: PlayerBasic | None
+
+@dataclass
+class IPHistory:
+    ip_id: int
+    history: list[PlayerIPTimeRange]
