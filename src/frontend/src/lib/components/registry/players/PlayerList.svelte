@@ -101,11 +101,11 @@
         {#each players as player, i}
           <tr class="row-{i % 2}">
             <td><Flag country_code={player.country_code} /></td>
-            <td class="mobile-hide">
-              <FriendCodeDisplay friend_codes={player.friend_codes}/>
-            </td>
             <td>
               <a href="/{$page.params.lang}/registry/players/profile?id={player.id}" class={player.is_banned ? 'banned_name' : ''}>{player.name}</a>
+            </td>
+            <td class="mobile-hide">
+              <FriendCodeDisplay friend_codes={player.friend_codes}/>
             </td>
           </tr>
         {/each}
