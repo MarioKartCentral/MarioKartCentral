@@ -8,6 +8,7 @@ from api import appsettings
 from ratelimit.types import ASGIApp, Scope, Receive, Send
 from ratelimit import RateLimitMiddleware, Rule
 from ratelimit.backends.simple import MemoryBackend
+import ipaddress
 
 async def handle_error(request, exception):
     return ProblemResponse(Problem("Unexpected Error"))
@@ -31,6 +32,20 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
             path == "/api/user/me" or 
             path == "/api/user/me/player"
         ) 
+
+        ip_address = request.headers.get('CF-Connecting-IP')
+        if ip_address is None and appsettings.ENV == "Development":
+            if request.client is not None:
+                ip_address = request.client.host
+
+        if ip_address is not None:
+            ip_obj = ipaddress.ip_address(ip_address)
+            if isinstance(ip_obj, ipaddress.IPv6Address):
+                full_addr = ip_obj.exploded
+                parts = full_addr.split(":")
+                ip_address = ":".join(parts[:4])
+
+        request.state.ip_address = ip_address
         
         response = await call_next(request)
         
@@ -49,10 +64,6 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
                 if not user:
                     return
                 
-            ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-            if not ip_address:
-                ip_address = request.client.host if request.client else None
-            
             # Get referer header if available
             referer = request.headers.get('Referer', None)
             # Log to activity queue instead of directly processing
@@ -77,9 +88,7 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
 
 class RateLimitByIPMiddleware:
     async def auth_function(self, scope: Scope):
-        ip_address = scope.get('CF-Connecting-IP', None)
-        if not ip_address:
-            ip_address = scope['client'][0]
+        ip_address = scope["state"]["ip_address"]
         return ip_address, 'default'
     
     def on_blocked(self, retry_after: int):

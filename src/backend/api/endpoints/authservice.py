@@ -68,9 +68,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
     
     persistent_session_id = request.cookies.get('persistentSession', None)
-    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-    if not ip_address:
-        ip_address = request.client.host if request.client else None
+    ip_address: str | None = request.state.ip_address
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     async def log_ip_fingerprint():
@@ -115,9 +113,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # login user after registering
     persistent_session_id = request.cookies.get('persistentSession', None)
-    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-    if not ip_address:
-        ip_address = request.client.host if request.client else None
+    ip_address: str | None = request.state.ip_address
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
