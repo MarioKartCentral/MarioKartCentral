@@ -17,6 +17,7 @@ class IPCheckResponse:
     message: str | None = None
     mobile: bool = False
     proxy: bool = False
+    countryCode: str | None = None
 
 @dataclass
 class AltFlagFilter:
@@ -27,6 +28,11 @@ class PlayerAltFlagRequestData:
     player_id: int
 
 @dataclass
+class AltFlagUser:
+    user_id: int
+    player: PlayerBasic | None
+
+@dataclass
 class AltFlag:
     id: int
     type: str
@@ -35,7 +41,7 @@ class AltFlag:
     score: int
     date: int
     fingerprint_hash: str | None
-    players: list[PlayerBasic]
+    users: list[AltFlagUser]
 
 @dataclass
 class AltFlagList:

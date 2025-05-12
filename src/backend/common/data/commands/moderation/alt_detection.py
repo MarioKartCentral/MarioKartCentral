@@ -38,7 +38,7 @@ class CheckIPsCommand(Command[None]):
         response_data: list[IPCheckResponse] = []
         current_timestamp = int(datetime.now().timestamp())
         async with aiohttp.ClientSession() as session:
-            url = "http://ip-api.com/batch?fields=status,message,mobile,proxy"
+            url = "http://ip-api.com/batch?fields=status,message,mobile,proxy,countryCode"
             # we can specify 100 IPs per request, so send requests in chunks of 100
             chunk_size = 100
             for i in range(0, len(ips_to_check), chunk_size):
@@ -56,6 +56,7 @@ class CheckIPsCommand(Command[None]):
                 "id": ips_to_check[i].user_id,  # This is the ip_address.id
                 "is_mobile": response_data[i].mobile, 
                 "is_vpn": response_data[i].proxy,
+                "country": response_data[i].countryCode,
                 "checked_at": current_timestamp
             } for i in range(len(ips_to_check))
         ]
@@ -63,7 +64,7 @@ class CheckIPsCommand(Command[None]):
         async with db_wrapper.connect(db_name='user_activity') as db:
             update_ip_check_results_command = """
                 UPDATE ip_addresses 
-                SET is_mobile = :is_mobile, is_vpn = :is_vpn, is_checked = 1, checked_at = :checked_at
+                SET is_mobile = :is_mobile, is_vpn = :is_vpn, country = :country, is_checked = 1, checked_at = :checked_at
                 WHERE id = :id
             """
             await db.executemany(update_ip_check_results_command, query_parameters)
@@ -91,7 +92,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
 
             get_flags_query = """
                 SELECT f.id, f.type, f.flag_key, f.data, f.score, f.date, l.fingerprint,
-                       p.id as player_id, p.name as player_name, p.country_code
+                       u.id as user_id, p.id as player_id, p.name as player_name, p.country_code
                 FROM (
                     SELECT id FROM alt_flags.alt_flags 
                     ORDER BY date DESC 
@@ -108,14 +109,18 @@ class ListAltFlagsCommand(Command[AltFlagList]):
             flag_dict: dict[int, AltFlag] = {}
             async with db.execute(get_flags_query, {"limit": limit, "offset": offset}) as cursor:
                 rows = await cursor.fetchall()
-                for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, player_id, player_name, player_country in rows:
+                for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, user_id, player_id, player_name, player_country in rows:
                     # Create flag if we haven't seen it yet
                     if flag_id not in flag_dict:
                         flag_dict[flag_id] = AltFlag(flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, [])
                     
                     # Add player if we have player data (might be NULL if no players associated)
-                    if player_id is not None:
-                        flag_dict[flag_id].players.append(PlayerBasic(player_id, player_name, player_country))
+                    if user_id is not None:
+                        player = None
+                        if player_id is not None:
+                            player = PlayerBasic(player_id, player_name, player_country)
+                        flag_user = AltFlagUser(user_id, player)
+                        flag_dict[flag_id].users.append(flag_user)
 
             return AltFlagList(list(flag_dict.values()), count, page_count)
 
@@ -139,6 +144,8 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                     raise Problem("Player not found")
                 user_id, player_id, player_name, player_country = row
                 current_player = PlayerBasic(player_id, player_name, player_country)
+                current_user = AltFlagUser(user_id, current_player)
+                
 
             flag_dict: dict[int, AltFlag] = {}
             get_player_flags_command = """
@@ -152,25 +159,28 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     flag_id, type, flag_key, data, score, date, fingerprint_hash = row
-                    flag = AltFlag(flag_id, type, flag_key, data, score, date, fingerprint_hash, [current_player])
+                    flag = AltFlag(flag_id, type, flag_key, data, score, date, fingerprint_hash, [current_user])
                     flag_dict[flag_id] = flag
 
            # get other players with the same flags
             get_flag_players_command = """
-                SELECT p.id, p.name, p.country_code, uf2.flag_id
+                SELECT u.id, p.id, p.name, p.country_code, uf2.flag_id
                 FROM alt_flags.user_alt_flags uf1
                 JOIN alt_flags.user_alt_flags uf2 ON uf1.flag_id = uf2.flag_id
                 JOIN main.users u ON uf2.user_id = u.id
-                JOIN main.players p ON u.player_id = p.id
+                LEFT JOIN main.players p ON u.player_id = p.id
                 WHERE uf1.user_id = :user_id
                 AND uf2.user_id != :user_id
             """
             async with db.execute(get_flag_players_command, {"user_id": user_id}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, player_country, flag_id = row
+                    user_id, player_id, player_name, player_country, flag_id = row
                     flag = flag_dict.get(flag_id)
                     if flag:
-                        flag.players.append(PlayerBasic(player_id, player_name, player_country))
+                        current_player = None
+                        if player_id:
+                            current_player = PlayerBasic(player_id, player_name, player_country)
+                        flag.users.append(AltFlagUser(user_id, current_player))
             
             return list(flag_dict.values())

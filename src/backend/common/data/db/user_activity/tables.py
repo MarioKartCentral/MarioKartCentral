@@ -44,6 +44,7 @@ class IPAddress(TableModel):
             ip_address TEXT NOT NULL UNIQUE,
             is_mobile BOOLEAN NOT NULL,
             is_vpn BOOLEAN NOT NULL,
+            country TEXT,
             is_checked BOOLEAN NOT NULL,
             checked_at INTEGER
         )"""

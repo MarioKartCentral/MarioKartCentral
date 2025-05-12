@@ -63,7 +63,10 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                         'user_id_1=' || ui1.user_id || ',user_id_2=' || ui2.user_id AS flag_key,
                         MIN(MAX(tr1.date_earliest, tr2.date_earliest)) AS match_date,
                         tr1.date_earliest AS date_1,
-                        tr2.date_earliest AS date_2
+                        tr2.date_earliest AS date_2,
+                        ip.is_mobile AS is_mobile,
+                        ip.is_vpn AS is_vpn,
+                        ip.country AS country
                     FROM user_activity.user_ips ui1
                     JOIN user_activity.user_ips ui2 ON 
                         ui1.ip_address_id = ui2.ip_address_id AND
@@ -79,7 +82,7 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                         ip.is_checked = 1
                     GROUP BY ui1.user_id, ui2.user_id
                 )
-                SELECT im.user_id_1, im.user_id_2, im.ip_address_id, im.score, im.flag_key, im.match_date, im.date_1, im.date_2
+                SELECT im.user_id_1, im.user_id_2, im.ip_address_id, im.score, im.flag_key, im.match_date, im.date_1, im.date_2, im.is_mobile, im.is_vpn, im.country
                 FROM ip_matches im
                 LEFT JOIN alt_flags af ON im.flag_key = af.flag_key AND af.type = 'ip_match'
                 WHERE af.score IS NULL OR im.score > af.score
@@ -96,7 +99,7 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                 return new_state
                 
             new_flags: list[dict[str, Any]] = []
-            for user_id_1, user_id_2, ip_address_id, score, flag_key, match_date, date_1, date_2 in potential_matches:
+            for user_id_1, user_id_2, ip_address_id, score, flag_key, match_date, date_1, date_2, is_mobile, is_vpn, country in potential_matches:
                 data: dict[str, Any] = {
                     "type": "ip_match",
                     "flag_key": flag_key,
@@ -106,6 +109,9 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                         "ip_address_id": ip_address_id,
                         "date_1": date_1,
                         "date_2": date_2,
+                        "is_mobile": bool(is_mobile),
+                        "is_vpn": bool(is_vpn),
+                        "country": country,
                     }),
                     "score": score,
                     "date": match_date,
