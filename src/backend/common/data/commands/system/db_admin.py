@@ -19,9 +19,8 @@ class UpdateDbSchemaCommand(Command[None]):
             db_name = db_schema.db_name
             async with db_wrapper.connect(db_name, autocommit=True) as db:
                 await db.execute("pragma journal_mode = WAL;")
-                await db.execute("pragma synchronous = NORMAL;")
 
-            async with db_wrapper.connect(db_name, autocommit=False) as db:
+            async with db_wrapper.connect(db_name) as db:
                 # Create a clean DB, so that we can compare it against our current schema
                 async with aiosqlite.connect(":memory:") as clean_db:
                     for table in db_schema.tables:

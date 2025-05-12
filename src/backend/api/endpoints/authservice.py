@@ -35,6 +35,7 @@ def create_email_config():
 
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
+    time = datetime.now(timezone.utc)
     user = await handle(GetUserDataFromEmailCommand(body.email))
     if user:
         if user.password_hash is None:
@@ -74,7 +75,8 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
 
     async def log_ip_fingerprint():
         if appsettings.ENABLE_IP_LOGGING:
-            await handle(LogUserIPCommand(user.id, ip_address))
+            referer = request.headers.get('Referer', None)
+            await handle(EnqueueUserActivityCommand(user.id, ip_address, request.url.path, time, referer))
         await handle(LogFingerprintCommand(body.fingerprint))
         
     resp = JSONResponse(return_user, status_code=200, background=BackgroundTask(log_ip_fingerprint))
@@ -85,6 +87,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
 
 @bind_request_body(SignupRequestData)
 async def sign_up(request: Request, body: SignupRequestData) -> Response:
+    time = datetime.now(timezone.utc)
     existing_user = await handle(GetUserDataFromEmailCommand(body.email))
     if existing_user:
         raise Problem("User with this email already exists", status=400)
@@ -124,7 +127,8 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
         await handle(command)
         
         if appsettings.ENABLE_IP_LOGGING:
-            await handle(LogUserIPCommand(user.id, ip_address))
+            referer = request.headers.get('Referer', None)
+            await handle(EnqueueUserActivityCommand(user.id, ip_address, request.url.path, time, referer))
         await handle(LogFingerprintCommand(body.fingerprint))
 
     resp = JSONResponse(user, status_code=201, background=BackgroundTask(send_email_and_log))
