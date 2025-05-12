@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timezone
+import traceback
 from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
@@ -15,9 +16,9 @@ class JobRunner:
         async def run_with_error_handler():
             try:
                 await self._job.run()
-            except Exception as ex:
+            except Exception:
                 print(f"Job '{self._job.name}' failed")
-                print(ex)
+                traceback.print_exc()
                 raise
     
         self._longer_than_delay = False

@@ -1,5 +1,3 @@
-import sys
-import traceback
 from starlette.middleware.base import BaseHTTPMiddleware
 from api.utils.responses import ProblemResponse
 from common.data.models import Problem
@@ -11,15 +9,17 @@ from ratelimit.types import ASGIApp, Scope, Receive, Send
 from ratelimit import RateLimitMiddleware, Rule
 from ratelimit.backends.simple import MemoryBackend
 
-class ProblemHandlingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
-        try:
-            return await call_next(request)
-        except Problem as problem:
-            print(f"Problem: {problem}", file=sys.stderr)
-            if problem.status > 500:
-                traceback.print_exc()
-            return ProblemResponse(problem)
+async def handle_error(request, exception):
+    return ProblemResponse(Problem("Unexpected Error"))
+
+async def handle_problem(request, problem):
+    return ProblemResponse(problem)
+
+exception_handlers = {
+    Problem: handle_problem,
+    500: handle_error
+}
+
         
 class IPLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
@@ -45,7 +45,6 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
                 session_id = request.cookies.get("session", None)
                 if not session_id:
                     return
-                    
                 user = await handle(GetUserIdFromSessionCommand(session_id))
                 if not user:
                     return
@@ -56,7 +55,6 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
             
             # Get referer header if available
             referer = request.headers.get('Referer', None)
-                
             # Log to activity queue instead of directly processing
             await handle(EnqueueUserActivityCommand(
                 user_id=user.id,

@@ -38,7 +38,7 @@ class DetectPersistentCookieMatchesCommand(Command[PersistentCookieDetectionStat
                 FROM user_activity.user_logins l1
                 JOIN user_activity.user_logins l2 ON 
                     l1.persistent_session_id = l2.persistent_session_id AND
-                    l1.user_id < l2.user_id AND -- Ensures each pair is only counted once
+                    l1.user_id < l2.user_id -- Ensures each pair is only counted once
                 WHERE
                     (l1.id > :last_login_id OR l2.id > :last_login_id) AND 
                     NOT EXISTS (SELECT 1 FROM alt_flags WHERE type = 'persistent_cookie_match' AND flag_key = 'user_id_1=' || l1.user_id || ',user_id_2=' || l2.user_id)

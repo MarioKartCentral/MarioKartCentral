@@ -8,6 +8,6 @@ bcrypt==4.1.2
 debugpy==1.8.0
 msgspec==0.18.6
 oauthlib==3.2.2
-starlette==0.32.0
+starlette==0.46.2
 types-aiobotocore[s3,ses]==2.7.0
-uvicorn==0.24.0
+uvicorn==0.34.2
