@@ -1,5 +1,4 @@
 <script lang="ts">
-  import LL from '$i18n/i18n-svelte';
   import Table from '$lib/components/common/Table.svelte';
   import { page } from '$app/stores';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
@@ -33,7 +32,7 @@
     return '🐢';
   }
 
-  function getString(placement: any) {
+  function getString(placement) {
     if (placement.squad.players.length > 4) {
       return placement.squad.name;
     }

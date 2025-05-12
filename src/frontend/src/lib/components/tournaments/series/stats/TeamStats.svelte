@@ -5,7 +5,7 @@
   import { StatsMode } from '$lib/types/tournament';
 
   export let stats_mode: StatsMode;
-  export let rostersArray: any[];
+  export let rostersArray;
 
   function getColorClass(roster) {
     if (stats_mode === StatsMode.TEAM_MEDALS) {
