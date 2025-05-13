@@ -86,6 +86,7 @@ const ja: Translation = {
     SORT_BY_ALPHABETICAL: 'アルファベット順',
     SORT_BY_NEWEST: '最新順',
     WORKING: 'Working...',
+    VIEW: 'View',
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -127,7 +128,8 @@ const ja: Translation = {
     SELECTED_FC: 'フレンドコード選択:',
     OTHER_FCS: 'その他フレンドコード:',
     SELECT_TYPE: '機種選択...',
-    EDIT_FC_TOOLTIP: 'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
+    EDIT_FC_TOOLTIP:
+      'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'All FC Types',
       SWITCH: 'Switch',
@@ -370,6 +372,22 @@ const ja: Translation = {
     ALT_DETECTION: {
       ALT_FLAGS: 'Alt Flags',
       PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      LOGIN_HISTORY: 'Login History',
+      FINGERPRINT: 'Fingerprint',
+      SEARCH_FOR_FINGERPRINTS: 'Search for fingerprints',
+      FINGERPRINT_HASH: 'Fingerprint Data (hash: {hash})',
+      SEARCH_BY_HASH: 'Search by hash...',
+      PREVIOUS_COOKIE: 'Previous Cookie?',
+      IP_ADDRESS: 'IP Address',
+      IP_ADDRESSES: 'IP Addresses',
+      IP_ADDRESS_COUNT: '{count} IPs',
+      LOGOUT_DATE: 'Logout Date',
+      VPN: 'VPN',
+      MOBILE: 'Mobile',
+      IP_SEARCH: 'Search for IPs',
+      IP_USER_COUNT: '{count} users',
+      IP_HISTORY: 'IP History',
+      NUM_TIMES: '{count} times',
       TABLE: {
         PLAYERS: 'Players',
         TYPE: 'Type',
@@ -437,6 +455,8 @@ const ja: Translation = {
       WORD_FILTER: '単語フィルター',
       MANAGE_USERS: 'ユーザ管理',
       ALT_DETECTION: 'Alt検出',
+      FINGERPRINTS: 'Fingerprints',
+      IP_SEARCH: 'IP Search',
     },
   },
   NOTIFICATION: {

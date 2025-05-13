@@ -176,6 +176,10 @@ export const permissions = {
   edit_user: 'user_edit',
   manage_posts: 'post_manage',
   view_alt_flags: 'alt_flag_view',
+  view_user_logins: 'user_logins_view',
+  view_basic_ip_info: 'ip_basic_info_view',
+  view_ip_addresses: 'ip_address_view',
+  view_fingerprints: 'fingerprints_view',
 };
 
 export const team_permissions = {

@@ -3,7 +3,7 @@ import type { PlayerBasic } from './player';
 export type AltFlagUser = {
   user_id: number;
   player: PlayerBasic | null;
-}
+};
 
 export type AltFlag = {
   id: number;
