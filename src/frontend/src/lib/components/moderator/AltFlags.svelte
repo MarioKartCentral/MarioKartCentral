@@ -26,6 +26,11 @@
         }
         show_details = show_details;
     }
+
+    function jsonToFieldString(jsonStr: string) {
+        const obj = JSON.parse(jsonStr);
+        return Object.entries(obj);
+    }
 </script>
 
 {#if flags.length}
@@ -73,7 +78,11 @@
                                 <Button on:click={() => toggle_details(i)}>{$LL.COMMON.HIDE()}</Button>
                             </div>
                             <div>
-                                {flag.data}
+                                {#each jsonToFieldString(flag.data) as entry}
+                                    <div>
+                                        {entry[0]}: {entry[1]}
+                                    </div>
+                                {/each}
                             </div>
                         {:else}
                             <Button on:click={() => toggle_details(i)}>{$LL.COMMON.SHOW()}</Button>
