@@ -60,12 +60,13 @@ async def view_ip_history(request: Request) -> JSONResponse:
     ip_history = await handle(ViewHistoryForIPCommand(ip_id, has_ip_permission))
     return JSONResponse(ip_history)
 
-@require_permission(permissions.VIEW_IP_ADDRESSES)
-async def view_ip_history_from_address(request: Request) -> JSONResponse:
-    ip_address = request.path_params['ip_address']
-    ip_id = await handle(GetIPIDFromAddressCommand(ip_address))
-    ip_history = await handle(ViewHistoryForIPCommand(ip_id, True))
-    return JSONResponse(ip_history)
+@bind_request_query(IPFilter)
+@require_permission(permissions.VIEW_BASIC_IP_INFO)
+async def search_ip_addresses(request: Request, body: IPFilter) -> JSONResponse:
+    # check if the user has permissions to view actual ip addresses
+    has_ip_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, permissions.VIEW_IP_ADDRESSES))
+    results = await handle(SearchIPsCommand(body, has_ip_permission))
+    return JSONResponse(results)
 
 @require_permission(permissions.VIEW_FINGERPRINTS)
 async def view_fingerprint(request: Request) -> JSONResponse:
@@ -82,6 +83,6 @@ routes: list[Route] = [
     Route('/api/moderator/player_logins/{player_id:int}', view_player_user_logins),
     Route('/api/moderator/player_ips/{player_id:int}', view_player_ip_history),
     Route('/api/moderator/ip_addresses/{ip_id:int}', view_ip_history),
-    Route('/api/moderator/ip_addresses/from_address/{ip_address:str}', view_ip_history_from_address),
+    Route('/api/moderator/ip_addresses', search_ip_addresses),
     Route('/api/moderator/fingerprints/{fingerprint_hash:str}', view_fingerprint),
 ]

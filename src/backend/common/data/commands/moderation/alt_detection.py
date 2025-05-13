@@ -50,7 +50,7 @@ class CheckIPsCommand(Command[None]):
         response_data: list[IPCheckResponse] = []
         current_timestamp = int(datetime.now().timestamp())
         async with aiohttp.ClientSession() as session:
-            url = "http://ip-api.com/batch?fields=status,message,mobile,proxy,countryCode"
+            url = "http://ip-api.com/batch?fields=status,message,mobile,proxy,countryCode,region,city,as"
             # we can specify 100 IPs per request, so send requests in chunks of 100
             chunk_size = 100
             for i in range(0, len(ips_to_check), chunk_size):
@@ -69,6 +69,9 @@ class CheckIPsCommand(Command[None]):
                 "is_mobile": response_data[i].mobile, 
                 "is_vpn": response_data[i].proxy,
                 "country": response_data[i].countryCode,
+                "region": response_data[i].region,
+                "city": response_data[i].city,
+                "asn": response_data[i].asn,
                 "checked_at": current_timestamp
             } for i in range(len(ips_to_check))
         ]
@@ -76,7 +79,9 @@ class CheckIPsCommand(Command[None]):
         async with db_wrapper.connect(db_name='user_activity') as db:
             update_ip_check_results_command = """
                 UPDATE ip_addresses 
-                SET is_mobile = :is_mobile, is_vpn = :is_vpn, country = :country, is_checked = 1, checked_at = :checked_at
+                SET is_mobile = :is_mobile, is_vpn = :is_vpn, country = :country,
+                region = :region, city = :city, asn = :asn,
+                is_checked = 1, checked_at = :checked_at
                 WHERE id = :id
             """
             await db.executemany(update_ip_check_results_command, query_parameters)
@@ -209,7 +214,7 @@ class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
             async with db.execute("""SELECT ul.id, ul.user_id, ul.ip_address_id,
                                     ul.fingerprint, ul.had_persistent_session, ul.date,
                                     ul.logout_date, ip.ip_address, ip.is_mobile,
-                                    ip.is_vpn, ip.country
+                                    ip.is_vpn, ip.country, ip.region, ip.city, ip.asn
                                     FROM players p
                                     JOIN users u ON u.player_id = p.id
                                     JOIN user_activity.user_logins ul ON u.id = ul.user_id
@@ -218,10 +223,11 @@ class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (login_id, user_id, ip_address_id, fingerprint, had_persistent_session, login_date,
-                        logout_date, ip_address, is_mobile, is_vpn, ip_country) = row
+                        logout_date, ip_address, is_mobile, is_vpn, ip_country, ip_region,
+                        ip_city, ip_asn) = row
                     if not self.has_ip_permission:
                         ip_address = None
-                    ip = IPAddress(ip_address_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country)
+                    ip = IPAddress(ip_address_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country, ip_region, ip_city, ip_asn)
                     login = UserLogin(login_id, user_id, fingerprint, bool(had_persistent_session), login_date, logout_date, ip)
                     logins.append(login)
         return PlayerUserLogins(self.player_id, logins)
@@ -236,7 +242,7 @@ class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
         async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
             async with db.execute("""SELECT tr.id, tr.date_earliest, tr.date_latest, tr.times,
                                     uip.user_id, ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn,
-                                    ip.country
+                                    ip.country, ip.region, ip.city, ip.asn
                                     FROM players p
                                     JOIN users u ON u.player_id = p.id
                                     JOIN user_activity.user_ips uip ON u.id = uip.user_id
@@ -246,10 +252,10 @@ class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (time_range_id, date_earliest, date_latest, times, user_id, ip_id, ip_address,
-                     is_mobile, is_vpn, country) = row
+                     is_mobile, is_vpn, country, region, city, asn) = row
                     if not self.has_ip_permission:
                         ip_address = None
-                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), country)
+                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), country, region, city, asn)
                     time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
                     ips.append(time_range)
                 ip_history = PlayerIPHistory(self.player_id, ips)
@@ -264,7 +270,8 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
         time_ranges: list[PlayerIPTimeRange] = []
         async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
             async with db.execute("""SELECT ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn,
-                                    ip.country, uip.user_id, tr.id, tr.date_earliest,
+                                    ip.country, ip.region, ip.city, ip.asn,
+                                    uip.user_id, tr.id, tr.date_earliest,
                                     tr.date_latest, tr.times, p.id, p.name, p.country_code
                                     FROM user_activity.ip_addresses ip
                                     JOIN user_activity.user_ips uip ON ip.id = uip.ip_address_id
@@ -275,11 +282,12 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                                     (self.ip_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (ip_id, ip_address, is_mobile, is_vpn, ip_country, user_id, time_range_id,
+                    (ip_id, ip_address, is_mobile, is_vpn, ip_country, ip_region, ip_city, ip_asn,
+                        user_id, time_range_id,
                         date_earliest, date_latest, times, player_id, player_name, player_country) = row
                     if not self.has_ip_permission:
                         ip_address = None
-                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country)
+                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country, ip_region, ip_city, ip_asn)
                     ip_time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
                     player = None
                     if player_id:
@@ -288,6 +296,52 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                     time_ranges.append(player_time_range)
         ip_history = IPHistory(self.ip_id, time_ranges)
         return ip_history
+    
+@dataclass
+class SearchIPsCommand(Command[IPAddressList]):
+    filter: IPFilter
+    has_ip_permission: bool
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        limit = 20
+        offset = 0
+
+        if self.filter.page:
+            offset = (self.filter.page - 1) * limit
+        ip_filter = f"{self.filter.ip_address}%" if self.has_ip_permission and self.filter.ip_address else None
+        query_parameters: dict[str, Any] = {
+            "ip_address": ip_filter,
+            "city": f"{self.filter.city}%" if self.filter.city else None,
+            "asn": f"{self.filter.asn}%" if self.filter.asn else None,
+            "offset": offset,
+            "limit": limit,
+        }
+        results: list[IPAddressWithUserCount] = []
+        async with db_wrapper.connect(db_name='user_activity') as db:
+            query = """FROM ip_addresses ip
+                        JOIN user_ips uip ON ip.id = uip.ip_address_id
+                        WHERE (:ip_address IS NULL OR ip.ip_address LIKE :ip_address) AND (:city IS NULL OR ip.city LIKE :city)
+                        AND (:asn IS NULL OR ip.asn LIKE :asn)
+                        GROUP BY ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn, ip.country, ip.city, ip.region
+                        """
+            async with db.execute(f"""SELECT ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn, ip.country, ip.city, ip.region, ip.asn, COUNT(uip.user_id)
+                                    {query} LIMIT :limit OFFSET :offset
+                                  """, query_parameters) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    ip_id, ip_address, is_mobile, is_vpn, country, city, region, asn, user_count = row
+                    if not self.has_ip_permission:
+                        ip_address = None
+                    ip = IPAddressWithUserCount(ip_id, ip_address, is_mobile, is_vpn, country, city, region, asn, user_count)
+                    results.append(ip)
+            
+            count_query = f"SELECT COUNT(*) FROM (SELECT ip.id {query})"
+            async with db.execute(count_query, query_parameters) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                count = int(row[0])
+            page_count = (count + limit - 1) // limit
+            return IPAddressList(results, count, page_count)
     
 @dataclass
 class GetIPIDFromAddressCommand(Command[int]):

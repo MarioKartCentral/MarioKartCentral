@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from common.data.models.player_basic import PlayerBasic
 from typing import Literal
 
@@ -18,6 +18,9 @@ class IPCheckResponse:
     mobile: bool = False
     proxy: bool = False
     countryCode: str | None = None
+    region: str | None = None
+    city: str | None = None
+    asn: str | None = field(metadata={"alias": "as"}, default=None)
 
 @dataclass
 class AltFlagFilter:
@@ -56,6 +59,19 @@ class IPAddress:
     is_mobile: bool
     is_vpn: bool
     country: str | None
+    city: str | None
+    region: str | None
+    asn: str | None
+
+@dataclass
+class IPAddressWithUserCount(IPAddress):
+    user_count: int
+
+@dataclass
+class IPAddressList:
+    ip_addresses: list[IPAddressWithUserCount]
+    count: int
+    page_count: int
 
 @dataclass
 class UserLogin:
@@ -95,3 +111,10 @@ class PlayerIPTimeRange:
 class IPHistory:
     ip_id: int
     history: list[PlayerIPTimeRange]
+
+@dataclass
+class IPFilter:
+    ip_address: str | None = None
+    city: str | None = None
+    asn: str | None = None
+    page: int | None = None
