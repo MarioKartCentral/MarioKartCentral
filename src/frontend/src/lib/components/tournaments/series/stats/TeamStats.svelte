@@ -1,0 +1,135 @@
+<!-- Main component -->
+<script lang="ts">
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import Table from '$lib/components/common/Table.svelte';
+  import { StatsMode } from '$lib/types/tournament';
+
+  export let stats_mode: StatsMode;
+  export let rostersArray;
+
+  function getColorClass(roster) {
+    if (stats_mode === StatsMode.TEAM_MEDALS) {
+      if (roster.medals_placement === 1) {
+        return 'gold_row';
+      }
+      if (roster.medals_placement === 2) {
+        return 'silver_row';
+      }
+      if (roster.medals_placement === 3) {
+        return 'bronze_row';
+      }
+    } else {
+      if (roster.appearances_placement === 1) {
+        return 'gold_row';
+      }
+      if (roster.appearances_placement === 2) {
+        return 'silver_row';
+      }
+      if (roster.appearances_placement === 3) {
+        return 'bronze_row';
+      }
+      return '';
+    }
+  }
+</script>
+
+<div class="table-container">
+  <div class="compact-table">
+    <Table>
+      <col class="placement" />
+      <col class="tag" />
+      <col class="name" />
+      {#if stats_mode === StatsMode.TEAM_MEDALS}
+        <col class="medals" />
+        <col class="medals" />
+        <col class="medals" />
+      {:else}
+        <col class="appearances" />
+      {/if}
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          {#if stats_mode === StatsMode.TEAM_MEDALS}
+            <th class="text_center">👑</th><th class="text_center">🥈</th><th class="text_center">🥉</th>
+          {:else}
+            <th class="text_center bold_td">Appearances</th>
+          {/if}
+        </tr>
+      </thead>
+      {#each rostersArray as roster}
+        {#if (stats_mode === StatsMode.TEAM_MEDALS && (roster.gold > 0 || roster.silver > 0 || roster.bronze > 0)) || (stats_mode === StatsMode.TEAM_APPEARANCES && roster.appearances_placement < 25)}
+          <tr class={getColorClass(roster)}>
+            <td class="text_center bold_td"
+              >{stats_mode === StatsMode.TEAM_MEDALS ? roster.medals_placement : roster.appearances_placement}</td
+            >
+            <td><TagBadge tag={roster.tag} color={roster.color} /></td>
+            <td>{roster.name}</td>
+            {#if stats_mode === StatsMode.TEAM_MEDALS}
+              <td class="text_center bold_td">{roster.gold > 0 ? roster.gold : '-'}</td>
+              <td class="text_center bold_td">{roster.silver > 0 ? roster.silver : '-'}</td>
+              <td class="text_center bold_td">{roster.bronze > 0 ? roster.bronze : '-'}</td>
+            {:else}
+              <td class="text_center bold_td">{roster.appearances}</td>
+            {/if}
+          </tr>
+        {/if}
+      {/each}
+    </Table>
+  </div>
+</div>
+
+<style>
+  .table-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .compact-table {
+    width: fit-content;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  col.placement {
+    width: 64px;
+  }
+  col.tag {
+    width: 64px;
+  }
+  col.name {
+    width: 256px;
+  }
+  col.medals {
+    width: 64px;
+  }
+
+  col.appearances {
+    width: 192px;
+  }
+
+  .text_center {
+    text-align: center;
+  }
+
+  .gold_row {
+    color: #fffab0;
+    background-color: rgba(255, 253, 108, 0.25);
+  }
+
+  .silver_row {
+    color: #dddddd;
+    background-color: rgba(195, 255, 255, 0.25);
+  }
+
+  .bronze_row {
+    color: #ffcbae;
+    background-color: rgba(255, 158, 110, 0.25);
+  }
+
+  .bold_td {
+    font-weight: bold;
+  }
+</style>
