@@ -407,9 +407,9 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tr.color
                     FROM tournament_players tp
                     LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
-                    LEFT JOIN tournament_placements pla ON tr.id = pla.registration_id
+                    JOIN tournament_placements pla ON tr.id = pla.registration_id
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE  t.series_id = ? AND t.is_squad = FALSE)  
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)
              """
             tournament_squads_query = f"""
                  SELECT
@@ -428,11 +428,11 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     rosters.name AS roster_name,
                     rosters.tag AS roster_tag
                     FROM tournament_registrations tr
-                    LEFT JOIN tournament_placements pla ON pla.registration_id = tr.id
+                    JOIN tournament_placements pla ON pla.registration_id = tr.id
                     LEFT JOIN team_squad_registrations tsr ON tr.id = tsr.registration_id
                     LEFT JOIN team_rosters rosters ON rosters.id = tsr.roster_id
                     LEFT JOIN teams t ON rosters.team_id = t.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = TRUE)  
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
             """
             squad_players_query = f"""
                 SELECT 
@@ -444,7 +444,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.country_code
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE  t.series_id = ? AND t.is_squad = TRUE)  
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}

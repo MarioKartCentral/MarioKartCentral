@@ -5,6 +5,7 @@
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import TypeBadge from '$lib/components/badges/TypeBadge.svelte';
   import Section from '$lib/components/common/Section.svelte';
+  import { locale } from '$i18n/i18n-svelte';
   export let tournaments;
 
   const isPodium = (value) => value.placement <= 3;
@@ -13,10 +14,8 @@
   for (let i = 0; i < tournaments.length; i++) {
     tournaments[i].placements = tournaments[i].placements.filter(isPodium).sort(comparePlacements);
   }
-  let options = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  const options: Intl.DateTimeFormatOptions = {
+    dateStyle: 'medium',
   };
 
   function getMedal(placement: number) {
@@ -66,9 +65,9 @@
                 <a href="/{$page.params.lang}/tournaments?id={tournament.id}">{tournament.name}</a>
               </td>
               <td class="right">
-                {new Date(tournament.date_start * 1000).toLocaleDateString('fr-FR', options)} - {new Date(
+                {new Date(tournament.date_start * 1000).toLocaleString($locale, options)} - {new Date(
                   tournament.date_end * 1000,
-                ).toLocaleDateString('fr-FR', options)}
+                ).toLocaleDateString($locale, options)}
               </td>
             </tr>
             <tr>
