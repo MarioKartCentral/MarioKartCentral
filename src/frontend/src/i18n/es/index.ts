@@ -384,6 +384,7 @@ const es: Translation = {
       IP_ADDRESS: 'IP Address',
       IP_ADDRESSES: 'IP Addresses',
       IP_ADDRESS_COUNT: '{count} IPs',
+      PLAYER_IP_HISTORY: 'Player IP History',
       LOGOUT_DATE: 'Logout Date',
       VPN: 'VPN',
       MOBILE: 'Mobile',

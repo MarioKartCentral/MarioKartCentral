@@ -1393,6 +1393,10 @@ type RootTranslation = {
 			 */
 			IP_ADDRESS_COUNT: RequiredParams<'count'>
 			/**
+			 * P​l​a​y​e​r​ ​I​P​ ​H​i​s​t​o​r​y
+			 */
+			PLAYER_IP_HISTORY: string
+			/**
 			 * L​o​g​o​u​t​ ​D​a​t​e
 			 */
 			LOGOUT_DATE: string
@@ -6355,6 +6359,10 @@ export type TranslationFunctions = {
 			 * {count} IPs
 			 */
 			IP_ADDRESS_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Player IP History
+			 */
+			PLAYER_IP_HISTORY: () => LocalizedString
 			/**
 			 * Logout Date
 			 */

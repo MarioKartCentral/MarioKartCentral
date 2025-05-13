@@ -35,6 +35,11 @@ export type PlayerIPTimeRange = {
   player: PlayerBasic | null;
 };
 
+export type PlayerIPHistory = {
+  player_id: number;
+  ips: UserIPTimeRange[];
+};
+
 export type IPHistory = {
   ip_id: number;
   history: PlayerIPTimeRange[];

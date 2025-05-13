@@ -21,6 +21,7 @@
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
   import PlayerAltFlags from '$lib/components/moderator/PlayerAltFlags.svelte';
   import PlayerLogins from '$lib/components/moderator/PlayerLogins.svelte';
+  import PlayerIpDialog from '$lib/components/moderator/PlayerIPDialog.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
@@ -28,6 +29,7 @@
   let playerNotesDialog: Dialog;
   let altDialog: PlayerAltFlags;
   let loginDialog: PlayerLogins;
+  let ipDialog: PlayerIpDialog;
   let show_notes = false;
 
   user.subscribe((value) => {
@@ -120,6 +122,9 @@
         {#if check_permission(user_info, permissions.view_user_logins)}
           <Button on:click={loginDialog.open}>{$LL.MODERATOR.ALT_DETECTION.LOGIN_HISTORY()}</Button>
         {/if}
+        {#if check_permission(user_info, permissions.view_basic_ip_info)}
+          <Button on:click={ipDialog.open}>{$LL.MODERATOR.ALT_DETECTION.IP_HISTORY()}</Button>
+        {/if}
       </div>
       {#if show_notes}
         <PlayerNotes notes={player.notes} />
@@ -149,6 +154,7 @@
     </Dialog>
     <PlayerAltFlags bind:this={altDialog} player_id={player.id}/>
     <PlayerLogins bind:this={loginDialog} player_id={player.id}/>
+    <PlayerIpDialog bind:this={ipDialog} player_id={player.id}/>
   {/if}
   <PlayerProfile {player} />
   <PlayerTournamentHistory {player} />
