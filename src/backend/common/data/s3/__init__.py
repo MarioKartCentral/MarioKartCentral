@@ -4,7 +4,6 @@ import aiobotocore.session
 from types_aiobotocore_s3 import S3Client
 from types_aiobotocore_s3.literals import ObjectCannedACLType
 from datetime import datetime
-from typing import Optional
 
 TOURNAMENTS_BUCKET = "mkc-tournaments"
 TEMPLATES_BUCKET = "mkc-templates"

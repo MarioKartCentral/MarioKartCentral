@@ -9,14 +9,16 @@ from ratelimit.types import ASGIApp, Scope, Receive, Send
 from ratelimit import RateLimitMiddleware, Rule
 from ratelimit.backends.simple import MemoryBackend
 import ipaddress
+from typing import Any
+from starlette.requests import Request
 
-async def handle_error(request, exception):
+async def handle_error(request: Request, exception: Exception):
     return ProblemResponse(Problem("Unexpected Error"))
 
-async def handle_problem(request, problem):
+async def handle_problem(request: Request, problem: Problem):
     return ProblemResponse(problem)
 
-exception_handlers = {
+exception_handlers: dict[Any, Any] = {
     Problem: handle_problem,
     500: handle_error
 }
@@ -43,7 +45,7 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
             if isinstance(ip_obj, ipaddress.IPv6Address):
                 full_addr = ip_obj.exploded
                 parts = full_addr.split(":")
-                ip_address = ":".join(parts[:4])
+                ip_address = ":".join(parts[:4]) + "::"
 
         request.state.ip_address = ip_address
         
