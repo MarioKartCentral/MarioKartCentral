@@ -43,7 +43,7 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
             if isinstance(ip_obj, ipaddress.IPv6Address):
                 full_addr = ip_obj.exploded
                 parts = full_addr.split(":")
-                ip_address = ":".join(parts[:4])
+                ip_address = ":".join(parts[:4]) + "::"
 
         request.state.ip_address = ip_address
         
