@@ -22,6 +22,7 @@ class UpdateDbSchemaCommand(Command[None]):
 
             async with db_wrapper.connect(db_name) as db:
                 # Create a clean DB, so that we can compare it against our current schema
+                await db.executescript("pragma foreign_keys = OFF;")
                 async with aiosqlite.connect(":memory:") as clean_db:
                     for table in db_schema.tables:
                         await clean_db.execute(table.get_create_table_command())
