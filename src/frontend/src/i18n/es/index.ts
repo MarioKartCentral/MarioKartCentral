@@ -48,7 +48,6 @@ const es: Translation = {
     GREY_3: 'Gris 3',
     BLACK: 'Negro',
   },
-
   COMMON: {
     GAME: 'Juego',
     MODE: 'Modo',
@@ -86,6 +85,7 @@ const es: Translation = {
     SORT_BY_ALPHABETICAL: 'Alfabético',
     SORT_BY_NEWEST: 'Más recientes',
     WORKING: 'En proceso...',
+    VIEW: 'View',
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -127,6 +127,8 @@ const es: Translation = {
     SELECTED_FC: 'Clave de amigo seleccionada:',
     OTHER_FCS: 'Otras claves de amigo:',
     SELECT_TYPE: 'Selecciona un tipo de clave de amigo...',
+    EDIT_FC_TOOLTIP:
+      'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'Todos los tipos de código de amigo',
       SWITCH: 'Switch',
@@ -373,6 +375,23 @@ const es: Translation = {
     ALT_DETECTION: {
       ALT_FLAGS: 'Señales de alting',
       PLAYER_ALT_FLAGS: 'Señales de alting del jugador',
+      LOGIN_HISTORY: 'Login History',
+      FINGERPRINT: 'Fingerprint',
+      SEARCH_FOR_FINGERPRINTS: 'Search for fingerprints',
+      FINGERPRINT_HASH: 'Fingerprint Data (hash: {hash})',
+      SEARCH_BY_HASH: 'Search by hash...',
+      PREVIOUS_COOKIE: 'Previous Cookie?',
+      IP_ADDRESS: 'IP Address',
+      IP_ADDRESSES: 'IP Addresses',
+      IP_ADDRESS_COUNT: '{count} IPs',
+      PLAYER_IP_HISTORY: 'Player IP History',
+      LOGOUT_DATE: 'Logout Date',
+      VPN: 'VPN',
+      MOBILE: 'Mobile',
+      IP_SEARCH: 'Search for IPs',
+      IP_USER_COUNT: '{count} users',
+      IP_HISTORY: 'IP History',
+      NUM_TIMES: '{count} times',
       TABLE: {
         PLAYERS: 'Jugadores',
         TYPE: 'Tipo',
@@ -440,6 +459,8 @@ const es: Translation = {
       WORD_FILTER: 'Filtro de palabras',
       MANAGE_USERS: 'Manejar perfiles de usuario',
       ALT_DETECTION: 'Detección de alts',
+      FINGERPRINTS: 'Fingerprints',
+      IP_SEARCH: 'IP Search',
     },
   },
   NOTIFICATION: {

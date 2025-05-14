@@ -34,6 +34,7 @@ class IPAddress(TableModel):
     ip_address: str
     is_mobile: bool
     is_vpn: bool
+    country: str
     is_checked: bool
     checked_at: int | None
 
@@ -44,6 +45,10 @@ class IPAddress(TableModel):
             ip_address TEXT NOT NULL UNIQUE,
             is_mobile BOOLEAN NOT NULL,
             is_vpn BOOLEAN NOT NULL,
+            country TEXT,
+            region TEXT,
+            city TEXT,
+            asn TEXT,
             is_checked BOOLEAN NOT NULL,
             checked_at INTEGER
         )"""

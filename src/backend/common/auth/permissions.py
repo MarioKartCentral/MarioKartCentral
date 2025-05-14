@@ -23,6 +23,10 @@ IMPORT_V1_DATA = 'import_v1_data'
 MANAGE_POSTS = "post_manage"
 VIEW_ALT_FLAGS = "alt_flag_view"
 MANAGE_API_TOKENS = "api_tokens_manage"
+VIEW_USER_LOGINS = "user_logins_view"
+VIEW_BASIC_IP_INFO = "ip_basic_info_view"
+VIEW_IP_ADDRESSES = "ip_address_view"
+VIEW_FINGERPRINTS = "fingerprints_view"
 
 permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
@@ -71,6 +75,10 @@ permissions_by_id: dict[int, str] = {
     43: tournament_permissions.MANAGE_TOURNAMENT_POSTS,
     44: series_permissions.VIEW_HIDDEN_SERIES,
     45: MANAGE_API_TOKENS,
+    46: VIEW_USER_LOGINS,
+    47: VIEW_BASIC_IP_INFO,
+    48: VIEW_IP_ADDRESSES,
+    49: VIEW_FINGERPRINTS,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

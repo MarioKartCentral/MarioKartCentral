@@ -83,6 +83,7 @@ const en_us: BaseTranslation = {
     SORT_BY_ALPHABETICAL: 'Alphabetical',
     SORT_BY_NEWEST: 'Newest',
     WORKING: 'Working...',
+    VIEW: 'View',
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -124,6 +125,8 @@ const en_us: BaseTranslation = {
     SELECTED_FC: 'Selected FC:',
     OTHER_FCS: 'Other FCs:',
     SELECT_TYPE: 'Select a FC type...',
+    EDIT_FC_TOOLTIP:
+      'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'All FC Types',
       SWITCH: 'Switch',
@@ -367,6 +370,23 @@ const en_us: BaseTranslation = {
     ALT_DETECTION: {
       ALT_FLAGS: 'Alt Flags',
       PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      LOGIN_HISTORY: 'Login History',
+      FINGERPRINT: 'Fingerprint',
+      SEARCH_FOR_FINGERPRINTS: 'Search for fingerprints',
+      FINGERPRINT_HASH: 'Fingerprint Data (hash: {hash: string})',
+      SEARCH_BY_HASH: 'Search by hash...',
+      PREVIOUS_COOKIE: 'Previous Cookie?',
+      IP_ADDRESS: 'IP Address',
+      IP_ADDRESSES: 'IP Addresses',
+      IP_ADDRESS_COUNT: '{count:number} IPs',
+      PLAYER_IP_HISTORY: 'Player IP History',
+      LOGOUT_DATE: 'Logout Date',
+      VPN: 'VPN',
+      MOBILE: 'Mobile',
+      IP_SEARCH: 'Search for IPs',
+      IP_USER_COUNT: '{count:number} users',
+      IP_HISTORY: 'IP History',
+      NUM_TIMES: '{count:number} times',
       TABLE: {
         PLAYERS: 'Players',
         TYPE: 'Type',
@@ -434,6 +454,8 @@ const en_us: BaseTranslation = {
       WORD_FILTER: 'Word Filter',
       MANAGE_USERS: 'Manage Users',
       ALT_DETECTION: 'Alt Detection',
+      FINGERPRINTS: 'Fingerprints',
+      IP_SEARCH: 'IP Search',
     },
   },
   NOTIFICATION: {

@@ -30,6 +30,13 @@ class UserLoginFingerprintId(IndexModel):
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_user_logins_fingerprint_id
             ON user_logins(fingerprint, id)"""
+    
+@dataclass
+class UserLoginUserID(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS idx_user_logins_user_id
+            ON user_logins(user_id)"""
 
 # Indexes for IPAddress table
 @dataclass
@@ -45,6 +52,27 @@ class IPAddressIsCheckedCheckedAt(IndexModel):
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_is_checked_checked_at
             ON ip_addresses(is_checked, checked_at)"""
+    
+@dataclass
+class IPAddressIPCityASN(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_ip_city_asn
+            ON ip_addresses(ip_address, city, asn)"""
+
+@dataclass
+class IPAddressCityASN(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_city_asn
+            ON ip_addresses(city, asn)"""
+
+@dataclass
+class IPAddressASN(IndexModel):
+    @staticmethod
+    def get_create_index_command() -> str:
+        return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_asn
+            ON ip_addresses(asn)"""
 
 # Indexes for UserIP table
 @dataclass
@@ -60,5 +88,8 @@ all_indices: list[type[IndexModel]] = [
     UserLoginSessionID,
     IPAddressIsCheckedIsVPNCheckedAt,
     IPAddressIsCheckedCheckedAt,
+    IPAddressIPCityASN,
+    IPAddressCityASN,
+    IPAddressASN,
     UserIPIPAddressID
 ]

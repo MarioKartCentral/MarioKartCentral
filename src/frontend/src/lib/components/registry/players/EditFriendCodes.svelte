@@ -7,6 +7,7 @@
     import { EditSolid } from "flowbite-svelte-icons";
     import type { FriendCode } from "$lib/types/friend-code";
     import FCTypeBadge from "$lib/components/badges/FCTypeBadge.svelte";
+    import Tooltip from "$lib/components/common/Tooltip.svelte";
 
     export let player: PlayerInfo;
     export let is_privileged = false;
@@ -103,12 +104,22 @@
                     <div>
                         <label for="fc">{$LL.FRIEND_CODES.FRIEND_CODE()}</label>
                     </div>
-                    <div>
-                        <input name="fc" placeholder={selected_fc.type !== 'nnid' ? '0000-0000-0000' : 'NNID'} 
-                        minlength={selected_fc.type === 'nnid' ? 6 : null} maxlength={selected_fc.type === 'nnid' ? 16 : null} 
-                        disabled={!is_privileged} value={selected_fc.fc} required/>
-                    </div>
+                    {#if is_privileged}
+                        <div>
+                            <input name="fc" placeholder={selected_fc.type !== 'nnid' ? '0000-0000-0000' : 'NNID'} 
+                            minlength={selected_fc.type === 'nnid' ? 6 : null} maxlength={selected_fc.type === 'nnid' ? 16 : null} 
+                            value={selected_fc.fc} required/>
+                        </div>
+                    {:else}
+                        <div>
+                            {selected_fc.fc}
+                        </div>
+                        <Tooltip>
+                            {$LL.FRIEND_CODES.EDIT_FC_TOOLTIP()}
+                        </Tooltip>
+                    {/if}
                 </div>
+                
                 <div class="option">
                     <div>
                         <label for="is_primary">{$LL.FRIEND_CODES.PRIMARY()}</label>
@@ -154,4 +165,4 @@
         display: flex;
         align-items: center;
     }
-  </style>
+</style>

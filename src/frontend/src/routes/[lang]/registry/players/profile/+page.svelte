@@ -20,12 +20,16 @@
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
   import PlayerAltFlags from '$lib/components/moderator/PlayerAltFlags.svelte';
+  import PlayerLogins from '$lib/components/moderator/PlayerLogins.svelte';
+  import PlayerIpDialog from '$lib/components/moderator/PlayerIPDialog.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
   let playerNotesDialog: Dialog;
   let altDialog: PlayerAltFlags;
+  let loginDialog: PlayerLogins;
+  let ipDialog: PlayerIpDialog;
   let show_notes = false;
 
   user.subscribe((value) => {
@@ -113,7 +117,13 @@
           <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}">{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button>
         {/if}
         {#if check_permission(user_info, permissions.view_alt_flags)}
-          <Button on:click={altDialog.open}>Alt Flags</Button>
+          <Button on:click={altDialog.open}>{$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}</Button>
+        {/if}
+        {#if check_permission(user_info, permissions.view_user_logins)}
+          <Button on:click={loginDialog.open}>{$LL.MODERATOR.ALT_DETECTION.LOGIN_HISTORY()}</Button>
+        {/if}
+        {#if check_permission(user_info, permissions.view_basic_ip_info)}
+          <Button on:click={ipDialog.open}>{$LL.MODERATOR.ALT_DETECTION.IP_HISTORY()}</Button>
         {/if}
       </div>
       {#if show_notes}
@@ -143,6 +153,8 @@
       {/key}
     </Dialog>
     <PlayerAltFlags bind:this={altDialog} player_id={player.id}/>
+    <PlayerLogins bind:this={loginDialog} player_id={player.id}/>
+    <PlayerIpDialog bind:this={ipDialog} player_id={player.id}/>
   {/if}
   <PlayerProfile {player} />
   <PlayerTournamentHistory {player} />

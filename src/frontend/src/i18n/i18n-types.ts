@@ -330,6 +330,10 @@ type RootTranslation = {
 		 * W​o​r​k​i​n​g​.​.​.
 		 */
 		WORKING: string
+		/**
+		 * V​i​e​w
+		 */
+		VIEW: string
 	}
 	API_TOKENS: {
 		/**
@@ -473,6 +477,10 @@ type RootTranslation = {
 		 * S​e​l​e​c​t​ ​a​ ​F​C​ ​t​y​p​e​.​.​.
 		 */
 		SELECT_TYPE: string
+		/**
+		 * T​o​ ​e​d​i​t​ ​t​h​e​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​i​t​s​e​l​f​ ​o​r​ ​t​o​ ​a​d​d​ ​a​ ​n​e​w​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​p​a​s​t​ ​t​h​e​ ​l​i​m​i​t​,​ ​m​a​k​e​ ​a​ ​t​i​c​k​e​t​ ​i​n​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​.
+		 */
+		EDIT_FC_TOOLTIP: string
 		TYPES: {
 			/**
 			 * A​l​l​ ​F​C​ ​T​y​p​e​s
@@ -1346,6 +1354,78 @@ type RootTranslation = {
 			 * P​l​a​y​e​r​ ​A​l​t​ ​F​l​a​g​s
 			 */
 			PLAYER_ALT_FLAGS: string
+			/**
+			 * L​o​g​i​n​ ​H​i​s​t​o​r​y
+			 */
+			LOGIN_HISTORY: string
+			/**
+			 * F​i​n​g​e​r​p​r​i​n​t
+			 */
+			FINGERPRINT: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​f​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			SEARCH_FOR_FINGERPRINTS: string
+			/**
+			 * F​i​n​g​e​r​p​r​i​n​t​ ​D​a​t​a​ ​(​h​a​s​h​:​ ​{​h​a​s​h​}​)
+			 * @param {string} hash
+			 */
+			FINGERPRINT_HASH: RequiredParams<'hash'>
+			/**
+			 * S​e​a​r​c​h​ ​b​y​ ​h​a​s​h​.​.​.
+			 */
+			SEARCH_BY_HASH: string
+			/**
+			 * P​r​e​v​i​o​u​s​ ​C​o​o​k​i​e​?
+			 */
+			PREVIOUS_COOKIE: string
+			/**
+			 * I​P​ ​A​d​d​r​e​s​s
+			 */
+			IP_ADDRESS: string
+			/**
+			 * I​P​ ​A​d​d​r​e​s​s​e​s
+			 */
+			IP_ADDRESSES: string
+			/**
+			 * {​c​o​u​n​t​}​ ​I​P​s
+			 * @param {number} count
+			 */
+			IP_ADDRESS_COUNT: RequiredParams<'count'>
+			/**
+			 * P​l​a​y​e​r​ ​I​P​ ​H​i​s​t​o​r​y
+			 */
+			PLAYER_IP_HISTORY: string
+			/**
+			 * L​o​g​o​u​t​ ​D​a​t​e
+			 */
+			LOGOUT_DATE: string
+			/**
+			 * V​P​N
+			 */
+			VPN: string
+			/**
+			 * M​o​b​i​l​e
+			 */
+			MOBILE: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​I​P​s
+			 */
+			IP_SEARCH: string
+			/**
+			 * {​c​o​u​n​t​}​ ​u​s​e​r​s
+			 * @param {number} count
+			 */
+			IP_USER_COUNT: RequiredParams<'count'>
+			/**
+			 * I​P​ ​H​i​s​t​o​r​y
+			 */
+			IP_HISTORY: string
+			/**
+			 * {​c​o​u​n​t​}​ ​t​i​m​e​s
+			 * @param {number} count
+			 */
+			NUM_TIMES: RequiredParams<'count'>
 			TABLE: {
 				/**
 				 * P​l​a​y​e​r​s
@@ -1590,6 +1670,14 @@ type RootTranslation = {
 			 * A​l​t​ ​D​e​t​e​c​t​i​o​n
 			 */
 			ALT_DETECTION: string
+			/**
+			 * F​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			FINGERPRINTS: string
+			/**
+			 * I​P​ ​S​e​a​r​c​h
+			 */
+			IP_SEARCH: string
 		}
 	}
 	NOTIFICATION: {
@@ -5228,6 +5316,10 @@ export type TranslationFunctions = {
 		 * Working...
 		 */
 		WORKING: () => LocalizedString
+		/**
+		 * View
+		 */
+		VIEW: () => LocalizedString
 	}
 	API_TOKENS: {
 		/**
@@ -5370,6 +5462,10 @@ export type TranslationFunctions = {
 		 * Select a FC type...
 		 */
 		SELECT_TYPE: () => LocalizedString
+		/**
+		 * To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.
+		 */
+		EDIT_FC_TOOLTIP: () => LocalizedString
 		TYPES: {
 			/**
 			 * All FC Types
@@ -6227,6 +6323,74 @@ export type TranslationFunctions = {
 			 * Player Alt Flags
 			 */
 			PLAYER_ALT_FLAGS: () => LocalizedString
+			/**
+			 * Login History
+			 */
+			LOGIN_HISTORY: () => LocalizedString
+			/**
+			 * Fingerprint
+			 */
+			FINGERPRINT: () => LocalizedString
+			/**
+			 * Search for fingerprints
+			 */
+			SEARCH_FOR_FINGERPRINTS: () => LocalizedString
+			/**
+			 * Fingerprint Data (hash: {hash})
+			 */
+			FINGERPRINT_HASH: (arg: { hash: string }) => LocalizedString
+			/**
+			 * Search by hash...
+			 */
+			SEARCH_BY_HASH: () => LocalizedString
+			/**
+			 * Previous Cookie?
+			 */
+			PREVIOUS_COOKIE: () => LocalizedString
+			/**
+			 * IP Address
+			 */
+			IP_ADDRESS: () => LocalizedString
+			/**
+			 * IP Addresses
+			 */
+			IP_ADDRESSES: () => LocalizedString
+			/**
+			 * {count} IPs
+			 */
+			IP_ADDRESS_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Player IP History
+			 */
+			PLAYER_IP_HISTORY: () => LocalizedString
+			/**
+			 * Logout Date
+			 */
+			LOGOUT_DATE: () => LocalizedString
+			/**
+			 * VPN
+			 */
+			VPN: () => LocalizedString
+			/**
+			 * Mobile
+			 */
+			MOBILE: () => LocalizedString
+			/**
+			 * Search for IPs
+			 */
+			IP_SEARCH: () => LocalizedString
+			/**
+			 * {count} users
+			 */
+			IP_USER_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * IP History
+			 */
+			IP_HISTORY: () => LocalizedString
+			/**
+			 * {count} times
+			 */
+			NUM_TIMES: (arg: { count: number }) => LocalizedString
 			TABLE: {
 				/**
 				 * Players
@@ -6471,6 +6635,14 @@ export type TranslationFunctions = {
 			 * Alt Detection
 			 */
 			ALT_DETECTION: () => LocalizedString
+			/**
+			 * Fingerprints
+			 */
+			FINGERPRINTS: () => LocalizedString
+			/**
+			 * IP Search
+			 */
+			IP_SEARCH: () => LocalizedString
 		}
 	}
 	NOTIFICATION: {
