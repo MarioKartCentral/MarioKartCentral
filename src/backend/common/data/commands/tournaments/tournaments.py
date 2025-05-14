@@ -391,7 +391,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             series_id = self.series_id
             tournaments_query = f"""
                 SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public
-                FROM tournaments WHERE series_id = ?
+                FROM tournaments WHERE series_id = ? ORDER BY date_start DESC
             """
             tournament_players_query = f"""
                 SELECT 
@@ -444,7 +444,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.country_code
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                    
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
