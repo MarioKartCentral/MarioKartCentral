@@ -196,7 +196,6 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.VIEW_ALT_FLAGS,
         permissions.VIEW_USER_LOGINS,
         permissions.VIEW_BASIC_IP_INFO,
-        permissions.VIEW_FINGERPRINTS,
     ],
     SITE_SUPPORTER: [],
     BANNED: [],
