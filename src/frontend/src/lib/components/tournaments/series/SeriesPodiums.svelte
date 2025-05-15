@@ -52,52 +52,50 @@
     <col class="right" />
     <tbody>
       {#each tournaments as t, i}
-        {#if t.placements.length > 0}
-          <tr class="row-{i % 2}">
-            <td class="left">
-              <div class="row_top tournament_name">
-                <a href="/{$page.params.lang}/tournaments?id={t.id}">{t.name}</a>
-              </div>
-              <div>
-                <GameBadge game={t.game} />
-                <ModeBadge mode={t.mode} />
-                <TypeBadge is_squad={t.is_squad} teams_allowed={t.teams_allowed} />
-              </div>
-            </td>
-            <td class="right">
-              <div class="row_top">
-                {new Date(t.date_start * 1000).toLocaleDateString($locale, options)} - {new Date(
-                  t.date_end * 1000,
-                ).toLocaleDateString($locale, options)}
-              </div>
-              <div>
-                {#each t.placements as p}
-                  <span class={getColor(p.placement) + ' bold'}>
-                    {getMedal(p.placement)}
-                    {#if t.teams_allowed}
-                      {#each p.squad.rosters as r}
-                        <a href={`/${$page.params.lang}/registry/teams/profile?id=${r.team_id}`}>
-                          {r.team_name}
-                        </a>
-                      {/each}
-                    {:else}
-                      {#each p.squad.players as player}
-                        <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
-                          {player.name}
-                        </a>
-                        {#if player !== p.squad.players[p.squad.players.length - 1]}
-                          <span class="white_color">
-                            {' / '}
-                          </span>
-                        {/if}
-                      {/each}
-                    {/if}
-                  </span>
-                {/each}
-              </div>
-            </td>
-          </tr>
-        {/if}
+        <tr class="row-{i % 2}">
+          <td class="left">
+            <div class="row_top tournament_name">
+              <a href="/{$page.params.lang}/tournaments?id={t.id}">{t.name}</a>
+            </div>
+            <div>
+              <GameBadge game={t.game} />
+              <ModeBadge mode={t.mode} />
+              <TypeBadge is_squad={t.is_squad} teams_allowed={t.teams_allowed} />
+            </div>
+          </td>
+          <td class="right">
+            <div class="row_top">
+              {new Date(t.date_start * 1000).toLocaleDateString($locale, options)} - {new Date(
+                t.date_end * 1000,
+              ).toLocaleDateString($locale, options)}
+            </div>
+            <div>
+              {#each t.placements as p}
+                <span class={getColor(p.placement) + ' bold'}>
+                  {getMedal(p.placement)}
+                  {#if t.teams_allowed}
+                    {#each p.squad.rosters as r}
+                      <a href={`/${$page.params.lang}/registry/teams/profile?id=${r.team_id}`}>
+                        {r.team_name}
+                      </a>
+                    {/each}
+                  {:else}
+                    {#each p.squad.players as player}
+                      <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
+                        {player.name}
+                      </a>
+                      {#if player !== p.squad.players[p.squad.players.length - 1]}
+                        <span class="white_color">
+                          {' / '}
+                        </span>
+                      {/if}
+                    {/each}
+                  {/if}
+                </span>
+              {/each}
+            </div>
+          </td>
+        </tr>
       {/each}
     </tbody>
   </Table>
