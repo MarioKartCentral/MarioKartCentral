@@ -52,8 +52,8 @@
             <div class="flex gap-3 flex-wrap">
                 {#if check_permission(user_info, permissions.view_ip_addresses)}
                     <input bind:value={ip_address} placeholder={$LL.MODERATOR.ALT_DETECTION.IP_ADDRESS()}/>
+                    <input bind:value={city} placeholder="City"/>
                 {/if}
-                <input bind:value={city} placeholder="City"/>
                 <input bind:value={asn} placeholder="ASN"/>
                 <Button on:click={fetchData}>{$LL.COMMON.SEARCH()}</Button>
             </div>

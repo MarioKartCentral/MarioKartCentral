@@ -57,7 +57,7 @@
             </span>
             <input name="confirm-password" type="password" minlength={min_length} maxlength=64 bind:value={confirm_password} required/>
         </div>
-        {#if !is_change}
+        {#if !is_change && !is_reset}
             <div class="option">
                 <span class="agree-terms">
                     <input name="terms" type="checkbox" bind:checked={agree_terms}/>
