@@ -572,7 +572,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     team_color = team_color if team_color is not None else 1
                     team_tag = roster_tag if roster_tag is not None else ""
                     team_name = roster_name if roster_name is not None else ""
-                    roster_id = roster_id if roster_id is not None else 1
+                    roster_id = roster_id if roster_id is not None else 0
                     roster_name = roster_name if roster_name is not None else ""
                     roster_tag = roster_tag if roster_tag is not None else ""
 

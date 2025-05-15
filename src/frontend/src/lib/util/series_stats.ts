@@ -8,7 +8,7 @@ export function makeStats(tournaments) {
     for (const placement of tournament.placements) {
       const placementResult = placement.placement;
       for (const roster of placement.squad.rosters) {
-        if (roster.roster_id !== null) {
+        if (roster.roster_id !== null && roster.roster_id !== 0) {
           updateStats(rostersMap, roster.roster_id, () => newRosterObject(roster), placementResult);
         }
       }
@@ -55,6 +55,7 @@ function updateStats(map, id, createFn, placement) {
 
 function newRosterObject(roster) {
   return {
+    team_id: roster.team_id,
     name: roster.roster_name,
     tag: roster.roster_tag,
     color: roster.team_color,
