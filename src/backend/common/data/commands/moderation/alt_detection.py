@@ -60,6 +60,9 @@ class CheckIPsCommand(Command[None]):
                         raise Problem("Error when sending request to IP site")
                     r = await resp.json()
                     body = msgspec.convert(r, type=list[IPCheckResponse])
+                    # get ASNs since they are named "as" which we cannot put in a class name
+                    for i in range(len(r)):
+                        body[i].asn = r[i].get("as", None)
                     response_data.extend(body)
         
         # Update the ip_addresses table with the check results
