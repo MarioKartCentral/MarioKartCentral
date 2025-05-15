@@ -68,7 +68,6 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                         ip.is_vpn AS is_vpn,
                         ip.country AS country,
                         ip.region AS region,
-                        ip.city AS city,
                         ip.asn AS asn
                     FROM user_activity.user_ips ui1
                     JOIN user_activity.user_ips ui2 ON 
@@ -86,7 +85,7 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                     GROUP BY ui1.user_id, ui2.user_id
                 )
                 SELECT im.user_id_1, im.user_id_2, im.ip_address_id, im.score, im.flag_key, im.match_date, im.date_1, im.date_2, im.is_mobile, im.is_vpn, im.country,
-                    im.region, im.city, im.asn
+                    im.region, im.asn
                 FROM ip_matches im
                 LEFT JOIN alt_flags af ON im.flag_key = af.flag_key AND af.type = 'ip_match'
                 WHERE af.score IS NULL OR im.score > af.score
@@ -104,7 +103,7 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                 
             new_flags: list[dict[str, Any]] = []
             for (user_id_1, user_id_2, ip_address_id, score, flag_key, match_date, date_1, date_2, is_mobile, is_vpn, country,
-                 region, city, asn) in potential_matches:
+                 region, asn) in potential_matches:
                 data: dict[str, Any] = {
                     "type": "ip_match",
                     "flag_key": flag_key,
@@ -118,7 +117,6 @@ class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
                         "is_vpn": bool(is_vpn),
                         "country": country,
                         "region": region,
-                        "city": city,
                         "asn": asn,
                     }),
                     "score": score,
