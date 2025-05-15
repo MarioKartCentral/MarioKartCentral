@@ -16,6 +16,8 @@
 
     let player: PlayerInfo | null = null;
     let working = false;
+    let agree_terms = false;
+    let agree_policy = false;
 
     async function transfer_account() {
         if(!player) return;
@@ -55,8 +57,28 @@
                 <PlayerSearch has_connected_user={false} bind:player={player}/>
             </div>
             {#if player}
+                <div class="option">
+                    <span class="agree-terms">
+                        <input name="terms" type="checkbox" bind:checked={agree_terms}/>
+                    </span>
+                    <div class="terms-label">
+                        <a href="/{$page.params.lang}/user/terms" target="_blank">
+                            {$LL.LOGIN.AGREE_TO_TERMS()}
+                        </a>
+                    </div>
+                </div>
+                <div class="option">
+                    <span class="agree-terms">
+                        <input name="privacy" type="checkbox" bind:checked={agree_policy}/>
+                    </span>
+                    <div class="terms-label">
+                        <a href="/{$page.params.lang}/user/privacy-policy" target="_blank">
+                            {$LL.LOGIN.AGREE_TO_PRIVACY_POLICY()}
+                        </a>
+                    </div>
+                </div>
                 <div>
-                    <Button {working} on:click={transfer_account}>{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
+                    <Button {working} on:click={transfer_account} disabled={!agree_policy || !agree_terms}>{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
                 </div>
             {/if}
         </Section>
@@ -70,5 +92,14 @@
 <style>
     div {
         margin-bottom: 10px;
+    }
+    .option {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    span.agree-terms {
+        margin-right: 10px;
     }
 </style>

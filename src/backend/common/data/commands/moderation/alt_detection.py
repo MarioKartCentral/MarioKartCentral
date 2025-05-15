@@ -227,6 +227,7 @@ class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
                         ip_city, ip_asn) = row
                     if not self.has_ip_permission:
                         ip_address = None
+                        ip_city = None
                     ip = IPAddress(ip_address_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country, ip_region, ip_city, ip_asn)
                     login = UserLogin(login_id, user_id, fingerprint, bool(had_persistent_session), login_date, logout_date, ip)
                     logins.append(login)
@@ -255,6 +256,7 @@ class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
                      is_mobile, is_vpn, country, region, city, asn) = row
                     if not self.has_ip_permission:
                         ip_address = None
+                        city = None
                     ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), country, region, city, asn)
                     time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
                     ips.append(time_range)
@@ -287,6 +289,7 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                         date_earliest, date_latest, times, player_id, player_name, player_country) = row
                     if not self.has_ip_permission:
                         ip_address = None
+                        ip_city = None
                     ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country, ip_region, ip_city, ip_asn)
                     ip_time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
                     player = None
@@ -309,9 +312,10 @@ class SearchIPsCommand(Command[IPAddressList]):
         if self.filter.page:
             offset = (self.filter.page - 1) * limit
         ip_filter = f"{self.filter.ip_address}%" if self.has_ip_permission and self.filter.ip_address else None
+        city_filter = f"{self.filter.city}%" if self.has_ip_permission and self.filter.city else None
         query_parameters: dict[str, Any] = {
             "ip_address": ip_filter,
-            "city": f"{self.filter.city}%" if self.filter.city else None,
+            "city": city_filter,
             "asn": f"{self.filter.asn}%" if self.filter.asn else None,
             "offset": offset,
             "limit": limit,
@@ -332,6 +336,7 @@ class SearchIPsCommand(Command[IPAddressList]):
                     ip_id, ip_address, is_mobile, is_vpn, country, city, region, asn, user_count = row
                     if not self.has_ip_permission:
                         ip_address = None
+                        city = None
                     ip = IPAddressWithUserCount(ip_id, ip_address, is_mobile, is_vpn, country, city, region, asn, user_count)
                     results.append(ip)
             

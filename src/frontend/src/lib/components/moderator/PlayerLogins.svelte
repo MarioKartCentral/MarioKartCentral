@@ -7,6 +7,15 @@
     import { locale } from "$i18n/i18n-svelte";
     import Button from "../common/buttons/Button.svelte";
     import { page } from "$app/stores";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { user } from "$lib/stores/stores";
+    import { permissions, check_permission } from "$lib/util/permissions";
+
+    let user_info: UserInfo;
+
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     export let player_id: number;
 
@@ -65,11 +74,17 @@
                 {#each logins.logins as login, i}
                     <tr class="row-{i % 2}">
                         <td>{new Date(login.date * 1000).toLocaleString($locale, options)}</td>
-                        <td>
-                            <Button href="/{$page.params.lang}/moderator/fingerprints?hash={login.fingerprint}">
-                                {$LL.COMMON.VIEW()}
-                            </Button>
-                        </td>
+                        {#if check_permission(user_info, permissions.view_fingerprints)}
+                            <td>
+                                <Button href="/{$page.params.lang}/moderator/fingerprints?hash={login.fingerprint}">
+                                    {$LL.COMMON.VIEW()}
+                                </Button>
+                            </td>
+                        {:else}
+                            <td>
+                                {login.fingerprint}
+                            </td>
+                        {/if}
                         <td>
                             <Button on:click={() => toggle_ip(i)}>
                                 {#if show_ips.has(i)}
