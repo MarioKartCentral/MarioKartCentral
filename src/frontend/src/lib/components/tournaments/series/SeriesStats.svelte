@@ -8,7 +8,7 @@
 
   export let stats;
 
-  let stats_mode: StatsMode = stats.rostersArray.length > 1 ? StatsMode.TEAM_MEDALS : StatsMode.PLAYER_MEDALS;
+  let stats_mode: StatsMode = stats.rostersArray.length > 0 ? StatsMode.TEAM_MEDALS : StatsMode.PLAYER_MEDALS;
 
   $: sortedRosters =
     stats_mode === StatsMode.TEAM_MEDALS ? sortByMedals(stats.rostersArray) : sortByAppearances(stats.rostersArray);
@@ -18,18 +18,17 @@
 </script>
 
 <Section header="Stats">
-  <div class="stats_container">
-    {#if stats.rostersArray.length > 0}
+  {#if stats_mode === StatsMode.TEAM_MEDALS || stats_mode === StatsMode.TEAM_APPEARANCES}
+    <div class="stats_container">
       <Button on:click={() => (stats_mode = StatsMode.TEAM_MEDALS)}>Podium Finishes</Button>
       <Button on:click={() => (stats_mode = StatsMode.TEAM_APPEARANCES)}>Tournament Appearances</Button>
-    {:else}
+    </div>
+    <TeamStats {stats_mode} rostersArray={sortedRosters} />
+  {:else}
+    <div class="stats_container">
       <Button on:click={() => (stats_mode = StatsMode.PLAYER_MEDALS)}>Podium Finishes</Button>
       <Button on:click={() => (stats_mode = StatsMode.PLAYER_APPEARANCES)}>Tournament Appearances</Button>
-    {/if}
-  </div>
-  {#if stats_mode === StatsMode.TEAM_MEDALS || stats_mode === StatsMode.TEAM_APPEARANCES}
-    <TeamStats {stats_mode} rostersArray={sortedRosters} />
-  {:else if stats_mode === StatsMode.PLAYER_MEDALS || stats_mode === StatsMode.PLAYER_APPEARANCES}
+    </div>
     <PlayerStats {stats_mode} playersArray={sortedPlayers} />
   {/if}
 </Section>

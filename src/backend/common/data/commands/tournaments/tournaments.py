@@ -391,7 +391,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             series_id = self.series_id
             tournaments_query = f"""
                 SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public
-                FROM tournaments WHERE series_id = ?
+                FROM tournaments WHERE series_id = ? ORDER BY date_start DESC
             """
             tournament_players_query = f"""
                 SELECT 
@@ -444,7 +444,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.country_code
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                    
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
@@ -571,7 +572,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     team_color = team_color if team_color is not None else 1
                     team_tag = roster_tag if roster_tag is not None else ""
                     team_name = roster_name if roster_name is not None else ""
-                    roster_id = roster_id if roster_id is not None else 1
+                    roster_id = roster_id if roster_id is not None else 0
                     roster_name = roster_name if roster_name is not None else ""
                     roster_tag = roster_tag if roster_tag is not None else ""
 
