@@ -3,6 +3,7 @@
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import Table from '$lib/components/common/Table.svelte';
   import { StatsMode } from '$lib/types/tournament';
+  import { page } from '$app/stores';
 
   export let stats_mode: StatsMode;
   export let rostersArray;
@@ -33,6 +34,9 @@
   }
 </script>
 
+{#if stats_mode === StatsMode.TEAM_APPEARANCES}
+  <h2 class="text_center bold top25">Showing Top 25</h2>
+{/if}
 <div class="table-container">
   <div class="compact-table">
     <Table>
@@ -54,24 +58,34 @@
           {#if stats_mode === StatsMode.TEAM_MEDALS}
             <th class="text_center">👑</th><th class="text_center">🥈</th><th class="text_center">🥉</th>
           {:else}
-            <th class="text_center bold_td">Appearances</th>
+            <th class="text_center bold">Appearances</th>
           {/if}
         </tr>
       </thead>
-      {#each rostersArray as roster}
-        {#if (stats_mode === StatsMode.TEAM_MEDALS && (roster.gold > 0 || roster.silver > 0 || roster.bronze > 0)) || (stats_mode === StatsMode.TEAM_APPEARANCES && roster.appearances_placement < 25)}
-          <tr class={getColorClass(roster)}>
-            <td class="text_center bold_td"
-              >{stats_mode === StatsMode.TEAM_MEDALS ? roster.medals_placement : roster.appearances_placement}</td
+      {#each rostersArray as r, i}
+        {#if (stats_mode === StatsMode.TEAM_MEDALS && (r.gold > 0 || r.silver > 0 || r.bronze > 0)) || (stats_mode === StatsMode.TEAM_APPEARANCES && r.appearances_placement < 25)}
+          <tr class="row-{i % 2}">
+            <td class="text_center bold {getColorClass(r)}"
+              >{stats_mode === StatsMode.TEAM_MEDALS ? r.medals_placement : r.appearances_placement}</td
             >
-            <td><TagBadge tag={roster.tag} color={roster.color} /></td>
-            <td>{roster.name}</td>
+            <td class={getColorClass(r)}><TagBadge tag={r.tag} color={r.color} /></td>
+            <td class={getColorClass(r)}>
+              <span class="white">
+                <a href={`/${$page.params.lang}/registry/teams/profile?id=${r.team_id}`}>
+                  {r.name}
+                </a>
+              </span>
+              </td>
             {#if stats_mode === StatsMode.TEAM_MEDALS}
-              <td class="text_center bold_td">{roster.gold > 0 ? roster.gold : '-'}</td>
-              <td class="text_center bold_td">{roster.silver > 0 ? roster.silver : '-'}</td>
-              <td class="text_center bold_td">{roster.bronze > 0 ? roster.bronze : '-'}</td>
+              <td class="text_center {getColorClass(r)} {r.gold > 0 ? 'bold' : ''}">{r.gold > 0 ? r.gold : '—'}</td>
+              <td class="text_center {getColorClass(r)} {r.silver > 0 ? 'bold' : ''}"
+                >{r.silver > 0 ? r.silver : '—'}</td
+              >
+              <td class="text_center {getColorClass(r)} {r.bronze > 0 ? 'bold' : ''}"
+                >{r.bronze > 0 ? r.bronze : '—'}</td
+              >
             {:else}
-              <td class="text_center bold_td">{roster.appearances}</td>
+              <td class="text_center bold {getColorClass(r)}">{r.appearances}</td>
             {/if}
           </tr>
         {/if}
@@ -129,7 +143,15 @@
     background-color: rgba(255, 158, 110, 0.25);
   }
 
-  .bold_td {
+  .bold {
     font-weight: bold;
+  }
+
+  .white {
+    color: white;
+  }
+
+  .top25 {
+    margin-top: 10px;
   }
 </style>
