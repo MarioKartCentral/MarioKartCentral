@@ -1,13 +1,21 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import { XCompanySolid, YoutubeSolid } from "flowbite-svelte-icons";
+  import Twitch from "$lib/components/icons/Twitch.svelte";
 </script>
 
 <div class="footer">
   <div class="footer-social">
     <ul>
-      <li><a href="https://www.youtube.com/c/MarioKartCentral" rel="external" title="YouTube">▶️</a></li>
-      <li><a href="https://twitter.com/mk_central" rel="external" title="Twitter">🐦</a></li>
-      <li><a href="https://www.twitch.tv/mariokartcentral" rel="external" title="Twitch">🗨️</a></li>
+      <li><a href="https://www.youtube.com/c/MarioKartCentral" rel="external" title="YouTube">
+        <YoutubeSolid/>
+      </a></li>
+      <li><a href="https://twitter.com/mk_central" rel="external" title="Twitter">
+        <XCompanySolid/>
+      </a></li>
+      <li><a href="https://www.twitch.tv/mariokartcentral" rel="external" title="Twitch">
+        <Twitch/>
+      </a></li>
     </ul>
   </div>
   <div class="footer-terms">
@@ -36,6 +44,7 @@
   .footer-social ul {
     display: flex;
     list-style: none;
+    gap: 5px;
   }
 
   a {
