@@ -381,7 +381,7 @@
         <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
         {#if invite_player}
           {#if roster.game === 'mkw'}
-            <div>
+            <div class="mb-3">
               {$LL.COMMON.BAGGER()}?
               <select bind:value={invite_player_bagger}>
                 <option value={false}>
