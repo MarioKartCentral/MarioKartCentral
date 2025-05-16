@@ -1,4 +1,4 @@
-import type { TournamentPlacement } from "./tournament-placement";
+import type { TournamentPlacement } from './tournament-placement';
 
 export type TournamentBasic = {
   name: string;
@@ -54,7 +54,7 @@ export type Tournament = {
 
 export type TournamentWithPlacements = Tournament & {
   placements: TournamentPlacement[];
-}
+};
 
 export enum StatsMode {
   TEAM_MEDALS = 'team_medals',

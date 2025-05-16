@@ -1,5 +1,5 @@
-import type { TournamentWithPlacements } from "$lib/types/tournament";
-import type { PlayerSeriesStats, RosterSeriesStats, SeriesStats, Medals } from "$lib/types/series-stats";
+import type { TournamentWithPlacements } from '$lib/types/tournament';
+import type { PlayerSeriesStats, RosterSeriesStats, SeriesStats, Medals } from '$lib/types/series-stats';
 
 export function makeStats(tournaments: TournamentWithPlacements[]) {
   const rosterMap = new Map<number, RosterSeriesStats>();
@@ -7,11 +7,10 @@ export function makeStats(tournaments: TournamentWithPlacements[]) {
 
   for (const tournament of tournaments) {
     for (const placement of tournament.placements) {
-
       const placementResult = placement.placement;
-      if(placementResult === null) continue;
+      if (placementResult === null) continue;
       for (const roster of placement.squad.rosters) {
-        if(!rosterMap.has(roster.roster_id)) {
+        if (!rosterMap.has(roster.roster_id)) {
           rosterMap.set(roster.roster_id, {
             ...roster,
             gold: 0,
@@ -28,10 +27,17 @@ export function makeStats(tournaments: TournamentWithPlacements[]) {
       }
 
       for (const player of placement.squad.players) {
-        if(!playerMap.has(player.player_id)) {
+        if (!playerMap.has(player.player_id)) {
           playerMap.set(player.player_id, {
-            id: player.player_id, name: player.name, country_code: player.country_code,
-            gold: 0, silver: 0, bronze: 0, appearances: 0, medals_placement: 0, appearances_placement: 0,
+            id: player.player_id,
+            name: player.name,
+            country_code: player.country_code,
+            gold: 0,
+            silver: 0,
+            bronze: 0,
+            appearances: 0,
+            medals_placement: 0,
+            appearances_placement: 0,
           });
         }
         updateStats(playerMap, player.player_id, placementResult);
@@ -55,7 +61,7 @@ export function makeStats(tournaments: TournamentWithPlacements[]) {
 
 function updateStats(map: Map<number, SeriesStats>, id: number, placement: number) {
   const obj = map.get(id);
-  if(!obj) return;
+  if (!obj) return;
 
   const { gold, silver, bronze } = getMedals(placement);
 
@@ -71,7 +77,7 @@ const medalsCache = new Map<number, Medals>();
 
 function getMedals(placement: number) {
   const cache_hit = medalsCache.get(placement);
-  if(cache_hit) return cache_hit;
+  if (cache_hit) return cache_hit;
 
   const medals = { gold: 0, silver: 0, bronze: 0 };
 
