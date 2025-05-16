@@ -42,7 +42,8 @@ def get_all_jobs():
         vpn_detection,
         ip_match_detection,
         persistent_cookie_detection,
-        fingerprint_match_detection
+        fingerprint_match_detection,
+        db_backup
     )
     if not _jobs:
         _jobs.extend(log_processor.get_jobs())
@@ -57,4 +58,5 @@ def get_all_jobs():
         _jobs.extend(ip_match_detection.get_jobs())
         _jobs.extend(persistent_cookie_detection.get_jobs())
         _jobs.extend(fingerprint_match_detection.get_jobs())
+        _jobs.extend(db_backup.get_jobs())
     return _jobs
