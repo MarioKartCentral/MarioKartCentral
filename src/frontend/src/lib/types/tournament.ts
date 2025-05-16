@@ -1,3 +1,5 @@
+import type { TournamentPlacement } from './tournament-placement';
+
 export type TournamentBasic = {
   name: string;
   series_id: number | null;
@@ -49,6 +51,10 @@ export type Tournament = {
   series_description: string | null;
   series_ruleset: string | null;
 } & TournamentBasic;
+
+export type TournamentWithPlacements = Tournament & {
+  placements: TournamentPlacement[];
+};
 
 export enum StatsMode {
   TEAM_MEDALS = 'team_medals',

@@ -18,7 +18,7 @@
             description: placement.placement_description, tie: false,
             bounded: placement.placement_lower_bound ? true : false,
             placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
-            player: placement.player, squad: placement.squad
+            squad: placement.squad
         })
     }
 
@@ -41,7 +41,7 @@
             if(p.placement || p.is_disqualified) {
                 // if it's a solo tournament, we want to use player ID instead of registration ID
                 // since you can't view tournament player IDs on frontend
-                new_placements.push({registration_id: p.player ? p.player.player_id : p.id, placement: p.placement, placement_description: p.description,
+                new_placements.push({registration_id: p.id, placement: p.placement, placement_description: p.description,
                     placement_lower_bound: p.placement_lower_bound, is_disqualified: Boolean(p.is_disqualified)
                 });
             }

@@ -1,0 +1,25 @@
+global:
+  scrape_interval:     1m # By default, scrape targets every 60 seconds.
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: 'codelab-monitor'
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090', 'api:8000']
+
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+remote_write:
+  - url: '<Your Prometheus remote_write endpoint>'
+    basic_auth:
+      username: '<Your Grafana Username>'
+      password: '<Your Grafana Cloud Access Policy Token>'

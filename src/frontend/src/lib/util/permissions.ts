@@ -180,6 +180,7 @@ export const permissions = {
   view_basic_ip_info: 'ip_basic_info_view',
   view_ip_addresses: 'ip_address_view',
   view_fingerprints: 'fingerprints_view',
+  create_db_backups: 'db_backup_create',
 };
 
 export const team_permissions = {

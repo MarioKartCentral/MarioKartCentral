@@ -6,10 +6,26 @@
   import TypeBadge from '$lib/components/badges/TypeBadge.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import { locale } from '$i18n/i18n-svelte';
-  export let tournaments;
+  import type { TournamentWithPlacements } from '$lib/types/tournament';
+  import type { TournamentPlacement } from '$lib/types/tournament-placement';
 
-  const isPodium = (value) => value.placement <= 3;
-  const comparePlacements = (a, b) => a.placement - b.placement;
+  export let tournaments: TournamentWithPlacements[];
+
+  const isPodium = (value: TournamentPlacement) => value.placement && value.placement <= 3;
+  const comparePlacements = (a: TournamentPlacement, b: TournamentPlacement) => {
+    if(a.placement === null) {
+      if(b.placement !== null) {
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    }
+    if(b.placement === null) {
+      return -1;
+    }
+    return a.placement - b.placement;
+  }
 
   for (let i = 0; i < tournaments.length; i++) {
     tournaments[i].placements = tournaments[i].placements.filter(isPodium).sort(comparePlacements);
@@ -19,7 +35,7 @@
     dateStyle: 'medium',
   };
 
-  function getMedal(placement: number) {
+  function getMedal(placement: number | null) {
     if (placement === 1) {
       return '👑';
     }
@@ -32,7 +48,7 @@
     return '🐢';
   }
 
-  function getColor(placement: number) {
+  function getColor(placement: number | null) {
     if (placement === 1) {
       return 'gold_color';
     }
@@ -55,7 +71,7 @@
         <tr class="row-{i % 2}">
           <td class="left">
             <div class="row_top tournament_name">
-              <a href="/{$page.params.lang}/tournaments?id={t.id}">{t.name}</a>
+              <a href="/{$page.params.lang}/tournaments/details?id={t.id}">{t.name}</a>
             </div>
             <div>
               <GameBadge game={t.game} />
@@ -73,12 +89,14 @@
               {#each t.placements as p}
                 <span class={getColor(p.placement) + ' bold'}>
                   {getMedal(p.placement)}
-                  {#if t.teams_allowed}
-                    {#each p.squad.rosters as r}
-                      <a href={`/${$page.params.lang}/registry/teams/profile?id=${r.team_id}`}>
-                        {r.team_name}
-                      </a>
-                    {/each}
+                  {#if p.squad.rosters.length}
+                    <a href={`/${$page.params.lang}/registry/teams/profile?id=${p.squad.rosters[0].team_id}`}>
+                      {p.squad.rosters[0].team_name}
+                    </a>
+                  {:else if p.squad.name}
+                    <a href="/{$page.params.lang}/tournaments/details?id={t.id}">
+                      {p.squad.name}
+                    </a>
                   {:else}
                     {#each p.squad.players as player, i}
                       {#if i < 4}

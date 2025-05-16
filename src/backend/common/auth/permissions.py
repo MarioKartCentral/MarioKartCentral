@@ -27,6 +27,7 @@ VIEW_USER_LOGINS = "user_logins_view"
 VIEW_BASIC_IP_INFO = "ip_basic_info_view"
 VIEW_IP_ADDRESSES = "ip_address_view"
 VIEW_FINGERPRINTS = "fingerprints_view"
+CREATE_DB_BACKUPS = "db_backup_create"
 
 permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
@@ -79,6 +80,7 @@ permissions_by_id: dict[int, str] = {
     47: VIEW_BASIC_IP_INFO,
     48: VIEW_IP_ADDRESSES,
     49: VIEW_FINGERPRINTS,
+    50: CREATE_DB_BACKUPS,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

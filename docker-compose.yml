@@ -59,6 +59,27 @@ services:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
 
+  prometheus:
+    image: prom/prometheus
+    volumes: 
+      - "./src/backend/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - 9090:9090
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+    
   frontend:
     build: ./src/frontend
     ports:
@@ -125,3 +146,4 @@ volumes:
   mkc-db:
   mkc-s3:
   mkc-email:
+  grafana-storage:
