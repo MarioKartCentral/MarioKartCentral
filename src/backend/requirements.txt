@@ -11,3 +11,4 @@ oauthlib==3.2.2
 starlette==0.46.2
 types-aiobotocore[s3,ses]==2.7.0
 uvicorn==0.34.2
+starlette-prometheus==0.10.0

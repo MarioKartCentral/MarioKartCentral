@@ -59,6 +59,13 @@ services:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
 
+  prometheus:
+    image: prom/prometheus
+    volumes: 
+      - "./src/backend/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    ports:
+      - 9090:9090
+    
   frontend:
     build: ./src/frontend
     ports:
