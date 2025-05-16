@@ -1,6 +1,7 @@
 import aiosqlite
 import re
 from dataclasses import dataclass
+import logging
 from common.auth import permissions, roles, team_permissions, team_roles, series_permissions, series_roles, tournament_permissions, tournament_roles
 from common.data.commands import Command
 from common.data.db import all_dbs
@@ -20,9 +21,8 @@ class UpdateDbSchemaCommand(Command[None]):
             async with db_wrapper.connect(db_name, autocommit=True) as db:
                 await db.execute("pragma journal_mode = WAL;")
 
-            async with db_wrapper.connect(db_name) as db:
+            async with db_wrapper.connect(db_name, foreign_keys=False) as db:
                 # Create a clean DB, so that we can compare it against our current schema
-                await db.executescript("pragma foreign_keys = OFF;")
                 async with aiosqlite.connect(":memory:") as clean_db:
                     for table in db_schema.tables:
                         await clean_db.execute(table.get_create_table_command())
@@ -56,16 +56,16 @@ class UpdateDbSchemaCommand(Command[None]):
                                 modified_tables.append(table)
                         else:
                             # for new tables, create them
-                            print(f"Creating table {table}\n{sql}")
+                            logging.info(f"Creating table {table}\n{sql}")
                             await db.execute(sql)
                     
                     for table in actual_tables:
                         if table not in clean_tables:
-                            print(f"Table '{table}' has been removed. The table will be kept, but should be deleted manually later once the data has been preserved.")
+                            logging.info(f"Table '{table}' has been removed. The table will be kept, but should be deleted manually later once the data has been preserved.")
                     
                     # update any tables that were modified
                     for table in modified_tables:
-                        print(f"Detected schema change in table '{table}'")
+                        logging.info(f"Detected schema change in table '{table}'")
                         fetch_table_schema_sql = f"SELECT name FROM pragma_table_info(\'{table}\')"
                         clean_columns = [str(row[0]) for row in await clean_db.execute_fetchall(fetch_table_schema_sql)]
                         actual_columns = [str(row[0]) for row in await db.execute_fetchall(fetch_table_schema_sql)]
@@ -79,25 +79,25 @@ class UpdateDbSchemaCommand(Command[None]):
                             
                         for column in clean_columns:
                             if column not in actual_columns:
-                                print(f"New column '{column}' detected in table '{table}'")
+                                logging.info(f"New column '{column}' detected in table '{table}'")
 
                         # create a temp table
                         temp_table_name = table + "_temp"
                         create_temp_table_sql = clean_tables[table].replace(table, temp_table_name, 1)
-                        print(f"Creating temp table {temp_table_name}\n{create_temp_table_sql}")
+                        logging.info(f"Creating temp table {temp_table_name}\n{create_temp_table_sql}")
                         await db.execute(create_temp_table_sql)
 
                         # copy everything over
                         common_columns = ",".join(existing_columns)
-                        print(f"Copying data from {table} to {temp_table_name}")
+                        logging.info(f"Copying data from {table} to {temp_table_name}")
                         await db.execute(f"INSERT INTO {temp_table_name} ({common_columns}) SELECT {common_columns} FROM {table}")
 
                         # drop the old table
-                        print(f"Deleting {table}")
+                        logging.info(f"Deleting {table}")
                         await db.execute(f"DROP TABLE {table}")
 
                         # rename the temp table to the correct name
-                        print(f"Renaming {temp_table_name} to {table}")
+                        logging.info(f"Renaming {temp_table_name} to {table}")
                         await db.execute(f"ALTER TABLE {temp_table_name} RENAME TO {table}")
 
                     clean_indices = get_indices_from_schema(clean_schema)
@@ -107,24 +107,23 @@ class UpdateDbSchemaCommand(Command[None]):
                         if (actual_sql := actual_indices.get(index)) is not None:
                             # for changed indices, drop and recreate them
                             if sql != actual_sql:
-                                print(f"Index '{index}' modified, dropping index")
+                                logging.info(f"Index '{index}' modified, dropping index")
                                 await db.execute(f"DROP INDEX {index}")
 
-                                print(f"Rereating index '{index}'\n{sql}")
+                                logging.info(f"Rereating index '{index}'\n{sql}")
                                 await db.execute(sql)
                         else:
                             # for new indices, create them
-                            print(f"Creating index '{index}'\n{sql}")
+                            logging.info(f"Creating index '{index}'\n{sql}")
                             await db.execute(sql)
 
                     for index in actual_indices:
                         if index not in clean_indices:
                             # for removed indices, drop them
-                            print(f"Index '{index}' removed, dropping index")
+                            logging.info(f"Index '{index}' removed, dropping index")
                             await db.execute(f"DROP INDEX {index}")
 
                     await db.execute("PRAGMA foreign_key_check")
-
                     await db.commit()
             
 

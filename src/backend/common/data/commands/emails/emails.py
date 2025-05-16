@@ -10,6 +10,7 @@ from email.mime.multipart import MIMEMultipart
 import secrets
 from datetime import datetime, timezone, timedelta
 import aiobotocore.session
+import logging
 
 async def send_email(to_email: str, subject: str, content: str, config: EmailServiceConfig):
     """
@@ -130,7 +131,7 @@ class SendPasswordResetEmailCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     # Don't reveal if email exists or not
-                    print(f"Password reset requested for non-existent email: {self.user_email}")
+                    logging.info(f"Password reset requested for non-existent email: {self.user_email}")
                     return # Silently fail
                 user_id = row[0]
             token_id = secrets.token_hex(16)
