@@ -248,7 +248,7 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
             command = CreateFakeUserDiscordCommand(user_data.id)
         await handle(command)
             
-    except Exception as e:
+    except Exception:
         logging.error("Unexpected error occurred during Discord auth callback", exc_info=True)
         redirect_params = "?auth_failed=1"
 
