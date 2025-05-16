@@ -44,7 +44,8 @@
   .footer-social ul {
     display: flex;
     list-style: none;
-    gap: 5px;
+    gap: 10px;
+    align-items: center;
   }
 
   a {
