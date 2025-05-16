@@ -6,14 +6,16 @@
   import SeriesStats from '$lib/components/tournaments/series/SeriesStats.svelte';
   import SeriesPosts from '$lib/components/tournaments/series/SeriesPosts.svelte';
   import SeriesPodiums from '$lib/components/tournaments/series/SeriesPodiums.svelte';
+  import type { TournamentWithPlacements } from '$lib/types/tournament';
+  import type { CombinedSeriesStats } from '$lib/types/series-stats';
 
   import LL from '$i18n/i18n-svelte';
   import { makeStats } from '$lib/util/series_stats';
 
   let id = 0;
   let series: TournamentSeries;
-  let stats;
-  let tournaments;
+  let stats: CombinedSeriesStats;
+  let tournaments: TournamentWithPlacements[];
   let not_found = false;
   $: series_name = series ? series.series_name : 'Tournament Series';
 
@@ -25,26 +27,17 @@
       not_found = true;
       return;
     }
+    const series_body: TournamentSeries = await resSeries.json();
+    series = series_body;
+
     const resSeriesPl = await fetch(`/api/tournaments/series/${id}/placements`);
     if (resSeriesPl.status !== 200) {
       not_found = true;
       return;
     }
-    const body1: TournamentSeries = await resSeries.json();
-    const body2: TournamentSeries = await resSeriesPl.json();
-    console.log(body1)
-    series = body1;
-    tournaments = body2;
-
-    // const originalArray = body2
-    // const scaleFactor = 50_000_000;
-    // const bigArray = Array.from({ length: originalArray.length * scaleFactor }, (_, i) => 
-    //   originalArray[i % originalArray.length]
-    // );
-    // console.log(bigArray.length);
-
-    stats = makeStats(body2);
-    console.log(stats);
+    const tournaments_body: TournamentWithPlacements[] = await resSeriesPl.json();
+    tournaments = tournaments_body;
+    stats = makeStats(tournaments);
   });
 </script>
 
@@ -55,8 +48,10 @@
 {#if series}
   <SeriesInfo {series} />
   <SeriesPosts {series}/>
-  <SeriesPodiums {tournaments} />
-  <SeriesStats {stats} />
+  {#if tournaments}
+    <SeriesPodiums {tournaments} />
+    <SeriesStats {stats} />
+  {/if}
 {:else if not_found}
   {$LL.TOURNAMENTS.SERIES.NOT_FOUND()}
 {/if}

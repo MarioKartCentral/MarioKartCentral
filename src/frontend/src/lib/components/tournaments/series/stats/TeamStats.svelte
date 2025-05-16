@@ -4,11 +4,12 @@
   import Table from '$lib/components/common/Table.svelte';
   import { StatsMode } from '$lib/types/tournament';
   import { page } from '$app/stores';
+  import type { RosterSeriesStats } from '$lib/types/series-stats';
 
   export let stats_mode: StatsMode;
-  export let rostersArray;
+  export let rostersArray: RosterSeriesStats[];
 
-  function getColorClass(roster) {
+  function getColorClass(roster: RosterSeriesStats) {
     if (stats_mode === StatsMode.TEAM_MEDALS) {
       if (roster.medals_placement === 1) {
         return 'gold_row';
@@ -68,11 +69,11 @@
             <td class="text_center bold {getColorClass(r)}"
               >{stats_mode === StatsMode.TEAM_MEDALS ? r.medals_placement : r.appearances_placement}</td
             >
-            <td class={getColorClass(r)}><TagBadge tag={r.tag} color={r.color} /></td>
+            <td class={getColorClass(r)}><TagBadge tag={r.roster_tag ? r.roster_tag : r.team_tag} color={r.team_color} /></td>
             <td class={getColorClass(r)}>
               <span class="white">
                 <a href={`/${$page.params.lang}/registry/teams/profile?id=${r.team_id}`}>
-                  {r.name}
+                  {r.roster_name ? r.roster_name : r.team_name}
                 </a>
               </span>
               </td>

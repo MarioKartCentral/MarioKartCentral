@@ -22,7 +22,7 @@
         for(let placement of placements.placements) {
             // if it's a solo tournament, we want to use player ID instead of registration ID
             // since you can't view tournament player IDs on frontend
-            let curr_line = `${placement.player ? placement.player.player_id : placement.registration_id}\t\t`
+            let curr_line = `${placement.registration_id}\t\t`
             if(placement.placement_lower_bound) {
                 curr_line += `${placement.placement}-${placement.placement_lower_bound}`;
             }

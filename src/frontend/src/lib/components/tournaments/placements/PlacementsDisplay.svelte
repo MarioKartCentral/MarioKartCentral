@@ -23,7 +23,7 @@
                 description: placement.placement_description, tie: false,
                 bounded: placement.placement_lower_bound ? true : false,
                 placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
-                player: placement.player, squad: placement.squad
+                squad: placement.squad
             })
         }
         placement_list.sort((a, b) => sort_placement_list(a, b));

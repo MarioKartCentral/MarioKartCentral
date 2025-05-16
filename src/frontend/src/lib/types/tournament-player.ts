@@ -11,7 +11,7 @@ export type TournamentPlayer = {
   mii_name: string | null;
   can_host: boolean;
   name: string;
-  country_code: string | null;
+  country_code: string;
   discord: Discord | null;
   selected_fc_id: number | null;
   friend_codes: FriendCode[];

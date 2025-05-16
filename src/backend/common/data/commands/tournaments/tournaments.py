@@ -372,7 +372,6 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
     series_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-
         cache_key = f'series_tournaments_{self.series_id}.json'
         s3_object = await s3_wrapper.get_object_metadata_and_body(s3.SERIES_BUCKET, cache_key)
 
@@ -414,26 +413,34 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             tournament_squads_query = f"""
                  SELECT
                     tr.id,
-                    tr.tournament_id,           
+                    tr.tournament_id,
+                    tr.name,
+                    tr.tag,
+                    tr.color,
                     pla.placement, 
                     pla.placement_description, 
                     pla.placement_lower_bound, 
                     pla.is_disqualified,
-                    tr.timestamp,
-                    t.id AS team_id,
-                    t.name AS team_name,
-                    t.tag AS team_tag,
-                    t.color AS team_color,
-                    rosters.id AS roster_id,
-                    rosters.name AS roster_name,
-                    rosters.tag AS roster_tag
+                    tr.timestamp
                     FROM tournament_registrations tr
                     JOIN tournament_placements pla ON pla.registration_id = tr.id
-                    LEFT JOIN team_squad_registrations tsr ON tr.id = tsr.registration_id
-                    LEFT JOIN team_rosters rosters ON rosters.id = tsr.roster_id
-                    LEFT JOIN teams t ON rosters.team_id = t.id
                     WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
             """
+            squad_rosters_query = """
+                SELECT tsr.registration_id,
+                    r.id,
+                    r.name,
+                    r.tag,
+                    r.team_id,
+                    t.name,
+                    t.tag,
+                    t.color
+                    FROM team_squad_registrations tsr
+                    JOIN team_rosters r ON tsr.roster_id = r.id
+                    JOIN teams t ON r.team_id = t.id
+                    JOIN tournament_registrations tr ON tsr.registration_id = tr.id
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                """
             squad_players_query = f"""
                 SELECT 
                     tp.id,
@@ -549,36 +556,39 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     placements[tournament_id].append(placement)
 
             # Process squads and add their players
+            squad_dict: dict[int, TournamentSquadDetails] = {}
             async with db.execute(tournament_squads_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (
                         id,
                         tournament_id,
+                        name,
+                        tag,
+                        color,
                         placement,
                         placement_description,
                         placement_lower_bound,
                         is_disqualified,
-                        timestamp,
-                        team_id,
-                        team_name,
-                        team_tag,
-                        team_color,
-                        roster_id,
-                        roster_name,
-                        roster_tag
+                        timestamp
                     ) = row
-                    team_id = team_id if team_id is not None else 1
-                    team_color = team_color if team_color is not None else 1
-                    team_tag = roster_tag if roster_tag is not None else ""
-                    team_name = roster_name if roster_name is not None else ""
-                    roster_id = roster_id if roster_id is not None else 0
-                    roster_name = roster_name if roster_name is not None else ""
-                    roster_tag = roster_tag if roster_tag is not None else ""
 
                     # Get players for this squad
                     squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [
                     ])
+
+                    squad = TournamentSquadDetails(
+                            id=id,
+                            name=name,
+                            tag=tag,
+                            color=color,
+                            timestamp=timestamp,
+                            is_registered=True,
+                            is_approved=True,
+                            players=squad_players,
+                            rosters=[]
+                        )
+                    squad_dict[id] = squad
 
                     placement = TournamentPlacementDetailed(
                         registration_id=id,
@@ -586,27 +596,19 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
                         is_disqualified=bool(is_disqualified),
-                        squad=TournamentSquadDetails(
-                            id=id,
-                            name=roster_name,
-                            tag=roster_tag,
-                            color=team_color,
-                            timestamp=timestamp,
-                            is_registered=True,
-                            is_approved=True,
-                            players=squad_players,
-                            rosters=[RosterBasic(
-                                team_id=team_id,
-                                team_name=team_name,
-                                team_tag=team_tag,
-                                team_color=team_color,
-                                roster_id=roster_id,
-                                roster_name=roster_name,
-                                roster_tag=roster_tag
-                            )]
-                        )
+                        squad=squad
                     )
                     placements[tournament_id].append(placement)
+
+                async with db.execute(squad_rosters_query, (series_id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        squad_id, roster_id, roster_name, roster_tag, team_id, team_name, team_tag, team_color = row
+                        squad = squad_dict.get(squad_id, None)
+                        if not squad:
+                            continue
+                        roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag)
+                        squad.rosters.append(roster)
                 
                 # Store the result in S3 cache
                 await s3_wrapper.put_object(

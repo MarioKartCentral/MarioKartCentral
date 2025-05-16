@@ -3,11 +3,12 @@
   import Table from '$lib/components/common/Table.svelte';
   import { StatsMode } from '$lib/types/tournament';
   import { page } from '$app/stores';
+  import type { PlayerSeriesStats } from '$lib/types/series-stats';
 
   export let stats_mode: StatsMode;
-  export let playersArray;
+  export let playersArray: PlayerSeriesStats[];
 
-  function getColorClass(p) {
+  function getColorClass(p: PlayerSeriesStats) {
     if (stats_mode === 'player_medals') {
       if (p.medals_placement === 1) {
         return 'gold_row';
@@ -72,7 +73,7 @@
             </td>
             <td class={getColorClass(p)}>
               <span class="white">
-                <a href={`/${$page.params.lang}/registry/players/profile?id=${p.player_id}`}>
+                <a href={`/${$page.params.lang}/registry/players/profile?id=${p.id}`}>
                   {p.name}
                 </a>
               </span>

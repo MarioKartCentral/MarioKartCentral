@@ -3,18 +3,19 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import TeamStats from '$lib/components/tournaments/series/stats/TeamStats.svelte';
   import PlayerStats from '$lib/components/tournaments/series/stats/PlayerStats.svelte';
-  import { sortByMedals, sortByAppearances } from '$lib/util/series_stats';
+  import { compareMedals } from '$lib/util/series_stats';
   import { StatsMode } from '$lib/types/tournament';
+  import type { CombinedSeriesStats } from '$lib/types/series-stats';
 
-  export let stats;
+  export let stats: CombinedSeriesStats;
 
-  let stats_mode: StatsMode = stats.rostersArray.length > 0 ? StatsMode.TEAM_MEDALS : StatsMode.PLAYER_MEDALS;
+  let stats_mode: StatsMode = stats.roster_stats.length > 0 ? StatsMode.TEAM_MEDALS : StatsMode.PLAYER_MEDALS;
 
   $: sortedRosters =
-    stats_mode === StatsMode.TEAM_MEDALS ? sortByMedals(stats.rostersArray) : sortByAppearances(stats.rostersArray);
+    stats_mode === StatsMode.TEAM_MEDALS ? stats.roster_stats.sort(compareMedals) : stats.roster_stats.sort((a, b) => b.appearances - a.appearances);
 
   $: sortedPlayers =
-    stats_mode === StatsMode.PLAYER_MEDALS ? sortByMedals(stats.playersArray) : sortByAppearances(stats.playersArray);
+    stats_mode === StatsMode.PLAYER_MEDALS ? stats.player_stats.sort(compareMedals) : stats.player_stats.sort((a, b) => b.appearances - a.appearances);
 </script>
 
 <Section header="Stats">

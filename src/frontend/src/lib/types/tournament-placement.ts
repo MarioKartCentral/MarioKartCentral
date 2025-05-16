@@ -1,4 +1,4 @@
-import type { TournamentPlayer, TournamentPlayerDetailsShort } from './tournament-player';
+import type { TournamentPlayerDetailsShort } from './tournament-player';
 import type { TournamentSquad } from './tournament-squad';
 
 export type TournamentPlacementSimple = {
@@ -18,7 +18,6 @@ export type TournamentPlacementSimplePlayerIDs = {
 };
 
 export type TournamentPlacement = TournamentPlacementSimple & {
-  player: TournamentPlayer | null;
   squad: TournamentSquad;
 };
 
