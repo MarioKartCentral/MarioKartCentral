@@ -1,10 +1,11 @@
 import asyncio
 from datetime import datetime, timedelta, timezone
-import traceback
+import logging
 import time
 from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
+from common.logging_setup import setup_logging
 
 class JobRunner:
     def __init__(self, job: Job):
@@ -17,15 +18,13 @@ class JobRunner:
         async def run_with_error_handler():
             try:
                 start = time.time()
-                print(f"Job '{self._job.name}' started")
+                logging.info(f"Job '{self._job.name}' started")
                 await self._job.run()
                 end = time.time()
                 elapsed = timedelta(seconds=end - start)
-                print(f"Job '{self._job.name}' completed in {elapsed}")
+                logging.info(f"Job '{self._job.name}' completed in {elapsed}")
             except Exception:
-                print(f"Job '{self._job.name}' failed")
-                traceback.print_exc()
-    
+                logging.error(f"Job '{self._job.name}' failed", exc_info=True)
         self._longer_than_delay = False
         self._last_run = datetime.now(timezone.utc)
         self._task = asyncio.create_task(run_with_error_handler())
@@ -39,12 +38,12 @@ class JobRunner:
         if time_since_last_run >= self._job.delay:
             if self._task.done():
                 if self._longer_than_delay:
-                    print(f"Job '{self._job.name}' took {time_since_last_run}, when delay is {self._job.delay}")
+                    logging.info(f"Job '{self._job.name}' took {time_since_last_run}, when delay is {self._job.delay}")
 
                 self.start()
             else:
                 if not self._longer_than_delay:
-                    print(f"Job '{self._job.name}' is still running after delay of {self._job.delay}")
+                    logging.info(f"Job '{self._job.name}' is still running after delay of {self._job.delay}")
                     self._longer_than_delay = True
 
 
@@ -58,6 +57,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    setup_logging()
     if settings.DEBUG:
         import debugpy
         debugpy.listen(("0.0.0.0", 5678))

@@ -1,3 +1,4 @@
+
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from api import appsettings
@@ -7,6 +8,10 @@ from api.endpoints import (authservice, roleservice, userservice, tournaments,
                            team_registry, user_settings, notifications, moderation, mkcv1importer, posts)
 from api.utils.middleware import IPLoggingMiddleware, RateLimitByIPMiddleware, exception_handlers
 from api.utils.schema_gen import schema_route
+from common.logging_setup import setup_logging
+
+
+setup_logging()
 
 if appsettings.DEBUG:
     import debugpy

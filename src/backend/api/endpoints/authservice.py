@@ -1,4 +1,4 @@
-import traceback
+import logging
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route
@@ -249,9 +249,7 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
         await handle(command)
             
     except Exception as e:
-        if isinstance(e, Problem):
-            print(f"Problem raised during Discord auth callback: {e}")
-        traceback.print_exc()
+        logging.error("Unexpected error occurred during Discord auth callback", exc_info=True)
         redirect_params = "?auth_failed=1"
 
     async def sync_avatar():
