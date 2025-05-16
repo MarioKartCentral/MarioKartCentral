@@ -5,7 +5,8 @@ from api import appsettings
 from api.data import on_startup, on_shutdown
 from api.endpoints import (authservice, roleservice, userservice, tournaments, 
                            tournament_registration, tournament_placements, player_registry, player_bans, 
-                           team_registry, user_settings, notifications, moderation, mkcv1importer, posts)
+                           team_registry, user_settings, notifications, moderation, mkcv1importer, posts,
+                           admin)
 from api.utils.middleware import IPLoggingMiddleware, RateLimitByIPMiddleware, exception_handlers
 from api.utils.schema_gen import schema_route
 from common.logging_setup import setup_logging
@@ -21,6 +22,7 @@ if appsettings.DEBUG:
     debugpy.wait_for_client()  # blocks execution until client is attached
 
 routes = [
+    *admin.routes,
     *authservice.routes,
     *mkcv1importer.routes,
     *moderation.routes,

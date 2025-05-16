@@ -106,4 +106,9 @@
         {$LL.NAVBAR.MOD_PANEL.IP_SEARCH()}
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.create_db_backups)}
+    <DropdownItem href="/{$page.params.lang}/admin/backup_db">
+        Backup Database
+    </DropdownItem>
+  {/if}
 </Dropdown>
