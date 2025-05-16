@@ -16,7 +16,7 @@
     let agree_terms = false;
     let agree_policy = false;
 
-    $: button_disabled = password.length < 8 || password != confirm_password || (!is_change && (!agree_terms || !agree_policy));
+    $: button_disabled = password.length < 8 || password != confirm_password || (!is_change && !is_reset && (!agree_terms || !agree_policy));
 </script>
 
 <div class="form">
