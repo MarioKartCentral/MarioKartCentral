@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { XCompanySolid, YoutubeSolid } from "flowbite-svelte-icons";
+  import { XCompanySolid, YoutubeSolid, GithubSolid } from "flowbite-svelte-icons";
   import Twitch from "$lib/components/icons/Twitch.svelte";
 </script>
 
@@ -16,6 +16,11 @@
       <li><a href="https://www.twitch.tv/mariokartcentral" rel="external" title="Twitch">
         <Twitch/>
       </a></li>
+      <li>
+        <a href="https://github.com/MarioKartCentral/MarioKartCentral" rel="external" title="Github">
+          <GithubSolid/>
+        </a>
+      </li>
     </ul>
   </div>
   <div class="footer-terms">
