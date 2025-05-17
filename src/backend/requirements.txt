@@ -8,7 +8,9 @@ bcrypt==4.1.2
 debugpy==1.8.0
 msgspec==0.18.6
 oauthlib==3.2.2
+opentelemetry-exporter-otlp-proto-http==1.33.1
+opentelemetry-instrumentation-logging==0.54b1
+opentelemetry-instrumentation-starlette==0.54b1
 starlette==0.46.2
 types-aiobotocore[s3,ses]==2.7.0
 uvicorn==0.34.2
-starlette-prometheus==0.10.0

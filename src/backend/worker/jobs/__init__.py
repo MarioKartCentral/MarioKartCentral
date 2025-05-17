@@ -46,7 +46,7 @@ def get_all_jobs():
         db_backup
     )
     if not _jobs:
-        _jobs.extend(log_processor.get_jobs())
+        # _jobs.extend(log_processor.get_jobs())
         _jobs.extend(role_checker.get_jobs())
         _jobs.extend(discord_refresh.get_jobs())
         _jobs.extend(unban_players_checker.get_jobs())

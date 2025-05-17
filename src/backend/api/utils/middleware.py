@@ -13,9 +13,12 @@ from typing import Any
 from starlette.requests import Request
 
 async def handle_error(request: Request, exception: Exception):
+    logging.getLogger().error("Unhandled Exception", exc_info=exception)
     return ProblemResponse(Problem("Unexpected Error"))
 
 async def handle_problem(request: Request, problem: Problem):
+    if problem.status >= 500:
+        logging.getLogger().error(f"Problem: {problem}", exc_info=problem)
     return ProblemResponse(problem)
 
 exception_handlers: dict[Any, Any] = {
