@@ -267,6 +267,8 @@ class ConvertMKCV1DataCommand(Command[None]):
             creation_date = self.get_mkc_timestamp(team.created_at)
             recruitment_status = team.recruitment_status == "recruiting"
             logo = None # change to team.picture_filename later
+            if team.picture_filename:
+                logo = f"/img/mkcv1_images/{team.picture_filename}"
             new_team = NewMKCTeam(team.id, team.team_name, team.team_tag, team.team_description, creation_date, new_language, team.color_number-1, # subtract 1 from anything that uses colors
                                   logo, new_approval, bool(team.is_historical or team.is_shadow), recruitment_status, {})
             team_dict[team.id] = new_team
@@ -353,6 +355,8 @@ class ConvertMKCV1DataCommand(Command[None]):
             game, mode = tournament_mode_map[series.default_game_mode] if series.default_game_mode else ("mk8dx", "150cc")
             organizer = organizer_map[series.organizer]
             logo = None # change to series.logo_filename later
+            if series.logo_filename:
+                logo = f"/img/mkcv1_images/{series.logo_filename}"
             new_series = NewMKCSeries(series.id, series.series_name, series.url_slug, series.display_order, game, mode, bool(series.historical), bool(series.published),
                                       series.short_description, series.full_description if series.full_description else "", "", logo, organizer, series.location)
             series_dict[series.id] = new_series
@@ -379,6 +383,8 @@ class ConvertMKCV1DataCommand(Command[None]):
             date_end = self.get_mkc_timestamp(tournament.end_date)
             registration_deadline = self.get_mkc_timestamp(tournament.transfer_date) if tournament.transfer_date else None
             logo = None # change to tournament.logo_filename later
+            if tournament.logo_filename:
+                logo = f"/img/mkcv1_images/{tournament.logo_filename}"
             new_tournament = NewMKCTournament(tournament.id, tournament.title, game, mode,
                                               tournament.tournament_series_id, is_squad,
                                               bool(tournament.registrations_open), date_start, 
