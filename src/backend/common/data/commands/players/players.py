@@ -14,8 +14,8 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
-        if len(self.name) > 20:
-            raise Problem("Player name must be 20 characters or less", status=400)
+        if len(self.name) > 24:
+            raise Problem("Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect(db_name="main", attach=["auth"]) as db:
             if self.user_id is not None:
                 check_confirmed_email_query = """
@@ -89,8 +89,8 @@ class UpdatePlayerCommand(Command[bool]):
     async def handle(self, db_wrapper, s3_wrapper) -> bool:
         data = self.data
         async with db_wrapper.connect() as db:
-            if len(self.data.name) > 20:
-                raise Problem("Player name must be 20 characters or less", status=400)
+            if len(self.data.name) > 24:
+                raise Problem("Player name must be 24 characters or less", status=400)
             async with db.execute("SELECT name FROM players WHERE id = ?", (data.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:

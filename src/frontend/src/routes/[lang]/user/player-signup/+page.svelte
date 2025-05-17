@@ -71,7 +71,7 @@
         <span class="item-label">
           <label for="name">{$LL.COMMON.NAME()}</label>
         </span>
-        <Input name="name" type="name" minlength={2} no_white_space />
+        <Input name="name" type="name" minlength={2} maxlength={24} no_white_space />
       </div>
       <div class="field">
         <span class="item-label">
