@@ -142,7 +142,7 @@
     <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>
     
-    <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
+    <NavLi href="http://discord.gg/Pgd8xr6" target="_blank">{$LL.NAVBAR.DISCORD()}</NavLi>
     {#if is_mod}
       <NavLi nav_name="MODERATOR" has_dropdown>
         {$LL.NAVBAR.MODERATOR()}
