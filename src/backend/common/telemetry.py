@@ -14,7 +14,7 @@ from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 
 def setup_telemetry():
     tracer_provider = TracerProvider()
-    otlp = os.environ.get('OTEL_EXPORTER_OTLP_ENDPOINT') is not None # if not set, assume no OTLP
+    otlp = bool(os.environ.get('OTEL_EXPORTER_OTLP_ENDPOINT')) # if not set, assume no OTLP
     if otlp:
         tracer_provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter()))
     trace.set_tracer_provider(tracer_provider)
