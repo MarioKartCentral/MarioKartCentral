@@ -2,10 +2,11 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 import logging
 import time
+from common.telemetry import setup_telemetry
+from opentelemetry import trace
 from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
-from common.logging_setup import setup_logging
 
 class JobRunner:
     def __init__(self, job: Job):
@@ -30,6 +31,7 @@ class JobRunner:
         self._task = asyncio.create_task(run_with_error_handler())
 
     def tick(self):
+        trace.get_current_span().set_attribute("job_name", self._job.name)
         if self._last_run is None or self._task is None:
             self.start()
             return
@@ -50,17 +52,19 @@ class JobRunner:
 async def main():
     await on_startup()
     jobs = [JobRunner(job) for job in get_all_jobs()]
+    tracer = trace.get_tracer("worker")
     while True:
         for job in jobs:
-            job.tick()
+            with tracer.start_as_current_span("job_tick"):
+                job.tick()
         await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
-    setup_logging()
     if settings.DEBUG:
         import debugpy
         debugpy.listen(("0.0.0.0", 5678))
         debugpy.wait_for_client()  # blocks execution until client is attached
 
+    setup_telemetry()
     asyncio.run(main())

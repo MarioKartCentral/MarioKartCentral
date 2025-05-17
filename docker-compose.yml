@@ -30,6 +30,11 @@ services:
       AWS_SES_ACCESS_KEY: ${AWS_SES_ACCESS_KEY:-}
       AWS_SES_SECRET_KEY: ${AWS_SES_SECRET_KEY:-}
       USE_SES_FOR_EMAILS: ${USE_SES_FOR_EMAILS:-false}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-Authorization=Basic ${GRAFANA_CLOUD_OTLP_TOKEN:-}}
+      OTEL_PYTHON_LOG_LEVEL: info
+      OTEL_SERVICE_NAME: mkc-api
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
@@ -55,30 +60,14 @@ services:
       ENV: Development
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-Authorization=Basic ${GRAFANA_CLOUD_OTLP_TOKEN:-}}
+      OTEL_PYTHON_LOG_LEVEL: info
+      OTEL_SERVICE_NAME: mkc-worker
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
-
-  prometheus:
-    image: prom/prometheus
-    volumes: 
-      - "./src/backend/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
-    ports:
-      - 9090:9090
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    expose:
-      - 9100
     
   frontend:
     build: ./src/frontend
@@ -146,4 +135,3 @@ volumes:
   mkc-db:
   mkc-s3:
   mkc-email:
-  grafana-storage:
