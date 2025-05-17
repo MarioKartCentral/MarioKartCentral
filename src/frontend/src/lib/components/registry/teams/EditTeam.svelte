@@ -22,8 +22,8 @@
   
     $: team_name = team ? team.name : $LL.NAVBAR.REGISTRY();
 
-    let logo_file: string | null;
-    let remove_logo: boolean;
+    let logo_file: string | null = null;
+    let remove_logo = false;
 
     let user_info: UserInfo;
     user.subscribe((value) => {
@@ -55,6 +55,7 @@
         language: data.get('language')?.toString(),
         description: getOptionalValue('description'),
       };
+      console.log(payload);
       const endpoint = '/api/registry/teams/edit';
       const response = await fetch(endpoint, {
         method: 'POST',
