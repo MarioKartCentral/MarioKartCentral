@@ -328,7 +328,7 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
 async def view_approved_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
     command = ViewTransfersCommand(filter, "approved")
     transfers = await handle(command)
-    return JSONResponse(transfers)
+    return JSONResponse(transfers, headers={ "Cache-Control": "public, max-age=600, s-maxage=600" })
 
 @bind_request_query(TransferFilter)
 @require_permission(permissions.MANAGE_TRANSFERS)

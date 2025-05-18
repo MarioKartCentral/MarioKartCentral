@@ -13,7 +13,7 @@ async def current_user(request: Request) -> JSONResponse:
     user = await handle(GetUserDataFromIdCommand(request.state.user.id))
     if user is None:
         raise Problem("User is not logged in", status=401)
-    return JSONResponse(user)
+    return JSONResponse(user, headers={"Cache-Control":"private, max-age=60", "Vary": "Cookie"})
 
 @require_logged_in()
 async def current_user_and_player(request: Request) -> JSONResponse:
@@ -30,7 +30,7 @@ async def current_user_and_player(request: Request) -> JSONResponse:
         mod_notifications = await handle(GetModNotificationsCommand(user_roles))
         tokens = await handle(GetUserAPITokensCommand(user.id))
         token_count = len(tokens)
-    return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications, token_count))
+    return JSONResponse(UserPlayer(user.id, user.player_id, user.email_confirmed, user.force_password_reset, player, user_roles, team_roles, series_roles, tournament_roles, mod_notifications, token_count), headers={"Cache-Control":"private, max-age=60", "Vary": "Cookie"})
 
 @require_logged_in()
 async def player_invites(request: Request) -> JSONResponse:

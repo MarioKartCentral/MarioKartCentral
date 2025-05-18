@@ -54,7 +54,7 @@
                         <div>
                             {new Date(p.time_range.date_earliest * 1000).toLocaleString($locale, options)}
                             -
-                            {new Date(p.time_range.date_earliest * 1000).toLocaleString($locale, options)}
+                            {new Date(p.time_range.date_latest * 1000).toLocaleString($locale, options)}
                         </div>
                         <div>
                             {$LL.MODERATOR.ALT_DETECTION.NUM_TIMES({"count": p.time_range.times})}

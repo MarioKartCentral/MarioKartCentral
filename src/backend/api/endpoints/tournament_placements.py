@@ -40,7 +40,7 @@ async def get_latest_tournament_with_placements(request: Request) -> JSONRespons
     tournament_id = await handle(GetLatestTournamentIdWithPlacements())
     command = GetTournamentDataCommand(tournament_id)
     tournament = await handle(command)
-    return JSONResponse(tournament)
+    return JSONResponse(tournament, headers={ "Cache-Control": "public, max-age=600, s-maxage=600" })
 
 async def get_player_placements(request: Request) -> JSONResponse:
     player_id = int(request.path_params['player_id'])
