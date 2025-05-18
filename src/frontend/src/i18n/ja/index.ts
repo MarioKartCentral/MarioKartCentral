@@ -153,7 +153,7 @@ const ja: Translation = {
   HOMEPAGE: {
     WELCOME: 'Welcome to MKCentral!',
     SUMMARY:
-      '<strong>MKCentral</strong>はマリオカートプレイヤーのための世界最大の独立コミュニティです。カジュアルなレーサーであってもトーナメントのベテランであっても、当サイトは競争し、繋がり、マリオカートのすべてを祝うために皆を一つの場所に集めます。',
+      '<strong>MKCentral</strong>は、マリオカートプレイヤーのための世界最大の独立したコミュニティです。カジュアルプレイヤーから大会経験豊富な競技者まで、すべてのユーザーが一堂に会し、競技や交流を通じてマリオカートの魅力を共有できる場を提供しています。',
     YOU_PLACED: 'あなたの順位: {placement|ordinalSuffix}', // TODO: if possible, update the file formatters.ts and implement ordinalSuffixJa()
     LATEST_RESULTS: '最新結果',
     VIEW_FULL_PLACEMENTS: '全順位表示',
@@ -166,7 +166,7 @@ const ja: Translation = {
     RECENT_TRANSACTIONS: '最近の移籍',
     MORE_RECENT_TRANSACTIONS: '最近の移籍詳細',
     VIEW_ALL_ANNOUNCEMENTS: 'すべてのお知らせを表示',
-    LEARN_MORE_ABOUT_US: 'Learn more about us',
+    LEARN_MORE_ABOUT_US: '詳細はこちらをご覧ください。',
   },
   IMAGES: {
     UPLOAD_IMAGE: '画像アップロード',

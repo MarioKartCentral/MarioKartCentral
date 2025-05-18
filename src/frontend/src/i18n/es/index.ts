@@ -152,7 +152,7 @@ const es: Translation = {
   HOMEPAGE: {
     WELCOME: '¡Bienvenido a Mario Kart Central!',
     SUMMARY:
-      '<strong>MKCentral</strong> es la comunidad independiente más grande para jugadores de Mario Kart. Ya seas un corredor casual o un veterano de torneos, nuestro sitio reúne a todos en un mismo lugar para competir, conectar y celebrar todo lo relacionado con Mario Kart.',
+      '<strong>MKCentral</strong> es la comunidad independiente de Mario Kart más grande. Ya seas un jugador casual o un experto, nuestra comunidad reúne a jugadores de todo tipo en un mismo lugar para competir, conectar y celebrar todo lo relacionado con Mario Kart.',
     YOU_PLACED: 'Tu posición: {placement|ordinalSuffix}',
     LATEST_RESULTS: 'Últimos resultados',
     VIEW_FULL_PLACEMENTS: 'Ver todas las posiciones',
@@ -165,7 +165,7 @@ const es: Translation = {
     RECENT_TRANSACTIONS: 'Transacciones recientes',
     MORE_RECENT_TRANSACTIONS: 'Más transacciones recientes',
     VIEW_ALL_ANNOUNCEMENTS: 'Ver todos los anuncios',
-    LEARN_MORE_ABOUT_US: 'Learn more about us',
+    LEARN_MORE_ABOUT_US: 'Conoce más sobre nosotros.',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Subir imagen',

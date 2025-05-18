@@ -153,7 +153,7 @@ const de: Translation = {
   HOMEPAGE: {
     WELCOME: 'Herzlich willkommen bei MKCentral!',
     SUMMARY:
-      'Wir sind die Heimat der Mario Kart Turniere, wo Sie Turniere für alle Spieler finden können - egal, ob Sie einen entspannten oder wettbewerbsorientierten Wettkampf suchen, wir haben alles für Sie! Wir veranstalten Events für Mario Kart 8 Deluxe, Tour und mehr, mit einer Vielzahl von Matches, die jede Woche stattfinden!',
+      '<strong>MKCentral</strong> ist die größte unabhängige Community für Mario Kart-Spieler. Ob Gelegenheitsfahrer oder Turnierprofi, unsere Webseite bringt alle an einem Ort zusammen, um zu konkurrieren, zu verbinden und alles rund um Mario Kart zu feiern.',
     YOU_PLACED: 'Ihre Platzierung: {placement|ordinalSuffix}',
     LATEST_RESULTS: 'Neueste Ergebnisse',
     VIEW_FULL_PLACEMENTS: 'Vollständige Platzierungen ansehen',
@@ -166,7 +166,7 @@ const de: Translation = {
     RECENT_TRANSACTIONS: 'Letzte Transaktionen',
     MORE_RECENT_TRANSACTIONS: 'Weitere Transaktionen',
     VIEW_ALL_ANNOUNCEMENTS: 'Alle Ankündigungen anzeigen',
-    LEARN_MORE_ABOUT_US: 'Erfahren Sie mehr über uns',
+    LEARN_MORE_ABOUT_US: 'Erfahre mehr über uns.',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Bild hochladen',
