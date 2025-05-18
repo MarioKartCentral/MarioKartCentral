@@ -129,4 +129,7 @@
     span.agree-terms {
         margin-right: 10px;
     }
+    .terms-label {
+        text-decoration: underline;
+    }
 </style>
