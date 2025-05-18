@@ -48,7 +48,7 @@
   async function logout() {
       const response = await fetch('/api/user/logout', { method: 'POST' });
       if (response.status < 300) {
-        window.location.reload();
+        window.location.href = `/${$page.params.lang}/`;
       } else {
         alert($LL.LOGIN.LOGOUT_FAILED());
     }
