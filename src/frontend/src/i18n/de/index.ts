@@ -85,6 +85,8 @@ const de: Translation = {
     NEW: 'Neu',
     SORT_BY_ALPHABETICAL: 'Alphabetisch',
     SORT_BY_NEWEST: 'Neuestes',
+    WORKING: 'Working...',
+    VIEW: 'View',
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
