@@ -130,10 +130,12 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
             if is_banned:
                 insert_user_roles.add((user_id, roles.id_by_default_role[roles.BANNED], expiration_date))
             insert_series_roles = set([(user_id, series_roles.id_by_default_role[role.role_name], role.series_id) for role in self.series_roles])
-            insert_team_roles = set([(user_id, team_roles.id_by_default_role[role.role_name], role.team_id) for role in self.team_roles])
+            insert_team_roles = set([(user_id, team_roles.id_by_default_role[role.role_name], role.team_id, role.team_id) for role in self.team_roles])
             await db.executemany("""INSERT INTO user_roles(user_id, role_id, expires_on) VALUES(?, ?, ?)""", insert_user_roles)
             await db.executemany("""INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""", insert_series_roles)
-            await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES(?, ?, ?)""", insert_team_roles)
+            await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id)
+                                    SELECT ?, ?, ?
+                                    WHERE EXISTS(SELECT 1 FROM teams WHERE id = ?)""", insert_team_roles)
             await db.commit()
             return UserLoginData(user_id, self.player_id, email_confirmed, force_password_reset, self.email, self.password_hash)
 
