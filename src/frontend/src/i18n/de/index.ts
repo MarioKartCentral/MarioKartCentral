@@ -126,7 +126,8 @@ const de: Translation = {
     SELECTED_FC: 'Ausgewählter FC:',
     OTHER_FCS: 'Andere FCs:',
     SELECT_TYPE: 'Wählen Sie einen FC-Typ aus...',
-    EDIT_FC_TOOLTIP: 'Um den Freundescode selbst zu bearbeiten oder einen neuen Freundescode über das bisherige Limit hinaus hinzuzufügen, erstellen Sie ein Ticket auf dem MKCentral Discord-Server.',
+    EDIT_FC_TOOLTIP:
+      'Um den Freundescode selbst zu bearbeiten oder einen neuen Freundescode über das bisherige Limit hinaus hinzuzufügen, erstellen Sie ein Ticket auf dem MKCentral Discord-Server.',
     TYPES: {
       ALL: 'Alle FC Typen',
       SWITCH: 'Switch',
@@ -149,7 +150,8 @@ const de: Translation = {
   },
   HOMEPAGE: {
     WELCOME: 'Herzlich willkommen bei MKCentral!',
-    SUMMARY: "Wir sind die Heimat der Mario Kart Turniere, wo Sie Turniere für alle Spieler finden können - egal, ob Sie einen entspannten oder wettbewerbsorientierten Wettkampf suchen, wir haben alles für Sie! Wir veranstalten Events für Mario Kart 8 Deluxe, Tour und mehr, mit einer Vielzahl von Matches, die jede Woche stattfinden!",
+    SUMMARY:
+      'Wir sind die Heimat der Mario Kart Turniere, wo Sie Turniere für alle Spieler finden können - egal, ob Sie einen entspannten oder wettbewerbsorientierten Wettkampf suchen, wir haben alles für Sie! Wir veranstalten Events für Mario Kart 8 Deluxe, Tour und mehr, mit einer Vielzahl von Matches, die jede Woche stattfinden!',
     YOU_PLACED: 'Ihre Platzierung: {placement|ordinalSuffix}',
     LATEST_RESULTS: 'Neueste Ergebnisse',
     VIEW_FULL_PLACEMENTS: 'Vollständige Platzierungen ansehen',
@@ -163,7 +165,6 @@ const de: Translation = {
     MORE_RECENT_TRANSACTIONS: 'Weitere Transaktionen',
     VIEW_ALL_ANNOUNCEMENTS: 'Alle Ankündigungen anzeigen',
     LEARN_MORE_ABOUT_US: 'Erfahren Sie mehr über uns',
-
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Bild hochladen',
@@ -173,7 +174,7 @@ const de: Translation = {
     TEAM_INVITES: 'Team Einladungen',
     TOURNAMENT_INVITES: 'Turnier Einladungen',
     SELECT_LEAVE_ROSTER: 'Wählen Sie ein Roster zum Verlassen aus:',
-    SELECT_LEAVE_ROSTER_ERROR: 'Bite wählen Sie ein Roster zum Verlassen aus', //Roster / Roster ? 
+    SELECT_LEAVE_ROSTER_ERROR: 'Bite wählen Sie ein Roster zum Verlassen aus', //Roster / Roster ?
     ACCEPT_TEAM_INVITE_SUCCESS:
       'Die Einladung zu {roster_name} wurde erfolgreich angenommen! Ihr Transfer muss von den Staff-Mitgliedern bearbeitet werden, bevor er abgeschlossen werden kann.',
     ACCEPT_TEAM_INVITE_FAILED: 'Akzeptieren der Teameinladung fehlgeschlagen',
@@ -226,7 +227,7 @@ const de: Translation = {
     EMAIL_ALREADY_CONFIRMED: 'Ihre E-Mail wurde bereits bestätigt.',
     WELCOME_TO_MKC: 'Herzlich willkommen bei MKCentral!',
     EMAIL_CONFIRMATION_REQUIRED:
-      "Bevor Sie Ihre Spielerregistrierung abschließen können, müssen Sie Ihre E-Mail-Adresse bestätigen. Sie sollten eine E-Mail mit einem Link zur Bestätigung Ihrer E-Mail-Adresse erhalten haben. Wenn Sie die E-Mail nicht sehen oder der Link abgelaufen ist, können Sie auf die Schaltfläche unten klicken, um eine weitere Bestätigungs-E-Mail zu senden.",
+      'Bevor Sie Ihre Spielerregistrierung abschließen können, müssen Sie Ihre E-Mail-Adresse bestätigen. Sie sollten eine E-Mail mit einem Link zur Bestätigung Ihrer E-Mail-Adresse erhalten haben. Wenn Sie die E-Mail nicht sehen oder der Link abgelaufen ist, können Sie auf die Schaltfläche unten klicken, um eine weitere Bestätigungs-E-Mail zu senden.',
     SEND_CONFIRMATION_EMAIL: 'Bestätigungs-E-Mail senden',
     SEND_PASSWORD_RESET_EMAIL_SUCCESS: 'E-Mail zum Zurücksetzen des Passworts erfolgreich gesendet!',
     SEND_PASSWORD_RESET_EMAIL_FAILURE: 'E-Mail zum Zurücksetzen des Passworts konnte nicht gesendet werden',
@@ -246,11 +247,11 @@ const de: Translation = {
     TRANSFER: 'Übertragung', //maybe Transfer
     CHANGE_EMAIL: 'E-Mail ändern',
     NEW_EMAIL: 'Neue E-Mail',
-    CHANGE_EMAIL_SUCCESS: 'Ihre E-Mail wurde erfolgreich geändert. Bitte prüfen Sie Ihren Posteingang auf eine Bestätigungs-E-Mail.',
+    CHANGE_EMAIL_SUCCESS:
+      'Ihre E-Mail wurde erfolgreich geändert. Bitte prüfen Sie Ihren Posteingang auf eine Bestätigungs-E-Mail.',
     CHANGE_EMAIL_FAILED: 'Änderung der E-Mail fehlgeschlagen',
     AGREE_TO_TERMS: 'Ich stimme den MKCentral-Nutzungsbedingungen zu.',
     AGREE_TO_PRIVACY_POLICY: 'Ich stimme den MKCentral Datenschutzbestimmungen zu.',
-
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -260,7 +261,8 @@ const de: Translation = {
   MARKDOWN: {
     INPUT: 'Eingabe',
     PREVIEW: 'Vorschau',
-    MARKDOWN_HELP: 'Diese Texteingabe unterstützt Markdown. Klicken Sie hier, um eine Liste der grundlegenden Markdown-Syntax zu erhalten.',
+    MARKDOWN_HELP:
+      'Diese Texteingabe unterstützt Markdown. Klicken Sie hier, um eine Liste der grundlegenden Markdown-Syntax zu erhalten.',
   },
   MODERATOR: {
     MODERATOR: 'Moderator',
@@ -288,7 +290,8 @@ const de: Translation = {
     DENY_TEAM_EDIT_CONFIRM: 'Sind Sie sicher, dass Sie diese Anfrage zur Bearbeitung des Teams ablehnen möchten?',
     APPROVE_TEAM_EDIT_FAILED: 'Bestätigung der Bearbeitung des Teams fehlgeschlagen',
     DENY_TEAM_EDIT_FAILED: 'Ablehnung der Bearbeitung des Teams fehlgeschlagen',
-    APPROVE_ROSTER_EDIT_CONFIRM: 'Sind Sie sicher, dass Sie diese Anfrage zur Bearbeitung des Rosters genehmigen möchten',
+    APPROVE_ROSTER_EDIT_CONFIRM:
+      'Sind Sie sicher, dass Sie diese Anfrage zur Bearbeitung des Rosters genehmigen möchten',
     DENY_ROSTER_EDIT_CONFIRM: 'Sind Sie sicher, dass Sie diese Anfrage zur Bearbeitung des Rosters ablehnen möchten?',
     APPROVE_ROSTER_EDIT_FAILED: 'Bestätigung der Bearbeitung des Rosters fehlgeschlagen',
     DENY_ROSTER_EDIT_FAILED: 'Ablehnung der Bearbeitung des Rosters fehlgeschlagen',
@@ -325,13 +328,13 @@ const de: Translation = {
     MERGE_PLAYERS: 'Spieler zusammenführen',
     SELECT_UNIQUE_PLAYERS: 'Bitte wählen Sie zwei verschiedene Spieler',
     MERGE_PLAYERS_CONFIRM:
-      "Sind Sie sicher, dass Sie alle Daten von {old_player} in {new_player} zusammenführen wollen? Dadurch wird {old_player} vollständig GELÖSCHT.",
+      'Sind Sie sicher, dass Sie alle Daten von {old_player} in {new_player} zusammenführen wollen? Dadurch wird {old_player} vollständig GELÖSCHT.',
     MERGE_PLAYERS_SUCCESS: 'Erfolgreiche Zusammenführung der Spieler!',
     MERGE_PLAYERS_FAILED: 'Zusammenführung der Spieler fehlgeschlagen',
     MERGE_TEAMS: 'Teams zusammenführen',
     SELECT_UNIQUE_TEAMS: 'Bitte wählen Sie zwei verschiedene Teams',
     MERGE_TEAMS_CONFIRM:
-      "Sind Sie sicher, dass Sie alle Daten von {old_team} in {new_team} zusammenführen wollen? Dadurch wird {old_team} vollständig GELÖSCHT.",
+      'Sind Sie sicher, dass Sie alle Daten von {old_team} in {new_team} zusammenführen wollen? Dadurch wird {old_team} vollständig GELÖSCHT.',
     MERGE_TEAMS_SUCCESS: 'Erfolgreiche Zusammenführung der Teams!',
     MERGE_TEAMS_FAILED: 'Zusammenführung der Teams fehlgeschlagen',
     OLD_TEAM: 'Altes Team',
@@ -628,7 +631,8 @@ const de: Translation = {
     EXPIRES_TO: 'Gültig bis',
     EXPIRES_FROM: 'Läuft ab von',
     SEARCH_BY_NAME: 'Suche nach Name',
-    THIS_PLAYER_IS_BANNED: 'Dieser Spieler ist <strong>gesperrt</strong> und darf nicht an MKCentral-Wettbewerben teilnehmen.',
+    THIS_PLAYER_IS_BANNED:
+      'Dieser Spieler ist <strong>gesperrt</strong> und darf nicht an MKCentral-Wettbewerben teilnehmen.',
     UNBAN_DATE: 'Datum der Aufhebung der Sperre',
   }, //break time
   POSTS: {
@@ -686,7 +690,7 @@ const de: Translation = {
       REQUEST_CHANGE_IN: 'Sie können eine Änderung des Namens/Tags in {days} Tagen beantragen.',
       NAME_TAG_CHANGE_PENDING: 'Name/Tag Änderung vorbehaltlich der Genehmigung durch die MKC-Staff:',
       NAME_TAG_CHANGE_SUCCESS:
-        "Ihr Antrag auf Änderung des Namens/Tags wurde zur Genehmigung an die MKCentral-Staffs gesendet.",
+        'Ihr Antrag auf Änderung des Namens/Tags wurde zur Genehmigung an die MKCentral-Staffs gesendet.',
       NAME_TAG_CHANGE_FAILURE: 'Requesting team name/tag change failed',
       EDIT_TEAM_SUCCESS: 'Team erfolgreich bearbeitet',
       EDIT_TEAM_FAILURE: 'Team konnte nicht bearbeitet werden',
@@ -710,7 +714,7 @@ const de: Translation = {
       TEAM_ROLE_REMOVE_CONFIRM: 'Sind Sie sicher, dass Sie die Rolle {team_role} von {player_name} entfernen möchten?',
       TEAM_ROLE_REMOVE_FAILED: 'Teamrolle konnte nicht entfernt werden',
       ROSTER_NAME_TAG_CHANGE_SUCCESS:
-        "Ihr Antrag auf Änderung des Namens/Tags Ihres Rosters wurde zur Genehmigung an die MKCentral Staffs weitergeleitet.",
+        'Ihr Antrag auf Änderung des Namens/Tags Ihres Rosters wurde zur Genehmigung an die MKCentral Staffs weitergeleitet.',
       ROSTER_NAME_TAG_CHANGE_FAILURE: 'Antrag auf Änderung des Namens/Tags im Roster fehlgeschlagen',
     },
     LIST: {
@@ -725,7 +729,6 @@ const de: Translation = {
       SEARCH_BY: 'Suche nach Team- oder Rosternamen...',
       TEAM_COUNT: '{count} Teams',
       ACTIVE_TEAMS_MIN_PLAYERS: 'Aktive Teams mit {count}+ Spielern',
-
     },
     PROFILE: {
       TEAM_PROFILE: 'Team Profil',
@@ -773,7 +776,7 @@ const de: Translation = {
   },
   TIME_TRIALS: {
     DESCRIPTION:
-      "Diese Seite befindet sich derzeit noch im Aufbau, wird aber in Zukunft die zentrale Anlaufstelle für alle Zeitfahrten sein. Im Moment können Spieler Ranglisten auf verschiedenen anderen Seiten finden. Dies ist das Herz von Mario Kart Time Trials. Hier findest du die aktuellsten Ranglisten für Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7 und Mario Kart Wii, mit allen erdenklichen Kategorien. Reichen Sie Ihre Zeiten ein, um zu sehen, wie Sie abschneiden!",
+      'Diese Seite befindet sich derzeit noch im Aufbau, wird aber in Zukunft die zentrale Anlaufstelle für alle Zeitfahrten sein. Im Moment können Spieler Ranglisten auf verschiedenen anderen Seiten finden. Dies ist das Herz von Mario Kart Time Trials. Hier findest du die aktuellsten Ranglisten für Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7 und Mario Kart Wii, mit allen erdenklichen Kategorien. Reichen Sie Ihre Zeiten ein, um zu sehen, wie Sie abschneiden!',
   },
   TOURNAMENTS: {
     TOURNAMENT: 'Turnier',
@@ -881,7 +884,8 @@ const de: Translation = {
       REGISTRATIONS_CLOSED: 'Die Anmeldungen für dieses Turnier sind geschlossen.',
       REGISTER_PROMPT: 'Möchten Sie sich für dieses Turnier anmelden? Füllen Sie einfach Ihre Anmeldedaten unten aus!',
       ADD_FC_TO_REGISTER: 'Bitte fügen Sie einen FC für {game|uppercase} hinzu, um sich für dieses Turnier anzumelden.',
-      COMPLETE_REGISTRATION_TO_REGISTER: 'Bitte füllen Sie Ihre Spieleranmeldung aus, um sich für dieses Turnier zu registrieren.',
+      COMPLETE_REGISTRATION_TO_REGISTER:
+        'Bitte füllen Sie Ihre Spieleranmeldung aus, um sich für dieses Turnier zu registrieren.',
       MY_INVITES: 'Meine Einladungen',
       CHECK_IN_REMINDER_WINDOW_OPEN: 'Checken Sie unbedingt ein, bevor das Turnier beginnt!',
       CHECK_IN_REMINDER_WINDOW_CLOSED: 'Achten Sie darauf, dass Sie während des Check-in-Fensters einchecken!',
@@ -918,7 +922,7 @@ const de: Translation = {
       SELECT_REPRESENTATIVES: 'Bitte wählen Sie genau {min_representatives} Kapitäne/ Repräsentanten.',
       SELECT_MORE_PLAYERS: 'Sie benötigen {count} mehr {{Spieler|Spieler}} um sich für dieses Turnier zu registrieren.', //TODO: update "player" / "players"
       SELECT_LESS_PLAYERS:
-        "Die maximale Squadgröße für dieses Turnier beträgt {max_squad_size} Spieler, bitte entfernen Sie mindestens {count} Spieler.",
+        'Die maximale Squadgröße für dieses Turnier beträgt {max_squad_size} Spieler, bitte entfernen Sie mindestens {count} Spieler.',
       ADD_PLAYER_SELECT: 'Spieler hinzufügen...',
       MANUALLY_REGISTER_PLAYER: 'Spieler manuell registrieren',
       MANUALLY_REGISTER_SQUAD: 'Squad manuell registrieren',
@@ -931,7 +935,8 @@ const de: Translation = {
       REMOVE_ROSTER_CONFIRM: 'Sind Sie sicher, dass Sie das Roster {roster_name} von diesem Squad entfernen möchten?',
       ADD_ROSTER_FAILED: 'Roster kann nicht hinzugefügt werden',
       REMOVE_ROSTER_FAILED: 'Roster konnte nicht entfernt werden',
-      SIGN_IN_REGISTER_TO_REGISTER: 'Melden Sie sich an oder registrieren Sie sich, um an Turnieren auf MKCentral teilzunehmen.',
+      SIGN_IN_REGISTER_TO_REGISTER:
+        'Melden Sie sich an oder registrieren Sie sich, um an Turnieren auf MKCentral teilzunehmen.',
       LINK_DISCORD_TO_REGISTER: 'Bitte verknüpfe deinen Discord-Account, um an Turnieren auf MKCentral teilzunehmen.',
       CONFIRM_EMAIL_TO_REGISTER:
         'Bitte bestätigen Sie Ihre E-Mail und füllen Sie die Spielerregistrierung aus, um an Turnieren auf MKCentral teilzunehmen.',
@@ -968,7 +973,7 @@ const de: Translation = {
       TEAMS_ONLY: 'Nur Teams? (kann nicht geändert werden)',
       TEAM_MEMBERS_ONLY: 'Nur Teammitglieder? (kann nicht geändert werden)',
       MIN_REPRESENTATIVES: '# Anzahl der erforderlichen Repräsentanten',
-      HOST_STATUS_REQUIRED: "Kann/kann nicht gehostet werden erforderlich? (kann nicht geändert werden)",
+      HOST_STATUS_REQUIRED: 'Kann/kann nicht gehostet werden erforderlich? (kann nicht geändert werden)',
       MII_NAME_REQUIRED: 'Name im Spiel/Miiname erforderlich? (kann nicht geändert werden)',
       REQUIRE_SINGLE_FC: 'Die Teilnehmer müssen einen FC für das Turnier auswählen? (kann nicht geändert werden)',
       CHECKINS_ENABLED: 'Check-Ins aktiviert',
