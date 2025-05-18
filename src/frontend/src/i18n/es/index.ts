@@ -165,7 +165,7 @@ const es: Translation = {
     RECENT_TRANSACTIONS: 'Transacciones recientes',
     MORE_RECENT_TRANSACTIONS: 'Más transacciones recientes',
     VIEW_ALL_ANNOUNCEMENTS: 'Ver todos los anuncios',
-    LEARN_MORE_ABOUT_US: 'Learn more about us'
+    LEARN_MORE_ABOUT_US: 'Learn more about us',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Subir imagen',

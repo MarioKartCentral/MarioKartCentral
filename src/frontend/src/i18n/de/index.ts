@@ -166,7 +166,7 @@ const de: Translation = {
     RECENT_TRANSACTIONS: 'Recent Transactions',
     MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
     VIEW_ALL_ANNOUNCEMENTS: 'View all Announcements',
-    LEARN_MORE_ABOUT_US: 'Learn more about us'
+    LEARN_MORE_ABOUT_US: 'Learn more about us',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Upload Image',

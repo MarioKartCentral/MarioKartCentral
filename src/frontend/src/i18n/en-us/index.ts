@@ -150,7 +150,7 @@ const en_us: BaseTranslation = {
   HOMEPAGE: {
     WELCOME: 'Welcome to MKCentral!',
     SUMMARY:
-      '<strong>MKCentral</strong> is the world\'s largest independent community for Mario Kart players. Whether you\'re a casual racer or a tournament veteran, our site brings everyone together in one place to compete, connect, and celebrate everything Mario Kart.',
+      "<strong>MKCentral</strong> is the world's largest independent community for Mario Kart players. Whether you're a casual racer or a tournament veteran, our site brings everyone together in one place to compete, connect, and celebrate everything Mario Kart.",
     YOU_PLACED: 'You placed: {placement:number|ordinalSuffix}',
     LATEST_RESULTS: 'Latest Results',
     VIEW_FULL_PLACEMENTS: 'View Full Placements',
@@ -163,7 +163,7 @@ const en_us: BaseTranslation = {
     RECENT_TRANSACTIONS: 'Recent Transactions',
     MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
     VIEW_ALL_ANNOUNCEMENTS: 'View all Announcements',
-    LEARN_MORE_ABOUT_US: 'Learn more about us'
+    LEARN_MORE_ABOUT_US: 'Learn more about us',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Upload Image',

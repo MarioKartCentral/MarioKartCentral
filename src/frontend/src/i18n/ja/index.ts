@@ -166,7 +166,7 @@ const ja: Translation = {
     RECENT_TRANSACTIONS: '最近の移籍',
     MORE_RECENT_TRANSACTIONS: '最近の移籍詳細',
     VIEW_ALL_ANNOUNCEMENTS: 'すべてのお知らせを表示',
-    LEARN_MORE_ABOUT_US: 'Learn more about us'
+    LEARN_MORE_ABOUT_US: 'Learn more about us',
   },
   IMAGES: {
     UPLOAD_IMAGE: '画像アップロード',
