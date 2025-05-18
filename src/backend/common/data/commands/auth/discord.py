@@ -310,7 +310,10 @@ class SyncDiscordAvatarCommand(Command[str | None]):
     user_id: int
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        discord_id = None
+        avatar = None
+        
+        async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT discord_id, avatar FROM user_discords WHERE user_id = ?", (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -319,33 +322,33 @@ class SyncDiscordAvatarCommand(Command[str | None]):
                 if not avatar:
                     return None
 
-                # Construct Discord CDN URL
-                avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{avatar}.png?size=256"
-                
-                # Download avatar from Discord
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(avatar_url) as resp:
-                        if resp.status != 200:
-                            raise Problem(f"Failed to fetch Discord avatar: {resp.status}")
-                        image_data = await resp.read()
+        avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{avatar}.png?size=256"
+        
+        image_data = None
+        async with aiohttp.ClientSession() as session:
+            async with session.get(avatar_url) as resp:
+                if resp.status != 200:
+                    raise Problem(f"Failed to fetch Discord avatar: {resp.status}")
+                image_data = await resp.read()
 
-                # Upload to S3
-                filename = f"avatars/{discord_id}_{avatar}.png"
-                await s3_wrapper.put_object(
-                    bucket_name=IMAGE_BUCKET, 
-                    key=filename, 
-                    body=image_data,
-                    acl="public-read"
-                )
-                
-                # Update user settings with new avatar URL including /img/ prefix
-                avatar_path = f"/img/{filename}"
-                await db.execute(
-                    "UPDATE user_settings SET avatar = ? WHERE user_id = ?",
-                    (avatar_path, self.user_id)
-                )
-                await db.commit()
-                return avatar_path
+        filename = f"avatars/{discord_id}_{avatar}.png"
+        await s3_wrapper.put_object(
+            bucket_name=IMAGE_BUCKET, 
+            key=filename, 
+            body=image_data,
+            acl="public-read"
+        )
+        
+        avatar_path = f"/img/{filename}"
+        
+        async with db_wrapper.connect() as db:
+            await db.execute(
+                "UPDATE user_settings SET avatar = ? WHERE user_id = ?",
+                (avatar_path, self.user_id)
+            )
+            await db.commit()
+            
+        return avatar_path
             
 @dataclass
 class RemoveDiscordAvatarCommand(Command[None]):

@@ -21,6 +21,7 @@ class DBWrapperConnection():
             if self.foreign_keys:
                 await db.execute("pragma foreign_keys = ON;")
             await db.execute("pragma synchronous = NORMAL;")
+            await db.execute("PRAGMA busy_timeout = 5000")
         for name, path in self.attach.items():
             await db.execute(f"ATTACH DATABASE :path AS :name", {"path": path, "name": name})
 
