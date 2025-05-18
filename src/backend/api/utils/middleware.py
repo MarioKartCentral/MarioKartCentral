@@ -125,4 +125,3 @@ class RateLimitByIPMiddleware:
     
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         await self.rate_limit(scope, receive, send)
-        await self.app(scope, receive, send)
