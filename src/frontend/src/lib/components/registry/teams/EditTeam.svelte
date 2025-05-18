@@ -18,11 +18,12 @@
   
     let id = 0;
     let team: Team;
+    let working = false;
   
     $: team_name = team ? team.name : $LL.NAVBAR.REGISTRY();
 
-    let logo_file: string | null;
-    let remove_logo: boolean;
+    let logo_file: string | null = null;
+    let remove_logo = false;
 
     let user_info: UserInfo;
     user.subscribe((value) => {
@@ -41,6 +42,7 @@
     });
   
     async function editTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+      working = true;
       const data = new FormData(event.currentTarget);
       function getOptionalValue(name: string) {
         return data.get(name) ? data.get(name)?.toString() : '';
@@ -60,6 +62,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      working = false;
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
@@ -70,6 +73,7 @@
     }
 
     async function forceEditTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+      working = true;
       const data = new FormData(event.currentTarget);
       function getOptionalValue(name: string) {
         return data.get(name) ? data.get(name)?.toString() : '';
@@ -86,13 +90,13 @@
         approval_status: data.get('approval_status'),
         is_historical: getOptionalValue('is_historical') === 'true',
       };
-      console.log(payload);
       const endpoint = '/api/registry/teams/forceEdit';
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      working = false;
       const result = await response.json();
       if (response.status < 300) {
         window.location.reload();
@@ -140,7 +144,7 @@
               <br />
           </Section>
           <Section header={$LL.COMMON.SUBMIT()}>
-              <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+              <Button {working} type="submit">{$LL.COMMON.SUBMIT()}</Button>
           </Section>
         </form>
       {/if}
@@ -183,8 +187,8 @@
               <option value="true">{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
             </select>
           </Section>
-          <Section header="Submit">
-            <Button type="submit">{$LL.TEAMS.PROFILE.EDIT_TEAM()}</Button>
+          <Section header={$LL.COMMON.SUBMIT()}>
+            <Button {working} type="submit">{$LL.TEAMS.PROFILE.EDIT_TEAM()}</Button>
           </Section>
         </form>
       {/if}

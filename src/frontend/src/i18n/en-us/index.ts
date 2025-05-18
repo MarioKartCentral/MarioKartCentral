@@ -82,6 +82,18 @@ const en_us: BaseTranslation = {
     NEW: 'New',
     SORT_BY_ALPHABETICAL: 'Alphabetical',
     SORT_BY_NEWEST: 'Newest',
+    WORKING: 'Working...',
+    VIEW: 'View',
+  },
+  API_TOKENS: {
+    API_TOKENS: 'API Tokens',
+    TOKEN_NAME: 'Token Name:',
+    DELETE_TOKEN_CONFIRM:
+      'Are you sure you want to delete the token with name {name:string}? Any applications that use this token will become unauthorized.',
+    DELETE_TOKEN_FAILED: 'Failed to delete API token',
+    CREATE_TOKEN: 'Create API Token',
+    CREATE_TOKEN_FAILED: 'Failed to create API token',
+    TOKEN_NAME_HERE: 'Name your new API token...',
   },
   DISCORD: {
     DISCORD: 'Discord',
@@ -113,6 +125,8 @@ const en_us: BaseTranslation = {
     SELECTED_FC: 'Selected FC:',
     OTHER_FCS: 'Other FCs:',
     SELECT_TYPE: 'Select a FC type...',
+    EDIT_FC_TOOLTIP:
+      'To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.',
     TYPES: {
       ALL: 'All FC Types',
       SWITCH: 'Switch',
@@ -136,7 +150,7 @@ const en_us: BaseTranslation = {
   HOMEPAGE: {
     WELCOME: 'Welcome to MKCentral!',
     SUMMARY:
-      "We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!",
+      "<strong>MKCentral</strong> is the world's largest independent community for Mario Kart players. Whether you're a casual racer or a tournament veteran, our site brings everyone together in one place to compete, connect, and celebrate everything Mario Kart.",
     YOU_PLACED: 'You placed: {placement:number|ordinalSuffix}',
     LATEST_RESULTS: 'Latest Results',
     VIEW_FULL_PLACEMENTS: 'View Full Placements',
@@ -149,6 +163,7 @@ const en_us: BaseTranslation = {
     RECENT_TRANSACTIONS: 'Recent Transactions',
     MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
     VIEW_ALL_ANNOUNCEMENTS: 'View all Announcements',
+    LEARN_MORE_ABOUT_US: 'Learn more about us',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Upload Image',
@@ -233,6 +248,8 @@ const en_us: BaseTranslation = {
     NEW_EMAIL: 'New Email',
     CHANGE_EMAIL_SUCCESS: 'Successfully changed your email. Please check your inbox for a confirmation email.',
     CHANGE_EMAIL_FAILED: 'Failed to change email',
+    AGREE_TO_TERMS: 'I agree to the MKCentral Terms of Use.',
+    AGREE_TO_PRIVACY_POLICY: 'I agree to the MKCentral Privacy Policy.',
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -354,6 +371,23 @@ const en_us: BaseTranslation = {
     ALT_DETECTION: {
       ALT_FLAGS: 'Alt Flags',
       PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      LOGIN_HISTORY: 'Login History',
+      FINGERPRINT: 'Fingerprint',
+      SEARCH_FOR_FINGERPRINTS: 'Search for fingerprints',
+      FINGERPRINT_HASH: 'Fingerprint Data (hash: {hash: string})',
+      SEARCH_BY_HASH: 'Search by hash...',
+      PREVIOUS_COOKIE: 'Previous Cookie?',
+      IP_ADDRESS: 'IP Address',
+      IP_ADDRESSES: 'IP Addresses',
+      IP_ADDRESS_COUNT: '{count:number} IPs',
+      PLAYER_IP_HISTORY: 'Player IP History',
+      LOGOUT_DATE: 'Logout Date',
+      VPN: 'VPN',
+      MOBILE: 'Mobile',
+      IP_SEARCH: 'Search for IPs',
+      IP_USER_COUNT: '{count:number} users',
+      IP_HISTORY: 'IP History',
+      NUM_TIMES: '{count:number} times',
       TABLE: {
         PLAYERS: 'Players',
         TYPE: 'Type',
@@ -421,6 +455,8 @@ const en_us: BaseTranslation = {
       WORD_FILTER: 'Word Filter',
       MANAGE_USERS: 'Manage Users',
       ALT_DETECTION: 'Alt Detection',
+      FINGERPRINTS: 'Fingerprints',
+      IP_SEARCH: 'IP Search',
     },
   },
   NOTIFICATION: {
@@ -688,6 +724,7 @@ const en_us: BaseTranslation = {
       HISTORICAL_TEAMS: 'Historical Teams',
       SEARCH_BY: 'Search by team or roster name...',
       TEAM_COUNT: '{count:number} teams',
+      ACTIVE_TEAMS_MIN_PLAYERS: 'Active Teams with {count:number}+ players',
     },
     PROFILE: {
       TEAM_PROFILE: 'Team Profile',

@@ -20,12 +20,16 @@
   import PlayerTournamentHistory from '$lib/components/registry/players/PlayerTournamentHistory.svelte';
   import PlayerRegistrationHistory from '$lib/components/registry/players/PlayerRegistrationHistory.svelte';
   import PlayerAltFlags from '$lib/components/moderator/PlayerAltFlags.svelte';
+  import PlayerLogins from '$lib/components/moderator/PlayerLogins.svelte';
+  import PlayerIpDialog from '$lib/components/moderator/PlayerIPDialog.svelte';
 
   let user_info: UserInfo;
   let banDialog: Dialog;
   let editBanDialog: Dialog;
   let playerNotesDialog: Dialog;
   let altDialog: PlayerAltFlags;
+  let loginDialog: PlayerLogins;
+  let ipDialog: PlayerIpDialog;
   let show_notes = false;
 
   user.subscribe((value) => {
@@ -40,6 +44,13 @@
   let resetPlayerNotes = false;
 
   $: player_name = player ? player.name : 'Registry';
+
+  const mod_permissions = [
+    permissions.ban_player,
+    permissions.edit_player,
+    permissions.view_alt_flags,
+    permissions.edit_user,
+  ]
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
@@ -81,10 +92,18 @@
     <PlayerProfileBan ban_info={player.ban_info} />
   {/if}
 
-  {#if check_permission(user_info, permissions.ban_player) || check_permission(user_info, permissions.edit_player)}
+  {#if mod_permissions.some(p => check_permission(user_info, p))}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
         {#if check_permission(user_info, permissions.ban_player)}
+          <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
+            <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()} />
+          </Dialog>
+          <Dialog bind:this={editBanDialog} header={$LL.PLAYER_BAN.VIEW_EDIT_BAN()}>
+            {#if banInfo}
+              <ViewEditBan {banInfo} />
+            {/if}
+          </Dialog>
           {#if !player.is_banned}
             <Button on:click={banDialog.open}>{$LL.PLAYER_BAN.BAN_PLAYER()}</Button>
           {:else}
@@ -92,6 +111,19 @@
           {/if}
         {/if}
         {#if check_permission(user_info, permissions.edit_player)}
+          <Dialog
+            bind:this={playerNotesDialog}
+            on:close={() => (resetPlayerNotes = !resetPlayerNotes)}
+            header={$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}
+          >
+            {#key resetPlayerNotes}
+              <EditPlayerNotes
+                playerId={player.id}
+                notes={player.notes?.notes || ''}
+                on:cancel={closeEditPlayerNotesDialog}
+              />
+            {/key}
+          </Dialog>
           <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button>
           <Button on:click={() => show_notes = !show_notes}>
             {#if show_notes}
@@ -106,36 +138,22 @@
           <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}">{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button>
         {/if}
         {#if check_permission(user_info, permissions.view_alt_flags)}
-          <Button on:click={altDialog.open}>Alt Flags</Button>
+          <PlayerAltFlags bind:this={altDialog} player_id={player.id}/>
+          <Button on:click={altDialog.open}>{$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}</Button>
+        {/if}
+        {#if check_permission(user_info, permissions.view_user_logins)}
+          <PlayerLogins bind:this={loginDialog} player_id={player.id}/>
+          <Button on:click={loginDialog.open}>{$LL.MODERATOR.ALT_DETECTION.LOGIN_HISTORY()}</Button>
+        {/if}
+        {#if check_permission(user_info, permissions.view_basic_ip_info)}
+          <PlayerIpDialog bind:this={ipDialog} player_id={player.id}/>
+          <Button on:click={ipDialog.open}>{$LL.MODERATOR.ALT_DETECTION.IP_HISTORY()}</Button>
         {/if}
       </div>
       {#if show_notes}
         <PlayerNotes notes={player.notes} />
       {/if}
-      
     </Section>
-    <Dialog bind:this={banDialog} header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-      <BanPlayerForm playerId={player.id} playerName={player.name} handleCancel={() => banDialog.close()} />
-    </Dialog>
-    <Dialog bind:this={editBanDialog} header={$LL.PLAYER_BAN.VIEW_EDIT_BAN()}>
-      {#if banInfo}
-        <ViewEditBan {banInfo} />
-      {/if}
-    </Dialog>
-    <Dialog
-      bind:this={playerNotesDialog}
-      on:close={() => (resetPlayerNotes = !resetPlayerNotes)}
-      header={$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}
-    >
-      {#key resetPlayerNotes}
-        <EditPlayerNotes
-          playerId={player.id}
-          notes={player.notes?.notes || ''}
-          on:cancel={closeEditPlayerNotesDialog}
-        />
-      {/key}
-    </Dialog>
-    <PlayerAltFlags bind:this={altDialog} player_id={player.id}/>
   {/if}
   <PlayerProfile {player} />
   <PlayerTournamentHistory {player} />

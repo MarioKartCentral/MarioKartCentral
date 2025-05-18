@@ -86,6 +86,16 @@ const de: Translation = {
     SORT_BY_ALPHABETICAL: 'Alphabetisch',
     SORT_BY_NEWEST: 'Neuestes',
   },
+  API_TOKENS: {
+    API_TOKENS: 'API Tokens',
+    TOKEN_NAME: 'Token Name:',
+    DELETE_TOKEN_CONFIRM:
+      'Sind Sie sicher, dass Sie das Token mit dem Namen {name} löschen wollen? Alle Anwendungen, die dieses Token verwenden, werden nicht autorisiert.',
+    DELETE_TOKEN_FAILED: 'API-Token konnte nicht gelöscht werden',
+    CREATE_TOKEN: 'API-Token erstellen',
+    CREATE_TOKEN_FAILED: 'API-Token konnte nicht erstellt werden',
+    TOKEN_NAME_HERE: 'Benennen Sie Ihr neues API-Token...',
+  },
   DISCORD: {
     DISCORD: 'Discord',
     SIGN_IN_REGISTER_TO_LINK: 'Anmelden oder Registrieren, um Ihr Discord-Konto zu verknüpfen',
@@ -116,6 +126,7 @@ const de: Translation = {
     SELECTED_FC: 'Ausgewählter FC:',
     OTHER_FCS: 'Andere FCs:',
     SELECT_TYPE: 'Wählen Sie einen FC-Typ aus...',
+    EDIT_FC_TOOLTIP: 'Um den Freundescode selbst zu bearbeiten oder einen neuen Freundescode über das bisherige Limit hinaus hinzuzufügen, erstellen Sie ein Ticket auf dem MKCentral Discord-Server.',
     TYPES: {
       ALL: 'Alle FC Typen',
       SWITCH: 'Switch',
@@ -138,8 +149,7 @@ const de: Translation = {
   },
   HOMEPAGE: {
     WELCOME: 'Herzlich willkommen bei MKCentral!',
-    SUMMARY:
-      "Wir sind die Heimat der Mario Kart Turniere, wo Sie Turniere für alle Spieler finden können - egal, ob Sie einen entspannten oder wettbewerbsorientierten Wettkampf suchen, wir haben alles für Sie! Wir veranstalten Events für Mario Kart 8 Deluxe, Tour und mehr, mit einer Vielzahl von Matches, die jede Woche stattfinden!",
+    SUMMARY: "Wir sind die Heimat der Mario Kart Turniere, wo Sie Turniere für alle Spieler finden können - egal, ob Sie einen entspannten oder wettbewerbsorientierten Wettkampf suchen, wir haben alles für Sie! Wir veranstalten Events für Mario Kart 8 Deluxe, Tour und mehr, mit einer Vielzahl von Matches, die jede Woche stattfinden!",
     YOU_PLACED: 'Ihre Platzierung: {placement|ordinalSuffix}',
     LATEST_RESULTS: 'Neueste Ergebnisse',
     VIEW_FULL_PLACEMENTS: 'Vollständige Platzierungen ansehen',
@@ -152,6 +162,8 @@ const de: Translation = {
     RECENT_TRANSACTIONS: 'Letzte Transaktionen',
     MORE_RECENT_TRANSACTIONS: 'Weitere Transaktionen',
     VIEW_ALL_ANNOUNCEMENTS: 'Alle Ankündigungen anzeigen',
+    LEARN_MORE_ABOUT_US: 'Erfahren Sie mehr über uns',
+
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Bild hochladen',
@@ -236,6 +248,9 @@ const de: Translation = {
     NEW_EMAIL: 'Neue E-Mail',
     CHANGE_EMAIL_SUCCESS: 'Ihre E-Mail wurde erfolgreich geändert. Bitte prüfen Sie Ihren Posteingang auf eine Bestätigungs-E-Mail.',
     CHANGE_EMAIL_FAILED: 'Änderung der E-Mail fehlgeschlagen',
+    AGREE_TO_TERMS: 'Ich stimme den MKCentral-Nutzungsbedingungen zu.',
+    AGREE_TO_PRIVACY_POLICY: 'Ich stimme den MKCentral Datenschutzbestimmungen zu.',
+
   },
   LOUNGE: {
     LOUNGE: 'Lounge',
@@ -357,6 +372,23 @@ const de: Translation = {
     ALT_DETECTION: {
       ALT_FLAGS: 'Alt Flags',
       PLAYER_ALT_FLAGS: 'Player Alt Flags',
+      LOGIN_HISTORY: 'Login History',
+      FINGERPRINT: 'Fingerprint',
+      SEARCH_FOR_FINGERPRINTS: 'Search for fingerprints',
+      FINGERPRINT_HASH: 'Fingerprint Data (hash: {hash})',
+      SEARCH_BY_HASH: 'Search by hash...',
+      PREVIOUS_COOKIE: 'Previous Cookie?',
+      IP_ADDRESS: 'IP Address',
+      IP_ADDRESSES: 'IP Addresses',
+      IP_ADDRESS_COUNT: '{count} IPs',
+      PLAYER_IP_HISTORY: 'Player IP History',
+      LOGOUT_DATE: 'Logout Date',
+      VPN: 'VPN',
+      MOBILE: 'Mobile',
+      IP_SEARCH: 'Search for IPs',
+      IP_USER_COUNT: '{count} users',
+      IP_HISTORY: 'IP History',
+      NUM_TIMES: '{count} times',
       TABLE: {
         PLAYERS: 'Players',
         TYPE: 'Type',
@@ -424,6 +456,8 @@ const de: Translation = {
       WORD_FILTER: 'Wortfilter',
       MANAGE_USERS: 'Benutzer verwalten',
       ALT_DETECTION: 'Alt-Erkennung',
+      FINGERPRINTS: 'Fingerabdrücke',
+      IP_SEARCH: 'IP-Suche',
     },
   },
   NOTIFICATION: {
@@ -690,6 +724,8 @@ const de: Translation = {
       HISTORICAL_TEAMS: 'Historische Teams',
       SEARCH_BY: 'Suche nach Team- oder Rosternamen...',
       TEAM_COUNT: '{count} Teams',
+      ACTIVE_TEAMS_MIN_PLAYERS: 'Aktive Teams mit {count}+ Spielern',
+
     },
     PROFILE: {
       TEAM_PROFILE: 'Team Profil',

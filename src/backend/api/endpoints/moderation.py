@@ -36,10 +36,53 @@ async def view_player_alt_flags(request: Request, body: PlayerAltFlagRequestData
     flags = await handle(ViewPlayerAltFlagsCommand(body.player_id))
     return JSONResponse(flags)
 
+@require_permission(permissions.VIEW_USER_LOGINS)
+async def view_player_user_logins(request: Request) -> JSONResponse:
+    player_id = request.path_params['player_id']
+    # check if the user has permissions to view actual ip addresses
+    has_ip_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, permissions.VIEW_IP_ADDRESSES))
+    player_logins = await handle(ViewPlayerLoginHistoryCommand(player_id, has_ip_permission))
+    return JSONResponse(player_logins)
+
+@require_permission(permissions.VIEW_BASIC_IP_INFO)
+async def view_player_ip_history(request: Request) -> JSONResponse:
+    player_id = request.path_params['player_id']
+    # check if the user has permissions to view actual ip addresses
+    has_ip_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, permissions.VIEW_IP_ADDRESSES))
+    player_ips = await handle(ViewPlayerIPHistoryCommand(player_id, has_ip_permission))
+    return JSONResponse(player_ips)
+
+@require_permission(permissions.VIEW_BASIC_IP_INFO)
+async def view_ip_history(request: Request) -> JSONResponse:
+    ip_id = request.path_params['ip_id']
+    # check if the user has permissions to view actual ip addresses
+    has_ip_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, permissions.VIEW_IP_ADDRESSES))
+    ip_history = await handle(ViewHistoryForIPCommand(ip_id, has_ip_permission))
+    return JSONResponse(ip_history)
+
+@bind_request_query(IPFilter)
+@require_permission(permissions.VIEW_BASIC_IP_INFO)
+async def search_ip_addresses(request: Request, body: IPFilter) -> JSONResponse:
+    # check if the user has permissions to view actual ip addresses
+    has_ip_permission = await handle(CheckUserHasPermissionCommand(request.state.user.id, permissions.VIEW_IP_ADDRESSES))
+    results = await handle(SearchIPsCommand(body, has_ip_permission))
+    return JSONResponse(results)
+
+@require_permission(permissions.VIEW_FINGERPRINTS)
+async def view_fingerprint(request: Request) -> JSONResponse:
+    fingerprint_hash = request.path_params['fingerprint_hash']
+    fingerprint = await handle(GetFingerprintDataCommand(fingerprint_hash))
+    return JSONResponse(fingerprint)
+
 routes: list[Route] = [
     Route('/api/moderator/wordFilter/edit', edit_word_filter, methods=['POST']),
     Route('/api/moderator/wordFilter', view_word_filter),
     Route('/api/moderator/friendCodeEdits', list_friend_code_edits),
     Route('/api/moderator/altFlags', list_alt_flags),
     Route('/api/moderator/playerAltFlags', view_player_alt_flags),
+    Route('/api/moderator/player_logins/{player_id:int}', view_player_user_logins),
+    Route('/api/moderator/player_ips/{player_id:int}', view_player_ip_history),
+    Route('/api/moderator/ip_addresses/{ip_id:int}', view_ip_history),
+    Route('/api/moderator/ip_addresses', search_ip_addresses),
+    Route('/api/moderator/fingerprints/{fingerprint_hash:str}', view_fingerprint),
 ]

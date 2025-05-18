@@ -35,7 +35,7 @@
                 description: placement.placement_description, tie: false,
                 bounded: placement.placement_lower_bound ? true : false,
                 placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
-                player: placement.player, squad: placement.squad
+                squad: placement.squad
             })
         }
         tmp.sort((a, b) => sort_placement_list(a, b));
@@ -49,13 +49,6 @@
             return null;
         
         for (let placement of list) {
-            // ffa tournaments
-            if (placement.player?.player_id === player.id)
-                return placement.placement;
-
-            // squad tournaments
-            if (!placement.squad)
-                return null;
             for (let p of placement.squad.players) {
                 if (p.player_id === player.id)
                     return placement.placement;
@@ -102,7 +95,7 @@
         {/if}
         <div class="flex flex-col {playerPlacement ? 'mt-[14px]' : 'mt-[13px]'}">
             {#each placement_list as placement}
-                <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
+                <PlacementItem {placement} is_edit={false} is_homepage={true}/>
             {/each}
         </div>
     {/if}

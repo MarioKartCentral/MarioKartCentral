@@ -95,16 +95,22 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
     team_roles: list[NewMKCTeamRole]
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        async with db_wrapper.connect(db_name='main', attach=["auth"]) as db:
             email_confirmed = True
             force_password_reset = True
-            row = await db.execute_insert("""INSERT INTO users(email, password_hash, join_date, player_id, 
-                                          email_confirmed, force_password_reset) VALUES (?, ?, ?, ?, ?, ?)""", 
-                                          (self.email, self.password_hash, self.join_date, self.player_id, email_confirmed, force_password_reset))
-            # TODO: Run queries to identify why user creation failed
-            if row is None:
-                raise Problem("Failed to create user")
+            row = await db.execute_insert("INSERT INTO users(join_date, player_id) VALUES(:join_date, :player_id)", 
+                                          {"join_date": self.join_date, "player_id": self.player_id})
+            if row is None or not row[0]:
+                raise Problem("Failed to generate user ID from main table")
+            
             user_id = int(row[0])
+
+            insert_query = '''
+                INSERT INTO auth.user_auth(user_id, email, password_hash, email_confirmed, force_password_reset)
+                VALUES(:user_id, :email, :password_hash, :email_confirmed, :force_password_reset)
+            '''
+            await db.execute_insert(insert_query, {"user_id": user_id, "email": self.email, "password_hash": self.password_hash,
+                                                   "email_confirmed": email_confirmed, "force_password_reset": force_password_reset})
 
             is_banned = False
             expiration_date: int | None = None
@@ -120,11 +126,11 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
             await db.execute("INSERT INTO user_settings(user_id, about_me) VALUES(?, ?)", (user_id, self.about_me))
 
             # add user, series, team roles
-            insert_user_roles: list[tuple[int, int, int | None]] = [(user_id, roles.id_by_default_role[role.role_name], None) for role in self.user_roles]
+            insert_user_roles: set[tuple[int, int, int | None]] = set([(user_id, roles.id_by_default_role[role.role_name], None) for role in self.user_roles])
             if is_banned:
-                insert_user_roles.append((user_id, roles.id_by_default_role[roles.BANNED], expiration_date))
-            insert_series_roles = [(user_id, series_roles.id_by_default_role[role.role_name], role.series_id) for role in self.series_roles]
-            insert_team_roles = [(user_id, team_roles.id_by_default_role[role.role_name], role.team_id) for role in self.team_roles]
+                insert_user_roles.add((user_id, roles.id_by_default_role[roles.BANNED], expiration_date))
+            insert_series_roles = set([(user_id, series_roles.id_by_default_role[role.role_name], role.series_id) for role in self.series_roles])
+            insert_team_roles = set([(user_id, team_roles.id_by_default_role[role.role_name], role.team_id) for role in self.team_roles])
             await db.executemany("""INSERT INTO user_roles(user_id, role_id, expires_on) VALUES(?, ?, ?)""", insert_user_roles)
             await db.executemany("""INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""", insert_series_roles)
             await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES(?, ?, ?)""", insert_team_roles)
@@ -261,6 +267,8 @@ class ConvertMKCV1DataCommand(Command[None]):
             creation_date = self.get_mkc_timestamp(team.created_at)
             recruitment_status = team.recruitment_status == "recruiting"
             logo = None # change to team.picture_filename later
+            if team.picture_filename:
+                logo = f"/img/mkcv1_images/{team.picture_filename}"
             new_team = NewMKCTeam(team.id, team.team_name, team.team_tag, team.team_description, creation_date, new_language, team.color_number-1, # subtract 1 from anything that uses colors
                                   logo, new_approval, bool(team.is_historical or team.is_shadow), recruitment_status, {})
             team_dict[team.id] = new_team
@@ -342,12 +350,13 @@ class ConvertMKCV1DataCommand(Command[None]):
         return transfers
 
     def get_tournament_data(self, mkc_data: MKCData, tournament_mode_map: dict[MKCGameMode, tuple[Game, GameMode]], organizer_map: dict[str, str]):
-        
         series_dict: dict[int, NewMKCSeries] = {}
         for series in mkc_data.tournament_series:
             game, mode = tournament_mode_map[series.default_game_mode] if series.default_game_mode else ("mk8dx", "150cc")
             organizer = organizer_map[series.organizer]
             logo = None # change to series.logo_filename later
+            if series.logo_filename:
+                logo = f"/img/mkcv1_images/{series.logo_filename}"
             new_series = NewMKCSeries(series.id, series.series_name, series.url_slug, series.display_order, game, mode, bool(series.historical), bool(series.published),
                                       series.short_description, series.full_description if series.full_description else "", "", logo, organizer, series.location)
             series_dict[series.id] = new_series
@@ -374,6 +383,8 @@ class ConvertMKCV1DataCommand(Command[None]):
             date_end = self.get_mkc_timestamp(tournament.end_date)
             registration_deadline = self.get_mkc_timestamp(tournament.transfer_date) if tournament.transfer_date else None
             logo = None # change to tournament.logo_filename later
+            if tournament.logo_filename:
+                logo = f"/img/mkcv1_images/{tournament.logo_filename}"
             new_tournament = NewMKCTournament(tournament.id, tournament.title, game, mode,
                                               tournament.tournament_series_id, is_squad,
                                               bool(tournament.registrations_open), date_start, 
@@ -409,7 +420,6 @@ class ConvertMKCV1DataCommand(Command[None]):
         tournament_player_dict: dict[int, NewMKCTournamentPlayer] = {} # map event registration IDs to our new tournament player IDs for placements
         new_squad_dict: dict[int, NewMKCSquad] = {}
         roster_squad_links: list[NewMKCRosterSquadLink] = []
-        solo_placements: list[NewMKCSoloPlacement] = []
         squad_placements: list[NewMKCSquadPlacement] = []
         tournament_team_map: dict[tuple[Game, GameMode], TeamMode] = { # map game/mode from our new tournaments to old game/mode used for identifying team rosters
             ("mk8dx", "150cc"): "150cc",
@@ -463,6 +473,7 @@ class ConvertMKCV1DataCommand(Command[None]):
                 # link up our team roster with the created squad
                 roster_squad_link = NewMKCRosterSquadLink(roster.id, new_squad.id, tournament.id)
                 roster_squad_links.append(roster_squad_link)
+                
                 for member in roster.members:
                     # we want to only add roster members that were registered for the tournament the whole way through
                     if tournament.registration_deadline and member.join_date > tournament.registration_deadline:
@@ -482,6 +493,30 @@ class ConvertMKCV1DataCommand(Command[None]):
                                                         timestamp, False, None, False, False, None, is_representative, bool(reg.verified))
                     new_tournament_players.append(new_player)
                     tournament_player_id += 1
+                if reg.secondary_team_id:
+                    secondary_team = team_dict[reg.secondary_team_id]
+                    secondary_roster = secondary_team.rosters[roster_mode]
+                    secondary_roster_squad_link = NewMKCRosterSquadLink(secondary_roster.id, new_squad.id, tournament.id)
+                    roster_squad_links.append(secondary_roster_squad_link)
+                    for member in secondary_roster.members:
+                        # we want to only add roster members that were registered for the tournament the whole way through
+                        if tournament.registration_deadline and member.join_date > tournament.registration_deadline:
+                            continue
+                        if member.leave_date:
+                            if tournament.registration_deadline and member.leave_date < tournament.registration_deadline:
+                                continue
+                            if member.leave_date < tournament.date_start:
+                                continue
+                        # on the new site players can just unregister themselves from the tournament instead of opting out.
+                        # therefore just skip over any members that are opted out
+                        if (reg.id, member.player_id) in optouts:
+                            continue
+                        # set a player as representative for their squad if they are one for the event registration
+                        is_representative = (reg.id, member.player_id) in team_representatives
+                        new_player = NewMKCTournamentPlayer(tournament_player_id, member.player_id, tournament.id, new_squad.id, False,
+                                                            timestamp, False, None, False, False, None, is_representative, bool(reg.verified))
+                        new_tournament_players.append(new_player)
+                        tournament_player_id += 1
                 if reg.id in placement_dict:
                     placement = placement_dict[reg.id]
                     placement_value = None if placement.disqualified else (placement.placement_upper_bound if placement.placement_upper_bound else placement.placement)
@@ -490,7 +525,12 @@ class ConvertMKCV1DataCommand(Command[None]):
                     squad_placements.append(new_placement)
             # if the registration is for a single player (solo tournaments)
             else:
-                new_player = NewMKCTournamentPlayer(tournament_player_id, reg.player_id, reg.event_id, None, False, timestamp,
+                new_squad = NewMKCSquad(tournament_squad_id, None, None, 0, timestamp, tournament.id, reg.status == "registered",
+                                        bool(reg.verified))
+                new_squads.append(new_squad)
+                new_squad_dict[new_squad.id] = new_squad
+                tournament_squad_id += 1
+                new_player = NewMKCTournamentPlayer(tournament_player_id, reg.player_id, reg.event_id, new_squad.id, False, timestamp,
                                                     bool(reg.checked_in), reg.mii_name, bool(reg.player_can_host), False, None,
                                                     False, bool(reg.verified))
                 new_tournament_players.append(new_player)
@@ -500,8 +540,10 @@ class ConvertMKCV1DataCommand(Command[None]):
                     placement = placement_dict[reg.id]
                     placement_value = None if placement.disqualified else (placement.placement_upper_bound if placement.placement_upper_bound else placement.placement)
                     placement_lower_bound = None if placement.disqualified else (placement.placement if placement.placement_upper_bound else None)
-                    new_placement = NewMKCSoloPlacement(tournament.id, new_player.id, placement_value, placement.title, placement_lower_bound, bool(placement.disqualified))
-                    solo_placements.append(new_placement)
+                    new_placement = NewMKCSquadPlacement(tournament.id, new_squad.id, placement_value, placement.title, placement_lower_bound, bool(placement.disqualified))
+                    squad_placements.append(new_placement)
+                    # new_placement = NewMKCSoloPlacement(tournament.id, new_player.id, placement_value, placement.title, placement_lower_bound, bool(placement.disqualified))
+                    # solo_placements.append(new_placement)
 
         for player in mkc_data.squad_memberships:
             # there are 16 cases where this is true for some reason,
@@ -520,7 +562,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             new_tournament_players.append(new_player)
             tournament_player_id += 1
         
-        return new_squads, new_tournament_players, roster_squad_links, solo_placements, squad_placements
+        return new_squads, new_tournament_players, roster_squad_links, squad_placements
     
     def get_tournament_template_data(self, mkc_data: MKCData, tournament_mode_map: dict[MKCGameMode, tuple[Game, GameMode]], organizer_map: dict[str, str]):
         templates: list[NewMKCTournamentTemplate] = []
@@ -585,7 +627,7 @@ class ConvertMKCV1DataCommand(Command[None]):
         }
         series_dict, tournament_dict = self.get_tournament_data(mkc_data, tournament_mode_map, organizer_map)
         (new_squads, new_tournament_players, roster_squad_links, 
-         solo_placements, squad_placements) = self.get_tournament_registration_data(mkc_data, tournament_dict, team_dict, roster_dict, roster_id)
+         squad_placements) = self.get_tournament_registration_data(mkc_data, tournament_dict, team_dict, roster_dict, roster_id)
         templates = self.get_tournament_template_data(mkc_data, tournament_mode_map, organizer_map)
         
         async with db_wrapper.connect() as db:
@@ -657,24 +699,20 @@ class ConvertMKCV1DataCommand(Command[None]):
                 await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament.id}.json', s3_message)
 
             # tournament registrations
-            await db.executemany("""INSERT INTO tournament_squads(id, name, tag, color, timestamp, tournament_id, is_registered, is_approved)
+            await db.executemany("""INSERT INTO tournament_registrations(id, name, tag, color, timestamp, tournament_id, is_registered, is_approved)
                                     VALUES(?, ?, ?, ?, ?, ?, ?, ?)""",
                                     [(s.id, s.name, s.tag, s.color, s.timestamp, s.tournament_id, s.is_registered, s.is_approved) for s in new_squads])
-            await db.executemany("""INSERT INTO tournament_players(id, player_id, tournament_id, squad_id, is_squad_captain, timestamp,
+            await db.executemany("""INSERT INTO tournament_players(id, player_id, tournament_id, registration_id, is_squad_captain, timestamp,
                                     is_checked_in, mii_name, can_host, is_invite, selected_fc_id, is_representative, is_bagger_clause,
                                     is_approved) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                                    [(p.id, p.player_id, p.tournament_id, p.squad_id, p.is_squad_captain, p.timestamp,
+                                    [(p.id, p.player_id, p.tournament_id, p.registration_id, p.is_squad_captain, p.timestamp,
                                       p.is_checked_in, p.mii_name, p.can_host, p.is_invite, p.selected_fc_id, p.is_representative,
                                       False, p.is_approved) for p in new_tournament_players])
-            await db.executemany("""INSERT INTO team_squad_registrations(roster_id, squad_id, tournament_id)
-                                    VALUES(?, ?, ?)""", [(r.roster_id, r.squad_id, r.tournament_id) for r in roster_squad_links])
-            
-            # tournament placements
-            await db.executemany("""INSERT INTO tournament_solo_placements(tournament_id, player_id, placement, placement_description, placement_lower_bound, is_disqualified)
-                                    VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.player_id, p.placement, p.placement_description, p.placement_lower_bound,
-                                                                   p.is_disqualified) for p in solo_placements])
-            await db.executemany("""INSERT INTO tournament_squad_placements(tournament_id, squad_id, placement, placement_description, placement_lower_bound, is_disqualified)
-                                 VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.squad_id, p.placement, p.placement_description, p.placement_lower_bound,
+            await db.executemany("""INSERT INTO team_squad_registrations(roster_id, registration_id, tournament_id)
+                                    VALUES(?, ?, ?)""", [(r.roster_id, r.registration_id, r.tournament_id) for r in roster_squad_links])
+
+            await db.executemany("""INSERT INTO tournament_placements(tournament_id, registration_id, placement, placement_description, placement_lower_bound, is_disqualified)
+                                 VALUES(?, ?, ?, ?, ?, ?)""", [(p.tournament_id, p.registration_id, p.placement, p.placement_description, p.placement_lower_bound,
                                                                    p.is_disqualified) for p in squad_placements])
 
             # tournament templates

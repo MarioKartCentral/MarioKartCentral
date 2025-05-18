@@ -8,22 +8,24 @@
     export let player: PlayerInfo;
     export let is_privileged = false;
 
+    let working = false;
+
     let pending_change = player.name_changes.find((n) => n.approval_status === 'pending');
 
     async function requestNameChange(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             name: data.get('name')?.toString(),
         };
-        console.log(payload);
         const endpoint = '/api/registry/players/requestName';
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
-
         if (response.status < 300) {
             window.location.reload();
         } else {
@@ -32,6 +34,7 @@
     }
 
     async function forceEditPlayer(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             player_id: player.id,
@@ -40,13 +43,13 @@
             is_hidden: data.get('is_hidden') === 'true',
             is_shadow: player.is_shadow
         };
-        console.log(payload);
         const endpoint = '/api/registry/players/edit';
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
 
         if (response.status < 300) {
@@ -62,9 +65,9 @@
         <form method="POST" on:submit|preventDefault={requestNameChange}>
             <div class="option">
                 <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
-                <Input name="name" value={player.name} required maxlength={20} no_white_space/>
+                <Input name="name" value={player.name} required maxlength={24} no_white_space/>
             </div>
-            <Button type="submit">{$LL.PLAYERS.PROFILE.REQUEST_NAME_CHANGE()}</Button>
+            <Button {working} type="submit">{$LL.PLAYERS.PROFILE.REQUEST_NAME_CHANGE()}</Button>
         </form>
     {:else}
         <div class="bold">
@@ -78,7 +81,7 @@
     <form method="POST" on:submit|preventDefault={forceEditPlayer}>
         <div class="option">
             <label for="name">{$LL.PLAYERS.PROFILE.DISPLAY_NAME()}</label>
-            <Input name="name" value={player.name} required maxlength={20} no_white_space/>
+            <Input name="name" value={player.name} required maxlength={24} no_white_space/>
         </div>
         <div class="option">
             <label for="country">{$LL.COMMON.COUNTRY()}</label>
@@ -91,7 +94,7 @@
                 <option value={true}>{$LL.COMMON.HIDE()}</option>
             </select>
         </div>
-        <Button type="submit">{$LL.COMMON.EDIT()}</Button>
+        <Button {working} type="submit">{$LL.COMMON.EDIT()}</Button>
     </form>
 {/if}
 

@@ -9,8 +9,8 @@ class RequestEditPlayerNameCommand(Command[None]):
     name: str
 
     async def handle(self, db_wrapper, s3_wrapper):
-        if len(self.name) > 20:
-            raise Problem("Player name must be 20 characters or less", status=400)
+        if len(self.name) > 24:
+            raise Problem("Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()

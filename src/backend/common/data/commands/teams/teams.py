@@ -46,12 +46,19 @@ class CreateTeamCommand(Command[int | None]):
                                       FROM team_rosters r
                                       JOIN teams t ON r.team_id = t.id
                                       WHERE (r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
-                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?)) 
+                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?) 
                                       AND game = ? AND mode = ? AND is_active = 1""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
                         raise Problem('An existing team for this game/mode already has this name or tag', status=400)
+            if not self.is_privileged and self.user_id is not None:
+                async with db.execute("""SELECT t.id FROM teams t
+                                        JOIN user_team_roles ut ON t.id = ut.team_id
+                                        WHERE t.approval_status = 'pending' AND ut.user_id = ?""", (self.user_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        raise Problem("You already have a pending team in the approval queue; you must wait for a staff member to approve/deny this team before creating another team", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, None, self.approval_status,
@@ -482,24 +489,17 @@ class ListTeamsCommand(Command[TeamList]):
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
             append_equal_filter(filter.is_active, "r.is_active")
+            append_equal_filter(filter.is_historical, "t.is_historical")
 
-            # query that determines if a team has at least 1 member in an active roster
-            member_query = """SELECT t.id
-                                FROM teams t
-                                JOIN team_rosters r ON t.id = r.team_id
-                                JOIN team_members m ON m.roster_id = r.id
-                                WHERE m.leave_date IS NULL AND r.is_active = 1
-                            """
-            # we should include teams which have 0 members but aren't listed as historical in this filter
-            if filter.is_historical is True:
-                historical_clause = f"(t.is_historical = ? OR t.id NOT IN ({member_query}))"
-                where_clauses.append(historical_clause)
-                variable_parameters.append(filter.is_historical)
-            # require that teams have at least 1 member
-            elif filter.is_historical is False:
-                historical_clause = f"(t.is_historical = ? AND t.id IN ({member_query}))"
-                where_clauses.append(historical_clause)
-                variable_parameters.append(filter.is_historical)
+            if filter.min_player_count:
+                player_count_query = """SELECT r.team_id
+                                    FROM team_members m
+                                    JOIN team_rosters r ON m.roster_id = r.id
+                                    WHERE m.leave_date IS NULL AND r.is_active = 1
+                                    GROUP BY r.team_id
+                                    HAVING COUNT(r.team_id) >= ?"""
+                where_clauses.append(f"t.id IN ({player_count_query})")
+                variable_parameters.append(filter.min_player_count)
 
             if self.approval_status:
                 append_equal_filter(self.approval_status, "t.approval_status")

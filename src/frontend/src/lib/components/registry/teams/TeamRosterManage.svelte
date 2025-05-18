@@ -40,6 +40,8 @@
       user_info = value;
     });
 
+  let working = false;
+
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
@@ -59,6 +61,7 @@
   }
 
   async function invitePlayer(player_id: number) {
+    working = true;
     const payload = {
       team_id: roster.team_id,
       roster_id: roster.id,
@@ -75,17 +78,18 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
+      working = false;
       alert(`${$LL.TEAMS.EDIT.PLAYER_INVITE_FAILED()}: ${result['title']}`);
     }
   }
 
   async function retractInvite(player_id: number) {
+    working = true;
     const payload = {
       team_id: roster.team_id,
       roster_id: roster.id,
       player_id: player_id,
     };
-    console.log(payload);
     let endpoint: string;
     if(is_mod) {
       endpoint = '/api/registry/teams/forceDeleteInvite';
@@ -98,11 +102,12 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    });
+    });  
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
     } else {
+      working = false;
       alert(`${$LL.TEAMS.EDIT.DELETE_INVITE_FAILED()}: ${result['title']}`);
     }
   }
@@ -113,13 +118,12 @@
   }
 
   async function kickPlayer(player: RosterPlayer) {
-    console.log(player);
+    working = true;
     const payload = {
       player_id: player.player_id,
       roster_id: roster.id,
       team_id: roster.team_id,
     };
-    console.log(payload);
     let endpoint: string;
     if(is_mod) {
       endpoint = '/api/registry/teams/forceKickPlayer';
@@ -137,11 +141,13 @@
     if (response.status < 300) {
       window.location.reload();
     } else {
+      working = false;
       alert(`${$LL.TEAMS.EDIT.PLAYER_KICK_FAILED()}: ${result['title']}`);
     }
   }
 
   async function editRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     edit_dialog.close();
     const data = new FormData(event.currentTarget);
     function getOptionalValue(name: string) {
@@ -158,16 +164,19 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
       alert($LL.TEAMS.EDIT.ROSTER_EDIT_SUCCESS());
     } else {
+      working = false;
       alert(`${$LL.TEAMS.EDIT.ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function forceEditRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     edit_dialog.close();
     const data = new FormData(event.currentTarget);
     function getOptionalValue(name: string) {
@@ -188,18 +197,22 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
       alert($LL.TEAMS.EDIT.ROSTER_EDIT_SUCCESS());
     } else {
+      working = false;
       alert(`${$LL.TEAMS.EDIT.ROSTER_EDIT_FAILED()}: ${result['title']}`);
     }
   }
 
   async function grantTeamRole(player: RosterPlayer, role_name: string) {
     let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_ADD_CONFIRM({player_name: player.name, team_role: role_name}));
-    if(!conf) return;
+    if(!conf) {
+      return;
+    }
     const payload = {
       player_id: player.player_id,
       role_name: role_name
@@ -220,7 +233,9 @@
 
   async function removeTeamRole(player: RosterPlayer, role_name: string) {
     let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_REMOVE_CONFIRM({player_name: player.name, team_role: role_name}));
-    if(!conf) return;
+    if(!conf) {
+      return;
+    }
     const payload = {
       player_id: player.player_id,
       role_name: role_name
@@ -352,7 +367,7 @@
                 <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
                 <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
                 <td>
-                  <Button on:click={() => retractInvite(player.player_id)}>{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button>
+                  <Button {working} on:click={() => retractInvite(player.player_id)}>{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button>
                 </td>
               </tr>
             {/each}
@@ -366,7 +381,7 @@
         <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
         {#if invite_player}
           {#if roster.game === 'mkw'}
-            <div>
+            <div class="mb-3">
               {$LL.COMMON.BAGGER()}?
               <select bind:value={invite_player_bagger}>
                 <option value={false}>
@@ -378,7 +393,7 @@
               </select>
             </div>
           {/if}
-          <Button on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</Button>
+          <Button {working} on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</Button>
         {/if}
       </div>
     {/if}
@@ -393,7 +408,7 @@
 <Dialog bind:this={kick_dialog} header={$LL.TEAMS.EDIT.KICK_PLAYER()}>
   {$LL.TEAMS.EDIT.KICK_CONFIRM({player_name: curr_player?.name})}
   <div>
-    <Button on:click={() => kickPlayer(curr_player)}>{$LL.TEAMS.EDIT.KICK()}</Button>
+    <Button {working} on:click={() => kickPlayer(curr_player)}>{$LL.TEAMS.EDIT.KICK()}</Button>
     <Button on:click={kick_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
   </div>
 </Dialog>
@@ -408,7 +423,7 @@
       <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
     </select>
     <br />
-    <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+    <Button {working} type="submit">{$LL.COMMON.SUBMIT()}</Button>
   </form>
 </Dialog>
 
@@ -438,7 +453,7 @@
       <option value="false">{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
     </select>
     <br />
-    <Button type="submit">{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
+    <Button {working} type="submit">{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
   </form>
 </Dialog>
 

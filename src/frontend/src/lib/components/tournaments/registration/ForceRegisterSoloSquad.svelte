@@ -15,6 +15,7 @@
 
     export let tournament: Tournament;
     let player: PlayerInfo | null;
+    let working = false;
 
     let shadow_dialog: CreateShadowPlayerDialog;
 
@@ -25,6 +26,7 @@
 
     async function registerSolo(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         if(!player) return;
+        working = true;
         const formData = new FormData(event.currentTarget);
         let selected_fc_id = formData.get('selected_fc_id');
         let mii_name = formData.get('mii_name');
@@ -40,12 +42,12 @@
             is_approved: is_approved === 'true'    
         };
         const endpoint = `/api/tournaments/${tournament.id}/forceRegister`;
-        console.log(payload);
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -56,6 +58,7 @@
     }
     async function registerSquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
         if(!player) return;
+        working = true;
         const formData = new FormData(event.currentTarget);
         let squad_color = formData.get('squad_color');
         let squad_name = formData.get('squad_name');
@@ -79,12 +82,12 @@
             is_approved: is_approved === 'true'
         };
         const endpoint = `/api/tournaments/${tournament.id}/forceCreateSquad`;
-        console.log(payload);
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -112,7 +115,7 @@
             <SquadTournamentFields {tournament}/>
             <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>
             <TournamentStaffFields {tournament}/>
-            <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
+            <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
         </form>
     {/if}
 </div>

@@ -96,4 +96,19 @@
       {$LL.NAVBAR.MOD_PANEL.ALT_DETECTION()}
     </DropdownItem>
   {/if}
+  {#if check_permission(user_info, permissions.view_fingerprints)}
+    <DropdownItem href="/{$page.params.lang}/moderator/fingerprints">
+        {$LL.NAVBAR.MOD_PANEL.FINGERPRINTS()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.view_basic_ip_info)}
+    <DropdownItem href="/{$page.params.lang}/moderator/ip_search">
+        {$LL.NAVBAR.MOD_PANEL.IP_SEARCH()}
+    </DropdownItem>
+  {/if}
+  {#if check_permission(user_info, permissions.create_db_backups)}
+    <DropdownItem href="/{$page.params.lang}/admin/backup_db">
+        Backup Database
+    </DropdownItem>
+  {/if}
 </Dropdown>

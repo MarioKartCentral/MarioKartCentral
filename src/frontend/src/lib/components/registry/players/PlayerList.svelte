@@ -29,7 +29,7 @@
 
   async function fetchData() {
     players = [];
-    let url = '/api/registry/players?detailed=true&is_banned=false&is_hidden=false';
+    let url = '/api/registry/players?detailed=true&is_banned=false&is_hidden=false&matching_fcs_only=true';
     if (filters.fc_type != null && filters.fc_type != '') {
       url += '&fc_type=' + filters.fc_type;
     }

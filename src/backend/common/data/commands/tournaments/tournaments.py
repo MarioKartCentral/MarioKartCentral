@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import timezone
 
 import msgspec
 
@@ -365,3 +366,255 @@ class CheckTournamentVisibilityCommand(Command[bool]):
                     raise Problem("Tournament not found", status=404)
                 is_viewable = row[0]
                 return bool(is_viewable)
+
+@dataclass
+class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]):
+    series_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        cache_key = f'series_tournaments_{self.series_id}.json'
+        s3_object = await s3_wrapper.get_object_metadata_and_body(s3.SERIES_BUCKET, cache_key)
+
+        if s3_object:
+            last_modified = s3_object['LastModified']
+            s3_body = s3_object['Body']
+
+            now = datetime.now(timezone.utc)
+            if (now - datetime.fromisoformat(str(last_modified)).replace(tzinfo=timezone.utc)) < timedelta(hours=1):
+                return msgspec.json.decode(s3_body if isinstance(s3_body, bytes) else str(s3_body).encode('utf-8'), type=list[TournamentWithPlacements])
+
+        async with db_wrapper.connect(readonly=True) as db:
+            series_id = self.series_id
+        
+        async with db_wrapper.connect(readonly=True) as db:
+            series_id = self.series_id
+            tournaments_query = f"""
+                SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public
+                FROM tournaments WHERE series_id = ? ORDER BY date_start DESC
+            """
+            tournament_players_query = f"""
+                SELECT 
+                    tp.id,
+                    tp.tournament_id,
+                    tp.player_id,
+                    p.name,
+                    p.country_code,
+                    pla.placement,
+                    pla.placement_description,
+                    pla.placement_lower_bound,
+                    pla.is_disqualified,
+                    tr.color
+                    FROM tournament_players tp
+                    LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
+                    JOIN tournament_placements pla ON tr.id = pla.registration_id
+                    LEFT JOIN players p ON tp.player_id = p.id
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)
+             """
+            tournament_squads_query = f"""
+                 SELECT
+                    tr.id,
+                    tr.tournament_id,
+                    tr.name,
+                    tr.tag,
+                    tr.color,
+                    pla.placement, 
+                    pla.placement_description, 
+                    pla.placement_lower_bound, 
+                    pla.is_disqualified,
+                    tr.timestamp
+                    FROM tournament_registrations tr
+                    JOIN tournament_placements pla ON pla.registration_id = tr.id
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
+            """
+            squad_rosters_query = """
+                SELECT tsr.registration_id,
+                    r.id,
+                    r.name,
+                    r.tag,
+                    r.team_id,
+                    t.name,
+                    t.tag,
+                    t.color
+                    FROM team_squad_registrations tsr
+                    JOIN team_rosters r ON tsr.roster_id = r.id
+                    JOIN teams t ON r.team_id = t.id
+                    JOIN tournament_registrations tr ON tsr.registration_id = tr.id
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                """
+            squad_players_query = f"""
+                SELECT 
+                    tp.id,
+                    tp.tournament_id,
+                    tp.player_id,
+                    tp.registration_id,
+                    p.name,
+                    p.country_code
+                    FROM tournament_players tp
+                    LEFT JOIN players p ON tp.player_id = p.id
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                    
+            """
+            tournaments: list[TournamentWithPlacements] = []
+            placements: dict[int, list[TournamentPlacementDetailed]] = {}
+            squad_players_map: dict[int, list[SquadPlayerDetails]] = {}
+
+            # First get all tournaments
+            async with db.execute(tournaments_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public = row
+                    tournament = TournamentWithPlacements(
+                        id, name, game, mode, date_start, date_end, series_id,
+                        None, None, None, bool(is_squad), bool(registrations_open),
+                        bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable),
+                        bool(is_public), "", []
+                    )
+                    tournaments.append(tournament)
+                    placements[tournament.id] = tournament.placements
+
+            # First collect all squad players and organize them by squad_id
+            async with db.execute(squad_players_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    id, tournament_id, player_id, squad_id, name, country_code = row
+                    player = SquadPlayerDetails(
+                        id=id,
+                        player_id=player_id,
+                        registration_id=0,
+                        timestamp=0,
+                        is_checked_in=True,
+                        is_approved=True,
+                        mii_name="mii",
+                        can_host=False,
+                        name=name,
+                        country_code=country_code,
+                        discord=None,
+                        selected_fc_id=None,
+                        friend_codes=[],
+                        is_squad_captain=False,
+                        is_representative=False,
+                        is_invite=False,
+                        is_bagger_clause=False
+                    )
+                    if squad_id not in squad_players_map:
+                        squad_players_map[squad_id] = []
+                    squad_players_map[squad_id].append(player)
+
+            # Process solo players
+            async with db.execute(tournament_players_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (
+                        id,
+                        tournament_id,
+                        player_id,
+                        name,
+                        country_code,
+                        placement,
+                        placement_description,
+                        placement_lower_bound,
+                        is_disqualified,
+                        color
+                    ) = row
+                    color = color if color is not None else 1
+                    placement = TournamentPlacementDetailed(
+                        registration_id=id,
+                        placement=placement,
+                        placement_description=placement_description,
+                        placement_lower_bound=placement_lower_bound,
+                        is_disqualified=bool(is_disqualified),
+                        squad=TournamentSquadDetails(
+                            id=id,
+                            name="",
+                            tag="",
+                            color=color,
+                            timestamp=0,
+                            is_registered=True,
+                            is_approved=True,
+                            players=[SquadPlayerDetails(
+                                id=id,
+                                player_id=player_id,
+                                registration_id=0,
+                                timestamp=0,
+                                is_checked_in=True,
+                                is_approved=True,
+                                mii_name="mii",
+                                can_host=False,
+                                name=name,
+                                country_code=country_code,
+                                discord=None,
+                                selected_fc_id=None,
+                                friend_codes=[],
+                                is_squad_captain=True,
+                                is_representative=True,
+                                is_invite=True,
+                                is_bagger_clause=False
+                            )],
+                            rosters=[]
+                        )
+                    )
+                    placements[tournament_id].append(placement)
+
+            # Process squads and add their players
+            squad_dict: dict[int, TournamentSquadDetails] = {}
+            async with db.execute(tournament_squads_query, (series_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (
+                        id,
+                        tournament_id,
+                        name,
+                        tag,
+                        color,
+                        placement,
+                        placement_description,
+                        placement_lower_bound,
+                        is_disqualified,
+                        timestamp
+                    ) = row
+
+                    # Get players for this squad
+                    squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [
+                    ])
+
+                    squad = TournamentSquadDetails(
+                            id=id,
+                            name=name,
+                            tag=tag,
+                            color=color,
+                            timestamp=timestamp,
+                            is_registered=True,
+                            is_approved=True,
+                            players=squad_players,
+                            rosters=[]
+                        )
+                    squad_dict[id] = squad
+
+                    placement = TournamentPlacementDetailed(
+                        registration_id=id,
+                        placement=placement,
+                        placement_description=placement_description,
+                        placement_lower_bound=placement_lower_bound,
+                        is_disqualified=bool(is_disqualified),
+                        squad=squad
+                    )
+                    placements[tournament_id].append(placement)
+
+                async with db.execute(squad_rosters_query, (series_id,)) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        squad_id, roster_id, roster_name, roster_tag, team_id, team_name, team_tag, team_color = row
+                        squad = squad_dict.get(squad_id, None)
+                        if not squad:
+                            continue
+                        roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag)
+                        squad.rosters.append(roster)
+                
+                # Store the result in S3 cache
+                await s3_wrapper.put_object(
+                    s3.SERIES_BUCKET,
+                    f'series_tournaments_{self.series_id}.json',
+                    msgspec.json.encode(tournaments)
+                )
+
+            return tournaments

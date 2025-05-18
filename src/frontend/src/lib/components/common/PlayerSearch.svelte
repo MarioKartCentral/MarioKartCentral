@@ -9,7 +9,7 @@
 
   export let player: PlayerInfo | null = null;
   export let fc_type: string | null = null;
-  export let squad_id: number | null = null;
+  export let registration_id: number | null = null;
   export let is_shadow: boolean | null = false;
   export let include_shadow_players = false;
   export let has_connected_user: boolean | null = null;
@@ -43,8 +43,8 @@
     if(fc_type) {
       query_parameters.push(`fc_type=${fc_type}`);
     }
-    if(squad_id) {
-      query_parameters.push(`squad_id=${squad_id}`);
+    if(registration_id) {
+      query_parameters.push(`registration_id=${registration_id}`);
     }
     if(is_shadow !== null) {
       query_parameters.push(`is_shadow=${is_shadow}`);

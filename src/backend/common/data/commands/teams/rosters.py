@@ -175,16 +175,16 @@ class LeaveRosterCommand(Command[None]):
             await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
                              VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved", False))
             # get all team tournament rosters the player is in where the tournament hasn't ended yet
-            async with db.execute("""SELECT p.squad_id FROM tournament_players p
-                                JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+            async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                 JOIN tournaments t ON p.tournament_id = t.id
                                 WHERE p.player_id = ? AND s.roster_id = ?
                                 AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
                                 (self.player_id, self.roster_id, leave_date, True, True)) as cursor:
                 rows = await cursor.fetchall()
-                squad_ids: list[int] = [row[0] for row in rows]
+                registration_ids: list[int] = [row[0] for row in rows]
             # finally remove the player from all the tournaments they shouldn't be in
-            await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (self.player_id,))
+            await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
             await db.commit()
 
 @save_to_command_log
@@ -426,7 +426,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         AND tr.id NOT IN (
                             SELECT roster_id
                             FROM team_squad_registrations tsr
-                            JOIN tournament_squads s ON tsr.squad_id = s.id
+                            JOIN tournament_registrations s ON tsr.registration_id = s.id
                             WHERE tsr.tournament_id = ?
                             AND s.is_registered = ?
                         )"""
@@ -483,7 +483,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                 m.roster_id IN (
                                   SELECT tr.id
                                   {rosters_query}
-                                )""", variable_parameters) as cursor:
+                                ) ORDER BY p.name COLLATE NOCASE""", variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (player_id, name, country_code, is_banned, 
@@ -505,18 +505,17 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                                   FROM friend_codes f
                                   JOIN players p ON f.player_id = p.id
                                   JOIN team_members m ON p.id = m.player_id
-                                  WHERE f.type = ? AND m.roster_id IN (
+                                  WHERE f.type = ? AND m.leave_date IS NULL AND m.roster_id IN (
                                     SELECT tr.id
                                     {rosters_query}
                                   )""", (fc_type, *variable_parameters)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     fc_id, player_id, type, fc, is_verified, is_primary, is_active, creation_date = row
-                    player_fcs = fc_dict.get(player_id, None)
-                    if player_fcs:
+                    player_fcs = fc_dict.get(int(player_id), None)
+                    if player_fcs is not None:
                         player_fcs.append(FriendCode(fc_id, fc, type, player_id, bool(is_verified), bool(is_primary), creation_date, is_active=bool(is_active)))
             return rosters
-        
 
 @save_to_command_log
 @dataclass

@@ -136,8 +136,8 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
                 offset = (filter.page - 1) * limit
 
             _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'p.id = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.name, 'p.name LIKE ?', f"%{filter.name}%")
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'bbp.name LIKE ?', f"%{filter.reason}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.name, 'p.name LIKE ?', f"{filter.name}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'bbp.name LIKE ?', f"{filter.reason}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'b.expiration_date <= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'b.expiration_date >= ?')
@@ -188,8 +188,8 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
                 offset = (filter.page - 1) * limit
 
             _append_equal_filter(where_clauses, variable_parameters, filter.player_id, 'p.id = ?')
-            _append_equal_filter(where_clauses, variable_parameters, filter.name, 'p.name LIKE ?', f"%{filter.name}%")
-            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'bbp.name LIKE ?', f"%{filter.banned_by}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.name, 'p.name LIKE ?', f"{filter.name}%")
+            _append_equal_filter(where_clauses, variable_parameters, filter.banned_by, 'bbp.name LIKE ?', f"{filter.banned_by}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.is_indefinite, 'b.is_indefinite = ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.expires_before, 'b.expiration_date <= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.expires_after, 'b.expiration_date >= ?')
@@ -200,9 +200,9 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             if filter.comment and filter.comment.strip():
                 _append_equal_filter(where_clauses, variable_parameters, filter.comment, "b.comment LIKE ?", f"%{filter.comment}%")
             if filter.unbanned_by and filter.unbanned_by.lower() in 'system':
-                _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, '(ubp.name LIKE ? OR ubu.id IS NULL)', f"%{filter.unbanned_by}%")
+                _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, '(ubp.name LIKE ? OR ubu.id IS NULL)', f"{filter.unbanned_by}%")
             else:
-                _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'ubp.name LIKE ?', f"%{filter.unbanned_by}%")
+                _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_by, 'ubp.name LIKE ?', f"{filter.unbanned_by}%")
             _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_before, 'b.unban_date <= ?')
             _append_equal_filter(where_clauses, variable_parameters, filter.unbanned_after, 'b.unban_date >= ?')
 

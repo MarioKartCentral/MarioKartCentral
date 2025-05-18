@@ -1,5 +1,6 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
+  import { page } from '$app/stores';
   import RecentTransactions from '$lib/components/homepage/RecentTransactions.svelte';
   import LatestTournaments from '$lib/components/homepage/LatestTournaments.svelte';
   import LatestResults from '$lib/components/homepage/LatestResults.svelte';
@@ -14,7 +15,13 @@
 
 <div class="welcome">
   <h1 class="text-2xl font-bold mb-[20px]">{$LL.HOMEPAGE.WELCOME()}</h1>
-  <p class="pl-[50px] pr-[50px] mb-[20px]">{$LL.HOMEPAGE.SUMMARY()}</p>
+  <p class="max-w-screen-md text-left px-[20px] md:px-0 mb-[20px]">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html $LL.HOMEPAGE.SUMMARY()}
+    <a href="/{$page.params.lang}/about" class="text-green-500 hover:underline font-semibold ml-1">
+      {$LL.HOMEPAGE.LEARN_MORE_ABOUT_US()}
+    </a>
+  </p>
 </div>
 
 
@@ -32,7 +39,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    text-align: center;
   }
+
+  .welcome p {
+      margin-left: auto;
+      margin-right: auto;
+  }
+
   .grid-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

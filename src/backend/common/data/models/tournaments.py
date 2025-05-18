@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from common.data.models.common import Game, GameMode
+from common.data.models.tournament_placements import TournamentPlacementDetailed
 
 @dataclass
 class TournamentDBFields():
@@ -152,3 +153,7 @@ class TournamentInvite():
     tournament_name: str
     tournament_game: Game
     tournament_mode: GameMode
+
+@dataclass
+class TournamentWithPlacements(TournamentDataBasic):
+    placements: list[TournamentPlacementDetailed]

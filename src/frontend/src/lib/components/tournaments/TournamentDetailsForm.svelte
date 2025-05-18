@@ -72,6 +72,9 @@
     if (data.game !== 'mkw' || !data.is_squad) {
       data.bagger_clause_enabled = false;
     }
+    if(!data.is_viewable) {
+      data.is_public = false;
+    }
     update_function();
   }
 </script>

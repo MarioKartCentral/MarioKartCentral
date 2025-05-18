@@ -8,3 +8,4 @@ from .teams import *
 from .tournaments import *
 from .users import *
 from .emails import *
+from .user_activity import *

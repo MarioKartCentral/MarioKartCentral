@@ -1,4 +1,4 @@
-import type { TournamentPlayer, TournamentPlayerDetailsShort } from './tournament-player';
+import type { TournamentPlayerDetailsShort } from './tournament-player';
 import type { TournamentSquad } from './tournament-squad';
 
 export type TournamentPlacementSimple = {
@@ -18,13 +18,11 @@ export type TournamentPlacementSimplePlayerIDs = {
 };
 
 export type TournamentPlacement = TournamentPlacementSimple & {
-  player: TournamentPlayer | null;
-  squad: TournamentSquad | null;
+  squad: TournamentSquad;
 };
 
 export type TournamentPlacementList = {
   tournament_id: number;
-  is_squad: boolean;
   placements: TournamentPlacement[];
   unplaced: TournamentPlacement[];
 };
@@ -34,7 +32,7 @@ export type PlayerTournamentPlacement = {
   tournament_name: string;
   game: string;
   mode: string;
-  squad_id: number | null;
+  registration_id: number | null;
   squad_name: string | null;
   team_id: number | null;
   date_start: number;

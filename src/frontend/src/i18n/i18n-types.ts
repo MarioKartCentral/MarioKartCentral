@@ -326,6 +326,45 @@ type RootTranslation = {
 		 * N​e​w​e​s​t
 		 */
 		SORT_BY_NEWEST: string
+		/**
+		 * W​o​r​k​i​n​g​.​.​.
+		 */
+		WORKING: string
+		/**
+		 * V​i​e​w
+		 */
+		VIEW: string
+	}
+	API_TOKENS: {
+		/**
+		 * A​P​I​ ​T​o​k​e​n​s
+		 */
+		API_TOKENS: string
+		/**
+		 * T​o​k​e​n​ ​N​a​m​e​:
+		 */
+		TOKEN_NAME: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​e​ ​t​o​k​e​n​ ​w​i​t​h​ ​n​a​m​e​ ​{​n​a​m​e​}​?​ ​A​n​y​ ​a​p​p​l​i​c​a​t​i​o​n​s​ ​t​h​a​t​ ​u​s​e​ ​t​h​i​s​ ​t​o​k​e​n​ ​w​i​l​l​ ​b​e​c​o​m​e​ ​u​n​a​u​t​h​o​r​i​z​e​d​.
+		 * @param {string} name
+		 */
+		DELETE_TOKEN_CONFIRM: RequiredParams<'name'>
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​d​e​l​e​t​e​ ​A​P​I​ ​t​o​k​e​n
+		 */
+		DELETE_TOKEN_FAILED: string
+		/**
+		 * C​r​e​a​t​e​ ​A​P​I​ ​T​o​k​e​n
+		 */
+		CREATE_TOKEN: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​r​e​a​t​e​ ​A​P​I​ ​t​o​k​e​n
+		 */
+		CREATE_TOKEN_FAILED: string
+		/**
+		 * N​a​m​e​ ​y​o​u​r​ ​n​e​w​ ​A​P​I​ ​t​o​k​e​n​.​.​.
+		 */
+		TOKEN_NAME_HERE: string
 	}
 	DISCORD: {
 		/**
@@ -438,6 +477,10 @@ type RootTranslation = {
 		 * S​e​l​e​c​t​ ​a​ ​F​C​ ​t​y​p​e​.​.​.
 		 */
 		SELECT_TYPE: string
+		/**
+		 * T​o​ ​e​d​i​t​ ​t​h​e​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​i​t​s​e​l​f​ ​o​r​ ​t​o​ ​a​d​d​ ​a​ ​n​e​w​ ​f​r​i​e​n​d​ ​c​o​d​e​ ​p​a​s​t​ ​t​h​e​ ​l​i​m​i​t​,​ ​m​a​k​e​ ​a​ ​t​i​c​k​e​t​ ​i​n​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​D​i​s​c​o​r​d​ ​s​e​r​v​e​r​.
+		 */
+		EDIT_FC_TOOLTIP: string
 		TYPES: {
 			/**
 			 * A​l​l​ ​F​C​ ​T​y​p​e​s
@@ -561,6 +604,10 @@ type RootTranslation = {
 		 * V​i​e​w​ ​a​l​l​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: string
+		/**
+		 * L​e​a​r​n​ ​m​o​r​e​ ​a​b​o​u​t​ ​u​s
+		 */
+		LEARN_MORE_ABOUT_US: string
 	}
 	IMAGES: {
 		/**
@@ -849,6 +896,14 @@ type RootTranslation = {
 		 * F​a​i​l​e​d​ ​t​o​ ​c​h​a​n​g​e​ ​e​m​a​i​l
 		 */
 		CHANGE_EMAIL_FAILED: string
+		/**
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​T​e​r​m​s​ ​o​f​ ​S​e​r​v​i​c​e​.
+		 */
+		AGREE_TO_TERMS: string
+		/**
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​.
+		 */
+		AGREE_TO_PRIVACY_POLICY: string
 	}
 	LOUNGE: {
 		/**
@@ -1303,6 +1358,78 @@ type RootTranslation = {
 			 * P​l​a​y​e​r​ ​A​l​t​ ​F​l​a​g​s
 			 */
 			PLAYER_ALT_FLAGS: string
+			/**
+			 * L​o​g​i​n​ ​H​i​s​t​o​r​y
+			 */
+			LOGIN_HISTORY: string
+			/**
+			 * F​i​n​g​e​r​p​r​i​n​t
+			 */
+			FINGERPRINT: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​f​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			SEARCH_FOR_FINGERPRINTS: string
+			/**
+			 * F​i​n​g​e​r​p​r​i​n​t​ ​D​a​t​a​ ​(​h​a​s​h​:​ ​{​h​a​s​h​}​)
+			 * @param {string} hash
+			 */
+			FINGERPRINT_HASH: RequiredParams<'hash'>
+			/**
+			 * S​e​a​r​c​h​ ​b​y​ ​h​a​s​h​.​.​.
+			 */
+			SEARCH_BY_HASH: string
+			/**
+			 * P​r​e​v​i​o​u​s​ ​C​o​o​k​i​e​?
+			 */
+			PREVIOUS_COOKIE: string
+			/**
+			 * I​P​ ​A​d​d​r​e​s​s
+			 */
+			IP_ADDRESS: string
+			/**
+			 * I​P​ ​A​d​d​r​e​s​s​e​s
+			 */
+			IP_ADDRESSES: string
+			/**
+			 * {​c​o​u​n​t​}​ ​I​P​s
+			 * @param {number} count
+			 */
+			IP_ADDRESS_COUNT: RequiredParams<'count'>
+			/**
+			 * P​l​a​y​e​r​ ​I​P​ ​H​i​s​t​o​r​y
+			 */
+			PLAYER_IP_HISTORY: string
+			/**
+			 * L​o​g​o​u​t​ ​D​a​t​e
+			 */
+			LOGOUT_DATE: string
+			/**
+			 * V​P​N
+			 */
+			VPN: string
+			/**
+			 * M​o​b​i​l​e
+			 */
+			MOBILE: string
+			/**
+			 * S​e​a​r​c​h​ ​f​o​r​ ​I​P​s
+			 */
+			IP_SEARCH: string
+			/**
+			 * {​c​o​u​n​t​}​ ​u​s​e​r​s
+			 * @param {number} count
+			 */
+			IP_USER_COUNT: RequiredParams<'count'>
+			/**
+			 * I​P​ ​H​i​s​t​o​r​y
+			 */
+			IP_HISTORY: string
+			/**
+			 * {​c​o​u​n​t​}​ ​t​i​m​e​s
+			 * @param {number} count
+			 */
+			NUM_TIMES: RequiredParams<'count'>
 			TABLE: {
 				/**
 				 * P​l​a​y​e​r​s
@@ -1547,6 +1674,14 @@ type RootTranslation = {
 			 * A​l​t​ ​D​e​t​e​c​t​i​o​n
 			 */
 			ALT_DETECTION: string
+			/**
+			 * F​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			FINGERPRINTS: string
+			/**
+			 * I​P​ ​S​e​a​r​c​h
+			 */
+			IP_SEARCH: string
 		}
 	}
 	NOTIFICATION: {
@@ -2603,6 +2738,11 @@ type RootTranslation = {
 			 * @param {number} count
 			 */
 			TEAM_COUNT: RequiredParams<'count'>
+			/**
+			 * A​c​t​i​v​e​ ​T​e​a​m​s​ ​w​i​t​h​ ​{​c​o​u​n​t​}​+​ ​p​l​a​y​e​r​s
+			 * @param {number} count
+			 */
+			ACTIVE_TEAMS_MIN_PLAYERS: RequiredParams<'count'>
 		}
 		PROFILE: {
 			/**
@@ -5176,6 +5316,44 @@ export type TranslationFunctions = {
 		 * Newest
 		 */
 		SORT_BY_NEWEST: () => LocalizedString
+		/**
+		 * Working...
+		 */
+		WORKING: () => LocalizedString
+		/**
+		 * View
+		 */
+		VIEW: () => LocalizedString
+	}
+	API_TOKENS: {
+		/**
+		 * API Tokens
+		 */
+		API_TOKENS: () => LocalizedString
+		/**
+		 * Token Name:
+		 */
+		TOKEN_NAME: () => LocalizedString
+		/**
+		 * Are you sure you want to delete the token with name {name}? Any applications that use this token will become unauthorized.
+		 */
+		DELETE_TOKEN_CONFIRM: (arg: { name: string }) => LocalizedString
+		/**
+		 * Failed to delete API token
+		 */
+		DELETE_TOKEN_FAILED: () => LocalizedString
+		/**
+		 * Create API Token
+		 */
+		CREATE_TOKEN: () => LocalizedString
+		/**
+		 * Failed to create API token
+		 */
+		CREATE_TOKEN_FAILED: () => LocalizedString
+		/**
+		 * Name your new API token...
+		 */
+		TOKEN_NAME_HERE: () => LocalizedString
 	}
 	DISCORD: {
 		/**
@@ -5288,6 +5466,10 @@ export type TranslationFunctions = {
 		 * Select a FC type...
 		 */
 		SELECT_TYPE: () => LocalizedString
+		/**
+		 * To edit the friend code itself or to add a new friend code past the limit, make a ticket in the MKCentral Discord server.
+		 */
+		EDIT_FC_TOOLTIP: () => LocalizedString
 		TYPES: {
 			/**
 			 * All FC Types
@@ -5410,6 +5592,10 @@ export type TranslationFunctions = {
 		 * View all Announcements
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: () => LocalizedString
+		/**
+		 * Learn more about us
+		 */
+		LEARN_MORE_ABOUT_US: () => LocalizedString
 	}
 	IMAGES: {
 		/**
@@ -5694,6 +5880,14 @@ export type TranslationFunctions = {
 		 * Failed to change email
 		 */
 		CHANGE_EMAIL_FAILED: () => LocalizedString
+		/**
+		 * I agree to the MKCentral Terms of Use.
+		 */
+		AGREE_TO_TERMS: () => LocalizedString
+		/**
+		 * I agree to the MKCentral Privacy Policy.
+		 */
+		AGREE_TO_PRIVACY_POLICY: () => LocalizedString
 	}
 	LOUNGE: {
 		/**
@@ -6137,6 +6331,74 @@ export type TranslationFunctions = {
 			 * Player Alt Flags
 			 */
 			PLAYER_ALT_FLAGS: () => LocalizedString
+			/**
+			 * Login History
+			 */
+			LOGIN_HISTORY: () => LocalizedString
+			/**
+			 * Fingerprint
+			 */
+			FINGERPRINT: () => LocalizedString
+			/**
+			 * Search for fingerprints
+			 */
+			SEARCH_FOR_FINGERPRINTS: () => LocalizedString
+			/**
+			 * Fingerprint Data (hash: {hash})
+			 */
+			FINGERPRINT_HASH: (arg: { hash: string }) => LocalizedString
+			/**
+			 * Search by hash...
+			 */
+			SEARCH_BY_HASH: () => LocalizedString
+			/**
+			 * Previous Cookie?
+			 */
+			PREVIOUS_COOKIE: () => LocalizedString
+			/**
+			 * IP Address
+			 */
+			IP_ADDRESS: () => LocalizedString
+			/**
+			 * IP Addresses
+			 */
+			IP_ADDRESSES: () => LocalizedString
+			/**
+			 * {count} IPs
+			 */
+			IP_ADDRESS_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Player IP History
+			 */
+			PLAYER_IP_HISTORY: () => LocalizedString
+			/**
+			 * Logout Date
+			 */
+			LOGOUT_DATE: () => LocalizedString
+			/**
+			 * VPN
+			 */
+			VPN: () => LocalizedString
+			/**
+			 * Mobile
+			 */
+			MOBILE: () => LocalizedString
+			/**
+			 * Search for IPs
+			 */
+			IP_SEARCH: () => LocalizedString
+			/**
+			 * {count} users
+			 */
+			IP_USER_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * IP History
+			 */
+			IP_HISTORY: () => LocalizedString
+			/**
+			 * {count} times
+			 */
+			NUM_TIMES: (arg: { count: number }) => LocalizedString
 			TABLE: {
 				/**
 				 * Players
@@ -6381,6 +6643,14 @@ export type TranslationFunctions = {
 			 * Alt Detection
 			 */
 			ALT_DETECTION: () => LocalizedString
+			/**
+			 * Fingerprints
+			 */
+			FINGERPRINTS: () => LocalizedString
+			/**
+			 * IP Search
+			 */
+			IP_SEARCH: () => LocalizedString
 		}
 	}
 	NOTIFICATION: {
@@ -7355,6 +7625,10 @@ export type TranslationFunctions = {
 			 * {count} teams
 			 */
 			TEAM_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Active Teams with {count}+ players
+			 */
+			ACTIVE_TEAMS_MIN_PLAYERS: (arg: { count: number }) => LocalizedString
 		}
 		PROFILE: {
 			/**

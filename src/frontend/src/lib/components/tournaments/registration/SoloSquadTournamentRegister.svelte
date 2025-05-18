@@ -9,7 +9,10 @@
   export let tournament: Tournament;
   export let friend_codes: FriendCode[];
 
+  let working = false;
+
   async function registerSolo(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const formData = new FormData(event.currentTarget);
     let selected_fc_id = formData.get('selected_fc_id');
     let mii_name = formData.get('mii_name');
@@ -20,12 +23,12 @@
       can_host: can_host === 'true',
     };
     const endpoint = `/api/tournaments/${tournament.id}/register`;
-    console.log(payload);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -35,6 +38,7 @@
     }
   }
   async function registerSquad(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const formData = new FormData(event.currentTarget);
     let squad_color = formData.get('squad_color');
     let squad_name = formData.get('squad_name');
@@ -53,12 +57,12 @@
       is_bagger_clause: is_bagger_clause === 'true',
     };
     const endpoint = `/api/tournaments/${tournament.id}/createSquad`;
-    console.log(payload);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -84,8 +88,7 @@
       </select>
     </div>
   {/if}
-
-  <Button type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
+  <Button type="submit" {working}>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
 </form>
 
 <style>

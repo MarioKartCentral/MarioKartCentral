@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
-  import logo from '$lib/assets/logo.png';
   import { user, have_unread_notification } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import Notification from './Notification.svelte';
@@ -48,7 +47,7 @@
   async function logout() {
       const response = await fetch('/api/user/logout', { method: 'POST' });
       if (response.status < 300) {
-        window.location.reload();
+        window.location.href = `/${$page.params.lang}/`;
       } else {
         alert($LL.LOGIN.LOGOUT_FAILED());
     }
@@ -59,22 +58,22 @@
   <div class="flex gap-2 items-center">
     <NavHamburger bind:menu_hidden={menu_hidden}/>
     <NavBrand href="/{$page.params.lang}">
-      <img src={logo} class="w-24 desktop:w-32" alt="MKCentral Logo" />
+      <span class="text-white text-2xl font-bold desktop:text-3xl">MKCentral</span>
     </NavBrand>
   </div>
   <div class="flex items-center desktop:order-2">
-    <div class="nav-user-bar cursor-pointer relative">
-      {#if unread_count}
-        <BellSolid size="xl" class="text-yellow-400"/>
-        <AlertCount count={unread_count} placement="top-right"/>
-      {:else}
-        <BellOutline size="xl" class="text-gray-300"/>
-      {/if}
-    </div>
-    <Notification bind:this={notify} />
     <div class="nav-user-bar cursor-pointer hidden sm:block">
       <LanguagePicker/>
     </div>
+    <div class="nav-user-bar cursor-pointer relative">
+      {#if unread_count}
+        <BellSolid size="lg" class="text-yellow-400"/>
+        <AlertCount count={unread_count} placement="top-right"/>
+      {:else}
+        <BellOutline size="lg" class="text-gray-300"/>
+      {/if}
+    </div>
+    <Notification bind:this={notify} />
     {#if user_info.is_checked}
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">
@@ -87,6 +86,9 @@
           <DropdownItem href="/{$page.params.lang}/registry/players/profile?id={user_info.player_id}">{$LL.NAVBAR.PROFILE()}</DropdownItem>
           <DropdownItem href="/{$page.params.lang}/registry/players/edit-profile">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</DropdownItem>
           <DropdownItem href="/{$page.params.lang}/registry/invites">{$LL.PLAYERS.PROFILE.INVITES()}</DropdownItem>
+          {#if user_info.token_count}
+            <DropdownItem href="/{$page.params.lang}/user/api-tokens">{$LL.API_TOKENS.API_TOKENS()}</DropdownItem>
+          {/if}
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
       {:else if user_info.id !== null}
@@ -98,6 +100,9 @@
             <DropdownItem href="/{$page.params.lang}/user/player-signup">{$LL.NAVBAR.PLAYER_SIGNUP()}</DropdownItem>
           {:else}
             <DropdownItem href="/{$page.params.lang}/user/confirm-email">{$LL.LOGIN.CONFIRM_EMAIL()}</DropdownItem>
+          {/if}
+          {#if user_info.token_count}
+            <DropdownItem href="/{$page.params.lang}/user/api-tokens">{$LL.API_TOKENS.API_TOKENS()}</DropdownItem>
           {/if}
           <DropdownItem on:click={logout}><span class="logout">{$LL.LOGIN.LOGOUT()}</span></DropdownItem>
         </Dropdown>
@@ -136,7 +141,16 @@
     <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>
     
-    <NavLi href="http://discord.gg/Pgd8xr6">{$LL.NAVBAR.DISCORD()}</NavLi>
+    <NavLi has_dropdown>
+      {$LL.NAVBAR.DISCORD()}
+      <ChevronDownOutline class="inline"/>
+    </NavLi>
+    <Dropdown>
+      <DropdownItem href="https://discord.gg/Pgd8xr6" target="_blank">Site Discord</DropdownItem>
+      <DropdownItem href="https://discord.gg/Q9HCD8tVvD" target="_blank">MKWorld</DropdownItem>
+      <DropdownItem href="https://discord.gg/HuE4Pd8Skf" target="_blank">MK8DX</DropdownItem>
+      <DropdownItem href="https://discord.gg/H3Nsdcn" target="_blank">MKTour</DropdownItem>
+    </Dropdown>
     {#if is_mod}
       <NavLi nav_name="MODERATOR" has_dropdown>
         {$LL.NAVBAR.MODERATOR()}
