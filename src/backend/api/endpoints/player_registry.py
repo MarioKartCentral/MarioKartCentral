@@ -218,12 +218,23 @@ async def merge_players(request: Request, body: MergePlayersRequestData) -> JSON
     await handle(MergePlayersCommand(body.from_player_id, body.to_player_id))
     return JSONResponse({})
 
+async def player_lounge(request: Request) -> JSONResponse:
+    player_id = int(request.path_params['id'])
+    command = GetPlayerLoungeInfoCommand(player_id)
+    lounge_info = await handle(command)
+    return JSONResponse({
+        "id": lounge_info.id,
+        "switch_fc": lounge_info.switch_fc,
+        "country_code": lounge_info.country_code
+    })
+
 routes = [
     Route('/api/registry/players/create', create_player, methods=['POST']),
     Route('/api/registry/players/createShadowPlayer', create_shadow_player, methods=['POST']),
     Route('/api/registry/players/edit', edit_player, methods=['POST']),
     Route('/api/registry/players/{id:int}', view_player),
     Route('/api/registry/players/{id:int}/notes', update_player_notes, methods=['POST']),
+    Route('/api/registry/players/{id:int}/lounge', player_lounge),
     Route('/api/registry/players/{player_id:int}/getPlayerTransferHistory', get_player_transfer_history),
     Route('/api/registry/players', list_players),
     Route('/api/registry/addFriendCode', create_fc, methods=['POST']),
