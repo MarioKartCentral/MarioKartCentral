@@ -8,7 +8,7 @@
 </script>
 
 {#if organizer === "Affiliate"}
-    <Badge badgeClass="organizer_affiliate_badge wide" {style}>{$LL.TOURNAMENTS.MANAGE.ORGANIZED_BY_AFFILIATE()}</Badge>
+    <!-- <Badge badgeClass="organizer_affiliate_badge wide" {style}>{$LL.TOURNAMENTS.MANAGE.ORGANIZED_BY_AFFILIATE()}</Badge> -->
 {:else if organizer === "LAN"}
     <Badge badgeClass="organizer_lan_badge wide" {style}>{$LL.TOURNAMENTS.MANAGE.ORGANIZED_BY_LAN()}</Badge>
 {/if}

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
-  import logo from '$lib/assets/logo.png';
   import { user, have_unread_notification } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import Notification from './Notification.svelte';
@@ -59,22 +58,22 @@
   <div class="flex gap-2 items-center">
     <NavHamburger bind:menu_hidden={menu_hidden}/>
     <NavBrand href="/{$page.params.lang}">
-      <img src={logo} class="w-24 desktop:w-32" alt="MKCentral Logo" />
+      <span class="text-white text-2xl font-bold desktop:text-3xl">MKCentral</span>
     </NavBrand>
   </div>
   <div class="flex items-center desktop:order-2">
-    <div class="nav-user-bar cursor-pointer relative">
-      {#if unread_count}
-        <BellSolid size="xl" class="text-yellow-400"/>
-        <AlertCount count={unread_count} placement="top-right"/>
-      {:else}
-        <BellOutline size="xl" class="text-gray-300"/>
-      {/if}
-    </div>
-    <Notification bind:this={notify} />
     <div class="nav-user-bar cursor-pointer hidden sm:block">
       <LanguagePicker/>
     </div>
+    <div class="nav-user-bar cursor-pointer relative">
+      {#if unread_count}
+        <BellSolid size="lg" class="text-yellow-400"/>
+        <AlertCount count={unread_count} placement="top-right"/>
+      {:else}
+        <BellOutline size="lg" class="text-gray-300"/>
+      {/if}
+    </div>
+    <Notification bind:this={notify} />
     {#if user_info.is_checked}
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">

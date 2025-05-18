@@ -9,7 +9,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   .markdown-box :global(p) {
     display: block;
     margin-top: 1em;

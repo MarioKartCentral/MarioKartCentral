@@ -152,7 +152,7 @@ const es: Translation = {
   HOMEPAGE: {
     WELCOME: '¡Bienvenido a Mario Kart Central!',
     SUMMARY:
-      '¡Somos el hogar de los torneos de Mario Kart, donde encontrarás competiciones para todos los jugadores, ya sea que busques competiciones casuales o competitivas, tenemos lo que buscas! Organizamos eventos para Mario Kart 8 Deluxe, Tour y más, con una variedad de partidas cada semana.',
+      '<strong>MKCentral</strong> es la comunidad independiente más grande para jugadores de Mario Kart. Ya seas un corredor casual o un veterano de torneos, nuestro sitio reúne a todos en un mismo lugar para competir, conectar y celebrar todo lo relacionado con Mario Kart.',
     YOU_PLACED: 'Tu posición: {placement|ordinalSuffix}',
     LATEST_RESULTS: 'Últimos resultados',
     VIEW_FULL_PLACEMENTS: 'Ver todas las posiciones',
@@ -165,6 +165,7 @@ const es: Translation = {
     RECENT_TRANSACTIONS: 'Transacciones recientes',
     MORE_RECENT_TRANSACTIONS: 'Más transacciones recientes',
     VIEW_ALL_ANNOUNCEMENTS: 'Ver todos los anuncios',
+    LEARN_MORE_ABOUT_US: 'Learn more about us'
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Subir imagen',

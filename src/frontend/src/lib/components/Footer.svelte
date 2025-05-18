@@ -23,6 +23,9 @@
       </li>
     </ul>
   </div>
+  <div class="footer-about">
+    <a href="/{$page.params.lang}/about">About Us</a>
+  </div>
   <div class="footer-terms">
     <a href="/{$page.params.lang}/user/terms">Terms and Rules</a>
   </div>
@@ -45,6 +48,7 @@
   }
   .footer-social {
     flex: 1;
+    min-width: max-content;
   }
   .footer-social ul {
     display: flex;

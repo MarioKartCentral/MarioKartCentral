@@ -153,7 +153,7 @@ const fr: Translation = {
   HOMEPAGE: {
     WELCOME: 'Bienvenue MKCentral!',
     SUMMARY:
-      'Nous sommes le cœur des compétitions Mario Kart, où vous trouverez des tournois pour tout type de joueurs que vous soyez un joueur occasionnel ou un joueur compétitif, nous sommes là ! Nous organisons des tournois sur Mario Kart 8 Deluxe, Tour, et plus encore, avec une variété de matchs qui ont lieu chaque semaine!',
+      '<strong>MKCentral</strong> est la plus grande communauté indépendante pour les joueurs de Mario Kart. Que vous soyez un pilote occasionnel ou un vétéran des tournois, notre site rassemble tout le monde au même endroit pour concourir, se connecter et célébrer tout ce qui concerne Mario Kart.',
     YOU_PLACED: 'You placed: {placement|ordinalSuffix}',
     LATEST_RESULTS: 'Latest Results',
     VIEW_FULL_PLACEMENTS: 'View Full Placements',
@@ -166,6 +166,7 @@ const fr: Translation = {
     RECENT_TRANSACTIONS: 'Recent Transactions',
     MORE_RECENT_TRANSACTIONS: 'More Recent Transactions',
     VIEW_ALL_ANNOUNCEMENTS: 'View all Announcements',
+    LEARN_MORE_ABOUT_US: 'Learn more about us'
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Upload Image',
@@ -250,7 +251,7 @@ const fr: Translation = {
     NEW_EMAIL: 'New Email',
     CHANGE_EMAIL_SUCCESS: 'Successfully changed your email. Please check your inbox for a confirmation email.',
     CHANGE_EMAIL_FAILED: 'Failed to change email',
-    AGREE_TO_TERMS: 'I agree to the MKCentral Terms of Service.',
+    AGREE_TO_TERMS: 'I agree to the MKCentral Terms of Use.',
     AGREE_TO_PRIVACY_POLICY: 'I agree to the MKCentral Privacy Policy.',
   },
   LOUNGE: {

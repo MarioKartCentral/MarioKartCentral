@@ -604,6 +604,10 @@ type RootTranslation = {
 		 * V​i​e​w​ ​a​l​l​ ​A​n​n​o​u​n​c​e​m​e​n​t​s
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: string
+		/**
+		 * L​e​a​r​n​ ​m​o​r​e​ ​a​b​o​u​t​ ​u​s
+		 */
+		LEARN_MORE_ABOUT_US: string
 	}
 	IMAGES: {
 		/**
@@ -5588,6 +5592,10 @@ export type TranslationFunctions = {
 		 * View all Announcements
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: () => LocalizedString
+		/**
+		 * Learn more about us
+		 */
+		LEARN_MORE_ABOUT_US: () => LocalizedString
 	}
 	IMAGES: {
 		/**
@@ -5873,7 +5881,7 @@ export type TranslationFunctions = {
 		 */
 		CHANGE_EMAIL_FAILED: () => LocalizedString
 		/**
-		 * I agree to the MKCentral Terms of Service.
+		 * I agree to the MKCentral Terms of Use.
 		 */
 		AGREE_TO_TERMS: () => LocalizedString
 		/**

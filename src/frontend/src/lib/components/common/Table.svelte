@@ -10,7 +10,7 @@
   </table>
 </div>
 
-<style>
+<style lang="postcss">
   .container {
     padding: 10px;
   }

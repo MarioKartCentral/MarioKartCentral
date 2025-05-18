@@ -1,20 +1,21 @@
 <script lang="ts">
-    import { GlobeSolid } from "flowbite-svelte-icons";
+    import { GlobeSolid, ChevronDownSolid } from "flowbite-svelte-icons";
+    import { page } from "$app/stores";
     import LL from "$i18n/i18n-svelte";
     import Dropdown from "$lib/components/common/Dropdown.svelte";
     import DropdownItem from "../common/DropdownItem.svelte";
 
     const languages = [
-      { value: 'de', getLang: 'DE' },
-      { value: 'en-gb', getLang: 'EN_GB' },
-      { value: 'en-us', getLang: 'EN_US' },
-      { value: 'fr', getLang: 'FR' },
-      { value: 'es', getLang: 'ES' },
-      { value: 'ja', getLang: 'JA' },
+      { value: 'de', nativeName: 'Deutsch' },
+      { value: 'en-gb', nativeName: 'English (GB)' },
+      { value: 'en-us', nativeName: 'English (US)' },
+      { value: 'es', nativeName: 'Español' },
+      { value: 'fr', nativeName: 'Français' },
+      { value: 'ja', nativeName: '日本語' },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const language_strings: any = $LL.LANGUAGES;
+    const sortedLanguages = [...languages].sort((a, b) => a.nativeName.localeCompare(b.nativeName));
+    $: currentLanguage = languages.find(lang => lang.value === $page.params.lang) || languages[0];
 
     async function setLanguage(lang: string) {
         const endpoint = '/api/user/settings/editLanguage';
@@ -35,12 +36,16 @@
     }
 </script>
 
-<GlobeSolid size="xl" class="text-gray-300"/>
+<button class="flex items-center rounded-md focus:outline-none focus:ring-0">
+    <GlobeSolid size="md" class="md:mr-2 text-gray-300" />
+    <span class="hidden md:inline text-white">{currentLanguage.nativeName}</span>
+    <ChevronDownSolid size="sm" class="hidden md:inline ml-1 text-white" />
+</button>
 <Dropdown>
-    {#each languages as l}
+    {#each sortedLanguages as l}
         <DropdownItem on:click={() => setLanguage(l.value)}>
             <div class="item">
-                {language_strings[l.getLang]()}
+                {l.nativeName}
             </div>
         </DropdownItem>
     {/each}
