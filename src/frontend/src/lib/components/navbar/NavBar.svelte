@@ -142,7 +142,16 @@
     <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>
     
-    <NavLi href="http://discord.gg/Pgd8xr6" target="_blank">{$LL.NAVBAR.DISCORD()}</NavLi>
+    <NavLi has_dropdown>
+      {$LL.NAVBAR.DISCORD()}
+      <ChevronDownOutline class="inline"/>
+    </NavLi>
+    <Dropdown>
+      <DropdownItem href="https://discord.gg/Pgd8xr6" target="_blank">Site Discord</DropdownItem>
+      <DropdownItem href="https://discord.gg/Q9HCD8tVvD" target="_blank">MKWorld</DropdownItem>
+      <DropdownItem href="https://discord.gg/HuE4Pd8Skf" target="_blank">MK8DX</DropdownItem>
+      <DropdownItem href="https://discord.gg/H3Nsdcn" target="_blank">MKTour</DropdownItem>
+    </Dropdown>
     {#if is_mod}
       <NavLi nav_name="MODERATOR" has_dropdown>
         {$LL.NAVBAR.MODERATOR()}
