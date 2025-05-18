@@ -34,7 +34,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
       OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-Authorization=Basic ${GRAFANA_CLOUD_OTLP_TOKEN:-}}
       OTEL_PYTHON_LOG_LEVEL: info
-      OTEL_SERVICE_NAME: mkc-api
+      OTEL_SERVICE_NAME: mkc-api-dev
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
@@ -64,7 +64,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
       OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-Authorization=Basic ${GRAFANA_CLOUD_OTLP_TOKEN:-}}
       OTEL_PYTHON_LOG_LEVEL: info
-      OTEL_SERVICE_NAME: mkc-worker
+      OTEL_SERVICE_NAME: mkc-worker-dev
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app

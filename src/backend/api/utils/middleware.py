@@ -11,6 +11,8 @@ from ratelimit.backends.simple import MemoryBackend
 import ipaddress
 from typing import Any
 from starlette.requests import Request
+from opentelemetry import trace
+from opentelemetry.trace.status import Status, StatusCode
 
 async def handle_error(request: Request, exception: Exception):
     logging.getLogger().error("Unhandled Exception", exc_info=exception)
@@ -19,12 +21,36 @@ async def handle_error(request: Request, exception: Exception):
 async def handle_problem(request: Request, problem: Problem):
     if problem.status >= 500:
         logging.getLogger().error(f"Problem: {problem}", exc_info=problem)
+    span = trace.get_current_span()
+    if span and span.is_recording():
+        span.record_exception(problem)
+        span.set_status(Status(StatusCode.ERROR, str(problem)))
     return ProblemResponse(problem)
 
 exception_handlers: dict[Any, Any] = {
     Problem: handle_problem,
     500: handle_error
 }
+
+
+class ProblemExceptionMiddleware:
+    """
+    Catches any Problems that might have been raised during the middleware
+    """
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        try:
+            await self.app(scope, receive, send)
+        except Problem as problem:
+            logging.getLogger().error(f"Problem: {problem}", exc_info=problem)
+            span = trace.get_current_span()
+            if span.is_recording():
+                span.record_exception(problem)
+                span.set_status(Status(StatusCode.ERROR, str(problem)))
+            response = ProblemResponse(problem)
+            await response(scope, receive, send)
 
         
 class IPLoggingMiddleware(BaseHTTPMiddleware):
