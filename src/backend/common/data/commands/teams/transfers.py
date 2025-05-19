@@ -10,7 +10,7 @@ class ApproveTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status FROM team_transfers WHERE id = ?", (self.invite_id)) as cursor:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
