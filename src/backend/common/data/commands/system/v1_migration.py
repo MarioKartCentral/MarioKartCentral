@@ -207,6 +207,9 @@ class ConvertMKCV1DataCommand(Command[None]):
                 player.user.series_roles.append(NewMKCSeriesRole(series_roles.ORGANIZER, series_id))
                 continue
             new_role_name = user_role_map[player_role.role]
+            # don't move over mod roles
+            if new_role_name == roles.SITE_MODERATOR:
+                continue
             player.user.user_roles.append(NewMKCUserRole(new_role_name))
 
         return player_dict, friend_codes
