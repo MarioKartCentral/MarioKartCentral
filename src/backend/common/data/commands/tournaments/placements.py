@@ -75,11 +75,11 @@ class SetTournamentPlacementsFromPlayerIDsCommand(Command[None]):
         # sort with DQs at the end
         sorted_placements = sorted(b, key=lambda x: float('inf') if x.placement is None else x.placement)
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT min_squad_size, max_squad_size FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute("SELECT min_squad_size, max_squad_size, is_squad FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=404)
-                min_squad_size, max_squad_size = row
+                min_squad_size, max_squad_size, is_squad = row
 
         # going through placements in order of rank to make sure they fulfill all criteria
         curr_placement = 1
@@ -94,10 +94,14 @@ class SetTournamentPlacementsFromPlayerIDsCommand(Command[None]):
                     raise Problem("Placement must be non-null to set lower bound", status=400)
                 if placement.placement_description:
                     raise Problem("Cannot have description for null placements", status=400)
-            if min_squad_size is not None and len(placement.player_ids) < min_squad_size:
-                raise Problem(f"Error in placement for ID {placement.player_ids}: Row has less players than minimum squad size")
-            if max_squad_size is not None and len(placement.player_ids) > max_squad_size:
-                raise Problem(f"Error in placement for ID {placement.player_ids}: Row has more players than maximum squad size")
+            if is_squad:
+                if min_squad_size is not None and len(placement.player_ids) < min_squad_size:
+                    raise Problem(f"Error in placement for ID {placement.player_ids}: Row has less players than minimum squad size", status=400)
+                if max_squad_size is not None and len(placement.player_ids) > max_squad_size:
+                    raise Problem(f"Error in placement for ID {placement.player_ids}: Row has more players than maximum squad size", status=400)
+            else:
+                if len(placement.player_ids) > 1:
+                    raise Problem(f"Error in placement for ID {placement.player_ids}: Row has more than 1 player for a solo tournament", status=400)
             if placement.placement and placement.is_disqualified:
                 raise Problem("Cannot have a placement value while disqualified", status=400)
             # if the current placement is not equal to its sorted position in the list or is not tied with the previous placement
