@@ -45,9 +45,9 @@ class CreateTeamCommand(Command[int | None]):
                 async with db.execute("""SELECT COUNT(r.id) 
                                       FROM team_rosters r
                                       JOIN teams t ON r.team_id = t.id
-                                      WHERE (r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
-                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?) 
-                                      AND game = ? AND mode = ? AND is_active = 1""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
+                                      WHERE ((r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
+                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?))
+                                      AND r.game = ? AND r.mode = ? AND r.is_active = 1 AND t.is_historical = 0""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
