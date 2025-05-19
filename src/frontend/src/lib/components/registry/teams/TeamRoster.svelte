@@ -81,7 +81,13 @@
             <td>
               <RosterPlayerName {player}/>
             </td>
-            <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
+            <td class="mobile-hide">
+              {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i}
+                {#if i === 0}
+                  {fc.fc}
+                {/if}
+              {/each}
+            </td>
             <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
           </tr>
         {/each}
