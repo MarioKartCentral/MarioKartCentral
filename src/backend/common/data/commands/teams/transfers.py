@@ -10,11 +10,11 @@ class ApproveTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status FROM team_transfers WHERE id = ?", (self.invite_id)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
-                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause = row
+                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status = row
             if not is_accepted:
                 raise Problem("Invite has not been accepted by the player yet", status=400)
             if roster_leave_id:
@@ -26,6 +26,8 @@ class ApproveTransferCommand(Command[None]):
                     team_member_id = row[0]
             else:
                 team_member_id = None
+            if approval_status == "approved":
+                raise Problem("Transfer is already approved", status=400)
             curr_time = int(datetime.now(timezone.utc).timestamp())
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
             await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
