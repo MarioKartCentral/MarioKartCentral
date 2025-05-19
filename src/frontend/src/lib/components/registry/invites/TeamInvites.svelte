@@ -1,5 +1,4 @@
 <script lang="ts">
-    import Table from "$lib/components/common/Table.svelte";
     import type { TeamInvite } from "$lib/types/team-invite";
     import { locale } from "$i18n/i18n-svelte";
     import { user } from '$lib/stores/stores';
@@ -105,48 +104,34 @@
 </script>
 
 {#if invites.length}
-    <Table>
-    <col class="tag" />
-    <col class="name" />
-    <col class="mode mobile-hide"/>
-    <col class="date mobile-hide" />
-    <col class="accept" />
-    <thead>
-        <tr>
-        <th>{$LL.COMMON.TAG()}</th>
-        <th>{$LL.COMMON.NAME()}</th>
-        <th class="mode mobile-hide">{$LL.COMMON.MODE()}</th>
-        <th class="mode mobile-hide">{$LL.COMMON.DATE()}</th>
-        <th>{$LL.INVITES.ACCEPT()}?</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="invites">
         {#each invites as invite}
-        <tr>
-            <td>
-                <TagBadge tag={invite.roster_tag ? invite.roster_tag : invite.team_tag} color={invite.team_color}/>
-            </td>
-            <td>
-                {invite.roster_name}
-                {#if invite.is_bagger_clause}
-                    <BaggerBadge/>
-                {/if}
-            </td>
-            <td class="mode mobile-hide">
-                <GameBadge game={invite.game}/>
-                <ModeBadge mode={invite.mode}/>
-            </td>
-            <td class="mode mobile-hide">{new Date(invite.date * 1000).toLocaleString($locale, options)}</td>
-            <td>
-            {#if check_permission(user_info, permissions.join_team, true)}
-                <ConfirmButton on:click={() => acceptDialog(invite)}/>
-            {/if}
-            <CancelButton on:click={() => declineDialog(invite)}/>
-            </td>
-        </tr>
+            <div class="row">
+                <div class="date field">
+                    {new Date(invite.date * 1000).toLocaleString($locale, options)}
+                </div>
+                <div class="left field">
+                    <TagBadge tag={invite.roster_tag ? invite.roster_tag : invite.team_tag} color={invite.team_color}/>
+                    <div>
+                        {invite.roster_name}
+                        {#if invite.is_bagger_clause}
+                            <BaggerBadge/>
+                        {/if}
+                    </div>
+                </div>
+                <div class="badges field">
+                    <GameBadge game={invite.game}/>
+                    <ModeBadge mode={invite.mode}/>
+                </div>
+                <div class="accept field">
+                    {#if check_permission(user_info, permissions.join_team, true)}
+                        <ConfirmButton on:click={() => acceptDialog(invite)}/>
+                    {/if}
+                    <CancelButton on:click={() => declineDialog(invite)}/>
+                </div>
+            </div>
         {/each}
-    </tbody>
-    </Table>
+    </div>
 {:else}
     {$LL.INVITES.NO_INVITES()}
 {/if}
@@ -162,7 +147,7 @@
         {/each}
       </select>
     {/if}
-    <div class="accept">
+    <div class="dialog-accept">
       <Button {working} on:click={() => acceptInvite(curr_invite)}>{$LL.INVITES.ACCEPT()}</Button>
       <Button on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
@@ -171,29 +156,51 @@
   <Dialog bind:this={decline_dialog} header={$LL.INVITES.DECLINE()}>
     {$LL.INVITES.DECLINE_TEAM_INVITE_CONFIRM({roster_name: curr_invite?.roster_name})}
     <br /><br />
-    <div class="accept">
+    <div class="dialog-accept">
       <Button {working} on:click={() => declineInvite(curr_invite)}>{$LL.INVITES.DECLINE()}</Button>
       <Button on:click={decline_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
     </div>
   </Dialog>
 
 <style>
-    col.tag {
-        width: 15%;
+    .invites {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
     }
-    col.name {
-        width: 25%;
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.9rem;
+        background-color: rgba(255, 255, 255, 0.15);
+        padding: 12px;
+        min-height: 75px;
     }
-    col.mode {
-        width: 25%;
+    .row:nth-child(odd) {
+        background-color: rgba(210, 210, 210, 0.15);
     }
-    col.date {
-        width: 15%;
+    .date {
+        min-width: 200px;
     }
-    col.accept {
-        width: 20%;
+    .field {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
     }
-    div.accept {
+    .left {
+        min-width: 200px;
+    }
+    .badges {
+        min-width: 200px;
+    }
+    .accept {
+        min-width: 100px;
+    }
+    div.dialog-accept {
         margin-top: 20px;
     }
 </style>
