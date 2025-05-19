@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { valid_team_modes } from '$lib/util/util';
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { PlayerTransferItem } from '$lib/types/player-transfer';
   import Section from '$lib/components/common/Section.svelte';
@@ -12,9 +11,6 @@
 
   let game: string | null = null;
   let mode: string | null = null;
-  // Default game + mode, because the component allows null
-  game = 'mk8dx';
-  mode = valid_team_modes[game][0];
   let history: PlayerTransferItem[] = [];
   let filtered_history: PlayerTransferItem[] = [];
 
@@ -58,7 +54,7 @@
       <div>
         <form on:submit|preventDefault={filterData}>
           <div class="flex flex-row flex-wrap items-center justify-center">
-            <GameModeSelect bind:game bind:mode hide_labels is_team />
+            <GameModeSelect bind:game bind:mode hide_labels is_team all_option inline/>
             <div class="ml-1 my-2">
               <Button type="submit">Filter</Button>
             </div>

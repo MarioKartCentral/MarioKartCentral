@@ -429,30 +429,36 @@
 
 <Dialog bind:this={force_edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
   <form method="post" on:submit|preventDefault={forceEditRoster}>
-    <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-    <Input name="name" type="text" value={roster.name} required maxlength={32} no_white_space/>
-    <br />
-    <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-    <Input name="tag" type="text" value={roster.tag} required maxlength={5} no_white_space/>
-    <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
-    <select name="recruiting">
-      <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-      <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
-    </select>
-    <br />
-    <label for="approval_status">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.STATUS()}</label>
-    <select name="approval_status" value={roster.approval_status}>
-      <option value="approved">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.APPROVED()}</option>
-      <option value="denied">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.DENIED()}</option>
-      <option value="pending">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.PENDING()}</option>
-    </select>
-    <br />
-    <label for="is_active">{$LL.TEAMS.PROFILE.ACTIVE_HISTORICAL()}</label>
-    <select name="is_active" value={roster.is_active ? 'true' : 'false'}>
-      <option value="true">{$LL.TEAMS.PROFILE.ACTIVE()}</option>
-      <option value="false">{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
-    </select>
-    <br />
+    <div class="option">
+      <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
+      <Input name="name" type="text" value={roster.name} required maxlength={32} no_white_space/>
+    </div>
+    <div class="option">
+      <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
+      <Input name="tag" type="text" value={roster.tag} required maxlength={5} no_white_space/>
+    </div>
+    <div class="option">
+      <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
+      <select name="recruiting">
+        <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+        <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+      </select>
+    </div>
+    <div class="option">
+      <label for="approval_status">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.STATUS()}</label>
+      <select name="approval_status" value={roster.approval_status}>
+        <option value="approved">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.APPROVED()}</option>
+        <option value="denied">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.DENIED()}</option>
+        <option value="pending">{$LL.TEAMS.PROFILE.APPROVAL_STATUS.PENDING()}</option>
+      </select>
+    </div>
+    <div class="option">
+      <label for="is_active">{$LL.TEAMS.PROFILE.ACTIVE_HISTORICAL()}</label>
+      <select name="is_active" value={roster.is_active ? 'true' : 'false'}>
+        <option value="true">{$LL.TEAMS.PROFILE.ACTIVE()}</option>
+        <option value="false">{$LL.TEAMS.PROFILE.HISTORICAL()}</option>
+      </select>
+    </div>
     <Button {working} type="submit">{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
   </form>
 </Dialog>
@@ -475,5 +481,8 @@
   }
   div.section {
     margin: 10px 0;
+  }
+  div.option {
+    margin-bottom: 10px;
   }
 </style>

@@ -67,12 +67,12 @@
 <style>
   .flex {
     display: flex;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
   }
   select {
     width: 192px;
-    /* margin-right: 10px; */
   }
   .gap {
     gap: 5px;

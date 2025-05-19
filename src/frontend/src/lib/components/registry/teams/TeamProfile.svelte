@@ -90,7 +90,7 @@
     word-break: break-word;
     white-space: pre-line;
     max-height: 200px;
-    overflow: hidden;
+    overflow-y: auto;
     @media(min-width: 800px) {
       justify-content: left;
       margin-left: auto;
