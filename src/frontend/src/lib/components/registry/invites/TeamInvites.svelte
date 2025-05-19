@@ -13,6 +13,7 @@
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
     import { check_permission, permissions } from "$lib/util/permissions";
     import LL from "$i18n/i18n-svelte";
+    import { page } from "$app/stores";
 
     export let invites: TeamInvite[];
 
@@ -111,12 +112,17 @@
                     {new Date(invite.date * 1000).toLocaleString($locale, options)}
                 </div>
                 <div class="left field">
-                    <TagBadge tag={invite.roster_tag ? invite.roster_tag : invite.team_tag} color={invite.team_color}/>
+                    <a href="/{$page.params.lang}/registry/teams/profile?id={invite.team_id}">
+                        <TagBadge tag={invite.roster_tag ? invite.roster_tag : invite.team_tag} color={invite.team_color}/>
+                    </a>
                     <div>
-                        {invite.roster_name}
-                        {#if invite.is_bagger_clause}
-                            <BaggerBadge/>
-                        {/if}
+                        <a href="/{$page.params.lang}/registry/teams/profile?id={invite.team_id}">
+                            {invite.roster_name}
+                            {#if invite.is_bagger_clause}
+                                <BaggerBadge/>
+                            {/if}
+                        </a>
+                        
                     </div>
                 </div>
                 <div class="badges field">
