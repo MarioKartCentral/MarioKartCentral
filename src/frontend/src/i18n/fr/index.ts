@@ -87,6 +87,7 @@ const fr: Translation = {
     SORT_BY_NEWEST: 'Plus récent',
     WORKING: 'En cours...',
     VIEW: 'Voir',
+    NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',

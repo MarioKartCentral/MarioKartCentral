@@ -13,9 +13,19 @@
     const color_strings: any = $LL.COLORS;
 </script>
 
-<select {name} bind:value={color}>
-    {#each sorted_colors as c}
-        <option value={c.id}>{color_strings[c.label]()}</option>
-    {/each}
-</select>
-<TagBadge {tag} {color}/>
+<div class="color-select">
+    <select {name} bind:value={color}>
+        {#each sorted_colors as c}
+            <option value={c.id}>{color_strings[c.label]()}</option>
+        {/each}
+    </select>
+    <TagBadge {tag} {color}/>
+</div>
+
+<style>
+    .color-select {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+</style>

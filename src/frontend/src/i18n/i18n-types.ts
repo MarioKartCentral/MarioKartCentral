@@ -334,6 +334,10 @@ type RootTranslation = {
 		 * V​i​e​w
 		 */
 		VIEW: string
+		/**
+		 * M​a​k​e​ ​s​u​r​e​ ​t​h​a​t​ ​y​o​u​r​ ​i​n​p​u​t​ ​d​o​e​s​ ​n​o​t​ ​b​e​g​i​n​ ​o​r​ ​e​n​d​ ​w​i​t​h​ ​a​ ​w​h​i​t​e​s​p​a​c​e​ ​c​h​a​r​a​c​t​e​r​!
+		 */
+		NO_SPACE_INPUT_WARNING: string
 	}
 	API_TOKENS: {
 		/**
@@ -552,7 +556,7 @@ type RootTranslation = {
 		 */
 		WELCOME: string
 		/**
-		 * W​e​ ​a​r​e​ ​t​h​e​ ​h​o​m​e​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​o​u​r​n​a​m​e​n​t​s​,​ ​w​h​e​r​e​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​o​u​r​n​a​m​e​n​t​s​ ​f​o​r​ ​a​l​l​ ​p​l​a​y​e​r​s​—​w​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​l​o​o​k​i​n​g​ ​f​o​r​ ​a​ ​c​a​s​u​a​l​ ​o​r​ ​c​o​m​p​e​t​i​t​i​v​e​ ​c​o​m​p​e​t​i​t​i​o​n​,​ ​w​e​'​v​e​ ​g​o​t​ ​y​o​u​ ​c​o​v​e​r​e​d​!​ ​W​e​ ​h​o​l​d​ ​e​v​e​n​t​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​T​o​u​r​,​ ​a​n​d​ ​m​o​r​e​,​ ​w​i​t​h​ ​a​ ​v​a​r​i​e​t​y​ ​o​f​ ​m​a​t​c​h​e​s​ ​h​a​p​p​e​n​i​n​g​ ​w​e​e​k​l​y​!
+		 * <​s​t​r​o​n​g​>​M​K​C​e​n​t​r​a​l​<​/​s​t​r​o​n​g​>​ ​i​s​ ​t​h​e​ ​w​o​r​l​d​'​s​ ​l​a​r​g​e​s​t​ ​i​n​d​e​p​e​n​d​e​n​t​ ​c​o​m​m​u​n​i​t​y​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​p​l​a​y​e​r​s​.​ ​W​h​e​t​h​e​r​ ​y​o​u​'​r​e​ ​a​ ​c​a​s​u​a​l​ ​r​a​c​e​r​ ​o​r​ ​a​ ​t​o​u​r​n​a​m​e​n​t​ ​v​e​t​e​r​a​n​,​ ​o​u​r​ ​s​i​t​e​ ​b​r​i​n​g​s​ ​e​v​e​r​y​o​n​e​ ​t​o​g​e​t​h​e​r​ ​i​n​ ​o​n​e​ ​p​l​a​c​e​ ​t​o​ ​c​o​m​p​e​t​e​,​ ​c​o​n​n​e​c​t​,​ ​a​n​d​ ​c​e​l​e​b​r​a​t​e​ ​e​v​e​r​y​t​h​i​n​g​ ​M​a​r​i​o​ ​K​a​r​t​.
 		 */
 		SUMMARY: string
 		/**
@@ -605,7 +609,7 @@ type RootTranslation = {
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: string
 		/**
-		 * L​e​a​r​n​ ​m​o​r​e​ ​a​b​o​u​t​ ​u​s
+		 * L​e​a​r​n​ ​m​o​r​e​ ​a​b​o​u​t​ ​u​s​.
 		 */
 		LEARN_MORE_ABOUT_US: string
 	}
@@ -897,7 +901,7 @@ type RootTranslation = {
 		 */
 		CHANGE_EMAIL_FAILED: string
 		/**
-		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​T​e​r​m​s​ ​o​f​ ​S​e​r​v​i​c​e​.
+		 * I​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​ ​M​K​C​e​n​t​r​a​l​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​.
 		 */
 		AGREE_TO_TERMS: string
 		/**
@@ -5324,6 +5328,10 @@ export type TranslationFunctions = {
 		 * View
 		 */
 		VIEW: () => LocalizedString
+		/**
+		 * Make sure that your input does not begin or end with a whitespace character!
+		 */
+		NO_SPACE_INPUT_WARNING: () => LocalizedString
 	}
 	API_TOKENS: {
 		/**
@@ -5541,7 +5549,7 @@ export type TranslationFunctions = {
 		 */
 		WELCOME: () => LocalizedString
 		/**
-		 * We are the home of Mario Kart Tournaments, where you'll find tournaments for all players—whether you're looking for a casual or competitive competition, we've got you covered! We hold events for Mario Kart 8 Deluxe, Tour, and more, with a variety of matches happening weekly!
+		 * <strong>MKCentral</strong> is the world's largest independent community for Mario Kart players. Whether you're a casual racer or a tournament veteran, our site brings everyone together in one place to compete, connect, and celebrate everything Mario Kart.
 		 */
 		SUMMARY: () => LocalizedString
 		/**
@@ -5593,7 +5601,7 @@ export type TranslationFunctions = {
 		 */
 		VIEW_ALL_ANNOUNCEMENTS: () => LocalizedString
 		/**
-		 * Learn more about us
+		 * Learn more about us.
 		 */
 		LEARN_MORE_ABOUT_US: () => LocalizedString
 	}
