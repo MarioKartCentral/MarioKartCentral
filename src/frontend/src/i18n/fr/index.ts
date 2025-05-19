@@ -166,6 +166,7 @@ const fr: Translation = {
     RECENT_TRANSACTIONS: 'Derniers transferts',
     MORE_RECENT_TRANSACTIONS: 'Plus de transferts récents',
     VIEW_ALL_ANNOUNCEMENTS: 'Voir toutes les annonces',
+    LEARN_MORE_ABOUT_US: 'En savoir plus sur nous',
   },
   IMAGES: {
     UPLOAD_IMAGE: 'Importer une image',
