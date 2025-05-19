@@ -146,7 +146,8 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                                     FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
-                                    WHERE m.player_id = ? AND m.leave_date IS NULL""", (self.id,)) as cursor:
+                                    WHERE m.player_id = ? AND m.leave_date IS NULL
+                                    AND t.approval_status = 'approved'""", (self.id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode, is_bagger_clause = row
@@ -425,6 +426,7 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                 JOIN teams as t
                 ON t.id = tr.team_id
                 WHERE player_id = ?
+                AND t.approval_status="approved"
                 ORDER BY tm.join_date ASC;''',
                 (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
