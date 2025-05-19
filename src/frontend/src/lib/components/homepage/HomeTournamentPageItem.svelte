@@ -46,7 +46,7 @@
         <!-- badges -->
         <div class="badges flex gap-[5px] flex-wrap mobile-center">
             <GameBadge game={tournament.game} style='font-size: 0.95rem;' />
-            <ModeBadge mode={tournament.mode} style='font-size: 0.95rem;' />
+            <ModeBadge mode={tournament.mode} style='font-size: 0.95rem;width:120px;' />
             <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed} style='font-size: 0.95rem;' />
             <OrganizerBadge organizer={tournament.organizer} style='font-size: 0.95rem;'/>
           </div>
