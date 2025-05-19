@@ -161,7 +161,7 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
             async with db.execute(get_user_player_info, {"player_id": self.player_id}) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    raise Problem("Player not found")
+                    raise Problem("Player not found", status=404)
                 user_id, player_id, player_name, player_country = row
                 current_player = PlayerBasic(player_id, player_name, player_country)
                 current_user = AltFlagUser(user_id, current_player)
