@@ -15,7 +15,7 @@
   });
 </script>
 
-<Dropdown>
+<Dropdown scroll>
   {#if check_permission(user_info, permissions.manage_teams)}
     <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">
       {$LL.NAVBAR.MOD_PANEL.APPROVE_TEAMS()}
