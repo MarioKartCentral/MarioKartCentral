@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.models import TournamentSquadDetails
 from common.data.models.tournament_registrations import TournamentPlayerDetailsShort
+from common.data.models.teams import RosterBasic
 
 @dataclass
 class TournamentPlacement():
@@ -43,6 +44,7 @@ class PlayerTournamentPlacement():
     placement_description: str | None
     is_disqualified: bool
     partners: list[TournamentPlayerDetailsShort]
+    rosters: list[RosterBasic]
 
 @dataclass
 class PlayerTournamentResults():
@@ -55,13 +57,14 @@ class TeamTournamentPlacement():
     tournament_name: str
     game: str
     mode: str
-    team_id: int | None
-    team_name: str | None
+    registration_id: int
+    squad_name: str | None
     date_start: int
     date_end: int
     placement: int | None
     placement_description: str | None
     is_disqualified: bool
+    rosters: list[RosterBasic]
 
 @dataclass
 class TeamTournamentResults():

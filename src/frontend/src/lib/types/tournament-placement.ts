@@ -1,5 +1,6 @@
 import type { TournamentPlayerDetailsShort } from './tournament-player';
 import type { TournamentSquad } from './tournament-squad';
+import type { RosterBasic } from './roster-basic';
 
 export type TournamentPlacementSimple = {
   registration_id: number;
@@ -41,6 +42,7 @@ export type PlayerTournamentPlacement = {
   placement_description: string | null;
   is_disqualified: boolean;
   partners: TournamentPlayerDetailsShort[] | null;
+  rosters: RosterBasic[];
 };
 
 export type PlayerTournamentResults = {
@@ -53,13 +55,14 @@ export type TeamTournamentPlacement = {
   tournament_name: string;
   game: string;
   mode: string;
-  team_id: number | null;
-  team_name: string | null;
+  registration_id: number;
+  squad_name: string | null;
   date_start: number;
   date_end: number;
   placement: number | null;
   placement_description: string | null;
   is_disqualified: boolean;
+  rosters: RosterBasic[];
 };
 
 export type TeamTournamentResults = {

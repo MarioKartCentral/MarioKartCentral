@@ -109,17 +109,14 @@
                     {placement.tournament_name}
                   </a>
                 </td>
-                {#if placement.team_id != null && placement.team_name != null}
                   <td class="mobile-hide">
                     <a
-                      href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
+                      href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
                     >
-                      {placement.team_name}
+                      {placement.squad_name}
                     </a>
                   </td>
-                {:else}
-                  <td></td>
-                {/if}
+
                 <td class="mobile-hide">
                   {toDate(placement.date_start)}
                   {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
