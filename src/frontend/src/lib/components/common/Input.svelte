@@ -13,7 +13,7 @@
 </script>
 
 <input {name} {minlength} {maxlength} bind:value={value} {...{type}} {required} {disabled} pattern={no_white_space ? pattern_exp.source : null}/>
-{#if value && !pattern_exp.test(value)}
+{#if no_white_space && value && !pattern_exp.test(value)}
     <Tooltip is_warning>
         {$LL.COMMON.NO_SPACE_INPUT_WARNING()}
     </Tooltip>
