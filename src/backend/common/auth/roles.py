@@ -4,6 +4,7 @@ SUPER_ADMINISTRATOR = "Super Administrator"
 ADMINISTRATOR = "Administrator"
 SITE_MODERATOR = "Site Moderator"
 SUPPORT_STAFF = "Support Staff"
+LOUNGE_STAFF = "Lounge Staff"
 SITE_SUPPORTER = "Site Supporter"
 EVENT_ADMIN = "Event Admin"
 EVENT_MOD = "Event Mod"
@@ -21,6 +22,7 @@ default_roles = [
     (6, SITE_SUPPORTER, 6),
     (7, BANNED, 99),
     (8, TEAM_LEADER_BANNED, 99),
+    (9, LOUNGE_STAFF, 5),
 ]
 
 id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
@@ -44,6 +46,12 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.IMPORT_V1_DATA,
         permissions.MANAGE_POSTS,
         permissions.VIEW_ALT_FLAGS,
+        permissions.MANAGE_API_TOKENS,
+        permissions.VIEW_USER_LOGINS,
+        permissions.VIEW_BASIC_IP_INFO,
+        permissions.VIEW_IP_ADDRESSES,
+        permissions.VIEW_FINGERPRINTS,
+        permissions.CREATE_DB_BACKUPS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -59,6 +67,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         series_permissions.MANAGE_SERIES_POSTS,
+        series_permissions.VIEW_HIDDEN_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
@@ -83,6 +92,12 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.EDIT_USER,
         permissions.MANAGE_POSTS,
         permissions.VIEW_ALT_FLAGS,
+        permissions.MANAGE_API_TOKENS,
+        permissions.VIEW_USER_LOGINS,
+        permissions.VIEW_BASIC_IP_INFO,
+        permissions.VIEW_IP_ADDRESSES,
+        permissions.VIEW_FINGERPRINTS,
+        permissions.CREATE_DB_BACKUPS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -98,6 +113,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         series_permissions.MANAGE_SERIES_POSTS,
+        series_permissions.VIEW_HIDDEN_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
@@ -116,6 +132,8 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.MANAGE_WORD_FILTER,
         permissions.MANAGE_POSTS,
         permissions.VIEW_ALT_FLAGS,
+        permissions.VIEW_USER_LOGINS,
+        permissions.VIEW_BASIC_IP_INFO,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -131,6 +149,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         series_permissions.MANAGE_SERIES_POSTS,
+        series_permissions.VIEW_HIDDEN_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
@@ -145,6 +164,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         series_permissions.MANAGE_SERIES_ROLES,
         series_permissions.EDIT_SERIES,
         series_permissions.MANAGE_SERIES_POSTS,
+        series_permissions.VIEW_HIDDEN_SERIES,
         tournament_permissions.EDIT_TOURNAMENT,
         tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS,
         tournament_permissions.MANAGE_PLACEMENTS,
@@ -174,6 +194,11 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         team_permissions.REGISTER_TOURNAMENT,
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
+    LOUNGE_STAFF: [
+        permissions.VIEW_ALT_FLAGS,
+        permissions.VIEW_USER_LOGINS,
+        permissions.VIEW_BASIC_IP_INFO,
+    ],
     SITE_SUPPORTER: [],
     BANNED: [],
     TEAM_LEADER_BANNED: [],
@@ -186,6 +211,7 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
     EVENT_ADMIN: [],
     EVENT_MOD: [],
     SUPPORT_STAFF: [],
+    LOUNGE_STAFF: [],
     SITE_SUPPORTER: [],
     BANNED: [
         tournament_permissions.REGISTER_TOURNAMENT,

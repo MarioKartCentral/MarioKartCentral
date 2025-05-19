@@ -28,18 +28,37 @@ class CreateTeamCommand(Command[int | None]):
         async with db_wrapper.connect() as db:
             valid_game_modes = {"mk8dx": ["150cc", "200cc"],
                                 "mkw": ["rt", "ct"],
-                                "mkt": ["vsrace"]}
+                                "mkt": ["vsrace"],
+                                "mkworld": ["150cc", "200cc"],}
             if self.game not in valid_game_modes:
                 raise Problem(f"Invalid game (valid games: {', '.join(valid_game_modes.keys())})", status=400)
             if self.mode not in valid_game_modes[self.game]:
                 raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
-            # we don't want users to be able to create teams that share the same name/tag as another team, but it should be possible if moderators wish
+            if len(self.name) > 32:
+                raise Problem("Team name must be 32 characters or less", status=400)
+            if len(self.tag) > 5:
+                raise Problem("Team tag must be 5 characters or less", status=400)
+            if len(self.description) > 200:
+                raise Problem("Team description must be 200 characters or less", status=400)
+            # we don't want users to be able to create teams that share the same name/tag as another team for this game, but it should be possible if moderators wish
             if not self.is_privileged:
-                async with db.execute("SELECT COUNT(id) FROM team_rosters WHERE name = ? OR tag = ? AND is_active = 0", (self.name, self.tag)) as cursor:
+                async with db.execute("""SELECT COUNT(r.id) 
+                                      FROM team_rosters r
+                                      JOIN teams t ON r.team_id = t.id
+                                      WHERE ((r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
+                                      OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?))
+                                      AND r.game = ? AND r.mode = ? AND r.is_active = 1 AND t.is_historical = 0""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
-                        raise Problem('An existing team already has this name or tag', status=400)
+                        raise Problem('An existing team for this game/mode already has this name or tag', status=400)
+            if not self.is_privileged and self.user_id is not None:
+                async with db.execute("""SELECT t.id FROM teams t
+                                        JOIN user_team_roles ut ON t.id = ut.team_id
+                                        WHERE t.approval_status = 'pending' AND ut.user_id = ?""", (self.user_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        raise Problem("You already have a pending team in the approval queue; you must wait for a staff member to approve/deny this team before creating another team", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, None, self.approval_status,
@@ -200,6 +219,12 @@ class EditTeamCommand(Command[None]):
     mod_player_id: int | None
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.name) > 32:
+            raise Problem("Team name must be 32 characters or less", status=400)
+        if len(self.tag) > 5:
+            raise Problem("Team tag must be 5 characters or less", status=400)
+        if len(self.description) > 200:
+            raise Problem("Team description must be 200 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -219,12 +244,12 @@ class EditTeamCommand(Command[None]):
                 approval_status = ?,
                 is_historical = ?
                 WHERE id = ?""",
-                (self.name, self.tag, self.description, self.language, self.color, logo_path, self.approval_status, self.is_historical, self.team_id))
+                (self.name.strip(), self.tag.strip(), self.description, self.language, self.color, logo_path, self.approval_status, self.is_historical, self.team_id))
             # add a team name/tag change log if we're changing one of those values
             if team_name != self.name or team_tag != self.tag:
                 now = int(datetime.now(timezone.utc).timestamp())
                 await db.execute("""INSERT INTO team_edits(team_id, old_name, new_name, old_tag, new_tag, date, approval_status, handled_by)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, team_name, self.name, team_tag, self.tag, now, "approved", self.mod_player_id))
+                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, team_name, self.name.strip(), team_tag.strip(), self.tag, now, "approved", self.mod_player_id))
             # if team is approved, approve all rosters that are pending; if team is not approved, change all approved rosters to pending
             if self.approval_status == "approved":
                 await db.execute("UPDATE team_rosters SET approval_status = 'approved' WHERE team_id = ? AND approval_status = 'pending'", (self.team_id,))
@@ -266,6 +291,8 @@ class ManagerEditTeamCommand(Command[None]):
     remove_logo: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.description) > 200:
+            raise Problem("Team description must be 200 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -303,6 +330,10 @@ class RequestEditTeamCommand(Command[None]):
     tag: str
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.name) > 32:
+            raise Problem("Team name must be 32 characters or less", status=400)
+        if len(self.tag) > 5:
+            raise Problem("Team tag must be 5 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -447,6 +478,10 @@ class ListTeamsCommand(Command[TeamList]):
                     where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
                     variable_parameters.extend([f"%{filter_value}%", f"%{filter_value}%"])
 
+            if filter.name_or_tag is not None:
+                where_clauses.append("(t.name LIKE ? OR t.tag LIKE ? OR r.name LIKE ? OR r.tag LIKE ?)")
+                variable_parameters.extend([f"%{filter.name_or_tag}%"]*4)
+
             append_team_roster_like_filter(filter.name, "name")
             append_team_roster_like_filter(filter.tag, "tag")
             append_equal_filter(filter.game, "r.game")
@@ -454,24 +489,17 @@ class ListTeamsCommand(Command[TeamList]):
             append_equal_filter(filter.language, "t.language")
             append_equal_filter(filter.is_recruiting, "r.is_recruiting")
             append_equal_filter(filter.is_active, "r.is_active")
+            append_equal_filter(filter.is_historical, "t.is_historical")
 
-            # query that determines if a team has at least 1 member in an active roster
-            member_query = """SELECT t.id
-                                FROM teams t
-                                JOIN team_rosters r ON t.id = r.team_id
-                                JOIN team_members m ON m.roster_id = r.id
-                                WHERE m.leave_date IS NULL AND r.is_active = 1
-                            """
-            # we should include teams which have 0 members but aren't listed as historical in this filter
-            if filter.is_historical is True:
-                historical_clause = f"(t.is_historical = ? OR t.id NOT IN ({member_query}))"
-                where_clauses.append(historical_clause)
-                variable_parameters.append(filter.is_historical)
-            # require that teams have at least 1 member
-            elif filter.is_historical is False:
-                historical_clause = f"(t.is_historical = ? AND t.id IN ({member_query}))"
-                where_clauses.append(historical_clause)
-                variable_parameters.append(filter.is_historical)
+            if filter.min_player_count:
+                player_count_query = """SELECT r.team_id
+                                    FROM team_members m
+                                    JOIN team_rosters r ON m.roster_id = r.id
+                                    WHERE m.leave_date IS NULL AND r.is_active = 1
+                                    GROUP BY r.team_id
+                                    HAVING COUNT(r.team_id) >= ?"""
+                where_clauses.append(f"t.id IN ({player_count_query})")
+                variable_parameters.append(filter.min_player_count)
 
             if self.approval_status:
                 append_equal_filter(self.approval_status, "t.approval_status")

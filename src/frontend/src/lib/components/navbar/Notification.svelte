@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import type { Notification } from '$lib/types/notification';
   import { have_unread_notification, user } from '$lib/stores/stores';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
@@ -88,7 +89,7 @@
         <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
       {/if}
     {/each}
-    <DropdownItem href="/user/notifications"><div class="text-center">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</div></DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/user/notifications"><div class="text-center">{$LL.NOTIFICATION.SEE_ALL_NOTIFICATIONS()}</div></DropdownItem>
     {#if hasUnread}
       <DropdownDivider divClass="my-1 h-px bg-gray-500 dark:bg-gray-600"/>
       <DropdownItem on:click={makeAllNotificationsAsRead}><div class="text-center">{$LL.NOTIFICATION.MARK_ALL_READ()}</div></DropdownItem>

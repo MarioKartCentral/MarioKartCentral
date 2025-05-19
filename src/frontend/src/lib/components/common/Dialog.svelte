@@ -66,7 +66,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 90%;
+    width: 100%;
     min-height: 200px;
     transform: translate(-50%, -50%);
     background-color: rgba(64, 64, 64, 0.9);
@@ -74,7 +74,7 @@
   @media (min-width: 600px) {
     .container {
       min-width: 400px;
-      width: auto;
+      max-width: 700px;
     }
   }
   .header {
@@ -85,7 +85,7 @@
   .content {
     padding: 15px;
     max-height: 500px;
-    overflow: auto;
+    overflow-y: scroll;
   }
   .exit {
     position: absolute;

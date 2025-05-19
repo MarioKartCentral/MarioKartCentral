@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { MyTournamentRegistration, RegistrationDetails } from '$lib/types/tournaments/my-tournament-registration';
+  import type { MyTournamentRegistration } from '$lib/types/tournaments/my-tournament-registration';
   import type { Tournament } from '$lib/types/tournament';
+  import type { TournamentPlayer } from '$lib/types/tournament-player';
   import TournamentInviteList from './TournamentInviteList.svelte';
   import MySquad from './MySquad.svelte';
-  import TournamentPlayerList from '../TournamentPlayerList.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { BadgeCheckSolid } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
@@ -11,17 +11,20 @@
   export let registration: MyTournamentRegistration;
   export let tournament: Tournament;
 
+  let working = false;
+
   function getInvitedSquads() {
-    let invite_registrations = registration.registrations.filter((r) => r.player.is_invite);
-    // this line is mostly for the linter to know that none of the squad values will be null
-    return invite_registrations.map((r) => r.squad).filter((s) => s !== null);
+    let invite_registrations = registration.registrations.filter((r) => r.is_invite);
+    return invite_registrations.map((r) => r.squad);
   }
 
-  async function toggleCheckin(reg: RegistrationDetails) {
+  async function toggleCheckin(player: TournamentPlayer | null) {
+    if(!player) return;
+    working = true;
     const payload = {
       tournament_id: tournament.id,
-      squad_id: reg.player.squad_id,
-      player_id: reg.player.player_id
+      registration_id: player.registration_id,
+      player_id: player.player_id
     }
     const endpoint = `/api/tournaments/${tournament.id}/toggleCheckin`;
     const response = await fetch(endpoint, {
@@ -29,6 +32,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -46,17 +50,17 @@
     <TournamentInviteList {tournament} squads={getInvitedSquads()}/>
   {/if}
 {/if}
-{#each registration.registrations.filter((r) => !r.player.is_invite) as reg}
+{#each registration.registrations.filter((r) => !r.is_invite) as reg}
   <div class="registration">
     {#if tournament.checkins_enabled}
       <div class="section">
         {#if tournament.checkins_open}
-          {#if !reg.player.is_checked_in}
-            <Button on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
+          {#if reg.player && !reg.player.is_checked_in}
+            <Button {working} on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
             <div>
               {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
             </div>
-          {:else}
+          {:else if reg.player}
             <div class="flex">
               <BadgeCheckSolid/>
               <div>
@@ -69,7 +73,7 @@
               {/if}
             </div>
             <div>
-              <Button size="xs" on:click={() => toggleCheckin(reg)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
+              <Button {working} size="xs" on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
             </div>
           {/if}
         {:else}
@@ -77,7 +81,7 @@
         {/if}
       </div>
     {/if}
-    {#if tournament.verification_required && ((reg.squad && !reg.squad.is_approved) || (!reg.squad && !reg.player.is_approved))}
+    {#if tournament.verification_required && ((!reg.squad.is_approved) || (reg.player && !reg.player.is_approved))}
       <div class="section">
         <div class="pending">
           {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
@@ -85,12 +89,7 @@
         {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
       </div>
     {/if}
-    {#if reg.squad}
-      <MySquad {tournament} squad={reg.squad} my_player={reg.player}/>
-    {:else}
-      <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
-      <TournamentPlayerList {tournament} players={[reg.player]} my_player={reg.player}/>
-    {/if}
+    <MySquad {tournament} registration={reg}/>
   </div>
 {/each}
 

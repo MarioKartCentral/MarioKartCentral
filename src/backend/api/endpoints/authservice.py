@@ -1,4 +1,4 @@
-import traceback
+import logging
 from starlette.requests import Request
 from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route
@@ -35,8 +35,11 @@ def create_email_config():
 
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
+    time = datetime.now(timezone.utc)
     user = await handle(GetUserDataFromEmailCommand(body.email))
     if user:
+        if user.password_hash is None:
+            raise Problem("Invalid login details", status=401)
         try:
             pw_hasher.verify(user.password_hash, body.password)
         except:
@@ -65,24 +68,24 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
     
     persistent_session_id = request.cookies.get('persistentSession', None)
-    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-    if not ip_address:
-        ip_address = request.client.host if request.client else None
+    ip_address: str | None = request.state.ip_address
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     async def log_ip_fingerprint():
         if appsettings.ENABLE_IP_LOGGING:
-            await handle(LogUserIPCommand(user.id, ip_address))
+            referer = request.headers.get('Referer', None)
+            await handle(EnqueueUserActivityCommand(user.id, ip_address, request.url.path, time, referer))
         await handle(LogFingerprintCommand(body.fingerprint))
         
     resp = JSONResponse(return_user, status_code=200, background=BackgroundTask(log_ip_fingerprint))
-    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
     if not persistent_session_id:
-        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
     return resp
 
 @bind_request_body(SignupRequestData)
 async def sign_up(request: Request, body: SignupRequestData) -> Response:
+    time = datetime.now(timezone.utc)
     existing_user = await handle(GetUserDataFromEmailCommand(body.email))
     if existing_user:
         raise Problem("User with this email already exists", status=400)
@@ -110,9 +113,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # login user after registering
     persistent_session_id = request.cookies.get('persistentSession', None)
-    ip_address = request.headers.get('CF-Connecting-IP', None) # use cloudflare headers if exists
-    if not ip_address:
-        ip_address = request.client.host if request.client else None
+    ip_address: str | None = request.state.ip_address
     session = await handle(CreateSessionCommand(user.id, ip_address, persistent_session_id, body.fingerprint))
 
     # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
@@ -122,16 +123,17 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
         await handle(command)
         
         if appsettings.ENABLE_IP_LOGGING:
-            await handle(LogUserIPCommand(user.id, ip_address))
+            referer = request.headers.get('Referer', None)
+            await handle(EnqueueUserActivityCommand(user.id, ip_address, request.url.path, time, referer))
         await handle(LogFingerprintCommand(body.fingerprint))
 
     resp = JSONResponse(user, status_code=201, background=BackgroundTask(send_email_and_log))
-    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()))
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
     if not persistent_session_id:
-        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()))
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
     return resp
 
-@require_logged_in
+@require_logged_in(session_only=True)
 async def log_out(request: Request) -> Response:
     session_id = request.state.session_id
     await handle(DeleteSessionCommand(session_id))
@@ -139,7 +141,7 @@ async def log_out(request: Request) -> Response:
     resp.delete_cookie('session')
     return resp
 
-@require_logged_in
+@require_logged_in()
 async def send_confirmation_email(request: Request) -> Response:
     email_config = create_email_config()
     command = SendEmailVerificationCommand(request.state.user.id, email_config)
@@ -172,12 +174,40 @@ async def reset_password_with_token(request: Request, body: ResetPasswordTokenRe
     return JSONResponse({})
 
 @bind_request_body(ResetPasswordRequestData)
-@require_logged_in
+@require_logged_in()
 async def reset_password(request: Request, body: ResetPasswordRequestData):
     new_pw_hash = pw_hasher.hash(body.new_password)
     command = ResetPasswordCommand(request.state.user.id, body.old_password, new_pw_hash)
     await handle(command)
     return JSONResponse({})
+
+@bind_request_body(TransferAccountRequestData)
+async def transfer_account(request: Request, body: TransferAccountRequestData):
+    command = GetMKCV1UserByPlayerIDCommand(body.player_id)
+    mkc_user = await handle(command)
+    if not mkc_user:
+        raise Problem("Old site account not found", status=404)
+    user = await handle(TransferMKCV1UserCommand(mkc_user.email, None, mkc_user.register_date,
+        mkc_user.player_id, mkc_user.about_me,
+        mkc_user.user_roles, mkc_user.series_roles,
+        mkc_user.team_roles))
+    async def send_password_reset():
+        email_config = create_email_config()
+        command = SendPasswordResetEmailCommand(user.email, email_config)
+        await handle(command)
+    return JSONResponse({}, background=BackgroundTask(send_password_reset))
+
+@bind_request_body(ChangeEmailRequestData)
+@require_logged_in()
+async def change_email(request: Request, body: ChangeEmailRequestData):
+    command = ChangeEmailCommand(request.state.user.id, body.new_email, body.password)
+    await handle(command)
+
+    async def send_confirmation_email():
+        email_config = create_email_config()
+        command = SendEmailVerificationCommand(request.state.user.id, email_config)
+        await handle(command)
+    return JSONResponse({}, background=BackgroundTask(send_confirmation_email))
 
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
@@ -196,6 +226,14 @@ async def link_discord(request: Request) -> Response:
 async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallbackData) -> Response:
     redirect_params = ""
     user_data = request.state.user
+    # If they have not completed registration yet, redirect to registration page, otherwise edit profile page
+    if not request.state.user.player_id:
+        redirect_path = "/user/player-signup"
+    else:
+        redirect_path = "/registry/players/edit-profile"
+    if discord_auth_data.error:
+        return RedirectResponse(f"{redirect_path}{redirect_params}", 302)
+    assert discord_auth_data.code is not None
     try:
         if appsettings.ENABLE_DISCORD:
             command = LinkUserDiscordCommand(
@@ -210,21 +248,18 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
             command = CreateFakeUserDiscordCommand(user_data.id)
         await handle(command)
             
-    except Exception as e:
-        if isinstance(e, Problem):
-            print(f"Problem raised during Discord auth callback: {e}")
-        traceback.print_exc()
+    except Exception:
+        logging.error("Unexpected error occurred during Discord auth callback", exc_info=True)
         redirect_params = "?auth_failed=1"
 
-    # If they have not completed registration yet, redirect to registration page, otherwise edit profile page
-    if not request.state.user.player_id:
-        redirect_path = "/user/player-signup"
-    else:
-        redirect_path = "/registry/players/edit-profile"
+    async def sync_avatar():
+        if appsettings.ENABLE_DISCORD:
+            command = SyncDiscordAvatarCommand(request.state.user.id)
+            await handle(command)
 
-    return RedirectResponse(f"{redirect_path}{redirect_params}", 302)
+    return RedirectResponse(f"{redirect_path}{redirect_params}", 302, background=BackgroundTask(sync_avatar))
 
-@require_logged_in
+@require_logged_in()
 async def my_discord_data(request: Request) -> Response:
     command = GetUserDiscordCommand(request.state.user.id)
     discord_data = await handle(command)
@@ -236,7 +271,7 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
     discord_data = await handle(command)
     return JSONResponse(discord_data)
 
-@require_logged_in
+@require_logged_in()
 async def delete_discord_data(request: Request) -> JSONResponse:
     command = DeleteUserDiscordDataCommand(request.state.user.id, appsettings.DISCORD_CLIENT_ID, str(appsettings.DISCORD_CLIENT_SECRET))
     await handle(command)
@@ -248,6 +283,50 @@ async def sync_discord_avatar(request: Request) -> JSONResponse:
     avatar_path = await handle(command)
     return JSONResponse({"avatar": avatar_path})
 
+@bind_request_body(RemovePlayerAvatarRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> JSONResponse:
+    command = RemoveDiscordAvatarCommand(body.player_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(CreateAPITokenRequestData)
+@require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
+async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> JSONResponse:
+    user_id = request.path_params['user_id']
+    command = CreateAPITokenCommand(user_id, request.state.user.id, body.name)
+    await handle(command)
+    return JSONResponse({})
+
+@require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
+async def user_api_tokens(request: Request) -> JSONResponse:
+    user_id = request.path_params['user_id']
+    command = GetUserAPITokensCommand(int(user_id))
+    tokens = await handle(command)
+    return JSONResponse(tokens)
+
+@require_logged_in(session_only=True)
+async def my_api_tokens(request: Request) -> JSONResponse:
+    command = GetUserAPITokensCommand(request.state.user.id)
+    tokens = await handle(command)
+    return JSONResponse(tokens)
+
+@bind_request_body(DeleteAPITokenRequestData)
+@require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
+async def mod_delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+    user_id = request.path_params['user_id']
+    command = DeleteAPITokenCommand(body.token_id, user_id)
+    await handle(command)
+    return JSONResponse({})
+
+@bind_request_body(DeleteAPITokenRequestData)
+@require_logged_in(session_only=True)
+async def delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+    user_id = request.state.user.id
+    command = DeleteAPITokenCommand(body.token_id, user_id)
+    await handle(command)
+    return JSONResponse({})
+
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
     Route('/api/user/login', log_in, methods=["POST"]),
@@ -258,10 +337,18 @@ routes = [
     Route('/api/user/check_password_token', check_password_reset_token, methods=["POST"]),
     Route('/api/user/reset_password_token', reset_password_with_token, methods=["POST"]),
     Route('/api/user/reset_password', reset_password, methods=["POST"]),
+    Route('/api/user/transfer_account', transfer_account, methods=["POST"]),
+    Route('/api/user/change_email', change_email, methods=["POST"]),
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
     Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
     Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
+    Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
+    Route('/api/user/{user_id:int}/create_api_token', create_api_token, methods=["POST"]),
+    Route('/api/user/{user_id:int}/user_api_tokens', user_api_tokens),
+    Route('/api/user/{user_id:int}/delete_api_token', mod_delete_api_token, methods=["POST"]),
+    Route('/api/user/api_tokens', my_api_tokens),
+    Route('/api/user/delete_api_token', delete_api_token, methods=["POST"]),
 ]

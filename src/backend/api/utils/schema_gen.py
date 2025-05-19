@@ -52,7 +52,7 @@ class SchemaGenerator(BaseSchemaGenerator):
     def get_schema(self, routes: list[BaseRoute]):
         schema: dict[Any, Any] = { 
             "openapi": "3.0.0", 
-            "info": {"title": "Mario Kart Central API", "version": "1.0"},
+            "info": {"title": "MKCentral API", "version": "1.0"},
         }
         schema.setdefault("paths", {})
 
@@ -136,9 +136,19 @@ class SchemaGenerator(BaseSchemaGenerator):
                     "type": "apiKey",
                     "in": "cookie",
                     "name": "session"
+                },
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT",
                 }
-            }
+            },
         }
+        schema["security"] = [
+            {
+                "bearerAuth": [],
+            }
+        ]
         return schema
 
 schemas = SchemaGenerator()

@@ -22,7 +22,7 @@
         for(let placement of placements.placements) {
             // if it's a solo tournament, we want to use player ID instead of registration ID
             // since you can't view tournament player IDs on frontend
-            let curr_line = `${placement.player ? placement.player.player_id : placement.registration_id}\t\t`
+            let curr_line = `${placement.registration_id}\t\t`
             if(placement.placement_lower_bound) {
                 curr_line += `${placement.placement}-${placement.placement_lower_bound}`;
             }
@@ -113,9 +113,7 @@
     <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
         <div slot="header_content">
             <Button href="/{$page.params.lang}/tournaments/edit_placements?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_INTERACTIVE_INPUT()}</Button>
-            {#if placements.is_squad}
-                <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
-            {/if}
+            <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
         </div>
         <div>
             {$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_INSTRUCTIONS()}

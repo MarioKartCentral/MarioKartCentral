@@ -7,6 +7,7 @@
     export let player: PlayerInfo | null;
     export let is_privileged = false;
     let selected_type: string | null = null;
+    let working = false;
 
     const fc_limits: { [key: string]: number } = { switch: 1, mkt: 1, mkw: 4, '3ds': 1, nnid: 1 };
 
@@ -21,6 +22,7 @@
     }
 
     async function addFC(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             fc: data.get('fc')?.toString().replaceAll(" ", "-"),
@@ -35,6 +37,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
 
         if (response.status < 300) {
@@ -45,6 +48,7 @@
     }
 
     async function forceAddFC(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             player_id: player?.id,
@@ -60,6 +64,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
 
         if (response.status < 300) {
@@ -102,7 +107,7 @@
                     <input name="description" placeholder={$LL.FRIEND_CODES.DESCRIPTION()} maxlength=200/>
                 </div>
             </div>
-            <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+            <Button {working} type="submit">{$LL.COMMON.SUBMIT()}</Button>
         </div>
     </form>
 {/if}

@@ -77,13 +77,9 @@
     <form on:submit|preventDefault={search}>
         <div class="flex">
             <div class="option">
-                <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline/>
+                <GameModeSelect bind:game={game} bind:mode={mode} flex all_option inline hide_labels/>
             </div>
-            
             <div class="option">
-                <div>
-                    <label for="name">{$LL.COMMON.NAME()}</label>
-                </div>
                 <div>
                     <input name="name" bind:value={name} placeholder={$LL.TOURNAMENTS.SEARCH_FOR_TOURNAMENTS()}/>
                 </div>     
@@ -105,12 +101,8 @@
                 </div>
             </div>
             
-            
             {#if check_permission(user_info, tournament_permissions.view_hidden_tournament)}
                 <div class="option">
-                    <div>
-                        <label for="show_hidden"/>
-                    </div>
                     <select bind:value={show_hidden}>
                         <option value={null}>{$LL.TOURNAMENTS.SHOW_HIDDEN_PRIVATE_TOURNAMENTS()}</option>
                         <option value={true}>{$LL.TOURNAMENTS.PUBLIC_TOURNAMENTS_ONLY()}</option>
@@ -145,19 +137,19 @@
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        margin-bottom: 10px;
+        /* margin-bottom: 10px; */
     }
     input {
         width: 200px;
     }
     div.centered {
         text-align: center;
-        margin: auto auto 10px auto;
+        margin: 10px auto 10px auto;
     }
-    :global(label) {
+    label {
         margin-left: 5px;
         margin-right: 10px;
         display: inline-block;
-        width: 50px;
+        width: 40px;
     }
 </style>

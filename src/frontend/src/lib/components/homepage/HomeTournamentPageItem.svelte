@@ -4,6 +4,7 @@
     import TypeBadge from '../badges/TypeBadge.svelte';
     import ModeBadge from '../badges/ModeBadge.svelte';
     import GameBadge from '../badges/GameBadge.svelte';
+    import OrganizerBadge from '../badges/OrganizerBadge.svelte';
     import Button from '$lib/components/common/buttons/Button.svelte';
     export let tournament: TournamentListItem;
     import LL from '$i18n/i18n-svelte';
@@ -21,8 +22,8 @@
     <div class="flex flex-col justify-evenly">
         <!-- logo and name -->
         <div class="flex gap-[5px] mobile-center">
-            <div class='flex items-center w-[25px] h-[25px]'>
-                {#if tournament.logo}
+            {#if tournament.logo}
+                <div class='flex items-center w-[25px] h-[25px]'>
                     {#if tournament.series_id}
                         <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">
                             <img src={tournament.logo} alt={tournament.name} />
@@ -32,22 +33,22 @@
                             <img src={tournament.logo} alt={tournament.name} />
                         </a>
                     {/if}
-                    
-                {/if}
-            </div>
+                </div>
+            {/if}
             <h3>
                 <a
-                    class="text-lg font-bold hover:text-emerald-400 p-1"
+                    class="text-lg font-bold p-1"
                     href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
                     >{tournament.name}
                 </a>
             </h3>
         </div>
         <!-- badges -->
-        <div class="badges flex gap-[5px] mobile-center">
+        <div class="badges flex gap-[5px] flex-wrap mobile-center">
             <GameBadge game={tournament.game} style='font-size: 0.95rem;' />
-            <ModeBadge mode={tournament.mode} style='font-size: 0.95rem;' />
+            <ModeBadge mode={tournament.mode} style='font-size: 0.95rem;width:120px;' />
             <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed} style='font-size: 0.95rem;' />
+            <OrganizerBadge organizer={tournament.organizer} style='font-size: 0.95rem;'/>
           </div>
     </div>
     <!-- date and register / view tournament button -->
@@ -93,7 +94,7 @@
         justify-content: space-between;
         background-color: rgba(29, 33, 33, 0.8);
         padding: 12px 10px;
-        margin: 5px auto;
+        margin: auto;
     }
     .container:nth-child(odd) {
         background-color: rgba(33, 39, 39, 0.8);

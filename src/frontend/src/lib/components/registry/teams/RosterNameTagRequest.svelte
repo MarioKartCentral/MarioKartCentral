@@ -4,6 +4,7 @@
     import LL from "$i18n/i18n-svelte";
     import { onMount } from "svelte";
     import type { RosterEditRequest } from "$lib/types/roster-edit-request";
+    import Input from "$lib/components/common/Input.svelte";
 
     export let roster: TeamRoster;
 
@@ -12,6 +13,7 @@
 
     let days_until_change = 0;
     let days_between_changes = 90;
+    let working = false;
 
     onMount(async() => {
         const res = await fetch(`/api/registry/teams/${roster.team_id}/rosterEditRequests/${roster.id}`);
@@ -31,6 +33,7 @@
     });
 
     async function editNameTag(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+        working = true;
         const data = new FormData(event.currentTarget);
         const payload = {
             roster_id: roster.id,
@@ -45,6 +48,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         });
+        working = false;
         const result = await response.json();
         if (response.status < 300) {
             window.location.reload();
@@ -67,24 +71,24 @@
                 {$LL.TEAMS.EDIT.NAME_TAG_CHANGE_PENDING()}
             </div>
             <div>
-                <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
+                <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
                 <input name="name" type="text" value={r.new_name} required disabled/>
             </div>
             <div>
-                <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
+                <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
                 <input name="tag" type="text" value={r.new_tag} required disabled/>
             </div>
         {/each}
     {:else}
         <div>
-            <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-            <input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$" maxlength=32/>
+            <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
+            <Input name="name" type="text" value={roster.name} required disabled={days_until_change > 0} maxlength={32} no_white_space/>
         </div>
         <div>
-            <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-            <input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} pattern="^\S.*\S$|^\S$" maxlength=5/>
+            <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
+            <Input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} maxlength={5} no_white_space/>
         </div>
-        <Button type="submit" disabled={days_until_change > 0}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+        <Button type="submit" disabled={days_until_change > 0} {working}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}
 </form>
 

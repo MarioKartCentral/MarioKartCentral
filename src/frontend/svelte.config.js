@@ -7,6 +7,7 @@ const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 function getEntriesForLocale(locale) {
   return [
     `/${locale}`,
+    `/${locale}/admin/backup_db`,
     `/${locale}/tournaments/details`,
     `/${locale}/tournaments/create`,
     `/${locale}/tournaments/create/select_template`,
@@ -56,7 +57,10 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/approve_teams`,
     `/${locale}/moderator/approve_team_edits`,
     `/${locale}/moderator/approve_transfers`,
+    `/${locale}/moderator/fingerprints`,
     `/${locale}/moderator/friend_code_edits`,
+    `/${locale}/moderator/ip_history`,
+    `/${locale}/moderator/ip_search`,
     `/${locale}/moderator/manage_user_roles`,
     `/${locale}/moderator/merge_players`,
     `/${locale}/moderator/merge_teams`,
@@ -66,11 +70,14 @@ function getEntriesForLocale(locale) {
     `/${locale}/moderator/users`,
     `/${locale}/moderator/users/edit`,
     `/${locale}/moderator/word_filter`,
+    `/${locale}/user/api-tokens`,
     `/${locale}/user/confirm-email`,
     `/${locale}/user/login`,
     `/${locale}/user/notifications`,
     `/${locale}/user/player-signup`,
+    `/${locale}/user/privacy-policy`,
     `/${locale}/user/reset-password`,
+    `/${locale}/user/terms`,
   ];
 }
 

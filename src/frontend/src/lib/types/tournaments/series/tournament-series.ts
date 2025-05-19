@@ -11,6 +11,7 @@ export type TournamentSeriesBasic = {
   logo: string | null;
   organizer: string;
   location: string;
+  discord_invite: string | null;
 };
 
 export type TournamentSeries = TournamentSeriesBasic & {

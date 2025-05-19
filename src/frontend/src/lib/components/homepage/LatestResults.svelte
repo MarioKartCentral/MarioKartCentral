@@ -35,12 +35,12 @@
                 description: placement.placement_description, tie: false,
                 bounded: placement.placement_lower_bound ? true : false,
                 placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
-                player: placement.player, squad: placement.squad
+                squad: placement.squad
             })
         }
         tmp.sort((a, b) => sort_placement_list(a, b));
         playerPlacement = getPlayerPlacement(tmp);
-        placement_list = tmp.slice(0, 10);
+        placement_list = tmp.slice(0, 16);
     }
 
     function getPlayerPlacement(list: PlacementOrganizer[]) {
@@ -49,13 +49,6 @@
             return null;
         
         for (let placement of list) {
-            // ffa tournaments
-            if (placement.player?.player_id === player.id)
-                return placement.placement;
-
-            // squad tournaments
-            if (!placement.squad)
-                return null;
             for (let p of placement.squad.players) {
                 if (p.player_id === player.id)
                     return placement.placement;
@@ -100,9 +93,9 @@
                 {$LL.HOMEPAGE.YOU_PLACED({placement: playerPlacement})}
             </div>
         {/if}
-        <div class="flex flex-col {playerPlacement ? 'mt-[14px] gap-[1px]' : 'mt-[13px] gap-[4px]'}">
+        <div class="flex flex-col {playerPlacement ? 'mt-[14px]' : 'mt-[13px]'}">
             {#each placement_list as placement}
-                <PlacementItem {placement} is_squad={tournament.is_squad} is_edit={false} is_homepage={true}/>
+                <PlacementItem {placement} is_edit={false} is_homepage={true}/>
             {/each}
         </div>
     {/if}

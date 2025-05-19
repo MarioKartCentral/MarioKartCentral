@@ -1,6 +1,6 @@
-# MarioKartCentral Documentation
+# MKCentral Documentation
 
-Welcome to the MarioKartCentral documentation! This documentation provides detailed information about the system's architecture, implementation, and key concepts.
+Welcome to the MKCentral documentation! This documentation provides detailed information about the system's architecture, implementation, and key concepts.
 
 ## Documentation Structure
 
@@ -25,7 +25,7 @@ The documentation is organized into several key documents that cover different a
 
 ## Contributing
 
-If you're planning to contribute to MarioKartCentral, make sure to:
+If you're planning to contribute to MKCentral, make sure to:
 
 1. Read through all documentation thoroughly before making changes
 2. Follow the established patterns and practices shown in these docs

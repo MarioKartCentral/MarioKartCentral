@@ -9,9 +9,10 @@
 
   export let player: PlayerInfo | null = null;
   export let fc_type: string | null = null;
-  export let squad_id: number | null = null;
+  export let registration_id: number | null = null;
   export let is_shadow: boolean | null = false;
   export let include_shadow_players = false;
+  export let has_connected_user: boolean | null = null;
 
   let query = '';
   let results: PlayerInfo[] = [];
@@ -32,13 +33,28 @@
       results = [];
       return;
     }
-    const name_var = query ? `&name_or_fc=${query}` : ``;
-    const type_var = fc_type ? `&fc_type=${fc_type}` : ``;
-    const squad_var = squad_id ? `&squad_id=${squad_id}` : ``;
-    const shadow_var = is_shadow !== null ? `&is_shadow=${is_shadow}` : ``;
-    const include_shadow_var = `&include_shadow_players=${include_shadow_players}`;
-    const url = `/api/registry/players?detailed=true&matching_fcs_only=true${name_var}${type_var}${squad_var}${shadow_var}${include_shadow_var}`;
-    console.log(url);
+    let query_parameters = [];
+    query_parameters.push("detailed=true");
+    query_parameters.push("matching_fcs_only=true");
+    query_parameters.push(`include_shadow_players=${include_shadow_players}`);
+    if(query) {
+      query_parameters.push(`name_or_fc=${query}`);
+    }
+    if(fc_type) {
+      query_parameters.push(`fc_type=${fc_type}`);
+    }
+    if(registration_id) {
+      query_parameters.push(`registration_id=${registration_id}`);
+    }
+    if(is_shadow !== null) {
+      query_parameters.push(`is_shadow=${is_shadow}`);
+    }
+    if(has_connected_user !== null) {
+      query_parameters.push(`has_connected_user=${has_connected_user}`);
+    }
+    const query_string = query_parameters.length ? query_parameters.join("&") : "";
+
+    const url = `/api/registry/players?${query_string}`;
     const res = await fetch(url);
     if (res.status === 200) {
       const body = await res.json();
@@ -118,7 +134,7 @@
     z-index: 1;
   }
   div.table-inner {
-    max-height: 100px;
+    max-height: 150px;
     overflow-y: scroll;
   }
   tr {

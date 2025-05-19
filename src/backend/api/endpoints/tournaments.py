@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission, require_tournament_permission, require_series_permission, get_user_info, check_tournament_visiblity
+from api.auth import require_permission, require_tournament_permission, require_series_permission, get_user_info, check_tournament_visiblity, check_series_visibility
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from api.utils.word_filter import check_word_filter
@@ -56,6 +56,7 @@ async def edit_series(request: Request, body: EditSeriesRequestData) -> JSONResp
     await handle(command)
     return JSONResponse({})
 
+@check_series_visibility
 async def series_info(request: Request) -> JSONResponse:
     series_id = request.path_params['series_id']
     command = GetSeriesDataCommand(series_id)
@@ -63,8 +64,9 @@ async def series_info(request: Request) -> JSONResponse:
     return JSONResponse(series)
 
 @bind_request_query(SeriesFilter)
+@get_user_info
 async def series_list(request: Request, filter: SeriesFilter) -> JSONResponse:
-    command = GetSeriesListCommand(filter)
+    command = GetSeriesListCommand(filter, request.state.user)
     series = await handle(command)
     return JSONResponse(series)
 
@@ -97,6 +99,12 @@ async def template_list(request: Request, filter: TemplateFilter) -> JSONRespons
     templates = await handle(command)
     return JSONResponse(templates)
 
+async def series_placements(request: Request) -> JSONResponse:
+    series_id = request.path_params['series_id']
+    command = GetTournamentSeriesWithTournaments(series_id)
+    template = await handle(command)
+    return JSONResponse(template)
+
 routes = [
     Route('/api/tournaments/create', create_tournament, methods=["POST"]),
     Route('/api/tournaments/{tournament_id:int}/edit', edit_tournament, methods=["POST"]),
@@ -109,5 +117,6 @@ routes = [
     Route('/api/tournaments/templates/create', create_template, methods=['POST']),
     Route('/api/tournaments/templates/{template_id:int}/edit', edit_template, methods=['POST']),
     Route('/api/tournaments/templates/{template_id:int}', template_info),
-    Route('/api/tournaments/templates/list', template_list)    
+    Route('/api/tournaments/templates/list', template_list),
+    Route('/api/tournaments/series/{series_id:int}/placements', series_placements)
 ]

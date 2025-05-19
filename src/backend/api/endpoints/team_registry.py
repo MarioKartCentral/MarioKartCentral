@@ -221,6 +221,8 @@ async def deny_roster_edit_request(request: Request, body: EditRosterChangeReque
 async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        if user_id is None:
+            return
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
         content_args = {'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand([user_id], notifications.TEAM_INVITE , content_args, '/registry/invites', notifications.SUCCESS))
@@ -257,7 +259,7 @@ async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(DeclineRosterInviteRequestData)
-@require_logged_in
+@require_logged_in()
 async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> JSONResponse:
     async def notify():
         content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
@@ -274,7 +276,7 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_body(LeaveRosterRequestData)
-@require_logged_in
+@require_logged_in()
 async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResponse:
     async def notify():
         player_id = request.state.user.player_id
@@ -295,10 +297,11 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
         player_user_id = await handle(GetUserIdFromPlayerIdCommand(data.player_id))
-        content_args = {'roster_name': data.roster_name or data.team_name}
-        await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_APPROVE_TRANSFER, content_args, f'/registry/teams/profile?id={data.player_id}', notifications.SUCCESS))
+        if player_user_id is not None:
+            content_args = {'roster_name': data.roster_name or data.team_name}
+            await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_APPROVE_TRANSFER, content_args, f'/registry/teams/profile?id={data.team_id}', notifications.SUCCESS))
         content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
-        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , content_args, f'/registry/players/profile?id={data.team_id}', notifications.SUCCESS))
+        await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_ACCEPTED , content_args, f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
 
     command = ApproveTransferCommand(body.invite_id)
     await handle(command)
@@ -311,8 +314,9 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
         player_user_id = await handle(GetUserIdFromPlayerIdCommand(data.player_id))
-        content_args = {'roster_name': data.roster_name or data.team_name}
-        await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_DENY_TRANSFER, content_args, f'/registry/teams/profile?id={data.player_id}', notifications.WARNING))
+        if player_user_id is not None:
+            content_args = {'roster_name': data.roster_name or data.team_name}
+            await handle(DispatchNotificationCommand([player_user_id], notifications.STAFF_DENY_TRANSFER, content_args, f'/registry/teams/profile?id={data.team_id}', notifications.WARNING))
         content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand(user_ids, notifications.TEAM_TRANSFER_DENIED , content_args, f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
 
@@ -324,7 +328,7 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
 async def view_approved_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
     command = ViewTransfersCommand(filter, "approved")
     transfers = await handle(command)
-    return JSONResponse(transfers)
+    return JSONResponse(transfers, headers={ "Cache-Control": "public, max-age=600, s-maxage=600" })
 
 @bind_request_query(TransferFilter)
 @require_permission(permissions.MANAGE_TRANSFERS)
@@ -373,6 +377,8 @@ async def edit_team_member_info(request: Request, body: EditTeamMemberInfoReques
 async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        if user_id is None:
+            return
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
         content_args = {'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand([user_id], notifications.TEAM_KICKED , content_args, f'/registry/teams/profile?id={body.team_id}', notifications.WARNING))
@@ -387,6 +393,8 @@ async def kick_player(request: Request, body: KickPlayerRequestData) -> JSONResp
 async def mod_kick_player(request: Request, body: KickPlayerRequestData) -> JSONResponse:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+        if user_id is None:
+            return
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
         team_leader_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(body.team_id))
@@ -455,7 +463,7 @@ async def deny_roster(request: Request) -> JSONResponse:
     return JSONResponse({}, background=BackgroundTask(notify))
 
 @bind_request_query(RegisterableRostersRequestData)
-@require_logged_in
+@require_logged_in()
 async def list_registerable_rosters(request: Request, body: RegisterableRostersRequestData) -> JSONResponse:
     user = request.state.user.id
     command = GetRegisterableRostersCommand(user, body.tournament_id, body.game, body.mode)

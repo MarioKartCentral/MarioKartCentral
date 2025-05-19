@@ -38,40 +38,48 @@
   });
 </script>
 
-<header>
-  <NavBar />
-</header>
-<div class="container md:mx-auto">
-  <main>
-    <slot />
-  </main>
+<div class="page-container">
+  <header>
+    <NavBar />
+  </header>
+  <div class="container mx-auto">
+    <main>
+      <slot />
+    </main>
+  </div>
+  <footer>
+    <Footer />
+  </footer>
 </div>
-<footer>
-  <Footer />
-</footer>
 
 <style>
-  /* If the header and main elements are directly placed within the body, the fixed behavior will stop after scrolling one screen's height.
-     To prevent this, wrap them in a container. */
-  .container {
+  .page-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
   }
+  
   header {
     position: sticky;
     top: 0;
     z-index: 700;
   }
+  
+  .container {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
   main {
-    flex: 1 0;
+    flex: 1 0 auto;
     padding-top: 30px;
     padding-bottom: 30px;
-    padding-left: 50px;
-    padding-right: 50px;
-    @media(max-width: 800px) {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  footer {
+    flex-shrink: 0;
   }
 </style>

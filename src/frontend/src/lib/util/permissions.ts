@@ -176,6 +176,11 @@ export const permissions = {
   edit_user: 'user_edit',
   manage_posts: 'post_manage',
   view_alt_flags: 'alt_flag_view',
+  view_user_logins: 'user_logins_view',
+  view_basic_ip_info: 'ip_basic_info_view',
+  view_ip_addresses: 'ip_address_view',
+  view_fingerprints: 'fingerprints_view',
+  create_db_backups: 'db_backup_create',
 };
 
 export const team_permissions = {
@@ -197,6 +202,7 @@ export const series_permissions = {
   manage_series_roles: 'series_roles_manage',
   edit_series: 'series_edit',
   manage_series_posts: 'series_posts_manage',
+  view_hidden_series: 'series_view_hidden',
 };
 
 export const tournament_permissions = {
@@ -220,4 +226,5 @@ export const mod_panel_permissions = [
   permissions.manage_shadow_players,
   permissions.merge_players,
   permissions.merge_teams,
+  permissions.view_alt_flags,
 ];

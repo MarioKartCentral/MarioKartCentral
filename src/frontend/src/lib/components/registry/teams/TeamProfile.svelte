@@ -1,17 +1,11 @@
 <script lang="ts">
   import type { Team } from '$lib/types/team';
-  import logo from '$lib/assets/logo.png';
   import { LL, locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import { Avatar } from 'flowbite-svelte';
 
   export let team: Team;
-
-  let avatar_url = logo;
-  if (team.logo) {
-    avatar_url = team.logo;
-  }
 
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
@@ -25,9 +19,12 @@
 </script>
 
 <div class="wrapper">
-  <div class="avatar">
-    <Avatar size="xl" src={avatar_url} border alt={team.name}/>
-  </div>
+  {#if team.logo}
+    <div class="avatar">
+      <Avatar size="xl" src={team.logo} border alt={team.name} class="bg-transparent"/>
+    </div>
+  {/if}
+  
   <div class="team_details">
     <div class="tag">
       <TagBadge tag={team.tag} color={team.color}/>
@@ -91,6 +88,9 @@
     justify-content: center;
     max-width: 400px;
     word-break: break-word;
+    white-space: pre-line;
+    max-height: 200px;
+    overflow: hidden;
     @media(min-width: 800px) {
       justify-content: left;
       margin-left: auto;

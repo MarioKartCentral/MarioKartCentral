@@ -25,6 +25,6 @@ span {
     width: 75px;
 }
 .wide {
-    width: 100px;
+    width: 110px;
 }
 </style>

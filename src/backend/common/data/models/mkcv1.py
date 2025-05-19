@@ -41,6 +41,7 @@ class MKCEventRegistration:
     updated_at: str # timestamp
     player_can_host: Literal[0, 1]
     team_id: int | None
+    secondary_team_id: int | None
     mii_name: str | None
     squad_id: int | None
     checked_in: Literal[0, 1]
@@ -463,7 +464,7 @@ class NewMKCTournamentPlayer:
     id: int
     player_id: int
     tournament_id: int
-    squad_id: int | None
+    registration_id: int
     is_squad_captain: bool
     timestamp: int
     is_checked_in: bool
@@ -477,7 +478,7 @@ class NewMKCTournamentPlayer:
 @dataclass
 class NewMKCRosterSquadLink:
     roster_id: int
-    squad_id: int
+    registration_id: int
     tournament_id: int
 
 @dataclass
@@ -492,7 +493,7 @@ class NewMKCSoloPlacement:
 @dataclass
 class NewMKCSquadPlacement:
     tournament_id: int
-    squad_id: int
+    registration_id: int
     placement: int | None
     placement_description: str | None
     placement_lower_bound: int | None
@@ -548,3 +549,7 @@ class NewMKCTournamentTemplate:
 @dataclass
 class NewMKCUserData:
     users: dict[str, NewMKCUser] # key: email
+
+@dataclass
+class NewMKCUserDataByPlayer:
+    users: dict[int, NewMKCUser] # key: player id

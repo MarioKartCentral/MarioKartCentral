@@ -23,6 +23,8 @@ class CreateFriendCodeCommand(Command[None]):
         match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", self.fc)
         if self.type != "nnid" and not match:
             raise Problem(f"FC {self.fc} of type {self.type} is in incorrect format", status=400)
+        if self.type == "nnid" and len(self.fc) > 16:
+            raise Problem("NNIDs must be 16 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT fc, is_primary FROM friend_codes WHERE player_id = ? AND type = ? AND is_active = ?",
                                   (self.player_id, self.type, True)) as cursor:
@@ -65,12 +67,15 @@ class EditFriendCodeCommand(Command[None]):
     mod_player_id: int | None
 
     async def handle(self, db_wrapper, s3_wrapper):
+        
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT type, fc, is_active, is_primary FROM friend_codes WHERE id = ? AND player_id = ?", (self.id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("FC not found", status=404)
                 type, curr_fc, curr_is_active, curr_is_primary = row
+            if type == "nnid" and self.fc and len(self.fc) > 16:
+                raise Problem("NNIDs must be 16 characters or less", status=400)
             if self.fc is not None:
                 # make sure FC is in 0000-0000-0000 format
                 match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", self.fc)

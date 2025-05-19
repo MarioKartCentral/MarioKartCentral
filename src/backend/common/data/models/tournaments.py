@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from common.data.models.common import Game, GameMode
+from common.data.models.tournament_placements import TournamentPlacementDetailed
 
 @dataclass
 class TournamentDBFields():
@@ -75,15 +76,8 @@ class EditTournamentRequestData():
     url: str | None
     registration_deadline: int | None
     registration_cap: int | None
-    teams_allowed: bool
-    teams_only: bool
-    team_members_only: bool
     min_squad_size: int | None
     max_squad_size: int | None
-    squad_tag_required: bool
-    squad_name_required: bool
-    mii_name_required: bool
-    host_status_required: bool
     checkins_enabled: bool
     checkins_open: bool
     min_players_checkin: int | None
@@ -127,6 +121,7 @@ class TournamentDataBasic(TournamentDataMinimal):
     use_series_logo: bool
     is_viewable: bool
     is_public: bool
+    organizer: str
 
 @dataclass
 class TournamentList:
@@ -158,3 +153,7 @@ class TournamentInvite():
     tournament_name: str
     tournament_game: Game
     tournament_mode: GameMode
+
+@dataclass
+class TournamentWithPlacements(TournamentDataBasic):
+    placements: list[TournamentPlacementDetailed]

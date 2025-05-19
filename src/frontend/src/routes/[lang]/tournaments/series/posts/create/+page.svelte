@@ -5,6 +5,14 @@
     import CreateEditPost from "$lib/components/posts/CreateEditPost.svelte";
     import { onMount } from "svelte";
     import LL from "$i18n/i18n-svelte";
+    import { user } from "$lib/stores/stores";
+    import type { UserInfo } from "$lib/types/user-info";
+    import { check_series_permission, series_permissions } from "$lib/util/permissions";
+
+    let user_info: UserInfo;
+    user.subscribe((value) => {
+        user_info = value;
+    });
 
     let series_id = 0;
 
@@ -20,4 +28,10 @@
     </div>
 </Section>
 
-<CreateEditPost {series_id}/> 
+{#if user_info.is_checked && series_id}
+    {#if check_series_permission(user_info, series_permissions.manage_series_posts, series_id)}
+        <CreateEditPost {series_id}/>
+    {:else}
+        {$LL.COMMON.NO_PERMISSION()}
+    {/if}
+{/if}

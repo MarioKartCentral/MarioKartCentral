@@ -19,6 +19,7 @@
   let all_toggle_on = false;
   let accept_dialog: Dialog;
   let curr_invite: TournamentSquad;
+  let working = false;
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -31,8 +32,8 @@
     squad_data[squad.id] = { display_players: false, date: new Date(squad.timestamp * 1000) };
   }
 
-  function toggle_show_players(squad_id: number) {
-    squad_data[squad_id].display_players = !squad_data[squad_id].display_players;
+  function toggle_show_players(registration_id: number) {
+    squad_data[registration_id].display_players = !squad_data[registration_id].display_players;
   }
 
   function toggle_all_players() {
@@ -51,6 +52,7 @@
     if (!curr_invite) {
       return;
     }
+    working = true;
     const formData = new FormData(event.currentTarget);
     let selected_fc_id = formData.get('selected_fc_id');
     let mii_name = formData.get('mii_name');
@@ -59,15 +61,15 @@
       selected_fc_id: selected_fc_id ? Number(selected_fc_id) : null,
       mii_name: mii_name,
       can_host: can_host === 'true',
-      squad_id: curr_invite.id,
+      registration_id: curr_invite.id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/acceptInvite`;
-    console.log(payload);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -83,7 +85,7 @@
       return;
     }
     const payload = {
-      squad_id: squad.id,
+      registration_id: squad.id,
     };
     const endpoint = `/api/tournaments/${tournament.id}/declineInvite`;
     console.log(payload);
@@ -123,7 +125,7 @@
       <th>
         {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
         <button class="show-players" on:click={toggle_all_players}>
-          ({all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()})
+          {all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
         </button>
       </th>
       <th>{$LL.INVITES.ACCEPT()}</th>
@@ -154,7 +156,7 @@
         </td>
       </tr>
       {#if squad_data[squad.id].display_players}
-        <tr class="row-{i % 2}">
+        <tr class="inner">
           <td colspan="10">
             <TournamentPlayerList {tournament} players={squad.players} />
           </td>
@@ -178,7 +180,7 @@
       {/if}
       <br />
       <div>
-        <Button type="submit">{$LL.INVITES.ACCEPT()}</Button>
+        <Button {working} type="submit">{$LL.INVITES.ACCEPT()}</Button>
         <Button type="button" on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
       </div>
     {/if}

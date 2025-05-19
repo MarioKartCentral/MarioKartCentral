@@ -8,7 +8,6 @@
     import LL from "$i18n/i18n-svelte";
 
     export let tournament_id: number;
-    export let is_squad: boolean;
     export let placements: TournamentPlacement[];
     export let is_placements = true;
 
@@ -19,7 +18,7 @@
             description: placement.placement_description, tie: false,
             bounded: placement.placement_lower_bound ? true : false,
             placement_lower_bound: placement.placement_lower_bound, is_disqualified: placement.is_disqualified,
-            player: placement.player, squad: placement.squad
+            squad: placement.squad
         })
     }
 
@@ -42,7 +41,7 @@
             if(p.placement || p.is_disqualified) {
                 // if it's a solo tournament, we want to use player ID instead of registration ID
                 // since you can't view tournament player IDs on frontend
-                new_placements.push({registration_id: p.player ? p.player.player_id : p.id, placement: p.placement, placement_description: p.description,
+                new_placements.push({registration_id: p.id, placement: p.placement, placement_description: p.description,
                     placement_lower_bound: p.placement_lower_bound, is_disqualified: Boolean(p.is_disqualified)
                 });
             }
@@ -146,8 +145,6 @@
                 p.description = null;
                 p.tie = false;
                 p.bounded = false;
-                p.placement_lower_bound = null;
-                p.is_disqualified = false;
             }
         }
         placement_list = placement_list;
@@ -168,7 +165,7 @@
 
 <section class="zone" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
     {#each placement_list as p(p.id)}
-        <PlacementItem placement={p} {is_squad} is_edit={true} on:change={updatePlacements} on:dq={handleDQ}/>
+        <PlacementItem placement={p} is_edit={true} on:change={updatePlacements} on:dq={handleDQ}/>
     {/each}
     
 </section>

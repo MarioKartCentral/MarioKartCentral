@@ -15,7 +15,8 @@ import common.data.notifications as notifications
 @require_permission(permissions.BAN_PLAYER)
 async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
     async def notify():
-        user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
+        if user_id is None:
+            return
         unban_date_text = 'Indefinite' if body.is_indefinite else f'DATE-{body.expiration_date}'
         content_args = {'reason': body.reason, 'date': unban_date_text}
         await handle(DispatchNotificationCommand([user_id], notifications.BANNED , content_args, f'/registry/players/profile?id={player_id}', notifications.CRITICAL))
@@ -23,7 +24,9 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
     player_id = request.path_params['id']
     banned_by_id = request.state.user.id
     expires_on = None if body.is_indefinite else body.expiration_date
-    await handle(GrantRoleCommand(banned_by_id, player_id, BANNED, expires_on, True))
+    user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
+    if user_id is not None:
+        await handle(GrantRoleCommand(banned_by_id, player_id, BANNED, expires_on, True))
     player_ban = await handle(BanPlayerCommand(player_id, banned_by_id, body))
     return JSONResponse(player_ban, status_code=200, background=BackgroundTask(notify))
 
@@ -31,12 +34,15 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
 @require_permission(permissions.BAN_PLAYER)
 async def unban_player(request: Request) -> Response:
     async def notify():
-        user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
+        if user_id is None:
+            return
         await handle(DispatchNotificationCommand([user_id], notifications.UNBANNED, {}, f'/registry/players/profile?id={player_id}', notifications.INFO))
 
     player_id = request.path_params['id']
     unbanned_by_id = request.state.user.id
-    await handle(RemoveRoleCommand(unbanned_by_id, player_id, BANNED, True))
+    user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
+    if user_id is not None:
+        await handle(RemoveRoleCommand(unbanned_by_id, player_id, BANNED, True))
     player_unban = await handle(UnbanPlayerCommand(player_id, unbanned_by_id))
     return JSONResponse(player_unban, status_code=200, background=BackgroundTask(notify))
 
@@ -49,7 +55,9 @@ async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Respo
             cur_ban = ban_list.ban_list[0]
             if cur_ban.reason != body.reason or cur_ban.is_indefinite != body.is_indefinite or cur_ban.expiration_date != body.expiration_date:
                 unban_date_text = 'Indefinite' if body.is_indefinite else f'DATE-{body.expiration_date}'
-                user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
+                
+                if user_id is None:
+                    return
                 content_args = {'reason': body.reason, 'date': unban_date_text}
                 await handle(DispatchNotificationCommand([user_id], notifications.BAN_CHANGE, content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
 
@@ -57,8 +65,9 @@ async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Respo
     banned_by_id = request.state.user.id
     expires_on = None if body.is_indefinite else body.expiration_date
     ban_list = await handle(ListBannedPlayersCommand(PlayerBanFilter(player_id=player_id)))
-
-    await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, BANNED, expires_on))
+    user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
+    if user_id is not None:
+        await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, BANNED, expires_on))
     player_ban = await handle(EditPlayerBanCommand(player_id, banned_by_id, body))        
     return JSONResponse(player_ban, status_code=200, background=BackgroundTask(notify))
 

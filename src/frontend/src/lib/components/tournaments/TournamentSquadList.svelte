@@ -44,8 +44,8 @@
     return true;
   }
 
-  function toggle_show_players(squad_id: number) {
-    squad_data[squad_id].display_players = !squad_data[squad_id].display_players;
+  function toggle_show_players(registration_id: number) {
+    squad_data[registration_id].display_players = !squad_data[registration_id].display_players;
   }
 
   function toggle_all_players() {
@@ -66,7 +66,7 @@
       return;
     }
     const payload = {
-      squad_id: squad.id,
+      registration_id: squad.id,
     };
     console.log(payload);
     const endpoint = `/api/tournaments/${tournament.id}/forceUnregisterSquad`;
@@ -167,7 +167,7 @@
         {/if}
       </tr>
       {#if squad_data[squad.id].display_players}
-        <tr class="row-{i % 2}">
+        <tr class="inner">
           <td colspan="10">
             <TournamentPlayerList {tournament} players={squad.players} {is_privileged}/>
           </td>

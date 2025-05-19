@@ -13,6 +13,7 @@ class SeriesDBFields():
     short_description: str
     organizer: str
     location: str | None
+    discord_invite: str | None
 
 @dataclass
 class SeriesS3Fields():
@@ -41,6 +42,7 @@ class SeriesBasic:
     logo: str | None
     organizer: str
     location: str | None
+    discord_invite: str | None
 
 @dataclass
 class Series(SeriesBasic):

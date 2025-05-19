@@ -14,9 +14,17 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
-        async with db_wrapper.connect() as db:
+        if len(self.name) > 24:
+            raise Problem("Player name must be 24 characters or less", status=400)
+        async with db_wrapper.connect(db_name="main", attach=["auth"]) as db:
             if self.user_id is not None:
-                async with db.execute("SELECT player_id, email_confirmed FROM users WHERE id = ?", (self.user_id,)) as cursor:
+                check_confirmed_email_query = """
+                    SELECT player_id, ua.email_confirmed 
+                    FROM users u
+                    JOIN user_auth ua on u.id = ua.user_id
+                    WHERE u.id = ?
+                """
+                async with db.execute(check_confirmed_email_query, (self.user_id,)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     player_id, email_confirmed = row
@@ -56,16 +64,18 @@ class CreatePlayerCommand(Command[Player]):
                 match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
                 if friend_code.type != "nnid" and not match:
                     raise Problem(f"FC {friend_code.fc} of type {friend_code.type} is in incorrect format", status=400)
+                if friend_code.type == "nnid" and len(friend_code.fc) > 16:
+                    raise Problem("NNIDs must be 16 characters or less", status=400)
                 
                 # check if friend code is currently in use
                 async with db.execute("SELECT id FROM friend_codes WHERE fc = ? AND type = ? AND is_active = ?", (friend_code.fc, friend_code.type, True)) as cursor:
                     row = await cursor.fetchone()
                     if row:
-                        raise Problem("Another player is currently using this friend code for this game", status=400)
+                        raise Problem(f"Another player is currently using this {friend_code.type} friend code", status=400)
                     
-            friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description)
+            friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description, now)
                                   for friend_code in self.friend_codes]
-            await db.executemany("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            await db.executemany("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
             return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
@@ -79,6 +89,8 @@ class UpdatePlayerCommand(Command[bool]):
     async def handle(self, db_wrapper, s3_wrapper) -> bool:
         data = self.data
         async with db_wrapper.connect() as db:
+            if len(self.data.name) > 24:
+                raise Problem("Player name must be 24 characters or less", status=400)
             async with db.execute("SELECT name FROM players WHERE id = ?", (data.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -87,7 +99,7 @@ class UpdatePlayerCommand(Command[bool]):
             update_query = """UPDATE players 
             SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?
             WHERE id = ?"""
-            params = (data.name, data.country_code, data.is_hidden, data.is_shadow, data.player_id)
+            params = (data.name.strip(), data.country_code, data.is_hidden, data.is_shadow, data.player_id)
 
             async with db.execute(update_query, params) as cursor:
                 if cursor.rowcount != 1:
@@ -95,7 +107,7 @@ class UpdatePlayerCommand(Command[bool]):
             if curr_name != data.name:
                 now = int(datetime.now(timezone.utc).timestamp())
                 await db.execute("""INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status, handled_by)
-                                    VALUES(?, ?, ?, ?, ?, ?)""", (data.player_id, curr_name, data.name, now, "approved", self.mod_player_id))
+                                    VALUES(?, ?, ?, ?, ?, ?)""", (data.player_id, curr_name, data.name.strip(), now, "approved", self.mod_player_id))
 
             await db.commit()
             return True
@@ -154,10 +166,11 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             user_settings = None
             if user:
                 async with db.execute("""SELECT avatar, about_me, language, 
-                    color_scheme, timezone FROM user_settings WHERE user_id = ?""", (user.id,)) as cursor:
+                    color_scheme, timezone, hide_discord FROM user_settings WHERE user_id = ?""", (user.id,)) as cursor:
                     settings_row = await cursor.fetchone()
                     if settings_row is not None:
-                        user_settings = UserSettings(user.id, *settings_row)
+                        avatar, about_me, language, color_scheme, timezone, hide_discord = settings_row
+                        user_settings = UserSettings(user.id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
 
             discord = None
             if user:
@@ -176,20 +189,22 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 
             notes = None
             if self.include_notes:
-                async with db.execute("SELECT notes, edited_by, date FROM player_notes WHERE player_id = ?", (self.id,)) as cursor:
-                    row = await cursor.fetchone()
-                    if row:
-                        player_notes, edited_by, date = row
-                        query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date FROM players p 
-                            JOIN users u ON u.player_id = p.id
-                            WHERE u.id = ?"""
-                        async with db.execute(query, (edited_by,)) as cursor:
-                            player_row = await cursor.fetchone()
-                            edited_by =  None
-                            if player_row:
-                                p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date = player_row
-                                edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
-                            notes = PlayerNotes(player_notes, edited_by, date)
+                # Connect to main database and attach player_notes
+                async with db_wrapper.connect(db_name='main', attach=['player_notes']) as db_with_notes:
+                    async with db_with_notes.execute("SELECT notes, edited_by, date FROM player_notes.player_notes WHERE player_id = ?", (self.id,)) as cursor:
+                        row = await cursor.fetchone()
+                        if row:
+                            player_notes, edited_by, date = row
+                            query = """SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date FROM players p 
+                                JOIN users u ON u.player_id = p.id
+                                WHERE u.id = ?"""
+                            async with db_with_notes.execute(query, (edited_by,)) as cursor:
+                                player_row = await cursor.fetchone()
+                                edited_by = None
+                                if player_row:
+                                    p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date = player_row
+                                    edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
+                                notes = PlayerNotes(player_notes, edited_by, date)
 
             roles: list[PlayerRole] = []
             if user:
@@ -241,14 +256,29 @@ class ListPlayersCommand(Command[PlayerList]):
             append_equal_filter(filter.discord_id, "d.discord_id")
 
             # make sure that player is in a team roster which is linked to the passed-in squad ID
-            if filter.squad_id is not None:
+            if filter.registration_id is not None:
                 where_clauses.append(f"""p.id IN (
                                      SELECT m.player_id FROM team_members m
                                      JOIN team_squad_registrations r ON r.roster_id = m.roster_id
-                                     WHERE r.squad_id IS ? AND m.leave_date IS ?
+                                     WHERE r.registration_id IS ? AND m.leave_date IS ?
                 )""")
-                variable_parameters.append(filter.squad_id)
+                variable_parameters.append(filter.registration_id)
                 variable_parameters.append(None)
+
+            # if has_connected_user is true, we should only list players who have
+            # a user connected to them.
+            # if it's false, we only want players who do not have a user connected to them.
+            if filter.has_connected_user is not None:
+                if filter.has_connected_user:
+                    where_clauses.append("""p.id IN (
+                                            SELECT u.player_id FROM users u
+                                            WHERE u.player_id IS NOT NULL
+                                         )""")
+                else:
+                    where_clauses.append("""p.id NOT IN (
+                                            SELECT u.player_id FROM users u
+                                            WHERE u.player_id IS NOT NULL
+                                        )""")
 
             # some filters require us to check if a player has a matching friend code,
             # so we do that here

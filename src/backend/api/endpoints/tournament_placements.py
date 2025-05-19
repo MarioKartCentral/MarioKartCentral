@@ -11,17 +11,9 @@ from common.data.models import *
 @require_tournament_permission(tournament_permissions.MANAGE_PLACEMENTS)
 async def set_placements(request: Request, body: list[TournamentPlacement]) -> JSONResponse:
     tournament_id = int(request.path_params['tournament_id'])
-    command = CheckIfSquadTournament(tournament_id)
-    is_squad = await handle(command)
-    if is_squad:
-        reg_command = GetSquadRegistrationsCommand(tournament_id, False, False, False, None)
-        registrations = await handle(reg_command)
-        placements_command = SetSquadPlacementsCommand(tournament_id, body, registrations)
-    else:
-        reg_command = GetFFARegistrationsCommand(tournament_id, False, False, None)
-        registrations = await handle(reg_command)
-        placements_command = SetSoloPlacementsCommand(tournament_id, body, registrations)
-
+    reg_command = GetTournamentRegistrationsCommand(tournament_id, False, False, False, None)
+    registrations = await handle(reg_command)
+    placements_command = SetTournamentPlacementsCommand(tournament_id, body, registrations)
     await handle(placements_command)
 
     return JSONResponse({})
@@ -30,25 +22,17 @@ async def set_placements(request: Request, body: list[TournamentPlacement]) -> J
 @require_tournament_permission(tournament_permissions.MANAGE_PLACEMENTS)
 async def set_placements_from_player_ids(request: Request, body: list[TournamentPlacementFromPlayerIDs]) -> JSONResponse:
     tournament_id = int(request.path_params['tournament_id'])
-    command = SetSquadPlacementsFromPlayerIDsCommand(tournament_id, body)
+    command = SetTournamentPlacementsFromPlayerIDsCommand(tournament_id, body)
     await handle(command)
     return JSONResponse({})
 
 @check_tournament_visiblity
 async def get_placements(request: Request) -> JSONResponse:
     tournament_id = int(request.path_params['tournament_id'])
-    command = CheckIfSquadTournament(tournament_id)
-    is_squad = await handle(command)
-    if is_squad:
-        reg_command = GetSquadRegistrationsCommand(tournament_id, False, False, False, None)
-        squads = await handle(reg_command)
-        placements_command = GetSquadPlacementsCommand(tournament_id, squads)
-        placements = await handle(placements_command)
-    else:
-        reg_command = GetFFARegistrationsCommand(tournament_id, False, False, None)
-        players = await handle(reg_command)
-        placements_command = GetSoloPlacementsCommand(tournament_id, players)
-        placements = await handle(placements_command)
+    reg_command = GetTournamentRegistrationsCommand(tournament_id, False, False, False, None)
+    squads = await handle(reg_command)
+    placements_command = GetTournamentPlacementsCommand(tournament_id, squads)
+    placements = await handle(placements_command)
     
     return JSONResponse(placements)
 
@@ -56,7 +40,7 @@ async def get_latest_tournament_with_placements(request: Request) -> JSONRespons
     tournament_id = await handle(GetLatestTournamentIdWithPlacements())
     command = GetTournamentDataCommand(tournament_id)
     tournament = await handle(command)
-    return JSONResponse(tournament)
+    return JSONResponse(tournament, headers={ "Cache-Control": "public, max-age=600, s-maxage=600" })
 
 async def get_player_placements(request: Request) -> JSONResponse:
     player_id = int(request.path_params['player_id'])

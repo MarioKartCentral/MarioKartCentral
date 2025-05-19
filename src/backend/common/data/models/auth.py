@@ -46,3 +46,30 @@ class ResetPasswordTokenRequestData:
 class ResetPasswordRequestData:
     old_password: str
     new_password: str
+
+@dataclass
+class TransferAccountRequestData:
+    player_id: int
+
+@dataclass
+class RemovePlayerAvatarRequestData:
+    player_id: int
+
+@dataclass
+class ChangeEmailRequestData:
+    new_email: str
+    password: str
+
+@dataclass
+class CreateAPITokenRequestData:
+    name: str
+
+@dataclass
+class APIToken:
+    user_id: int
+    token_id: str
+    name: str
+
+@dataclass
+class DeleteAPITokenRequestData:
+    token_id: str

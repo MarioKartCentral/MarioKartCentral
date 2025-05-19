@@ -10,11 +10,11 @@ class ApproveTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
-                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause = row
+                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status = row
             if not is_accepted:
                 raise Problem("Invite has not been accepted by the player yet", status=400)
             if roster_leave_id:
@@ -26,6 +26,8 @@ class ApproveTransferCommand(Command[None]):
                     team_member_id = row[0]
             else:
                 team_member_id = None
+            if approval_status == "approved":
+                raise Problem("Transfer is already approved", status=400)
             curr_time = int(datetime.now(timezone.utc).timestamp())
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
             await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
@@ -33,19 +35,19 @@ class ApproveTransferCommand(Command[None]):
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
-                async with db.execute("""SELECT p.squad_id FROM tournament_players p
-                                    JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
                                     AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
                                     AND p.is_bagger_clause = ?""",
                                     (player_id, roster_leave_id, curr_time, True, True, is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
-                    squad_ids: list[int] = [row[0] for row in rows]
+                    registration_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
                 # (such as when transferring between two rosters of same team), we don't want to remove them
-                async with db.execute("""SELECT p.squad_id FROM tournament_players p
-                                    JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
                                     AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
@@ -53,18 +55,18 @@ class ApproveTransferCommand(Command[None]):
                                     (player_id, roster_id, curr_time, True, True, is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        if row[0] in squad_ids:
-                            squad_ids.remove(row[0])
+                        if row[0] in registration_ids:
+                            registration_ids.remove(row[0])
                 # finally remove the player from all the tournaments they shouldn't be in
-                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (player_id,))
+                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (player_id,))
 
             # next we want to automatically add the transferred player to any team tournaments where that team is registered
             # and registrations are open
-            async with db.execute("""SELECT s.squad_id, t.id FROM team_squad_registrations s
+            async with db.execute("""SELECT s.registration_id, t.id FROM team_squad_registrations s
                                     JOIN tournaments t ON s.tournament_id = t.id
                                     WHERE t.teams_allowed = ? AND t.registrations_open = ?
                                     AND s.roster_id = ? AND NOT EXISTS (
-                                        SELECT p.id FROM tournament_players p WHERE p.player_id = ? AND p.squad_id = s.squad_id
+                                        SELECT p.id FROM tournament_players p WHERE p.player_id = ? AND p.registration_id = s.registration_id
                                   )""", (True, True, roster_id, player_id)) as cursor:
                 rows = await cursor.fetchall()
                 squads: dict[int, int] = {}
@@ -73,16 +75,16 @@ class ApproveTransferCommand(Command[None]):
                     squads[tournament] = squad
             # if the player is already in some of these tournaments we don't want to add them again
             tournament_query = ','.join(map(str, squads.keys()))
-            async with db.execute(f"SELECT squad_id, tournament_id FROM tournament_players WHERE player_id = ? AND is_bagger_clause = ? AND tournament_id IN ({tournament_query})",
+            async with db.execute(f"SELECT registration_id, tournament_id FROM tournament_players WHERE player_id = ? AND is_bagger_clause = ? AND tournament_id IN ({tournament_query})",
                                   (player_id, is_bagger_clause)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, is_bagger_clause,
-                            False) for tournament_id, squad_id in squads.items()]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+            insert_rows = [(player_id, tournament_id, registration_id, False, curr_time, False, None, False, False, None, False, is_bagger_clause,
+                            False) for tournament_id, registration_id in squads.items()]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                                  is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
@@ -268,19 +270,19 @@ class ForceTransferPlayerCommand(Command[None]):
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
-                async with db.execute("""SELECT p.squad_id FROM tournament_players p
-                                    JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
                                     AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
                                     AND p.is_bagger_clause = ?""",
                                     (self.player_id, self.roster_leave_id, curr_time, True, True, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
-                    squad_ids: list[int] = [row[0] for row in rows]
+                    registration_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
                 # (such as when transferring between two rosters of same team), we don't want to remove them
-                async with db.execute("""SELECT p.squad_id FROM tournament_players p
-                                    JOIN team_squad_registrations s ON p.squad_id = s.squad_id
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
                                     AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
@@ -288,19 +290,19 @@ class ForceTransferPlayerCommand(Command[None]):
                                     (self.player_id, self.roster_id, curr_time, True, True, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        if row[0] in squad_ids:
-                            squad_ids.remove(row[0])
+                        if row[0] in registration_ids:
+                            registration_ids.remove(row[0])
                 # finally remove the player from all the tournaments they shouldn't be in
-                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND squad_id IN ({','.join(map(str, squad_ids))})", (self.player_id,))
+                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
 
             # next we want to automatically add the transferred player to any team tournaments where that team is registered
             # and registrations are open
-            async with db.execute("""SELECT s.squad_id, t.id FROM team_squad_registrations s
+            async with db.execute("""SELECT s.registration_id, t.id FROM team_squad_registrations s
                                     JOIN tournaments t ON s.tournament_id = t.id
                                     WHERE t.teams_allowed = ? AND t.registrations_open = ?
                                     AND s.roster_id = ? AND NOT EXISTS (
                                         SELECT p.id FROM tournament_players p 
-                                        WHERE p.player_id = ? AND p.squad_id = s.squad_id
+                                        WHERE p.player_id = ? AND p.registration_id = s.registration_id
                                     )""", (True, True, self.roster_id, self.player_id)) as cursor:
                 rows = await cursor.fetchall()
                 squads: dict[int, int] = {}
@@ -309,16 +311,16 @@ class ForceTransferPlayerCommand(Command[None]):
                     squads[tournament] = squad
             # if the player is already in some of these tournaments we don't want to add them again
             tournament_query = ','.join(map(str, squads.keys()))
-            async with db.execute(f"SELECT squad_id, tournament_id FROM tournament_players WHERE player_id = ? AND tournament_id IN ({tournament_query})",
+            async with db.execute(f"SELECT registration_id, tournament_id FROM tournament_players WHERE player_id = ? AND tournament_id IN ({tournament_query})",
                                   (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     squad, tournament = row
                     if tournament in squads.keys():
                         del squads[tournament]
-            insert_rows = [(self.player_id, tournament_id, squad_id, False, curr_time, False, None, False, False, None, False, self.is_bagger_clause,
-                            False) for tournament_id, squad_id in squads.items()]
-            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, squad_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+            insert_rows = [(self.player_id, tournament_id, registration_id, False, curr_time, False, None, False, False, None, False, self.is_bagger_clause,
+                            False) for tournament_id, registration_id in squads.items()]
+            await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                                  is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()

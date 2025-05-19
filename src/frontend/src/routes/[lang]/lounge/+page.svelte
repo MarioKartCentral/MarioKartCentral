@@ -1,12 +1,13 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import Logo150Animated from '$lib/assets/logo_lounge150.gif';
   import Logo200 from '$lib/assets/logo_lounge200.png';
   import LogoMKW from '$lib/assets/logo_loungemkw.jpg';
   import LogoMKTC from '$lib/assets/logo_loungemktc.png';
+  import LogoMK7 from '$lib/assets/logo_loungemk7.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
+  import DiscordInviteButton from '$lib/components/common/buttons/DiscordInviteButton.svelte';
+  import LinkButton from '$lib/components/common/buttons/LinkButton.svelte';
   import LL from '$i18n/i18n-svelte';
 </script>
 
@@ -19,12 +20,10 @@
       <img class="w-32 h-32" src={Logo150Animated} alt="150cc Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="https://mk8dx-lounge.com/"><LinkSolid class="mr-2" />{$LL.LOUNGE.WEBSITE()}</Button>
+          <LinkButton href="https://mk8dx-lounge.com/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/revmGkE">
-            <DiscordSolid class="mr-2" />{$LL.LOUNGE.DISCORD_INVITE()}</Button
-          >
+          <DiscordInviteButton href="https://discord.gg/revmGkE"/>
         </div>
       </div>
     </div>
@@ -35,12 +34,10 @@
       <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="https://200-lounge.com/"><LinkSolid class="mr-2" />{$LL.LOUNGE.WEBSITE()}</Button>
+          <LinkButton href="https://200-lounge.com/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/dfdRkFu">
-            <DiscordSolid class="mr-2" />{$LL.LOUNGE.DISCORD_INVITE()}</Button
-          >
+          <DiscordInviteButton href="https://discord.gg/dfdRkFu"/>
         </div>
       </div>
     </div>
@@ -53,12 +50,10 @@
       <img class="w-32 h-32" src={LogoMKTC} alt="MKTC Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="http://www.mariokarttour.net/"><LinkSolid class="mr-2" />{$LL.LOUNGE.WEBSITE()}</Button>
+          <LinkButton href="http://www.mariokarttour.net/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/vYr3bQQHFY">
-            <DiscordSolid class="mr-2" />{$LL.LOUNGE.DISCORD_INVITE()}</Button
-          >
+          <DiscordInviteButton href="https://discord.gg/vYr3bQQHFY"/>
         </div>
       </div>
     </div>
@@ -71,12 +66,22 @@
       <img class="w-32 h-32" src={LogoMKW} alt="MKW Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <Button size="lg" href="https://mkwlounge.gg"><LinkSolid class="mr-2" />{$LL.LOUNGE.WEBSITE()}</Button>
+          <LinkButton href="https://mkwlounge.gg">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/mkw">
-            <DiscordSolid class="mr-2" />{$LL.LOUNGE.DISCORD_INVITE()}</Button
-          >
+          <DiscordInviteButton href="https://discord.gg/mkw"/>
+        </div>
+      </div>
+    </div>
+  </Section>
+  <h2>{$LL.GAMES.MK7()}</h2>
+  <GameBadge game="mk7" />
+  <Section header={'Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={LogoMK7} alt="MK7 Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <DiscordInviteButton href="https://discord.gg/cZZp9DdQ5e"/>
         </div>
       </div>
     </div>

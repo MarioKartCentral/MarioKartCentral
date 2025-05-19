@@ -1,5 +1,5 @@
 <svelte:head>
-  <title>Announcements | Mario Kart Central</title>
+  <title>Announcements | MKCentral</title>
 </svelte:head>
 
 <slot />

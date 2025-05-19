@@ -32,19 +32,40 @@
   type TeamFilter = {
     game: string | null;
     mode: string | null;
-    name: string | null;
+    name_or_tag: string | null;
     is_historical: boolean;
     is_active: boolean | null;
+    min_player_count: number | null;
+    sort_by_newest: boolean;
     page: number;
   }
 
   let filters: TeamFilter = {
     game: null,
     mode: null,
-    name: null,
+    name_or_tag: null,
     is_historical: false,
     is_active: null,
+    sort_by_newest: false,
+    min_player_count: null,
     page: 1,
+  }
+
+  const min_players = 6;
+  let active_historical_filter = "min_players";
+  $: {
+    if(active_historical_filter === "min_players") {
+      filters.min_player_count = min_players;
+      filters.is_historical = false;
+    }
+    else if (active_historical_filter === "active") {
+      filters.min_player_count = null;
+      filters.is_historical = false;
+    }
+    else {
+      filters.min_player_count = null;
+      filters.is_historical = true;
+    }
   }
 
   async function fetchData() {
@@ -75,23 +96,35 @@
     }
   }
 
+  async function search() {
+    filters.page = 1;
+    await fetchData();
+  }
+
   onMount(async () => {
-    fetchData();
+    await fetchData();
   });
 </script>
 
-<form on:submit|preventDefault={fetchData}>
+<form on:submit|preventDefault={search}>
   <div class="flex">
     <div class="option">
-      <GameModeSelect all_option hide_labels inline bind:game={filters.game} bind:mode={filters.mode}/>
+      <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode}/>
     </div>
     <div class="option">
-      <input class="search" bind:value={filters.name} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
+      <input class="search" bind:value={filters.name_or_tag} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
     </div>
     <div class="option">
-      <select bind:value={filters.is_historical}>
-        <option value={false}>{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
-        <option value={true}>{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
+      <select bind:value={active_historical_filter}>
+        <option value="min_players">{$LL.TEAMS.LIST.ACTIVE_TEAMS_MIN_PLAYERS({count: min_players})}</option>
+        <option value="active">{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
+        <option value="historical">{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
+      </select>
+    </div>
+    <div class="option">
+      <select bind:value={filters.sort_by_newest}>
+        <option value={false}>{$LL.COMMON.SORT_BY_ALPHABETICAL()}</option>
+        <option value={true}>{$LL.COMMON.SORT_BY_NEWEST()}</option>
       </select>
     </div>
     <div class="option">
@@ -134,7 +167,7 @@
         </td>
       </tr>
       {#if show_rosters[team.id]}
-        <tr class="row-{i % 2}">
+        <tr class="inner">
           <td colspan="10">
             <RosterList {team} />
           </td>
@@ -169,9 +202,7 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-  }
-  .option {
-    margin-right: 10px;
+    gap: 5px;
   }
   input {
     width: 250px;

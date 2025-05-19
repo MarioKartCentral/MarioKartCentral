@@ -9,6 +9,8 @@ class RequestEditPlayerNameCommand(Command[None]):
     name: str
 
     async def handle(self, db_wrapper, s3_wrapper):
+        if len(self.name) > 24:
+            raise Problem("Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -24,7 +26,7 @@ class RequestEditPlayerNameCommand(Command[None]):
                     raise Problem("Player has requested name change in the last 90 days", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status) VALUES (?, ?, ?, ?, ?)", 
-                             (self.player_id, curr_name, self.name, creation_date, "pending"))
+                             (self.player_id, curr_name, self.name.strip(), creation_date, "pending"))
             await db.commit()
                     
 @dataclass

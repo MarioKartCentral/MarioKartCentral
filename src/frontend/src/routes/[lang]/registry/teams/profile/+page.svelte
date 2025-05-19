@@ -51,10 +51,10 @@
 </script>
 
 <svelte:head>
-  <title>{team_name} | Mario Kart Central</title>
+  <title>{team_name} | MKCentral</title>
 </svelte:head>
 
-{#if team}
+{#if team && user_info.is_checked}
   {#if team.approval_status === 'approved' || check_team_permission(user_info, team_permissions.edit_team_info, team.id)}
     {#if check_permission(user_info, permissions.manage_teams)}
       <Section header={$LL.NAVBAR.MODERATOR()}>
@@ -88,7 +88,9 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAMS.PROFILE.ROSTERS()}>
-      <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
+      <div class="filter">
+        <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
+      </div>
       {#key game}
         {#key mode}
           {#each filter_team_page_rosters(team) as roster}
@@ -107,3 +109,9 @@
 {:else if not_found}
     {$LL.TEAMS.PROFILE.TEAM_NOT_FOUND()}
 {/if}
+
+<style>
+  .filter {
+    margin-bottom: 10px;
+  }
+</style>

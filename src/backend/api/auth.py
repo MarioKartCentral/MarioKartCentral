@@ -4,50 +4,56 @@ from starlette.responses import Response
 from api.data import handle
 from api.utils.responses import ProblemResponse
 from common.data.commands import *
-from common.data.models import Problem
+from common.data.models import Problem, User
 from common.auth import permissions, series_permissions, tournament_permissions
+
+# returns user and session ID
+# session_only: only use cookies and not authorization header
+async def get_user(request: Request, session_only=False) -> tuple[User | None, str | None]:
+    session_id = request.cookies.get("session", None)
+    if session_id:
+        user = await handle(GetUserIdFromSessionCommand(session_id))
+    elif session_only:
+        return None, None
+    else:
+        auth_header = request.headers.get("Authorization", None)
+        if not auth_header:
+            return None, None
+        scheme, _, token = auth_header.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            raise Problem("Invalid Authorization header", status=401)
+        user = await handle(GetUserFromAPITokenCommand(token))
+    return user, session_id
 
 def get_user_info[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-        session_id = request.cookies.get("session", None)
-        if session_id is None:
-            request.state.user = None
-            return await handle_request(request, *args, **kwargs)
-        
-        user = await handle(GetUserIdFromSessionCommand(session_id))
+        user, session_id = await get_user(request)
+        request.state.session_id = session_id
         request.state.user = user
         return await handle_request(request, *args, **kwargs)
     return wrapper
 
-def require_logged_in[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
-    async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-        session_id = request.cookies.get("session", None)
-        if session_id is None:
-            raise Problem("Not logged in", status=401)
-
-        user = await handle(GetUserIdFromSessionCommand(session_id))
-
-        if user is not None:
+def require_logged_in(session_only=False):
+    def require_logged_in_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+        async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+            user, session_id = await get_user(request, session_only)
+            if not user:
+                resp = ProblemResponse(Problem("Not logged in", status=401))
+                resp.delete_cookie("session")
+                return resp
+            
             request.state.session_id = session_id
             request.state.user = user
             return await handle_request(request, *args, **kwargs)
-        else:
-            resp = ProblemResponse(Problem("Not logged in", status=401))
-            resp.delete_cookie("session")
-            return resp
-
-    return wrapper
+        return wrapper
+    return require_logged_in_decorator
 
 # if check_denied_only is True, as long as the permission is not denied we authorize the request
-def require_permission(permission_name: str, check_denied_only: bool = False):
+def require_permission(permission_name: str, check_denied_only = False, session_only = False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-            session_id = request.cookies.get("session", None)
-            if session_id is None:
-                raise Problem("Not logged in", status=401)
-            
-            user = await handle(GetUserIdFromSessionCommand(session_id))
-            if user is None:
+            user, session_id = await get_user(request, session_only)
+            if not user:
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -62,15 +68,11 @@ def require_permission(permission_name: str, check_denied_only: bool = False):
         return wrapper
     return has_permission_decorator
 
-def require_team_permission(permission_name: str, check_denied_only: bool = False):
+def require_team_permission(permission_name: str, check_denied_only = False, session_only = False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-            session_id = request.cookies.get("session", None)
-            if session_id is None:
-                raise Problem("Not logged in", status=401)
-            
-            user = await handle(GetUserIdFromSessionCommand(session_id))
-            if user is None:
+            user, session_id = await get_user(request, session_only)
+            if not user:
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -95,15 +97,11 @@ def require_team_permission(permission_name: str, check_denied_only: bool = Fals
         return wrapper
     return has_permission_decorator
 
-def require_series_permission(permission_name: str, check_denied_only: bool = False):
+def require_series_permission(permission_name: str, check_denied_only = False, session_only = False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-            session_id = request.cookies.get("session", None)
-            if session_id is None:
-                raise Problem("Not logged in", status=401)
-            
-            user = await handle(GetUserIdFromSessionCommand(session_id))
-            if user is None:
+            user, session_id = await get_user(request, session_only)
+            if not user:
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -130,15 +128,11 @@ def require_series_permission(permission_name: str, check_denied_only: bool = Fa
         return wrapper
     return has_permission_decorator
 
-def require_tournament_permission(permission_name: str, check_denied_only: bool = False):
+def require_tournament_permission(permission_name: str, check_denied_only = False, session_only = False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-            session_id = request.cookies.get("session", None)
-            if session_id is None:
-                raise Problem("Not logged in", status=401)
-            
-            user = await handle(GetUserIdFromSessionCommand(session_id))
-            if user is None:
+            user, session_id = await get_user(request, session_only)
+            if not user:
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -164,6 +158,34 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool 
         return wrapper
     return has_permission_decorator
 
+def check_series_visibility[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
+    async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
+        series_id = request.path_params.get("series_id", None)
+        if series_id is None:
+            series_id = request.query_params.get("series_id", None)
+        if series_id is None and request.method == "POST":
+            body = await request.json()
+            series_id = body.get("series_id", None)
+        if series_id is None:
+            raise Problem("No series ID specified", status=400)
+
+        is_public = await handle(CheckSeriesVisibilityCommand(int(series_id)))
+        if is_public:
+            return await handle_request(request, *args, **kwargs)
+        
+        user, _ = await get_user(request)
+        if not user:
+            resp = ProblemResponse(Problem("Not logged in", status=401))
+            resp.delete_cookie("session")
+            return resp
+        
+        user_has_permission = await handle(CheckUserHasPermissionCommand(user.id, series_permissions.VIEW_HIDDEN_SERIES, series_id=int(series_id)))
+        if user_has_permission:
+            return await handle_request(request, *args, **kwargs)
+        else:
+            raise Problem("Insufficient permission", f"User does not have required permission \'{series_permissions.VIEW_HIDDEN_SERIES}\'", status=401)
+    return wrapper
+
 def check_tournament_visiblity[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
         tournament_id = request.path_params.get("tournament_id", None)
@@ -181,12 +203,8 @@ def check_tournament_visiblity[**P](handle_request: Callable[Concatenate[Request
         if is_viewable:
             return await handle_request(request, *args, **kwargs)
 
-        session_id = request.cookies.get("session", None)
-        if session_id is None:
-            raise Problem("Not logged in", status=401)
-        
-        user = await handle(GetUserIdFromSessionCommand(session_id))
-        if user is None:
+        user, _ = await get_user(request)
+        if not user:
             resp = ProblemResponse(Problem("Not logged in", status=401))
             resp.delete_cookie("session")
             return resp
@@ -202,13 +220,7 @@ def check_tournament_visiblity[**P](handle_request: Callable[Concatenate[Request
 # used to see if a user can view hidden posts
 def check_post_privileges[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
     async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
-        session_id = request.cookies.get("session", None)
-        if session_id is None:
-            request.state.user = None
-            request.state.is_privileged = False
-            return await handle_request(request, *args, **kwargs)
-        
-        user = await handle(GetUserIdFromSessionCommand(session_id))
+        user, _ = await get_user(request)
         request.state.user = user
         if user is None:
             request.state.is_privileged = False

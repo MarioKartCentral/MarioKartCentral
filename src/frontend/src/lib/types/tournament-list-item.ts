@@ -17,4 +17,5 @@ export type TournamentListItem = {
   logo: string | null;
   is_viewable: boolean;
   is_public: boolean;
+  organizer: string;
 };

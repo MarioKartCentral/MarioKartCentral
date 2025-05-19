@@ -50,17 +50,47 @@ export function sortFilterRosters(rosters: TeamRoster[], show_pending: boolean =
   return sort_filtered;
 }
 
-export const valid_games = ['mk8dx', 'mk8', 'mkw', 'mkt', 'mk7', 'smk'];
+export const valid_games = ['mkworld', 'mk8dx', 'mk8', 'mkw', 'mkt', 'mk7', 'smk'];
+export const game_abbreviations: { [key: string]: string } = {
+  mkworld: 'MKWorld',
+  mk8dx: 'MK8DX',
+  mk8: 'MK8',
+  mkw: 'MKWii',
+  mkt: 'MKTour',
+  mk7: 'MK7',
+  smk: 'SMK',
+  mk64: 'MK64',
+  mkdd: 'MKDD',
+  mksc: 'MKSC',
+  mkds: 'MKDS',
+};
 export const game_order: { [key: string]: number } = {
-  mk8dx: 0,
-  mk8: 1,
-  mkw: 2,
-  mkt: 3,
-  mk7: 4,
-  smk: 5,
+  mkworld: 0,
+  mk8dx: 1,
+  mk8: 2,
+  mkw: 3,
+  mkt: 4,
+  mk7: 5,
+  smk: 6,
+};
+export const mode_order: { [key: string]: number } = {
+  '150cc': 0,
+  '200cc': 1,
+  mixed_battle: 2,
+  balloon_battle: 3,
+  shine_thief: 4,
+  bobomb_blast: 5,
+  coin_runners: 6,
+  renegade_roundup: 7,
+  match_race: 8,
+  mixed: 9,
+  rt: 10,
+  ct: 11,
+  vsrace: 12,
 };
 export const fc_types = ['switch', 'nnid', 'mkw', 'mkt', '3ds'];
 export const game_fc_types: { [key: string]: string } = {
+  mkworld: 'switch',
   mk8dx: 'switch',
   mk8: 'nnid',
   mkw: 'mkw',
@@ -76,6 +106,7 @@ export const fc_type_order: { [key: string]: number } = {
   '3ds': 4,
 };
 export const valid_modes: { [key: string]: string[] } = {
+  mkworld: ['150cc', '200cc'],
   mk8dx: [
     '150cc',
     '200cc',
@@ -94,8 +125,9 @@ export const valid_modes: { [key: string]: string[] } = {
   mk7: ['vsrace'],
   smk: ['match_race'],
 };
-export const valid_team_games = ['mk8dx', 'mkw', 'mkt'];
+export const valid_team_games = ['mkworld', 'mk8dx', 'mkw', 'mkt'];
 export const valid_team_modes: { [key: string]: string[] } = {
+  mkworld: ['150cc', '200cc'],
   mk8dx: ['150cc', '200cc'],
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],

@@ -11,6 +11,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { permissions, check_permission } from '$lib/util/permissions';
   import LogoUpload from '$lib/components/common/LogoUpload.svelte';
+  import Input from '$lib/components/common/Input.svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -19,8 +20,10 @@
 
   let tag = "";
   let logo_file = "";
+  let working = false;
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+    working = true;
     const data = new FormData(event.currentTarget);
     function getOptionalValue(name: string) {
       return data.get(name) ? data.get(name)?.toString() : '';
@@ -50,11 +53,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    working = false;
     const result = await response.json();
     if (response.status < 300) {
       let team_id = result['id'];
       if(team_id) {
-        goto(`/${$page.params.lang}/registry/teams/profile?id=${team_id}`);
+        window.location.href = `/${$page.params.lang}/registry/teams/profile?id=${team_id}`;
       }
       else {
         goto(`/${$page.params.lang}/registry/teams`);
@@ -73,11 +77,11 @@
     </div>
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-      <input name="name" type="text" required pattern="^\S.*\S$|^\S$" maxlength=32/>
+      <Input name="name" type="text" required no_white_space maxlength={32}/>
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-      <input name="tag" type="text" bind:value={tag} required maxlength=5 pattern="^\S.*\S$|^\S$"/>
+      <Input name="tag" type="text" bind:value={tag} required maxlength={5} no_white_space/>
     </div>    
   </Section>
   <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
@@ -130,7 +134,7 @@
     </Section>
   {/if}
   <Section header={$LL.COMMON.SUBMIT()}>
-    <Button type="submit">{$LL.COMMON.SUBMIT()}</Button>
+    <Button type="submit" {working}>{$LL.COMMON.SUBMIT()}</Button>
   </Section>
 </form>
 
@@ -139,9 +143,6 @@
     display: inline-block;
     width: 150px;
     margin-right: 10px;
-  }
-  input {
-    width: 200px;
   }
   .option {
     margin-bottom: 10px;
