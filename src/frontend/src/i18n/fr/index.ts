@@ -261,7 +261,8 @@ const fr: Translation = {
   MARKDOWN: {
     INPUT: 'Entrée',
     PREVIEW: 'Prévisualisation',
-    MARKDOWN_HELP: 'Ce champ de texte prend en charge la syntaxe Markdown. Cliquez ici pour voir la liste de la syntaxe de base Markdown',
+    MARKDOWN_HELP:
+      'Ce champ de texte prend en charge la syntaxe Markdown. Cliquez ici pour voir la liste de la syntaxe de base Markdown',
   },
   MODERATOR: {
     MODERATOR: 'Modérateur',
@@ -880,7 +881,8 @@ const fr: Translation = {
       EDIT_SQUAD_FAILED: 'La modification de la squad a échoué',
       NO_PERMISSION_TO_REGISTER: "Vous n'avez pas la permission de vous inscrire à ce tournoi",
       REGISTRATIONS_CLOSED: 'Les inscriptions à ce tournoi sont fermés.',
-      REGISTER_PROMPT: "Vous voulez vous inscrire à ce tournoi ? Il vous suffit de remplir vos informations d'inscription ci-dessous !",
+      REGISTER_PROMPT:
+        "Vous voulez vous inscrire à ce tournoi ? Il vous suffit de remplir vos informations d'inscription ci-dessous !",
       ADD_FC_TO_REGISTER: "Merci d'ajouter votre code ami {game|uppercase} pour vous inscrire à ce tournoi.",
       COMPLETE_REGISTRATION_TO_REGISTER: 'Please complete your player registration to register for this tournament.',
       MY_INVITES: 'Mes invitations',
