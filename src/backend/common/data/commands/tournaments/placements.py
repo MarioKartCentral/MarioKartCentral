@@ -377,9 +377,9 @@ class GetLatestTournamentIdWithPlacements(Command[int]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""
-                SELECT MAX(id) FROM tournaments where is_viewable = 1 AND is_public = 1 AND id IN (
+                SELECT id FROM tournaments where is_viewable = 1 AND is_public = 1 AND id IN (
                     SELECT tournament_id from tournament_placements
-                )
+                ) ORDER BY date_end DESC LIMIT 1
                 """) as cursor:
                 row = await cursor.fetchone()
                 if row is None or row[0] is None:
