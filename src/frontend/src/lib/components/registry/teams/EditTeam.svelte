@@ -170,7 +170,7 @@
             <LanguageSelect bind:language={team.language}/>
             <br />
             <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
-            <textarea name="description" value={team.description} maxlength=200/>
+            <textarea name="description" value={team.description} maxlength=500/>
             <br />
           </Section>
           <Section header="Team Status">

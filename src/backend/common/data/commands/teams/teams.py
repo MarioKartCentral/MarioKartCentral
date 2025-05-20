@@ -38,8 +38,8 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem("Team name must be 32 characters or less", status=400)
             if len(self.tag) > 5:
                 raise Problem("Team tag must be 5 characters or less", status=400)
-            if len(self.description) > 200:
-                raise Problem("Team description must be 200 characters or less", status=400)
+            if len(self.description) > 500:
+                raise Problem("Team description must be 500 characters or less", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team for this game, but it should be possible if moderators wish
             if not self.is_privileged:
                 async with db.execute("""SELECT COUNT(r.id) 
@@ -223,8 +223,8 @@ class EditTeamCommand(Command[None]):
             raise Problem("Team name must be 32 characters or less", status=400)
         if len(self.tag) > 5:
             raise Problem("Team tag must be 5 characters or less", status=400)
-        if len(self.description) > 200:
-            raise Problem("Team description must be 200 characters or less", status=400)
+        if len(self.description) > 500:
+            raise Problem("Team description must be 500 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -291,8 +291,8 @@ class ManagerEditTeamCommand(Command[None]):
     remove_logo: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
-        if len(self.description) > 200:
-            raise Problem("Team description must be 200 characters or less", status=400)
+        if len(self.description) > 500:
+            raise Problem("Team description must be 500 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT logo FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
