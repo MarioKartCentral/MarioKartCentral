@@ -62,9 +62,9 @@
     }
   }
 
-  function toggle_results() {
+  function toggle_results(value: boolean) {
     // 100ms timeout if closing results so that clicking an option goes through
-    setTimeout(() => (show_results = !show_results), show_results ? 100 : 0);
+    setTimeout(() => (show_results = value), show_results ? 200 : 0);
   }
 
   function set_option(option: PlayerInfo | null) {
@@ -73,7 +73,7 @@
   }
 </script>
 
-<div class="container" on:focusin={toggle_results} on:focusout={toggle_results}>
+<div class="container" on:focusin={() => toggle_results(true)} on:focusout={() => toggle_results(false)}>
   {#if !player}
     <input type="search" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} bind:value={query} on:input={handle_search} />
     {#if show_results}
@@ -87,27 +87,25 @@
             <tbody>
               {#each results as result}
                 <tr on:click={() => set_option(result)}>
-                  <td>
+                  <td on:click={() => set_option(result)}>
                     <Flag country_code={result.country_code}/>
                   </td>
-                  <td>
+                  <td on:click={() => set_option(result)}>
                     {result.name}
                   </td>
-                  <td class="mobile-hide">
+                  <td class="mobile-hide" on:click={() => set_option(result)}>
                     {#if result.friend_codes.length}
                       {result.friend_codes[0].fc}
                     {/if}
                   </td>
-                  <td>
+                  <td on:click={() => set_option(result)}>
                     <UserAddSolid size="lg"/>
                   </td>
                 </tr>
               {/each}
             </tbody>
-            
           </Table>
         </div>
-        
       </div>
     {/if}
   {:else}
