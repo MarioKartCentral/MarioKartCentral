@@ -85,7 +85,7 @@
                     <span class="item-label">
                         <label for="password">{$LL.LOGIN.PASSWORD()}</label>
                     </span>
-                    <input name="password" type="password" required bind:value={password}/>
+                    <input name="password" type="password" required bind:value={password} maxlength=64/>
                 </div>
                 <div class="login-row">
                     <Button extra_classes="login-btn" type="submit" {working}>{$LL.LOGIN.LOGIN()}</Button>
