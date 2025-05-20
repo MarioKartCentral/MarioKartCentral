@@ -66,22 +66,27 @@
 
 <Dialog bind:this={add_player_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_TO_SQUAD()}>
     {#if squad}
-        <PlayerSearch bind:player={player} fc_type={game_fc_types[tournament.game]}/>
-        {#if player}
-            <form method="POST" on:submit|preventDefault={addPlayer}>
-                <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>
-                <TournamentStaffFields {tournament} squad_exists={true}/>
-                <div class="confirm">
-                    <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</Button>
-                    <Button type="button" on:click={add_player_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
-                </div>
-            </form>
-        {/if}
+        <div class="search">
+            <PlayerSearch bind:player={player} fc_type={game_fc_types[tournament.game]}/>
+            {#if player}
+                <form method="POST" on:submit|preventDefault={addPlayer}>
+                    <SoloTournamentFields {tournament} friend_codes={player.friend_codes}/>
+                    <TournamentStaffFields {tournament} squad_exists={true}/>
+                    <div class="confirm">
+                        <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</Button>
+                        <Button type="button" on:click={add_player_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
+                    </div>
+                </form>
+            {/if}
+        </div>
     {/if}
 </Dialog>
 
 <style>
     .confirm {
         margin-top: 20px;
+    }
+    .search {
+        min-height: 200px;
     }
 </style>
