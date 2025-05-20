@@ -156,7 +156,7 @@
             <Input name="name" type="text" value={team.name} required maxlength={32} no_white_space/>
             <br />
             <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-            <Input name="tag" type="text" bind:value={team.tag} required maxlength={5} no_white_space/>
+            <Input name="tag" type="text" bind:value={team.tag} required maxlength={8} no_white_space/>
           </Section>
           <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
             <label for="color">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>

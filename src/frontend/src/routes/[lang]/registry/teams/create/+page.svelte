@@ -81,7 +81,7 @@
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-      <Input name="tag" type="text" bind:value={tag} required maxlength={5} no_white_space/>
+      <Input name="tag" type="text" bind:value={tag} required maxlength={8} no_white_space/>
     </div>    
   </Section>
   <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>

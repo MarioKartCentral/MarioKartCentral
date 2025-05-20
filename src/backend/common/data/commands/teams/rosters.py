@@ -48,8 +48,8 @@ class CreateRosterCommand(Command[None]):
             self.tag = self.tag.strip()
         if self.name and len(self.name) > 32:
             raise Problem("Roster name must be 32 characters or less", status=400)
-        if self.tag and len(self.tag) > 5:
-            raise Problem("Roster tag must be 5 characters or less", status=400)
+        if self.tag and len(self.tag) > 8:
+            raise Problem("Roster tag must be 8 characters or less", status=400)
         async with db_wrapper.connect() as db:
             valid_game_modes = {"mk8dx": ["150cc", "200cc"],
                                 "mkw": ["rt", "ct"],
@@ -99,8 +99,8 @@ class EditRosterCommand(Command[None]):
         self.tag = self.tag.strip()
         if self.name and len(self.name) > 32:
             raise Problem("Roster name must be 32 characters or less", status=400)
-        if self.tag and len(self.tag) > 5:
-            raise Problem("Roster tag must be 5 characters or less", status=400)
+        if self.tag and len(self.tag) > 8:
+            raise Problem("Roster tag must be 8 characters or less", status=400)
         async with db_wrapper.connect() as db:
             # get team name and tag
             async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
@@ -198,8 +198,8 @@ class RequestEditRosterCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         if len(self.name) > 32:
             raise Problem("Roster name must be 32 characters or less", status=400)
-        if len(self.tag) > 5:
-            raise Problem("Roster tag must be 5 characters or less", status=400)
+        if len(self.tag) > 8:
+            raise Problem("Roster tag must be 8 characters or less", status=400)
         name = self.name.strip()
         tag = self.tag.strip()
         async with db_wrapper.connect() as db:

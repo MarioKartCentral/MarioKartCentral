@@ -33,7 +33,7 @@
     <span class="item-label">
       <label for="squad_tag">{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG()}</label>
     </span>
-    <Input name="squad_tag" maxlength={5} bind:value={entered_tag} required no_white_space/>
+    <Input name="squad_tag" maxlength={8} bind:value={entered_tag} required no_white_space/>
   </div>
 {/if}
 

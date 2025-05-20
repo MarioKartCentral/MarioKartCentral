@@ -441,7 +441,7 @@
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-      <Input name="tag" type="text" value={roster.tag} required maxlength={5} no_white_space/>
+      <Input name="tag" type="text" value={roster.tag} required maxlength={8} no_white_space/>
     </div>
     <div class="option">
       <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
