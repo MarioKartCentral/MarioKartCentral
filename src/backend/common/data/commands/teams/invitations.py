@@ -101,8 +101,9 @@ class AcceptInviteCommand(Command[None]):
                 fc_count = row[0]
                 if fc_count == 0:
                     raise Problem("Player does not have any friend codes for this roster's game", status=400)
+            now = int(datetime.now(timezone.utc).timestamp())
             # we do not move the player to the team's roster just yet, just mark it as accepted, a moderator must approve the transfer
-            await db.execute("UPDATE team_transfers SET roster_leave_id = ?, is_accepted = ? WHERE id = ?", (self.roster_leave_id, True, self.invite_id))
+            await db.execute("UPDATE team_transfers SET roster_leave_id = ?, is_accepted = ?, date = ? WHERE id = ?", (self.roster_leave_id, True, now, self.invite_id))
             await db.commit()
 
 @save_to_command_log
