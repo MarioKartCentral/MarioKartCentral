@@ -38,7 +38,9 @@
         <Section header={$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}>
             {#if totalFlags}
                 <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
-                <AltFlags {flags}/>
+                {#key flags}
+                    <AltFlags {flags}/>
+                {/key}
                 <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
             {/if}
         </Section>
