@@ -77,7 +77,7 @@
     </div>
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-      <Input name="name" type="text" required no_white_space maxlength={32}/>
+      <Input name="name" type="text" required no_white_space minlength={2} maxlength={32}/>
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>

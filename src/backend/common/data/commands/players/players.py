@@ -14,7 +14,10 @@ class CreatePlayerCommand(Command[Player]):
     is_shadow: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper):
-        if len(self.name) > 24:
+        name = self.name.strip()
+        if len(name) < 2:
+            raise Problem("Player name must be at least 2 characters", status=400)
+        if len(name) > 24:
             raise Problem("Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect(db_name="main", attach=["auth"]) as db:
             if self.user_id is not None:
@@ -37,7 +40,7 @@ class CreatePlayerCommand(Command[Player]):
                 VALUES (?, ?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
                 command, 
-                (self.name, self.country_code, self.is_hidden, self.is_shadow, False, now))
+                (name, self.country_code, self.is_hidden, self.is_shadow, False, now))
             
             # TODO: Run queries to determine why it errored
             if player_row is None:
@@ -78,7 +81,7 @@ class CreatePlayerCommand(Command[Player]):
             await db.executemany("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     friend_code_tuples)
             await db.commit()
-            return Player(int(player_id), self.name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
+            return Player(int(player_id), name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
 
 @save_to_command_log
 @dataclass

@@ -26,6 +26,8 @@ class CreateTeamCommand(Command[int | None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            name = self.name.strip()
+            tag = self.tag.strip()
             valid_game_modes = {"mk8dx": ["150cc", "200cc"],
                                 "mkw": ["rt", "ct"],
                                 "mkt": ["vsrace"],
@@ -34,9 +36,13 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem(f"Invalid game (valid games: {', '.join(valid_game_modes.keys())})", status=400)
             if self.mode not in valid_game_modes[self.game]:
                 raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
-            if len(self.name) > 32:
+            if len(name) < 2:
+                raise Problem("Team name must be at least 2 characters", status=400)
+            if len(name) > 32:
                 raise Problem("Team name must be 32 characters or less", status=400)
-            if len(self.tag) > 5:
+            if len(tag) < 1:
+                raise Problem("Team tag must be at least 1 character", status=400)
+            if len(tag) > 5:
                 raise Problem("Team tag must be 5 characters or less", status=400)
             if len(self.description) > 500:
                 raise Problem("Team description must be 500 characters or less", status=400)
@@ -47,7 +53,7 @@ class CreateTeamCommand(Command[int | None]):
                                       JOIN teams t ON r.team_id = t.id
                                       WHERE ((r.name IS NOT NULL AND r.name = ?) OR (r.name IS NULL AND t.name = ?) 
                                       OR (r.tag IS NOT NULL AND r.tag = ?) OR (r.tag IS NULL AND t.tag = ?))
-                                      AND r.game = ? AND r.mode = ? AND r.is_active = 1 AND t.is_historical = 0""", (self.name, self.name, self.tag, self.tag, self.game, self.mode)) as cursor:
+                                      AND r.game = ? AND r.mode = ? AND r.is_active = 1 AND t.is_historical = 0""", (name, name, tag, tag, self.game, self.mode)) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     if row[0] > 0:
@@ -61,7 +67,7 @@ class CreateTeamCommand(Command[int | None]):
                         raise Problem("You already have a pending team in the approval queue; you must wait for a staff member to approve/deny this team before creating another team", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             async with db.execute("""INSERT INTO teams (name, tag, description, creation_date, language, color, logo, approval_status, is_historical)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.name, self.tag, self.description, creation_date, self.language, self.color, None, self.approval_status,
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (name, tag, self.description, creation_date, self.language, self.color, None, self.approval_status,
                 self.is_historical)) as cursor:
                 team_id = cursor.lastrowid
             await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
