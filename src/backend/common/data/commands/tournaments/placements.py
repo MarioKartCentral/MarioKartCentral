@@ -194,6 +194,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 LEFT JOIN tournament_placements as tsp 
                 ON s.id = tsp.registration_id
                 WHERE t.show_on_profiles = 1
+                AND t.is_public = 1
                 AND tp.registration_id IS NOT NULL
                 AND t.teams_allowed = 0
                 AND (t.min_squad_size IS NULL OR t.min_squad_size <= 4)
@@ -246,6 +247,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 LEFT JOIN teams
                 ON tr.team_id = teams.id
                 WHERE t.show_on_profiles = 1
+                AND t.is_public = 1
                 AND tp.registration_id IS NOT NULL
                 AND tp.player_id = ?
                 AND s.is_registered = 1
@@ -275,6 +277,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 JOIN teams
                 ON tr.team_id = teams.id
                 WHERE t.show_on_profiles = 1
+                AND t.is_public = 1
                 AND tp.registration_id IS NOT NULL
                 AND tp.player_id = ?
                 AND s.is_registered = 1
