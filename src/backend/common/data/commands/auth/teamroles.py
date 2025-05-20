@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.auth import team_permissions, permissions
+from common.auth import team_permissions, permissions, team_roles
 from common.data.commands import Command, save_to_command_log
 from common.data.models import *
 from datetime import datetime, timezone
@@ -85,6 +85,14 @@ class GrantTeamRoleCommand(Command[None]):
 
                 if role_id is None:
                     raise Problem("Role not found", status=404)
+                
+            if self.role == team_roles.LEADER:
+                async with db.execute("SELECT COUNT(user_id) FROM user_team_roles WHERE role_id = ? AND team_id = ?", (role_id, self.team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        count = row[0]
+                        if count >= 4:
+                            raise Problem("Teams can only have a maximum of 4 leaders", status=400)
             
             async with db.execute("SELECT user_id FROM user_team_roles WHERE user_id = ? AND role_id = ? AND team_id = ?", (target_user_id, role_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
