@@ -182,6 +182,7 @@
     overflow: hidden;
     word-break: break-word;
     white-space: pre-line;
+    overflow-y: auto;
     @media(min-width: 1024px) {
       margin-left: auto;
       margin-right: auto;

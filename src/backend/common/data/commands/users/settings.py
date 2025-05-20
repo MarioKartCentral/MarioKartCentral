@@ -58,8 +58,8 @@ class EditUserSettingsCommand(Command[bool]):
         set_value(data.timezone, "timezone")
         set_value(data.hide_discord, "hide_discord")
 
-        if data.about_me and len(data.about_me) > 200:
-            raise Problem("About me must be 200 characters or less", status=400)
+        if data.about_me and len(data.about_me) > 500:
+            raise Problem("About me must be 500 characters or less", status=400)
 
         if not set_clauses:
             raise Problem("Bad request body", detail="There are no values to set")
@@ -82,8 +82,8 @@ class EditPlayerUserSettingsCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             data = self.data
-            if data.about_me and len(data.about_me) > 200:
-                raise Problem("About me must be 200 characters or less", status=400)
+            if data.about_me and len(data.about_me) > 500:
+                raise Problem("About me must be 500 characters or less", status=400)
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (data.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
