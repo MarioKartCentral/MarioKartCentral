@@ -20,14 +20,31 @@
     let totalFlags = 0;
     let totalPages = 0;
 
+    let type: string | null = null;
+    let exclude_fingerprints = true;
+
     async function fetchData() {
-        const res = await fetch(`/api/moderator/altFlags?page=${currentPage}`);
+        let url = `/api/moderator/altFlags?page=${currentPage}`;
+        if(type) {
+            url += `&type=${type}`;
+        }
+        if(exclude_fingerprints) {
+            url += `&exclude_fingerprints=true`
+        }
+        const res = await fetch(url);
         if(res.status === 200) {
             const body: AltFlagList = await res.json();
             flags = body.flags;
             totalFlags = body.count;
             totalPages = body.page_count;
         }
+    }
+
+    async function filter() {
+        if(type === "fingerprint_match") {
+            exclude_fingerprints = false;
+        }
+        await fetchData();
     }
 
     onMount(fetchData);
@@ -37,6 +54,29 @@
     {#if check_permission(user_info, permissions.view_alt_flags)}
         <Section header={$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}>
             {#if totalFlags}
+                <div>
+                    <select bind:value={type} on:change={filter}>
+                        <option value={null}>
+                            All Flags
+                        </option>
+                        <option value="vpn">
+                            VPN
+                        </option>
+                        <option value="ip_match">
+                            IP Matches
+                        </option>
+                        <option value="persistent_cookie_match">
+                            Cookie Matches
+                        </option>
+                        <option value="fingerprint_match">
+                            Fingerprint Matches
+                        </option>
+                    </select>
+                    <select bind:value={exclude_fingerprints} on:change={fetchData}>
+                        <option value={true}>Exclude Fingerprints</option>
+                        <option value={false}>Include Fingerprints</option>
+                    </select>
+                </div>
                 <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
                 {#key flags}
                     <AltFlags {flags}/>

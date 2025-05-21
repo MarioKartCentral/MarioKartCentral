@@ -104,7 +104,7 @@
               <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
             </div>
             <div>
-              <Input name="tag" type="text" required maxlength={5}/>
+              <Input name="tag" type="text" required maxlength={8}/>
             </div>
           </div>
           <div class="option">

@@ -86,7 +86,7 @@
         </div>
         <div>
             <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-            <Input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} maxlength={5} no_white_space/>
+            <Input name="tag" type="text" value={roster.tag} required disabled={days_until_change > 0} maxlength={8} no_white_space/>
         </div>
         <Button type="submit" disabled={days_until_change > 0} {working}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
     {/if}

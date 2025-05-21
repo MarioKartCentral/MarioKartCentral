@@ -42,8 +42,8 @@ class CreateTeamCommand(Command[int | None]):
                 raise Problem("Team name must be 32 characters or less", status=400)
             if len(tag) < 1:
                 raise Problem("Team tag must be at least 1 character", status=400)
-            if len(tag) > 5:
-                raise Problem("Team tag must be 5 characters or less", status=400)
+            if len(tag) > 8:
+                raise Problem("Team tag must be 8 characters or less", status=400)
             if len(self.description) > 500:
                 raise Problem("Team description must be 500 characters or less", status=400)
             # we don't want users to be able to create teams that share the same name/tag as another team for this game, but it should be possible if moderators wish
@@ -227,8 +227,8 @@ class EditTeamCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         if len(self.name) > 32:
             raise Problem("Team name must be 32 characters or less", status=400)
-        if len(self.tag) > 5:
-            raise Problem("Team tag must be 5 characters or less", status=400)
+        if len(self.tag) > 8:
+            raise Problem("Team tag must be 8 characters or less", status=400)
         if len(self.description) > 500:
             raise Problem("Team description must be 500 characters or less", status=400)
         async with db_wrapper.connect() as db:
@@ -338,8 +338,8 @@ class RequestEditTeamCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         if len(self.name) > 32:
             raise Problem("Team name must be 32 characters or less", status=400)
-        if len(self.tag) > 5:
-            raise Problem("Team tag must be 5 characters or less", status=400)
+        if len(self.tag) > 8:
+            raise Problem("Team tag must be 8 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
