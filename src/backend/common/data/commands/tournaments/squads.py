@@ -49,6 +49,10 @@ class CreateSquadCommand(Command[None]):
                     raise Problem('Tournament does not accept Mii Names, please set this value to null', status=400)
                 if bool(teams_only):
                     raise Problem('This tournament is teams only, cannot create new squads', status=400)
+                if self.squad_tag and len(self.squad_tag) > 8:
+                    raise Problem("Squad tags must be 8 characters or less", status=400)
+                if self.squad_name and len(self.squad_name) > 32:
+                    raise Problem("Squad names must be 32 characters or less", status=400)
                 if self.squad_tag is not None and self.mii_name is not None:
                     if self.squad_tag not in self.mii_name:
                         raise Problem("Mii name must contain squad tag", status=400)
