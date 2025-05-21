@@ -103,8 +103,11 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                 offset = (self.filter.page - 1) * limit
 
             # Get count for pagination
-            count_query = "SELECT COUNT(*) FROM alt_flags.alt_flags"
-            async with db.execute(count_query) as cursor:
+            count_query = """SELECT COUNT(*) FROM alt_flags.alt_flags
+                    WHERE (:type IS NULL OR type = :type)
+                    AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')"""
+            async with db.execute(count_query, {"type": self.filter.type,
+                                                "exclude_fingerprints": self.filter.exclude_fingerprints}) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 count = row[0]
@@ -123,11 +126,14 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                 LEFT JOIN alt_flags.user_alt_flags uf ON f.id = uf.flag_id
                 LEFT JOIN main.users u ON uf.user_id = u.id
                 LEFT JOIN main.players p ON u.player_id = p.id
+                WHERE (:type IS NULL OR f.type = :type)
+                AND (:exclude_fingerprints=0 OR f.type != 'fingerprint_match')
                 ORDER BY f.date DESC
             """
             
             flag_dict: dict[int, AltFlag] = {}
-            async with db.execute(get_flags_query, {"limit": limit, "offset": offset}) as cursor:
+            async with db.execute(get_flags_query, {"limit": limit, "offset": offset, "type": self.filter.type,
+                                                    "exclude_fingerprints": self.filter.exclude_fingerprints}) as cursor:
                 rows = await cursor.fetchall()
                 for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, user_id, player_id, player_name, player_country in rows:
                     # Create flag if we haven't seen it yet
