@@ -117,7 +117,9 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                 SELECT f.id, f.type, f.flag_key, f.data, f.score, f.date, l.fingerprint,
                        u.id as user_id, p.id as player_id, p.name as player_name, p.country_code
                 FROM (
-                    SELECT id FROM alt_flags.alt_flags 
+                    SELECT id FROM alt_flags.alt_flags
+                    WHERE (:type IS NULL OR type = :type)
+                    AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')
                     ORDER BY date DESC 
                     LIMIT :limit OFFSET :offset
                 ) as pf
@@ -126,8 +128,6 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                 LEFT JOIN alt_flags.user_alt_flags uf ON f.id = uf.flag_id
                 LEFT JOIN main.users u ON uf.user_id = u.id
                 LEFT JOIN main.players p ON u.player_id = p.id
-                WHERE (:type IS NULL OR f.type = :type)
-                AND (:exclude_fingerprints=0 OR f.type != 'fingerprint_match')
                 ORDER BY f.date DESC
             """
             
