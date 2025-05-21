@@ -4,6 +4,6 @@
     export let style = "";
 </script>
 
-<span class={badgeClass} style={style}>
+<span class="badge {badgeClass}" style={style}>
     <slot/>
 </span>
