@@ -428,9 +428,10 @@ async def list_denied_teams(request: Request, body: TeamFilter) -> JSONResponse:
     teams = await handle(command)
     return JSONResponse(teams)
 
+@bind_request_query(RosterFilter)
 @require_permission(permissions.MANAGE_TEAMS)
-async def list_unapproved_rosters(request: Request) -> JSONResponse:
-    command = ListRostersCommand(approved=False)
+async def list_rosters(request: Request, body: RosterFilter) -> JSONResponse:
+    command = ListRostersCommand(body)
     rosters = await handle(command)
     return JSONResponse(rosters)
 
@@ -534,7 +535,7 @@ routes: list[Route] = [
     Route('/api/registry/teams', list_teams),
     Route('/api/registry/teams/pendingTeams', list_pending_teams),
     Route('/api/registry/teams/deniedTeams', list_denied_teams),
-    Route('/api/registry/teams/unapprovedRosters', list_unapproved_rosters),
+    Route('/api/registry/teams/listRosters', list_rosters),
     Route('/api/registry/teams/{team_id:int}/approveRoster/{rosterId:int}', approve_roster, methods=['POST']), # dispatches notification
     Route('/api/registry/teams/{team_id:int}/denyRoster/{rosterId:int}', deny_roster, methods=['POST']), # dispatches notification
     Route('/api/registry/teams/getRegisterable', list_registerable_rosters),

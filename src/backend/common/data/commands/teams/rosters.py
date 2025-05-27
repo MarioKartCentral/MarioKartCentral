@@ -358,11 +358,18 @@ class ListRosterEditRequestsCommand(Command[RosterEditList]):
     
        
 @dataclass
-class ListRostersCommand(Command[list[TeamRoster]]):
-    approved: bool = True
+class ListRostersCommand(Command[RosterList]):
+    filter: RosterFilter
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            filter = self.filter
+            limit:int = 50
+            offset:int = 0
+
+            if filter.page is not None:
+                offset = (filter.page - 1) * limit
+
             where_clauses: list[str] = []
             variable_parameters: list[Any] = []
 
@@ -371,28 +378,24 @@ class ListRostersCommand(Command[list[TeamRoster]]):
                     where_clauses.append(f"{column_name} = ?")
                     variable_parameters.append(filter_value)
 
-            def append_not_equal_filter(filter_value: Any, column_name: str):
-                if filter_value is not None:
-                    where_clauses.append(f"{column_name} != ?")
-                    variable_parameters.append(filter_value)
-
-            if self.approved:
-                append_equal_filter("approved", "r.approval_status")
+            if filter.approval_status == "approved":
+                append_equal_filter(filter.approval_status, "r.approval_status")
             else:
-                # want unapproved rosters only for teams which havent been approved yet
-                append_not_equal_filter("approved", "r.approval_status")
+                # want pending/denied rosters only for teams which are already approved
+                append_equal_filter(filter.approval_status, "r.approval_status")
                 append_equal_filter("approved", "t.approval_status")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
+            from_where_clause = f"""FROM team_rosters r
+                                        JOIN teams t ON r.team_id = t.id
+                                        {where_clause}"""
             rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag,
                                         r.creation_date, r.is_recruiting, r.is_active, r.approval_status,
                                         t.name, t.tag, t.color
-                                        FROM team_rosters r
-                                        JOIN teams t ON r.team_id = t.id
-                                        {where_clause}
+                                        {from_where_clause} LIMIT ? OFFSET ?
                                         """
             rosters: list[TeamRoster] = []
-            async with db.execute(rosters_query, variable_parameters) as cursor:
+            async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting,
@@ -402,7 +405,14 @@ class ListRostersCommand(Command[list[TeamRoster]]):
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
                                         creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
                     rosters.append(roster)
-            return rosters
+
+            count_query = f"""SELECT COUNT(*) FROM (SELECT DISTINCT r.id {from_where_clause})"""
+            async with db.execute(count_query, variable_parameters) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                count = row[0]
+                page_count = int(count / limit) + (1 if count % limit else 0)
+            return RosterList(rosters, count, page_count)
 
 @dataclass
 class GetRegisterableRostersCommand(Command[list[TeamRoster]]):

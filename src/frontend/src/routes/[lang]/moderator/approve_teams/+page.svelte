@@ -4,6 +4,7 @@
   import Table from '$lib/components/common/Table.svelte';
   import type { Team, TeamList } from '$lib/types/team';
   import type { TeamRoster } from '$lib/types/team-roster';
+  import type { RosterList } from '$lib/types/roster-list';
   import { check_permission, permissions } from '$lib/util/permissions';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
@@ -15,37 +16,63 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import LL from '$i18n/i18n-svelte';
-
-  let rosters: TeamRoster[] = [];
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
 
   let pending_teams: Team[] = [];
+  let pending_rosters: TeamRoster[] = [];
+  
+  let denied_team_page = 1;
+  let denied_team_total_pages = 1;
   let denied_teams: Team[] = [];
-  $: pending_rosters = rosters.filter((r) => r.approval_status === 'pending');
-  $: denied_rosters = rosters.filter((r) => r.approval_status === 'denied');
+
+  let denied_roster_page = 1;
+  let denied_roster_total_pages = 1;
+  let denied_rosters: TeamRoster[] = []
 
   let user_info: UserInfo;
   user.subscribe((value) => {
     user_info = value;
   });
 
-  onMount(async () => {
+  async function getPendingTeams() {
     const res = await fetch(`/api/registry/teams/pendingTeams`);
     if (res.status === 200) {
       const body: TeamList = await res.json();
       pending_teams = body.teams;
     }
+  }
 
-    const res2 = await fetch(`/api/registry/teams/unapprovedRosters`);
-    if (res2.status === 200) {
-      const body: TeamRoster[] = await res2.json();
-      rosters = body;
-    }
-
-    const res3 = await fetch(`/api/registry/teams/deniedTeams`);
-    if(res3.status === 200) {
-      const body: TeamList = await res3.json();
+  async function getDeniedTeams() {
+    const res = await fetch(`/api/registry/teams/deniedTeams?page=${denied_team_page}`);
+    if(res.status === 200) {
+      const body: TeamList = await res.json();
       denied_teams = body.teams;
+      denied_team_total_pages = body.page_count;
     }
+  }
+
+  async function getPendingRosters() {
+    const res = await fetch(`/api/registry/teams/listRosters?approval_status=pending`);
+    if (res.status === 200) {
+      const body: RosterList = await res.json();
+      pending_rosters = body.rosters;
+    }
+  }
+
+  async function getDeniedRosters() {
+    const res = await fetch(`/api/registry/teams/listRosters?approval_status=denied&page=${denied_roster_page}`);
+    if (res.status === 200) {
+      const body: RosterList = await res.json();
+      denied_rosters = body.rosters;
+      denied_roster_total_pages = body.page_count;
+    }
+  }
+
+  onMount(async () => {
+    await getPendingTeams();
+    await getPendingRosters();
+    await getDeniedTeams();
+    await getDeniedRosters();
   });
 
   const options: Intl.DateTimeFormatOptions = {
@@ -209,6 +236,7 @@
   </Section>
   <Section header={$LL.MODERATOR.DENIED_TEAMS()}>
     {#if denied_teams.length}
+    <PageNavigation bind:currentPage={denied_team_page} bind:totalPages={denied_team_total_pages} refresh_function={getDeniedTeams}/>
     <Table>
       <col class="tag" />
       <col class="name" />
@@ -238,6 +266,7 @@
         {/each}
       </tbody>
     </Table>
+    <PageNavigation bind:currentPage={denied_team_page} bind:totalPages={denied_team_total_pages} refresh_function={getDeniedTeams}/>
     {:else}
       {$LL.MODERATOR.NO_DENIED_TEAMS()}
     {/if}
@@ -245,6 +274,7 @@
   </Section>
   <Section header={$LL.MODERATOR.DENIED_ROSTERS()}>
     {#if denied_rosters.length}
+    <PageNavigation bind:currentPage={denied_roster_page} bind:totalPages={denied_roster_total_pages} refresh_function={getDeniedRosters}/>
     <Table>
       <col class="tag" />
       <col class="name" />
@@ -274,6 +304,7 @@
         {/each}
       </tbody>
     </Table>
+    <PageNavigation bind:currentPage={denied_roster_page} bind:totalPages={denied_roster_total_pages} refresh_function={getDeniedRosters}/>
     {:else}
       {$LL.MODERATOR.NO_DENIED_ROSTERS()}
     {/if}
