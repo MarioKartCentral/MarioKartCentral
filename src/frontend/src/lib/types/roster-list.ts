@@ -1,7 +1,7 @@
-import type { TeamRoster } from "./team-roster";
+import type { TeamRoster } from './team-roster';
 
 export type RosterList = {
-    rosters: TeamRoster[];
-    count: number;
-    page_count: number;
-}
+  rosters: TeamRoster[];
+  count: number;
+  page_count: number;
+};
