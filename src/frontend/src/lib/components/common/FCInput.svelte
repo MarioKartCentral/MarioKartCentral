@@ -5,6 +5,7 @@
     export let fc = '';
     export let name = 'fc';
     export let selected_type: string | null = 'switch';
+    export let required = false;
 
     async function updateFC(e: Event) {
         if(selected_type === 'nnid') return;
@@ -37,4 +38,4 @@
 </script>
 
 <Input type={selected_type === 'nnid' ? 'text' : 'tel'} bind:value={fc} {name} placeholder={selected_type !== 'nnid' ? '0000-0000-0000' : 'NNID'} on:input={(e) => updateFC(e)}
-minlength={selected_type === 'nnid' ? 6 : 14} maxlength={selected_type === 'nnid' ? 16 : 14} required/>
+minlength={selected_type === 'nnid' ? 6 : 14} maxlength={selected_type === 'nnid' ? 16 : 14} {required}/>

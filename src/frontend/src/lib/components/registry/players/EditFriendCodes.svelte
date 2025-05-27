@@ -107,7 +107,7 @@
                     </div>
                     {#if is_privileged}
                         <div>
-                            <FcInput fc={selected_fc.fc} selected_type={selected_fc.type}/>
+                            <FcInput fc={selected_fc.fc} selected_type={selected_fc.type} required/>
                         </div>
                     {:else}
                         <div>

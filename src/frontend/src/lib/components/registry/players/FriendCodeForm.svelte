@@ -87,7 +87,7 @@
                     <label for="fc">{$LL.FRIEND_CODES.FRIEND_CODE()}</label>
                 </div>
                 <div>
-                    <FcInput {selected_type}/>
+                    <FcInput {selected_type} required/>
                 </div>
             </div>
             <div class="option">
