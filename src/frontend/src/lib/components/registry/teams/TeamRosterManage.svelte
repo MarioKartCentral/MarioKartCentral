@@ -353,9 +353,9 @@
                     {/if}
                   {/if}
                   {#if roster.game === "mkw" && check_permission(user_info, permissions.manage_transfers)}
-                      <DropdownItem on:click={() => toggleBagger(player)}>
-                        {$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE()}
-                      </DropdownItem>
+                    <DropdownItem on:click={() => toggleBagger(player)}>
+                      {$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE()}
+                    </DropdownItem>
                   {/if}
                 </Dropdown>
               </td>
