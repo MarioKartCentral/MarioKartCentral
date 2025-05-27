@@ -8,6 +8,7 @@
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import LL from '$i18n/i18n-svelte';
   import { onMount } from 'svelte';
+  import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
 
   let game: string | null = null;
   let mode: string | null = null;
@@ -76,6 +77,9 @@
                   >
                     <!-- prefer roster name, but use team name as fallback -->
                     {record.roster_name ? record.roster_name : record.team_name}
+                    {#if record.is_bagger_clause}
+                      <BaggerBadge/>
+                    {/if}
                   </a>
                 </td>
                 <td>

@@ -5,6 +5,7 @@ export type PlayerTransferItem = {
   mode: string;
   join_date: number;
   leave_date: number | null;
+  is_bagger_clause: boolean;
   roster_name: string | null;
 };
 
