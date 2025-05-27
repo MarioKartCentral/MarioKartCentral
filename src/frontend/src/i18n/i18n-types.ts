@@ -2699,6 +2699,18 @@ type RootTranslation = {
 			 * R​e​q​u​e​s​t​i​n​g​ ​r​o​s​t​e​r​ ​n​a​m​e​/​t​a​g​ ​c​h​a​n​g​e​ ​f​a​i​l​e​d
 			 */
 			ROSTER_NAME_TAG_CHANGE_FAILURE: string
+			/**
+			 * T​o​g​g​l​e​ ​B​a​g​g​e​r​ ​C​l​a​u​s​e
+			 */
+			TOGGLE_BAGGER_CLAUSE: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​c​h​a​n​g​e​ ​t​h​i​s​ ​p​l​a​y​e​r​'​s​ ​b​a​g​g​e​r​ ​s​t​a​t​u​s​?
+			 */
+			TOGGLE_BAGGER_CLAUSE_CONFIRM: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​t​o​g​g​l​e​ ​b​a​g​g​e​r​ ​c​l​a​u​s​e
+			 */
+			TOGGLE_BAGGER_CLAUSE_FAILED: string
 		}
 		LIST: {
 			/**
@@ -7591,6 +7603,18 @@ export type TranslationFunctions = {
 			 * Requesting roster name/tag change failed
 			 */
 			ROSTER_NAME_TAG_CHANGE_FAILURE: () => LocalizedString
+			/**
+			 * Toggle Bagger Clause
+			 */
+			TOGGLE_BAGGER_CLAUSE: () => LocalizedString
+			/**
+			 * Are you sure you would like to change this player's bagger status?
+			 */
+			TOGGLE_BAGGER_CLAUSE_CONFIRM: () => LocalizedString
+			/**
+			 * Failed to toggle bagger clause
+			 */
+			TOGGLE_BAGGER_CLAUSE_FAILED: () => LocalizedString
 		}
 		LIST: {
 			/**

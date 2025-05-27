@@ -332,3 +332,24 @@ class ForceTransferPlayerCommand(Command[None]):
                                  is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
             await db.commit()
+
+@save_to_command_log
+@dataclass
+class ToggleTeamMemberBaggerCommand(Command[None]):
+    roster_id: int
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT m.id, m.is_bagger_clause, r.game FROM team_members m
+                                  JOIN team_rosters r ON m.roster_id = r.id
+                                  WHERE m.roster_id = ? AND m.player_id = ? AND m.leave_date IS ?""",
+                                  (self.roster_id, self.player_id, None)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Team member not found", status=404)
+                member_id, is_bagger_clause, roster_game = row
+                if roster_game != "mkw":
+                    raise Problem("Cannot toggle bagger clause for games other than MKW", status=400)
+            await db.execute("UPDATE team_members SET is_bagger_clause = ? WHERE id = ?", (not is_bagger_clause, member_id))
+            await db.commit()

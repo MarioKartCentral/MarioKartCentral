@@ -382,3 +382,8 @@ class TeamList:
     teams: list[Team]
     team_count: int
     page_count: int
+
+@dataclass
+class ToggleBaggerRequestData:
+    roster_id: int
+    player_id: int

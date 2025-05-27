@@ -489,6 +489,12 @@ async def merge_teams(request: Request, body: MergeTeamsRequestData) -> JSONResp
     await handle(MergeTeamsCommand(body.from_team_id, body.to_team_id))
     return JSONResponse({})
 
+@bind_request_body(ToggleBaggerRequestData)
+@require_permission(permissions.MANAGE_TRANSFERS)
+async def toggle_bagger(request: Request, body: ToggleBaggerRequestData) -> JSONResponse:
+    await handle(ToggleTeamMemberBaggerCommand(body.roster_id, body.player_id))
+    return JSONResponse({})
+
 
 routes: list[Route] = [
     Route('/api/registry/teams/create', create_team, methods=['POST']),
@@ -535,4 +541,5 @@ routes: list[Route] = [
     Route('/api/registry/teams/{team_id:int}/editRequests', team_edit_history),
     Route('/api/registry/teams/{team_id:int}/rosterEditRequests/{rosterId:int}', roster_edit_history),
     Route('/api/registry/teams/merge', merge_teams, methods=['POST']),
+    Route('/api/registry/teams/toggleBaggerClause', toggle_bagger, methods=['POST']),
 ]

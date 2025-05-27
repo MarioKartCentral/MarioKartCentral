@@ -717,6 +717,9 @@ const es: Translation = {
       ROSTER_NAME_TAG_CHANGE_SUCCESS:
         'Tu solicitud para cambiar el nombre/tag del roster ha sido enviada al personal de MKCentral para su aprobación.',
       ROSTER_NAME_TAG_CHANGE_FAILURE: 'Error al solicitar el cambio de nombre/tag del roster',
+      TOGGLE_BAGGER_CLAUSE: 'Toggle Bagger Clause',
+      TOGGLE_BAGGER_CLAUSE_CONFIRM: "Are you sure you would like to change this player's bagger status?",
+      TOGGLE_BAGGER_CLAUSE_FAILED: 'Failed to toggle bagger clause',
     },
     LIST: {
       TAG: 'Tag',
