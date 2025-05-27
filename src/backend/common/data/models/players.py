@@ -44,6 +44,7 @@ class PlayerTransferItem:
     mode: str
     join_date: int
     leave_date: int | None
+    is_bagger_clause: bool
     roster_name: str
 
 @dataclass

@@ -3,6 +3,7 @@
     import type { PlayerInfo } from "$lib/types/player-info";
     import Button from "$lib/components/common/buttons/Button.svelte";
     import FCTypeSelect from "$lib/components/common/FCTypeSelect.svelte";
+    import FcInput from "$lib/components/common/FCInput.svelte";
 
     export let player: PlayerInfo | null;
     export let is_privileged = false;
@@ -86,9 +87,7 @@
                     <label for="fc">{$LL.FRIEND_CODES.FRIEND_CODE()}</label>
                 </div>
                 <div>
-                    <input name="fc" placeholder={selected_type !== 'nnid' ? '0000-0000-0000' : 'NNID'} 
-                    minlength={selected_type === 'nnid' ? 6 : null} maxlength={selected_type === 'nnid' ? 16 : null} 
-                    required/>
+                    <FcInput {selected_type}/>
                 </div>
             </div>
             <div class="option">

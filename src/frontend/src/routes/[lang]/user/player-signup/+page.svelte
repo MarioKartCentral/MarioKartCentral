@@ -9,6 +9,7 @@
   import LinkDiscord from '$lib/components/common/discord/LinkDiscord.svelte';
   import LL from '$i18n/i18n-svelte';
   import Input from '$lib/components/common/Input.svelte';
+  import FcInput from '$lib/components/common/FCInput.svelte';
 
   let user_info: UserInfo;
 
@@ -83,31 +84,31 @@
         <span class="item-label">
           <label for="switch_fc">{$LL.PLAYERS.PLAYER_SIGNUP.SWITCH_FC()}</label>
         </span>
-        <input name="switch_fc" placeholder='0000-0000-0000'/>
+        <FcInput name="switch_fc" selected_type="switch"/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="mkt_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKT_FC()}</label>
         </span>
-        <input name="mkt_fc" placeholder='0000-0000-0000'/>
+        <FcInput name="mkt_fc" selected_type="mkt"/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="mkw_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKW_FC()}</label>
         </span>
-        <input name="mkw_fc" placeholder='0000-0000-0000'/>
+        <FcInput name="mkw_fc" selected_type="mkw"/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="3ds_fc">{$LL.PLAYERS.PLAYER_SIGNUP['3DS_FC']()}</label>
         </span>
-        <input name="3ds_fc" placeholder='0000-0000-0000'/>
+        <FcInput name="3ds_fc" selected_type="3ds"/>
       </div>
       <div class="field">
         <span class="item-label">
           <label for="nnid">{$LL.PLAYERS.PLAYER_SIGNUP.NNID()}</label>
         </span>
-        <input name="nnid" placeholder='NNID'/>
+        <FcInput name="nnid" selected_type="nnid"/>
       </div>
       <Button type="submit" {working}>{$LL.PLAYERS.PLAYER_SIGNUP.REGISTER()}</Button>
     </form>
@@ -121,8 +122,5 @@
   span.item-label {
     display: inline-block;
     width: 150px;
-  }
-  input {
-    width: 200px;
   }
 </style>

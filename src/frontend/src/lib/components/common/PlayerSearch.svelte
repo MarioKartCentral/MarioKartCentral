@@ -13,6 +13,7 @@
   export let is_shadow: boolean | null = false;
   export let include_shadow_players = false;
   export let has_connected_user: boolean | null = null;
+  export let is_banned: boolean | null = null;
 
   let query = '';
   let results: PlayerInfo[] = [];
@@ -51,6 +52,9 @@
     }
     if(has_connected_user !== null) {
       query_parameters.push(`has_connected_user=${has_connected_user}`);
+    }
+    if(is_banned !== null) {
+      query_parameters.push(`is_banned=${is_banned}`);
     }
     const query_string = query_parameters.length ? query_parameters.join("&") : "";
 

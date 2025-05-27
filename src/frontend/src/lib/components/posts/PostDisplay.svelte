@@ -39,7 +39,7 @@
             let tournament_url = `/api/tournaments/${tournament_id}`;
             const res2 = await fetch(tournament_url);
             if(res2.status === 200) {
-                const body: Tournament = await res.json();
+                const body: Tournament = await res2.json();
                 series_id = body.series_id;
             }
         }

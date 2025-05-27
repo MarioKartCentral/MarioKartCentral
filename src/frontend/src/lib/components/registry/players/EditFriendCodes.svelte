@@ -8,6 +8,7 @@
     import type { FriendCode } from "$lib/types/friend-code";
     import FCTypeBadge from "$lib/components/badges/FCTypeBadge.svelte";
     import Tooltip from "$lib/components/common/Tooltip.svelte";
+    import FcInput from "$lib/components/common/FCInput.svelte";
 
     export let player: PlayerInfo;
     export let is_privileged = false;
@@ -106,9 +107,7 @@
                     </div>
                     {#if is_privileged}
                         <div>
-                            <input name="fc" placeholder={selected_fc.type !== 'nnid' ? '0000-0000-0000' : 'NNID'} 
-                            minlength={selected_fc.type === 'nnid' ? 6 : null} maxlength={selected_fc.type === 'nnid' ? 16 : null} 
-                            value={selected_fc.fc} required/>
+                            <FcInput fc={selected_fc.fc} selected_type={selected_fc.type}/>
                         </div>
                     {:else}
                         <div>

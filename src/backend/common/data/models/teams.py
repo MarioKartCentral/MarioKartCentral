@@ -382,3 +382,19 @@ class TeamList:
     teams: list[Team]
     team_count: int
     page_count: int
+
+@dataclass
+class RosterList:
+    rosters: list[TeamRoster]
+    count: int
+    page_count: int
+
+@dataclass
+class RosterFilter:
+    approval_status: Approval
+    page: int | None = None
+
+@dataclass
+class ToggleBaggerRequestData:
+    roster_id: int
+    player_id: int

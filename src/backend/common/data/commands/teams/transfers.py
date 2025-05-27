@@ -19,10 +19,11 @@ class ApproveTransferCommand(Command[None]):
                 raise Problem("Invite has not been accepted by the player yet", status=400)
             if roster_leave_id:
                 # check this before we move the player to the new team
-                async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (player_id, roster_leave_id, None)) as cursor:
+                async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?",
+                                      (player_id, roster_leave_id, None, is_bagger_clause)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
-                        raise Problem("Player is not currently on this roster", status=400)
+                        raise Problem("Player is not currently on the roster they are leaving", status=400)
                     team_member_id = row[0]
             else:
                 team_member_id = None
@@ -32,6 +33,13 @@ class ApproveTransferCommand(Command[None]):
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
             await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date, is_bagger_clause) VALUES (?, ?, ?, ?)", (roster_id, player_id, curr_time, is_bagger_clause))
+            # remove player from the same roster as the opposite bagger type, if exists
+            async with db.execute("UPDATE team_members SET leave_date = ? WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?", 
+                             (curr_time, player_id, roster_id, None, not is_bagger_clause)) as cursor:
+                rowcount = cursor.rowcount
+                if rowcount == 1:
+                    await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
+                                     VALUES(?, ?, ?, ?, ?, ?, ?)""", (player_id, None, curr_time, roster_id, True, "approved", not is_bagger_clause))
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
@@ -323,4 +331,25 @@ class ForceTransferPlayerCommand(Command[None]):
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                                  is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            await db.commit()
+
+@save_to_command_log
+@dataclass
+class ToggleTeamMemberBaggerCommand(Command[None]):
+    roster_id: int
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            async with db.execute("""SELECT m.id, m.is_bagger_clause, r.game FROM team_members m
+                                  JOIN team_rosters r ON m.roster_id = r.id
+                                  WHERE m.roster_id = ? AND m.player_id = ? AND m.leave_date IS ?""",
+                                  (self.roster_id, self.player_id, None)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Team member not found", status=404)
+                member_id, is_bagger_clause, roster_game = row
+                if roster_game != "mkw":
+                    raise Problem("Cannot toggle bagger clause for games other than MKW", status=400)
+            await db.execute("UPDATE team_members SET is_bagger_clause = ? WHERE id = ?", (not is_bagger_clause, member_id))
             await db.commit()

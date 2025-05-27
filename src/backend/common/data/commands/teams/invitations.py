@@ -33,7 +33,8 @@ class InvitePlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
-            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_id, None)) as cursor:
+            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?", 
+                                  (self.player_id, self.roster_id, None, self.is_bagger_clause)) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     raise Problem("Player is already on this roster", status=400)
@@ -80,16 +81,17 @@ class AcceptInviteCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             # check if invite exists and to make sure we're the same player as the invite
-            async with db.execute("SELECT r.game, i.player_id FROM team_transfers i JOIN team_rosters r ON i.roster_id = r.id WHERE i.id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("SELECT r.game, i.player_id, i.is_bagger_clause FROM team_transfers i JOIN team_rosters r ON i.roster_id = r.id WHERE i.id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("No invite found", status=404)
-                game, invite_player_id = row
+                game, invite_player_id, is_bagger_clause = row
                 if self.player_id != invite_player_id:
                     raise Problem("Cannot accept invite for another player", status=400)
             # make sure that we are actually in the roster we're leaving
             if self.roster_leave_id:
-                async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND player_id = ? AND leave_date IS ?", (self.roster_leave_id, self.player_id, None)) as cursor:
+                async with db.execute("SELECT id FROM team_members WHERE roster_id = ? AND player_id = ? AND leave_date IS ? AND is_bagger_clause = ?",
+                                      (self.roster_leave_id, self.player_id, None, is_bagger_clause)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
                         raise Problem("Player is not registered for the roster they are leaving", status=400)

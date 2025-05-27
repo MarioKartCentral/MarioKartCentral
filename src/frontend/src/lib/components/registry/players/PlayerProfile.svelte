@@ -18,6 +18,7 @@
   import PlayerNameHistory from '$lib/components/registry/players/PlayerNameHistory.svelte';
   import { permissions, check_permission } from '$lib/util/permissions';
   import type { PlayerRoster } from '$lib/types/player-roster';
+  import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
 
   let user_info: UserInfo;
 
@@ -96,6 +97,9 @@
                 </div>
                 <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
                   {r.roster_name}
+                  {#if r.is_bagger_clause}
+                    <BaggerBadge/>
+                  {/if}
                 </a>
               </div>
             {/each}

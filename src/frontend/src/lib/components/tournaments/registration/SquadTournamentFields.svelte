@@ -44,6 +44,9 @@
     font-weight: 525;
   }
   .item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     margin: 10px 0;
   }
 </style>

@@ -253,6 +253,27 @@
       alert(`${$LL.TEAMS.EDIT.TEAM_ROLE_REMOVE_FAILED()}: ${result['title']}`);
     }
   }
+
+  async function toggleBagger(player: RosterPlayer) {
+    let conf = window.confirm($LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE_CONFIRM());
+    if(!conf) return;
+    const payload = {
+      roster_id: roster.id,
+      player_id: player.player_id,
+    };
+    const endpoint = `/api/registry/teams/toggleBaggerClause`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (response.status < 300) {
+      window.location.reload();
+    } else {
+      alert(`${$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE_FAILED()}: ${result['title']}`);
+    }
+  }
 </script>
 
 <Section header="{roster.name}">
@@ -330,6 +351,11 @@
                         {$LL.TEAMS.EDIT.MAKE_MANAGER()}
                       </DropdownItem>
                     {/if}
+                  {/if}
+                  {#if roster.game === "mkw" && check_permission(user_info, permissions.manage_transfers)}
+                    <DropdownItem on:click={() => toggleBagger(player)}>
+                      {$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE()}
+                    </DropdownItem>
                   {/if}
                 </Dropdown>
               </td>

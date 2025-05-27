@@ -122,7 +122,7 @@
 
 {#if check_permission(user_info, permissions.ban_player)}
   <Section header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-    <PlayerSearch bind:player={player}/>
+    <PlayerSearch bind:player={player} is_banned={false}/>
     {#if player}
       {#if banInfo}
         <strong>{$LL.PLAYER_BAN.THE_PLAYER_IS_ALREADY_BANNED()}</strong>

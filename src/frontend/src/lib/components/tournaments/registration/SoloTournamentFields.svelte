@@ -46,7 +46,6 @@
     <span class="item-label">
       <label for="can_host">{$LL.TOURNAMENTS.REGISTRATIONS.CAN_HOST()}</label>
     </span>
-    
     <select name="can_host" value={Boolean(can_host)} required>
       <option value={false}>{$LL.COMMON.NO()}</option>
       <option value={true} disabled={!check_tournament_permission(user_info, tournament_permissions.register_host, tournament.id, 
@@ -56,12 +55,18 @@
 {/if}
 
 <style>
+  select {
+    min-width: 150px;
+  }
   .item-label {
     display: inline-block;
     width: 150px;
     font-weight: 525;
   }
   .item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     margin: 10px 0;
   }
 </style>

@@ -139,11 +139,12 @@ class SetTournamentPlacementsFromPlayerIDsCommand(Command[None]):
                     if registration_id:
                         squad_dict[registration_id] = placement
 
-            player_rows = [(player_id, self.tournament_id, registration_id, False, now, False, None, False, False, None, False, False, True) 
+            player_rows = [(player_id, self.tournament_id, registration_id, False, now, False, None, False, False, None, False, False, True, player_id) 
                            for registration_id, placement in squad_dict.items() for player_id in placement.player_ids]
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in,
                                     mii_name, can_host, is_invite, selected_fc_id, is_representative, is_bagger_clause, is_approved)
-                                    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", player_rows)
+                                    SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                                    WHERE EXISTS (SELECT 1 FROM players WHERE id = ?)""", player_rows)
             placement_rows = [(self.tournament_id, registration_id, placement.placement, placement.placement_description,
                                placement.placement_lower_bound, placement.is_disqualified) for registration_id, placement in squad_dict.items()]
             await db.executemany("""INSERT INTO tournament_placements(tournament_id, registration_id, placement, placement_description, 

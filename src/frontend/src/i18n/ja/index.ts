@@ -712,6 +712,9 @@ const ja: Translation = {
       TEAM_ROLE_REMOVE_FAILED: '役職の解除に失敗しました。',
       ROSTER_NAME_TAG_CHANGE_SUCCESS: 'roster名/tagの変更申請はMKCentralのスタッフに送信され、承認されました。',
       ROSTER_NAME_TAG_CHANGE_FAILURE: 'roster名/tagの変更申請に失敗しました',
+      TOGGLE_BAGGER_CLAUSE: 'Toggle Bagger Clause',
+      TOGGLE_BAGGER_CLAUSE_CONFIRM: "Are you sure you would like to change this player's bagger status?",
+      TOGGLE_BAGGER_CLAUSE_FAILED: 'Failed to toggle bagger clause',
     },
     LIST: {
       TAG: 'チームタグ',
