@@ -263,6 +263,12 @@ class UnregisterPlayerCommand(Command[None]):
             # disallow players from leaving their squad as captain if there is more than 1 player
             if is_squad_captain and num_squad_players > 1:
                 raise Problem("Please unregister your current squad or give captain to another player in your squad before unregistering for this tournament", status=400)
+            
+            async with db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND player_id = ?", (self.tournament_id, self.registration_id, self.player_id)) as cursor:
+                rowcount = cursor.rowcount
+                if rowcount == 0:
+                    raise Problem("Registration not found", status=404)
+                
             if num_squad_players == 1 and not player_is_invite:
                 # delete any invites as well
                 await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND is_invite = 1 AND player_id != ?", (self.tournament_id, self.registration_id, self.player_id))
@@ -270,10 +276,6 @@ class UnregisterPlayerCommand(Command[None]):
                 await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ?", (self.registration_id,))
                 await db.execute("DELETE FROM tournament_registrations WHERE id = ?", (self.registration_id,))
 
-            async with db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND player_id = ?", (self.tournament_id, self.registration_id, self.player_id)) as cursor:
-                rowcount = cursor.rowcount
-                if rowcount == 0:
-                    raise Problem("Registration not found", status=404)
             await db.commit()
 
 @dataclass
