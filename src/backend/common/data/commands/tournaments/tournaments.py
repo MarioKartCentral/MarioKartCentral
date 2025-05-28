@@ -390,7 +390,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             series_id = self.series_id
             tournaments_query = f"""
                 SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public
-                FROM tournaments WHERE series_id = ? ORDER BY date_start DESC
+                FROM tournaments WHERE series_id = ? AND is_viewable = 1 AND is_public = 1 ORDER BY date_start DESC
             """
             tournament_players_query = f"""
                 SELECT 
@@ -408,7 +408,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
                     JOIN tournament_placements pla ON tr.id = pla.registration_id
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0)
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0 AND t.is_viewable = 1 AND t.is_public = 1)
              """
             tournament_squads_query = f"""
                  SELECT
@@ -424,7 +424,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tr.timestamp
                     FROM tournament_registrations tr
                     JOIN tournament_placements pla ON pla.registration_id = tr.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)  
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)  
             """
             squad_rosters_query = """
                 SELECT tsr.registration_id,
@@ -439,7 +439,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     JOIN team_rosters r ON tsr.roster_id = r.id
                     JOIN teams t ON r.team_id = t.id
                     JOIN tournament_registrations tr ON tsr.registration_id = tr.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
                 """
             squad_players_query = f"""
                 SELECT 
@@ -451,7 +451,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.country_code
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1)
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
                     
             """
             tournaments: list[TournamentWithPlacements] = []
