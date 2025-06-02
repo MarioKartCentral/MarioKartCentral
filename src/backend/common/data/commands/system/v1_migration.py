@@ -57,9 +57,9 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
         if user_bytes is None:
             return None # we shouldn't interrupt login flow if this fails
         user_data = msgspec.json.decode(user_bytes, type=NewMKCUserData)
-        if self.email not in user_data.users:
+        if self.email.lower() not in user_data.users:
             return None
-        v1_user = user_data.users[self.email]
+        v1_user = user_data.users[self.email.lower()]
         return v1_user
     
 @dataclass
@@ -729,7 +729,7 @@ class ConvertMKCV1DataCommand(Command[None]):
             await db.commit()
 
         # create a new S3 file which lets us retrieve a user's info easier upon first login
-        new_users = {u.email: u for u in xf_dict.values()}
+        new_users = {u.email.lower(): u for u in xf_dict.values()}
         user_data = NewMKCUserData(new_users)
         s3_message = bytes(msgspec.json.encode(user_data))
         await s3_wrapper.put_object(s3.MKCV1_BUCKET, f'users.json', s3_message)
