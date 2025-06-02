@@ -15,6 +15,7 @@
 
     $: rank_width = is_homepage ? 'w-[50px]' : 'w-[100px]'
     let bg_class = "other";
+    let custom_placement = placement.placement;
     $: {
         bg_class = "other";
         if(placement.is_disqualified) {
@@ -67,6 +68,18 @@
         }
         dispatch("dq");
     }
+
+    function editPlacement() {
+        if(custom_placement === null || custom_placement < 1) {
+            custom_placement = 1;
+        }
+        placement.placement = custom_placement;
+        placement.is_disqualified = false;
+        placement.bounded = false;
+        placement.placement_lower_bound = null;
+        placement.tie = false;
+        dispatch("placement_change");
+    }
 </script>
 
 <div class="flex {bg_class}">
@@ -94,9 +107,12 @@
                 {$LL.TOURNAMENTS.PLACEMENTS.TOGGLE_DQ()}
             </DropdownItem>
         </Dropdown>
+        {#if placement.placement !== null}
+            <input type="number" bind:value={custom_placement} on:blur={editPlacement} class="w-16" minlength=1/>
+        {/if}
     {/if}
     <div class="description {is_homepage ? 'hidden' : ''}">
-        {#if placement.placement}
+        {#if placement.placement !== null}
             {#if is_edit}
                 <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()} maxlength=32/>
             {:else if placement.description}
