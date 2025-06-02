@@ -8,6 +8,7 @@ from api.utils.responses import JSONResponse, bind_request_body
 from api.utils.word_filter import check_word_filter
 from common.data.commands import *
 from common.data.models import Problem, EditUserSettingsRequestData
+from datetime import timedelta
 
 @require_logged_in()
 async def get_settings(request: Request) -> Response:
@@ -30,7 +31,7 @@ async def edit_settings(request: Request, body: EditUserSettingsRequestData) -> 
 
     # set language and color_scheme cookies
     if body.language is not None:
-        resp.set_cookie('language', body.language, secure=True, httponly=True)
+        resp.set_cookie('language', body.language, secure=True, httponly=True, max_age=int(timedelta(days=365).total_seconds()))
     if body.color_scheme is not None:
         resp.set_cookie('color_scheme', body.color_scheme, secure=True, httponly=True)
 
@@ -48,7 +49,7 @@ async def edit_player_user_settings(request: Request, body: EditPlayerUserSettin
 @get_user_info
 async def edit_language(request: Request, body: SetLanguageRequestData) -> JSONResponse:
     resp = JSONResponse({}, status_code=200)
-    resp.set_cookie('language', body.language, secure=True, httponly=True)
+    resp.set_cookie('language', body.language, secure=True, httponly=True, max_age=int(timedelta(days=365).total_seconds()))
     if request.state.user:
         command_body = EditUserSettingsRequestData(language=body.language)
         command = EditUserSettingsCommand(request.state.user.id, command_body)

@@ -150,6 +150,7 @@
       <DropdownItem href="https://discord.gg/Q9HCD8tVvD" target="_blank">MKWorld</DropdownItem>
       <DropdownItem href="https://discord.gg/HuE4Pd8Skf" target="_blank">MK8DX</DropdownItem>
       <DropdownItem href="https://discord.gg/H3Nsdcn" target="_blank">MKTour</DropdownItem>
+      <DropdownItem href="https://discord.gg/f9J3RNWmQ9" target="_blank">MKWii</DropdownItem>
     </Dropdown>
     {#if is_mod}
       <NavLi nav_name="MODERATOR" has_dropdown>
