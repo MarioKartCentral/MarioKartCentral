@@ -164,11 +164,15 @@ class LeaveRosterCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_id, None)) as cursor:
+            async with db.execute("""SELECT m.id, r.team_id, u.id FROM team_members m
+                                  JOIN team_rosters r ON r.id = m.roster_id
+                                  LEFT JOIN users u ON u.player_id = m.player_id
+                                  WHERE m.player_id = ? AND m.roster_id = ? AND m.leave_date IS ?
+                                  """, (self.player_id, self.roster_id, None)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Player is not currently on this roster", status=400)
-                team_member_id = row[0]
+                team_member_id, team_id, user_id = row
             leave_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (leave_date, team_member_id))
             # players leaving a roster goes into the transfer history too
@@ -185,6 +189,21 @@ class LeaveRosterCommand(Command[None]):
                 registration_ids: list[int] = [row[0] for row in rows]
             # finally remove the player from all the tournaments they shouldn't be in
             await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
+
+            # remove user's team roles if they are no longer in a roster for this team
+            if user_id is not None:
+                # check if team member is in any other rosters for this team
+                async with db.execute("""SELECT COUNT(*)
+                                        FROM team_members m
+                                        JOIN team_rosters r ON m.roster_id = r.id
+                                        WHERE m.player_id = ? AND m.roster_id != ?
+                                        AND r.team_id = ? AND m.leave_date IS NULL""",
+                                        (self.player_id, self.roster_id, team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    roster_count = row[0]
+                if roster_count == 0:
+                    await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, team_id))
             await db.commit()
 
 @save_to_command_log
@@ -539,16 +558,17 @@ class EditTeamMemberCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT m.id, m.join_date, m.leave_date, m.is_bagger_clause FROM team_members m
+            async with db.execute("""SELECT m.id, m.join_date, m.leave_date, m.is_bagger_clause, u.id FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
+                                    LEFT JOIN users u ON u.player_id = m.player_id
                                     WHERE m.player_id = ? AND m.roster_id = ? AND t.id = ?
                                     ORDER BY m.join_date DESC
                                     """, (self.player_id, self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Team member not found", status=404)
-                id, member_join_date, member_leave_date, member_is_bagger = row
+                id, member_join_date, member_leave_date, member_is_bagger, user_id = row
                 if not self.join_date:
                     self.join_date = member_join_date
                 if self.is_bagger_clause is None:
@@ -557,5 +577,21 @@ class EditTeamMemberCommand(Command[None]):
                 if member_leave_date is None and self.leave_date is not None:
                     await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
                                      VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved", member_is_bagger))
+                    
+            # remove user's team roles if they are no longer in a roster for this team
+            if user_id is not None:
+                # check if team member is in any other rosters for this team
+                async with db.execute("""SELECT COUNT(*)
+                                        FROM team_members m
+                                        JOIN team_rosters r ON m.roster_id = r.id
+                                        WHERE m.player_id = ? AND m.roster_id != ?
+                                        AND r.team_id = ? AND m.leave_date IS NULL""",
+                                        (self.player_id, self.roster_id, self.team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    roster_count = row[0]
+                if roster_count == 0:
+                    await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, self.team_id))
+                    
             await db.execute("UPDATE team_members SET join_date = ?, leave_date = ?, is_bagger_clause = ? WHERE id = ?", (self.join_date, self.leave_date, self.is_bagger_clause, id))
             await db.commit()

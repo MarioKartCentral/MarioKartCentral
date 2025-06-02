@@ -407,7 +407,7 @@
         </Table>
       </div>
     {/if}
-    {#if check_permission(user_info, permissions.invite_to_team, true)}
+    {#if (roster.approval_status === 'approved' && roster.is_active) && check_permission(user_info, permissions.invite_to_team, true)}
       <div class="section">
         <b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b>
         <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
