@@ -15,7 +15,7 @@
     {/if}
     
     {#if squad.name}
-        <div>
+        <div class="squad-name">
             {squad.name}
         </div>
         
@@ -44,6 +44,12 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
+    }
+    .squad-name {
+        min-width: 150px;
+        @media(max-width: 600px) {
+            min-width: 100px;
+        }
     }
     .players {
         max-width: 225px;

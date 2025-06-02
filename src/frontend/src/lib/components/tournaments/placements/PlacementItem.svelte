@@ -13,7 +13,8 @@
     export let is_edit: boolean;
     export let is_homepage = false;
 
-    $: rank_width = is_homepage ? 'w-[50px]' : 'w-[100px]'
+    let saved_placement = placement.placement;
+
     let bg_class = "other";
     $: {
         bg_class = "other";
@@ -70,22 +71,36 @@
 
     function editPlacement() {
         if(placement.placement === null || placement.placement < 1) {
-            placement.placement = 1;
+            placement.placement = saved_placement;
         }
         placement.is_disqualified = false;
         placement.bounded = false;
         placement.placement_lower_bound = null;
         placement.tie = false;
+        saved_placement = placement.placement;
         dispatch("placement_change");
     }
 </script>
 
 <div class="flex {bg_class}">
-    <div class="rank {rank_width}">
+    <div class="rank {is_homepage ? 'rank-homepage' : 'rank-tournament-page'}">
         {getPlacementText(placement)}
     </div>
     <div class="info">
         <SquadPlacementDisplay squad={placement.squad}/>
+    </div>
+    
+    <div class="description {is_homepage ? 'hidden' : ''}">
+        {#if placement.placement !== null}
+            {#if is_edit}
+                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()} maxlength=32/>
+                {#if placement.placement !== null}
+                    <input class="placement-num" type="number" bind:value={placement.placement} on:blur={editPlacement} minlength=1/>
+                {/if}
+            {:else if placement.description}
+                {placement.description}
+            {/if}
+        {/if}
     </div>
     {#if is_edit}
         <div class="actions">
@@ -105,19 +120,7 @@
                 {$LL.TOURNAMENTS.PLACEMENTS.TOGGLE_DQ()}
             </DropdownItem>
         </Dropdown>
-        {#if placement.placement !== null}
-            <input type="number" bind:value={placement.placement} on:blur={editPlacement} class="w-16" minlength=1/>
-        {/if}
     {/if}
-    <div class="description {is_homepage ? 'hidden' : ''}">
-        {#if placement.placement !== null}
-            {#if is_edit}
-                <input class="title" bind:value={placement.description} placeholder={$LL.TOURNAMENTS.PLACEMENTS.PLACEMENT_TITLE()} maxlength=32/>
-            {:else if placement.description}
-                {placement.description}
-            {/if}
-        {/if}
-    </div>
 </div>
 
 <style>
@@ -159,20 +162,37 @@
         font-size: 1.5em;
         font-weight: 600;
     }
+    .rank-homepage {
+        width: 50px;
+    }
+    .rank-tournament-page {
+        width: 75px;
+        @media(max-width: 600px) {
+            width: 50px;
+        }
+    }
     .info {
         min-width: 150px;
         max-width: 400px;
     }
     .actions {
         display: flex;
-        width: 200px;
+        width: 100px;
         gap: 5px;
         cursor: pointer;
-    }
-    .description {
-        width: 200px;
+        padding: 5px;
     }
     input.title {
         width: 150px;
+        height: 36px;
+    }
+    div.description {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+    input.placement-num {
+        width: 50px;
+        height: 36px;
     }
 </style>

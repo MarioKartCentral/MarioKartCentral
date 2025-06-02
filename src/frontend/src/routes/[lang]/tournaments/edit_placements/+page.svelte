@@ -20,6 +20,21 @@
         placements = placements_body;
         is_loaded = true;
     });
+
+    function reset_placements() {
+        let conf = window.confirm("Are you sure you want to reset placements? You will lose all of your progress.");
+        if(!conf) return;
+        for(let p of placements.placements) {
+            p.placement = null;
+            p.is_disqualified = false;
+            p.placement_description = null;
+            p.placement_lower_bound = null;
+            placements.unplaced.push(p);
+        }
+        placements.placements = [];
+        placements.unplaced = placements.unplaced;
+        placements = placements;
+    }
 </script>
 
 {#if is_loaded}
@@ -32,10 +47,16 @@
         <div slot="header_content">
             <Button href="/{$page.params.lang}/tournaments/edit_placements/raw?id={placements.tournament_id}">{$LL.TOURNAMENTS.PLACEMENTS.SWITCH_TO_RAW_INPUT()}</Button>
             <Button href="/{$page.params.lang}/tournaments/edit_placements/raw_player_id?id={id}">{$LL.TOURNAMENTS.PLACEMENTS.RAW_INPUT_PLAYER_ID()}</Button>
+            <Button on:click={reset_placements}>Reset</Button>
         </div>
-        <PlacementsDragDropZone tournament_id={placements.tournament_id} placements={placements.placements}/>
+        {#key placements.placements}
+            <PlacementsDragDropZone tournament_id={placements.tournament_id} placements={placements.placements}/>
+        {/key}
+        
     </Section>
     <Section header={$LL.TOURNAMENTS.PLACEMENTS.UNPLACED({is_squad: true})}>
-        <PlacementsDragDropZone tournament_id={placements.tournament_id} placements={placements.unplaced} is_placements={false}/>
+        {#key placements.unplaced}
+            <PlacementsDragDropZone tournament_id={placements.tournament_id} placements={placements.unplaced} is_placements={false}/>
+        {/key}
     </Section>
 {/if}

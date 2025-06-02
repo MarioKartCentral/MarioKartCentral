@@ -179,7 +179,7 @@
     }
 </script>
 
-<section class="zone" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
+<section class="zone {is_placements ? '' : 'scroll'}" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
     {#each placement_list as p(p.id)}
         <PlacementItem placement={p} is_edit={true} on:change={updatePlacements} on:dq={handleDQ} on:placement_change={() => handlePlacementChange(p)}/>
     {/each}
@@ -193,5 +193,10 @@
     .zone {
         min-height: 50px;
         margin-bottom: 20px;
+        border: 2px gray solid;
+    }
+    .scroll {
+        height: 400px;
+        overflow-y: scroll;
     }
 </style>
