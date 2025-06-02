@@ -80,7 +80,7 @@
       </div>
     </Section>
     {#if check_team_permission(user_info, team_permissions.manage_rosters, id)}
-      {#each sortFilterRosters(team.rosters, true) as roster}
+      {#each sortFilterRosters(team.rosters, is_mod) as roster}
         <TeamRosterManage {roster} {is_mod}/>
       {/each}
     {/if}
