@@ -15,7 +15,6 @@
 
     $: rank_width = is_homepage ? 'w-[50px]' : 'w-[100px]'
     let bg_class = "other";
-    let custom_placement = placement.placement;
     $: {
         bg_class = "other";
         if(placement.is_disqualified) {
@@ -70,10 +69,9 @@
     }
 
     function editPlacement() {
-        if(custom_placement === null || custom_placement < 1) {
-            custom_placement = 1;
+        if(placement.placement === null || placement.placement < 1) {
+            placement.placement = 1;
         }
-        placement.placement = custom_placement;
         placement.is_disqualified = false;
         placement.bounded = false;
         placement.placement_lower_bound = null;
@@ -108,7 +106,7 @@
             </DropdownItem>
         </Dropdown>
         {#if placement.placement !== null}
-            <input type="number" bind:value={custom_placement} on:blur={editPlacement} class="w-16" minlength=1/>
+            <input type="number" bind:value={placement.placement} on:blur={editPlacement} class="w-16" minlength=1/>
         {/if}
     {/if}
     <div class="description {is_homepage ? 'hidden' : ''}">
