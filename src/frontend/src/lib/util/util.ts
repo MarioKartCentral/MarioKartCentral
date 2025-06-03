@@ -106,7 +106,7 @@ export const fc_type_order: { [key: string]: number } = {
   '3ds': 4,
 };
 export const valid_modes: { [key: string]: string[] } = {
-  mkworld: ['150cc', '200cc'],
+  mkworld: ['150cc'],
   mk8dx: [
     '150cc',
     '200cc',
@@ -127,7 +127,7 @@ export const valid_modes: { [key: string]: string[] } = {
 };
 export const valid_team_games = ['mkworld', 'mk8dx', 'mkw', 'mkt'];
 export const valid_team_modes: { [key: string]: string[] } = {
-  mkworld: ['150cc', '200cc'],
+  mkworld: ['150cc'],
   mk8dx: ['150cc', '200cc'],
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],

@@ -54,7 +54,7 @@ class CreateRosterCommand(Command[None]):
             valid_game_modes = {"mk8dx": ["150cc", "200cc"],
                                 "mkw": ["rt", "ct"],
                                 "mkt": ["vsrace"],
-                                "mkworld": ["150cc", "200cc"],}
+                                "mkworld": ["150cc"],}
             if self.game not in valid_game_modes:
                 raise Problem(f"Invalid game (valid games: {', '.join(valid_game_modes.keys())})", status=400)
             if self.mode not in valid_game_modes[self.game]:
