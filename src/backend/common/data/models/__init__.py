@@ -14,6 +14,7 @@ from .posts import *
 from .roles import *
 from .squads import *
 from .teams import *
+from .time_trials_api import *
 from .tournament_placements import *
 from .tournament_registrations import *
 from .tournament_series import *

@@ -1,106 +1,55 @@
 <script lang="ts">
-  import Section from '$lib/components/common/Section.svelte';
-  import Button from '$lib/components/common/buttons/Button.svelte';
-  import GameBadge from '$lib/components/badges/GameBadge.svelte';
-  import { DiscordSolid, LinkSolid } from 'flowbite-svelte-icons';
+    import { GAMES } from '$lib/util/gameConstants';
+    import Section from '$lib/components/common/Section.svelte';
+    import Button from '$lib/components/common/buttons/Button.svelte';
+    import GameBadge from '$lib/components/badges/GameBadge.svelte';
+    import SubmitButton from '$lib/components/time-trials/SubmitButton.svelte';
+    import LL from '$i18n/i18n-svelte';
+    import { page } from '$app/stores';
 </script>
 
-<div class="tt-container">
-  <div class="disclaimer">
-    This page is currently a work in progress. For now,
-    players can find leaderboards on several other sites.
-  </div>
-  <GameBadge game="mkworld"/>
-  <Section header="Mario Kart World Time Trials">
-    <div class="flex flex-row">
-      <div class="flex flex-col justify-start">
-        <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/6gDAPxvqh7">
-            <DiscordSolid class="mr-2" />Discord </Button
-          >
+<svelte:head>
+    <title>{$LL.TIME_TRIALS.TITLE()} - MKCentral</title>
+    <meta name="description" content="Mario Kart time trials leaderboards and records" />
+</svelte:head>
+
+<Section header={$LL.TIME_TRIALS.TITLE()}>
+    <div class="space-y-6">
+        <div class="flex justify-between items-start">
+            <p class="text-gray-600 dark:text-gray-300">
+                {$LL.TIME_TRIALS.DESCRIPTION()}
+            </p>
+            
+            <SubmitButton />
         </div>
-      </div>
+        
+        <div class="grid gap-4 md:grid-cols-2">
+            {#each Object.entries(GAMES) as [gameId, gameName]}
+                <div class="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <GameBadge game={gameId} />
+                        <h3 class="text-lg font-semibold">{gameName}</h3>
+                    </div>
+                    
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+                        {#if gameId === 'mk8dx'}
+                            Browse time trial records for all 96 tracks in Mario Kart 8 Deluxe, including DLC tracks. Filter by engine class (150cc/200cc).
+                        {:else if gameId === 'mkworld'}
+                            Classic Mario Kart World time trial records for all 12 original tracks.
+                        {/if}
+                    </p>
+                    
+                    <Button href="/{$page.params.lang}/time-trials/{gameId}" color="primary" extra_classes="w-full">
+                        {$LL.TIME_TRIALS.VIEW_TRACKS()}
+                    </Button>
+                </div>
+            {/each}
+        </div>
     </div>
-  </Section>
-  <hr/>
-  <GameBadge game= "mk8dx" />
-  <GameBadge game= "mk7" />
-  <GameBadge game= "mkw" />
-  <Section header={'MKLeaderboards'}>
-    <div class="flex flex-row">
-      <div class="flex flex-col justify-start">
-        <div class="mb-2 mx-2">
-          <Button size="lg" href="https://mkleaderboards.com"><LinkSolid class="mr-2" />Website</Button>
-        </div>
-        <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/NHrtWQq">
-            <DiscordSolid class="mr-2" />Discord </Button
-          >
-        </div>
-      </div>
-    </div>
-  </Section>
-  <hr/>
-  <GameBadge game= "mkworld" />
-  <GameBadge game= "mk8dx" />
-  <GameBadge game = "mk8" />
-  <GameBadge game= "mk7" />
-  <GameBadge game= "mkw" />
-  <GameBadge game= "mkds" />
-  <GameBadge game= "mkdd" />
-  <GameBadge game= "mksc" />
-  <GameBadge game= "mk64" />
-  <GameBadge game= "smk" />
-  <Section header={'MKWRS'}>
-    <div class="flex flex-row">
-      <div class="flex flex-col justify-start">
-        <div class="mb-2 mx-2">
-          <Button size="lg" href="https://mkwrs.com"><LinkSolid class="mr-2" />Website</Button>
-        </div>
-      </div>
-    </div>
-  </Section>
-  <hr/>
-  <GameBadge game= "mk8dx" />
-  <Section header={'DLC Leaderboards'}>
-    <div class="flex flex-row">
-      <div class="flex flex-col justify-start">
-        <div class="mb-2 mx-2">
-          <Button size="lg" href="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vRBvEljx9c5cRI-c1XMFWvkRAjeDPZK3fQwEbDADqK0XyK6RWWiZniN_5ea8RoWxzK7p-6XthRF481z/pubhtml?pli=1"><LinkSolid class="mr-2" />Website</Button>
-        </div>
-        <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="https://discord.gg/NHrtWQq">
-            <DiscordSolid class="mr-2" />Discord </Button
-          >
-      </div>
-    </div>
-  </Section>
-  <hr/>
-  <GameBadge game= "mk8dx" />
-  <Section header={'No Item Leaderboards'}>
-    <div class="flex flex-row">
-      <div class="flex flex-col justify-start">
-        <div class="mb-2 mx-2">
-          <Button size="lg" href="https://bit.ly/MK8DX-NITA-150"><LinkSolid class="mr-2" />Website</Button>
-        </div>
-        <div class="mb-2 mx-2">
-          <Button size="lg" color="blue" href="http://discord.gg/9jc88HW">
-            <DiscordSolid class="mr-2" />Discord </Button
-          >
-      </div>
-    </div>
-  </Section>
-</div>
+</Section>
 
 <style>
-  .tt-container {
-    max-width: 1200px;
-    margin: 20px auto 20px auto;
-  }
-  .disclaimer {
-    margin-bottom: 20px;
-  }
-  hr {
-    margin-bottom: 20px;
-  }
+    .grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
 </style>

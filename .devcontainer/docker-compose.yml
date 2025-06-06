@@ -5,7 +5,9 @@ services:
     image: mcr.microsoft.com/vscode/devcontainers/base:0-ubuntu-20.04
     init: true
     volumes:
-      # Ensure that file changes are synchronised inside and outside the dev container
       - .:/workspace:cached
-    
-    command: sleep infinity 
+      - mkc-db:/var/lib/mkc-api/data
+    command: sleep infinity
+
+volumes:
+  mkc-db:

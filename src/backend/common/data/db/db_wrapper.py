@@ -1,3 +1,7 @@
+"""
+Database wrapper providing unified access to SQLite and DuckDB.
+"""
+
 from dataclasses import dataclass
 import logging
 import sqlite3
@@ -5,10 +9,15 @@ from types import TracebackType
 import aiosqlite
 from typing import Dict, List
 
+from common.data.duckdb.wrapper import DuckDBWrapper
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class DBWrapperConnection():
+    """SQLite connection wrapper with lifecycle management."""
+    
     connection: aiosqlite.Connection
     readonly: bool
     attach: Dict[str, str]
@@ -37,7 +46,10 @@ class DBWrapperConnection():
 
 @dataclass
 class DBWrapper():
+    """Database wrapper providing access to SQLite and DuckDB."""
+    
     db_paths: Dict[str, str]
+    duckdb: DuckDBWrapper
 
     def reset_db(self, db_name: str = 'main'):
         """Resets the specified database file. Defaults to 'main'."""

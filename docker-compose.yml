@@ -108,7 +108,6 @@ services:
       - PERSIST_AUTHORIZATION=true
     ports:
       - 80:8080
-
   sqlite-web:
     image: 'coleifer/sqlite-web'
     environment:
@@ -117,6 +116,16 @@ services:
       - mkc-db:/data
     ports:
       - 7000:8080
+
+  duckdb-web:
+    build:
+      context: .
+      dockerfile: duckdb-web.Dockerfile
+    command: ["/usr/local/bin/start-duckdb.sh", "/data/duckdb/time_trials.duckdb"]
+    volumes:
+      - mkc-db:/data
+    ports:
+      - 7001:4213
 
   mailpit:
     image: axllent/mailpit

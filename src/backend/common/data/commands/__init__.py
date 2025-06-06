@@ -5,7 +5,9 @@ from .moderation import *
 from .posts import *
 from .players import *
 from .teams import *
+from .time_trials import *
 from .tournaments import *
 from .users import *
 from .emails import *
 from .user_activity import *
+from .time_trials import *

@@ -229,6 +229,8 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         permissions.INVITE_TO_TEAM,
         permissions.EDIT_PROFILE,
         permissions.LINK_DISCORD,
+        permissions.SUBMIT_TIME_TRIAL,
+        permissions.DELETE_TIME_TRIAL,
     ],
     TEAM_LEADER_BANNED: [
         team_permissions.EDIT_TEAM_NAME_TAG, 

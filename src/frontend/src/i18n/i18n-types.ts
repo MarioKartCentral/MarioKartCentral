@@ -2912,9 +2912,91 @@ type RootTranslation = {
 	}
 	TIME_TRIALS: {
 		/**
-		 * T​h​i​s​ ​p​a​g​e​ ​i​s​ ​c​u​r​r​e​n​t​l​y​ ​a​ ​w​o​r​k​ ​i​n​ ​p​r​o​g​r​e​s​s​,​ ​b​u​t​ ​i​t​ ​w​i​l​l​ ​e​v​e​n​t​u​a​l​l​y​ ​b​e​ ​t​h​e​ ​h​u​b​ ​f​o​r​ ​e​v​e​r​y​t​h​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​s​.​ ​F​o​r​ ​n​o​w​,​ ​p​l​a​y​e​r​s​ ​c​a​n​ ​f​i​n​d​ ​l​e​a​d​e​r​b​o​a​r​d​s​ ​o​n​ ​s​e​v​e​r​a​l​ ​o​t​h​e​r​ ​s​i​t​e​s​.​ ​T​h​i​s​ ​i​s​ ​t​h​e​ ​h​u​b​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​i​m​e​ ​T​r​i​a​l​s​.​ ​H​e​r​e​,​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​h​e​ ​m​o​s​t​ ​u​p​-​t​o​-​d​a​t​e​ ​r​a​n​k​i​n​g​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​7​,​ ​a​n​d​ ​M​a​r​i​o​ ​K​a​r​t​ ​W​i​i​,​ ​w​i​t​h​ ​e​v​e​r​y​ ​c​a​t​e​g​o​r​y​ ​i​m​a​g​i​n​a​b​l​e​.​ ​S​u​b​m​i​t​ ​y​o​u​r​ ​t​i​m​e​s​ ​t​o​ ​s​e​e​ ​w​h​e​r​e​ ​y​o​u​ ​s​t​a​c​k​ ​u​p​!
+		 * T​i​m​e​ ​T​r​i​a​l​s
+		 */
+		TITLE: string
+		/**
+		 * B​r​o​w​s​e​ ​M​a​r​i​o​ ​K​a​r​t​ ​t​i​m​e​ ​t​r​i​a​l​ ​l​e​a​d​e​r​b​o​a​r​d​s​ ​a​n​d​ ​r​e​c​o​r​d​s​ ​a​c​r​o​s​s​ ​d​i​f​f​e​r​e​n​t​ ​g​a​m​e​s​ ​a​n​d​ ​t​r​a​c​k​s​.
 		 */
 		DESCRIPTION: string
+		/**
+		 * V​i​e​w​ ​T​r​a​c​k​s
+		 */
+		VIEW_TRACKS: string
+		/**
+		 * T​r​a​c​k​ ​L​e​a​d​e​r​b​o​a​r​d
+		 */
+		TRACK_LEADERBOARD: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​T​r​a​c​k​s
+		 */
+		BACK_TO_TRACKS: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​G​a​m​e​s
+		 */
+		BACK_TO_GAMES: string
+		/**
+		 * E​n​g​i​n​e​ ​C​l​a​s​s
+		 */
+		ENGINE_CLASS: string
+		/**
+		 * N​o​ ​r​e​c​o​r​d​s​ ​f​o​u​n​d​ ​f​o​r​ ​t​h​i​s​ ​t​r​a​c​k​.
+		 */
+		NO_RECORDS: string
+		/**
+		 * L​o​a​d​i​n​g​ ​l​e​a​d​e​r​b​o​a​r​d​.​.​.
+		 */
+		LOADING: string
+		/**
+		 * P​o​s​i​t​i​o​n
+		 */
+		POSITION: string
+		/**
+		 * T​i​m​e
+		 */
+		TIME: string
+		/**
+		 * P​l​a​y​e​r
+		 */
+		PLAYER: string
+		/**
+		 * D​a​t​e
+		 */
+		DATE: string
+		/**
+		 * P​r​o​o​f
+		 */
+		PROOF: string
+		/**
+		 * V​i​e​w​ ​P​r​o​o​f
+		 */
+		VIEW_PROOF: string
+		/**
+		 * S​u​b​m​i​t​ ​T​i​m​e
+		 */
+		SUBMIT_TIME: string
+		/**
+		 * C​o​u​n​t​r​y
+		 */
+		COUNTRY: string
+		/**
+		 * S​u​b​m​i​t​t​e​d
+		 */
+		SUBMITTED: string
+		/**
+		 * P​r​e​v​i​o​u​s
+		 */
+		PREV_PAGE: string
+		/**
+		 * N​e​x​t
+		 */
+		NEXT_PAGE: string
+		/**
+		 * P​a​g​e​ ​{​c​u​r​r​e​n​t​}​ ​o​f​ ​{​t​o​t​a​l​}
+		 * @param {unknown} current
+		 * @param {unknown} total
+		 */
+		PAGE_INFO: RequiredParams<'current' | 'total'>
 	}
 	TOURNAMENTS: {
 		/**
@@ -7813,9 +7895,89 @@ export type TranslationFunctions = {
 	}
 	TIME_TRIALS: {
 		/**
-		 * This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!
+		 * Time Trials
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * Browse Mario Kart time trial leaderboards and records across different games and tracks.
 		 */
 		DESCRIPTION: () => LocalizedString
+		/**
+		 * View Tracks
+		 */
+		VIEW_TRACKS: () => LocalizedString
+		/**
+		 * Track Leaderboard
+		 */
+		TRACK_LEADERBOARD: () => LocalizedString
+		/**
+		 * Back to Tracks
+		 */
+		BACK_TO_TRACKS: () => LocalizedString
+		/**
+		 * Back to Games
+		 */
+		BACK_TO_GAMES: () => LocalizedString
+		/**
+		 * Engine Class
+		 */
+		ENGINE_CLASS: () => LocalizedString
+		/**
+		 * No records found for this track.
+		 */
+		NO_RECORDS: () => LocalizedString
+		/**
+		 * Loading leaderboard...
+		 */
+		LOADING: () => LocalizedString
+		/**
+		 * Position
+		 */
+		POSITION: () => LocalizedString
+		/**
+		 * Time
+		 */
+		TIME: () => LocalizedString
+		/**
+		 * Player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * Date
+		 */
+		DATE: () => LocalizedString
+		/**
+		 * Proof
+		 */
+		PROOF: () => LocalizedString
+		/**
+		 * View Proof
+		 */
+		VIEW_PROOF: () => LocalizedString
+		/**
+		 * Submit Time
+		 */
+		SUBMIT_TIME: () => LocalizedString
+		/**
+		 * Country
+		 */
+		COUNTRY: () => LocalizedString
+		/**
+		 * Submitted
+		 */
+		SUBMITTED: () => LocalizedString
+		/**
+		 * Previous
+		 */
+		PREV_PAGE: () => LocalizedString
+		/**
+		 * Next
+		 */
+		NEXT_PAGE: () => LocalizedString
+		/**
+		 * Page {current} of {total}
+		 */
+		PAGE_INFO: (arg: { current: unknown, total: unknown }) => LocalizedString
 	}
 	TOURNAMENTS: {
 		/**
