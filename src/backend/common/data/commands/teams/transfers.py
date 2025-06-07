@@ -193,7 +193,7 @@ class ViewTransfersCommand(Command[TransferList]):
                                     LEFT OUTER JOIN teams t2 ON r2.team_id = t2.id
                                     JOIN players p ON i.player_id = p.id
                                     WHERE i.is_accepted = 1 AND i.approval_status = ? {where_clause_str}
-                                    ORDER BY i.id DESC LIMIT ? OFFSET ?""",
+                                    ORDER BY i.date DESC LIMIT ? OFFSET ?""",
                                     (self.approval_status, *variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
