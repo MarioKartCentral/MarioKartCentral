@@ -22,21 +22,22 @@ class ApproveTransferCommand(Command[None]):
                 player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status, join_team_id, leave_team_id, user_id = row
             if not is_accepted:
                 raise Problem("Invite has not been accepted by the player yet", status=400)
+            team_member_id = None
             if roster_leave_id:
                 # check this before we move the player to the new team
                 async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?",
                                       (player_id, roster_leave_id, None, is_bagger_clause)) as cursor:
                     row = await cursor.fetchone()
+                    # if the player has already left the team, we should still accept the transfer, but change it to be from no team
                     if row is None:
-                        raise Problem("Player is not currently on the roster they are leaving", status=400)
-                    team_member_id = row[0]
-            else:
-                team_member_id = None
+                        roster_leave_id = None
+                    else:
+                        team_member_id = row[0]
             if approval_status == "approved":
                 raise Problem("Transfer is already approved", status=400)
             curr_time = int(datetime.now(timezone.utc).timestamp())
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
-            await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
+            await db.execute("UPDATE team_transfers SET roster_leave_id = ?, approval_status = ? WHERE id = ?", (roster_leave_id, "approved", self.invite_id,))
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date, is_bagger_clause) VALUES (?, ?, ?, ?)", (roster_id, player_id, curr_time, is_bagger_clause))
             # remove player from the same roster as the opposite bagger type, if exists
             async with db.execute("UPDATE team_members SET leave_date = ? WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?", 
