@@ -2170,6 +2170,22 @@ type RootTranslation = {
 			 * M​a​k​e​ ​D​i​s​c​o​r​d​ ​i​n​f​o​ ​p​u​b​l​i​c​l​y​ ​v​i​s​i​b​l​e​?
 			 */
 			SHOW_DISCORD_INFO: string
+			/**
+			 * S​e​n​d​ ​P​a​s​s​w​o​r​d​ ​R​e​s​e​t
+			 */
+			SEND_PASSWORD_RESET: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​e​n​d​ ​t​h​i​s​ ​p​l​a​y​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l​?
+			 */
+			SEND_PASSWORD_RESET_CONFIRM: string
+			/**
+			 * S​u​c​c​e​s​s​f​u​l​l​y​ ​s​e​n​t​ ​t​h​e​ ​p​l​a​y​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l​!
+			 */
+			SEND_PASSWORD_RESET_SUCCESS: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​s​e​n​d​ ​p​l​a​y​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l
+			 */
+			SEND_PASSWORD_RESET_FAILED: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -7087,6 +7103,22 @@ export type TranslationFunctions = {
 			 * Make Discord info publicly visible?
 			 */
 			SHOW_DISCORD_INFO: () => LocalizedString
+			/**
+			 * Send Password Reset
+			 */
+			SEND_PASSWORD_RESET: () => LocalizedString
+			/**
+			 * Are you sure you want to send this player a password reset email?
+			 */
+			SEND_PASSWORD_RESET_CONFIRM: () => LocalizedString
+			/**
+			 * Successfully sent the player a password reset email!
+			 */
+			SEND_PASSWORD_RESET_SUCCESS: () => LocalizedString
+			/**
+			 * Failed to send player a password reset email
+			 */
+			SEND_PASSWORD_RESET_FAILED: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**
