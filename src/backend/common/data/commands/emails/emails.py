@@ -144,6 +144,32 @@ class SendPasswordResetEmailCommand(Command[None]):
             \n<a href="{self.email_config.site_url}/user/reset-password?token={token_id}">Reset Password</a>'
         await send_email(self.user_email, subject, content, self.email_config)
 
+@dataclass
+class SendPasswordResetToPlayerCommand(Command[None]):
+    player_id: int
+    email_config: EmailServiceConfig
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect(db_name='main', attach=['auth']) as db:
+            async with db.execute("""SELECT u.id, ua.email
+                                    FROM users u
+                                    JOIN auth.user_auth ua ON u.id = ua.user_id
+                                    WHERE u.player_id = ?""", (self.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("User not found", status=404)
+                user_id, user_email = row
+            token_id = secrets.token_hex(16)
+            expires_on = int((datetime.now(timezone.utc) + timedelta(minutes=60)).timestamp())
+            await db.execute("INSERT INTO password_resets(token_id, user_id, expires_on) VALUES(:token_id, :user_id, :expires_on)",
+                             {"token_id": token_id, "user_id": user_id, "expires_on": expires_on})
+            await db.commit()
+            
+        subject = "Password Reset - MKCentral"
+        content = f'You requested a password reset on MKCentral. You can reset your password by clicking the link below (expires in 60 minutes): \
+            \n<a href="{self.email_config.site_url}/user/reset-password?token={token_id}">Reset Password</a>'
+        await send_email(user_email, subject, content, self.email_config)
+
 
 @dataclass
 class GetUserInfoFromPasswordResetTokenCommand(Command[UserInfo]):

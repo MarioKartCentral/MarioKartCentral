@@ -161,6 +161,14 @@ async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> 
     await handle(command)
     return JSONResponse({})
 
+@bind_request_body(SendPlayerPasswordResetRequestData)
+@require_permission(permissions.EDIT_PLAYER)
+async def send_player_password_reset(request: Request, body: SendPlayerPasswordResetRequestData) -> JSONResponse:
+    email_config = create_email_config()
+    command = SendPasswordResetToPlayerCommand(body.player_id, email_config)
+    await handle(command)
+    return JSONResponse({})
+
 @bind_request_body(CheckPasswordTokenRequestData)
 async def check_password_reset_token(request: Request, body: CheckPasswordTokenRequestData) -> JSONResponse:
     user_info = await handle(GetUserInfoFromPasswordResetTokenCommand(body.token_id))
@@ -334,6 +342,7 @@ routes = [
     Route('/api/user/send_confirmation_email', send_confirmation_email, methods=["POST"]),
     Route('/api/user/confirm_email', confirm_email, methods=["POST"]),
     Route('/api/user/forgot_password', forgot_password, methods=["POST"]),
+    Route('/api/user/send_player_password_reset', send_player_password_reset, methods=['POST']),
     Route('/api/user/check_password_token', check_password_reset_token, methods=["POST"]),
     Route('/api/user/reset_password_token', reset_password_with_token, methods=["POST"]),
     Route('/api/user/reset_password', reset_password, methods=["POST"]),
