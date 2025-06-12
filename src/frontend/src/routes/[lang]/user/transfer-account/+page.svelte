@@ -54,7 +54,7 @@
             <div>
                 {$LL.LOGIN.TRANSFER_ACCOUNT_DETAILS()}
             <div>
-                <PlayerSearch has_connected_user={false} bind:player={player}/>
+                <PlayerSearch bind:player={player}/>
             </div>
             {#if player}
                 <div class="option">

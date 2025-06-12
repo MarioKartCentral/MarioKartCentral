@@ -191,6 +191,9 @@ async def reset_password(request: Request, body: ResetPasswordRequestData):
 
 @bind_request_body(TransferAccountRequestData)
 async def transfer_account(request: Request, body: TransferAccountRequestData):
+    existing_user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
+    if existing_user_id is not None:
+        raise Problem("Your account has already been transferred to the new site, check the email associated with your account for a password reset", status=400)
     command = GetMKCV1UserByPlayerIDCommand(body.player_id)
     mkc_user = await handle(command)
     if not mkc_user:
