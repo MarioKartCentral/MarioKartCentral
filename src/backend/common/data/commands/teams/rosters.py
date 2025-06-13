@@ -573,25 +573,38 @@ class EditTeamMemberCommand(Command[None]):
                     self.join_date = member_join_date
                 if self.is_bagger_clause is None:
                     self.is_bagger_clause = member_is_bagger
-                # if we're kicking the member add log of it in team transfers
-                if member_leave_date is None and self.leave_date is not None:
-                    await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
-                                     VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved", member_is_bagger))
+
+            # if we're kicking the member add log of it in team transfers and remove them from squads + remove team roles if needed
+            if member_leave_date is None and self.leave_date is not None:
+                await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
+                                    VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved", member_is_bagger))
+
+                # get all team tournament rosters the player is in where the tournament hasn't ended yet
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
+                                    (self.player_id, self.roster_id, self.leave_date, True, True)) as cursor:
+                    rows = await cursor.fetchall()
+                    registration_ids: list[int] = [row[0] for row in rows]
+                # finally remove the player from all the tournaments they shouldn't be in
+                await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
                     
-            # remove user's team roles if they are no longer in a roster for this team
-            if user_id is not None:
-                # check if team member is in any other rosters for this team
-                async with db.execute("""SELECT COUNT(*)
-                                        FROM team_members m
-                                        JOIN team_rosters r ON m.roster_id = r.id
-                                        WHERE m.player_id = ? AND m.roster_id != ?
-                                        AND r.team_id = ? AND m.leave_date IS NULL""",
-                                        (self.player_id, self.roster_id, self.team_id)) as cursor:
-                    row = await cursor.fetchone()
-                    assert row is not None
-                    roster_count = row[0]
-                if roster_count == 0:
-                    await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, self.team_id))
+                # remove user's team roles if they are no longer in a roster for this team
+                if user_id is not None:
+                    # check if team member is in any other rosters for this team
+                    async with db.execute("""SELECT COUNT(*)
+                                            FROM team_members m
+                                            JOIN team_rosters r ON m.roster_id = r.id
+                                            WHERE m.player_id = ? AND m.roster_id != ?
+                                            AND r.team_id = ? AND m.leave_date IS NULL""",
+                                            (self.player_id, self.roster_id, self.team_id)) as cursor:
+                        row = await cursor.fetchone()
+                        assert row is not None
+                        roster_count = row[0]
+                    if roster_count == 0:
+                        await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, self.team_id))
                     
             await db.execute("UPDATE team_members SET join_date = ?, leave_date = ?, is_bagger_clause = ? WHERE id = ?", (self.join_date, self.leave_date, self.is_bagger_clause, id))
             await db.commit()
