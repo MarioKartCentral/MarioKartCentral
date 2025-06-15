@@ -13,6 +13,7 @@ class SetupDuckDBSchemaCommand(Command[None]):
     
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.duckdb.connection() as conn:
+            # Then create/update tables
             for table_cls in ALL_DUCKDB_TABLES:
                 # DuckDB can execute multiple statements in a single command
                 create_statements = table_cls.get_create_table_command()

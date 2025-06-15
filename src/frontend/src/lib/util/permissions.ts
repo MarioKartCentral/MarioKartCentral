@@ -183,6 +183,7 @@ export const permissions = {
   create_db_backups: 'db_backup_create',
   submit_time_trial: 'time_trial_submit',
   delete_time_trial: 'time_trial_delete',
+  VALIDATE_TIME_TRIAL_PROOF: 'time_trial_proof_validate', // Corrected to match API
 };
 
 export const team_permissions = {

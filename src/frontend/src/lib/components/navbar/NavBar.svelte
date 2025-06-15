@@ -14,9 +14,10 @@
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import { ChevronDownOutline, BellSolid, BellOutline } from 'flowbite-svelte-icons';
   import AlertCount from '$lib/components/common/AlertCount.svelte';
-  import { check_permission, series_permissions } from '$lib/util/permissions';
+  import { check_permission, series_permissions, permissions } from '$lib/util/permissions';
   import LoginRegister from '$lib/components/login/LoginRegister.svelte';
   import LanguagePicker from '$lib/components/navbar/LanguagePicker.svelte';
+  import { GAMES } from '$lib/util/gameConstants';
   
   let notify: Notification;
 
@@ -138,7 +139,32 @@
         <DropdownItem href="/{$page.params.lang}/tournaments/templates">{$LL.NAVBAR.TOURNAMENT_TEMPLATES()}</DropdownItem>
       {/if}
     </Dropdown>
-    <NavLi href="/{$page.params.lang}/time-trials" nav_name="TIME TRIALS">{$LL.NAVBAR.TIME_TRIALS()}</NavLi>
+
+    {#if check_permission(user_info, permissions.VALIDATE_TIME_TRIAL_PROOF)}
+      <NavLi nav_name="TIME TRIALS" has_dropdown>
+        {$LL.NAVBAR.TIME_TRIALS()}
+        <ChevronDownOutline class="inline"/>
+      </NavLi>
+      <Dropdown>
+        {#each Object.entries(GAMES) as [gameId, gameName]}
+          <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
+        {/each}
+        <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/validation">{$LL.NAVBAR.VALIDATE_PROOFS()}</DropdownItem>
+      </Dropdown>
+    {:else}
+      <!-- <NavLi nav_name="TIME TRIALS" has_dropdown>
+        {$LL.NAVBAR.TIME_TRIALS()}
+        <ChevronDownOutline class="inline"/>
+      </NavLi>
+      <Dropdown>
+        {#each Object.entries(GAMES) as [gameId, gameName]}
+          <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
+        {/each}
+        <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
+      </Dropdown> -->
+    {/if}
+
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>
     
     <NavLi has_dropdown>

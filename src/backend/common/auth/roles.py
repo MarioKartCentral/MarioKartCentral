@@ -10,6 +10,7 @@ EVENT_ADMIN = "Event Admin"
 EVENT_MOD = "Event Mod"
 BANNED = "Banned"
 TEAM_LEADER_BANNED = "Team Leader Banned"
+TIME_TRIAL_ADMIN = "Time Trial Admin" # New role
 
 # (roleid, name, role hierarchy pos)
 default_roles = [
@@ -23,6 +24,7 @@ default_roles = [
     (7, BANNED, 99),
     (8, TEAM_LEADER_BANNED, 99),
     (9, LOUNGE_STAFF, 5),
+    (10, TIME_TRIAL_ADMIN, 5), # New role added
 ]
 
 id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
@@ -202,6 +204,9 @@ default_permissions_by_default_role: dict[str, list[str]] = {
     SITE_SUPPORTER: [],
     BANNED: [],
     TEAM_LEADER_BANNED: [],
+    TIME_TRIAL_ADMIN: [ # Permissions for the new role
+        permissions.VALIDATE_TIME_TRIAL_PROOF,
+    ],
 }
 
 default_denied_permissions_by_default_role: dict[str, list[str]] = {
@@ -247,6 +252,7 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         team_permissions.REGISTER_TOURNAMENT,
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
+    TIME_TRIAL_ADMIN: [], # Denied permissions for the new role (empty by default)
 }
 
 # roleid, permissionid, is_denied
