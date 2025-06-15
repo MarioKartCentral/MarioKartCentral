@@ -56,6 +56,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.VIEW_IP_ADDRESSES,
         permissions.VIEW_FINGERPRINTS,
         permissions.CREATE_DB_BACKUPS,
+        permissions.VALIDATE_TIME_TRIAL_PROOF,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -102,6 +103,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.VIEW_IP_ADDRESSES,
         permissions.VIEW_FINGERPRINTS,
         permissions.CREATE_DB_BACKUPS,
+        permissions.VALIDATE_TIME_TRIAL_PROOF,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -143,6 +145,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.MERGE_PLAYERS,
         permissions.MERGE_TEAMS,
         permissions.EDIT_USER,
+        permissions.VALIDATE_TIME_TRIAL_PROOF,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -278,7 +281,6 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         permissions.EDIT_PROFILE,
         permissions.LINK_DISCORD,
         permissions.SUBMIT_TIME_TRIAL,
-        permissions.DELETE_TIME_TRIAL,
     ],
     TEAM_LEADER_BANNED: [
         team_permissions.EDIT_TEAM_NAME_TAG, 
@@ -295,7 +297,7 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         team_permissions.REGISTER_TOURNAMENT,
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
-    TIME_TRIAL_ADMIN: [], # Denied permissions for the new role (empty by default)
+    TIME_TRIAL_ADMIN: [], 
 }
 
 # roleid, permissionid, is_denied
