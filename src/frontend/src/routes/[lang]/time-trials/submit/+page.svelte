@@ -208,7 +208,6 @@
     <div class="permission-notice bg-gray-800 p-6 rounded-lg border border-gray-700 text-center mt-4 mx-auto max-w-lg">
         <h2 class="text-xl font-semibold mb-2 text-white">Login Required</h2>
         <p class="mb-4 text-gray-300">You must be logged in to submit time trials.</p>
-        <Button color="primary" href="/{$page.params.lang}/login">Login</Button>
     </div>
 {:else if !hasSubmitPermission}
     <div class="permission-notice bg-gray-800 p-6 rounded-lg border border-gray-700 text-center mt-4 mx-auto max-w-lg">

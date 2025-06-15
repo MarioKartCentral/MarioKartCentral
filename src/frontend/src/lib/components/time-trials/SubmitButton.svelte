@@ -39,11 +39,10 @@
     $: buttonState = (() => {
         if (!user_info?.id) {
             return {
-                href: '/login',
                 icon: LockOutline,
                 text: 'Login to Submit',
                 title: 'You must be logged in to submit time trials',
-                disabled: false,
+                disabled: true,
                 color: 'alternative' as const,
                 show: true
             };
