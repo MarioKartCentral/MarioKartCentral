@@ -377,7 +377,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                     Date
                                 </th>
-                                {#if $user && check_permission($user, permissions.VALIDATE_TIME_TRIAL_PROOF)}
+                                {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                         Moderation
                                     </th>
@@ -455,7 +455,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                                         {new Date(record.created_at).toLocaleDateString()}
                                     </td>
-                                    {#if $user && check_permission($user, permissions.VALIDATE_TIME_TRIAL_PROOF)}
+                                    {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <button 
                                                 on:click={() => markTimeTrialAsInvalid(record.id)}

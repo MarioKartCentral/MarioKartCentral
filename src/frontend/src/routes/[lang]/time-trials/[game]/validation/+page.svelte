@@ -28,7 +28,7 @@
     }> = {};
 
     // Use reactive statement to check permissions
-    $: hasValidationPermission = Boolean($user?.id && check_permission($user, permissions.VALIDATE_TIME_TRIAL_PROOF));
+    $: hasValidationPermission = Boolean($user?.id && check_permission($user, permissions.validate_time_trial_proof));
 
     // Track conversion helper
     function getFullTrackName(game: string, track: string): string {

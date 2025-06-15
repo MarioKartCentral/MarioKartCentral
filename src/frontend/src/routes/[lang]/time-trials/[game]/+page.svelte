@@ -52,7 +52,7 @@
                 🏆 {$LL.TIME_TRIALS.LEADERBOARDS()}
             </Button>
             <SubmitButton {game} />
-            {#if $user && check_permission($user, permissions.VALIDATE_TIME_TRIAL_PROOF)}
+            {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                 <Button on:click={navigateToValidation} color="blue" extra_classes="flex items-center">
                     <BadgeCheckOutline class="w-5 h-5 mr-2" />
                     {$LL.TIME_TRIALS.VALIDATE_PROOFS_BUTTON()}

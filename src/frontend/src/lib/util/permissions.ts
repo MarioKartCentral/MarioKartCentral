@@ -182,8 +182,7 @@ export const permissions = {
   view_fingerprints: 'fingerprints_view',
   create_db_backups: 'db_backup_create',
   submit_time_trial: 'time_trial_submit',
-  delete_time_trial: 'time_trial_delete',
-  VALIDATE_TIME_TRIAL_PROOF: 'time_trial_proof_validate', // Corrected to match API
+  validate_time_trial_proof: 'time_trial_proof_validate'
 };
 
 export const team_permissions = {
