@@ -6,7 +6,13 @@ from worker import settings
 
 db_paths: Dict[str, str] = get_db_paths(settings.DB_DIRECTORY)
 
-_command_handler = CommandHandler(db_paths, str(settings.S3_SECRET_KEY), settings.S3_ACCESS_KEY, settings.S3_ENDPOINT)
+_command_handler = CommandHandler(
+    db_paths,
+    settings.DB_DIRECTORY,
+    str(settings.S3_SECRET_KEY),
+    settings.S3_ACCESS_KEY,
+    settings.S3_ENDPOINT
+)
 
 async def handle[T](command: Command[T]) -> T:
     return await _command_handler.handle(command)

@@ -28,6 +28,8 @@ VIEW_BASIC_IP_INFO = "ip_basic_info_view"
 VIEW_IP_ADDRESSES = "ip_address_view"
 VIEW_FINGERPRINTS = "fingerprints_view"
 CREATE_DB_BACKUPS = "db_backup_create"
+SUBMIT_TIME_TRIAL = "time_trial_submit"
+VALIDATE_TIME_TRIAL_PROOF = "time_trial_proof_validate"
 
 permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
@@ -81,6 +83,8 @@ permissions_by_id: dict[int, str] = {
     48: VIEW_IP_ADDRESSES,
     49: VIEW_FINGERPRINTS,
     50: CREATE_DB_BACKUPS,
+    51: SUBMIT_TIME_TRIAL,
+    52: VALIDATE_TIME_TRIAL_PROOF,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }

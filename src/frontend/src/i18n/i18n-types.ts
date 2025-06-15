@@ -190,6 +190,10 @@ type RootTranslation = {
 		 */
 		GAME: string
 		/**
+		 * T​r​a​c​k
+		 */
+		TRACK: string
+		/**
 		 * M​o​d​e
 		 */
 		MODE: string
@@ -266,6 +270,10 @@ type RootTranslation = {
 		 */
 		SUBMIT: string
 		/**
+		 * S​u​b​m​i​t​t​i​n​g
+		 */
+		SUBMITTING: string
+		/**
 		 * C​a​n​c​e​l
 		 */
 		CANCEL: string
@@ -338,6 +346,14 @@ type RootTranslation = {
 		 * M​a​k​e​ ​s​u​r​e​ ​t​h​a​t​ ​y​o​u​r​ ​i​n​p​u​t​ ​d​o​e​s​ ​n​o​t​ ​b​e​g​i​n​ ​o​r​ ​e​n​d​ ​w​i​t​h​ ​a​ ​w​h​i​t​e​s​p​a​c​e​ ​c​h​a​r​a​c​t​e​r​!
 		 */
 		NO_SPACE_INPUT_WARNING: string
+		/**
+		 * P​e​r​m​i​s​s​i​o​n​ ​R​e​q​u​i​r​e​d
+		 */
+		PERMISSION_REQUIRED: string
+		/**
+		 * Y​o​u​ ​d​o​n​'​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​a​c​c​e​s​s​ ​t​h​i​s​ ​f​e​a​t​u​r​e​.
+		 */
+		NO_PERMISSION_MESSAGE: string
 	}
 	API_TOKENS: {
 		/**
@@ -1542,6 +1558,18 @@ type RootTranslation = {
 		 */
 		TIME_TRIALS: string
 		/**
+		 * T​i​m​e​ ​T​r​i​a​l​s​ ​H​o​m​e
+		 */
+		TIME_TRIALS_HOME: string
+		/**
+		 * S​u​b​m​i​t​ ​T​i​m​e​ ​T​r​i​a​l
+		 */
+		SUBMIT_TIME_TRIAL: string
+		/**
+		 * V​a​l​i​d​a​t​e​ ​P​r​o​o​f​s
+		 */
+		VALIDATE_PROOFS: string
+		/**
 		 * L​o​u​n​g​e
 		 */
 		LOUNGE: string
@@ -1678,6 +1706,10 @@ type RootTranslation = {
 			 * A​l​t​ ​D​e​t​e​c​t​i​o​n
 			 */
 			ALT_DETECTION: string
+			/**
+			 * T​i​m​e​ ​T​r​i​a​l​ ​V​a​l​i​d​a​t​i​o​n
+			 */
+			TIME_TRIAL_VALIDATION: string
 			/**
 			 * F​i​n​g​e​r​p​r​i​n​t​s
 			 */
@@ -2928,9 +2960,325 @@ type RootTranslation = {
 	}
 	TIME_TRIALS: {
 		/**
-		 * T​h​i​s​ ​p​a​g​e​ ​i​s​ ​c​u​r​r​e​n​t​l​y​ ​a​ ​w​o​r​k​ ​i​n​ ​p​r​o​g​r​e​s​s​,​ ​b​u​t​ ​i​t​ ​w​i​l​l​ ​e​v​e​n​t​u​a​l​l​y​ ​b​e​ ​t​h​e​ ​h​u​b​ ​f​o​r​ ​e​v​e​r​y​t​h​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​s​.​ ​F​o​r​ ​n​o​w​,​ ​p​l​a​y​e​r​s​ ​c​a​n​ ​f​i​n​d​ ​l​e​a​d​e​r​b​o​a​r​d​s​ ​o​n​ ​s​e​v​e​r​a​l​ ​o​t​h​e​r​ ​s​i​t​e​s​.​ ​T​h​i​s​ ​i​s​ ​t​h​e​ ​h​u​b​ ​o​f​ ​M​a​r​i​o​ ​K​a​r​t​ ​T​i​m​e​ ​T​r​i​a​l​s​.​ ​H​e​r​e​,​ ​y​o​u​'​l​l​ ​f​i​n​d​ ​t​h​e​ ​m​o​s​t​ ​u​p​-​t​o​-​d​a​t​e​ ​r​a​n​k​i​n​g​s​ ​f​o​r​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​ ​D​e​l​u​x​e​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​8​,​ ​M​a​r​i​o​ ​K​a​r​t​ ​7​,​ ​a​n​d​ ​M​a​r​i​o​ ​K​a​r​t​ ​W​i​i​,​ ​w​i​t​h​ ​e​v​e​r​y​ ​c​a​t​e​g​o​r​y​ ​i​m​a​g​i​n​a​b​l​e​.​ ​S​u​b​m​i​t​ ​y​o​u​r​ ​t​i​m​e​s​ ​t​o​ ​s​e​e​ ​w​h​e​r​e​ ​y​o​u​ ​s​t​a​c​k​ ​u​p​!
+		 * T​i​m​e​ ​T​r​i​a​l​s
+		 */
+		PAGE_TITLE: string
+		/**
+		 * T​i​m​e​ ​T​r​i​a​l​s
+		 */
+		TITLE: string
+		/**
+		 * B​r​o​w​s​e​ ​l​e​a​d​e​r​b​o​a​r​d​s​,​ ​s​u​b​m​i​t​ ​y​o​u​r​ ​r​e​c​o​r​d​s​,​ ​a​n​d​ ​c​o​m​p​e​t​e​ ​f​o​r​ ​t​h​e​ ​t​o​p​ ​s​p​o​t​s​ ​i​n​ ​M​a​r​i​o​ ​K​a​r​t​ ​t​i​m​e​ ​t​r​i​a​l​s​ ​a​c​r​o​s​s​ ​v​a​r​i​o​u​s​ ​g​a​m​e​s​.
 		 */
 		DESCRIPTION: string
+		/**
+		 * V​i​e​w​ ​T​r​a​c​k​s
+		 */
+		VIEW_TRACKS: string
+		/**
+		 * S​u​b​m​i​t​ ​T​i​m​e​ ​T​r​i​a​l
+		 */
+		SUBMIT_TIME_TRIAL: string
+		/**
+		 * S​u​b​m​i​t​ ​T​i​m​e
+		 */
+		SUBMIT_TIME: string
+		/**
+		 * M​y​ ​S​u​b​m​i​s​s​i​o​n​s
+		 */
+		MY_SUBMISSIONS: string
+		/**
+		 * L​e​a​d​e​r​b​o​a​r​d​s
+		 */
+		LEADERBOARDS: string
+		/**
+		 * {​g​a​m​e​}​ ​L​e​a​d​e​r​b​o​a​r​d
+		 * @param {string} game
+		 */
+		GAME_LEADERBOARD_TITLE: RequiredParams<'game'>
+		/**
+		 * {​t​r​a​c​k​}​ ​-​ ​{​c​a​t​e​g​o​r​y​}​ ​(​{​g​a​m​e​}​)
+		 * @param {string} category
+		 * @param {string} game
+		 * @param {string} track
+		 */
+		TRACK_LEADERBOARD_PAGE_TITLE: RequiredParams<'category' | 'game' | 'track'>
+		/**
+		 * T​i​m​e​ ​t​r​i​a​l​ ​s​u​b​m​i​t​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​!
+		 */
+		SUBMIT_SUCCESS: string
+		/**
+		 * E​r​r​o​r​ ​s​u​b​m​i​t​t​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​.
+		 */
+		SUBMIT_ERROR: string
+		/**
+		 * T​i​m​e​ ​t​r​i​a​l​ ​d​e​l​e​t​e​d​ ​s​u​c​c​e​s​s​f​u​l​l​y​!
+		 */
+		DELETE_SUCCESS: string
+		/**
+		 * E​r​r​o​r​ ​d​e​l​e​t​i​n​g​ ​t​i​m​e​ ​t​r​i​a​l​.
+		 */
+		DELETE_ERROR: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​t​i​m​e​ ​t​r​i​a​l​ ​s​u​b​m​i​s​s​i​o​n​?
+		 */
+		CONFIRM_DELETE: string
+		/**
+		 * Y​o​u​ ​h​a​v​e​ ​n​o​t​ ​s​u​b​m​i​t​t​e​d​ ​a​n​y​ ​t​i​m​e​ ​t​r​i​a​l​s​ ​y​e​t​.
+		 */
+		NO_SUBMISSIONS: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​G​a​m​e
+		 */
+		SELECT_GAME: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​T​r​a​c​k
+		 */
+		SELECT_TRACK: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​C​a​t​e​g​o​r​y
+		 */
+		SELECT_CATEGORY: string
+		/**
+		 * T​i​m​e
+		 */
+		SUBMISSION_TIME_VALUE: string
+		/**
+		 * P​l​a​y​e​r
+		 */
+		SUBMITTING_PLAYER_NAME: string
+		/**
+		 * D​a​t​e​ ​S​u​b​m​i​t​t​e​d
+		 */
+		DATE_SUBMITTED: string
+		/**
+		 * V​i​d​e​o​ ​P​r​o​o​f​ ​(​U​R​L​)
+		 */
+		VIDEO_PROOF: string
+		/**
+		 * G​h​o​s​t​ ​F​i​l​e​ ​(​o​p​t​i​o​n​a​l​)
+		 */
+		GHOST_FILE: string
+		/**
+		 * C​o​m​m​e​n​t​s​ ​(​o​p​t​i​o​n​a​l​)
+		 */
+		COMMENTS: string
+		/**
+		 * R​a​n​k
+		 */
+		RANK: string
+		/**
+		 * S​t​a​t​u​s
+		 */
+		STATUS: string
+		/**
+		 * P​e​n​d​i​n​g
+		 */
+		STATUS_PENDING: string
+		/**
+		 * A​p​p​r​o​v​e​d
+		 */
+		STATUS_APPROVED: string
+		/**
+		 * R​e​j​e​c​t​e​d
+		 */
+		STATUS_REJECTED: string
+		/**
+		 * T​r​a​c​k
+		 */
+		TRACK_NAME_LABEL: string
+		/**
+		 * C​a​t​e​g​o​r​y
+		 */
+		CATEGORY_NAME_LABEL: string
+		/**
+		 * N​o​ ​d​a​t​a​ ​a​v​a​i​l​a​b​l​e​ ​f​o​r​ ​t​h​i​s​ ​l​e​a​d​e​r​b​o​a​r​d​ ​y​e​t​.
+		 */
+		NO_LEADERBOARD_DATA: string
+		/**
+		 * V​a​l​i​d​a​t​e​ ​P​r​o​o​f​s
+		 */
+		VALIDATE_PROOFS_BUTTON: string
+		/**
+		 * T​i​m​e​ ​T​r​i​a​l​ ​P​r​o​o​f​ ​V​a​l​i​d​a​t​i​o​n​ ​Q​u​e​u​e
+		 */
+		VALIDATION_QUEUE_TITLE: string
+		/**
+		 * A​l​l​ ​G​a​m​e​s
+		 */
+		VALIDATION_GAME_FILTER_ALL: string
+		/**
+		 * T​i​m​e​ ​T​r​i​a​l​ ​P​r​o​o​f​ ​V​a​l​i​d​a​t​i​o​n
+		 */
+		VALIDATION_PAGE_TITLE: string
+		/**
+		 * V​a​l​i​d​a​t​e​ ​T​i​m​e​ ​T​r​i​a​l​ ​P​r​o​o​f​s
+		 */
+		VALIDATION_HEADER: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​l​o​a​d​ ​p​r​o​o​f​s​ ​f​o​r​ ​v​a​l​i​d​a​t​i​o​n​.
+		 */
+		LOAD_ERROR: string
+		/**
+		 * A​n​ ​u​n​e​x​p​e​c​t​e​d​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​.
+		 */
+		UNEXPECTED_ERROR: string
+		/**
+		 * T​h​e​r​e​ ​a​r​e​ ​n​o​ ​p​r​o​o​f​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n​.
+		 */
+		NO_PROOFS_PENDING: string
+		/**
+		 * N​o​ ​p​r​o​o​f​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n​ ​f​o​r​ ​{​g​a​m​e​}​.
+		 * @param {string} game
+		 */
+		NO_PROOFS_PENDING_FOR_GAME: RequiredParams<'game'>
+		/**
+		 * P​r​o​o​f​ ​I​D​:​ ​{​i​d​}
+		 * @param {string} id
+		 */
+		PROOF_ID: RequiredParams<'id'>
+		/**
+		 * T​i​m​e​ ​T​r​i​a​l​ ​I​D
+		 */
+		TIME_TRIAL_ID: string
+		/**
+		 * P​l​a​y​e​r​ ​I​D
+		 */
+		PLAYER_ID: string
+		/**
+		 * P​r​o​o​f​ ​U​R​L
+		 */
+		PROOF_URL: string
+		/**
+		 * P​r​o​o​f​ ​T​y​p​e
+		 */
+		PROOF_TYPE: string
+		/**
+		 * C​l​a​i​m​e​d​ ​P​r​o​p​e​r​t​i​e​s​ ​t​o​ ​V​e​r​i​f​y
+		 */
+		CLAIMED_PROPERTIES: string
+		/**
+		 * V​a​l​u​e​ ​t​o​ ​V​e​r​i​f​y
+		 */
+		VALUE_TO_VERIFY: string
+		/**
+		 * V​a​l​u​e​ ​f​o​r
+		 */
+		VALUE_PREFIX: string
+		PROPERTY_STATUS: {
+			/**
+			 * V​a​l​i​d​a​t​e​d​ ​(​V​a​l​i​d​)
+			 */
+			VALIDATED_VALID: string
+			/**
+			 * V​a​l​i​d​a​t​e​d​ ​(​I​n​v​a​l​i​d​)
+			 */
+			VALIDATED_INVALID: string
+			/**
+			 * P​e​n​d​i​n​g​ ​V​a​l​i​d​a​t​i​o​n
+			 */
+			PENDING: string
+		}
+		/**
+		 * V​a​l​i​d​a​t​e​d​ ​b​y​ ​p​l​a​y​e​r​ ​{​p​l​a​y​e​r​_​i​d​}​ ​o​n​ ​{​d​a​t​e​|​d​a​t​e​}
+		 * @param {Date} date
+		 * @param {string} player_id
+		 */
+		VALIDATED_BY: RequiredParams<'date|date' | 'player_id'>
+		/**
+		 * N​o​t​e​s
+		 */
+		NOTES: string
+		/**
+		 * E​n​t​e​r​ ​o​p​t​i​o​n​a​l​ ​n​o​t​e​s​ ​f​o​r​ ​t​h​i​s​ ​v​a​l​i​d​a​t​i​o​n​:
+		 */
+		NOTES_PROMPT_OPTIONAL: string
+		/**
+		 * E​n​t​e​r​ ​n​o​t​e​s​ ​f​o​r​ ​t​h​i​s​ ​r​e​j​e​c​t​i​o​n​ ​(​r​e​q​u​i​r​e​d​)​:
+		 */
+		NOTES_PROMPT_REQUIRED: string
+		ACTIONS: {
+			/**
+			 * A​p​p​r​o​v​e
+			 */
+			APPROVE: string
+			/**
+			 * R​e​j​e​c​t
+			 */
+			REJECT: string
+		}
+		/**
+		 * V​a​l​i​d​a​t​i​o​n​ ​E​r​r​o​r
+		 */
+		VALIDATION_ERROR_ALERT: string
+		/**
+		 * T​r​a​c​k​ ​(​A​b​b​r​e​v​i​a​t​i​o​n​)
+		 */
+		TRACK_ABBREVIATION_LABEL: string
+		/**
+		 * T​r​a​c​k​ ​(​F​u​l​l​ ​N​a​m​e​)
+		 */
+		TRACK_FULL_NAME_LABEL: string
+		/**
+		 * e​.​g​.​,​ ​M​B​C​,​ ​C​C​,​ ​W​S
+		 */
+		TRACK_ABBREVIATION_PLACEHOLDER: string
+		/**
+		 * S​e​l​e​c​t​ ​a​ ​t​r​a​c​k​.​.​.
+		 */
+		TRACK_SELECT_PLACEHOLDER: string
+		/**
+		 * A​n​ ​u​n​k​n​o​w​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​d​u​r​i​n​g​ ​v​a​l​i​d​a​t​i​o​n​.
+		 */
+		UNKNOWN_ERROR_ALERT: string
+		/**
+		 * A​n​ ​u​n​e​x​p​e​c​t​e​d​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
+		 */
+		UNEXPECTED_ERROR_ALERT: string
+		/**
+		 * V​a​l​u​e​ ​n​o​t​ ​s​p​e​c​i​f​i​e​d
+		 */
+		VALUE_NOT_SPECIFIED: string
+		/**
+		 * P​r​o​o​f​ ​S​u​b​m​i​s​s​i​o​n
+		 */
+		PROOF_SUBMISSION: string
+		/**
+		 * P​r​o​o​f​ ​E​v​i​d​e​n​c​e
+		 */
+		PROOF_EVIDENCE: string
+		/**
+		 * W​a​t​c​h​ ​V​i​d​e​o
+		 */
+		WATCH_VIDEO: string
+		/**
+		 * V​i​e​w​ ​F​u​l​l​ ​S​i​z​e
+		 */
+		VIEW_FULL_SIZE: string
+		/**
+		 * T​i​m​e
+		 */
+		TIME: string
+		/**
+		 * P​r​o​p​e​r​t​i​e​s​ ​t​o​ ​V​a​l​i​d​a​t​e
+		 */
+		PROPERTIES_TO_VALIDATE: string
+		/**
+		 * C​l​a​i​m​e​d​ ​V​a​l​u​e
+		 */
+		CLAIMED_VALUE: string
+		/**
+		 * P​e​r​m​i​s​s​i​o​n​ ​R​e​q​u​i​r​e​d
+		 */
+		PERMISSION_REQUIRED: string
+		/**
+		 * Y​o​u​ ​d​o​n​'​t​ ​h​a​v​e​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​v​a​l​i​d​a​t​e​ ​t​i​m​e​ ​t​r​i​a​l​ ​p​r​o​o​f​s​.
+		 */
+		NO_PERMISSION_MESSAGE: string
+		/**
+		 * N​o​ ​e​v​i​d​e​n​c​e​ ​U​R​L​ ​p​r​o​v​i​d​e​d
+		 */
+		NO_EVIDENCE_PROVIDED: string
 	}
 	TOURNAMENTS: {
 		/**
@@ -5213,6 +5561,10 @@ export type TranslationFunctions = {
 		 */
 		GAME: () => LocalizedString
 		/**
+		 * Track
+		 */
+		TRACK: () => LocalizedString
+		/**
 		 * Mode
 		 */
 		MODE: () => LocalizedString
@@ -5289,6 +5641,10 @@ export type TranslationFunctions = {
 		 */
 		SUBMIT: () => LocalizedString
 		/**
+		 * Submitting
+		 */
+		SUBMITTING: () => LocalizedString
+		/**
 		 * Cancel
 		 */
 		CANCEL: () => LocalizedString
@@ -5360,6 +5716,14 @@ export type TranslationFunctions = {
 		 * Make sure that your input does not begin or end with a whitespace character!
 		 */
 		NO_SPACE_INPUT_WARNING: () => LocalizedString
+		/**
+		 * Permission Required
+		 */
+		PERMISSION_REQUIRED: () => LocalizedString
+		/**
+		 * You don't have permission to access this feature.
+		 */
+		NO_PERMISSION_MESSAGE: () => LocalizedString
 	}
 	API_TOKENS: {
 		/**
@@ -6543,6 +6907,18 @@ export type TranslationFunctions = {
 		 */
 		TIME_TRIALS: () => LocalizedString
 		/**
+		 * Time Trials Home
+		 */
+		TIME_TRIALS_HOME: () => LocalizedString
+		/**
+		 * Submit Time Trial
+		 */
+		SUBMIT_TIME_TRIAL: () => LocalizedString
+		/**
+		 * Validate Proofs
+		 */
+		VALIDATE_PROOFS: () => LocalizedString
+		/**
 		 * Lounge
 		 */
 		LOUNGE: () => LocalizedString
@@ -6679,6 +7055,10 @@ export type TranslationFunctions = {
 			 * Alt Detection
 			 */
 			ALT_DETECTION: () => LocalizedString
+			/**
+			 * Time Trial Validation
+			 */
+			TIME_TRIAL_VALIDATION: () => LocalizedString
 			/**
 			 * Fingerprints
 			 */
@@ -7845,9 +8225,317 @@ export type TranslationFunctions = {
 	}
 	TIME_TRIALS: {
 		/**
-		 * This page is currently a work in progress, but it will eventually be the hub for everything time trials. For now, players can find leaderboards on several other sites. This is the hub of Mario Kart Time Trials. Here, you'll find the most up-to-date rankings for Mario Kart 8 Deluxe, Mario Kart 8, Mario Kart 7, and Mario Kart Wii, with every category imaginable. Submit your times to see where you stack up!
+		 * Time Trials
+		 */
+		PAGE_TITLE: () => LocalizedString
+		/**
+		 * Time Trials
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.
 		 */
 		DESCRIPTION: () => LocalizedString
+		/**
+		 * View Tracks
+		 */
+		VIEW_TRACKS: () => LocalizedString
+		/**
+		 * Submit Time Trial
+		 */
+		SUBMIT_TIME_TRIAL: () => LocalizedString
+		/**
+		 * Submit Time
+		 */
+		SUBMIT_TIME: () => LocalizedString
+		/**
+		 * My Submissions
+		 */
+		MY_SUBMISSIONS: () => LocalizedString
+		/**
+		 * Leaderboards
+		 */
+		LEADERBOARDS: () => LocalizedString
+		/**
+		 * {game} Leaderboard
+		 */
+		GAME_LEADERBOARD_TITLE: (arg: { game: string }) => LocalizedString
+		/**
+		 * {track} - {category} ({game})
+		 */
+		TRACK_LEADERBOARD_PAGE_TITLE: (arg: { category: string, game: string, track: string }) => LocalizedString
+		/**
+		 * Time trial submitted successfully!
+		 */
+		SUBMIT_SUCCESS: () => LocalizedString
+		/**
+		 * Error submitting time trial.
+		 */
+		SUBMIT_ERROR: () => LocalizedString
+		/**
+		 * Time trial deleted successfully!
+		 */
+		DELETE_SUCCESS: () => LocalizedString
+		/**
+		 * Error deleting time trial.
+		 */
+		DELETE_ERROR: () => LocalizedString
+		/**
+		 * Are you sure you want to delete this time trial submission?
+		 */
+		CONFIRM_DELETE: () => LocalizedString
+		/**
+		 * You have not submitted any time trials yet.
+		 */
+		NO_SUBMISSIONS: () => LocalizedString
+		/**
+		 * Select a Game
+		 */
+		SELECT_GAME: () => LocalizedString
+		/**
+		 * Select a Track
+		 */
+		SELECT_TRACK: () => LocalizedString
+		/**
+		 * Select a Category
+		 */
+		SELECT_CATEGORY: () => LocalizedString
+		/**
+		 * Time
+		 */
+		SUBMISSION_TIME_VALUE: () => LocalizedString
+		/**
+		 * Player
+		 */
+		SUBMITTING_PLAYER_NAME: () => LocalizedString
+		/**
+		 * Date Submitted
+		 */
+		DATE_SUBMITTED: () => LocalizedString
+		/**
+		 * Video Proof (URL)
+		 */
+		VIDEO_PROOF: () => LocalizedString
+		/**
+		 * Ghost File (optional)
+		 */
+		GHOST_FILE: () => LocalizedString
+		/**
+		 * Comments (optional)
+		 */
+		COMMENTS: () => LocalizedString
+		/**
+		 * Rank
+		 */
+		RANK: () => LocalizedString
+		/**
+		 * Status
+		 */
+		STATUS: () => LocalizedString
+		/**
+		 * Pending
+		 */
+		STATUS_PENDING: () => LocalizedString
+		/**
+		 * Approved
+		 */
+		STATUS_APPROVED: () => LocalizedString
+		/**
+		 * Rejected
+		 */
+		STATUS_REJECTED: () => LocalizedString
+		/**
+		 * Track
+		 */
+		TRACK_NAME_LABEL: () => LocalizedString
+		/**
+		 * Category
+		 */
+		CATEGORY_NAME_LABEL: () => LocalizedString
+		/**
+		 * No data available for this leaderboard yet.
+		 */
+		NO_LEADERBOARD_DATA: () => LocalizedString
+		/**
+		 * Validate Proofs
+		 */
+		VALIDATE_PROOFS_BUTTON: () => LocalizedString
+		/**
+		 * Time Trial Proof Validation Queue
+		 */
+		VALIDATION_QUEUE_TITLE: () => LocalizedString
+		/**
+		 * All Games
+		 */
+		VALIDATION_GAME_FILTER_ALL: () => LocalizedString
+		/**
+		 * Time Trial Proof Validation
+		 */
+		VALIDATION_PAGE_TITLE: () => LocalizedString
+		/**
+		 * Validate Time Trial Proofs
+		 */
+		VALIDATION_HEADER: () => LocalizedString
+		/**
+		 * Failed to load proofs for validation.
+		 */
+		LOAD_ERROR: () => LocalizedString
+		/**
+		 * An unexpected error occurred.
+		 */
+		UNEXPECTED_ERROR: () => LocalizedString
+		/**
+		 * There are no proofs pending validation.
+		 */
+		NO_PROOFS_PENDING: () => LocalizedString
+		/**
+		 * No proofs pending validation for {game}.
+		 */
+		NO_PROOFS_PENDING_FOR_GAME: (arg: { game: string }) => LocalizedString
+		/**
+		 * Proof ID: {id}
+		 */
+		PROOF_ID: (arg: { id: string }) => LocalizedString
+		/**
+		 * Time Trial ID
+		 */
+		TIME_TRIAL_ID: () => LocalizedString
+		/**
+		 * Player ID
+		 */
+		PLAYER_ID: () => LocalizedString
+		/**
+		 * Proof URL
+		 */
+		PROOF_URL: () => LocalizedString
+		/**
+		 * Proof Type
+		 */
+		PROOF_TYPE: () => LocalizedString
+		/**
+		 * Claimed Properties to Verify
+		 */
+		CLAIMED_PROPERTIES: () => LocalizedString
+		/**
+		 * Value to Verify
+		 */
+		VALUE_TO_VERIFY: () => LocalizedString
+		/**
+		 * Value for
+		 */
+		VALUE_PREFIX: () => LocalizedString
+		PROPERTY_STATUS: {
+			/**
+			 * Validated (Valid)
+			 */
+			VALIDATED_VALID: () => LocalizedString
+			/**
+			 * Validated (Invalid)
+			 */
+			VALIDATED_INVALID: () => LocalizedString
+			/**
+			 * Pending Validation
+			 */
+			PENDING: () => LocalizedString
+		}
+		/**
+		 * Validated by player {player_id} on {date|date}
+		 */
+		VALIDATED_BY: (arg: { date: Date, player_id: string }) => LocalizedString
+		/**
+		 * Notes
+		 */
+		NOTES: () => LocalizedString
+		/**
+		 * Enter optional notes for this validation:
+		 */
+		NOTES_PROMPT_OPTIONAL: () => LocalizedString
+		/**
+		 * Enter notes for this rejection (required):
+		 */
+		NOTES_PROMPT_REQUIRED: () => LocalizedString
+		ACTIONS: {
+			/**
+			 * Approve
+			 */
+			APPROVE: () => LocalizedString
+			/**
+			 * Reject
+			 */
+			REJECT: () => LocalizedString
+		}
+		/**
+		 * Validation Error
+		 */
+		VALIDATION_ERROR_ALERT: () => LocalizedString
+		/**
+		 * Track (Abbreviation)
+		 */
+		TRACK_ABBREVIATION_LABEL: () => LocalizedString
+		/**
+		 * Track (Full Name)
+		 */
+		TRACK_FULL_NAME_LABEL: () => LocalizedString
+		/**
+		 * e.g., MBC, CC, WS
+		 */
+		TRACK_ABBREVIATION_PLACEHOLDER: () => LocalizedString
+		/**
+		 * Select a track...
+		 */
+		TRACK_SELECT_PLACEHOLDER: () => LocalizedString
+		/**
+		 * An unknown error occurred during validation.
+		 */
+		UNKNOWN_ERROR_ALERT: () => LocalizedString
+		/**
+		 * An unexpected error occurred. Please try again.
+		 */
+		UNEXPECTED_ERROR_ALERT: () => LocalizedString
+		/**
+		 * Value not specified
+		 */
+		VALUE_NOT_SPECIFIED: () => LocalizedString
+		/**
+		 * Proof Submission
+		 */
+		PROOF_SUBMISSION: () => LocalizedString
+		/**
+		 * Proof Evidence
+		 */
+		PROOF_EVIDENCE: () => LocalizedString
+		/**
+		 * Watch Video
+		 */
+		WATCH_VIDEO: () => LocalizedString
+		/**
+		 * View Full Size
+		 */
+		VIEW_FULL_SIZE: () => LocalizedString
+		/**
+		 * Time
+		 */
+		TIME: () => LocalizedString
+		/**
+		 * Properties to Validate
+		 */
+		PROPERTIES_TO_VALIDATE: () => LocalizedString
+		/**
+		 * Claimed Value
+		 */
+		CLAIMED_VALUE: () => LocalizedString
+		/**
+		 * Permission Required
+		 */
+		PERMISSION_REQUIRED: () => LocalizedString
+		/**
+		 * You don't have permission to validate time trial proofs.
+		 */
+		NO_PERMISSION_MESSAGE: () => LocalizedString
+		/**
+		 * No evidence URL provided
+		 */
+		NO_EVIDENCE_PROVIDED: () => LocalizedString
 	}
 	TOURNAMENTS: {
 		/**
@@ -9941,6 +10629,7 @@ export type TranslationFunctions = {
 
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
+	date: (value: Date) => unknown
 	ordinalSuffix: (value: number) => unknown
 	parsedate: (value: unknown) => unknown
 	uppercase: (value: unknown | string) => unknown

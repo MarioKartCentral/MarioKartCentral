@@ -108,7 +108,6 @@ services:
       - PERSIST_AUTHORIZATION=true
     ports:
       - 80:8080
-
   sqlite-web:
     image: 'coleifer/sqlite-web'
     environment:

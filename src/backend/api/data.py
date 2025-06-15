@@ -4,9 +4,16 @@ from common.data.command_handler import CommandHandler
 from common.data.commands import *
 from common.data.db.utils import get_db_paths
 
+
 db_paths = get_db_paths(appsettings.DB_DIRECTORY)
 
-_command_handler = CommandHandler(db_paths, str(appsettings.S3_SECRET_KEY), appsettings.S3_ACCESS_KEY, appsettings.S3_ENDPOINT)
+_command_handler = CommandHandler(
+    db_paths,
+    appsettings.DB_DIRECTORY,
+    str(appsettings.S3_SECRET_KEY),
+    appsettings.S3_ACCESS_KEY,
+    appsettings.S3_ENDPOINT
+)
 
 async def handle[T](command: Command[T]) -> T:
     return await _command_handler.handle(command)
@@ -19,6 +26,9 @@ async def on_startup():
         for db_name in db_paths.keys():
             await handle(ResetDbCommand(db_name=db_name))
     await handle(UpdateDbSchemaCommand())
+    
+    # Initialize DuckDB schema
+    await handle(SetupDuckDBSchemaCommand())
 
     # Seed DB
     hashed_pw = pw_hasher.hash(str(appsettings.ADMIN_PASSWORD))
