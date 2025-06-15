@@ -10,17 +10,14 @@ export const load: PageLoad = async ({ params }) => {
     // Convert track abbreviations to track data format
     // This gives us ALL tracks from the constants, not just ones with records
     tracks = Object.fromEntries(
-      Object.entries(MKWORLD_TRACK_ABBREVIATIONS).map(([fullName, abbr]) => [
-        abbr, 
-        { name: fullName }
-      ])
+      Object.entries(MKWORLD_TRACK_ABBREVIATIONS).map(([fullName, abbr]) => [abbr, { name: fullName }]),
     );
   }
 
   return {
     game,
     gameData: {
-      tracks
-    }
+      tracks,
+    },
   };
 };

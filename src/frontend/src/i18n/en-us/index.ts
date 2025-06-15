@@ -88,7 +88,7 @@ const en_us: BaseTranslation = {
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
     PERMISSION_REQUIRED: 'Permission Required',
-    NO_PERMISSION_MESSAGE: 'You don\'t have permission to access this feature.',
+    NO_PERMISSION_MESSAGE: "You don't have permission to access this feature.",
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -789,7 +789,8 @@ const en_us: BaseTranslation = {
   TIME_TRIALS: {
     PAGE_TITLE: 'Time Trials',
     TITLE: 'Time Trials',
-    DESCRIPTION: 'Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.',
+    DESCRIPTION:
+      'Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.',
     VIEW_TRACKS: 'View Tracks',
     SUBMIT_TIME_TRIAL: 'Submit Time Trial',
     SUBMIT_TIME: 'Submit Time', // Added
@@ -838,17 +839,17 @@ const en_us: BaseTranslation = {
     VALUE_TO_VERIFY: 'Value to Verify',
     VALUE_PREFIX: 'Value for', // Added missing key
     PROPERTY_STATUS: {
-        VALIDATED_VALID: 'Validated (Valid)',
-        VALIDATED_INVALID: 'Validated (Invalid)',
-        PENDING: 'Pending Validation',
+      VALIDATED_VALID: 'Validated (Valid)',
+      VALIDATED_INVALID: 'Validated (Invalid)',
+      PENDING: 'Pending Validation',
     },
     VALIDATED_BY: 'Validated by player {player_id:string} on {date:Date|date}',
     NOTES: 'Notes',
     NOTES_PROMPT_OPTIONAL: 'Enter optional notes for this validation:',
     NOTES_PROMPT_REQUIRED: 'Enter notes for this rejection (required):',
     ACTIONS: {
-        APPROVE: 'Approve',
-        REJECT: 'Reject',
+      APPROVE: 'Approve',
+      REJECT: 'Reject',
     },
     VALIDATION_ERROR_ALERT: 'Validation Error',
     TRACK_ABBREVIATION_LABEL: 'Track (Abbreviation)',
@@ -866,9 +867,9 @@ const en_us: BaseTranslation = {
     PROPERTIES_TO_VALIDATE: 'Properties to Validate',
     CLAIMED_VALUE: 'Claimed Value',
     PERMISSION_REQUIRED: 'Permission Required',
-    NO_PERMISSION_MESSAGE: 'You don\'t have permission to validate time trial proofs.',
+    NO_PERMISSION_MESSAGE: "You don't have permission to validate time trial proofs.",
     NO_EVIDENCE_PROVIDED: 'No evidence URL provided',
-},
+  },
   TOURNAMENTS: {
     TOURNAMENT: 'Tournament',
     CREATE_TOURNAMENT: 'Create Tournament',
@@ -1412,7 +1413,7 @@ const en_us: BaseTranslation = {
     YE: 'Yemen',
     ZM: 'Zambia',
     ZW: 'Zimbabwe',
-  }
+  },
 };
 
 export default en_us;

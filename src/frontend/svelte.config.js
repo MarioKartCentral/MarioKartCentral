@@ -6,14 +6,14 @@ const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 
 function getTimeTrialsEntriesForLocale(locale) {
   const entries = [];
-  
+
   // Add main time trials page
   entries.push(`/${locale}/time-trials`);
   entries.push(`/${locale}/time-trials/submit`);
   entries.push(`/${locale}/time-trials/mkworld`);
   entries.push(`/${locale}/time-trials/mkworld/leaderboard`);
   entries.push(`/${locale}/time-trials/mkworld/validation`);
-  
+
   return entries;
 }
 
