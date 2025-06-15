@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DBWrapperConnection():
-    """SQLite connection wrapper with lifecycle management."""
-    
     connection: aiosqlite.Connection
     readonly: bool
     attach: Dict[str, str]
@@ -46,8 +44,6 @@ class DBWrapperConnection():
 
 @dataclass
 class DBWrapper():
-    """Database wrapper providing access to SQLite and DuckDB."""
-    
     db_paths: Dict[str, str]
     duckdb: DuckDBWrapper
 
