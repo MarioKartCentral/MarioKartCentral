@@ -44,6 +44,18 @@ class InvitePlayerCommand(Command[None]):
                 num_invites = row[0]
                 if num_invites > 0:
                     raise Problem("Player has already been invited", status=400)
+            if self.is_bagger_clause:
+                bagger_count = 0
+                async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE roster_id = ? AND approval_status != 'approved' AND is_bagger_clause = 1", (self.roster_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    bagger_count += row[0]
+                async with db.execute("SELECT COUNT(id) FROM team_members WHERE roster_id = ? AND leave_date IS NULL AND is_bagger_clause = 1", (self.roster_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    bagger_count += row[0]
+                if bagger_count >= 2:
+                    raise Problem("Rosters may only have 2 bag-claused players at once", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
             await db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_bagger_clause, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?, ?)", 
                              (self.player_id, self.roster_id, creation_date, self.is_bagger_clause, False, "pending"))

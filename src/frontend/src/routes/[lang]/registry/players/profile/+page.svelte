@@ -81,6 +81,27 @@
     resetPlayerNotes = !resetPlayerNotes;
     playerNotesDialog.close();
   }
+
+  async function sendPasswordReset() {
+    let conf = window.confirm($LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_CONFIRM());
+    if(!conf) return;
+    const payload = {
+      player_id: player.id,
+    };
+    const endpoint = '/api/user/send_player_password_reset';
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+
+    if (response.status < 300) {
+        alert($LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_SUCCESS());
+    } else {
+        alert(`${$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_FAILED()}: ${result['title']}`);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -133,6 +154,9 @@
             {/if}
           </Button>
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}</Button>
+          {#if player.user_settings}
+            <Button on:click={sendPasswordReset}>{$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET()}</Button>
+          {/if}
         {/if}
         {#if check_permission(user_info, permissions.edit_user) && player.user_settings}
           <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}">{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button>

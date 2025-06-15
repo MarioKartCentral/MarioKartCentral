@@ -10,28 +10,34 @@ class ApproveTransferCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
+            async with db.execute("""SELECT tt.player_id, tt.roster_id, tt.roster_leave_id, tt.is_accepted, tt.is_bagger_clause, tt.approval_status, r1.team_id, r2.team_id, u.id
+                                  FROM team_transfers tt
+                                  JOIN team_rosters r1 ON tt.roster_id = r1.id
+                                  LEFT JOIN team_rosters r2 ON tt.roster_leave_id = r2.id
+                                  LEFT JOIN users u ON tt.player_id = u.player_id
+                                  WHERE tt.id = ?""", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Invite not found", status=404)
-                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status = row
+                player_id, roster_id, roster_leave_id, is_accepted, is_bagger_clause, approval_status, join_team_id, leave_team_id, user_id = row
             if not is_accepted:
                 raise Problem("Invite has not been accepted by the player yet", status=400)
+            team_member_id = None
             if roster_leave_id:
                 # check this before we move the player to the new team
                 async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?",
                                       (player_id, roster_leave_id, None, is_bagger_clause)) as cursor:
                     row = await cursor.fetchone()
+                    # if the player has already left the team, we should still accept the transfer, but change it to be from no team
                     if row is None:
-                        raise Problem("Player is not currently on the roster they are leaving", status=400)
-                    team_member_id = row[0]
-            else:
-                team_member_id = None
+                        roster_leave_id = None
+                    else:
+                        team_member_id = row[0]
             if approval_status == "approved":
                 raise Problem("Transfer is already approved", status=400)
             curr_time = int(datetime.now(timezone.utc).timestamp())
             # we use team_transfers table for transfers page, so don't delete the invite just set it to approved
-            await db.execute("UPDATE team_transfers SET approval_status = ? WHERE id = ?", ("approved", self.invite_id,))
+            await db.execute("UPDATE team_transfers SET roster_leave_id = ?, approval_status = ? WHERE id = ?", (roster_leave_id, "approved", self.invite_id,))
             await db.execute("INSERT INTO team_members(roster_id, player_id, join_date, is_bagger_clause) VALUES (?, ?, ?, ?)", (roster_id, player_id, curr_time, is_bagger_clause))
             # remove player from the same roster as the opposite bagger type, if exists
             async with db.execute("UPDATE team_members SET leave_date = ? WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?", 
@@ -95,6 +101,21 @@ class ApproveTransferCommand(Command[None]):
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                                  is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            
+            # remove user's team roles if they are no longer in a roster for the old team
+            if user_id is not None and leave_team_id and leave_team_id != join_team_id:
+                # check if team member is in any other rosters for this team
+                async with db.execute("""SELECT COUNT(*)
+                                        FROM team_members m
+                                        JOIN team_rosters r ON m.roster_id = r.id
+                                        WHERE m.player_id = ? AND m.roster_id != ?
+                                        AND r.team_id = ? AND m.leave_date IS NULL""",
+                                        (player_id, roster_leave_id, leave_team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    roster_count = row[0]
+                if roster_count == 0:
+                    await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, leave_team_id))
             await db.commit()
 
 @save_to_command_log
@@ -173,7 +194,7 @@ class ViewTransfersCommand(Command[TransferList]):
                                     LEFT OUTER JOIN teams t2 ON r2.team_id = t2.id
                                     JOIN players p ON i.player_id = p.id
                                     WHERE i.is_accepted = 1 AND i.approval_status = ? {where_clause_str}
-                                    ORDER BY i.id DESC LIMIT ? OFFSET ?""",
+                                    ORDER BY i.date DESC LIMIT ? OFFSET ?""",
                                     (self.approval_status, *variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -245,11 +266,18 @@ class ForceTransferPlayerCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, game FROM team_rosters WHERE id = ? AND team_id = ?", (self.roster_id, self.team_id)) as cursor:
+            async with db.execute("""SELECT p.id, u.id FROM players p
+                                    LEFT JOIN users u ON u.player_id = p.id
+                                    WHERE p.id = ?""", (self.player_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Player not found", status=404)
+                _, user_id = row
+            async with db.execute("SELECT game, team_id FROM team_rosters WHERE id = ? AND team_id = ?", (self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Roster not found", status=404)
-                game = row[1]
+                game, join_team_id = row
                 if self.is_bagger_clause and game != "mkw":
                     raise Problem("Cannot make players baggers for games other than MKW", status=400)
             fc_type = game_fc_map[game]
@@ -257,13 +285,16 @@ class ForceTransferPlayerCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player has no friend codes for this game", status=400)
+            leave_team_id = None
             if self.roster_leave_id:
                 # check this before we move the player to the new team
-                async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_leave_id, None)) as cursor:
+                async with db.execute("""SELECT m.id, r.team_id FROM team_members m
+                                      JOIN team_rosters r ON m.roster_id = r.id
+                                      WHERE m.player_id = ? AND m.roster_id = ? AND m.leave_date IS ?""", (self.player_id, self.roster_leave_id, None)) as cursor:
                     row = await cursor.fetchone()
                     if row is None:
                         raise Problem("Player is not currently on this roster", status=400)
-                    team_member_id = row[0]
+                    team_member_id, leave_team_id = row
             else:
                 team_member_id = None
             async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ?", (self.player_id, self.roster_id, None)) as cursor:
@@ -331,6 +362,22 @@ class ForceTransferPlayerCommand(Command[None]):
             await db.executemany("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                                  is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", insert_rows)
+            
+            # remove user's team roles if they are no longer in a roster for the old team
+            if user_id is not None and leave_team_id and leave_team_id != join_team_id:
+                # check if team member is in any other rosters for this team
+                async with db.execute("""SELECT COUNT(*)
+                                        FROM team_members m
+                                        JOIN team_rosters r ON m.roster_id = r.id
+                                        WHERE m.player_id = ? AND m.roster_id != ?
+                                        AND r.team_id = ? AND m.leave_date IS NULL""",
+                                        (self.player_id, self.roster_leave_id, leave_team_id)) as cursor:
+                    row = await cursor.fetchone()
+                    assert row is not None
+                    roster_count = row[0]
+                if roster_count == 0:
+                    await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, leave_team_id))
+
             await db.commit()
 
 @save_to_command_log

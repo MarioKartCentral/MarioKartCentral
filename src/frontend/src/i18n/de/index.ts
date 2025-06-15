@@ -585,6 +585,10 @@ const de: Translation = {
       REGISTRATION_DATE: 'Registriert',
       NAME_CHANGE_HISTORY: 'Geschichte der Namensänderung',
       SHOW_DISCORD_INFO: 'Discord-Informationen öffentlich sichtbar machen?',
+      SEND_PASSWORD_RESET: 'Send Password Reset',
+      SEND_PASSWORD_RESET_CONFIRM: 'Are you sure you want to send this player a password reset email?',
+      SEND_PASSWORD_RESET_SUCCESS: 'Successfully sent the player a password reset email!',
+      SEND_PASSWORD_RESET_FAILED: 'Failed to send player a password reset email',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:

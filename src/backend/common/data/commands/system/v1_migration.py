@@ -60,6 +60,13 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
         if self.email.lower() not in user_data.users:
             return None
         v1_user = user_data.users[self.email.lower()]
+        # make sure users cant claim an account if the linked player already has an account
+        if v1_user.player_id is not None:
+            async with db_wrapper.connect(readonly=True) as db:
+                async with db.execute("SELECT id FROM users WHERE player_id = ?", (v1_user.player_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        return None
         return v1_user
     
 @dataclass
@@ -80,6 +87,13 @@ class GetMKCV1UserByPlayerIDCommand(Command[NewMKCUser | None]):
         if self.player_id not in user_data.users:
             return None
         v1_user = user_data.users[self.player_id]
+        # make sure users cant transfer an account if they previously transferred their account and changed their email
+        if v1_user.player_id is not None:
+            async with db_wrapper.connect(readonly=True) as db:
+                async with db.execute("SELECT id FROM users WHERE player_id = ?", (v1_user.player_id,)) as cursor:
+                    row = await cursor.fetchone()
+                    if row:
+                        return None
         return v1_user
 
 @save_to_command_log

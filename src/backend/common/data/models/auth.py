@@ -34,6 +34,10 @@ class ForgotPasswordRequestData:
     email: str
 
 @dataclass
+class SendPlayerPasswordResetRequestData:
+    player_id: int
+
+@dataclass
 class CheckPasswordTokenRequestData:
     token_id: str
 

@@ -161,13 +161,28 @@
         placement_list.sort((a, b) => sort_placement_list(a, b));
         updatePlacements();
     }
+
+    function handlePlacementChange(p: PlacementOrganizer) {
+        if(!p.placement) return;
+        let to_index = p.placement-1;
+        if(to_index < 0) {
+            to_index = 0;
+        }
+        if (to_index >= placement_list.length) {
+            to_index = placement_list.length - 1;
+        }
+        const from_index = placement_list.indexOf(p);
+        // move the placement to the correct spot in the list
+        placement_list.splice(from_index, 1);
+        placement_list.splice(p.placement-1, 0, p);
+        updatePlacements();
+    }
 </script>
 
-<section class="zone" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
+<section class="zone {is_placements ? '' : 'scroll'}" use:dndzone={{items: placement_list}} on:consider={e => handleSort(e)} on:finalize={e => handleSort(e)}>
     {#each placement_list as p(p.id)}
-        <PlacementItem placement={p} is_edit={true} on:change={updatePlacements} on:dq={handleDQ}/>
+        <PlacementItem placement={p} is_edit={true} on:change={updatePlacements} on:dq={handleDQ} on:placement_change={() => handlePlacementChange(p)}/>
     {/each}
-    
 </section>
 
 {#if is_placements}
@@ -178,5 +193,10 @@
     .zone {
         min-height: 50px;
         margin-bottom: 20px;
+        border: 2px gray solid;
+    }
+    .scroll {
+        height: 400px;
+        overflow-y: scroll;
     }
 </style>

@@ -43,7 +43,7 @@ export function sortFilterRosters(rosters: TeamRoster[], show_pending: boolean =
   const sort_filtered = rosters
     .filter(
       (r) =>
-        (r.approval_status === 'approved' || (show_pending && r.approval_status === 'pending')) && // show approved, and pending if specified
+        (show_pending || r.approval_status === 'approved') && // show approved, and pending/denied if specified
         (!has_players || r.players.length > 0), // if has_players is false, don't check for # of players
     )
     .sort((a, b) => game_order[a.game] - game_order[b.game]); // sort rosters in game order
@@ -106,7 +106,7 @@ export const fc_type_order: { [key: string]: number } = {
   '3ds': 4,
 };
 export const valid_modes: { [key: string]: string[] } = {
-  mkworld: ['150cc', '200cc'],
+  mkworld: ['150cc'],
   mk8dx: [
     '150cc',
     '200cc',
@@ -127,7 +127,7 @@ export const valid_modes: { [key: string]: string[] } = {
 };
 export const valid_team_games = ['mkworld', 'mk8dx', 'mkw', 'mkt'];
 export const valid_team_modes: { [key: string]: string[] } = {
-  mkworld: ['150cc', '200cc'],
+  mkworld: ['150cc'],
   mk8dx: ['150cc', '200cc'],
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],
