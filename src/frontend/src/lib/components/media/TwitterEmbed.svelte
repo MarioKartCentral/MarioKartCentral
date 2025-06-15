@@ -42,6 +42,7 @@
     
     async function loadTwitterScript(): Promise<void> {
         return new Promise((resolve, reject) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if ((window as any).twttr) {
                 resolve();
                 return;
@@ -59,6 +60,7 @@
             script.onload = () => {
                 clearTimeout(timeout);
                 const checkTwttr = () => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if ((window as any).twttr?.widgets) {
                         resolve();
                     } else {
@@ -128,8 +130,10 @@
             try {
                 await loadTwitterScript();
                 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 if ((window as any).twttr?.widgets) {
                     const tweetElement = await Promise.race([
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (window as any).twttr.widgets.createTweet(tweetId, tweetContainer, {
                             theme: theme,
                             dnt: true,
