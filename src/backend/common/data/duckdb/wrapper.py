@@ -4,6 +4,7 @@ import aioduckdb
 from types import TracebackType
 from typing import Optional
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -45,3 +46,10 @@ class DuckDBWrapper:
     def connection(self) -> DuckDBWrapperConnection:
         """Create a new connection context manager."""
         return DuckDBWrapperConnection(self.db_path)
+    
+    def reset_db(self):
+        logging.info(f"Resetting DuckDB file: {self.db_path}")
+        try:
+            os.remove(self.db_path)
+        except FileNotFoundError:
+            logging.info(f"DuckDB file {self.db_path} not found.")

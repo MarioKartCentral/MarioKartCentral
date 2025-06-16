@@ -14,6 +14,11 @@ class ResetDbCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         db_wrapper.reset_db(self.db_name)
 
+@dataclass
+class ResetDuckDbCommand(Command[None]):
+    async def handle(self, db_wrapper, s3_wrapper):
+        db_wrapper.duckdb.reset_db()
+
 class UpdateDbSchemaCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         for db_schema in all_dbs.values():

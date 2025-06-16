@@ -27,6 +27,8 @@ async def on_startup():
             await handle(ResetDbCommand(db_name=db_name))
     await handle(UpdateDbSchemaCommand())
     
+    if appsettings.RESET_DUCK_DB:
+        await handle(ResetDuckDbCommand())
     # Initialize DuckDB schema
     await handle(SetupDuckDBSchemaCommand())
 
