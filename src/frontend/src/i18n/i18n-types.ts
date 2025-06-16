@@ -2992,6 +2992,10 @@ type RootTranslation = {
 		 */
 		LEADERBOARDS: string
 		/**
+		 * T​i​m​e​s​h​e​e​t​s
+		 */
+		TIMESHEETS: string
+		/**
 		 * {​g​a​m​e​}​ ​L​e​a​d​e​r​b​o​a​r​d
 		 * @param {string} game
 		 */
@@ -8256,6 +8260,10 @@ export type TranslationFunctions = {
 		 * Leaderboards
 		 */
 		LEADERBOARDS: () => LocalizedString
+		/**
+		 * Timesheets
+		 */
+		TIMESHEETS: () => LocalizedString
 		/**
 		 * {game} Leaderboard
 		 */

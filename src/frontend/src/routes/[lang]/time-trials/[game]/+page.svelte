@@ -30,6 +30,10 @@
     function navigateToLeaderboard() {
         goto(`/${$page.params.lang}/time-trials/${game}/leaderboard`);
     }
+
+    function navigateToTimesheet() {
+        goto(`/${$page.params.lang}/time-trials/${game}/timesheet`);
+    }
 </script>
 
 <svelte:head>
@@ -50,6 +54,9 @@
         <div class="flex items-center gap-2">
             <Button on:click={navigateToLeaderboard} size='md' extra_classes="flex items-center">
                 🏆 {$LL.TIME_TRIALS.LEADERBOARDS()}
+            </Button>
+            <Button on:click={navigateToTimesheet} size='md' extra_classes="flex items-center">
+                📝 {$LL.TIME_TRIALS.TIMESHEETS()}
             </Button>
             <SubmitButton {game} />
             {#if $user && check_permission($user, permissions.validate_time_trial_proof)}

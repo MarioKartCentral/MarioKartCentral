@@ -13,42 +13,20 @@
     import { check_permission, permissions } from '$lib/util/permissions';
     import MediaEmbed from '$lib/components/media/MediaEmbed.svelte';
     import { Popover } from 'flowbite-svelte';
-    
-    interface PlayerRecord {
-        id: string;
-        version: number;
-        player_id: string;  // Added player_id field
-        game: string;
-        track: string;
-        time_ms: number;
-        proofs: Array<{
-            id: string;
-            url: string;
-            type: string;
-            created_at: string;
-        }>;
-        created_at: string;
-        updated_at: string;
-        player_name: string | null;  // Added player_name field
-        player_country_code: string | null; // Added player_country_code field
-        is_superseded: boolean;
-        superseded_by?: string;
-        is_current_best: boolean;
-        validation_status: string;
-    }
-    
+    import type { TimeTrial, TimeTrialListResponse } from '$lib/types/time-trials';
+
     const game = $page.params.game as GameId;
     
-    let records: PlayerRecord[] = [];
+    let records: TimeTrial[] = [];
     let loading = true;
     let error = '';
     let selectedTrack = '';
     let selectedCountry = '';
-    let showPendingValidation = false; // Show times pending validation
-    let showTimesWithoutProof = false; // Show times without proof
+    let showPendingValidation = false;
+    let showTimesWithoutProof = false;
     let currentPage = 1;
     let tracks: string[] = [];
-    let countries: (string | null)[] = [];
+    let countries: string[] = [];
     
     // Get tracks from constants based on game
     $: {
@@ -91,8 +69,8 @@
                 throw new Error(`Failed to load leaderboard: ${response.statusText}`);
             }
             
-            const result = await response.json();
-            let allRecords = result["records"] as PlayerRecord[] || [];
+            const result: TimeTrialListResponse = await response.json();
+            let allRecords = result["records"] || [];
             
             // Client-side filtering
             let filteredRecords = allRecords;
@@ -111,7 +89,9 @@
             const uniqueCountries = [...new Set(
                 allRecords
                     .map(record => record.player_country_code)
-                    .filter(country => country && country.trim())
+                    .filter((country): country is string => 
+                        country != null && country.trim() !== ''
+                    )
             )].sort();
             countries = uniqueCountries;
         } catch (err) {
@@ -219,16 +199,26 @@
         let conf = window.confirm("Are you sure you would like to mark this time as invalid?");
         if(!conf) return;
         try {
+            // Find the time trial record to get its version
+            const timeTrialRecord = records.find(record => record.id === timeTrialId);
+            if (!timeTrialRecord) {
+                throw new Error('Time trial record not found');
+            }
+            
             const response = await fetch(`/api/time-trials/${timeTrialId}/mark-invalid`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ version: timeTrialRecord.version }),
             });
             
             if (!response.ok) {
-                throw new Error('Failed to mark time trial as invalid');
+                const errorData = await response.json().catch(() => null);
+                if (response.status === 409) {
+                    throw new Error('This record was modified by another user. Please refresh the page and try again.');
+                }
+                throw new Error(errorData?.detail || errorData?.title || 'Failed to mark time trial as invalid');
             }
             
             // Refresh the leaderboard data
@@ -408,7 +398,9 @@
                                                     href="/{$page.params.lang}/registry/players/profile?id={record.player_id}"
                                                 >
                                                     <div class="flex items-center gap-2 flex-wrap">
-                                                        <Flag country_code={record.player_country_code} size="small" />
+                                                        {#if record.player_country_code}
+                                                            <Flag country_code={record.player_country_code} size="small" />
+                                                        {/if}
                                                         <div class="text-sm max-w-32 text-wrap break-all">
                                                             {record.player_name}
                                                         </div>

@@ -2,6 +2,8 @@
  * Time trial utility functions following established patterns.
  */
 
+import type { ProofRequestData } from "$lib/types/time-trials";
+
 export interface ParsedTime {
   minutes: number;
   seconds: number;
@@ -86,7 +88,7 @@ export function formatTimeMs(totalMs: number): string {
  * @param proofs - Array of proof objects
  * @returns Validation errors or empty array if valid
  */
-export function validateProofs(proofs: Array<{ url: string; type: string }>): string[] {
+export function validateProofs(proofs: Array<ProofRequestData>): string[] {
   const errors: string[] = [];
 
   // Proofs are optional, so empty array is valid

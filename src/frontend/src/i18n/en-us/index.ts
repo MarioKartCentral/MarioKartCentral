@@ -796,6 +796,7 @@ const en_us: BaseTranslation = {
     SUBMIT_TIME: 'Submit Time', // Added
     MY_SUBMISSIONS: 'My Submissions',
     LEADERBOARDS: 'Leaderboards',
+    TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game:string} Leaderboard', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track:string} - {category:string} ({game:string})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',
