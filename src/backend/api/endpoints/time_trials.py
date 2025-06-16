@@ -113,7 +113,7 @@ async def mark_proof_invalid_endpoint(request: Request, body: MarkProofInvalidRe
 
     time_trial_id = request.path_params.get("trial_id")
     proof_id = request.path_params.get("proof_id")
-    current_player_id = str(request.state.user.player_id)
+    current_player_id = request.state.user.player_id
 
     if not time_trial_id:
         raise Problem("Time Trial ID is required in path.", status=400)
@@ -163,7 +163,7 @@ async def mark_proof_valid_endpoint(request: Request, body: MarkProofValidReques
     """
     time_trial_id = request.path_params.get("trial_id")
     proof_id = request.path_params.get("proof_id")
-    current_player_id = str(request.state.user.player_id)
+    current_player_id = request.state.user.player_id
 
     if not time_trial_id:
         raise Problem("Time Trial ID is required in path.", status=400)
@@ -221,7 +221,7 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
     - Validators can edit everything including validation status and player
     """
     time_trial_id = request.path_params.get("trial_id")
-    current_player_id = str(request.state.user.player_id)
+    current_player_id = request.state.user.player_id
 
     if not time_trial_id:
         raise Problem("Time Trial ID is required in path.", status=400)
