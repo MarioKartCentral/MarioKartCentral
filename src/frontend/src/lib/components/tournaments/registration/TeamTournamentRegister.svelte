@@ -42,7 +42,7 @@
   $: num_captains = players.filter((p) => p.is_captain).length;
   $: num_reps = players.filter((p) => p.is_captain || p.is_representative).length;
   $: can_register = ((!tournament.min_squad_size || num_captains === 1) && !(tournament.min_representatives && num_reps !== tournament.min_representatives) 
-    && (!tournament.min_squad_size || players.length >= tournament.min_squad_size) && (!tournament.max_squad_size || players.length <= tournament.max_squad_size));
+    && (!tournament.team_members_only || !tournament.min_squad_size || players.length >= tournament.min_squad_size) && (!tournament.max_squad_size || players.length <= tournament.max_squad_size));
 
   onMount(async () => {
     if(is_privileged) return; 
@@ -288,7 +288,7 @@
             {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_REPRESENTATIVES({min_representatives: tournament.min_representatives})}
           </div>
         {/if}
-        {#if tournament.min_squad_size && players.length < tournament.min_squad_size}
+        {#if tournament.team_members_only && tournament.min_squad_size && players.length < tournament.min_squad_size}
           <div>
             {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_MORE_PLAYERS({count: tournament.min_squad_size - players.length})}
           </div>

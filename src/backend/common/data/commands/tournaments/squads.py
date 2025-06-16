@@ -114,11 +114,11 @@ class RegisterTeamTournamentCommand(Command[int | None]):
             raise Problem('Duplicate roster IDs detected', status=400)
         async with db_wrapper.connect() as db:
             # check if tournament registrations are open and that our arguments are correct for the current tournament
-            async with db.execute("SELECT registrations_open, teams_allowed, min_representatives, min_squad_size, max_squad_size, bagger_clause_enabled, game FROM tournaments WHERE ID = ?",
+            async with db.execute("SELECT registrations_open, teams_allowed, min_representatives, min_squad_size, max_squad_size, bagger_clause_enabled, game, team_members_only FROM tournaments WHERE ID = ?",
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
-                registrations_open, teams_allowed, min_representatives, min_squad_size, max_squad_size, bagger_clause_enabled, game = row
+                registrations_open, teams_allowed, min_representatives, min_squad_size, max_squad_size, bagger_clause_enabled, game, team_members_only = row
                 if not bool(teams_allowed):
                     raise Problem('This is not a team tournament', status=400)
                 if self.is_privileged is False and not bool(registrations_open):
@@ -132,7 +132,7 @@ class RegisterTeamTournamentCommand(Command[int | None]):
                 baggers = [p.player_id for p in self.players if p.is_bagger_clause]
                 if len(baggers) and not bool(bagger_clause_enabled):
                     raise Problem("Cannot register players as baggers when bagger clause is not enabled", status=400)
-                if min_squad_size and len(self.players) < min_squad_size:
+                if team_members_only and min_squad_size and len(self.players) < min_squad_size:
                     raise Problem(f"Number of players is less than this tournament's minimum squad size ({min_squad_size})", status=400)
                 if max_squad_size and len(self.players) > max_squad_size:
                     raise Problem(f"Number of players is greater than this tournament's maximum squad size({max_squad_size})", status=400)
