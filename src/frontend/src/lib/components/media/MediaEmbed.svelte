@@ -9,6 +9,7 @@
     export let autoDetect: boolean = true;
     export let embedWidth: string = '100%';
     export let embedHeight: string = '315';
+    export let classes = "";
     
     type MediaType = 'youtube' | 'twitter' | 'twitch' | 'image' | 'video' | 'unknown';
     
@@ -66,7 +67,7 @@
     }
 </script>
 
-<div class="media-embed-container">
+<div class="media-embed-container {classes}">
     {#if mediaType === 'youtube'}
         <YouTubeEmbed {url} width={embedWidth} height={embedHeight} />
     

@@ -14,6 +14,7 @@
         TRACKS_BY_GAME, 
         type GameId 
     } from '$lib/util/gameConstants';
+    import { ArrowLeftOutline } from 'flowbite-svelte-icons';
 
     let proofsForValidation: ProofWithValidationStatusResponseData[] = [];
     let isLoading = true;
@@ -205,6 +206,10 @@
 </svelte:head>
 
 <div class="container mx-auto p-4">
+    <Button href="/{$page.params.lang}/time-trials/{gameFilter}" extra_classes="back-button text-white mb-4">
+        <ArrowLeftOutline class="w-4 h-4 mr-2" />
+        Back to Game homepage
+    </Button>
     <h1 class="text-2xl font-bold mb-4">{$LL.TIME_TRIALS.VALIDATION_HEADER()}</h1>
 
     {#if $user === undefined}
@@ -231,21 +236,22 @@
     {:else}
         <div class="space-y-6">
             {#each proofsForValidation as proof (proof.id)}
-                <div class="border border-base-300 rounded-lg overflow-hidden bg-base-100 shadow-sm">
+                <div class="proof-item overflow-hidden">
                     <!-- Proof Header -->
                     <div class="bg-base-200 px-6 py-4 border-b border-base-300">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                {#if proof.player_country_code}
-                                    <Flag country_code={proof.player_country_code} />
-                                {/if}
-                                <a href="/{$page.params.lang}/user/{proof.player_id}" class="text-lg font-semibold text-primary hover:underline">
-                                    {proof.player_name || proof.player_id}
-                                </a>
-                                <span class="text-sm text-base-content/60">
-                                    {new Date(proof.created_at).toLocaleDateString()}
-                                </span>
-                            </div>
+                            <a href="/{$page.params.lang}/registry/players/profile?id={proof.player_id}" class="text-lg font-semibold text-primary hover:underline">
+                                <div class="flex items-center gap-3">
+                                    {#if proof.player_country_code}
+                                        <Flag country_code={proof.player_country_code} />
+                                    {/if}
+                                    
+                                        {proof.player_name || proof.player_id}
+                                    <span class="text-sm text-base-content/60">
+                                        {new Date(proof.created_at).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            </a>
                             <div class="text-right text-sm">
                                 <div class="font-medium">{getFullTrackName(gameFilter || '', proof.track || '')}</div>
                                 {#if proof.time_ms}
@@ -293,7 +299,7 @@
                                         {proofValidationState[proof.id]?.isSubmitting ? 'Processing...' : '✓ Mark Proof Valid'}
                                     </Button>
                                     <Button 
-                                        color="orange" 
+                                        color="yellow" 
                                         size="lg"
                                         disabled={proofValidationState[proof.id]?.isSubmitting || false}
                                         on:click={() => markProofAsInvalid(proof)}
@@ -345,3 +351,9 @@
         </div>
     {/if}
 </div>
+
+<style>
+    .proof-item {
+        background-color: rgba(235, 255, 255, 0.1);
+    }
+</style>
