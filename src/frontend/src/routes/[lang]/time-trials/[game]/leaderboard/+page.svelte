@@ -7,10 +7,12 @@
     import { formatTime } from '$lib/utils/time';
     import LL from '$i18n/i18n-svelte';
     import { MKWORLD_TRACK_ABBREVIATIONS, type GameId } from '$lib/util/gameConstants';
-    import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid } from 'flowbite-svelte-icons';
+    import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid, ArrowLeftOutline } from 'flowbite-svelte-icons';
     import Twitch from '$lib/components/icons/Twitch.svelte';
     import { user } from '$lib/stores/stores';
     import { check_permission, permissions } from '$lib/util/permissions';
+    import MediaEmbed from '$lib/components/media/MediaEmbed.svelte';
+    import { Popover } from 'flowbite-svelte';
     
     interface PlayerRecord {
         id: string;
@@ -46,7 +48,7 @@
     let showTimesWithoutProof = false; // Show times without proof
     let currentPage = 1;
     let tracks: string[] = [];
-    let countries: string[] = [];
+    let countries: (string | null)[] = [];
     
     // Get tracks from constants based on game
     $: {
@@ -90,7 +92,7 @@
             }
             
             const result = await response.json();
-            let allRecords = result["records"] || [];
+            let allRecords = result["records"] as PlayerRecord[] || [];
             
             // Client-side filtering
             let filteredRecords = allRecords;
@@ -128,7 +130,7 @@
         return gameId?.toUpperCase() || 'Game';
     }
 
-    function getCountryDisplayName(countryCode: string): string {
+    function getCountryDisplayName(countryCode: string | null): string | null {
         if (countryCode && $LL.COUNTRIES[countryCode as keyof typeof $LL.COUNTRIES]) {
             return $LL.COUNTRIES[countryCode as keyof typeof $LL.COUNTRIES]();
         }
@@ -214,6 +216,8 @@
     }
     
     async function markTimeTrialAsInvalid(timeTrialId: string) {
+        let conf = window.confirm("Are you sure you would like to mark this time as invalid?");
+        if(!conf) return;
         try {
             const response = await fetch(`/api/time-trials/${timeTrialId}/mark-invalid`, {
                 method: 'POST',
@@ -255,23 +259,30 @@
     <title>{selectedTrack ? getTrackDisplayName(selectedTrack) + ' - ' : ''}{getGameDisplayName(game)} {$LL.TIME_TRIALS.LEADERBOARDS()}</title>
 </svelte:head>
 
+<div class="tracks-container">
+    <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
+        <ArrowLeftOutline class="w-4 h-4 mr-2" />
+        Back to Game homepage
+    </Button>
+</div>
+
 <Section header="{getGameDisplayName(game)} {$LL.TIME_TRIALS.LEADERBOARDS()}">
     <div class="space-y-6">
 
         <!-- Filters -->
-        <div class="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div class="filters rounded-lg border border-gray-700 p-6">
             <div class="space-y-4">
                 <!-- First row: Track and Country -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Track Filter -->
                     <div>
-                        <label for="track-select" class="block text-sm font-medium text-gray-300 mb-2">
+                        <label for="track-select" class="block text-sm font-medium mb-2">
                             Track
                         </label>
                         <select 
                             id="track-select"
                             bind:value={selectedTrack}
-                            class="w-full p-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white"
+                            class="w-full"
                         >
                             {#each tracks as track}
                                 <option value={track}>{getTrackDisplayName(track)}</option>
@@ -281,14 +292,15 @@
 
                     <!-- Country Filter -->
                     <div>
-                        <label for="country-select" class="block text-sm font-medium text-gray-300 mb-2">
+                        <label for="country-select" class="block text-sm font-medium mb-2">
                             Country
                         </label>
                         <select 
                             id="country-select"
                             bind:value={selectedCountry}
-                            class="w-full p-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white"
-                        >                        <option value="">{$LL.COUNTRIES.ALL()}</option>
+                            class="w-full"
+                        >
+                            <option value="">{$LL.COUNTRIES.ALL()}</option>
                         {#each countries as country}
                             <option value={country}>{getCountryDisplayName(country)}</option>
                         {/each}
@@ -300,7 +312,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <!-- Show Pending Validation Checkbox -->
                     <div>
-                        <label class="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                        <label class="flex items-center space-x-2 text-sm font-medium ">
                             <input 
                                 type="checkbox" 
                                 bind:checked={showPendingValidation}
@@ -308,14 +320,14 @@
                             />
                             <span>Show times pending validation</span>
                         </label>
-                        <p class="text-xs text-gray-400 mt-1">
+                        <p class="text-xs mt-1">
                             Include times awaiting validation review
                         </p>
                     </div>
 
                     <!-- Show Times Without Proof Checkbox -->
                     <div>
-                        <label class="flex items-center space-x-2 text-sm font-medium text-gray-300">
+                        <label class="flex items-center space-x-2 text-sm font-medium">
                             <input 
                                 type="checkbox" 
                                 bind:checked={showTimesWithoutProof}
@@ -323,9 +335,12 @@
                             />
                             <span>Show times without proof</span>
                         </label>
-                        <p class="text-xs text-gray-400 mt-1">
+                        <p class="text-xs mt-1">
                             Include times submitted without evidence
                         </p>
+                    </div>
+                    <div class="lg:col-start-4 w-full place-self-end">
+                        <Button href="/{$page.params.lang}/time-trials/submit?game={game}&track={selectedTrack}" extra_classes="w-full">Submit Time</Button>
                     </div>
                 </div>
             </div>
@@ -354,75 +369,68 @@
             </div>
         {:else}
             <!-- Leaderboard Table -->
-            <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+            <div class="rounded-lg border border-gray-700 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full">
-                        <thead class="bg-gray-700">
+                        <thead class="bg-primary-800">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                     Rank
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider min-w-32">
                                     Player
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                    Country
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider">
                                     Time
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
                                     Proof
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
                                     Date
                                 </th>
                                 {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                    <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                         Moderation
                                     </th>
                                 {/if}
                             </tr>
                         </thead>
-                        <tbody class="bg-gray-800 divide-y divide-gray-700">
+                        <tbody>
                             {#each records as record, index}
                                 <tr class="hover:bg-gray-700">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                                         #{(currentPage - 1) * 50 + index + 1}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm">
+                                    <td class="px-4 desktop:px-6 py-4">
                                             {#if record.player_name}
                                                 <a 
-                                                    href="/{$page.params.lang}/registry/players/profile?id={record.player_id}" 
-                                                    class="font-medium text-white hover:text-gray-300"
+                                                    href="/{$page.params.lang}/registry/players/profile?id={record.player_id}"
                                                 >
-                                                    {record.player_name}
+                                                    <div class="flex items-center gap-2 flex-wrap">
+                                                        <Flag country_code={record.player_country_code} size="small" />
+                                                        <div class="text-sm max-w-32 text-wrap break-all">
+                                                            {record.player_name}
+                                                        </div>
+                                                    </div>
                                                 </a>
                                             {:else}
                                                 <span class="font-medium text-white">
                                                     Player {record.player_id}
                                                 </span>
                                             {/if}
-                                        </div>
                                     </td>
-                                    <!-- Country Column -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        {#if record.player_country_code}
-                                            <div class="flex items-center">
-                                                <Flag country_code={record.player_country_code} size="small" />
-                                                <span class="ml-2 text-sm text-white">{getCountryDisplayName(record.player_country_code)}</span>
-                                            </div>
+                                    
+                                    <!-- Time Column -->
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-mono text-white">
+                                        {#if record.proofs.length}
+                                            <a href={record.proofs[0].url}>{formatTime(record.time_ms)}</a>
                                         {:else}
-                                            <span class="text-sm text-gray-400">-</span>
+                                            {formatTime(record.time_ms)}*
                                         {/if}
                                     </td>
-                                    <!-- Time Column -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-white">
-                                        {formatTime(record.time_ms)}
-                                    </td>
                                     <!-- Proof Column -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden desktop:table-cell">
                                         <div class="flex items-center space-x-2">
                                             {#if record.proofs && record.proofs.length > 0}
                                                 <!-- Proof icons -->
@@ -432,10 +440,15 @@
                                                         href={proof.url} 
                                                         target="_blank" 
                                                         rel="noopener noreferrer"
-                                                        class="text-blue-400 hover:text-blue-300 transition-colors w-5 h-5"
+                                                        class="w-5 h-5"
                                                         title="View proof: {iconInfo.title}"
                                                     >
-                                                        <svelte:component this={iconInfo.component} class="w-5 h-5" />
+                                                        <svelte:component this={iconInfo.component}/>
+                                                        <Popover>
+                                                            <MediaEmbed url={proof.url} 
+                                                            fallbackText="Open Proof Link"
+                                                            classes="w-96"/>
+                                                        </Popover>
                                                     </a>
                                                 {/each}
                                                 <!-- Status badge (only for non-validated) -->
@@ -446,20 +459,20 @@
                                                 {/if}
                                             {:else}
                                                 <!-- No proof badge -->
-                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700 text-gray-300">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700">
                                                     No Proof
                                                 </span>
                                             {/if}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm hidden desktop:table-cell">
                                         {new Date(record.created_at).toLocaleDateString()}
                                     </td>
                                     {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
                                             <button 
                                                 on:click={() => markTimeTrialAsInvalid(record.id)}
-                                                class="text-blue-400 hover:text-blue-300 text-sm font-medium bg-transparent border-none cursor-pointer"
+                                                class="hover:text-blue-200 text-sm font-medium bg-transparent border-none cursor-pointer"
                                             >
                                                 Mark Invalid
                                             </button>
@@ -474,3 +487,19 @@
         {/if}
     </div>
 </Section>
+
+<style>
+    .tracks-container {
+        max-width: 1200px;
+        margin: 20px auto;
+    }
+    .filters {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+    tbody tr {
+        background-color: rgba(235, 255, 255, 0.15);
+    }
+    tbody tr:nth-child(even) {
+        background-color: rgba(235, 255, 255, 0.1);
+    }
+</style>

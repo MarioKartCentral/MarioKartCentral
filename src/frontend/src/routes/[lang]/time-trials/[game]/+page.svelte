@@ -36,8 +36,8 @@
     <title>{gameName} - Time Trials - Mario Kart Central</title>
 </svelte:head>
 
-<div class="tracks-container text-gray-300">
-    <Button color="light" on:click={goBackToGameList} extra_classes="back-button bg-gray-700 border-gray-600 hover:bg-gray-600 text-white mb-4">
+<div class="tracks-container">
+    <Button on:click={goBackToGameList} extra_classes="back-button text-white mb-4">
         <ArrowLeftOutline class="w-4 h-4 mr-2" />
         Back to All Games
     </Button>
@@ -48,12 +48,12 @@
         </div>
         
         <div class="flex items-center gap-2">
-            <Button on:click={navigateToLeaderboard} color="green" extra_classes="flex items-center">
+            <Button on:click={navigateToLeaderboard} size='md' extra_classes="flex items-center">
                 🏆 {$LL.TIME_TRIALS.LEADERBOARDS()}
             </Button>
             <SubmitButton {game} />
             {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
-                <Button on:click={navigateToValidation} color="blue" extra_classes="flex items-center">
+                <Button on:click={navigateToValidation} color="blue" size='md' extra_classes="flex items-center">
                     <BadgeCheckOutline class="w-5 h-5 mr-2" />
                     {$LL.TIME_TRIALS.VALIDATE_PROOFS_BUTTON()}
                 </Button>
@@ -66,8 +66,7 @@
             {#each tracks as track}
                 <Button 
                     size="lg" 
-                    color="light"
-                    extra_classes="track-button bg-gray-700 border-gray-600 hover:bg-gray-600 text-white"
+                    extra_classes="track-button border-gray-600 hover:bg-gray-500 text-white"
                     on:click={() => navigateToTrack(track)}
                 >
                     {track}
@@ -81,9 +80,7 @@
     .tracks-container {
         max-width: 1200px;
         margin: 20px auto;
-        padding: 0 20px;
     }
-
     .game-header {
         display: flex;
         align-items: center;
@@ -130,5 +127,9 @@
         white-space: normal;
         word-wrap: break-word;
         line-height: 1.2;
+        background-color: rgba(255, 255, 255, 0.12);
+    }
+    :global(.track-button:hover) {
+        background-color: rgba(255, 255, 255, 0.2);
     }
 </style>

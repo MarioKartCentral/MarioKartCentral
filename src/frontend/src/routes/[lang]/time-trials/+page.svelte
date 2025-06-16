@@ -14,29 +14,30 @@
 
 <Section header={$LL.TIME_TRIALS.TITLE()}>
     <div class="space-y-6">
-        <div class="flex justify-between items-start">
-            <p class="text-gray-300">
+        <div class="flex flex-wrap justify-center desktop:justify-between items-center gap-4">
+            <p>
                 {$LL.TIME_TRIALS.DESCRIPTION()}
             </p>
-            
             <SubmitButton />
         </div>
         
-        <div class="grid gap-4 md:grid-cols-2">
-            <div class="p-6 bg-gray-800 rounded-lg border border-gray-700 hover:shadow-md transition-shadow">
-                <div class="flex items-center space-x-3 mb-4">
+        <div class="game-container">
+            <div class="flex flex-wrap justify-center items-center p-6">
+                <div class="flex items-center space-x-3">
                     <GameBadge game="mkworld" />
-                    <h3 class="text-lg font-semibold text-white">Mario Kart World</h3>
+                    <h3 class="text-lg font-semibold">Mario Kart World</h3>
                 </div>
-                
-                <div class="space-y-3">
-                    <Button href="/{$page.params.lang}/time-trials/mkworld" color="primary" extra_classes="w-full">
-                        {$LL.TIME_TRIALS.VIEW_TRACKS()}
-                    </Button>
-                    
-                    <Button href="/{$page.params.lang}/time-trials/mkworld/leaderboard" color="blue" extra_classes="w-full">
-                        {$LL.TIME_TRIALS.LEADERBOARDS()}
-                    </Button>
+                <div class="p-4 grow grid gap-2">
+                    <div>
+                        <Button href="/{$page.params.lang}/time-trials/mkworld" color="primary" extra_classes="w-full">
+                            {$LL.TIME_TRIALS.VIEW_TRACKS()}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button href="/{$page.params.lang}/time-trials/mkworld/leaderboard" color="blue" extra_classes="w-full">
+                            {$LL.TIME_TRIALS.LEADERBOARDS()}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,6 +45,9 @@
 </Section>
 
 <style>
+    .game-container {
+        background-color: rgba(0, 0, 0, 0.2);
+    }
     .grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
