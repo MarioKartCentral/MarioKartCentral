@@ -140,7 +140,8 @@
       {/if}
     </Dropdown>
 
-    {#if check_permission(user_info, permissions.validate_time_trial_proof)}
+    <!-- Time trials hidden from navbar temporarily -->
+    {#if check_permission(user_info, permissions.validate_time_trial_proof) || check_permission(user_info, permissions.edit_player)}
       <NavLi nav_name="TIME TRIALS" has_dropdown>
         {$LL.NAVBAR.TIME_TRIALS()}
         <ChevronDownOutline class="inline"/>
@@ -149,20 +150,14 @@
         {#each Object.entries(GAMES) as [gameId, gameName]}
           <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
         {/each}
-        <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
-        <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/validation">{$LL.NAVBAR.VALIDATE_PROOFS()}</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/timesheet">{$LL.NAVBAR.PLAYER_TIMESHEETS()}</DropdownItem>
+        {#if user_info.player && check_permission(user_info, permissions.submit_time_trial, true)}
+          <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
+        {/if}
+        {#if check_permission(user_info, permissions.validate_time_trial_proof)}
+          <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/validation">{$LL.NAVBAR.VALIDATE_PROOFS()}</DropdownItem>
+        {/if}
       </Dropdown>
-    {:else}
-      <!-- <NavLi nav_name="TIME TRIALS" has_dropdown>
-        {$LL.NAVBAR.TIME_TRIALS()}
-        <ChevronDownOutline class="inline"/>
-      </NavLi>
-      <Dropdown>
-        {#each Object.entries(GAMES) as [gameId, gameName]}
-          <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
-        {/each}
-        <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
-      </Dropdown> -->
     {/if}
 
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>

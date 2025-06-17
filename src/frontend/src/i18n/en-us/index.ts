@@ -428,6 +428,7 @@ const en_us: BaseTranslation = {
     TIME_TRIALS_HOME: 'Time Trials Home',
     SUBMIT_TIME_TRIAL: 'Submit Time Trial',
     VALIDATE_PROOFS: 'Validate Proofs',
+    PLAYER_TIMESHEETS: 'Player Timesheets',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
     PLAYERS: 'Players',
@@ -796,6 +797,7 @@ const en_us: BaseTranslation = {
     SUBMIT_TIME: 'Submit Time', // Added
     MY_SUBMISSIONS: 'My Submissions',
     LEADERBOARDS: 'Leaderboards',
+    TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game:string} Leaderboard', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track:string} - {category:string} ({game:string})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',

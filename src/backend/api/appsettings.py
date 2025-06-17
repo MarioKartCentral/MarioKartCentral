@@ -6,6 +6,7 @@ config = Config()
 
 DEBUG = config("DEBUG", cast=bool, default=False)
 RESET_DATABASE = config("RESET_DATABASE", cast=bool, default=False)
+RESET_DUCK_DB = config("RESET_DUCK_DB", cast=bool, default=False)
 S3_ACCESS_KEY = config("S3_ACCESS_KEY")
 S3_SECRET_KEY = config("S3_SECRET_KEY", cast=Secret)
 S3_ENDPOINT = config("S3_ENDPOINT")

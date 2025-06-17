@@ -1,5 +1,5 @@
 /**
- * Time formatting utilities for Mario Kart Central
+ * Time formatting utilities for MKCentral
  */
 
 /**

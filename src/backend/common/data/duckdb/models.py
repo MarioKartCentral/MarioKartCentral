@@ -7,7 +7,7 @@ proofs, and validation records.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, List
+from typing import List
 import uuid
 import datetime
 
@@ -21,6 +21,16 @@ class DuckDBTableModel(ABC):
         """Return the SQL command to create this table and its indexes."""
         pass
 
+@dataclass
+class TimeTrialProof:
+    """Not a table, but is the type used inside the TimeTrial model to represent proofs."""
+    id: str
+    url: str
+    type: str
+    created_at: str
+    status: str = "unvalidated"
+    validator_id: int | None = None
+    validated_at: str | None = None
 
 @dataclass
 class TimeTrial(DuckDBTableModel):
@@ -28,13 +38,13 @@ class TimeTrial(DuckDBTableModel):
     
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     version: int = 1
-    player_id: int = -1  # Foreign key to players table (potentially in a different DB)
+    player_id: int = -1
     game: str = ""
     track: str = ""
     time_ms: int = 0
-    proofs: List[Any] = field(default_factory=list)  # JSON array of proof objects
-    is_invalid: bool = False  # Whether the record has been marked as invalid
-    validation_status: str = "proofless"  # Precomputed: "valid", "invalid", "unvalidated", "proofless"
+    proofs: List[TimeTrialProof] = field(default_factory=lambda: [])
+    is_invalid: bool = False
+    validation_status: str = "proofless"
     created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
     updated_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())
 

@@ -51,6 +51,7 @@ const ja: Translation = {
   },
   COMMON: {
     GAME: 'Game',
+    TRACK: 'Track',
     MODE: 'Mode',
     GAME_MODE: 'Game/Mode',
     NAME: 'Name',
@@ -70,6 +71,7 @@ const ja: Translation = {
     ACTIONS: 'Actions',
     SAVE: 'Save',
     SUBMIT: 'Submit',
+    SUBMITTING: 'Submitting',
     CANCEL: 'Cancel',
     SEARCH: 'Search',
     NONE: 'None',
@@ -88,6 +90,8 @@ const ja: Translation = {
     WORKING: 'Working...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
+    PERMISSION_REQUIRED: 'Permission Required',
+    NO_PERMISSION_MESSAGE: "You don't have permission to access this feature.",
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -423,6 +427,10 @@ const ja: Translation = {
     TOURNAMENT_SERIES: '大会シリーズ',
     TOURNAMENT_TEMPLATES: '大会テンプレート',
     TIME_TRIALS: 'タイムアタック',
+    TIME_TRIALS_HOME: 'Time Trials Home',
+    SUBMIT_TIME_TRIAL: 'Submit Time Trial',
+    VALIDATE_PROOFS: 'Validate Proofs',
+    PLAYER_TIMESHEETS: 'Player Timesheets',
     LOUNGE: 'ラウンジ',
     REGISTRY: '登録情報',
     PLAYERS: 'プレイヤー一覧',
@@ -458,6 +466,7 @@ const ja: Translation = {
       WORD_FILTER: '単語フィルター',
       MANAGE_USERS: 'ユーザ管理',
       ALT_DETECTION: 'Alt検出',
+      TIME_TRIAL_VALIDATION: 'Time Trial Validation',
       FINGERPRINTS: 'Fingerprints',
       IP_SEARCH: 'IP Search',
     },
@@ -787,6 +796,7 @@ const ja: Translation = {
     SUBMIT_TIME: 'Submit Time', // Added
     MY_SUBMISSIONS: 'My Submissions',
     LEADERBOARDS: 'Leaderboards',
+    TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game} Leaderboard', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',

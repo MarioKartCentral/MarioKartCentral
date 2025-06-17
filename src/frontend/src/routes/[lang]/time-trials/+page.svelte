@@ -5,6 +5,7 @@
     import SubmitButton from '$lib/components/time-trials/SubmitButton.svelte';
     import LL from '$i18n/i18n-svelte';
     import { page } from '$app/stores';
+    import { DiscordSolid } from 'flowbite-svelte-icons';
 </script>
 
 <svelte:head>
@@ -34,8 +35,19 @@
                         </Button>
                     </div>
                     <div>
-                        <Button href="/{$page.params.lang}/time-trials/mkworld/leaderboard" color="blue" extra_classes="w-full">
+                        <Button href="/{$page.params.lang}/time-trials/mkworld/leaderboard" color="primary" extra_classes="w-full">
                             {$LL.TIME_TRIALS.LEADERBOARDS()}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button href="/{$page.params.lang}/time-trials/mkworld/timesheet" color="primary" extra_classes="w-full">
+                            {$LL.TIME_TRIALS.TIMESHEETS()}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button href="https://discord.gg/6gDAPxvqh7" color="blue" extra_classes="w-full">
+                            <DiscordSolid class="inline mr-2" />
+                            {$LL.DISCORD.DISCORD()}
                         </Button>
                     </div>
                 </div>
@@ -49,6 +61,6 @@
         background-color: rgba(0, 0, 0, 0.2);
     }
     .grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 </style>

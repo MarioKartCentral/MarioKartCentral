@@ -15,7 +15,7 @@
     <title>Login | MKCentral</title>
 </svelte:head>
 
-{#if !user_info.id}
+{#if user_info.id === null}
     <LoginRegister send_to="/{$page.params.lang}/"/>
 {:else}
     {$LL.LOGIN.ALREADY_LOGGED_IN()}

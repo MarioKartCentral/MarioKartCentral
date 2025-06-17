@@ -50,6 +50,7 @@ const es: Translation = {
   },
   COMMON: {
     GAME: 'Juego',
+    TRACK: 'Track',
     MODE: 'Modo',
     GAME_MODE: 'Juego/Modo',
     NAME: 'Nombre',
@@ -69,6 +70,7 @@ const es: Translation = {
     ACTIONS: 'Acciones',
     SAVE: 'Guardar',
     SUBMIT: 'Enviar',
+    SUBMITTING: 'Submitting',
     CANCEL: 'Cancelar',
     SEARCH: 'Buscar',
     NONE: 'Ninguno',
@@ -87,6 +89,8 @@ const es: Translation = {
     WORKING: 'En proceso...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
+    PERMISSION_REQUIRED: 'Permission Required',
+    NO_PERMISSION_MESSAGE: "You don't have permission to access this feature.",
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -151,7 +155,7 @@ const es: Translation = {
     MKWORLD: 'Mario Kart World',
   },
   HOMEPAGE: {
-    WELCOME: '¡Bienvenido a Mario Kart Central!',
+    WELCOME: '¡Bienvenido a MKCentral!',
     SUMMARY:
       '<strong>MKCentral</strong> es la comunidad independiente de Mario Kart más grande. Ya seas un jugador casual o un experto, nuestra comunidad reúne a jugadores de todo tipo en un mismo lugar para competir, conectar y celebrar todo lo relacionado con Mario Kart.',
     YOU_PLACED: 'Tu posición: {placement|ordinalSuffix}',
@@ -426,6 +430,10 @@ const es: Translation = {
     TOURNAMENT_SERIES: 'Series de torneos',
     TOURNAMENT_TEMPLATES: 'Plantillas de torneos',
     TIME_TRIALS: 'Contrarreloj',
+    TIME_TRIALS_HOME: 'Time Trials Home',
+    SUBMIT_TIME_TRIAL: 'Submit Time Trial',
+    VALIDATE_PROOFS: 'Validate Proofs',
+    PLAYER_TIMESHEETS: 'Player Timesheets',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registro',
     PLAYERS: 'Jugadores',
@@ -461,6 +469,7 @@ const es: Translation = {
       WORD_FILTER: 'Filtro de palabras',
       MANAGE_USERS: 'Manejar perfiles de usuario',
       ALT_DETECTION: 'Detección de alts',
+      TIME_TRIAL_VALIDATION: 'Time Trial Validation',
       FINGERPRINTS: 'Fingerprints',
       IP_SEARCH: 'IP Search',
     },
@@ -583,7 +592,7 @@ const es: Translation = {
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
-        'Este perfil de jugador está sin reclamar, lo que significa que ha participado en torneos anteriores pero no tiene una cuenta de usuario en Mario Kart Central. Para reclamar este perfil de jugador, haz clic en el botón a continuación.',
+        'Este perfil de jugador está sin reclamar, lo que significa que ha participado en torneos anteriores pero no tiene una cuenta de usuario en MKCentral. Para reclamar este perfil de jugador, haz clic en el botón a continuación.',
       CLAIM_PLAYER: 'Reclamar perfil de jugador',
       CLAIM_PLAYER_SUCCESS: '¡La reclamación del perfil de jugador ha sido enviada al Staff satisfactoriamente!',
       CLAIM_PLAYER_FAILED: 'Error al reclamar el perfil de jugador',
@@ -792,6 +801,7 @@ const es: Translation = {
     SUBMIT_TIME: 'Submit Time', // Added
     MY_SUBMISSIONS: 'My Submissions',
     LEADERBOARDS: 'Leaderboards',
+    TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game} Leaderboard', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',

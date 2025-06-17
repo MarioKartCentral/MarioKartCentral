@@ -4,23 +4,17 @@ import preprocess from 'svelte-preprocess';
 
 const locales = ['de', 'en-gb', 'en-us', 'es', 'fr', 'ja'];
 
-function getTimeTrialsEntriesForLocale(locale) {
-  const entries = [];
-
-  // Add main time trials page
-  entries.push(`/${locale}/time-trials`);
-  entries.push(`/${locale}/time-trials/submit`);
-  entries.push(`/${locale}/time-trials/mkworld`);
-  entries.push(`/${locale}/time-trials/mkworld/leaderboard`);
-  entries.push(`/${locale}/time-trials/mkworld/validation`);
-
-  return entries;
-}
-
 function getEntriesForLocale(locale) {
   return [
     `/${locale}`,
     `/${locale}/admin/backup_db`,
+    `/${locale}/time-trials`,
+    `/${locale}/time-trials/edit`,
+    `/${locale}/time-trials/submit`,
+    `/${locale}/time-trials/mkworld`,
+    `/${locale}/time-trials/mkworld/leaderboard`,
+    `/${locale}/time-trials/mkworld/validation`,
+    `/${locale}/time-trials/mkworld/timesheet`,
     `/${locale}/tournaments/details`,
     `/${locale}/tournaments/create`,
     `/${locale}/tournaments/create/select_template`,
@@ -91,7 +85,6 @@ function getEntriesForLocale(locale) {
     `/${locale}/user/privacy-policy`,
     `/${locale}/user/reset-password`,
     `/${locale}/user/terms`,
-    ...getTimeTrialsEntriesForLocale(locale),
   ];
 }
 

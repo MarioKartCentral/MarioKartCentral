@@ -2,15 +2,18 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { GAMES, TRACKS_BY_GAME, ENGINE_CLASSES, type GameId, getTrackAbbreviation, getTrackFromAbbreviation } from '$lib/util/gameConstants';
+    import { GAMES, TRACKS_BY_GAME, type GameId, getTrackAbbreviation, getTrackFromAbbreviation } from '$lib/util/gameConstants';
     import { parseTimeString, validateProofs } from '$lib/util/timeTrialUtils';
     import { user } from '$lib/stores/stores';
     import { check_permission, permissions } from '$lib/util/permissions';
     import type { UserInfo } from '$lib/types/user-info';
+    import type { PlayerInfo } from '$lib/types/player-info';
     import Button from '$lib/components/common/buttons/Button.svelte';
     import Input from '$lib/components/common/Input.svelte';
     import Section from '$lib/components/common/Section.svelte';
+    import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
     import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+    import type { ProofRequestData } from '$lib/types/time-trials';
 
     let user_info: UserInfo;
     user.subscribe((value) => {
@@ -19,42 +22,31 @@
 
     let selectedGame: GameId = 'mkworld';
     let selectedTrack = '';
-    let selectedCc = 150;
     let timeString = '';
     let timeError = '';
     let submitting = false;
     let submitError = '';
+    let selectedPlayer: PlayerInfo | null = null; // For administrators to select a different player
 
-    interface Proof {
-        id: string;
-        url: string;
-        type: 'Screenshot' | 'Partial Video (clip)' | 'Full Video';
-    }
-    let proofs: Proof[] = [];
-    const proofTypes: Proof['type'][] = ['Screenshot', 'Partial Video (clip)', 'Full Video'];
+    let proofs: (ProofRequestData & {"id": string})[] = [];
+    const proofTypes = ['Screenshot', 'Partial Video (clip)', 'Full Video'];
 
-    // --- Prepare items for NATIVE Select components ---
-    // Game items will be static as only MKWORLD is supported
-    
     // Track items will be dynamically generated based on selectedGame
     $: currentTrackObjects = TRACKS_BY_GAME[selectedGame] 
         ? (TRACKS_BY_GAME[selectedGame] as readonly string[]).map(track => ({ name: track, value: track })) 
         : [];
 
-    // Engine class items will be dynamically generated
-    $: currentEngineClassObjects = (ENGINE_CLASSES[selectedGame] || []).map(cc => ({ name: `${cc}cc`, value: cc }));
-
     // Proof type items are static
     const proofTypeObjects = proofTypes.map(type => ({ name: type, value: type }));
     // ---
 
-    $: hasSubmitPermission = user_info?.id && check_permission(user_info, permissions.submit_time_trial, true);
+    $: hasSubmitPermission = user_info?.id !== null && check_permission(user_info, permissions.submit_time_trial, true);
+    $: hasValidatePermission = user_info?.id !== null && check_permission(user_info, permissions.validate_time_trial_proof);
 
     onMount(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const gameParam = urlParams.get('game') as GameId;
         const trackParamFromUrl = urlParams.get('track');
-        const ccParam = urlParams.get('cc');
 
         if (gameParam && gameParam === 'mkworld') {
             selectedGame = 'mkworld';
@@ -78,17 +70,7 @@
                 selectedTrack = trackToSelect;
             }
         }
-
-        if (ccParam) {
-            const cc = parseInt(ccParam);
-            if ((ENGINE_CLASSES[selectedGame] as readonly number[])?.includes(cc)) {
-                selectedCc = cc;
-            }
-        }
     });
-
-    $: engineClasses = ENGINE_CLASSES[selectedGame] || [150]; // Still needed for selectedCc default
-    $: supportsEngineClass = engineClasses.length > 1;
 
     function addProof() {
         proofs = [...proofs, { id: crypto.randomUUID(), url: '', type: 'Screenshot' }];
@@ -120,7 +102,7 @@
         }
 
         // Validate proofs using utility function (only if there are proofs)
-        const proofsToSubmit = proofs.filter(p => p.url.trim() !== '');
+        const proofsToSubmit = proofs.filter(p => p.url && p.url.trim() !== '');
         if (proofsToSubmit.length > 0) {
             const proofValidationErrors = validateProofs(proofsToSubmit);
             if (proofValidationErrors.length > 0) {
@@ -130,7 +112,7 @@
         }
 
         // Check user authentication and permissions
-        if (!user_info?.id) {
+        if (user_info?.id === null) {
             submitError = 'You must be logged in to submit time trials';
             return;
         }
@@ -141,11 +123,6 @@
 
         submitting = true;
         try {
-            const timeTrialData: Record<string, number | string> = {};
-            if (supportsEngineClass) {
-                timeTrialData.cc = selectedCc;
-            }
-
             const proofsToSend = proofsToSubmit.map(({ url, type }) => ({ 
                 url: url.trim(), 
                 type
@@ -158,18 +135,21 @@
                 return;
             }
 
+            // Prepare the request body
+            const requestBody = {
+                game: selectedGame,
+                track: trackAbbreviationToSend,
+                time_ms: totalTimeMs,
+                proofs: proofsToSend,
+                ...(selectedPlayer && selectedPlayer.id !== user_info.player?.id && { player_id: selectedPlayer.id })
+            };
+
             const response = await fetch('/api/time-trials/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    game: selectedGame,
-                    track: trackAbbreviationToSend,
-                    time_ms: totalTimeMs,
-                    data: timeTrialData,
-                    proofs: proofsToSend
-                })
+                body: JSON.stringify(requestBody)
             });
 
             if (response.ok) {
@@ -200,11 +180,7 @@
     }
 </script>
 
-<svelte:head>
-    <title>Submit Time Trial - Mario Kart Central</title>
-</svelte:head>
-
-{#if !user_info?.id}
+{#if user_info?.id === null }
     <div class="permission-notice bg-gray-800 p-6 rounded-lg border border-gray-700 text-center mt-4 mx-auto max-w-lg">
         <h2 class="text-xl font-semibold mb-2 text-white">Login Required</h2>
         <p class="mb-4 text-gray-300">You must be logged in to submit time trials.</p>
@@ -243,16 +219,6 @@
                     </div>
                 </div>
             </div>
-            {#if supportsEngineClass}
-                <div class="option">
-                    <label for="cc">Engine Class *</label>
-                    <select id="cc" bind:value={selectedCc} required>
-                        {#each currentEngineClassObjects as ccOpt}
-                            <option value={ccOpt.value}>{ccOpt.name}</option>
-                        {/each}
-                    </select>
-                </div>
-            {/if}
             <div class="option">
                 <label for="time">Time (e.g., 1:23.456) *</label>
                 <div class="flex-1">
@@ -271,6 +237,17 @@
                     {/if}
                 </div>
             </div>
+            {#if hasValidatePermission}
+                <div class="option">
+                    <label for="player">Submit for Player</label>
+                    <div class="flex-1">
+                        <PlayerSearch bind:player={selectedPlayer} />
+                        {#if !selectedPlayer}
+                            <p class="text-sm text-gray-400 mt-1 ml-2">Leave empty to submit for yourself</p>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
         </Section>
 
         <Section header="Proofs (Optional)">

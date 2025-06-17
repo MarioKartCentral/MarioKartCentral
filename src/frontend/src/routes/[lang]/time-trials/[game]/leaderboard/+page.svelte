@@ -7,48 +7,28 @@
     import { formatTime } from '$lib/utils/time';
     import LL from '$i18n/i18n-svelte';
     import { MKWORLD_TRACK_ABBREVIATIONS, type GameId } from '$lib/util/gameConstants';
-    import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid, ArrowLeftOutline } from 'flowbite-svelte-icons';
+    import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid, ArrowLeftOutline, ChevronDownOutline } from 'flowbite-svelte-icons';
     import Twitch from '$lib/components/icons/Twitch.svelte';
     import { user } from '$lib/stores/stores';
     import { check_permission, permissions } from '$lib/util/permissions';
     import MediaEmbed from '$lib/components/media/MediaEmbed.svelte';
     import { Popover } from 'flowbite-svelte';
-    
-    interface PlayerRecord {
-        id: string;
-        version: number;
-        player_id: string;  // Added player_id field
-        game: string;
-        track: string;
-        time_ms: number;
-        proofs: Array<{
-            id: string;
-            url: string;
-            type: string;
-            created_at: string;
-        }>;
-        created_at: string;
-        updated_at: string;
-        player_name: string | null;  // Added player_name field
-        player_country_code: string | null; // Added player_country_code field
-        is_superseded: boolean;
-        superseded_by?: string;
-        is_current_best: boolean;
-        validation_status: string;
-    }
-    
+    import type { TimeTrial, TimeTrialListResponse } from '$lib/types/time-trials';
+    import Dropdown from '$lib/components/common/Dropdown.svelte';
+    import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+    import SubmitButton from '$lib/components/time-trials/SubmitButton.svelte';
+
     const game = $page.params.game as GameId;
     
-    let records: PlayerRecord[] = [];
+    let records: TimeTrial[] = [];
     let loading = true;
     let error = '';
     let selectedTrack = '';
     let selectedCountry = '';
-    let showPendingValidation = false; // Show times pending validation
-    let showTimesWithoutProof = false; // Show times without proof
-    let currentPage = 1;
+    let showPendingValidation = false;
+    let showTimesWithoutProof = false;
     let tracks: string[] = [];
-    let countries: (string | null)[] = [];
+    let countries: string[] = [];
     
     // Get tracks from constants based on game
     $: {
@@ -91,8 +71,8 @@
                 throw new Error(`Failed to load leaderboard: ${response.statusText}`);
             }
             
-            const result = await response.json();
-            let allRecords = result["records"] as PlayerRecord[] || [];
+            const result: TimeTrialListResponse = await response.json();
+            let allRecords = result["records"] || [];
             
             // Client-side filtering
             let filteredRecords = allRecords;
@@ -111,7 +91,9 @@
             const uniqueCountries = [...new Set(
                 allRecords
                     .map(record => record.player_country_code)
-                    .filter(country => country && country.trim())
+                    .filter((country): country is string => 
+                        country != null && country.trim() !== ''
+                    )
             )].sort();
             countries = uniqueCountries;
         } catch (err) {
@@ -219,16 +201,26 @@
         let conf = window.confirm("Are you sure you would like to mark this time as invalid?");
         if(!conf) return;
         try {
+            // Find the time trial record to get its version
+            const timeTrialRecord = records.find(record => record.id === timeTrialId);
+            if (!timeTrialRecord) {
+                throw new Error('Time trial record not found');
+            }
+            
             const response = await fetch(`/api/time-trials/${timeTrialId}/mark-invalid`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ version: timeTrialRecord.version }),
             });
             
             if (!response.ok) {
-                throw new Error('Failed to mark time trial as invalid');
+                const errorData = await response.json().catch(() => null);
+                if (response.status === 409) {
+                    throw new Error('This record was modified by another user. Please refresh the page and try again.');
+                }
+                throw new Error(errorData?.detail || errorData?.title || 'Failed to mark time trial as invalid');
             }
             
             // Refresh the leaderboard data
@@ -249,7 +241,6 @@
     
     // Watch for filter changes, reload data, and update URL (but don't call during SSR)
     $: if (typeof window !== 'undefined' && (selectedTrack || selectedCountry !== undefined || showPendingValidation !== undefined || showTimesWithoutProof !== undefined)) {
-        currentPage = 1;
         loadLeaderboard();
         updateURL();
     }
@@ -260,10 +251,21 @@
 </svelte:head>
 
 <div class="tracks-container">
-    <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
-        <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game homepage
-    </Button>
+    <div class="game-header">
+        <div class="flex items-center gap-3">
+            <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
+                <ArrowLeftOutline class="w-4 h-4 mr-2" />
+                Back to Game homepage
+            </Button>
+        </div>
+        
+        <div class="flex justify-center items-center gap-2 flex-wrap">
+            <Button href={`/${$page.params.lang}/time-trials/${game}/timesheet`} size='md' extra_classes="flex items-center">
+                🏆 {$LL.TIME_TRIALS.TIMESHEETS()}
+            </Button>
+            <SubmitButton {game} />
+        </div>
+    </div>
 </div>
 
 <Section header="{getGameDisplayName(game)} {$LL.TIME_TRIALS.LEADERBOARDS()}">
@@ -339,9 +341,6 @@
                             Include times submitted without evidence
                         </p>
                     </div>
-                    <div class="lg:col-start-4 w-full place-self-end">
-                        <Button href="/{$page.params.lang}/time-trials/submit?game={game}&track={selectedTrack}" extra_classes="w-full">Submit Time</Button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -360,11 +359,7 @@
         {:else if records.length === 0}
             <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
                 <p class="text-gray-400">
-                    {#if !showPendingValidation && !showTimesWithoutProof}
-                        No validated records found for this track{selectedCountry ? ` from ${selectedCountry}` : ''}. Try enabling the checkboxes below to see pending or unproven submissions.
-                    {:else}
-                        No records found for this track{selectedCountry ? ` from ${selectedCountry}` : ''} with the selected filters.
-                    {/if}
+                    No records found for this track with the selected filters.
                 </p>
             </div>
         {:else}
@@ -383,7 +378,7 @@
                                 <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider">
                                     Time
                                 </th>
-                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden laptop:table-cell">
                                     Proof
                                 </th>
                                 <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
@@ -400,15 +395,17 @@
                             {#each records as record, index}
                                 <tr class="hover:bg-gray-700">
                                     <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                        #{(currentPage - 1) * 50 + index + 1}
+                                        #{index + 1}
                                     </td>
                                     <td class="px-4 desktop:px-6 py-4">
                                             {#if record.player_name}
                                                 <a 
-                                                    href="/{$page.params.lang}/registry/players/profile?id={record.player_id}"
+                                                    href="/{$page.params.lang}/time-trials/{game}/timesheet?player={record.player_id}"
                                                 >
                                                     <div class="flex items-center gap-2 flex-wrap">
-                                                        <Flag country_code={record.player_country_code} size="small" />
+                                                        {#if record.player_country_code}
+                                                            <Flag country_code={record.player_country_code} size="small" />
+                                                        {/if}
                                                         <div class="text-sm max-w-32 text-wrap break-all">
                                                             {record.player_name}
                                                         </div>
@@ -430,7 +427,7 @@
                                         {/if}
                                     </td>
                                     <!-- Proof Column -->
-                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden desktop:table-cell">
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden laptop:table-cell">
                                         <div class="flex items-center space-x-2">
                                             {#if record.proofs && record.proofs.length > 0}
                                                 <!-- Proof icons -->
@@ -470,12 +467,21 @@
                                     </td>
                                     {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                                         <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
-                                            <button 
-                                                on:click={() => markTimeTrialAsInvalid(record.id)}
-                                                class="hover:text-blue-200 text-sm font-medium bg-transparent border-none cursor-pointer"
-                                            >
-                                                Mark Invalid
-                                            </button>
+                                            <ChevronDownOutline class="inline cursor-pointer"/>
+                                            <Dropdown>
+                                                <DropdownItem href="/{$page.params.lang}/time-trials/edit?trial_id={record.id}">
+                                                    Edit
+                                                </DropdownItem>
+                                                <DropdownItem>
+                                                    <button 
+                                                        on:click={() => markTimeTrialAsInvalid(record.id)}
+                                                        class="hover:text-blue-200 text-sm font-medium bg-transparent border-none cursor-pointer"
+                                                    >
+                                                        Mark Invalid
+                                                    </button>
+                                                </DropdownItem>
+                                            </Dropdown>
+                                            
                                         </td>
                                     {/if}
                                 </tr>
@@ -493,6 +499,16 @@
         max-width: 1200px;
         margin: 20px auto;
     }
+    
+    .game-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
     .filters {
         background-color: rgba(0, 0, 0, 0.2);
     }

@@ -23,13 +23,12 @@
     let hasValidationPermission = false;
     let hasFetchedOnce = false;
     
-    // Simplified state for MVP
     let proofValidationState: Record<string, {
         isSubmitting: boolean;
     }> = {};
 
     // Use reactive statement to check permissions
-    $: hasValidationPermission = Boolean($user?.id && check_permission($user, permissions.validate_time_trial_proof));
+    $: hasValidationPermission = Boolean($user?.id !== null && check_permission($user, permissions.validate_time_trial_proof));
 
     // Track conversion helper
     function getFullTrackName(game: string, track: string): string {
@@ -100,11 +99,14 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ version: proof.version }),
             });
             
             if (!response.ok) {
                 const errorData: ErrorResponse = await response.json().catch(() => ({ detail: $LL.TIME_TRIALS.UNKNOWN_ERROR_ALERT() }));
+                if (response.status === 409) {
+                    throw new Error('This record was modified by another user. Please refresh the page and try again.');
+                }
                 throw new Error(errorData.detail || 'Failed to mark proof as valid');
             }
             
@@ -139,11 +141,14 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ version: proof.version }),
             });
             
             if (!response.ok) {
                 const errorData: ErrorResponse = await response.json().catch(() => ({ detail: $LL.TIME_TRIALS.UNKNOWN_ERROR_ALERT() }));
+                if (response.status === 409) {
+                    throw new Error('This record was modified by another user. Please refresh the page and try again.');
+                }
                 throw new Error(errorData.detail || 'Failed to mark proof as invalid');
             }
             
@@ -178,11 +183,14 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ version: proof.version }),
             });
             
             if (!response.ok) {
                 const errorData: ErrorResponse = await response.json().catch(() => ({ detail: $LL.TIME_TRIALS.UNKNOWN_ERROR_ALERT() }));
+                if (response.status === 409) {
+                    throw new Error('This record was modified by another user. Please refresh the page and try again.');
+                }
                 throw new Error(errorData.detail || 'Failed to mark time trial as invalid');
             }
             
@@ -318,7 +326,9 @@
                                     </Button>
                                 </div>
                                 <p class="text-xs text-base-content/70 text-center">
-                                    <strong>Mark Proof Valid:</strong> Proof correctly shows track/time. <strong>Mark Proof Invalid:</strong> Broken link, wrong content. <strong>Mark Record Invalid:</strong> Obviously fake/impossible time.
+                                    <strong>Mark Proof Valid:</strong> Proof correctly shows track/time. 
+                                    <strong>Mark Proof Invalid:</strong> Broken link, wrong content. 
+                                    <strong>Mark Record Invalid:</strong> Obviously fake/impossible time.
                                 </p>
                             </div>
                         </div>

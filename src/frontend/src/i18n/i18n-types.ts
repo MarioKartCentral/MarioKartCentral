@@ -1570,6 +1570,10 @@ type RootTranslation = {
 		 */
 		VALIDATE_PROOFS: string
 		/**
+		 * P​l​a​y​e​r​ ​T​i​m​e​s​h​e​e​t​s
+		 */
+		PLAYER_TIMESHEETS: string
+		/**
 		 * L​o​u​n​g​e
 		 */
 		LOUNGE: string
@@ -2991,6 +2995,10 @@ type RootTranslation = {
 		 * L​e​a​d​e​r​b​o​a​r​d​s
 		 */
 		LEADERBOARDS: string
+		/**
+		 * T​i​m​e​s​h​e​e​t​s
+		 */
+		TIMESHEETS: string
 		/**
 		 * {​g​a​m​e​}​ ​L​e​a​d​e​r​b​o​a​r​d
 		 * @param {string} game
@@ -6919,6 +6927,10 @@ export type TranslationFunctions = {
 		 */
 		VALIDATE_PROOFS: () => LocalizedString
 		/**
+		 * Player Timesheets
+		 */
+		PLAYER_TIMESHEETS: () => LocalizedString
+		/**
 		 * Lounge
 		 */
 		LOUNGE: () => LocalizedString
@@ -8256,6 +8268,10 @@ export type TranslationFunctions = {
 		 * Leaderboards
 		 */
 		LEADERBOARDS: () => LocalizedString
+		/**
+		 * Timesheets
+		 */
+		TIMESHEETS: () => LocalizedString
 		/**
 		 * {game} Leaderboard
 		 */
