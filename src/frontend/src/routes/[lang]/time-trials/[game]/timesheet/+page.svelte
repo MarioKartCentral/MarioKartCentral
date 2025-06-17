@@ -207,7 +207,10 @@
     
     // Watch for user login/logout changes
     $: if (user_info && selectedPlayer === null && user_info.player !== null) {
-        updatePlayer(user_info.player);
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('player') === null) {
+            updatePlayer(user_info.player);
+        }
     }
     
     // Update page when new player is selected
