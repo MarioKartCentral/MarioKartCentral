@@ -37,6 +37,7 @@ const config = {
         },
       },
       screens: {
+        laptop: '800px',
         desktop: '1100px',
       },
     },

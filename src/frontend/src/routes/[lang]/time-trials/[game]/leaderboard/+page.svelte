@@ -251,10 +251,21 @@
 </svelte:head>
 
 <div class="tracks-container">
-    <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
-        <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game Homepage
-    </Button>
+    <div class="game-header">
+        <div class="flex items-center gap-3">
+            <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
+                <ArrowLeftOutline class="w-4 h-4 mr-2" />
+                Back to Game homepage
+            </Button>
+        </div>
+        
+        <div class="flex justify-center items-center gap-2 flex-wrap">
+            <Button href={`/${$page.params.lang}/time-trials/${game}/timesheet`} size='md' extra_classes="flex items-center">
+                🏆 {$LL.TIME_TRIALS.TIMESHEETS()}
+            </Button>
+            <SubmitButton {game} />
+        </div>
+    </div>
 </div>
 
 <Section header="{getGameDisplayName(game)} {$LL.TIME_TRIALS.LEADERBOARDS()}">
@@ -330,13 +341,6 @@
                             Include times submitted without evidence
                         </p>
                     </div>
-                    <div class="lg:col-start-4 w-full place-self-end">
-                        <SubmitButton 
-                            game={game} 
-                            track={selectedTrack} 
-                            extra_classes="w-full"
-                        />
-                    </div>
                 </div>
             </div>
         </div>
@@ -355,11 +359,7 @@
         {:else if records.length === 0}
             <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
                 <p class="text-gray-400">
-                    {#if !showPendingValidation && !showTimesWithoutProof}
-                        No validated records found for this track{selectedCountry ? ` from ${selectedCountry}` : ''}. Try enabling the checkboxes below to see pending or unproven submissions.
-                    {:else}
-                        No records found for this track{selectedCountry ? ` from ${selectedCountry}` : ''} with the selected filters.
-                    {/if}
+                    No records found for this track with the selected filters.
                 </p>
             </div>
         {:else}
@@ -378,7 +378,7 @@
                                 <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider">
                                     Time
                                 </th>
-                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden laptop:table-cell">
                                     Proof
                                 </th>
                                 <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
@@ -400,7 +400,7 @@
                                     <td class="px-4 desktop:px-6 py-4">
                                             {#if record.player_name}
                                                 <a 
-                                                    href="/{$page.params.lang}/registry/players/profile?id={record.player_id}"
+                                                    href="/{$page.params.lang}/time-trials/{game}/timesheet?player={record.player_id}"
                                                 >
                                                     <div class="flex items-center gap-2 flex-wrap">
                                                         {#if record.player_country_code}
@@ -427,7 +427,7 @@
                                         {/if}
                                     </td>
                                     <!-- Proof Column -->
-                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden desktop:table-cell">
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden laptop:table-cell">
                                         <div class="flex items-center space-x-2">
                                             {#if record.proofs && record.proofs.length > 0}
                                                 <!-- Proof icons -->
@@ -499,6 +499,16 @@
         max-width: 1200px;
         margin: 20px auto;
     }
+    
+    .game-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
     .filters {
         background-color: rgba(0, 0, 0, 0.2);
     }

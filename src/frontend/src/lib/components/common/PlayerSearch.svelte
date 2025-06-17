@@ -14,8 +14,9 @@
   export let include_shadow_players = false;
   export let has_connected_user: boolean | null = null;
   export let is_banned: boolean | null = null;
-
-  let query = '';
+  export let show_add_button: boolean = true;
+  export let query = '';
+  
   let results: PlayerInfo[] = [];
   let timeout: number;
   let show_results = false;
@@ -103,7 +104,9 @@
                     {/if}
                   </td>
                   <td on:click={() => set_option(result)}>
-                    <UserAddSolid size="lg"/>
+                    {#if show_add_button}
+                      <UserAddSolid size="lg"/>
+                    {/if}
                   </td>
                 </tr>
               {/each}
