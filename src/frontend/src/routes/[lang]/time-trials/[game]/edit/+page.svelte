@@ -23,7 +23,7 @@
     });
 
     // Get trial ID from URL params
-    let trialId = $page.url.searchParams.get("trial_id");
+    let trialId: string | null = null;
     
     // Original time trial data
     let originalTrial: TimeTrial | null = null;
@@ -96,6 +96,7 @@
     }
 
     onMount(async () => {
+        trialId = $page.url.searchParams.get("trial_id");
         await loadTimeTrial();
     });
 
