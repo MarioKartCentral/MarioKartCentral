@@ -155,7 +155,7 @@ const es: Translation = {
     MKWORLD: 'Mario Kart World',
   },
   HOMEPAGE: {
-    WELCOME: '¡Bienvenido a Mario Kart Central!',
+    WELCOME: '¡Bienvenido a MKCentral!',
     SUMMARY:
       '<strong>MKCentral</strong> es la comunidad independiente de Mario Kart más grande. Ya seas un jugador casual o un experto, nuestra comunidad reúne a jugadores de todo tipo en un mismo lugar para competir, conectar y celebrar todo lo relacionado con Mario Kart.',
     YOU_PLACED: 'Tu posición: {placement|ordinalSuffix}',
@@ -592,7 +592,7 @@ const es: Translation = {
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
-        'Este perfil de jugador está sin reclamar, lo que significa que ha participado en torneos anteriores pero no tiene una cuenta de usuario en Mario Kart Central. Para reclamar este perfil de jugador, haz clic en el botón a continuación.',
+        'Este perfil de jugador está sin reclamar, lo que significa que ha participado en torneos anteriores pero no tiene una cuenta de usuario en MKCentral. Para reclamar este perfil de jugador, haz clic en el botón a continuación.',
       CLAIM_PLAYER: 'Reclamar perfil de jugador',
       CLAIM_PLAYER_SUCCESS: '¡La reclamación del perfil de jugador ha sido enviada al Staff satisfactoriamente!',
       CLAIM_PLAYER_FAILED: 'Error al reclamar el perfil de jugador',

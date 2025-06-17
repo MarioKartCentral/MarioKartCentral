@@ -58,31 +58,17 @@
     }));
 
     // Permissions
-    $: hasValidatePermission = user_info?.id !== null && check_permission(user_info, permissions.validate_time_trial_proof, true);
+    $: hasValidatePermission = user_info?.id !== null && check_permission(user_info, permissions.validate_time_trial_proof);
     $: canEditThisTrial = originalTrial && (
-        (originalTrial.player_id === user_info?.player?.id?.toString()) || 
+        (originalTrial.player_id === user_info?.player?.id) || 
         hasValidatePermission
     );
     $: canChangePlayer = hasValidatePermission;
     $: canChangeValidationStatus = hasValidatePermission;
     $: canMarkInvalid = hasValidatePermission;
 
-    // Helper function to check if a proof can be removed
-    function canRemoveProof(proof: EditProofData & { isNew?: boolean }): boolean {
-        // New proofs can always be removed
-        if (proof.isNew) return true;
-        
-        // Existing proofs that are validated or invalid can only be removed by validators
-        if (proof.status && ['valid', 'invalid'].includes(proof.status)) {
-            return canChangeValidationStatus;
-        }
-        
-        // Unvalidated proofs can be removed by anyone who can edit the trial
-        return true;
-    }
-
     // Helper function to check if a proof can be edited
-    function canEditProof(proof: EditProofData & { isNew?: boolean }): boolean {
+    function canEditOrRemoveProof(proof: EditProofData & { isNew?: boolean }): boolean {
         // New proofs can always be edited
         if (proof.isNew) return true;
         
@@ -146,7 +132,7 @@
             if (canChangePlayer && originalTrial.player_name) {
                 // Create a minimal PlayerInfo object for the search component
                 selectedPlayer = {
-                    id: parseInt(originalTrial.player_id),
+                    id: originalTrial.player_id,
                     name: originalTrial.player_name,
                     country_code: originalTrial.player_country_code || null,
                     is_hidden: false,
@@ -237,7 +223,7 @@
         }
 
         // Check permissions
-        if (!user_info?.id) {
+        if (user_info?.id === null) {
             submitError = 'You must be logged in to edit time trials';
             return;
         }
@@ -286,7 +272,7 @@
             };
 
             // Add staff-only fields
-            if (canChangePlayer && selectedPlayer && selectedPlayer.id !== parseInt(originalTrial.player_id)) {
+            if (canChangePlayer && selectedPlayer && selectedPlayer.id !== originalTrial.player_id) {
                 requestBody.player_id = selectedPlayer.id;
             }
 
@@ -329,10 +315,6 @@
     }
 </script>
 
-<svelte:head>
-    <title>Edit Time Trial - Mario Kart Central</title>
-</svelte:head>
-
 {#if loading}
     <div class="loading-container text-center py-8">
         <p class="text-gray-300">Loading time trial...</p>
@@ -342,7 +324,7 @@
         <h2 class="text-xl font-semibold mb-2">Error Loading Time Trial</h2>
         <p>{loadError}</p>
     </div>
-{:else if !user_info?.id}
+{:else if user_info?.id === null}
     <div class="permission-notice bg-gray-800 p-6 rounded-lg border border-gray-700 text-center mt-4 mx-auto max-w-lg">
         <h2 class="text-xl font-semibold mb-2 text-white">Login Required</h2>
         <p class="mb-4 text-gray-300">You must be logged in to edit time trials.</p>
@@ -463,7 +445,7 @@
                     <div class="proof-item-grouping deleted-proof" style="border: 1px solid #7f1d1d; padding: 1rem; margin-top: 1rem; margin-bottom: 1rem; border-radius: 0.25rem; background-color: rgba(127, 29, 29, 0.1);">
                         <div class="option">
                             <span class="text-red-400">Proof marked for deletion: {proof.url || '(empty)'}</span>
-                            {#if canEditProof(proof)}
+                            {#if canEditOrRemoveProof(proof)}
                                 <Button on:click={() => undoDeleteProof(proof.id)} color="alternative">
                                     Undo Delete
                                 </Button>
@@ -482,11 +464,12 @@
                                     name={`proof-url-${proof.id}`}
                                     bind:value={proof.url} 
                                     placeholder="https://example.com/proof.mp4"
+                                    disabled={!canEditOrRemoveProof(proof)}
                                 />
                             </div>
                             <div class="option">
                                 <label for={`proof-type-${proof.id}`}>Type</label>
-                                <select id={`proof-type-${proof.id}`} bind:value={proof.type}>
+                                <select id={`proof-type-${proof.id}`} bind:value={proof.type} disabled={!canEditOrRemoveProof(proof)}>
                                     {#each proofTypeObjects as typeOpt}
                                         <option value={typeOpt.value}>{typeOpt.name}</option>
                                     {/each}
@@ -501,7 +484,7 @@
                                         {/each}
                                     </select>
                                 </div>
-                            {:else}
+                            {:else if !proof.isNew}
                                 <div class="option">
                                     <span class="label-like">Status</span>
                                     <span class="text-gray-300 capitalize">{proof.status || 'unvalidated'}</span>
@@ -509,7 +492,7 @@
                             {/if}
                             <div class="option">
                                 <span style="width: 150px; margin-right: 10px;"></span>
-                                {#if canRemoveProof(proof)}
+                                {#if canEditOrRemoveProof(proof)}
                                     <Button on:click={() => removeProof(proof.id)} color="red">
                                         <TrashBinOutline class="w-4 h-4 mr-1" /> 
                                         {proof.isNew ? 'Remove' : 'Delete'}
@@ -530,11 +513,6 @@
                                     embedWidth="100%"
                                     embedHeight="300"
                                 />
-                                
-                                <div class="text-xs text-gray-400 space-y-1">
-                                    <p><strong>Type:</strong> {proof.type}</p>
-                                    <p><strong>URL:</strong> <span class="break-all">{proof.url}</span></p>
-                                </div>
                             {:else}
                                 <div class="flex items-center justify-center h-48 bg-gray-800 rounded border border-gray-600">
                                     <p class="text-gray-400">Enter a URL to see proof preview</p>

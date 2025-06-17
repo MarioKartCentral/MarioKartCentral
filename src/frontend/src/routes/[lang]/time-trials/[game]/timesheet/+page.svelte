@@ -42,8 +42,8 @@
     let playerCountryCode: string | null = null;
 
     // Filter state
-    let includeUnvalidated = false;
-    let includeProofless = false;
+    let includeUnvalidated = true;
+    let includeProofless = true;
     let includeOutdated = false;
 
     // Helper functions
@@ -431,7 +431,7 @@
                                         <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
                                             {#if canEditTrial(trial)}
                                                 <a 
-                                                    href="/{$page.params.lang}/time-trials/{trial.id}/edit"
+                                                    href="/{$page.params.lang}/time-trials/edit?trial_id={trial.id}"
                                                     class="text-blue-400 hover:text-blue-200 text-sm font-medium"
                                                 >
                                                     Edit

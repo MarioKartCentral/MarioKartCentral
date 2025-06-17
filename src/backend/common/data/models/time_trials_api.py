@@ -62,7 +62,6 @@ class TimeTrialResponseData:
     validation_status: str = "proofless"
     player_name: Optional[str] = None
     player_country_code: Optional[str] = None
-    can_edit: bool = False
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission, get_user_info
+from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
@@ -18,6 +18,7 @@ from common.data.commands.time_trials import (
 )
 from common.data.models.time_trials_api import (
     CreateTimeTrialRequestData,
+    EditProofDictRequired,
     EditTimeTrialRequestData,
     MarkProofInvalidRequestData,
     MarkProofValidRequestData,
@@ -59,7 +60,7 @@ async def create_time_trial(request: Request, body: CreateTimeTrialRequestData) 
         proofs=body.proofs,
     )
     
-    time_trial = await handle(command)  # Command now returns just the TimeTrial
+    time_trial = await handle(command)
     
     response_proofs = [
         ProofResponseData(
@@ -231,9 +232,9 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
     can_validate = await handle(check_validate_permission)
 
     # Convert EditProofData objects to dicts for the command
-    proof_dicts = []
+    proof_dicts: list[EditProofDictRequired] = []
     for proof in body.proofs:
-        proof_dict = {
+        proof_dict: EditProofDictRequired = {
             'id': proof.id,
             'url': proof.url,
             'type': proof.type,
@@ -261,35 +262,14 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
 
 
 @bind_request_query(TimesheetFilter)
-@get_user_info
 async def get_timesheet(request: Request, filter: TimesheetFilter) -> JSONResponse:
     """
     Get all time trials for a specific player and game across all tracks.
     Supports filtering by validation status and showing/hiding outdated times.
     Requires authentication to determine edit permissions.
     """
-    # Get current user info for edit permission checking
-    current_user = request.state.user
-    current_player_id = current_user.player_id if current_user else None
-    
-    # Check if user has validation permissions (can edit any trial)
-    can_validate = False
-    if current_user:
-        check_validate_permission = CheckUserHasPermissionCommand(
-            user_id=current_user.id,
-            permission_name=permissions.VALIDATE_TIME_TRIAL_PROOF
-        )
-        can_validate = await handle(check_validate_permission)
-    
     command = GetTimesheetCommand(filter=filter)
     records = await handle(command)
-    
-    # Add edit permission context to each record
-    for record in records:
-        # User can edit if they own the trial or have validation permissions
-        record.can_edit = (
-            current_player_id == record.player_id or can_validate
-        )
     
     return JSONResponse(TimesheetResponseData(records), headers={"Cache-Control": "public, max-age=60"})
 

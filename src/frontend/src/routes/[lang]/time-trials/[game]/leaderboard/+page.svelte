@@ -16,6 +16,7 @@
     import type { TimeTrial, TimeTrialListResponse } from '$lib/types/time-trials';
     import Dropdown from '$lib/components/common/Dropdown.svelte';
     import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+    import SubmitButton from '$lib/components/time-trials/SubmitButton.svelte';
 
     const game = $page.params.game as GameId;
     
@@ -26,7 +27,6 @@
     let selectedCountry = '';
     let showPendingValidation = false;
     let showTimesWithoutProof = false;
-    let currentPage = 1;
     let tracks: string[] = [];
     let countries: string[] = [];
     
@@ -241,7 +241,6 @@
     
     // Watch for filter changes, reload data, and update URL (but don't call during SSR)
     $: if (typeof window !== 'undefined' && (selectedTrack || selectedCountry !== undefined || showPendingValidation !== undefined || showTimesWithoutProof !== undefined)) {
-        currentPage = 1;
         loadLeaderboard();
         updateURL();
     }
@@ -254,7 +253,7 @@
 <div class="tracks-container">
     <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
         <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game homepage
+        Back to Game Homepage
     </Button>
 </div>
 
@@ -332,7 +331,11 @@
                         </p>
                     </div>
                     <div class="lg:col-start-4 w-full place-self-end">
-                        <Button href="/{$page.params.lang}/time-trials/submit?game={game}&track={selectedTrack}" extra_classes="w-full">Submit Time</Button>
+                        <SubmitButton 
+                            game={game} 
+                            track={selectedTrack} 
+                            extra_classes="w-full"
+                        />
                     </div>
                 </div>
             </div>
@@ -392,7 +395,7 @@
                             {#each records as record, index}
                                 <tr class="hover:bg-gray-700">
                                     <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                        #{(currentPage - 1) * 50 + index + 1}
+                                        #{index + 1}
                                     </td>
                                     <td class="px-4 desktop:px-6 py-4">
                                             {#if record.player_name}
@@ -466,7 +469,7 @@
                                         <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
                                             <ChevronDownOutline class="inline cursor-pointer"/>
                                             <Dropdown>
-                                                <DropdownItem href="/{$page.params.lang}/time-trials/{game}/edit?trial_id={record.id}">
+                                                <DropdownItem href="/{$page.params.lang}/time-trials/edit?trial_id={record.id}">
                                                     Edit
                                                 </DropdownItem>
                                                 <DropdownItem>

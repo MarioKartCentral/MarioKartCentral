@@ -16,7 +16,7 @@ export interface Proof {
 export interface TimeTrial {
   id: string;
   version: number;
-  player_id: string;
+  player_id: number;
   game: string;
   track: string;
   time_ms: number;
@@ -35,7 +35,7 @@ export interface TimeTrialListResponse {
 export interface ProofWithValidationStatusResponseData {
   id: string;
   time_trial_id: string;
-  player_id: string;
+  player_id: number;
   game: string;
   proof_data: ProofRequestData | null;
   created_at: string; // ISO date string

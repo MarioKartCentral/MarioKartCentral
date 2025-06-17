@@ -34,8 +34,13 @@
                         </Button>
                     </div>
                     <div>
-                        <Button href="/{$page.params.lang}/time-trials/mkworld/leaderboard" color="blue" extra_classes="w-full">
+                        <Button href="/{$page.params.lang}/time-trials/mkworld/leaderboard" color="primary" extra_classes="w-full">
                             {$LL.TIME_TRIALS.LEADERBOARDS()}
+                        </Button>
+                    </div>
+                    <div>
+                        <Button href="/{$page.params.lang}/time-trials/mkworld/timesheet" color="primary" extra_classes="w-full">
+                            {$LL.TIME_TRIALS.TIMESHEETS()}
                         </Button>
                     </div>
                 </div>
@@ -49,6 +54,6 @@
         background-color: rgba(0, 0, 0, 0.2);
     }
     .grid {
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 </style>

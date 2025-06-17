@@ -232,7 +232,7 @@ const fr: Translation = {
     SEND_CONFIRMATION_EMAIL_SUCCESS: 'Email de confirmation envoyé avec succès !',
     SEND_CONFIRMATION_EMAIL_FAILURE: "Échec de l'envoi de l'email de confirmation",
     EMAIL_ALREADY_CONFIRMED: 'Votre email est déjà confirmé.',
-    WELCOME_TO_MKC: 'Bienvenue sur Mario Kart Central!',
+    WELCOME_TO_MKC: 'Bienvenue sur MKCentral!',
     EMAIL_CONFIRMATION_REQUIRED:
       "Avant de pouvoir compléter votre enregistrement en tant que joueur, vous devez vérifier votre adresse email. Vous devriez avoir reçu un email contenant un lien pour confirmer votre adresse email. Si vous ne voyez pas l'email, ou si le lien a expiré, vous pouvez cliquer sur le bouton ci-dessous pour envoyer un nouvel email de confirmation.",
     SEND_CONFIRMATION_EMAIL: "Envoyer l'email de confirmation",

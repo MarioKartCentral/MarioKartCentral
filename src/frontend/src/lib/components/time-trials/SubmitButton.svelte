@@ -21,7 +21,7 @@
     });
 
     // Check if user has permission to submit time trials (checkDeniedOnly mode)
-    $: hasSubmitPermission = user_info?.id && check_permission(user_info, permissions.submit_time_trial, true);
+    $: hasSubmitPermission = user_info?.id !== null && check_permission(user_info, permissions.submit_time_trial, true);
 
     // Build the submit URL with optional game and track parameters
     $: submitUrl = (() => {
@@ -37,11 +37,10 @@
 
     // Show different button states based on user permissions
     $: buttonState = (() => {
-        if (!user_info?.id) {
+        if (user_info?.id === null) {
             return {
                 icon: LockOutline,
                 text: 'Login to Submit',
-                title: 'You must be logged in to submit time trials',
                 disabled: true,
                 color: 'alternative' as const,
                 show: true
@@ -52,7 +51,6 @@
                 href: undefined,
                 icon: LockOutline,
                 text: '',
-                title: '',
                 disabled: true,
                 color: 'alternative' as const,
                 show: false
@@ -62,7 +60,6 @@
                 href: submitUrl,
                 icon: PlusOutline,
                 text: $LL.TIME_TRIALS.SUBMIT_TIME(),
-                title: 'Submit a new time trial',
                 disabled: false,
                 color: color,
                 show: true

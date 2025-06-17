@@ -139,57 +139,56 @@ class GetTimeTrialCommand(Command[Optional[TimeTrialResponseData]]):
         if not self.trial_id.strip():
             raise Problem("Trial ID is required", status=400)
         
-        main_sqlite_db_path = db_wrapper.db_paths.get('main')
-        if not main_sqlite_db_path:
-            raise Problem("Main SQLite database not configured", status=500)
-
         async with db_wrapper.duckdb.connection() as conn:
             # Retrieve time trial record with embedded proofs
             get_time_trial_query = f"""
-                ATTACH '{main_sqlite_db_path}' AS main_sqlite_db (READ_ONLY, TYPE sqlite);
-                SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, 
-                       tt.created_at, tt.updated_at, tt.validation_status,
-                       p.name AS player_name, p.country_code AS player_country_code
+                SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.created_at, tt.updated_at, tt.validation_status
                 FROM time_trials tt
-                LEFT JOIN main_sqlite_db.players p ON tt.player_id = p.id
                 WHERE tt.id = $trial_id
             """
             async with conn.execute(get_time_trial_query, {"trial_id": self.trial_id}) as cursor:
                 row = await cursor.fetchone()
-                if row:
-                    (id, version, player_id, game, track, time_ms, proofs_json, 
-                     created_at, updated_at, validation_status,
-                     player_name, player_country_code) = row
-                    proofs_obj = msgspec.json.decode(proofs_json, type=List[TimeTrialProof]) if proofs_json else []
+                if row is None:
+                    return None
 
-                    response_proofs = [
-                        ProofResponseData(
-                            id=proof.id,
-                            url=proof.url,
-                            type=proof.type,
-                            created_at=proof.created_at,
-                            status=proof.status,
-                            validator_id=proof.validator_id,
-                            validated_at=proof.validated_at,
-                        )
-                        for proof in proofs_obj
-                    ]
+        (id, version, player_id, game, track, time_ms, proofs_json, created_at, updated_at, validation_status) = row
+        proofs_obj = msgspec.json.decode(proofs_json, type=List[TimeTrialProof]) if proofs_json else []
 
-                    return TimeTrialResponseData(
-                        id=id,
-                        version=version,
-                        player_id=player_id,
-                        game=game,
-                        track=track,
-                        time_ms=time_ms,
-                        proofs=response_proofs,
-                        created_at=created_at,
-                        updated_at=updated_at,
-                        validation_status=validation_status,
-                        player_name=player_name,
-                        player_country_code=player_country_code,
-                    )
-        return None
+        player_name, player_country_code = None, None
+        async with db_wrapper.connect() as conn:
+            player_query = "SELECT name, country_code FROM players WHERE id = :player_id"
+            async with conn.execute(player_query, {"player_id": player_id}) as cursor:
+                player_row = await cursor.fetchone()
+                if player_row:
+                    player_name, player_country_code = player_row
+
+        response_proofs = [
+            ProofResponseData(
+                id=proof.id,
+                url=proof.url,
+                type=proof.type,
+                created_at=proof.created_at,
+                status=proof.status,
+                validator_id=proof.validator_id,
+                validated_at=proof.validated_at,
+            )
+            for proof in proofs_obj
+        ]
+
+        return TimeTrialResponseData(
+            id=id,
+            version=version,
+            player_id=player_id,
+            game=game,
+            track=track,
+            time_ms=time_ms,
+            proofs=response_proofs,
+            created_at=created_at,
+            updated_at=updated_at,
+            validation_status=validation_status,
+            player_name=player_name,
+            player_country_code=player_country_code,
+        )
 
 
 @dataclass
@@ -795,6 +794,15 @@ class GetTimesheetCommand(Command[List[TimeTrialResponseData]]):
             raise Problem("Player ID is required", status=400)
         if not self.filter.game.strip():
             raise Problem("Game is required", status=400)
+        
+        async with db_wrapper.connect() as conn:
+            player_query = "SELECT name, country_code FROM players WHERE id = :player_id"
+            async with conn.execute(player_query, {"player_id": self.filter.player_id}) as cursor:
+                player_row = await cursor.fetchone()
+                if not player_row:
+                    raise Problem(f"Player with ID {self.filter.player_id} not found", status=404)
+                
+        player_name, player_country_code = player_row
 
         async with db_wrapper.duckdb.connection() as conn:
             validation_filters = ["tt.validation_status = 'valid'"]  # Always include valid
@@ -886,8 +894,8 @@ class GetTimesheetCommand(Command[List[TimeTrialResponseData]]):
                         created_at=created_at,
                         updated_at=updated_at,
                         validation_status=validation_status,
-                        player_name=None,
-                        player_country_code=None
+                        player_name=player_name,
+                        player_country_code=player_country_code
                     ))
 
             return records

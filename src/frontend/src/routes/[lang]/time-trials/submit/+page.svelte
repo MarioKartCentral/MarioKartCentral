@@ -40,8 +40,8 @@
     const proofTypeObjects = proofTypes.map(type => ({ name: type, value: type }));
     // ---
 
-    $: hasSubmitPermission = user_info?.id && check_permission(user_info, permissions.submit_time_trial, true);
-    $: hasValidatePermission = user_info?.id && check_permission(user_info, permissions.validate_time_trial_proof, true);
+    $: hasSubmitPermission = user_info?.id !== null && check_permission(user_info, permissions.submit_time_trial, true);
+    $: hasValidatePermission = user_info?.id !== null && check_permission(user_info, permissions.validate_time_trial_proof);
 
     onMount(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -112,7 +112,7 @@
         }
 
         // Check user authentication and permissions
-        if (!user_info?.id) {
+        if (user_info?.id === null) {
             submitError = 'You must be logged in to submit time trials';
             return;
         }
@@ -180,11 +180,7 @@
     }
 </script>
 
-<svelte:head>
-    <title>Submit Time Trial - Mario Kart Central</title>
-</svelte:head>
-
-{#if !user_info?.id}
+{#if user_info?.id === null }
     <div class="permission-notice bg-gray-800 p-6 rounded-lg border border-gray-700 text-center mt-4 mx-auto max-w-lg">
         <h2 class="text-xl font-semibold mb-2 text-white">Login Required</h2>
         <p class="mb-4 text-gray-300">You must be logged in to submit time trials.</p>
