@@ -341,19 +341,11 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
     """List all proofs with their validation statuses."""
     
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> ListProofsForValidationResponseData:
-        main_sqlite_db_path = db_wrapper.db_paths.get('main')
-        if not main_sqlite_db_path:
-            raise Problem("Main SQLite database not configured", status=500)
-
         async with db_wrapper.duckdb.connection() as conn:
             get_all_time_trials_query = f"""
-                ATTACH '{main_sqlite_db_path}' AS main_sqlite_db (READ_ONLY, TYPE sqlite);
-
                 SELECT 
-                    tt.id, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.version,
-                    p.name AS player_name, p.country_code AS player_country_code
+                    tt.id, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.version
                 FROM time_trials tt
-                LEFT JOIN main_sqlite_db.players p ON tt.player_id = p.id
                 WHERE tt.validation_status = 'unvalidated' AND tt.is_invalid = false
                 ORDER BY tt.created_at DESC
             """
@@ -362,8 +354,9 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
                 all_trial_rows = await cursor.fetchall()
 
         response_proofs: List[ProofWithValidationStatusResponseData] = []
+        player_ids = set()
         for trial_row in all_trial_rows:
-            tt_id, tt_player_id, tt_game, tt_track, tt_time_ms, tt_proofs_json, tt_version, player_name, player_country_code = trial_row
+            tt_id, tt_player_id, tt_game, tt_track, tt_time_ms, tt_proofs_json, tt_version = trial_row
             
             try:
                 # Parse embedded proofs
@@ -372,6 +365,8 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
                 # Skip malformed time trial records
                 print(f"Error decoding JSON for time_trial_id {tt_id}")
                 continue
+
+            player_ids.add(tt_player_id)
 
             # Process each proof in this time trial
             for proof_data in proofs_data:
@@ -401,8 +396,8 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
                         id=p_id,
                         time_trial_id=tt_id,
                         player_id=tt_player_id,
-                        player_name=player_name,
-                        player_country_code=player_country_code,
+                        player_name=None,
+                        player_country_code=None,
                         game=tt_game,
                         proof_data=proof_data_obj,
                         created_at=p_created_at,
@@ -411,6 +406,25 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
                         version=tt_version,
                     )
                 )
+        
+        async with db_wrapper.connect() as conn:
+            # Fetch player names and country codes in bulk
+            if player_ids:
+                placeholders = ', '.join(['?'] * len(player_ids))
+                player_query = f"""
+                    SELECT id, name, country_code 
+                    FROM players 
+                    WHERE id IN ({placeholders})
+                """
+                async with conn.execute(player_query, list(player_ids)) as cursor:
+                    player_rows = await cursor.fetchall()
+                
+                player_map = {row[0]: (row[1], row[2]) for row in player_rows}
+                
+                # Update proofs with player names and country codes
+                for proof in response_proofs:
+                    if proof.player_id in player_map:
+                        proof.player_name, proof.player_country_code = player_map[proof.player_id]
             
         return ListProofsForValidationResponseData(proofs=response_proofs)
 
@@ -638,11 +652,11 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                 raise Problem("You don't have permission to edit this time trial", status=403)
 
             # Only validators can change player_id
-            if self.player_id != current_player_id_db and not self.can_validate:
+            if self.player_id is not None and self.player_id != current_player_id_db and not self.can_validate:
                 raise Problem("Only validators can change the player", status=403)
 
             # Only validators can modify is_invalid
-            if self.is_invalid != current_is_invalid and not self.can_validate:
+            if self.is_invalid is not None and self.is_invalid != current_is_invalid and not self.can_validate:
                 raise Problem("Only validators can modify invalid status", status=403)
             
             player_id = self.player_id if self.player_id is not None else int(current_player_id_db)
