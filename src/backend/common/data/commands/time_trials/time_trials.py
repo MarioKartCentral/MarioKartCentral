@@ -423,10 +423,6 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
     include_proofless: bool = False    # Include records without proofs
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> List[TimeTrialResponseData]:
-        main_sqlite_db_path = db_wrapper.db_paths.get('main')
-        if not main_sqlite_db_path:
-            raise Problem("Main SQLite database not configured", status=500)
-        
         # Build validation status filter (additive logic)
         validation_filters = ["tt.validation_status = 'valid'"]  # Always include valid
         
@@ -444,8 +440,6 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
         
         # Simple and efficient query using precomputed validation_status
         query = f"""
-            ATTACH '{main_sqlite_db_path}' AS main_sqlite_db (READ_ONLY, TYPE sqlite);
-
             WITH ranked_times AS (
                 SELECT 
                     tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms,
@@ -459,20 +453,20 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
             )
             SELECT 
                 ranked_times.id, version, player_id, game, track, time_ms,
-                proofs, created_at, updated_at, validation_status,
-                p.name as player_name, p.country_code
+                proofs, created_at, updated_at, validation_status
             FROM ranked_times
-            LEFT JOIN main_sqlite_db.players p ON ranked_times.player_id = p.id
             WHERE rn = 1
             ORDER BY time_ms ASC, created_at ASC
         """
+
+        player_ids = set()
         
+        records: List[TimeTrialResponseData] = []
         async with db_wrapper.duckdb.connection() as conn:
-            records: List[TimeTrialResponseData] = []
             async with conn.execute(query, query_params) as cursor:
                 async for row in cursor:
                     try:
-                        id, version, player_id, game, track, time_ms, proofs_str, created_at, updated_at, validation_status, player_name, country_code = row
+                        id, version, player_id, game, track, time_ms, proofs_str, created_at, updated_at, validation_status = row
                         # Parse proofs JSON and filter out invalid ones for response
                         proofs_data = msgspec.json.decode(proofs_str, type=list[TimeTrialProof]) if proofs_str else []
                         proof_responses: list[ProofResponseData] = []
@@ -489,6 +483,8 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
                                     validator_id=proof.validator_id,
                                     validated_at=proof.validated_at,
                                 ))
+
+                        player_ids.add(player_id)
                         
                         record = TimeTrialResponseData(
                             id=id,
@@ -500,8 +496,8 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
                             proofs=proof_responses,
                             created_at=created_at,
                             updated_at=updated_at,
-                            player_name=player_name,
-                            player_country_code=country_code,
+                            player_name=None,
+                            player_country_code=None,
                             validation_status=validation_status
                         )
 
@@ -510,8 +506,27 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
                     except Exception as e:
                         print(f"Error processing leaderboard record {row[0]}: {e}")
                         continue
-            
-            return records
+        
+        async with db_wrapper.connect() as conn:
+            # Fetch player names and country codes in bulk
+            if player_ids:
+                placeholders = ', '.join(['?'] * len(player_ids))
+                player_query = f"""
+                    SELECT id, name, country_code 
+                    FROM players 
+                    WHERE id IN ({placeholders})
+                """
+                async with conn.execute(player_query, list(player_ids)) as cursor:
+                    player_rows = await cursor.fetchall()
+                
+                player_map = {row[0]: (row[1], row[2]) for row in player_rows}
+                
+                # Update records with player names and country codes
+                for record in records:
+                    if record.player_id in player_map:
+                        record.player_name, record.player_country_code = player_map[record.player_id]
+           
+        return records
 
 
 @dataclass
