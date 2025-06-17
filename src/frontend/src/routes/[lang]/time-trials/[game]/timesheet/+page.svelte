@@ -146,6 +146,7 @@
             timeTrials = [];
             playerName = '';
             playerCountryCode = null;
+            isLoading = false;
             return;
         }
         

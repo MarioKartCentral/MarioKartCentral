@@ -1,6 +1,6 @@
 from starlette.requests import Request
 from starlette.routing import Route
-from api.auth import require_permission
+from api.auth import require_permission, get_user_info
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
@@ -88,8 +88,6 @@ async def create_time_trial(request: Request, body: CreateTimeTrialRequestData) 
     
     return JSONResponse(response_data)
 
-
-@require_permission(permissions.VALIDATE_TIME_TRIAL_PROOF) # TEMPORARY
 async def get_time_trial(request: Request) -> JSONResponse:
     """Get a specific time trial by ID."""
     trial_id = request.path_params['trial_id']
@@ -193,7 +191,6 @@ async def list_proofs_for_validation_endpoint(request: Request) -> JSONResponse:
     return JSONResponse(result)
 
 @bind_request_query(LeaderboardFilter)
-@require_permission(permissions.VALIDATE_TIME_TRIAL_PROOF) # TEMPORARY
 async def get_leaderboard(request: Request, filter: LeaderboardFilter) -> JSONResponse:
     """Get leaderboard showing only each player's best time for tracks."""
     
@@ -264,7 +261,7 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
 
 
 @bind_request_query(TimesheetFilter)
-@require_permission(permissions.SUBMIT_TIME_TRIAL, check_denied_only=True)
+@get_user_info
 async def get_timesheet(request: Request, filter: TimesheetFilter) -> JSONResponse:
     """
     Get all time trials for a specific player and game across all tracks.

@@ -140,7 +140,7 @@
       {/if}
     </Dropdown>
 
-    {#if check_permission(user_info, permissions.validate_time_trial_proof)}
+    {#if check_permission(user_info, permissions.validate_time_trial_proof) || check_permission(user_info, permissions.edit_player)}
       <NavLi nav_name="TIME TRIALS" has_dropdown>
         {$LL.NAVBAR.TIME_TRIALS()}
         <ChevronDownOutline class="inline"/>

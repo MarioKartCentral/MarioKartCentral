@@ -51,7 +51,7 @@
             <h1 class="text-white">{gameName} Time Trials</h1>
         </div>
         
-        <div class="flex items-center gap-2">
+        <div class="flex justify-center items-center gap-2 flex-wrap">
             <Button on:click={navigateToLeaderboard} size='md' extra_classes="flex items-center">
                 🏆 {$LL.TIME_TRIALS.LEADERBOARDS()}
             </Button>
@@ -90,6 +90,7 @@
     }
     .game-header {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
