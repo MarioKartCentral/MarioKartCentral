@@ -434,6 +434,7 @@ const de: Translation = {
     TIME_TRIALS_HOME: 'Zeitfahren-Startseite',
     SUBMIT_TIME_TRIAL: 'Zeitfahrt einreichen',
     VALIDATE_PROOFS: 'Beweise validieren',
+    PLAYER_TIMESHEETS: 'Player Timesheets',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
     PLAYERS: 'Spieler',
@@ -802,6 +803,7 @@ const de: Translation = {
     SUBMIT_TIME: 'Submit Time', // Added
     MY_SUBMISSIONS: 'My Submissions',
     LEADERBOARDS: 'Leaderboards',
+    TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game} Leaderboard', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',

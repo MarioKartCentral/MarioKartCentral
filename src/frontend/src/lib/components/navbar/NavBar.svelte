@@ -150,19 +150,9 @@
           <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
         {/each}
         <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
+        <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/timesheet">{$LL.NAVBAR.PLAYER_TIMESHEETS()}</DropdownItem>
         <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/validation">{$LL.NAVBAR.VALIDATE_PROOFS()}</DropdownItem>
       </Dropdown>
-    {:else}
-      <!-- <NavLi nav_name="TIME TRIALS" has_dropdown>
-        {$LL.NAVBAR.TIME_TRIALS()}
-        <ChevronDownOutline class="inline"/>
-      </NavLi>
-      <Dropdown>
-        {#each Object.entries(GAMES) as [gameId, gameName]}
-          <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
-        {/each}
-        <DropdownItem href="/{$page.params.lang}/time-trials/submit">{$LL.NAVBAR.SUBMIT_TIME_TRIAL()}</DropdownItem>
-      </Dropdown> -->
     {/if}
 
     <NavLi href="/{$page.params.lang}/lounge" nav_name="LOUNGE">{$LL.NAVBAR.LOUNGE()}</NavLi>

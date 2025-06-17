@@ -1570,6 +1570,10 @@ type RootTranslation = {
 		 */
 		VALIDATE_PROOFS: string
 		/**
+		 * P​l​a​y​e​r​ ​T​i​m​e​s​h​e​e​t​s
+		 */
+		PLAYER_TIMESHEETS: string
+		/**
 		 * L​o​u​n​g​e
 		 */
 		LOUNGE: string
@@ -6922,6 +6926,10 @@ export type TranslationFunctions = {
 		 * Validate Proofs
 		 */
 		VALIDATE_PROOFS: () => LocalizedString
+		/**
+		 * Player Timesheets
+		 */
+		PLAYER_TIMESHEETS: () => LocalizedString
 		/**
 		 * Lounge
 		 */

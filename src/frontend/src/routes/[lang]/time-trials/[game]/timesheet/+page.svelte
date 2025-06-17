@@ -25,7 +25,7 @@
 
     // URL parameters
     let gameId: GameId;
-    let playerId: string;
+    let playerId: string | null = null;
     
     // User state
     let user_info: UserInfo;
@@ -108,7 +108,7 @@
         return false;
     }
 
-    onMount(() => {
+    onMount(async() => {
         gameId = $page.params.game as GameId;
         
         // Get player_id from URL params
@@ -118,6 +118,10 @@
         if (urlPlayerId) {
             // Use the player ID from URL
             playerId = urlPlayerId;
+            const playerResponse = await fetch(`/api/registry/players/${playerId}`);
+            if(playerResponse.status === 200) {
+                selectedPlayer = await playerResponse.json();
+            }
         } else if (user_info?.player?.id) {
             // No URL player_id, use logged-in player
             playerId = user_info.player.id.toString();
@@ -138,7 +142,7 @@
         // Get playerId from selectedPlayer if available, otherwise from URL
         const currentPlayerId = selectedPlayer?.id?.toString() || playerId;
         
-        if (!currentPlayerId) {
+        if (!currentPlayerId || (!selectedPlayer && timeTrials.length)) {
             timeTrials = [];
             playerName = '';
             playerCountryCode = null;
@@ -174,7 +178,7 @@
             
             // Extract player info from first record or selectedPlayer
             if (records.length > 0) {
-                playerName = records[0].player_name || selectedPlayer?.name || `Player ${currentPlayerId}`;
+                playerName = records[0].player_name || selectedPlayer?.name || null;
                 playerCountryCode = records[0].player_country_code || selectedPlayer?.country_code || null;
             } else if (selectedPlayer) {
                 playerName = selectedPlayer.name;
@@ -234,15 +238,18 @@
 <Section header="{playerName ? `${playerName}'s ` : ''}{getGameDisplayName(gameId)} Timesheet">
     <div slot="header_content">
         <div class="flex items-center gap-3">
-            {#if playerCountryCode}
-                <Flag country_code={playerCountryCode} />
+            {#if selectedPlayer}
+                {#if playerCountryCode}
+                    <Flag country_code={playerCountryCode} />
+                {/if}
+                <a 
+                    href="/{$page.params.lang}/registry/players/profile?id={selectedPlayer?.id || playerId}" 
+                    class="text-primary hover:underline"
+                >
+                    View Profile
+                </a>
             {/if}
-            <a 
-                href="/{$page.params.lang}/registry/players/profile?id={selectedPlayer?.id || playerId}" 
-                class="text-primary hover:underline"
-            >
-                View Profile
-            </a>
+            
         </div>
     </div>
 
@@ -310,152 +317,146 @@
         </div>
     </div>
 
-    {#if isLoading}
-        <div class="flex justify-center items-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-            <span class="ml-2 text-gray-400">Loading timesheet...</span>
-        </div>
-    {:else if errorMessage}
-        <div class="bg-red-900/20 border border-red-800 rounded-lg p-4">
-            <p class="text-red-400">{errorMessage}</p>
-            <Button extra_classes="mt-2" on:click={fetchTimesheet}>Retry</Button>
-        </div>
-    {:else if !selectedPlayer && !playerId}
-        <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-            {#if !user_info?.player?.id}
-                <p class="text-gray-400 mb-4">
-                    You need to be logged in with a linked player account to view your timesheet.
-                </p>
-                <p class="text-gray-400">
-                    Or search for a specific player above to view their timesheet.
-                </p>
-            {:else}
+    {#key timeTrials}
+        {#if isLoading}
+            <div class="flex justify-center items-center py-12">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <span class="ml-2 text-gray-400">Loading timesheet...</span>
+            </div>
+        {:else if errorMessage}
+            <div class="bg-red-900/20 border border-red-800 rounded-lg p-4">
+                <p class="text-red-400">{errorMessage}</p>
+                <Button extra_classes="mt-2" on:click={fetchTimesheet}>Retry</Button>
+            </div>
+        {:else if !selectedPlayer}
+            <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
                 <p class="text-gray-400">
                     Search for a player above to view their timesheet.
                 </p>
-            {/if}
-        </div>
-    {:else if timeTrials.length === 0}
-        <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-            <p class="text-gray-400">
-                No records found for {playerName} with the selected filters.
-            </p>
-        </div>
-    {:else}
-        <!-- Timesheet Table -->
-        <div class="rounded-lg border border-gray-700 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-primary-800">
-                        <tr>
-                            <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                Track
-                            </th>
-                            <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider">
-                                Time
-                            </th>
-                            <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
-                                Proof
-                            </th>
-                            <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
-                                Date
-                            </th>
-                            {#if timeTrials.some(record => canEditTrial(record))}
+            </div>
+        {:else if timeTrials.length === 0}
+            <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
+                <p class="text-gray-400">
+                    No records found for {playerName} with the selected filters.
+                </p>
+            </div>
+        {:else}
+            <!-- Timesheet Table -->
+            <div class="rounded-lg border border-gray-700 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-primary-800">
+                            <tr>
                                 <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                    Edit
+                                    Track
                                 </th>
-                            {/if}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each timeTrials as trial}
-                            <tr class="hover:bg-gray-700">
-                                <!-- Track Column -->
-                                <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                                    {getTrackDisplayName(trial.track)}
-                                </td>
-                                
-                                <!-- Time Column -->
-                                <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-mono text-white">
-                                    {#if trial.proofs.length}
-                                        <a href={trial.proofs[0].url}>{formatTimeMs(trial.time_ms)}</a>
-                                    {:else}
-                                        {formatTimeMs(trial.time_ms)}*
-                                    {/if}
-                                </td>
-                                
-                                <!-- Proof Column -->
-                                <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden desktop:table-cell">
-                                    <div class="flex items-center space-x-2">
-                                        {#if trial.proofs && trial.proofs.length > 0}
-                                            <!-- Proof icons -->
-                                            {#each trial.proofs as proof}
-                                                {@const iconInfo = getProofIcon(proof.url, proof.type)}
-                                                <a 
-                                                    href={proof.url} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    class="w-5 h-5"
-                                                    title="View proof: {iconInfo.title}"
-                                                >
-                                                    <svelte:component this={iconInfo.component}/>
-                                                    <Popover>
-                                                        <MediaEmbed url={proof.url} 
-                                                        fallbackText="Open Proof Link"
-                                                        classes="w-96"/>
-                                                    </Popover>
-                                                </a>
-                                            {/each}
-                                            <!-- Status badge (only for non-validated) -->
-                                            {#if trial.validation_status === 'unvalidated'}
-                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-900 text-yellow-300">
-                                                    Pending
-                                                </span>
-                                            {/if}
-                                        {:else}
-                                            <!-- No proof badge -->
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700">
-                                                No Proof
-                                            </span>
-                                        {/if}
-                                    </div>
-                                </td>
-                                
-                                <!-- Date Column -->
-                                <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm hidden desktop:table-cell">
-                                    {new Date(trial.created_at).toLocaleDateString()}
-                                </td>
-                                
-                                <!-- Edit Column -->
-                                {#if timeTrials.some(r => canEditTrial(r))}
-                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
-                                        {#if canEditTrial(trial)}
-                                            <a 
-                                                href="/{$page.params.lang}/time-trials/{trial.id}/edit"
-                                                class="text-blue-400 hover:text-blue-200 text-sm font-medium"
-                                            >
-                                                Edit
-                                            </a>
-                                        {/if}
-                                    </td>
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider">
+                                    Time
+                                </th>
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
+                                    Proof
+                                </th>
+                                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell">
+                                    Date
+                                </th>
+                                {#if timeTrials.some(record => canEditTrial(record))}
+                                    <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                        Edit
+                                    </th>
                                 {/if}
                             </tr>
-                        {/each}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {#each timeTrials as trial}
+                                <tr class="hover:bg-gray-700">
+                                    <!-- Track Column -->
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                        {getTrackDisplayName(trial.track)}
+                                    </td>
+                                    
+                                    <!-- Time Column -->
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-mono text-white">
+                                        {#if trial.proofs.length}
+                                            <a href={trial.proofs[0].url}>{formatTimeMs(trial.time_ms)}</a>
+                                        {:else}
+                                            {formatTimeMs(trial.time_ms)}*
+                                        {/if}
+                                    </td>
+                                    
+                                    <!-- Proof Column -->
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap hidden desktop:table-cell">
+                                        <div class="flex items-center space-x-2">
+                                            {#if trial.proofs && trial.proofs.length > 0}
+                                                <!-- Proof icons -->
+                                                {#each trial.proofs as proof}
+                                                    {@const iconInfo = getProofIcon(proof.url, proof.type)}
+                                                    <a 
+                                                        href={proof.url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        class="w-5 h-5"
+                                                        title="View proof: {iconInfo.title}"
+                                                    >
+                                                        <svelte:component this={iconInfo.component}/>
+                                                        <Popover>
+                                                            <MediaEmbed url={proof.url} 
+                                                            fallbackText="Open Proof Link"
+                                                            classes="w-96"/>
+                                                        </Popover>
+                                                    </a>
+                                                {/each}
+                                                <!-- Status badge (only for non-validated) -->
+                                                {#if trial.validation_status === 'unvalidated'}
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-900 text-yellow-300">
+                                                        Pending
+                                                    </span>
+                                                {/if}
+                                            {:else}
+                                                <!-- No proof badge -->
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-700">
+                                                    No Proof
+                                                </span>
+                                            {/if}
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Date Column -->
+                                    <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm hidden desktop:table-cell">
+                                        {new Date(trial.created_at).toLocaleDateString()}
+                                    </td>
+                                    
+                                    <!-- Edit Column -->
+                                    {#if timeTrials.some(r => canEditTrial(r))}
+                                        <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
+                                            {#if canEditTrial(trial)}
+                                                <a 
+                                                    href="/{$page.params.lang}/time-trials/{trial.id}/edit"
+                                                    class="text-blue-400 hover:text-blue-200 text-sm font-medium"
+                                                >
+                                                    Edit
+                                                </a>
+                                            {/if}
+                                        </td>
+                                    {/if}
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- Summary -->
-        <div class="mt-6 p-4 bg-gray-800 rounded border border-gray-600">
-            <div class="text-sm text-gray-300">
-                Showing {timeTrials.length} time trial{timeTrials.length !== 1 ? 's' : ''} for {playerName}
-                {#if !includeOutdated}
-                    <span class="text-gray-500">(best times only - enable "Show outdated times" to see all submissions)</span>
-                {/if}
+            <!-- Summary -->
+            <div class="mt-6 p-4 bg-gray-800 rounded border border-gray-600">
+                <div class="text-sm text-gray-300">
+                    Showing {timeTrials.length} time trial{timeTrials.length !== 1 ? 's' : ''} for {playerName}
+                    {#if !includeOutdated}
+                        <span class="text-gray-500">(best times only - enable "Show outdated times" to see all submissions)</span>
+                    {/if}
+                </div>
             </div>
-        </div>
-    {/if}
+        {/if}
+    {/key}
+    
 </Section>
 
 <style>

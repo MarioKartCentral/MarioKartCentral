@@ -50,6 +50,7 @@ const es: Translation = {
   },
   COMMON: {
     GAME: 'Juego',
+    TRACK: 'Track',
     MODE: 'Modo',
     GAME_MODE: 'Juego/Modo',
     NAME: 'Nombre',
@@ -69,6 +70,7 @@ const es: Translation = {
     ACTIONS: 'Acciones',
     SAVE: 'Guardar',
     SUBMIT: 'Enviar',
+    SUBMITTING: 'Submitting',
     CANCEL: 'Cancelar',
     SEARCH: 'Buscar',
     NONE: 'Ninguno',
@@ -87,6 +89,8 @@ const es: Translation = {
     WORKING: 'En proceso...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
+    PERMISSION_REQUIRED: 'Permission Required',
+    NO_PERMISSION_MESSAGE: "You don't have permission to access this feature.",
   },
   API_TOKENS: {
     API_TOKENS: 'API Tokens',
@@ -426,6 +430,10 @@ const es: Translation = {
     TOURNAMENT_SERIES: 'Series de torneos',
     TOURNAMENT_TEMPLATES: 'Plantillas de torneos',
     TIME_TRIALS: 'Contrarreloj',
+    TIME_TRIALS_HOME: 'Time Trials Home',
+    SUBMIT_TIME_TRIAL: 'Submit Time Trial',
+    VALIDATE_PROOFS: 'Validate Proofs',
+    PLAYER_TIMESHEETS: 'Player Timesheets',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registro',
     PLAYERS: 'Jugadores',
@@ -461,6 +469,7 @@ const es: Translation = {
       WORD_FILTER: 'Filtro de palabras',
       MANAGE_USERS: 'Manejar perfiles de usuario',
       ALT_DETECTION: 'Detección de alts',
+      TIME_TRIAL_VALIDATION: 'Time Trial Validation',
       FINGERPRINTS: 'Fingerprints',
       IP_SEARCH: 'IP Search',
     },
@@ -792,6 +801,7 @@ const es: Translation = {
     SUBMIT_TIME: 'Submit Time', // Added
     MY_SUBMISSIONS: 'My Submissions',
     LEADERBOARDS: 'Leaderboards',
+    TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game} Leaderboard', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',

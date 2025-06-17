@@ -428,6 +428,7 @@ const en_us: BaseTranslation = {
     TIME_TRIALS_HOME: 'Time Trials Home',
     SUBMIT_TIME_TRIAL: 'Submit Time Trial',
     VALIDATE_PROOFS: 'Validate Proofs',
+    PLAYER_TIMESHEETS: 'Player Timesheets',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registry',
     PLAYERS: 'Players',
