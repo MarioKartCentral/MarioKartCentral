@@ -7,13 +7,15 @@
     import { formatTime } from '$lib/utils/time';
     import LL from '$i18n/i18n-svelte';
     import { MKWORLD_TRACK_ABBREVIATIONS, type GameId } from '$lib/util/gameConstants';
-    import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid, ArrowLeftOutline } from 'flowbite-svelte-icons';
+    import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid, ArrowLeftOutline, ChevronDownOutline } from 'flowbite-svelte-icons';
     import Twitch from '$lib/components/icons/Twitch.svelte';
     import { user } from '$lib/stores/stores';
     import { check_permission, permissions } from '$lib/util/permissions';
     import MediaEmbed from '$lib/components/media/MediaEmbed.svelte';
     import { Popover } from 'flowbite-svelte';
     import type { TimeTrial, TimeTrialListResponse } from '$lib/types/time-trials';
+    import Dropdown from '$lib/components/common/Dropdown.svelte';
+    import DropdownItem from '$lib/components/common/DropdownItem.svelte';
 
     const game = $page.params.game as GameId;
     
@@ -462,12 +464,21 @@
                                     </td>
                                     {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                                         <td class="px-4 desktop:px-6 py-4 whitespace-nowrap">
-                                            <button 
-                                                on:click={() => markTimeTrialAsInvalid(record.id)}
-                                                class="hover:text-blue-200 text-sm font-medium bg-transparent border-none cursor-pointer"
-                                            >
-                                                Mark Invalid
-                                            </button>
+                                            <ChevronDownOutline class="inline cursor-pointer"/>
+                                            <Dropdown>
+                                                <DropdownItem href="/{$page.params.lang}/time-trials/{game}/edit?trial_id={record.id}">
+                                                    Edit
+                                                </DropdownItem>
+                                                <DropdownItem>
+                                                    <button 
+                                                        on:click={() => markTimeTrialAsInvalid(record.id)}
+                                                        class="hover:text-blue-200 text-sm font-medium bg-transparent border-none cursor-pointer"
+                                                    >
+                                                        Mark Invalid
+                                                    </button>
+                                                </DropdownItem>
+                                            </Dropdown>
+                                            
                                         </td>
                                     {/if}
                                 </tr>

@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { GAMES, TRACKS_BY_GAME, ENGINE_CLASSES, type GameId, getTrackAbbreviation, getTrackFromAbbreviation } from '$lib/util/gameConstants';
+    import { GAMES, TRACKS_BY_GAME, type GameId, getTrackAbbreviation, getTrackFromAbbreviation } from '$lib/util/gameConstants';
     import { parseTimeString, validateProofs, formatTimeMs } from '$lib/util/timeTrialUtils';
     import { user } from '$lib/stores/stores';
     import { check_permission, permissions } from '$lib/util/permissions';
@@ -23,7 +23,7 @@
     });
 
     // Get trial ID from URL params
-    let trialId = $page.params.trial_id;
+    let trialId = $page.url.searchParams.get("trial_id");
     
     // Original time trial data
     let originalTrial: TimeTrial | null = null;
@@ -58,7 +58,7 @@
     }));
 
     // Permissions
-    $: hasValidatePermission = user_info?.id && check_permission(user_info, permissions.validate_time_trial_proof, true);
+    $: hasValidatePermission = user_info?.id !== null && check_permission(user_info, permissions.validate_time_trial_proof, true);
     $: canEditThisTrial = originalTrial && (
         (originalTrial.player_id === user_info?.player?.id?.toString()) || 
         hasValidatePermission
@@ -462,9 +462,11 @@
                     <div class="proof-item-grouping deleted-proof" style="border: 1px solid #7f1d1d; padding: 1rem; margin-top: 1rem; margin-bottom: 1rem; border-radius: 0.25rem; background-color: rgba(127, 29, 29, 0.1);">
                         <div class="option">
                             <span class="text-red-400">Proof marked for deletion: {proof.url || '(empty)'}</span>
-                            <Button on:click={() => undoDeleteProof(proof.id)} color="alternative">
-                                Undo Delete
-                            </Button>
+                            {#if canEditProof(proof)}
+                                <Button on:click={() => undoDeleteProof(proof.id)} color="alternative">
+                                    Undo Delete
+                                </Button>
+                            {/if}
                         </div>
                     </div>
                 {:else}
@@ -506,10 +508,13 @@
                             {/if}
                             <div class="option">
                                 <span style="width: 150px; margin-right: 10px;"></span>
-                                <Button on:click={() => removeProof(proof.id)} color="red">
-                                    <TrashBinOutline class="w-4 h-4 mr-1" /> 
-                                    {proof.isNew ? 'Remove' : 'Delete'}
-                                </Button>
+                                {#if canRemoveProof(proof)}
+                                    <Button on:click={() => removeProof(proof.id)} color="red">
+                                        <TrashBinOutline class="w-4 h-4 mr-1" /> 
+                                        {proof.isNew ? 'Remove' : 'Delete'}
+                                    </Button>
+                                {/if}
+                                
                             </div>
                         </div>
                         
