@@ -577,8 +577,8 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
     proofs: List[EditProofDictRequired]
     version: int
     current_player_id: int  # ID of logged-in player making the edit
-    player_id: int
-    is_invalid: bool
+    player_id: int | None
+    is_invalid: bool | None
     can_validate: bool = False
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> TimeTrialResponseData:
@@ -630,6 +630,9 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             # Only validators can modify is_invalid
             if self.is_invalid != current_is_invalid and not self.can_validate:
                 raise Problem("Only validators can modify invalid status", status=403)
+            
+            player_id = self.player_id if self.player_id is not None else int(current_player_id_db)
+            is_invalid = self.is_invalid if self.is_invalid is not None else bool(current_is_invalid)
 
             # Parse current proofs
             current_proofs_data = msgspec.json.decode(current_proofs_json, type=List[TimeTrialProof]) if current_proofs_json else []
@@ -640,7 +643,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                 self.game != current_game or 
                 self.track != current_track or 
                 self.time_ms != current_time_ms or
-                self.player_id != current_player_id_db
+                player_id != current_player_id_db
             )
 
             for proof_data in self.proofs:
@@ -725,7 +728,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                 updated_proofs.append(updated_proof)
 
             # Calculate new validation status
-            new_validation_status = calculate_validation_status(updated_proofs, self.is_invalid)
+            new_validation_status = calculate_validation_status(updated_proofs, is_invalid)
             
             # Update the time trial
             updated_proofs_json = msgspec.json.encode(updated_proofs).decode() if updated_proofs else None
@@ -743,8 +746,8 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                 "track": self.track,
                 "time_ms": self.time_ms,
                 "proofs": updated_proofs_json,
-                "player_id": self.player_id,
-                "is_invalid": self.is_invalid,
+                "player_id": player_id,
+                "is_invalid": is_invalid,
                 "validation_status": new_validation_status,
                 "version": new_version,
                 "updated_at": now_iso,
@@ -769,7 +772,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             return TimeTrialResponseData(
                 id=self.time_trial_id,
                 version=new_version,
-                player_id=self.player_id,
+                player_id=player_id,
                 game=self.game,
                 track=self.track,
                 time_ms=self.time_ms,
@@ -780,7 +783,6 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                 player_name=None,
                 player_country_code=None
             )
-
 
 @dataclass
 class GetTimesheetCommand(Command[List[TimeTrialResponseData]]):
