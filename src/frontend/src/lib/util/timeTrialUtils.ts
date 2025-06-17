@@ -2,7 +2,7 @@
  * Time trial utility functions following established patterns.
  */
 
-import type { ProofRequestData } from "$lib/types/time-trials";
+import type { ProofRequestData } from '$lib/types/time-trials';
 
 export interface ParsedTime {
   minutes: number;

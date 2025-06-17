@@ -8,7 +8,7 @@ export interface Proof {
   url: string;
   type: string;
   created_at: string;
-  status: "valid" | "invalid" | "unvalidated";
+  status: 'valid' | 'invalid' | 'unvalidated';
   validator_id?: number | null;
   validated_at?: string | null;
 }
@@ -25,7 +25,7 @@ export interface TimeTrial {
   updated_at: string;
   player_name?: string | null;
   player_country_code?: string | null;
-  validation_status: "valid" | "invalid" | "unvalidated" | "proofless";
+  validation_status: 'valid' | 'invalid' | 'unvalidated' | 'proofless';
 }
 
 export interface TimeTrialListResponse {
