@@ -112,7 +112,9 @@ export function validateProofs(proofs: Array<ProofRequestData>): string[] {
       // Check for Discord URLs which have short expiry times
       const url = proof.url.trim().toLowerCase();
       if (url.includes('discordapp')) {
-        errors.push(`Discord URLs are not allowed for proof as they automatically delete. Please upload your proof somewhere permanent such as YouTube, Twitch, X/Twitter, Imgur, or PostImg.cc.`);
+        errors.push(
+          `Discord URLs are not allowed for proof as they automatically delete. Please upload your proof somewhere permanent such as YouTube, Twitch, X/Twitter, Imgur, or PostImg.cc.`,
+        );
       }
     }
 
