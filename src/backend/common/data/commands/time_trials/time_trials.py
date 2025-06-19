@@ -666,7 +666,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             current_proofs_data = msgspec.json.decode(current_proofs_json, type=List[TimeTrialProof]) if current_proofs_json else []
             
             # Process proof changes
-            updated_proofs = []
+            updated_proofs: List[TimeTrialProof] = []
             core_fields_changed: bool = (
                 self.game != current_game or 
                 self.track != current_track or 
@@ -759,7 +759,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             new_validation_status = calculate_validation_status(updated_proofs, is_invalid)
             
             # Update the time trial
-            updated_proofs_json = msgspec.json.encode(updated_proofs).decode() if updated_proofs else None
+            updated_proofs_json = msgspec.json.encode(updated_proofs).decode()
             
             update_query = """
                 UPDATE time_trials 
