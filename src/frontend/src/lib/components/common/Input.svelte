@@ -12,11 +12,6 @@
     export let pattern: string | null = null;
     export let title: string | null = null;
 
-    const handleInput = (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        value = target.value;
-    };
-
     function trim_value() {
         if (no_white_space && value) {
             value = value.trim();
@@ -30,12 +25,12 @@
     {minlength}
     {maxlength}
     {placeholder}
-    value={value}
-    type={type}
+    bind:value={value}
+    {...{type}}
     {required}
     {disabled}
     {pattern}
     {title}
-    on:input={handleInput}
+    on:input
     on:blur={trim_value}
 />
