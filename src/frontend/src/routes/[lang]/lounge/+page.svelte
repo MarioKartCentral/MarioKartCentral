@@ -5,6 +5,7 @@
   import LogoMKW from '$lib/assets/logo_loungemkw.jpg';
   import LogoMKTC from '$lib/assets/logo_loungemktc.png';
   import LogoMK7 from '$lib/assets/logo_loungemk7.png';
+  import LogoMKWorld from '$lib/assets/logo_loungemkworld.gif';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import DiscordInviteButton from '$lib/components/common/buttons/DiscordInviteButton.svelte';
   import LinkButton from '$lib/components/common/buttons/LinkButton.svelte';
@@ -13,6 +14,23 @@
 
 <main class="container">
   <h1>{$LL.LOUNGE.LOUNGE()}</h1>
+
+  <h2>{$LL.GAMES.MKWORLD()}</h2>
+  <GameBadge game="mkworld" />
+  <Section header={'Lounge'}>
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={LogoMKWorld} alt="Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <LinkButton href="https://lounge.mkcentral.com/mkworld">{$LL.LOUNGE.WEBSITE()}</LinkButton>
+        </div>
+        <div class="mb-2 mx-2">
+          <DiscordInviteButton href="https://discord.gg/WR6JKPn2v9"/>
+        </div>
+      </div>
+    </div>
+  </Section>
+
   <h2>{$LL.GAMES.MK8DX()}</h2>
   <GameBadge game="mk8dx" />
   <Section header={'150cc Lounge'}>
@@ -20,7 +38,7 @@
       <img class="w-32 h-32" src={Logo150Animated} alt="150cc Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <LinkButton href="https://mk8dx-lounge.com/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
+          <LinkButton href="https://lounge.mkcentral.com/mk8dx">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
           <DiscordInviteButton href="https://discord.gg/revmGkE"/>
