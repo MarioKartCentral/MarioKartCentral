@@ -144,7 +144,7 @@ class RateLimitByIPMiddleware:
                 r"/api/user/sync_discord_avatar": [Rule(minute=3, hour=10)],
                 r"/api/registry/teams/edit": [Rule(minute=3, hour=10)],
                 r"/api/tournaments/\d+/create": [Rule(minute=3, hour=10)],
-                r"^/api/tournaments/\d+/edit": [Rule(minute=3, hour=10)],
+                r"^/api/tournaments/\d+/edit": [Rule(minute=3, hour=30)],
             },
             on_blocked=self.on_blocked
         )
