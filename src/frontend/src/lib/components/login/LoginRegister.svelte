@@ -13,6 +13,11 @@
 
     let email = "";
     let password = "";
+    let show_password = false;
+
+    const togglePasswordVisibility = () => {
+        show_password = !show_password
+    }
 
     async function loginOrSignup(isLogin: boolean) {
         working = true;
@@ -85,7 +90,17 @@
                     <span class="item-label">
                         <label for="password">{$LL.LOGIN.PASSWORD()}</label>
                     </span>
-                    <input name="password" type="password" required bind:value={password} maxlength=64/>
+                    {#if show_password}
+                        <input name="password" type="text" required bind:value={password} maxlength=64/>
+                    {:else}
+                        <input name="password" type="password" required bind:value={password} maxlength=64/>
+                    {/if}
+                </div>
+                <div class="option">
+                    <span class="item-label">
+                        <label for="show-password">Show Password</label>
+                    </span>
+                    <input type="checkbox" on:click={togglePasswordVisibility} />
                 </div>
                 <div class="login-row">
                     <Button extra_classes="login-btn" type="submit" {working}>{$LL.LOGIN.LOGIN()}</Button>

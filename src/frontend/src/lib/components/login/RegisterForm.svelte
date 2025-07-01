@@ -13,8 +13,13 @@
     const min_length = 8;
 
     let confirm_password = "";
+    let show_password = false;
     let agree_terms = false;
     let agree_policy = false;
+
+    const togglePasswordVisibility = () => {
+        show_password = !show_password
+    }
 
     $: button_disabled = password.length < 8 || password != confirm_password || (!is_change && !is_reset && (!agree_terms || !agree_policy));
 </script>
@@ -49,13 +54,27 @@
                     {/if}
                 </label>
             </span>
-            <input name="password" type="password" minlength={min_length} maxlength=64 bind:value={password} required/>
+            {#if show_password}
+                <input name="password" type="text" minlength={min_length} maxlength=64 bind:value={password} required/>
+            {:else}
+                <input name="password" type="password" minlength={min_length} maxlength=64 bind:value={password} required/>
+            {/if}
         </div>
         <div class="option">
             <span class="item-label">
                 <label for="confirm-password">{$LL.LOGIN.CONFIRM_PASSWORD()}</label>
             </span>
-            <input name="confirm-password" type="password" minlength={min_length} maxlength=64 bind:value={confirm_password} required/>
+            {#if show_password}
+                <input name="confirm-password" type="text" minlength={min_length} maxlength=64 bind:value={confirm_password} required/>
+            {:else}
+                <input name="confirm-password" type="password" minlength={min_length} maxlength=64 bind:value={confirm_password} required/>
+            {/if}
+        </div>
+        <div class="option">
+            <span class="item-label">
+                <label for="show-password">Show Password</label>
+            </span>
+            <input type="checkbox" on:click={togglePasswordVisibility} />
         </div>
         {#if !is_change && !is_reset}
             <div class="option">
@@ -131,5 +150,13 @@
     }
     .terms-label {
         text-decoration: underline;
+    }
+    .show-password-button {
+        font-size: 10pt;
+        padding: 8px;
+        border-radius: 5px;
+    }
+    .show-password-button:hover {
+        background-color: #256046;
     }
 </style>
