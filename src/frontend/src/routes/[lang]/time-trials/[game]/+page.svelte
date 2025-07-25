@@ -21,7 +21,7 @@
 
   function getTranslatedTrackName(trackName: string): string {
     const trackId = MKWORLD_TRACK_TRANSLATION_IDS[trackName as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
-    return $LL.TRACKS[trackId as keyof typeof $LL.TRACKS]();;
+    return $LL.TRACKS[trackId as keyof typeof $LL.TRACKS]();
   }
 </script>
 

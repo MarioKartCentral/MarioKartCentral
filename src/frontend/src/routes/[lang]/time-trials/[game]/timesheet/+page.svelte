@@ -57,7 +57,7 @@
         if (gameId === 'mkworld') {
             const fullName = getTrackFromAbbreviation(gameId, trackAbbr);
             const nameId = MKWORLD_TRACK_TRANSLATION_IDS[fullName as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
-            const translatedName = $LL.TRACKS[nameId as keyof typeof $LL.TRACKS]();;
+            const translatedName = $LL.TRACKS[nameId as keyof typeof $LL.TRACKS]();
             return translatedName || fullName || trackAbbr;
         }
         return trackAbbr;
