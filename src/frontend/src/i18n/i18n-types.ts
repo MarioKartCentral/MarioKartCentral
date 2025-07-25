@@ -5394,6 +5394,128 @@ type RootTranslation = {
 		 */
 		ZW: string
 	}
+	TRACKS: {
+		/**
+		 * M​a​r​i​o​ ​B​r​o​s​.​ ​C​i​r​c​u​i​t
+		 */
+		MARIO_BROS_CIRCUIT: string
+		/**
+		 * C​r​o​w​n​ ​C​i​t​y
+		 */
+		CROWN_CITY: string
+		/**
+		 * W​h​i​s​t​l​e​s​t​o​p​ ​S​u​m​m​i​t
+		 */
+		WHISTLESTOP_SUMMIT: string
+		/**
+		 * D​K​ ​S​p​a​c​e​p​o​r​t
+		 */
+		DK_SPACEPORT: string
+		/**
+		 * D​e​s​e​r​t​ ​H​i​l​l​s
+		 */
+		DESERT_HILLS: string
+		/**
+		 * S​h​y​ ​G​u​y​ ​B​a​z​a​a​r
+		 */
+		SHY_GUY_BAZAAR: string
+		/**
+		 * W​a​r​i​o​ ​S​t​a​d​i​u​m
+		 */
+		WARIO_STADIUM: string
+		/**
+		 * A​i​r​s​h​i​p​ ​F​o​r​t​r​e​s​s
+		 */
+		AIRSHIP_FORTRESS: string
+		/**
+		 * D​K​ ​P​a​s​s
+		 */
+		DK_PASS: string
+		/**
+		 * S​t​a​r​v​i​e​w​ ​P​e​a​k
+		 */
+		STARVIEW_PEAK: string
+		/**
+		 * S​k​y​ ​H​i​g​h​ ​S​u​n​d​a​e
+		 */
+		SKY_HIGH_SUNDAE: string
+		/**
+		 * W​a​r​i​o​ ​S​h​i​p​y​a​r​d
+		 */
+		WARIO_SHIPYARD: string
+		/**
+		 * K​o​o​p​a​ ​T​r​o​o​p​a​ ​B​e​a​c​h
+		 */
+		KOOPA_TROOPA_BEACH: string
+		/**
+		 * F​a​r​a​w​a​y​ ​O​a​s​i​s
+		 */
+		FARAWAY_OASIS: string
+		/**
+		 * P​e​a​c​h​ ​S​t​a​d​i​u​m
+		 */
+		PEACH_STADIUM: string
+		/**
+		 * P​e​a​c​h​ ​B​e​a​c​h
+		 */
+		PEACH_BEACH: string
+		/**
+		 * S​a​l​t​y​ ​S​a​l​t​y​ ​S​p​e​e​d​w​a​y
+		 */
+		SALTY_SALTY_SPEEDWAY: string
+		/**
+		 * D​i​n​o​ ​D​i​n​o​ ​J​u​n​g​l​e
+		 */
+		DINO_DINO_JUNGLE: string
+		/**
+		 * G​r​e​a​t​ ​?​ ​B​l​o​c​k​ ​R​u​i​n​s
+		 */
+		GREAT_BLOCK_RUINS: string
+		/**
+		 * C​h​e​e​p​ ​C​h​e​e​p​ ​F​a​l​l​s
+		 */
+		CHEEP_CHEEP_FALLS: string
+		/**
+		 * D​a​n​d​e​l​i​o​n​ ​D​e​p​t​h​s
+		 */
+		DANDELION_DEPTHS: string
+		/**
+		 * B​o​o​ ​C​i​n​e​m​a
+		 */
+		BOO_CINEMA: string
+		/**
+		 * D​r​y​ ​B​o​n​e​s​ ​B​u​r​n​o​u​t
+		 */
+		DRY_BONES_BURNOUT: string
+		/**
+		 * M​o​o​ ​M​o​o​ ​M​e​a​d​o​w​s
+		 */
+		MOO_MOO_MEADOWS: string
+		/**
+		 * C​h​o​c​o​ ​M​o​u​n​t​a​i​n
+		 */
+		CHOCO_MOUNTAIN: string
+		/**
+		 * T​o​a​d​'​s​ ​F​a​c​t​o​r​y
+		 */
+		TOADS_FACTORY: string
+		/**
+		 * B​o​w​s​e​r​'​s​ ​C​a​s​t​l​e
+		 */
+		BOWSERS_CASTLE: string
+		/**
+		 * A​c​o​r​n​ ​H​e​i​g​h​t​s
+		 */
+		ACORN_HEIGHTS: string
+		/**
+		 * M​a​r​i​o​ ​C​i​r​c​u​i​t
+		 */
+		MARIO_CIRCUIT: string
+		/**
+		 * R​a​i​n​b​o​w​ ​R​o​a​d
+		 */
+		RAINBOW_ROAD: string
+	}
 }
 
 export type TranslationFunctions = {
@@ -10640,6 +10762,128 @@ export type TranslationFunctions = {
 		 * Zimbabwe
 		 */
 		ZW: () => LocalizedString
+	}
+	TRACKS: {
+		/**
+		 * Mario Bros. Circuit
+		 */
+		MARIO_BROS_CIRCUIT: () => LocalizedString
+		/**
+		 * Crown City
+		 */
+		CROWN_CITY: () => LocalizedString
+		/**
+		 * Whistlestop Summit
+		 */
+		WHISTLESTOP_SUMMIT: () => LocalizedString
+		/**
+		 * DK Spaceport
+		 */
+		DK_SPACEPORT: () => LocalizedString
+		/**
+		 * Desert Hills
+		 */
+		DESERT_HILLS: () => LocalizedString
+		/**
+		 * Shy Guy Bazaar
+		 */
+		SHY_GUY_BAZAAR: () => LocalizedString
+		/**
+		 * Wario Stadium
+		 */
+		WARIO_STADIUM: () => LocalizedString
+		/**
+		 * Airship Fortress
+		 */
+		AIRSHIP_FORTRESS: () => LocalizedString
+		/**
+		 * DK Pass
+		 */
+		DK_PASS: () => LocalizedString
+		/**
+		 * Starview Peak
+		 */
+		STARVIEW_PEAK: () => LocalizedString
+		/**
+		 * Sky High Sundae
+		 */
+		SKY_HIGH_SUNDAE: () => LocalizedString
+		/**
+		 * Wario Shipyard
+		 */
+		WARIO_SHIPYARD: () => LocalizedString
+		/**
+		 * Koopa Troopa Beach
+		 */
+		KOOPA_TROOPA_BEACH: () => LocalizedString
+		/**
+		 * Faraway Oasis
+		 */
+		FARAWAY_OASIS: () => LocalizedString
+		/**
+		 * Peach Stadium
+		 */
+		PEACH_STADIUM: () => LocalizedString
+		/**
+		 * Peach Beach
+		 */
+		PEACH_BEACH: () => LocalizedString
+		/**
+		 * Salty Salty Speedway
+		 */
+		SALTY_SALTY_SPEEDWAY: () => LocalizedString
+		/**
+		 * Dino Dino Jungle
+		 */
+		DINO_DINO_JUNGLE: () => LocalizedString
+		/**
+		 * Great ? Block Ruins
+		 */
+		GREAT_BLOCK_RUINS: () => LocalizedString
+		/**
+		 * Cheep Cheep Falls
+		 */
+		CHEEP_CHEEP_FALLS: () => LocalizedString
+		/**
+		 * Dandelion Depths
+		 */
+		DANDELION_DEPTHS: () => LocalizedString
+		/**
+		 * Boo Cinema
+		 */
+		BOO_CINEMA: () => LocalizedString
+		/**
+		 * Dry Bones Burnout
+		 */
+		DRY_BONES_BURNOUT: () => LocalizedString
+		/**
+		 * Moo Moo Meadows
+		 */
+		MOO_MOO_MEADOWS: () => LocalizedString
+		/**
+		 * Choco Mountain
+		 */
+		CHOCO_MOUNTAIN: () => LocalizedString
+		/**
+		 * Toad's Factory
+		 */
+		TOADS_FACTORY: () => LocalizedString
+		/**
+		 * Bowser's Castle
+		 */
+		BOWSERS_CASTLE: () => LocalizedString
+		/**
+		 * Acorn Heights
+		 */
+		ACORN_HEIGHTS: () => LocalizedString
+		/**
+		 * Mario Circuit
+		 */
+		MARIO_CIRCUIT: () => LocalizedString
+		/**
+		 * Rainbow Road
+		 */
+		RAINBOW_ROAD: () => LocalizedString
 	}
 }
 

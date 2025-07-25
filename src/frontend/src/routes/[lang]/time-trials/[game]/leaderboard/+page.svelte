@@ -6,7 +6,7 @@
     import Section from '$lib/components/common/Section.svelte';
     import { formatTime } from '$lib/utils/time';
     import LL from '$i18n/i18n-svelte';
-    import { MKWORLD_TRACK_ABBREVIATIONS, type GameId } from '$lib/util/gameConstants';
+    import { MKWORLD_TRACK_ABBREVIATIONS, MKWORLD_TRACK_TRANSLATION_IDS, type GameId } from '$lib/util/gameConstants';
     import { XCompanySolid, YoutubeSolid, CameraFotoSolid, VideoCameraSolid, ArrowLeftOutline, ChevronDownOutline } from 'flowbite-svelte-icons';
     import Twitch from '$lib/components/icons/Twitch.svelte';
     import { user } from '$lib/stores/stores';
@@ -125,7 +125,9 @@
             const fullName = Object.keys(MKWORLD_TRACK_ABBREVIATIONS).find(
                 name => MKWORLD_TRACK_ABBREVIATIONS[name] === trackAbbr
             );
-            return fullName || trackAbbr;
+            const nameId = MKWORLD_TRACK_TRANSLATION_IDS[fullName as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
+            const translatedName = $LL.TRACKS[nameId as keyof typeof $LL.TRACKS]();;
+            return translatedName || fullName || trackAbbr;
         }
         return trackAbbr;
     }

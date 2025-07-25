@@ -7,6 +7,7 @@
         GAMES, 
         getTrackFromAbbreviation,
         MKWORLD_TRACKS,
+        MKWORLD_TRACK_TRANSLATION_IDS,
         type GameId 
     } from '$lib/util/gameConstants';
     import { formatTimeMs } from '$lib/util/timeTrialUtils';
@@ -55,7 +56,9 @@
     function getTrackDisplayName(trackAbbr: string): string {
         if (gameId === 'mkworld') {
             const fullName = getTrackFromAbbreviation(gameId, trackAbbr);
-            return fullName || trackAbbr;
+            const nameId = MKWORLD_TRACK_TRANSLATION_IDS[fullName as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
+            const translatedName = $LL.TRACKS[nameId as keyof typeof $LL.TRACKS]();;
+            return translatedName || fullName || trackAbbr;
         }
         return trackAbbr;
     }

@@ -81,6 +81,40 @@ export const MKWORLD_TRACK_ABBREVIATIONS: Record<string, string> = {
   'Rainbow Road': 'RR',
 };
 
+// Simple abbreviations for MKWorld tracks (updated)
+export const MKWORLD_TRACK_TRANSLATION_IDS: Record<string, string> = {
+  'Mario Bros. Circuit': 'MARIO_BROS_CIRCUIT',
+  'Crown City': 'CROWN_CITY',
+  'Whistlestop Summit': 'WHISTLESTOP_SUMMIT',
+  'DK Spaceport': 'DK_SPACEPORT',
+  'Desert Hills': 'DESERT_HILLS',
+  'Shy Guy Bazaar': 'SHY_GUY_BAZAAR',
+  'Wario Stadium': 'WARIO_STADIUM',
+  'Airship Fortress': 'AIRSHIP_FORTRESS',
+  'DK Pass': 'DK_PASS',
+  'Starview Peak': 'STARVIEW_PEAK',
+  'Sky High Sundae': 'SKY_HIGH_SUNDAE',
+  'Wario Shipyard': 'WARIO_SHIPYARD',
+  'Koopa Troopa Beach': 'KOOPA_TROOPA_BEACH',
+  'Faraway Oasis': 'FARAWAY_OASIS',
+  'Peach Stadium': 'PEACH_STADIUM',
+  'Peach Beach': 'PEACH_BEACH',
+  'Salty Salty Speedway': 'SALTY_SALTY_SPEEDWAY',
+  'Dino Dino Jungle': 'DINO_DINO_JUNGLE',
+  'Great ? Block Ruins': 'GREAT_BLOCK_RUINS',
+  'Cheep Cheep Falls': 'CHEEP_CHEEP_FALLS',
+  'Dandelion Depths': 'DANDELION_DEPTHS',
+  'Boo Cinema': 'BOO_CINEMA',
+  'Dry Bones Burnout': 'DRY_BONES_BURNOUT',
+  'Moo Moo Meadows': 'MOO_MOO_MEADOWS',
+  'Choco Mountain': 'CHOCO_MOUNTAIN',
+  "Toad's Factory": 'TOADS_FACTORY',
+  "Bowser's Castle": 'BOWSERS_CASTLE',
+  'Acorn Heights': 'ACORN_HEIGHTS',
+  'Mario Circuit': 'MARIO_CIRCUIT',
+  'Rainbow Road': 'RAINBOW_ROAD',
+};
+
 // Reverse mapping for MKWorld
 export const MKWORLD_ABBREVIATION_TO_TRACK = Object.fromEntries(
   Object.entries(MKWORLD_TRACK_ABBREVIATIONS).map(([track, abbr]) => [abbr, track]),
