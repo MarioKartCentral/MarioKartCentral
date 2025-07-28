@@ -19,9 +19,12 @@
   $: tracks = TRACKS_BY_GAME[game] || [];
   $: gameName = GAMES[game] || 'Unknown Game';
 
-  function getTranslatedTrackName(trackName: string): string {
-    const trackId = MKWORLD_TRACK_TRANSLATION_IDS[trackName as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
-    return $LL.TRACKS[trackId as keyof typeof $LL.TRACKS]();
+  function getTranslatedTrackName(game: GameId, track: string): string {
+    if(GAMES[game] === GAMES.mkworld) {
+      const trackId = MKWORLD_TRACK_TRANSLATION_IDS[track as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
+      return $LL.MARIO_KART_WORLD.TRACKS[trackId as keyof typeof $LL.MARIO_KART_WORLD.TRACKS]();
+    }
+    return track;
   }
 </script>
 
@@ -71,7 +74,7 @@
           extra_classes="flex items-center"
           href={`/${$page.params.lang}/time-trials/${game}/leaderboard?track=${getTrackAbbreviation(game, track)}`}
         >
-          {getTranslatedTrackName(track) || track}
+          {getTranslatedTrackName(game, track) || track}
         </Button>
       {/each}
     </div>
