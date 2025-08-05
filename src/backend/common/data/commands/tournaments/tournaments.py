@@ -380,7 +380,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             s3_body = s3_object['Body']
 
             now = datetime.now(timezone.utc)
-            if (now - datetime.fromisoformat(str(last_modified)).replace(tzinfo=timezone.utc)) < timedelta(hours=1):
+            if (now - datetime.fromisoformat(str(last_modified)).replace(tzinfo=timezone.utc)) < timedelta(seconds=1):
                 return msgspec.json.decode(s3_body if isinstance(s3_body, bytes) else str(s3_body).encode('utf-8'), type=list[TournamentWithPlacements])
 
         async with db_wrapper.connect(readonly=True) as db:
@@ -392,25 +392,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                 SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public
                 FROM tournaments WHERE series_id = ? AND is_viewable = 1 AND is_public = 1 ORDER BY date_start DESC
             """
-            tournament_players_query = f"""
-                SELECT 
-                    tp.id,
-                    tp.tournament_id,
-                    tp.player_id,
-                    p.name,
-                    p.country_code,
-                    pla.placement,
-                    pla.placement_description,
-                    pla.placement_lower_bound,
-                    pla.is_disqualified,
-                    tr.color
-                    FROM tournament_players tp
-                    LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
-                    JOIN tournament_placements pla ON tr.id = pla.registration_id
-                    LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0 AND t.is_viewable = 1 AND t.is_public = 1)
-             """
-            tournament_squads_query = f"""
+            tournament_registrations_and_placements_query = f"""
                  SELECT
                     tr.id,
                     tr.tournament_id,
@@ -424,7 +406,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tr.timestamp
                     FROM tournament_registrations tr
                     JOIN tournament_placements pla ON pla.registration_id = tr.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)  
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_viewable = 1 AND t.is_public = 1)  
             """
             squad_rosters_query = """
                 SELECT tsr.registration_id,
@@ -439,9 +421,9 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     JOIN team_rosters r ON tsr.roster_id = r.id
                     JOIN teams t ON r.team_id = t.id
                     JOIN tournament_registrations tr ON tsr.registration_id = tr.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
+                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_viewable = 1 AND t.is_public = 1)
                 """
-            squad_players_query = f"""
+            tournament_players_and_players_details_query = f"""
                 SELECT 
                     tp.id,
                     tp.tournament_id,
@@ -451,14 +433,14 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.country_code
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
+                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_viewable = 1 AND t.is_public = 1)
                     
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
             squad_players_map: dict[int, list[SquadPlayerDetails]] = {}
 
-            # First get all tournaments
+            # First : get all tournaments
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -469,11 +451,11 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable),
                         bool(is_public), "", []
                     )
-                    tournaments.append(tournament)
                     placements[tournament.id] = tournament.placements
+                    tournaments.append(tournament)
 
-            # First collect all squad players and organize them by squad_id
-            async with db.execute(squad_players_query, (series_id,)) as cursor:
+            # Second : get all tournament_players and players details
+            async with db.execute(tournament_players_and_players_details_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, tournament_id, player_id, squad_id, name, country_code = row
@@ -500,64 +482,9 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         squad_players_map[squad_id] = []
                     squad_players_map[squad_id].append(player)
 
-            # Process solo players
-            async with db.execute(tournament_players_query, (series_id,)) as cursor:
-                rows = await cursor.fetchall()
-                for row in rows:
-                    (
-                        id,
-                        tournament_id,
-                        player_id,
-                        name,
-                        country_code,
-                        placement,
-                        placement_description,
-                        placement_lower_bound,
-                        is_disqualified,
-                        color
-                    ) = row
-                    color = color if color is not None else 1
-                    placement = TournamentPlacementDetailed(
-                        registration_id=id,
-                        placement=placement,
-                        placement_description=placement_description,
-                        placement_lower_bound=placement_lower_bound,
-                        is_disqualified=bool(is_disqualified),
-                        squad=TournamentSquadDetails(
-                            id=id,
-                            name="",
-                            tag="",
-                            color=color,
-                            timestamp=0,
-                            is_registered=True,
-                            is_approved=True,
-                            players=[SquadPlayerDetails(
-                                id=id,
-                                player_id=player_id,
-                                registration_id=0,
-                                timestamp=0,
-                                is_checked_in=True,
-                                is_approved=True,
-                                mii_name="mii",
-                                can_host=False,
-                                name=name,
-                                country_code=country_code,
-                                discord=None,
-                                selected_fc_id=None,
-                                friend_codes=[],
-                                is_squad_captain=True,
-                                is_representative=True,
-                                is_invite=True,
-                                is_bagger_clause=False
-                            )],
-                            rosters=[]
-                        )
-                    )
-                    placements[tournament_id].append(placement)
-
-            # Process squads and add their players
+            # Third : get all registrations, placements and add players linked to them
             squad_dict: dict[int, TournamentSquadDetails] = {}
-            async with db.execute(tournament_squads_query, (series_id,)) as cursor:
+            async with db.execute(tournament_registrations_and_placements_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (
@@ -574,8 +501,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     ) = row
 
                     # Get players for this squad
-                    squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [
-                    ])
+                    squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [])
 
                     squad = TournamentSquadDetails(
                             id=id,
@@ -600,6 +526,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     )
                     placements[tournament_id].append(placement)
 
+                # Fourth : find squad's roster if it exists
                 async with db.execute(squad_rosters_query, (series_id,)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:

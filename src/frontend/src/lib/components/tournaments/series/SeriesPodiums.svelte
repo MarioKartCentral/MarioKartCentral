@@ -89,28 +89,26 @@
               {#each t.placements as p}
                 <span class={getColor(p.placement) + ' bold'}>
                   {getMedal(p.placement)}
+                  <!-- Display roster's name if it's a linked to a roster -->
                   {#if p.squad.rosters.length}
                     <a href={`/${$page.params.lang}/registry/teams/profile?id=${p.squad.rosters[0].team_id}`}>
                       {p.squad.rosters[0].team_name}
                     </a>
-                  {:else if p.squad.name}
+                  <!-- Display squad name if it's a 6v6 event -->
+                  {:else if p.squad.players.length > 5}
                     <a href="/{$page.params.lang}/tournaments/details?id={t.id}">
                       {p.squad.name}
                     </a>
+                  <!-- Display squad's players if it's a "ffa"/"mogi" style event -->
                   {:else}
-                    {#each p.squad.players as player, i}
-                      {#if i < 4}
-                        <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
-                          {player.name}
-                        </a>
-                        {#if player !== p.squad.players[p.squad.players.length - 1]}
-                          <span class="white_color">
-                            {' / '}
-                          </span>
-                        {/if}
-                      {/if}
-                      {#if i === 4}
-                        <span class="white_color">{' ...'}</span>
+                    {#each p.squad.players as player}
+                      <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
+                        {player.name}
+                      </a>
+                      {#if player !== p.squad.players[p.squad.players.length - 1]}
+                        <span class="white_color">
+                          {' / '}
+                        </span>
                       {/if}
                     {/each}
                   {/if}
