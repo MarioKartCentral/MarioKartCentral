@@ -46,6 +46,18 @@ class ApproveTransferCommand(Command[None]):
                 if rowcount == 1:
                     await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
                                      VALUES(?, ?, ?, ?, ?, ?, ?)""", (player_id, None, curr_time, roster_id, True, "approved", not is_bagger_clause))
+            # if we are registered for a tournament squad for the team we are transferring to as the opposite bagger type,
+            # we should flip the player's tournament registration to the new bagger type
+            async with db.execute("""SELECT p.id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
+                                    AND p.is_bagger_clause = ?""", (player_id, roster_id, not is_bagger_clause)) as cursor:
+                rows = await cursor.fetchall()
+                bagger_registration_ids: list[tuple[bool, int]] = [(bool(is_bagger_clause), int(row[0])) for row in rows]
+            if len(bagger_registration_ids):
+                await db.executemany("UPDATE tournament_players SET is_bagger_clause = ? WHERE id = ?", bagger_registration_ids)
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
                 # get all team tournament rosters the player is in where the tournament hasn't ended yet
@@ -399,4 +411,16 @@ class ToggleTeamMemberBaggerCommand(Command[None]):
                 if roster_game != "mkw":
                     raise Problem("Cannot toggle bagger clause for games other than MKW", status=400)
             await db.execute("UPDATE team_members SET is_bagger_clause = ? WHERE id = ?", (not is_bagger_clause, member_id))
+            # if we are registered for a tournament squad for the team we are transferring to as the opposite bagger type,
+            # we should flip the player's tournament registration to the new bagger type
+            async with db.execute("""SELECT p.id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
+                                    AND p.is_bagger_clause = ?""", (self.player_id, self.roster_id, is_bagger_clause)) as cursor:
+                rows = await cursor.fetchall()
+                bagger_registration_ids: list[tuple[bool, int]] = [(not is_bagger_clause, int(row[0])) for row in rows]
+            if len(bagger_registration_ids):
+                await db.executemany("UPDATE tournament_players SET is_bagger_clause = ? WHERE id = ?", bagger_registration_ids)
             await db.commit()
