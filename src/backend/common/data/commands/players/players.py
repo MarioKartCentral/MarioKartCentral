@@ -292,11 +292,12 @@ class ListPlayersCommand(Command[PlayerList]):
                     fc_where_clauses.append("fc LIKE ?")
                     variable_parameters.append(f"%{filter.friend_code}%")
 
-                # check names and friend codes
+                # check names and friend codes and discord ids
                 if filter.name_or_fc:
-                    fc_where_clauses.append("(f.fc LIKE ? OR p2.name LIKE ?)")
+                    fc_where_clauses.append("(f.fc LIKE ? OR p2.name LIKE ? OR d2.discord_id = ?)")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
+                    variable_parameters.append(filter.name_or_fc)
 
                 if filter.fc_type is not None:
                     # used when manually registering players for a tournament,
@@ -309,7 +310,12 @@ class ListPlayersCommand(Command[PlayerList]):
                     variable_parameters.append(filter.fc_type)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
-                where_clauses.append(f"p.id IN (SELECT p2.id FROM players p2 LEFT JOIN friend_codes f ON p2.id = f.player_id WHERE {fc_where_clauses_str})")
+                where_clauses.append(f"""p.id IN 
+                                            (SELECT p2.id FROM players p2 
+                                            LEFT JOIN friend_codes f ON p2.id = f.player_id
+                                            LEFT JOIN users u2 ON u2.player_id = p2.id
+                                            LEFT JOIN user_discords d2 ON u2.id = d2.user_id
+                                            WHERE {fc_where_clauses_str})""")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             order_by = 'p.join_date' if filter.sort_by_newest else 'name'
