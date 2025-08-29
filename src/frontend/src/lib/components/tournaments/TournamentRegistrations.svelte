@@ -94,7 +94,7 @@
       </div>
       {#if tournament.is_squad}
         {#key [tournament_squads, show_all]}
-          <TournamentSquadList {tournament} squads={show_all ? tournament_squads : tournament_squads.slice(0, display_limit)} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
+          <TournamentSquadList {tournament} bind:show_all={show_all} squads={show_all ? tournament_squads : tournament_squads.slice(0, display_limit)} is_privileged={check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations,
             tournament.id, tournament.series_id
           )}/>
         {/key}
