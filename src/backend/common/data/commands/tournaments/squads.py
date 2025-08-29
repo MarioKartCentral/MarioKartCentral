@@ -26,11 +26,11 @@ class CreateSquadCommand(Command[None]):
         timestamp = int(datetime.now(timezone.utc).timestamp())
         async with db_wrapper.connect() as db:
             # check if tournament registrations are open and that our arguments are correct for the current tournament
-            async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_only, require_single_fc, bagger_clause_enabled FROM tournaments WHERE ID = ?",
+            async with db.execute("SELECT is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_only, require_single_fc, bagger_clause_enabled, checkins_open FROM tournaments WHERE ID = ?",
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
-                is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_only, require_single_fc, bagger_clause_enabled = row
+                is_squad, registrations_open, squad_tag_required, squad_name_required, mii_name_required, teams_only, require_single_fc, bagger_clause_enabled, checkins_open = row
                 if not bool(is_squad):
                     raise Problem('This is not a squad tournament', status=400)
                 if self.is_privileged is False and not bool(registrations_open):
@@ -85,10 +85,12 @@ class CreateSquadCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
                 registration_id = cursor.lastrowid
             await db.commit()
+
+            is_checked_in = True if bool(checkins_open) else self.is_checked_in
             
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                              is_representative, is_bagger_clause, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, registration_id, True, timestamp, self.is_checked_in, self.mii_name, self.can_host, False,
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, registration_id, True, timestamp, is_checked_in, self.mii_name, self.can_host, False,
                 selected_fc_id, False, self.is_bagger_clause, self.is_approved))
             await db.commit()
 

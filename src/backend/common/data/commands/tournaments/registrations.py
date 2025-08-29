@@ -26,12 +26,12 @@ class RegisterPlayerCommand(Command[None]):
         timestamp = int(datetime.now(timezone.utc).timestamp())
         async with db_wrapper.connect() as db:
             # check if registrations are open and if mii name is required
-            async with db.execute("SELECT is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled FROM tournaments WHERE id = ?",
+            async with db.execute("SELECT is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled, checkins_open FROM tournaments WHERE id = ?",
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Tournament not found", status=404)
-                is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled = row
+                is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled, checkins_open = row
                 if bool(is_squad) and self.registration_id is None:
                     raise Problem("Players may not register alone for squad tournaments", status=400)
                 if not bool(is_squad) and self.registration_id is not None:
@@ -111,9 +111,12 @@ class RegisterPlayerCommand(Command[None]):
                     if player_squad_size >= max_squad_size:
                         raise Problem('Squad at maximum number of players', status=400)
                     
+            # checkin player if they're not being invited to the tournament
+            is_checked_in = True if bool(checkins_open) and not self.is_invite else self.is_checked_in
+                    
             await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                              is_representative, is_bagger_clause, is_approved)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, registration_id, self.is_squad_captain, timestamp, self.is_checked_in, self.mii_name, self.can_host, 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, registration_id, self.is_squad_captain, timestamp, is_checked_in, self.mii_name, self.can_host, 
                 self.is_invite, selected_fc_id, self.is_representative, self.is_bagger_clause, self.is_approved))
             await db.commit()
 
@@ -136,12 +139,12 @@ class EditPlayerRegistrationCommand(Command[None]):
     
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled FROM tournaments WHERE id = ?", 
+            async with db.execute("SELECT is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled, checkins_open FROM tournaments WHERE id = ?", 
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('Tournament not found', status=404)
-                is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled = row
+                is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled, checkins_open = row
                 # make sure players can't edit their registration details after registrations have closed
                 if (not self.is_privileged) and (not registrations_open):
                     raise Problem("Registrations are closed, so you cannot edit your registration details", status=400)
@@ -219,6 +222,10 @@ class EditPlayerRegistrationCommand(Command[None]):
                         await db.execute("DELETE FROM tournament_registrations WHERE id = ?", (self.registration_id,))
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND registration_id = ?",
                         (self.tournament_id, self.player_id, old_registration_id))
+                    
+                # if we're accepting an invite and checkins are open, automatically check in
+                if bool(checkins_open):
+                    is_checked_in = True
                     
             if self.is_approved is not None and not is_squad:
                 await db.execute("UPDATE tournament_registrations SET is_approved = ? WHERE id = ?", (self.is_approved, self.registration_id))
