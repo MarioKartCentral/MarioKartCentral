@@ -3,7 +3,6 @@ from .auth import *
 from .common import *
 from .command_log import *
 from .discord_integration import *
-from .email_service import *
 from .friend_codes import *
 from .mkcv1 import *
 from .moderation import *

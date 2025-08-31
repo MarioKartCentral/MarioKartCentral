@@ -1,6 +1,6 @@
 from datetime import timedelta
 from worker.data import handle
-from common.data.commands.user_activity.queue import ProcessUserActivityQueueCommand
+from common.data.commands import ProcessUserActivityQueueCommand
 from worker.jobs import Job
 
 class ProcessUserActivityQueueJob(Job):

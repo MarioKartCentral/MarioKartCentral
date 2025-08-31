@@ -9,7 +9,7 @@ from common.auth import permissions, series_permissions, tournament_permissions
 
 # returns user and session ID
 # session_only: only use cookies and not authorization header
-async def get_user(request: Request, session_only=False) -> tuple[User | None, str | None]:
+async def get_user(request: Request, session_only: bool=False) -> tuple[User | None, str | None]:
     session_id = request.cookies.get("session", None)
     if session_id:
         user = await handle(GetUserIdFromSessionCommand(session_id))
@@ -33,7 +33,7 @@ def get_user_info[**P](handle_request: Callable[Concatenate[Request, P], Awaitab
         return await handle_request(request, *args, **kwargs)
     return wrapper
 
-def require_logged_in(session_only=False):
+def require_logged_in(session_only: bool=False):
     def require_logged_in_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
@@ -49,7 +49,7 @@ def require_logged_in(session_only=False):
     return require_logged_in_decorator
 
 # if check_denied_only is True, as long as the permission is not denied we authorize the request
-def require_permission(permission_name: str, check_denied_only = False, session_only = False):
+def require_permission(permission_name: str, check_denied_only: bool=False, session_only: bool=False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
@@ -68,7 +68,7 @@ def require_permission(permission_name: str, check_denied_only = False, session_
         return wrapper
     return has_permission_decorator
 
-def require_team_permission(permission_name: str, check_denied_only = False, session_only = False):
+def require_team_permission(permission_name: str, check_denied_only: bool=False, session_only: bool=False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
@@ -97,7 +97,7 @@ def require_team_permission(permission_name: str, check_denied_only = False, ses
         return wrapper
     return has_permission_decorator
 
-def require_series_permission(permission_name: str, check_denied_only = False, session_only = False):
+def require_series_permission(permission_name: str, check_denied_only: bool=False, session_only: bool=False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
@@ -128,7 +128,7 @@ def require_series_permission(permission_name: str, check_denied_only = False, s
         return wrapper
     return has_permission_decorator
 
-def require_tournament_permission(permission_name: str, check_denied_only = False, session_only = False):
+def require_tournament_permission(permission_name: str, check_denied_only: bool=False, session_only: bool=False):
     def has_permission_decorator[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)

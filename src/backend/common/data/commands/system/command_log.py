@@ -4,9 +4,11 @@ from typing import Any
 
 import msgspec
 
-from common.data.commands import Command, get_command_log_type
+from common.data.command_handler import CommandHandler
+from common.data.command import Command, get_command_log_type
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import CommandLog, Problem, HistoricalCommandLogIndexEntry
-import common.data.s3 as s3
+from common.data.s3 import S3Wrapper, COMMAND_LOG_BUCKET
 
 COMMAND_LOGS_PER_FILE = 1000
 
@@ -14,7 +16,7 @@ COMMAND_LOGS_PER_FILE = 1000
 class SaveToCommandLogCommand(Command[None]):
     command: Command[Any]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         # disable command log for now while it has some issues
         pass
         # command_name = type(self.command).__name__
@@ -30,7 +32,7 @@ class SaveToCommandLogCommand(Command[None]):
 class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
     after_id: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         after_id = self.after_id
         if after_id is None:
             after_id = -1
@@ -55,8 +57,8 @@ class GetCommandLogsCommand(Command[list[CommandLog[Command[Any]]]]):
 
 @dataclass
 class GetHistoricalCommandLogIndexCommand(Command[list[HistoricalCommandLogIndexEntry]]):
-    async def handle(self, db_wrapper, s3_wrapper) -> list[HistoricalCommandLogIndexEntry]:
-        index_bytes = await s3_wrapper.get_object(s3.COMMAND_LOG_BUCKET, "index.json")
+    async def handle(self, s3_wrapper: S3Wrapper) -> list[HistoricalCommandLogIndexEntry]:
+        index_bytes = await s3_wrapper.get_object(COMMAND_LOG_BUCKET, "index.json")
         if not index_bytes:
             return []
         return msgspec.json.decode(index_bytes, type=list[HistoricalCommandLogIndexEntry])
@@ -64,14 +66,14 @@ class GetHistoricalCommandLogIndexCommand(Command[list[HistoricalCommandLogIndex
 @dataclass
 class UpdateHistoricalCommandLogIndexCommand(Command[None]):
     index: list[HistoricalCommandLogIndexEntry]
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, s3_wrapper: S3Wrapper):
         serialised = msgspec.json.encode(self.index)
-        await s3_wrapper.put_object(s3.COMMAND_LOG_BUCKET, "index.json", serialised)
+        await s3_wrapper.put_object(COMMAND_LOG_BUCKET, "index.json", serialised)
 
 @dataclass
 class GetHistoricalCommandLogLastIdCommand(Command[int | None]):
-    async def handle(self, db_wrapper, s3_wrapper):
-        last_id_bytes = await s3_wrapper.get_object(s3.COMMAND_LOG_BUCKET, "lastid")
+    async def handle(self, s3_wrapper: S3Wrapper):
+        last_id_bytes = await s3_wrapper.get_object(COMMAND_LOG_BUCKET, "lastid")
         if last_id_bytes is None:
             return None
         return int(last_id_bytes.decode())
@@ -80,16 +82,16 @@ class GetHistoricalCommandLogLastIdCommand(Command[int | None]):
 class UpdateHistoricalCommandLogLastIdCommand(Command[int | None]):
     last_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, s3_wrapper: S3Wrapper):
         serialised = str(self.last_id).encode()
-        await s3_wrapper.put_object(s3.COMMAND_LOG_BUCKET, "lastid", serialised)
-    
+        await s3_wrapper.put_object(COMMAND_LOG_BUCKET, "lastid", serialised)
+
 @dataclass
 class GetHistoricalCommandLogCommand(Command[list[CommandLog[Command[Any]]]]):
     file_name: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
-        log_bytes = await s3_wrapper.get_object(s3.COMMAND_LOG_BUCKET, self.file_name)
+    async def handle(self, s3_wrapper: S3Wrapper):
+        log_bytes = await s3_wrapper.get_object(COMMAND_LOG_BUCKET, self.file_name)
         if not log_bytes:
             raise Problem("Command log not found", f"Unable to find command log with filename {self.file_name}", status=404)
         log_decoded = msgspec.json.decode(log_bytes, type=list[CommandLog[str]])
@@ -107,19 +109,19 @@ class UpdateHistoricalCommandLogCommand(Command[None]):
     file_name: str
     commands: list[CommandLog[Command[Any]]]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, s3_wrapper: S3Wrapper):
         serialised = msgspec.json.encode(self.commands)
-        await s3_wrapper.put_object(s3.COMMAND_LOG_BUCKET, self.file_name, serialised)
-    
+        await s3_wrapper.put_object(COMMAND_LOG_BUCKET, self.file_name, serialised)
+
 @dataclass
 class SaveToHistoricalCommandLogsCommand(Command[None]):
     commands: list[CommandLog[Command[Any]]]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, command_handler: CommandHandler):
         if not self.commands:
             return
 
-        index = await GetHistoricalCommandLogIndexCommand().handle(db_wrapper, s3_wrapper)
+        index = await command_handler.handle(GetHistoricalCommandLogIndexCommand())
         update_index = False
 
         commands = sorted(self.commands, key=lambda c: c.id)
@@ -139,7 +141,7 @@ class SaveToHistoricalCommandLogsCommand(Command[None]):
                 update_index = True
                 command_log_file = []
             elif last_index_entry.from_id == next_command_file * COMMAND_LOGS_PER_FILE:
-                command_log_file = await GetHistoricalCommandLogCommand(last_index_entry.file_name).handle(db_wrapper, s3_wrapper)
+                command_log_file = await command_handler.handle(GetHistoricalCommandLogCommand(last_index_entry.file_name))
             else:
                 raise Problem("Encountered unexpected command id", f"Command ID: {next_command.id}. Latest Index ID: {last_index_entry.from_id}")
 
@@ -170,21 +172,20 @@ class SaveToHistoricalCommandLogsCommand(Command[None]):
                 last_id = commands_to_insert[-1].id
 
             command_log_file.extend(commands_to_insert)
-            await UpdateHistoricalCommandLogCommand(last_index_entry.file_name, command_log_file).handle(db_wrapper, s3_wrapper)
+            await command_handler.handle(UpdateHistoricalCommandLogCommand(last_index_entry.file_name, command_log_file))
             commands = commands[num_commands_to_insert:]
 
         if update_index:
-            await UpdateHistoricalCommandLogIndexCommand(index).handle(db_wrapper, s3_wrapper)
-        
-        if last_id is not None:
-            await UpdateHistoricalCommandLogLastIdCommand(last_id).handle(db_wrapper, s3_wrapper)
+            await command_handler.handle(UpdateHistoricalCommandLogIndexCommand(index))
 
-    
+        if last_id is not None:
+            await command_handler.handle(UpdateHistoricalCommandLogLastIdCommand(last_id))
+
 @dataclass
 class ClearCommandLogUpToIdCommand(Command[None]):
     id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='command_logs') as db:
             await db.execute("DELETE FROM command_log WHERE id < ?", (self.id,))
             await db.commit()

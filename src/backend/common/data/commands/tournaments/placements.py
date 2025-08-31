@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -11,7 +12,7 @@ class SetTournamentPlacementsCommand(Command[None]):
     body: list[TournamentPlacement]
     registrations: list[TournamentSquadDetails]
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         b = self.body
         registration_dict = {reg.id: reg for reg in self.registrations}
         # sort with DQs at the end
@@ -70,7 +71,7 @@ class SetTournamentPlacementsFromPlayerIDsCommand(Command[None]):
     tournament_id: int
     body: list[TournamentPlacementFromPlayerIDs]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         b = self.body
         # sort with DQs at the end
         sorted_placements = sorted(b, key=lambda x: float('inf') if x.placement is None else x.placement)
@@ -156,7 +157,7 @@ class GetTournamentPlacementsCommand(Command[TournamentPlacementList]):
     tournament_id: int
     squads: list[TournamentSquadDetails]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         squad_dict = {squad.id: squad for squad in self.squads}
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT registration_id, placement, placement_description, placement_lower_bound, is_disqualified FROM tournament_placements WHERE tournament_id = ? ORDER BY placement", (self.tournament_id,)) as cursor:
@@ -180,7 +181,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
     """
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         tournament_solo_and_squad_results: list[PlayerTournamentPlacement] = []
         tournament_team_results: list[PlayerTournamentPlacement] = []
         async with db_wrapper.connect(readonly=True) as db:
@@ -310,7 +311,7 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
     """
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         tournament_team_results: list[TeamTournamentPlacement] = []
         async with db_wrapper.connect(readonly=True) as db:
             team_placement_dict: dict[int, TeamTournamentPlacement] = {}
@@ -375,7 +376,7 @@ class GetTeamTournamentPlacementsCommand(Command[TeamTournamentResults]):
 
 @dataclass
 class GetLatestTournamentIdWithPlacements(Command[int]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""
                 SELECT id FROM tournaments where is_viewable = 1 AND is_public = 1 AND id IN (

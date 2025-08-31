@@ -2,13 +2,9 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from common.data.db import DBWrapper
-from common.data.s3 import S3Wrapper
-
-
 class Command[T](ABC):
     @abstractmethod
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> T:
+    async def handle(self, *args: Any, **kwargs: Any) -> T:
         pass
 
 _command_log_types: set[type[Command[Any]]] = set()

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import timedelta, timezone
 from common.auth import team_permissions, team_roles
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 @dataclass
@@ -9,7 +10,7 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
     team_id: int
     roster_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         edits: list[RosterEdit] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
@@ -41,7 +42,7 @@ class CreateRosterCommand(Command[None]):
     is_active: bool
     approval_status: Approval
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         if self.name:
             self.name = self.name.strip()
         if self.tag:
@@ -94,7 +95,7 @@ class EditRosterCommand(Command[None]):
     approval_status: Approval
     mod_player_id: int | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         self.name = self.name.strip()
         self.tag = self.tag.strip()
         if self.name and len(self.name) > 32:
@@ -147,7 +148,7 @@ class ManagerEditRosterCommand(Command[None]):
     team_id: int
     is_recruiting: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("UPDATE team_rosters SET is_recruiting = ? WHERE id = ? AND team_id = ?", (self.is_recruiting, self.roster_id, self.team_id)) as cursor:
                 rows = cursor.rowcount
@@ -162,7 +163,7 @@ class LeaveRosterCommand(Command[None]):
     player_id: int
     roster_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT m.id, r.team_id, u.id FROM team_members m
                                   JOIN team_rosters r ON r.id = m.roster_id
@@ -214,7 +215,7 @@ class RequestEditRosterCommand(Command[None]):
     name: str
     tag: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         if len(self.name) > 32:
             raise Problem("Roster name must be 32 characters or less", status=400)
         if len(self.tag) > 8:
@@ -258,7 +259,7 @@ class ApproveRosterCommand(Command[None]):
     team_id: int
     roster_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT r.approval_status, t.approval_status
                                   FROM team_rosters r
@@ -281,7 +282,7 @@ class DenyRosterCommand(Command[None]):
     team_id: int
     roster_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT r.approval_status, t.approval_status
                                   FROM team_rosters r
@@ -304,7 +305,7 @@ class ApproveRosterEditCommand(Command[None]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT r.roster_id, r.new_name, r.new_tag, t.name, t.tag 
                                   FROM roster_edits r
@@ -329,7 +330,7 @@ class DenyRosterEditCommand(Command[None]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("UPDATE roster_edits SET approval_status = 'denied', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id)) as cursor:
                 rowcount = cursor.rowcount
@@ -341,7 +342,7 @@ class DenyRosterEditCommand(Command[None]):
 class ListRosterEditRequestsCommand(Command[RosterEditList]):
     filter: RosterEditFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
         requests: list[RosterEdit] = []
         limit = 20
@@ -380,7 +381,7 @@ class ListRosterEditRequestsCommand(Command[RosterEditList]):
 class ListRostersCommand(Command[RosterList]):
     filter: RosterFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             filter = self.filter
             limit:int = 50
@@ -440,7 +441,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
     game: Game
     mode: GameMode
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             rosters_query = """
                     FROM team_roles r
@@ -556,7 +557,7 @@ class EditTeamMemberCommand(Command[None]):
     leave_date: int | None
     is_bagger_clause: bool | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT m.id, m.join_date, m.leave_date, m.is_bagger_clause, u.id FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id

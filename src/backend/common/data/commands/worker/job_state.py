@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import TypeVar, Generic, Type, Any, Optional, cast
 import msgspec
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 
 T = TypeVar('T')
 
@@ -11,7 +12,7 @@ class GetJobStateCommand(Generic[T], Command[Optional[T]]):
     job_name: str
     state_type: Type[T] = field(default_factory=lambda: cast(Type[T], str))
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', readonly=True) as db:
             async with db.execute(
                 "SELECT state FROM job_states WHERE job_name = :job_name",
@@ -34,7 +35,7 @@ class UpdateJobStateCommand(Command[None]):
     job_name: str
     state: Any  # Will be serialized to JSON
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         # Convert state to JSON string
         if isinstance(self.state, str):
             # If already a string, assume it's already valid JSON

@@ -2,10 +2,9 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from api import appsettings
 from api.data import on_startup, on_shutdown
-from api.endpoints import (authservice, roleservice, userservice, tournaments,
-                           tournament_registration, tournament_placements, player_registry, player_bans,
-                           team_registry, user_settings, notifications, moderation, mkcv1importer, posts,
-                           admin, time_trials)
+from api.endpoints import (authservice, roleservice, userservice, tournaments, tournament_registration, 
+                           tournament_placements, player_registry, player_bans, team_registry, 
+                           user_settings, notifications, moderation, posts, admin, time_trials)
 from api.utils.middleware import IPLoggingMiddleware, RateLimitByIPMiddleware, ProblemExceptionMiddleware, exception_handlers
 from api.utils.schema_gen import schema_route
 from opentelemetry.instrumentation.starlette import StarletteInstrumentor
@@ -22,7 +21,6 @@ setup_telemetry()
 routes = [
     *admin.routes,
     *authservice.routes,
-    *mkcv1importer.routes,
     *moderation.routes,
     *roleservice.routes,
     *userservice.routes,

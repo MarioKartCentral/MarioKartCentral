@@ -3,8 +3,7 @@ from typing import List
 import logging
 from worker.data import handle
 from worker.jobs import Job
-from common.data.commands import BackupDatabasesCommand, CleanupOldBackupsCommand
-from common.data.commands.system.db_backup import DbBackupState, BackupInfo 
+from common.data.commands import BackupDatabasesCommand, CleanupOldBackupsCommand, DbBackupState, BackupInfo 
 
 class DatabaseBackupJob(Job):
     @property

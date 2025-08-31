@@ -5,22 +5,24 @@ import logging
 from common.auth import permissions, roles, team_permissions, team_roles, series_permissions, series_roles, tournament_permissions, tournament_roles
 from common.data.commands import Command
 from common.data.db import all_dbs
+from common.data.db.db_wrapper import DBWrapper
+from common.data.duckdb.wrapper import DuckDBWrapper
 from common.data.models import Problem
 
 @dataclass
 class ResetDbCommand(Command[None]):
     db_name: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         db_wrapper.reset_db(self.db_name)
 
 @dataclass
 class ResetDuckDbCommand(Command[None]):
-    async def handle(self, db_wrapper, s3_wrapper):
-        db_wrapper.duckdb.reset_db()
+    async def handle(self, duckdb_wrapper: DuckDBWrapper):
+        duckdb_wrapper.reset_db()
 
 class UpdateDbSchemaCommand(Command[None]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         for db_schema in all_dbs.values():
             db_name = db_schema.db_name
             async with db_wrapper.connect(db_name, autocommit=True) as db:
@@ -137,7 +139,7 @@ class SeedDatabasesCommand(Command[None]):
     admin_email: str
     hashed_pw: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=['auth']) as db:
             await db.executemany(
                 "INSERT INTO roles(id, name, position) VALUES (:id, :name, :position) ON CONFLICT DO NOTHING",

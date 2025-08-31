@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Iterable
 from common.auth import team_permissions
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 
@@ -22,7 +23,7 @@ class CreateSquadCommand(Command[None]):
     is_approved: bool
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         timestamp = int(datetime.now(timezone.utc).timestamp())
         async with db_wrapper.connect() as db:
             # check if tournament registrations are open and that our arguments are correct for the current tournament
@@ -105,7 +106,7 @@ class RegisterTeamTournamentCommand(Command[int | None]):
     is_approved: bool
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> int | None:
+    async def handle(self, db_wrapper: DBWrapper) -> int | None:
         if len(self.roster_ids) == 0:
             raise Problem("Must register at least one roster", status=400)
         if not self.is_privileged and len(self.players) == 0:
@@ -240,7 +241,7 @@ class EditSquadCommand(Command[None]):
     is_registered: bool | None
     is_approved: bool | None
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT is_approved, name, tag, color, is_registered FROM tournament_registrations WHERE id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id)) as cursor:
                 row = await cursor.fetchone()
@@ -268,7 +269,7 @@ class CheckSquadCaptainPermissionsCommand(Command[None]):
     registration_id: int
     captain_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             # check captain's permissions
             # whether they are actually in the squad and are captain,
@@ -301,7 +302,7 @@ class ChangeSquadCaptainCommand(Command[None]):
     registration_id: int
     new_captain_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
                                   (self.tournament_id, self.registration_id, self.new_captain_id, False)) as cursor:
@@ -320,7 +321,7 @@ class AddRepresentativeCommand(Command[None]):
     registration_id: int
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
                                   (self.tournament_id, self.registration_id, self.player_id, False)) as cursor:
@@ -338,7 +339,7 @@ class RemoveRepresentativeCommand(Command[None]):
     registration_id: int
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
                                   (self.tournament_id, self.registration_id, self.player_id, False)) as cursor:
@@ -355,7 +356,7 @@ class UnregisterSquadCommand(Command[None]):
     tournament_id: int
     registration_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             await db.execute("DELETE FROM tournament_players WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
             await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
@@ -368,7 +369,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
     tournament_id: int
     registration_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT id, name, tag, color, timestamp, is_registered, is_approved FROM tournament_registrations WHERE tournament_id = ? AND id = ?",
                 (self.tournament_id, self.registration_id)) as cursor:
@@ -441,7 +442,7 @@ class AddRosterToSquadCommand(Command[None]):
     captain_player_id: int | None
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT game, mode, teams_allowed, registrations_open FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -511,7 +512,7 @@ class RemoveRosterFromSquadCommand(Command[None]):
     captain_player_id: int | None
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT registrations_open, teams_only FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()

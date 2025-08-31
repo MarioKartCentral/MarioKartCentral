@@ -90,7 +90,7 @@ Commands are implemented using Python dataclasses and encapsulate a unit of work
 class GetPlayerNameCommand(Command[str | None]):
     player_id: int
     
-    async def handle(self, db_wrapper, s3_wrapper) -> str | None:
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> str | None:
         async with db_wrapper.connect() as db:
             async with db.execute(
                 "SELECT name FROM players WHERE id = ?", 
@@ -368,7 +368,7 @@ class CreateFunFactCommand(Command[tuple[FunFact, str]]):
     user_id: int
     fact: str
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         if len(self.fact) > CreateFunFactRequest.MAX_LENGTH:
             raise Problem(
                 "Fun fact too long",
@@ -406,7 +406,7 @@ class CreateFunFactCommand(Command[tuple[FunFact, str]]):
 class ListFunFactsCommand(Command[list[FunFact]]):
     filter: FunFactFilter
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             offset = (self.filter.page - 1) * self.filter.page_size
             query = """

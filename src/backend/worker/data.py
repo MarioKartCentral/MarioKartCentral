@@ -11,8 +11,9 @@ _command_handler = CommandHandler(
     settings.DB_DIRECTORY,
     str(settings.S3_SECRET_KEY),
     settings.S3_ACCESS_KEY,
-    settings.S3_ENDPOINT
-)
+    settings.S3_ENDPOINT,
+    settings.DISCORD_CLIENT_ID,
+    str(settings.DISCORD_CLIENT_SECRET))
 
 async def handle[T](command: Command[T]) -> T:
     return await _command_handler.handle(command)

@@ -1,6 +1,6 @@
 from datetime import timedelta
 from worker.data import handle
-from common.data.commands.user_activity.compression import CompressUserActivityTimeRangesCommand
+from common.data.commands import CompressUserActivityTimeRangesCommand
 from worker.jobs import Job
 
 class CompressUserActivityTimeRangesJob(Job):

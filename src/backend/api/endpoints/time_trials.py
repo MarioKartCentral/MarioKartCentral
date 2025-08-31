@@ -4,18 +4,7 @@ from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
-from common.data.commands.auth.permissions import CheckUserHasPermissionCommand
-from common.data.commands.time_trials import (
-    CreateTimeTrialCommand, 
-    GetTimeTrialCommand, 
-    MarkProofInvalidCommand,
-    MarkProofValidCommand,
-    ListProofsForValidationCommand,
-    GetLeaderboardCommand,
-    MarkTimeTrialInvalidCommand,
-    EditTimeTrialCommand,
-    GetTimesheetCommand
-)
+from common.data.commands import *
 from common.data.models.time_trials_api import (
     CreateTimeTrialRequestData,
     EditProofDictRequired,

@@ -1,26 +1,28 @@
 from dataclasses import dataclass
 from typing import Dict, Any
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 import msgspec
-import common.data.s3 as s3
+from common.data.s3 import S3Wrapper, FINGERPRINT_BUCKET
 from datetime import datetime
-import aiohttp
+
+from common.ip_api import IPApi
 
 @dataclass
 class LogFingerprintCommand(Command[None]):
     fingerprint: Fingerprint
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, s3_wrapper: S3Wrapper):
         fingerprint_bytes = msgspec.json.encode(self.fingerprint.data)
-        await s3_wrapper.put_object(s3.FINGERPRINT_BUCKET, f"{self.fingerprint.hash}.json", fingerprint_bytes)
+        await s3_wrapper.put_object(FINGERPRINT_BUCKET, f"{self.fingerprint.hash}.json", fingerprint_bytes)
 
 @dataclass
 class GetFingerprintDataCommand(Command[Fingerprint]):
     fingerprint_hash: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
-        fingerprint_bytes = await s3_wrapper.get_object(s3.FINGERPRINT_BUCKET, f"{self.fingerprint_hash}.json")
+    async def handle(self, s3_wrapper: S3Wrapper):
+        fingerprint_bytes = await s3_wrapper.get_object(FINGERPRINT_BUCKET, f"{self.fingerprint_hash}.json")
         if not fingerprint_bytes:
             raise Problem("Fingerprint not found", status=404)
         fingerprint_data = msgspec.json.decode(fingerprint_bytes, type=dict[Any, Any])
@@ -29,7 +31,7 @@ class GetFingerprintDataCommand(Command[Fingerprint]):
 
 @dataclass
 class CheckIPsCommand(Command[None]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, ip_api: IPApi):
         limit = 2000 # rate limit of 100 ips/request * 45 requests/min, 2000 just to be safe
         ips_to_check: list[IPInfoBasic] = []
         
@@ -47,34 +49,19 @@ class CheckIPsCommand(Command[None]):
         if len(ips_to_check) == 0:
             return
             
-        response_data: list[IPCheckResponse] = []
         current_timestamp = int(datetime.now().timestamp())
-        async with aiohttp.ClientSession() as session:
-            url = "http://ip-api.com/batch?fields=status,message,mobile,proxy,countryCode,region,city,as"
-            # we can specify 100 IPs per request, so send requests in chunks of 100
-            chunk_size = 100
-            for i in range(0, len(ips_to_check), chunk_size):
-                data = [ip.ip_address for ip in ips_to_check[i:i+chunk_size]]
-                async with session.post(url, json=data) as resp:
-                    if int(resp.status/100) != 2:
-                        raise Problem("Error when sending request to IP site")
-                    r = await resp.json()
-                    body = msgspec.convert(r, type=list[IPCheckResponse])
-                    # get ASNs since they are named "as" which we cannot put in a class name
-                    for i in range(len(r)):
-                        body[i].asn = r[i].get("as", None)
-                    response_data.extend(body)
+        ip_response_data = await ip_api.check_ips(ips_to_check)
         
         # Update the ip_addresses table with the check results
         query_parameters: List[Dict[str, Any]] = [
             {
                 "id": ips_to_check[i].user_id,  # This is the ip_address.id
-                "is_mobile": response_data[i].mobile, 
-                "is_vpn": response_data[i].proxy,
-                "country": response_data[i].countryCode,
-                "region": response_data[i].region,
-                "city": response_data[i].city,
-                "asn": response_data[i].asn,
+                "is_mobile": ip_response_data[i].mobile, 
+                "is_vpn": ip_response_data[i].proxy,
+                "country": ip_response_data[i].countryCode,
+                "region": ip_response_data[i].region,
+                "city": ip_response_data[i].city,
+                "asn": ip_response_data[i].asn,
                 "checked_at": current_timestamp
             } for i in range(len(ips_to_check))
         ]
@@ -94,7 +81,7 @@ class CheckIPsCommand(Command[None]):
 class ListAltFlagsCommand(Command[AltFlagList]):
     filter: AltFlagFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name="main", attach=["user_activity", "alt_flags"], readonly=True) as db:
             limit = 20
             offset = 0
@@ -154,7 +141,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
 class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         # get alt flag info
         async with db_wrapper.connect(db_name="main", attach=["user_activity", "alt_flags"], readonly=True) as db:
 
@@ -217,7 +204,7 @@ class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
     player_id: int
     has_ip_permission: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         logins: list[UserLogin] = []
         async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
             async with db.execute("""SELECT ul.id, ul.user_id, ul.ip_address_id,
@@ -247,7 +234,7 @@ class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
     player_id: int
     has_ip_permission: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         ips: list[UserIPTimeRange] = []
         async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
             async with db.execute("""SELECT tr.id, tr.date_earliest, tr.date_latest, tr.times,
@@ -277,7 +264,7 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
     ip_id: int
     has_ip_permission: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         time_ranges: list[PlayerIPTimeRange] = []
         async with db_wrapper.connect(db_name='main', attach=['user_activity']) as db:
             async with db.execute("""SELECT ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn,
@@ -314,7 +301,7 @@ class SearchIPsCommand(Command[IPAddressList]):
     filter: IPFilter
     has_ip_permission: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         limit = 20
         offset = 0
 
@@ -361,7 +348,7 @@ class SearchIPsCommand(Command[IPAddressList]):
 class GetIPIDFromAddressCommand(Command[int]):
     ip_address: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='user_activity') as db:
             async with db.execute("SELECT id FROM ip_addresses WHERE ip_address = ?", (self.ip_address,)) as cursor:
                 row = await cursor.fetchone()

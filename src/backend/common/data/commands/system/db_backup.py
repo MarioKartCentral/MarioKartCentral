@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from typing import List, Dict, Any, Tuple
 from pathlib import Path
 from common.data.commands import Command
-import common.data.s3 as s3
+from common.data.db.db_wrapper import DBWrapper
+from common.data.s3 import DB_BACKUP_BUCKET, S3Wrapper
 
 
 @dataclass
@@ -29,7 +30,7 @@ class DbBackupState:
 class BackupDatabasesCommand(Command[List[BackupInfo]]):
     """Create a backup of all database files and store it in S3, one file per DB"""
     
-    async def handle(self, db_wrapper, s3_wrapper) -> List[BackupInfo]:
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> List[BackupInfo]:
         now = datetime.now(timezone.utc)
         backup_timestamp = int(now.timestamp())
         backup_set_prefix = now.strftime("%Y%m%d-%H%M%S")
@@ -115,7 +116,7 @@ class BackupDatabasesCommand(Command[List[BackupInfo]]):
                     # Read the snapshot file and upload to S3
                     with temp_snapshot_path.open("rb") as f_snapshot:
                         snapshot_data = f_snapshot.read()
-                        await s3_wrapper.put_object(s3.DB_BACKUP_BUCKET, s3_object_key, snapshot_data)
+                        await s3_wrapper.put_object(DB_BACKUP_BUCKET, s3_object_key, snapshot_data)
 
                     size_bytes = temp_snapshot_path.stat().st_size
 
@@ -158,8 +159,8 @@ class CleanupOldBackupsCommand(Command[List[str]]):
     max_hourly_backup_days: int = 7
     max_backup_size_bytes: int = 1024 * 1024 * 1024 * 100  # 100 GB
 
-    async def handle(self, db_wrapper, s3_wrapper) -> List[str]:
-        s3_objects = await s3_wrapper.list_objects(s3.DB_BACKUP_BUCKET)
+    async def handle(self, s3_wrapper: S3Wrapper) -> List[str]:
+        s3_objects = await s3_wrapper.list_objects(DB_BACKUP_BUCKET)
 
         # Group S3 objects by their common prefix (backup set)
         backup_sets_data: Dict[str, Dict[str, Any]] = {}
@@ -240,7 +241,7 @@ class CleanupOldBackupsCommand(Command[List[str]]):
         for bs_to_delete in backup_sets_to_delete:
             try:
                 for s3_key in bs_to_delete.s3_keys:
-                    await s3_wrapper.delete_object(s3.DB_BACKUP_BUCKET, s3_key)
+                    await s3_wrapper.delete_object(DB_BACKUP_BUCKET, s3_key)
                 deleted_backup_set_prefixes.append(bs_to_delete.backup_set_prefix)
             except Exception as e:
                 logging.error(f"Error deleting files for backup set {bs_to_delete.backup_set_prefix}: {str(e)}")
@@ -254,7 +255,7 @@ class CleanupOldBackupsCommand(Command[List[str]]):
             oldest_kept_set = backup_sets_to_keep.pop(0) # Oldest is at the start
             try:
                 for s3_key in oldest_kept_set.s3_keys:
-                    await s3_wrapper.delete_object(s3.DB_BACKUP_BUCKET, s3_key)
+                    await s3_wrapper.delete_object(DB_BACKUP_BUCKET, s3_key)
                 if oldest_kept_set.backup_set_prefix not in deleted_backup_set_prefixes:
                     deleted_backup_set_prefixes.append(oldest_kept_set.backup_set_prefix)
                 current_total_size -= oldest_kept_set.total_size_bytes

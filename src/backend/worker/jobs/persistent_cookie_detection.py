@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import json
 from typing import Any
 
+from common.data.db.db_wrapper import DBWrapper
 from worker.data import handle
 from worker.jobs import Job
 from common.data.commands import Command
@@ -15,7 +16,7 @@ class PersistentCookieDetectionState:
 class DetectPersistentCookieMatchesCommand(Command[PersistentCookieDetectionState]):
     state: PersistentCookieDetectionState
 
-    async def handle(self, db_wrapper, s3_wrapper) -> PersistentCookieDetectionState:
+    async def handle(self, db_wrapper: DBWrapper) -> PersistentCookieDetectionState:
         async with db_wrapper.connect(db_name='user_activity', readonly=True) as db:
             get_max_query = """
                 SELECT MAX(id) FROM user_logins

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import TypeVar, Type, Optional, Any
 from worker.data import handle
-from common.data.commands.worker.job_state import GetJobStateCommand, UpdateJobStateCommand
+from common.data.commands import GetJobStateCommand, UpdateJobStateCommand
 
 T = TypeVar('T')
 
@@ -31,7 +31,7 @@ _jobs: list[Job] = []
 
 def get_all_jobs():
     from worker.jobs import (
-        log_processor, 
+        # log_processor, 
         role_checker, 
         discord_refresh, 
         unban_players_checker, 

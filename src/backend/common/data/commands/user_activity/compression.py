@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any, List, Tuple
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 
 class GranularityLevel(Enum):
     NONE = 0
@@ -89,7 +90,7 @@ class CompressUserActivityTimeRangesCommand(Command[None]):
             
         return timestamp  # Default fallback
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         boundaries = self._get_compression_boundaries()
         
         async with db_wrapper.connect(db_name='user_activity') as db:

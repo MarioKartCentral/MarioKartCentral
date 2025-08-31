@@ -3,6 +3,8 @@ from datetime import datetime
 from common.data.commands import Command
 from urllib.parse import urlparse
 
+from common.data.db.db_wrapper import DBWrapper
+
 @dataclass
 class EnqueueUserActivityCommand(Command[None]):
     user_id: int
@@ -11,7 +13,7 @@ class EnqueueUserActivityCommand(Command[None]):
     timestamp: datetime
     referer: str | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         # Parse the URL to remove query parameters
         parsed_path = urlparse(self.path).path
         timestamp = int(self.timestamp.timestamp())
@@ -38,7 +40,7 @@ class EnqueueUserActivityCommand(Command[None]):
 class ProcessUserActivityQueueCommand(Command[None]):
     batch_size: int = 1000
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='user_activity', attach=["user_activity_queue"]) as db:
             get_id_range_command = """
                 SELECT MIN(id), MAX(id)

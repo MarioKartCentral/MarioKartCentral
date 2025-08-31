@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import json
 from typing import Any
 
+from common.data.db.db_wrapper import DBWrapper
 from worker.data import handle
 from worker.jobs import Job
 from common.data.commands import Command
@@ -16,7 +17,7 @@ class VPNDetectionState:
 class DetectVPNUsersCommand(Command[VPNDetectionState]):
     state: VPNDetectionState
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='user_activity', readonly=True) as db:
             get_maxs_query = """
                 SELECT

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone, timedelta
 import secrets
@@ -9,7 +10,7 @@ import secrets
 class GetUserIdFromSessionCommand(Command[User | None]):
     session_id: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=['sessions'], readonly=True) as db:
             query = """
                 SELECT s.user_id, u.player_id 
@@ -28,7 +29,7 @@ class GetUserIdFromSessionCommand(Command[User | None]):
 class IsValidSessionCommand(Command[bool]):
     session_id: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='sessions', readonly=True) as db:
             async with db.execute("SELECT EXISTS(SELECT 1 FROM sessions WHERE session_id = ?)", (self.session_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -42,7 +43,7 @@ class CreateSessionCommand(Command[SessionInfo]):
     persistent_session_id: str | None
     fingerprint: Fingerprint
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         session_id = secrets.token_hex(16)
         max_age = timedelta(days=365)
         current_date = datetime.now(timezone.utc)
@@ -112,7 +113,7 @@ class CreateSessionCommand(Command[SessionInfo]):
 class DeleteSessionCommand(Command[None]):
     session_id: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         now = int(datetime.now(timezone.utc).timestamp())
         
         async with db_wrapper.connect(db_name='sessions') as db:

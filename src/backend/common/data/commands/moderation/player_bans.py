@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from aiosqlite import Connection
 
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 @save_to_command_log
@@ -26,7 +27,7 @@ class BanPlayerCommand(Command[PlayerBan]):
             assert row is not None
             return True if row[0] else False
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         data = self.data
         ban_date = int(datetime.now(timezone.utc).timestamp())
 
@@ -58,7 +59,7 @@ class UnbanPlayerCommand(Command[PlayerBanHistorical]):
     player_id: int
     unbanned_by: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         unban_date = int(datetime.now(timezone.utc).timestamp())
 
         async with db_wrapper.connect() as db:
@@ -92,7 +93,7 @@ class EditPlayerBanCommand(Command[PlayerBan]):
     banned_by: int
     data: PlayerBanRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         data = self.data
         
         async with db_wrapper.connect() as db:
@@ -123,7 +124,7 @@ def _append_equal_filter(where_clauses: list[str], variable_parameters: list[Any
 class ListBannedPlayersCommand(Command[PlayerBanList]):
     filter: PlayerBanFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
 
         async with db_wrapper.connect(readonly=True) as db:
@@ -175,7 +176,7 @@ class ListBannedPlayersCommand(Command[PlayerBanList]):
 class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
     filter: PlayerBanHistoricalFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
 
         async with db_wrapper.connect(readonly=True) as db:
@@ -233,7 +234,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
 
 @dataclass
 class GetPlayersToUnbanCommand(Command[List[PlayerBanWithUserId]]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         now = int(datetime.now(timezone.utc).timestamp())
 
         async with db_wrapper.connect(readonly=True) as db:

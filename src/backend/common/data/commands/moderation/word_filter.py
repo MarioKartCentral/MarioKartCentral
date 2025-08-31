@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 @dataclass
 class CheckWordFilterCommand(Command[None]):
     request_body: dict[str, Any]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         # convert the request body into a string to check in the word filter
         string_body = ','.join(str(v).lower() for k, v in self.request_body.items() if k != 'logo_file') # sometimes bad words are in base64
 
@@ -20,7 +21,7 @@ class CheckWordFilterCommand(Command[None]):
 class EditWordFilterCommand(Command[None]):
     words: FilteredWords
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             await db.execute("DELETE FROM filtered_words")
             lowercase_words = set(w.lower().strip() for w in self.words.words)
@@ -30,7 +31,7 @@ class EditWordFilterCommand(Command[None]):
 
 @dataclass
 class GetWordFilterCommand(Command[FilteredWords]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT word FROM filtered_words") as cursor:
                 rows = await cursor.fetchall()

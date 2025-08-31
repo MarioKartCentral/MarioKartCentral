@@ -1,5 +1,6 @@
 import re
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -13,7 +14,7 @@ class CreatePlayerCommand(Command[Player]):
     is_hidden: bool = False
     is_shadow: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         name = self.name.strip()
         if len(name) < 2:
             raise Problem("Player name must be at least 2 characters", status=400)
@@ -89,7 +90,7 @@ class UpdatePlayerCommand(Command[bool]):
     data: EditPlayerRequestData
     mod_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> bool:
+    async def handle(self, db_wrapper: DBWrapper) -> bool:
         data = self.data
         async with db_wrapper.connect() as db:
             if len(self.data.name) > 24:
@@ -122,7 +123,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
     include_notes: bool = False
     include_unban_date: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> PlayerDetailed | None:
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerDetailed | None:
         async with db_wrapper.connect(readonly=True) as db:
             query = "SELECT name, country_code, is_hidden, is_shadow, is_banned, join_date FROM players WHERE id = ?"
             async with db.execute(query, (self.id,)) as cursor:
@@ -229,7 +230,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
 class ListPlayersCommand(Command[PlayerList]):
     filter: PlayerFilter
 
-    async def handle(self, db_wrapper, s3_wrapper) -> PlayerList:
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerList:
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
 
@@ -390,7 +391,7 @@ class MergePlayersCommand(Command[None]):
     from_player_id: int
     to_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         if self.from_player_id == self.to_player_id:
             raise Problem("Player IDs are equal", status=400)
         async with db_wrapper.connect() as db:
@@ -419,7 +420,7 @@ class MergePlayersCommand(Command[None]):
 class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         history: list[PlayerTransferItem] = []
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.join_date, tm.leave_date, tm.is_bagger_clause, tr.name as "roster_name"

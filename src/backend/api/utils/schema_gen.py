@@ -1,7 +1,7 @@
 import dataclasses
 import re
 from types import NoneType, UnionType
-from typing import Any, Literal, Optional, Union, get_args, get_origin
+from typing import Any, Literal, Optional, Union, cast, get_args, get_origin, get_type_hints
 import msgspec
 from starlette.requests import Request
 from starlette.routing import BaseRoute, Route
@@ -13,7 +13,7 @@ PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 class SchemaGenerator(BaseSchemaGenerator):
     @staticmethod
-    def type_to_openapi(typ: type[Any], is_nullable=False) -> dict[str, Any]:
+    def type_to_openapi(typ: Any, is_nullable: bool=False) -> dict[str, Any]:
         if typ == str:
             type_str = "string"
         elif typ == int:
@@ -24,12 +24,12 @@ class SchemaGenerator(BaseSchemaGenerator):
             type_str = "number"
         elif get_origin(typ) is Literal:
             enum = list(get_args(typ))
-            enum_type = type(enum[0]) # type: ignore
+            enum_type = cast(type[Any], type(enum[0]))
             if not(all(enum_type == type(enum_val) for enum_val in enum)):
                 raise Problem("Literal contains values of different types", f"Literal contains values of different types: {typ}")
             if is_nullable:
                 enum += [None]
-            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable) # type: ignore
+            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable)
             base_openapi["enum"] = enum
             return base_openapi
         elif get_origin(typ) is Optional:
@@ -69,9 +69,11 @@ class SchemaGenerator(BaseSchemaGenerator):
                 if spec_types.query_type is not None:
                     if dataclasses.is_dataclass(spec_types.query_type):
                         params: list[dict[str, Any]] = []
+                        
+                        type_hints = get_type_hints(spec_types.query_type)
                         for field in dataclasses.fields(spec_types.query_type):
-                            param_schema = SchemaGenerator.type_to_openapi(field.type) # type: ignore
-
+                            field_type = type_hints[field.name]
+                            param_schema = SchemaGenerator.type_to_openapi(field_type)
                             is_required = True
                             if field.default is not dataclasses.MISSING:
                                 param_schema["default"] = field.default

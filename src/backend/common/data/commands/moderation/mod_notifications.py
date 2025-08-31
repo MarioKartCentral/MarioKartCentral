@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 from common.auth import permissions
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
     user_roles: list[UserRole]
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         mod_notifications = ModNotifications()
         string_perms: list[str] = []
         for role in self.user_roles:

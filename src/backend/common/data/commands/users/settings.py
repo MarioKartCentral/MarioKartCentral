@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 
@@ -9,7 +10,7 @@ from common.data.models import *
 class CreateUserSettingsCommand(Command[None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             async with db.execute("INSERT INTO user_settings(user_id) VALUES (?)", (self.user_id,)) as cursor:
                 rows_inserted = cursor.rowcount
@@ -23,7 +24,7 @@ class CreateUserSettingsCommand(Command[None]):
 class GetUserSettingsCommand(Command[UserSettings | None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT avatar, about_me, language, 
                 color_scheme, timezone, hide_discord FROM user_settings WHERE user_id = ?""", (self.user_id,)) as cursor:
@@ -41,7 +42,7 @@ class EditUserSettingsCommand(Command[bool]):
     user_id: int
     data: EditUserSettingsRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         data = self.data
         set_clauses: list[str] = []
         variable_parameters: list[Any] = []
@@ -79,7 +80,7 @@ class EditUserSettingsCommand(Command[bool]):
 class EditPlayerUserSettingsCommand(Command[None]):
     data: EditPlayerUserSettingsRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             data = self.data
             if data.about_me and len(data.about_me) > 500:

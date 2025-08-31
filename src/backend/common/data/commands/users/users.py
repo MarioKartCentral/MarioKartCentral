@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -9,7 +10,7 @@ from datetime import datetime, timezone
 class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
     email: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=["auth"], readonly=True) as db:
             query = '''
                 SELECT a.user_id, u.player_id, a.password_hash, a.email_confirmed, a.force_password_reset
@@ -28,7 +29,7 @@ class GetUserDataFromEmailCommand(Command[UserLoginData | None]):
 class GetUserDataFromIdCommand(Command[UserAccountInfo | None]):
     id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=["auth"], readonly=True) as db:
             query = '''
                 SELECT a.email_confirmed, a.force_password_reset, u.player_id
@@ -49,7 +50,7 @@ class CreateUserCommand(Command[UserAccountInfo]):
     email: str
     password_hash: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         now = int(datetime.now(timezone.utc).timestamp())
 
         async with db_wrapper.connect(db_name='main', attach=["auth"]) as db:
@@ -71,7 +72,7 @@ class CreateUserCommand(Command[UserAccountInfo]):
 class GetPlayerIdForUserCommand(Command[int | None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> int | None:
+    async def handle(self, db_wrapper: DBWrapper) -> int | None:
         async with db_wrapper.connect(db_name='main', readonly=True) as db:
             async with db.execute("SELECT player_id FROM users WHERE id = :user_id", {"user_id": self.user_id}) as cursor:
                 row = await cursor.fetchone()
@@ -85,7 +86,7 @@ class GetPlayerIdForUserCommand(Command[int | None]):
 class GetInvitesForPlayerCommand(Command[PlayerInvites]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> PlayerInvites:
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerInvites:
         team_invites: list[TeamInvite] = []
         tournament_invites: list[TournamentInvite] = []
         async with db_wrapper.connect(readonly=True) as db:
@@ -117,7 +118,7 @@ class GetInvitesForPlayerCommand(Command[PlayerInvites]):
 class ListUsersCommand(Command[UserList]):
     filter: UserFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         limit: int = 50
         offset: int = 0
         if self.filter.page is not None:
@@ -166,7 +167,7 @@ class ViewUserCommand(Command[UserInfoDetailed]):
     user_id: int
     mod_user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=["auth"], readonly=True) as db:
             query = """
                 SELECT u.id, u.player_id, u.join_date,
@@ -226,7 +227,7 @@ class EditUserCommand(Command[None]):
     email_confirmed: bool
     force_password_reset: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=["auth"]) as db:
             exists_query = "SELECT EXISTS(SELECT 1 FROM users WHERE id = :user_id)"
             async with db.execute(exists_query, {"user_id": self.user_id}) as cursor:

@@ -2,6 +2,7 @@ from aiosqlite import Row
 from dataclasses import dataclass
 from typing import Iterable
 from common.data.commands import Command
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 
 @dataclass
@@ -13,18 +14,17 @@ class CheckUserHasPermissionCommand(Command[bool]):
     series_id: int | None = None
     tournament_id: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             def check_perms(rows: Iterable[Row]):
-                num_rows = sum(1 for r in rows) # type: ignore
-                if num_rows == 0:
-                    return None
                 # if we find an instance of the permission which is denied, always just return False
+                has_row = False
                 for row in rows:
+                    has_row = True
                     is_denied = row[0]
                     if is_denied:
                         return False
-                return True
+                return True if has_row else None
             
             #finally, check user roles
             async with db.execute("""

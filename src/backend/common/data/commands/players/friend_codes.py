@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import re
 
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -17,7 +18,7 @@ class CreateFriendCodeCommand(Command[None]):
     description: str | None
     is_privileged: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         is_primary = self.is_primary
         # make sure FC is in 0000-0000-0000 format
         match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", self.fc)
@@ -66,7 +67,7 @@ class EditFriendCodeCommand(Command[None]):
     description: str | None
     mod_player_id: int | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT type, fc, is_active, is_primary FROM friend_codes WHERE id = ? AND player_id = ?", (self.id, self.player_id)) as cursor:
@@ -109,7 +110,7 @@ class SetPrimaryFCCommand(Command[None]):
     id: int
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT id FROM friend_codes WHERE id = ? AND player_id = ?", (self.id, self.player_id)) as cursor:
                 row = await cursor.fetchone()
@@ -123,7 +124,7 @@ class SetPrimaryFCCommand(Command[None]):
 class ListFriendCodeEditsCommand(Command[FriendCodeEditList]):
     filter: FriendCodeEditFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
 
         limit:int = 50

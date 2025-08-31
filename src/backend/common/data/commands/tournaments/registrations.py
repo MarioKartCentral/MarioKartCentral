@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from common.data.commands import Command, save_to_command_log
+from common.data.db.db_wrapper import DBWrapper
 from common.data.models import *
 from common.auth import team_permissions
 
@@ -22,7 +23,7 @@ class RegisterPlayerCommand(Command[None]):
     is_approved: bool
     is_privileged: bool #if True, bypasses check for tournament registrations being open
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         timestamp = int(datetime.now(timezone.utc).timestamp())
         async with db_wrapper.connect() as db:
             # check if registrations are open and if mii name is required
@@ -134,7 +135,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     is_approved: bool | None
     is_privileged: bool
     
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled FROM tournaments WHERE id = ?", 
                                   (self.tournament_id,)) as cursor:
@@ -239,7 +240,7 @@ class UnregisterPlayerCommand(Command[None]):
     player_id: int
     is_privileged: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT registrations_open FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -286,7 +287,7 @@ class GetTournamentRegistrationsCommand(Command[list[TournamentSquadDetails]]):
     hosts_only: bool
     is_approved: bool | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT is_squad, game, verification_required, checkins_enabled, min_players_checkin, min_squad_size, teams_allowed FROM tournaments WHERE id = ?",
                                   (self.tournament_id,)) as cursor:
@@ -398,7 +399,7 @@ class GetPlayerRegistrationCommand(Command[MyTournamentRegistrationDetails]):
     tournament_id: int
     player_id: int
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT game, teams_allowed FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -550,7 +551,7 @@ class TogglePlayerCheckinCommand(Command[None]):
     registration_id: int
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT checkins_enabled, checkins_open FROM tournaments WHERE id = ?",
                                   (self.tournament_id,)) as cursor:
