@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 services:
   api:
@@ -68,7 +68,7 @@ services:
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
-    
+
   frontend:
     build: ./src/frontend
     ports:
@@ -79,7 +79,7 @@ services:
   cf-worker:
     build: ./src/cf-worker
     ports:
-      - 5000:5000
+      - 5001:5000
     volumes:
       - ./src/cf-worker:/usr/src/app
 
@@ -101,7 +101,7 @@ services:
       retries: 3
 
   swagger:
-    image: 'swaggerapi/swagger-ui'
+    image: "swaggerapi/swagger-ui"
     environment:
       - BASE_URL=/swagger
       - SWAGGER_JSON_URL=http://localhost:5000/api/schema
@@ -109,13 +109,13 @@ services:
     ports:
       - 80:8080
   sqlite-web:
-    image: 'coleifer/sqlite-web'
+    image: "coleifer/sqlite-web"
     environment:
       - SQLITE_DATABASE=/data/main.db
     volumes:
       - mkc-db:/data
     ports:
-      - 7000:8080
+      - 7001:8080
 
   mailpit:
     image: axllent/mailpit
