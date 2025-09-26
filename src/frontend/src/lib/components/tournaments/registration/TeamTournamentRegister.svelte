@@ -16,7 +16,7 @@
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import PlayerName from './PlayerName.svelte';
+  import TournamentPlayerName from './TournamentPlayerName.svelte';
   import RosterSearch from '$lib/components/common/RosterSearch.svelte';
   import type { Team } from '$lib/types/team';
   import LL from '$i18n/i18n-svelte';
@@ -238,8 +238,8 @@
                     <Flag country_code={player.country_code}/>
                   </td>
                   <td>
-                    <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
-                    is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause}/>
+                    <TournamentPlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
+                    is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause} is_banned={player.is_banned}/>
                   </td>
                   <td class="mobile-hide">
                     <FriendCodeDisplay friend_codes={player.friend_codes}/>

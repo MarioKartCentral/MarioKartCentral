@@ -55,6 +55,7 @@ class TournamentPlayerDetails():
     can_host: bool
     name: str
     country_code: str | None
+    is_banned: bool
     discord: Discord | None
     selected_fc_id: int | None
     friend_codes: list[FriendCode]

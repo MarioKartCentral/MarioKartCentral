@@ -403,6 +403,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tp.player_id,
                     p.name,
                     p.country_code,
+                    p.is_banned,
                     pla.placement,
                     pla.placement_description,
                     pla.placement_lower_bound,
@@ -452,7 +453,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tp.player_id,
                     tp.registration_id,
                     p.name,
-                    p.country_code
+                    p.country_code,
+                    p.is_banned
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
                     WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
@@ -480,7 +482,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             async with db.execute(squad_players_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    id, tournament_id, player_id, squad_id, name, country_code = row
+                    id, tournament_id, player_id, squad_id, name, country_code, is_banned = row
                     player = SquadPlayerDetails(
                         id=id,
                         player_id=player_id,
@@ -499,7 +501,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         is_representative=False,
                         is_invite=False,
                         is_bagger_clause=False,
-                        is_eligible=True
+                        is_eligible=True,
+                        is_banned=bool(is_banned)
                     )
                     if squad_id not in squad_players_map:
                         squad_players_map[squad_id] = []
@@ -515,6 +518,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         player_id,
                         name,
                         country_code,
+                        is_banned,
                         placement,
                         placement_description,
                         placement_lower_bound,
@@ -554,7 +558,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                                 is_representative=True,
                                 is_invite=True,
                                 is_bagger_clause=False,
-                                is_eligible=True
+                                is_eligible=True,
+                                is_banned=bool(is_banned)
                             )],
                             rosters=[]
                         )

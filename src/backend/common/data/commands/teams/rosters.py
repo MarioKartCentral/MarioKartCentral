@@ -13,7 +13,7 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
         edits: list[RosterEdit] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
-                                  t.color, t.id, re.handled_by, p.name, p.country_code 
+                                  t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
                                   FROM roster_edits re JOIN team_rosters r ON re.roster_id = r.id
                                   JOIN teams t ON r.team_id = t.id
                                   LEFT JOIN players p ON re.handled_by = p.id
@@ -22,10 +22,10 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, roster_id, old_name, new_name, old_tag, new_tag, date, 
-                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country) = row
+                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
                     edits.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
         return edits
     
@@ -368,15 +368,15 @@ class ListRosterEditRequestsCommand(Command[RosterEditList]):
                                 LEFT JOIN players p ON re.handled_by = p.id
                                 WHERE re.approval_status = ?"""
             async with db.execute(f"""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
-                                  t.color, t.id, re.handled_by, p.name, p.country_code 
+                                  t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
                                   {request_query} ORDER BY re.date LIMIT ? OFFSET ?""", (filter.approval_status, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, roster_id, old_name, new_name, old_tag, new_tag, date, 
-                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country) = row
+                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
                     requests.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"

@@ -9,7 +9,9 @@
 <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">
     <div class="player">
         <Flag country_code={player.country_code}/>
-        {player.name}
+        <span class={player.is_banned ? "banned_name" : ""}>
+            {player.name}
+        </span>
     </div>
 </a>
 
@@ -18,5 +20,9 @@
         display: flex;
         gap: 5px;
         align-items: center;
+    }
+    .banned_name {
+        opacity: 0.7;
+        text-decoration: line-through;
     }
 </style>

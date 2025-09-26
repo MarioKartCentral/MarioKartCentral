@@ -13,6 +13,7 @@ export type TournamentPlayer = {
   can_host: boolean;
   name: string;
   country_code: string;
+  is_banned: boolean;
   discord: Discord | null;
   selected_fc_id: number | null;
   friend_codes: FriendCode[];

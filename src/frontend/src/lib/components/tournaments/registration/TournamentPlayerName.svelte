@@ -7,6 +7,7 @@
 
     export let player_id: number;
     export let name: string;
+    export let is_banned: boolean = false;
     export let is_squad_captain: boolean = false;
     export let is_representative: boolean = false;
     export let is_bagger_clause: boolean = false;
@@ -14,7 +15,7 @@
 </script>
 
 <div class="{is_squad_captain ? "captain" : is_representative ? "representative" : ""} ">
-    <a href="/{$page.params.lang}/registry/players/profile?id={player_id}" class={!is_eligible ? "ineligible" : ""}>
+    <a href="/{$page.params.lang}/registry/players/profile?id={player_id}" class="{is_banned ? "banned_name" : ""} {!is_eligible ? "ineligible" : ""}">
         {name}
     </a>
     {#if is_squad_captain}
@@ -44,5 +45,9 @@
     }
     .ineligible {
         opacity: 50%;
-    }   
+    }
+    .banned_name {
+        opacity: 0.7;
+        text-decoration: line-through;
+    }
 </style>

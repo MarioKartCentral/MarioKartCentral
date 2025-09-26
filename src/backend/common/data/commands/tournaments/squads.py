@@ -406,7 +406,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
 
             async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
                                     t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, t.is_eligible,
-                                    p.name, p.country_code, d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
+                                    p.name, p.country_code, p.is_banned, d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
                                     LEFT JOIN users u ON u.player_id = p.id
@@ -420,12 +420,12 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 for row in player_rows:
                     (reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, 
                      can_host, is_invite, curr_fc_id, is_bagger_clause, player_is_approved, player_is_eligible, player_name, country, 
-                     discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
+                     is_banned, discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
                     curr_player = SquadPlayerDetails(reg_id, player_id, self.registration_id, player_timestamp, is_checked_in, player_is_approved, player_is_eligible, mii_name, can_host,
-                        player_name, country, player_discord, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
+                        player_name, country, bool(is_banned), player_discord, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
                     players.append(curr_player)
 
                     player_dict[curr_player.player_id] = curr_player
