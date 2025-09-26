@@ -3,16 +3,18 @@
     import { page } from "$app/stores";
     import RepresentativeBadge from "$lib/components/badges/RepresentativeBadge.svelte";
     import BaggerBadge from "$lib/components/badges/BaggerBadge.svelte";
+    import IneligibleBadge from "$lib/components/badges/IneligibleBadge.svelte";
 
     export let player_id: number;
     export let name: string;
     export let is_squad_captain: boolean = false;
     export let is_representative: boolean = false;
     export let is_bagger_clause: boolean = false;
+    export let is_eligible = true;
 </script>
 
-<div class="{is_squad_captain ? "captain" : is_representative ? "representative" : ""}">
-    <a href="/{$page.params.lang}/registry/players/profile?id={player_id}">
+<div class="{is_squad_captain ? "captain" : is_representative ? "representative" : ""} ">
+    <a href="/{$page.params.lang}/registry/players/profile?id={player_id}" class={!is_eligible ? "ineligible" : ""}>
         {name}
     </a>
     {#if is_squad_captain}
@@ -22,6 +24,9 @@
     {/if}
     {#if is_bagger_clause}
         <BaggerBadge/>
+    {/if}
+    {#if !is_eligible}
+        <IneligibleBadge/>
     {/if}
 </div>
 
@@ -36,5 +41,8 @@
     .representative {
         color: #ffdd99;
         font-weight: 700;
+    }
+    .ineligible {
+        opacity: 50%;
     }   
 </style>

@@ -40,13 +40,13 @@ class CreateTournamentCommand(Command[int | None]):
                     name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, use_series_description, series_stats_include,
                     logo, use_series_logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
                     squad_name_required, mii_name_required, host_status_required, checkins_enabled, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
-                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, max_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location, sync_team_rosters
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.use_series_description,
                 b.series_stats_include, None, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
                 b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open, b.min_players_checkin, 
-                b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives,
-                b.bagger_clause_enabled, b.use_series_ruleset, b.organizer, b.location))
+                b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives, b.max_representatives,
+                b.bagger_clause_enabled, b.use_series_ruleset, b.organizer, b.location, b.sync_team_rosters))
             tournament_id = cursor.lastrowid
 
             logo_filename = f"tournament_logos/{tournament_id}.png"
@@ -119,14 +119,16 @@ class EditTournamentCommand(Command[None]):
                 is_deleted = ?,
                 show_on_profiles = ?,
                 min_representatives = ?,
+                max_representatives = ?,
                 organizer = ?,
-                location = ?
+                location = ?,
+                sync_team_rosters = ?
                 WHERE id = ?""",
                 (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
                 logo_path, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.min_squad_size,
                 b.max_squad_size, b.checkins_enabled, b.checkins_open,
                 b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
-                b.min_representatives, b.organizer, b.location, self.id))
+                b.min_representatives, b.max_representatives, b.organizer, b.location, b.sync_team_rosters, self.id))
             updated_rows = cursor.rowcount
             if updated_rows == 0:
                 raise Problem('No tournament found', status=404)
@@ -200,11 +202,13 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                                                        show_on_profiles=t.show_on_profiles,
                                                        require_single_fc=t.require_single_fc,
                                                        min_representatives=t.min_representatives,
+                                                       max_representatives=t.max_representatives,
                                                        bagger_clause_enabled=t.bagger_clause_enabled,
                                                        is_deleted=t.is_deleted,
                                                        use_series_ruleset=t.use_series_ruleset, 
                                                        organizer=t.organizer,
                                                        location=t.location,
+                                                       sync_team_rosters=t.sync_team_rosters,
                                                        ruleset=s3_fields.ruleset,
                                                        series_name=None,
                                                        series_url=None,
@@ -494,7 +498,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         is_squad_captain=False,
                         is_representative=False,
                         is_invite=False,
-                        is_bagger_clause=False
+                        is_bagger_clause=False,
+                        is_eligible=True
                     )
                     if squad_id not in squad_players_map:
                         squad_players_map[squad_id] = []
@@ -548,7 +553,8 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                                 is_squad_captain=True,
                                 is_representative=True,
                                 is_invite=True,
-                                is_bagger_clause=False
+                                is_bagger_clause=False,
+                                is_eligible=True
                             )],
                             rosters=[]
                         )

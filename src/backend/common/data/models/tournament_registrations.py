@@ -50,6 +50,7 @@ class TournamentPlayerDetails():
     timestamp: int
     is_checked_in: bool
     is_approved: bool
+    is_eligible: bool
     mii_name: str | None
     can_host: bool
     name: str

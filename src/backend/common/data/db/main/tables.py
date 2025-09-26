@@ -207,10 +207,12 @@ class Tournament(TableModel):
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
+    max_representatives: int | None
     bagger_clause_enabled: bool
     use_series_ruleset: bool
     organizer: str
     location: str | None
+    sync_team_rosters: bool
 
     @staticmethod
     def get_create_table_command():
@@ -251,10 +253,12 @@ class Tournament(TableModel):
             show_on_profiles BOOLEAN NOT NULL,
             require_single_fc BOOLEAN NOT NULL,
             min_representatives INTEGER,
+            max_representatives INTEGER DEFAULT NULL,
             bagger_clause_enabled BOOLEAN NOT NULL,
             use_series_ruleset BOOLEAN DEFAULT 0 NOT NULL,
             organizer TEXT NOT NULL,
-            location TEXT
+            location TEXT,
+            sync_team_rosters BOOLEAN NOT NULL DEFAULT TRUE
             )"""
 
 @dataclass
@@ -310,6 +314,7 @@ class TournamentPlayer(TableModel):
     is_representative: bool
     is_bagger_clause: bool
     is_approved: bool
+    is_eligible: bool
 
     @staticmethod
     def get_create_table_command():
@@ -327,7 +332,8 @@ class TournamentPlayer(TableModel):
             selected_fc_id INTEGER,
             is_representative BOOLEAN NOT NULL,
             is_bagger_clause BOOLEAN NOT NULL,
-            is_approved BOOLEAN DEFAULT FALSE NOT NULL
+            is_approved BOOLEAN DEFAULT FALSE NOT NULL,
+            is_eligible BOOLEAN DEFAULT TRUE NOT NULL
             )"""
     
 @dataclass

@@ -1032,6 +1032,7 @@ const en_us: BaseTranslation = {
       LINK_DISCORD_TO_REGISTER: 'Please link your Discord account to participate in tournaments on MKCentral.',
       CONFIRM_EMAIL_TO_REGISTER:
         'Please confirm your email and complete the player registration to participate in tournaments on MKCentral.',
+      INELIGIBLE: 'Ineligible',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Select Template',
@@ -1089,6 +1090,9 @@ const en_us: BaseTranslation = {
       TOURNAMENT_RULESET: 'Tournament Ruleset',
       TOURNAMENT_REGISTRATION: 'Tournament Registration',
       TOURNAMENT_STATUS: 'Tournament Status',
+      SYNC_TEAM_ROSTERS: 'Remove players who leave their team from squads after registrations have closed?',
+      MAX_REPRESENTATIVES: 'Max # of squad representatives',
+      MIN_LESS_THAN_MAX_REPS: 'Min representatives must be less than or equal to max representatives',
     },
     PLACEMENTS: {
       EDIT_PLACEMENTS: 'Edit Placements',

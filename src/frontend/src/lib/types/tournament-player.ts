@@ -8,6 +8,7 @@ export type TournamentPlayer = {
   timestamp: number;
   is_checked_in: boolean;
   is_approved: boolean;
+  is_eligible: boolean;
   mii_name: string | null;
   can_host: boolean;
   name: string;

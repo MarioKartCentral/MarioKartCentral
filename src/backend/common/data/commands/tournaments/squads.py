@@ -324,6 +324,18 @@ class AddRepresentativeCommand(Command[None]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
+            async with db.execute("SELECT max_representatives FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise Problem("Tournament not found", status=404)
+                max_representatives: int | None = row[0]
+            async with db.execute("SELECT COUNT(*) FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND is_representative = 1",
+                                  (self.tournament_id, self.registration_id)) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                rep_count: int = row[0]
+                if max_representatives and rep_count >= max_representatives:
+                    raise Problem(f"This tournament has a maximum of {max_representatives} representatives", status=400)
             async with db.execute("SELECT player_id FROM tournament_players WHERE tournament_id = ? AND registration_id = ? AND player_id = ? AND is_invite = ?",
                                   (self.tournament_id, self.registration_id, self.player_id, False)) as cursor:
                 row = await cursor.fetchone()
@@ -393,7 +405,7 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                     rosters.append(roster)
 
             async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
-                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved,
+                                    t.mii_name, t.can_host, t.is_invite, t.selected_fc_id, t.is_bagger_clause, t.is_approved, t.is_eligible,
                                     p.name, p.country_code, d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                                     FROM tournament_players t
                                     JOIN players p on t.player_id = p.id
@@ -407,12 +419,12 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
                 fc_id_list: list[int] = [] # if require_single_fc is true, we will need to know exactly which FCs to retrieve
                 for row in player_rows:
                     (reg_id, player_id, is_squad_captain, is_representative, player_timestamp, is_checked_in, mii_name, 
-                     can_host, is_invite, curr_fc_id, is_bagger_clause, player_is_approved, player_name, country, 
+                     can_host, is_invite, curr_fc_id, is_bagger_clause, player_is_approved, player_is_eligible, player_name, country, 
                      discord_id, d_username, d_discriminator, d_global_name, d_avatar) = row
                     player_discord = None
                     if discord_id:
                         player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    curr_player = SquadPlayerDetails(reg_id, player_id, self.registration_id, player_timestamp, is_checked_in, player_is_approved, mii_name, can_host,
+                    curr_player = SquadPlayerDetails(reg_id, player_id, self.registration_id, player_timestamp, is_checked_in, player_is_approved, player_is_eligible, mii_name, can_host,
                         player_name, country, player_discord, None, [], is_squad_captain, is_representative, is_invite, is_bagger_clause)
                     players.append(curr_player)
 
