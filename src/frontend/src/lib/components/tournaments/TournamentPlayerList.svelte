@@ -31,20 +31,20 @@
   let edit_reg_dialog: EditPlayerRegistration;
 
   function get_players() {
-    if(!exclude_invites) {
+    if (!exclude_invites) {
       return players;
     }
     return players.filter((p) => !p.is_invite);
   }
 
   async function unregisterPlayer(player: TournamentPlayer) {
-    const conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_PLAYER_CONFIRM({player_name: player.name}));
+    const conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_PLAYER_CONFIRM({ player_name: player.name }));
     if (!conf) {
       return;
     }
     const payload = {
       registration_id: player.registration_id,
-      player_id: player.player_id
+      player_id: player.player_id,
     };
     console.log(payload);
     const endpoint = `/api/tournaments/${tournament.id}/forceUnregister`;
@@ -62,7 +62,7 @@
   }
 
   async function kickPlayer(player: TournamentPlayer) {
-    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER_CONFIRM({player_name: player.name}));
+    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER_CONFIRM({ player_name: player.name }));
     if (!conf) {
       return;
     }
@@ -86,7 +86,7 @@
   }
 
   async function makeCaptain(player: TournamentPlayer) {
-    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN_CONFIRM({player_name: player.name}));
+    let conf = window.confirm($LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN_CONFIRM({ player_name: player.name }));
     if (!conf) {
       return;
     }
@@ -191,10 +191,10 @@
     <col class="can-host mobile-hide" />
   {/if}
   {#if tournament.checkins_enabled}
-    <col class="is-checked-in mobile-hide"/>
+    <col class="is-checked-in mobile-hide" />
   {/if}
   {#if is_privileged || registration}
-    <col class="actions"/>
+    <col class="actions" />
   {/if}
   <thead>
     <tr>
@@ -211,26 +211,31 @@
         <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}</th>
       {/if}
       {#if is_privileged || registration}
-        <th/>
+        <th />
       {/if}
     </tr>
   </thead>
   <tbody>
     {#each get_players() as player, i}
-      <tr class="row-{i % 2} {user_info.player?.id === player.player_id ? "me" : ""}">
+      <tr class="row-{i % 2} {user_info.player?.id === player.player_id ? 'me' : ''}">
         <td>
-          <Flag country_code={player.country_code}/>
+          <Flag country_code={player.country_code} />
         </td>
         <td>
-          <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_squad_captain} is_representative={player.is_representative}
-          is_bagger_clause={player.is_bagger_clause}/>
+          <PlayerName
+            player_id={player.player_id}
+            name={player.name}
+            is_squad_captain={player.is_squad_captain}
+            is_representative={player.is_representative}
+            is_bagger_clause={player.is_bagger_clause}
+          />
         </td>
         {#if tournament.mii_name_required && exclude_invites}
           <td class="mobile-hide">{player.mii_name}</td>
         {/if}
         <td class="mobile-hide">
           {#if player.friend_codes.length > 0}
-            <FriendCodeDisplay friend_codes={player.friend_codes} selected_fc_id={player.selected_fc_id}/>
+            <FriendCodeDisplay friend_codes={player.friend_codes} selected_fc_id={player.selected_fc_id} />
           {/if}
         </td>
         {#if tournament.host_status_required && exclude_invites}
@@ -239,40 +244,51 @@
         {#if tournament.checkins_enabled}
           <td class="mobile-hide">{player.is_checked_in ? 'Yes' : 'No'}</td>
         {/if}
-        
+
         {#if is_privileged || registration}
           <td>
             {#if is_privileged}
-              <ChevronDownSolid class="cursor-pointer"/>
+              <ChevronDownSolid class="cursor-pointer" />
               <Dropdown>
                 <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
-                <DropdownItem on:click={() => unregisterPlayer(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
+                <DropdownItem on:click={() => unregisterPlayer(player)}
+                  >{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem
+                >
               </Dropdown>
             {:else if user_info.player_id === player.player_id && check_registrations_open(tournament)}
-              <ChevronDownSolid class="cursor-pointer"/>
+              <ChevronDownSolid class="cursor-pointer" />
               <Dropdown>
-                {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
-                  (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
+                {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) && (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
                   <DropdownItem on:click={() => edit_reg_dialog.open(player)}>{$LL.COMMON.EDIT()}</DropdownItem>
                 {/if}
                 {#if registration && registration.is_squad_captain && registration.squad.id === player.registration_id && !player.is_squad_captain}
-                  <DropdownItem on:click={() => makeCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem>
+                  <DropdownItem on:click={() => makeCaptain(player)}
+                    >{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem
+                  >
                 {/if}
                 <DropdownItem on:click={unregister}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER()}</DropdownItem>
               </Dropdown>
             {:else if registration && registration.is_squad_captain && registration.squad.id === player.registration_id && check_registrations_open(tournament)}
-              <ChevronDownSolid class="cursor-pointer"/>
+              <ChevronDownSolid class="cursor-pointer" />
               <Dropdown>
                 <DropdownItem on:click={() => kickPlayer(player)}>
-                  {player.is_invite ? $LL.TOURNAMENTS.REGISTRATIONS.RETRACT_INVITE() : $LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER()}
+                  {player.is_invite
+                    ? $LL.TOURNAMENTS.REGISTRATIONS.RETRACT_INVITE()
+                    : $LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER()}
                 </DropdownItem>
                 {#if !player.is_invite}
-                  <DropdownItem on:click={() => makeCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem>
+                  <DropdownItem on:click={() => makeCaptain(player)}
+                    >{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem
+                  >
                   {#if tournament.teams_only}
                     {#if !player.is_representative}
-                      <DropdownItem on:click={() => addRepresentative(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE()}</DropdownItem>
+                      <DropdownItem on:click={() => addRepresentative(player)}
+                        >{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE()}</DropdownItem
+                      >
                     {:else}
-                      <DropdownItem on:click={() => removeRepresentative(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE_REPRESENTATIVE()}</DropdownItem>
+                      <DropdownItem on:click={() => removeRepresentative(player)}
+                        >{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE_REPRESENTATIVE()}</DropdownItem
+                      >
                     {/if}
                   {/if}
                 {/if}
@@ -285,7 +301,7 @@
   </tbody>
 </Table>
 
-<EditPlayerRegistration bind:this={edit_reg_dialog} {tournament}/>
+<EditPlayerRegistration bind:this={edit_reg_dialog} {tournament} />
 
 <style>
   col.country {

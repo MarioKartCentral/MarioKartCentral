@@ -55,7 +55,7 @@
       <div>
         <form on:submit|preventDefault={filterData}>
           <div class="flex flex-row flex-wrap items-center justify-center">
-            <GameModeSelect bind:game bind:mode hide_labels is_team all_option inline/>
+            <GameModeSelect bind:game bind:mode hide_labels is_team all_option inline />
             <div class="ml-1 my-2">
               <Button type="submit">Filter</Button>
             </div>
@@ -72,13 +72,11 @@
             {#each filtered_history as record, i}
               <tr class="row-{i % 2}">
                 <td>
-                  <a
-                    href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}"
-                  >
+                  <a href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}">
                     <!-- prefer roster name, but use team name as fallback -->
                     {record.roster_name ? record.roster_name : record.team_name}
                     {#if record.is_bagger_clause}
-                      <BaggerBadge/>
+                      <BaggerBadge />
                     {/if}
                   </a>
                 </td>

@@ -115,7 +115,7 @@
     working = false;
     const result = await response.json();
     if (response.status < 300) {
-      let new_id = result["id"];
+      let new_id = result['id'];
       goto(`/${$page.params.lang}/tournaments/details?id=${new_id}`);
       alert($LL.TOURNAMENTS.MANAGE.CREATE_TOURNAMENT_SUCCESS());
     } else {
@@ -174,7 +174,9 @@
     <Section header={is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()} />
     <TournamentDetailsForm {data} update_function={updateData} {is_edit} {series_restrict} />
     <Section header="Submit">
-      <Button type="submit" {working}>{is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()}</Button>
+      <Button type="submit" {working}
+        >{is_edit ? $LL.TOURNAMENTS.MANAGE.EDIT_TOURNAMENT() : $LL.TOURNAMENTS.CREATE_TOURNAMENT()}</Button
+      >
     </Section>
   </form>
 {/if}

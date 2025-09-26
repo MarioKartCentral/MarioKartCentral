@@ -65,40 +65,38 @@
       </Button>
     </div>
   {:else if registration}
-    <MyRegistration {registration} {tournament}/>
+    <MyRegistration {registration} {tournament} />
     {#if !check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true)}
       <div>
         {$LL.TOURNAMENTS.REGISTRATIONS.NO_PERMISSION_TO_REGISTER()}
       </div>
-    {:else}
-      {#if check_registrations_open(tournament)}
-        {#if tournament.teams_allowed}
-          <TeamTournamentRegister {tournament}/>
-        {/if}
-        {#if !tournament.teams_only && !registration.registrations.some((r) => !r.is_invite)}
-          {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
-            <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
-            <SoloSquadTournamentRegister
-              {tournament}
-              friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
-            />
-          {:else}
-            {$LL.TOURNAMENTS.REGISTRATIONS.ADD_FC_TO_REGISTER({game: tournament.game})}
-          {/if}
-        {/if}
-      {:else}
-        <div>
-          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS_CLOSED()}
-        </div>
+    {:else if check_registrations_open(tournament)}
+      {#if tournament.teams_allowed}
+        <TeamTournamentRegister {tournament} />
       {/if}
+      {#if !tournament.teams_only && !registration.registrations.some((r) => !r.is_invite)}
+        {#if get_game_fcs(tournament.game, user_info.player.friend_codes).length}
+          <div>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_PROMPT()}</div>
+          <SoloSquadTournamentRegister
+            {tournament}
+            friend_codes={get_game_fcs(tournament.game, user_info.player.friend_codes)}
+          />
+        {:else}
+          {$LL.TOURNAMENTS.REGISTRATIONS.ADD_FC_TO_REGISTER({ game: tournament.game })}
+        {/if}
+      {/if}
+    {:else}
+      <div>
+        {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS_CLOSED()}
+      </div>
     {/if}
   {/if}
   {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
     {#if !tournament.teams_only}
-      <ForceRegisterSoloSquad {tournament}/>
+      <ForceRegisterSoloSquad {tournament} />
     {/if}
     {#if tournament.teams_allowed}
-      <TeamTournamentRegister {tournament} is_privileged={true}/>
+      <TeamTournamentRegister {tournament} is_privileged={true} />
     {/if}
   {/if}
 </Section>

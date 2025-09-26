@@ -72,7 +72,7 @@
     if (data.game !== 'mkw' || !data.is_squad) {
       data.bagger_clause_enabled = false;
     }
-    if(!data.is_viewable) {
+    if (!data.is_viewable) {
       data.is_public = false;
     }
     update_function();
@@ -85,7 +85,15 @@
       <label for="tournament_name">{$LL.TOURNAMENTS.MANAGE.TOURNAMENT_NAME_REQUIRED()}</label>
     </div>
     <div>
-      <input name="tournament_name" class="tournament_name" type="text" bind:value={data.name} minlength="1" maxlength=64 required />
+      <input
+        name="tournament_name"
+        class="tournament_name"
+        type="text"
+        bind:value={data.name}
+        minlength="1"
+        maxlength="64"
+        required
+      />
     </div>
   </div>
   <div class="option">
@@ -137,7 +145,7 @@
       <div>
         <label for="logo">{$LL.TOURNAMENTS.MANAGE.LOGO()}</label>
       </div>
-      <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo}/>
+      <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo} />
     </div>
   {/if}
 </Section>
@@ -165,7 +173,7 @@
     </div>
   {/if}
   <div class="option">
-    <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData} disabled={is_edit}/>
+    <GameModeSelect bind:game={data.game} bind:mode={data.mode} on:change={updateData} disabled={is_edit} />
   </div>
   <div class="option">
     <div>
@@ -328,9 +336,7 @@
     </div>
     <div class="option">
       <div>
-        <label for="require_single_fc"
-          >{$LL.TOURNAMENTS.MANAGE.REQUIRE_SINGLE_FC()}</label
-        >
+        <label for="require_single_fc">{$LL.TOURNAMENTS.MANAGE.REQUIRE_SINGLE_FC()}</label>
       </div>
       <div>
         <select name="require_single_fc" bind:value={data.require_single_fc} disabled={is_edit}>
@@ -410,9 +416,9 @@
   {/if}
   <div class="option">
     {#if series && data.use_series_description}
-      <MarkdownTextArea name="description" value={series.description} disabled/>
+      <MarkdownTextArea name="description" value={series.description} disabled />
     {:else}
-      <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData}/>
+      <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData} />
     {/if}
   </div>
 </Section>
@@ -432,9 +438,9 @@
   {/if}
   <div class="option">
     {#if series && data.use_series_ruleset}
-      <MarkdownTextArea name="ruleset" value={series.ruleset} disabled/>
+      <MarkdownTextArea name="ruleset" value={series.ruleset} disabled />
     {:else}
-      <MarkdownTextArea name="ruleset" bind:value={data.ruleset} on:change={updateData}/>
+      <MarkdownTextArea name="ruleset" bind:value={data.ruleset} on:change={updateData} />
     {/if}
   </div>
 </Section>

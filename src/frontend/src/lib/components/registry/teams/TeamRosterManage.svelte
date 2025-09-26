@@ -17,7 +17,13 @@
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
-  import { check_permission, check_team_permission, team_permissions, get_highest_team_role_position, permissions } from '$lib/util/permissions';
+  import {
+    check_permission,
+    check_team_permission,
+    team_permissions,
+    get_highest_team_role_position,
+    permissions,
+  } from '$lib/util/permissions';
   import RosterPlayerName from './RosterPlayerName.svelte';
   import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
@@ -36,9 +42,9 @@
   let invite_player_bagger: boolean = false;
 
   let user_info: UserInfo;
-    user.subscribe((value) => {
-      user_info = value;
-    });
+  user.subscribe((value) => {
+    user_info = value;
+  });
 
   let working = false;
 
@@ -51,10 +57,9 @@
 
   function can_kick(player: RosterPlayer) {
     let player_hierarchy = 2;
-    if(player.is_manager) {
+    if (player.is_manager) {
       player_hierarchy = 0;
-    }
-    else if(player.is_leader) {
+    } else if (player.is_leader) {
       player_hierarchy = 1;
     }
     return get_highest_team_role_position(user_info, roster.team_id) < player_hierarchy;
@@ -66,7 +71,7 @@
       team_id: roster.team_id,
       roster_id: roster.id,
       player_id: player_id,
-      is_bagger_clause: invite_player_bagger
+      is_bagger_clause: invite_player_bagger,
     };
     const endpoint = '/api/registry/teams/invitePlayer';
     const response = await fetch(endpoint, {
@@ -91,18 +96,17 @@
       player_id: player_id,
     };
     let endpoint: string;
-    if(is_mod) {
+    if (is_mod) {
       endpoint = '/api/registry/teams/forceDeleteInvite';
-    }
-    else {
+    } else {
       endpoint = '/api/registry/teams/deleteInvite';
     }
-    
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    });  
+    });
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -125,10 +129,9 @@
       team_id: roster.team_id,
     };
     let endpoint: string;
-    if(is_mod) {
+    if (is_mod) {
       endpoint = '/api/registry/teams/forceKickPlayer';
-    }
-    else {
+    } else {
       endpoint = '/api/registry/teams/kickPlayer';
     }
 
@@ -164,7 +167,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -197,7 +200,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
@@ -209,14 +212,14 @@
   }
 
   async function grantTeamRole(player: RosterPlayer, role_name: string) {
-    let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_ADD_CONFIRM({player_name: player.name, team_role: role_name}));
-    if(!conf) {
+    let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_ADD_CONFIRM({ player_name: player.name, team_role: role_name }));
+    if (!conf) {
       return;
     }
     const payload = {
       player_id: player.player_id,
-      role_name: role_name
-    }
+      role_name: role_name,
+    };
     const endpoint = `/api/registry/teams/${roster.team_id}/roles/grant`;
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -232,14 +235,16 @@
   }
 
   async function removeTeamRole(player: RosterPlayer, role_name: string) {
-    let conf = window.confirm($LL.TEAMS.EDIT.TEAM_ROLE_REMOVE_CONFIRM({player_name: player.name, team_role: role_name}));
-    if(!conf) {
+    let conf = window.confirm(
+      $LL.TEAMS.EDIT.TEAM_ROLE_REMOVE_CONFIRM({ player_name: player.name, team_role: role_name }),
+    );
+    if (!conf) {
       return;
     }
     const payload = {
       player_id: player.player_id,
-      role_name: role_name
-    }
+      role_name: role_name,
+    };
     const endpoint = `/api/registry/teams/${roster.team_id}/roles/remove`;
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -256,7 +261,7 @@
 
   async function toggleBagger(player: RosterPlayer) {
     let conf = window.confirm($LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE_CONFIRM());
-    if(!conf) return;
+    if (!conf) return;
     const payload = {
       roster_id: roster.id,
       player_id: player.player_id,
@@ -276,14 +281,14 @@
   }
 </script>
 
-<Section header="{roster.name}">
+<Section header={roster.name}>
   <div slot="header_content">
     {#if !roster.is_active}
       ({$LL.TEAMS.EDIT.ROSTER_INACTIVE()})
     {/if}
     <TagBadge tag={roster.tag} color={roster.color} />
-    <GameBadge game={roster.game}/>
-    <ModeBadge mode={roster.mode}/>
+    <GameBadge game={roster.game} />
+    <ModeBadge mode={roster.mode} />
     {#if (roster.approval_status === 'approved' && roster.is_active) || is_mod}
       <Button on:click={is_mod ? force_edit_dialog.open : edit_dialog.open}>{$LL.TEAMS.EDIT.EDIT_ROSTER()}</Button>
     {/if}
@@ -312,7 +317,7 @@
             <tr class="row-{i % 2} {user_info.player_id === player.player_id ? 'me' : ''}">
               <td><Flag country_code={player.country_code} /></td>
               <td>
-                <RosterPlayerName {player}/>
+                <RosterPlayerName {player} />
               </td>
               <td class="mobile-hide">
                 {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i}
@@ -323,7 +328,7 @@
               </td>
               <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
               <td>
-                <ChevronDownSolid class="cursor-pointer"/>
+                <ChevronDownSolid class="cursor-pointer" />
                 <Dropdown>
                   {#if can_kick(player)}
                     <DropdownItem on:click={() => kickDialog(player)}>
@@ -332,27 +337,27 @@
                   {/if}
                   {#if check_team_permission(user_info, team_permissions.manage_team_roles, roster.team_id)}
                     {#if player.is_leader}
-                      <DropdownItem on:click={() => removeTeamRole(player, "Leader")}>
+                      <DropdownItem on:click={() => removeTeamRole(player, 'Leader')}>
                         {$LL.TEAMS.EDIT.REMOVE_LEADER()}
                       </DropdownItem>
                     {:else if !player.is_manager}
-                      <DropdownItem on:click={() => grantTeamRole(player, "Leader")}>
+                      <DropdownItem on:click={() => grantTeamRole(player, 'Leader')}>
                         {$LL.TEAMS.EDIT.MAKE_LEADER()}
                       </DropdownItem>
                     {/if}
                   {/if}
                   {#if check_permission(user_info, team_permissions.manage_team_roles)}
                     {#if player.is_manager}
-                      <DropdownItem on:click={() => removeTeamRole(player, "Manager")}>
+                      <DropdownItem on:click={() => removeTeamRole(player, 'Manager')}>
                         {$LL.TEAMS.EDIT.REMOVE_MANAGER()}
                       </DropdownItem>
                     {:else}
-                      <DropdownItem on:click={() => grantTeamRole(player, "Manager")}>
+                      <DropdownItem on:click={() => grantTeamRole(player, 'Manager')}>
                         {$LL.TEAMS.EDIT.MAKE_MANAGER()}
                       </DropdownItem>
                     {/if}
                   {/if}
-                  {#if roster.game === "mkw" && check_permission(user_info, permissions.manage_transfers)}
+                  {#if roster.game === 'mkw' && check_permission(user_info, permissions.manage_transfers)}
                     <DropdownItem on:click={() => toggleBagger(player)}>
                       {$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE()}
                     </DropdownItem>
@@ -393,13 +398,17 @@
                     {player.name}
                   </a>
                   {#if player.is_bagger_clause}
-                    <BaggerBadge/>
+                    <BaggerBadge />
                   {/if}
                 </td>
-                <td class="mobile-hide">{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td>
+                <td class="mobile-hide"
+                  >{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td
+                >
                 <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
                 <td>
-                  <Button {working} on:click={() => retractInvite(player.player_id)}>{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button>
+                  <Button {working} on:click={() => retractInvite(player.player_id)}
+                    >{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button
+                  >
                 </td>
               </tr>
             {/each}
@@ -407,7 +416,7 @@
         </Table>
       </div>
     {/if}
-    {#if (roster.approval_status === 'approved' && roster.is_active) && check_permission(user_info, permissions.invite_to_team, true)}
+    {#if roster.approval_status === 'approved' && roster.is_active && check_permission(user_info, permissions.invite_to_team, true)}
       <div class="section">
         <b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b>
         <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
@@ -425,12 +434,13 @@
               </select>
             </div>
           {/if}
-          <Button {working} on:click={() => invitePlayer(Number(invite_player?.id))}>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</Button>
+          <Button {working} on:click={() => invitePlayer(Number(invite_player?.id))}
+            >{$LL.TEAMS.EDIT.INVITE_PLAYER()}</Button
+          >
         {/if}
       </div>
     {/if}
-    
-  {:else if roster.approval_status === "pending"}
+  {:else if roster.approval_status === 'pending'}
     <div>
       {$LL.TEAMS.EDIT.ROSTER_PENDING_APPROVAL()}
     </div>
@@ -438,7 +448,7 @@
 </Section>
 
 <Dialog bind:this={kick_dialog} header={$LL.TEAMS.EDIT.KICK_PLAYER()}>
-  {$LL.TEAMS.EDIT.KICK_CONFIRM({player_name: curr_player?.name})}
+  {$LL.TEAMS.EDIT.KICK_CONFIRM({ player_name: curr_player?.name })}
   <div>
     <Button {working} on:click={() => kickPlayer(curr_player)}>{$LL.TEAMS.EDIT.KICK()}</Button>
     <Button on:click={kick_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
@@ -446,8 +456,8 @@
 </Dialog>
 
 <Dialog bind:this={edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
-  <RosterNameTagRequest {roster}/>
-  <br/>
+  <RosterNameTagRequest {roster} />
+  <br />
   <form method="post" on:submit|preventDefault={editRoster}>
     <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
     <select name="recruiting">
@@ -463,11 +473,11 @@
   <form method="post" on:submit|preventDefault={forceEditRoster}>
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-      <Input name="name" type="text" value={roster.name} required maxlength={32} no_white_space/>
+      <Input name="name" type="text" value={roster.name} required maxlength={32} no_white_space />
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-      <Input name="tag" type="text" value={roster.tag} required maxlength={8} no_white_space/>
+      <Input name="tag" type="text" value={roster.tag} required maxlength={8} no_white_space />
     </div>
     <div class="option">
       <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>
