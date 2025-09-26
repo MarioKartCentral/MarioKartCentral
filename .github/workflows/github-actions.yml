@@ -58,5 +58,7 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Run svelte-check
+        run: npm run check
       - name: Build frontend environment
         run: npm run build
