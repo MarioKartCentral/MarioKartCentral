@@ -424,6 +424,7 @@ class TeamMember(TableModel):
     join_date: int
     leave_date: int | None
     is_bagger_clause: bool
+    is_hidden: bool
 
     @staticmethod
     def get_create_table_command():
@@ -433,7 +434,8 @@ class TeamMember(TableModel):
             player_id INTEGER NOT NULL REFERENCES players(id),
             join_date INTEGER NOT NULL,
             leave_date INTEGER,
-            is_bagger_clause BOOLEAN NOT NULL
+            is_bagger_clause BOOLEAN NOT NULL,
+            is_hidden BOOLEAN NOT NULL DEFAULT 0
             )
             """
 

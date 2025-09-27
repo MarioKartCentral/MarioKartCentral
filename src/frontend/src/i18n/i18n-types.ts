@@ -2222,6 +2222,22 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​s​e​n​d​ ​p​l​a​y​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l
 			 */
 			SEND_PASSWORD_RESET_FAILED: string
+			/**
+			 * H​i​d​e​ ​h​i​d​d​e​n​ ​e​n​t​r​i​e​s
+			 */
+			HIDE_HIDDEN_TEAM_REGISTRATIONS: string
+			/**
+			 * S​h​o​w​ ​h​i​d​d​e​n​ ​e​n​t​r​i​e​s
+			 */
+			SHOW_HIDDEN_TEAM_REGISTRATIONS: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​t​o​g​g​l​e​ ​t​h​i​s​ ​r​e​g​i​s​t​r​a​t​i​o​n​'​s​ ​v​i​s​i​b​i​l​i​t​y​?
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​t​o​g​g​l​e​ ​v​i​s​i​b​i​l​i​t​y
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -7527,6 +7543,22 @@ export type TranslationFunctions = {
 			 * Failed to send player a password reset email
 			 */
 			SEND_PASSWORD_RESET_FAILED: () => LocalizedString
+			/**
+			 * Hide hidden entries
+			 */
+			HIDE_HIDDEN_TEAM_REGISTRATIONS: () => LocalizedString
+			/**
+			 * Show hidden entries
+			 */
+			SHOW_HIDDEN_TEAM_REGISTRATIONS: () => LocalizedString
+			/**
+			 * Are you sure you would like to toggle this registration's visibility?
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM: () => LocalizedString
+			/**
+			 * Failed to toggle visibility
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**

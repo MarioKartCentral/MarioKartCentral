@@ -428,7 +428,7 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     async def handle(self, db_wrapper, s3_wrapper):
         history: list[PlayerTransferItem] = []
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.join_date, tm.leave_date, tm.is_bagger_clause, tr.name as "roster_name"
+            async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.id, tm.join_date, tm.leave_date, tm.is_bagger_clause, tm.is_hidden, tr.name as "roster_name"
                 FROM team_members as tm
                 JOIN team_rosters as tr
                 ON tm.roster_id = tr.id
@@ -440,7 +440,17 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                 (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    team_id, team_name, game, mode, join_date, leave_date, is_bagger_clause, roster_name = row
-                    history.append(PlayerTransferItem(team_id, team_name, game, mode, join_date, leave_date, bool(is_bagger_clause), roster_name))
+                    team_id, team_name, game, mode, item_id, join_date, leave_date, is_bagger_clause, is_hidden, roster_name = row
+                    history.append(PlayerTransferItem(item_id, team_id, team_name, game, mode, join_date, leave_date, bool(is_bagger_clause), roster_name, bool(is_hidden)))
                 results = PlayerTransferHistory(history)
                 return results
+
+@dataclass
+class ToggleTransferHistoryItemVisibilityCommand(Command[None]):
+    item_id: int
+    player_id: int
+
+    async def handle(self, db_wrapper, s3_wrapper):
+        async with db_wrapper.connect() as db:
+            await db.execute("UPDATE team_members SET is_hidden = NOT is_hidden WHERE id = ? AND player_id = ?", (self.item_id, self.player_id))
+            await db.commit()

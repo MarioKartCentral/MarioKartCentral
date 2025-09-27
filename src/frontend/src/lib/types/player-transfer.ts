@@ -1,4 +1,5 @@
 export type PlayerTransferItem = {
+  id: number;
   team_id: number;
   team_name: string;
   game: string;
@@ -7,6 +8,7 @@ export type PlayerTransferItem = {
   leave_date: number | null;
   is_bagger_clause: boolean;
   roster_name: string | null;
+  is_hidden: boolean;
 };
 
 export type PlayerTransferHistory = {
