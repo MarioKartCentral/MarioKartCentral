@@ -153,6 +153,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
 @dataclass
 class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
     player_id: int
+    exclude_fingerprints: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         # get alt flag info
@@ -180,9 +181,10 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 JOIN alt_flags.user_alt_flags uf ON f.id = uf.flag_id
                 LEFT JOIN user_activity.user_logins l ON f.login_id = l.id
                 WHERE uf.user_id = :user_id
+                AND (:exclude_fingerprints=0 OR f.type != 'fingerprint_match')
                 ORDER BY f.date DESC
             """
-            async with db.execute(get_player_flags_command, {"user_id": user_id}) as cursor:
+            async with db.execute(get_player_flags_command, {"user_id": user_id, "exclude_fingerprints": self.exclude_fingerprints}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     flag_id, type, flag_key, data, score, date, fingerprint_hash = row

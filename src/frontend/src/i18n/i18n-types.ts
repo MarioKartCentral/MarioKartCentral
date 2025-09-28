@@ -1450,6 +1450,14 @@ type RootTranslation = {
 			 * @param {number} count
 			 */
 			NUM_TIMES: RequiredParams<'count'>
+			/**
+			 * E​x​c​l​u​d​e​ ​f​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			EXCLUDE_FINGERPRINTS: string
+			/**
+			 * I​n​c​l​u​d​e​ ​f​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			INCLUDE_FINGERPRINTS: string
 			TABLE: {
 				/**
 				 * P​l​a​y​e​r​s
@@ -6839,6 +6847,14 @@ export type TranslationFunctions = {
 			 * {count} times
 			 */
 			NUM_TIMES: (arg: { count: number }) => LocalizedString
+			/**
+			 * Exclude fingerprints
+			 */
+			EXCLUDE_FINGERPRINTS: () => LocalizedString
+			/**
+			 * Include fingerprints
+			 */
+			INCLUDE_FINGERPRINTS: () => LocalizedString
 			TABLE: {
 				/**
 				 * Players

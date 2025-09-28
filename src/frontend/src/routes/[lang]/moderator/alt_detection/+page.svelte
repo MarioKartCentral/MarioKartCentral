@@ -73,8 +73,8 @@
                         </option>
                     </select>
                     <select bind:value={exclude_fingerprints} on:change={fetchData}>
-                        <option value={true}>Exclude Fingerprints</option>
-                        <option value={false}>Include Fingerprints</option>
+                        <option value={true}>{$LL.MODERATOR.ALT_DETECTION.EXCLUDE_FINGERPRINTS()}</option>
+                        <option value={false}>{$LL.MODERATOR.ALT_DETECTION.INCLUDE_FINGERPRINTS()}</option>
                     </select>
                 </div>
                 <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>

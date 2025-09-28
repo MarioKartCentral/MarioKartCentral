@@ -393,6 +393,8 @@ const en_us: BaseTranslation = {
       IP_USER_COUNT: '{count:number} users',
       IP_HISTORY: 'IP History',
       NUM_TIMES: '{count:number} times',
+      EXCLUDE_FINGERPRINTS: 'Exclude fingerprints',
+      INCLUDE_FINGERPRINTS: 'Include fingerprints',
       TABLE: {
         PLAYERS: 'Players',
         TYPE: 'Type',

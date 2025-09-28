@@ -31,6 +31,7 @@ class AltFlagFilter:
 @dataclass
 class PlayerAltFlagRequestData:
     player_id: int
+    exclude_fingerprints: bool = False
 
 @dataclass
 class AltFlagUser:
