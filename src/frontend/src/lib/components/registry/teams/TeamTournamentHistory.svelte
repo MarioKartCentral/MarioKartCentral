@@ -8,6 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
+  import { game_abbreviations } from '$lib/util/util';
 
   export let team: Team;
 
@@ -15,9 +16,13 @@
   let game: string | null = null;
   let from: string | null = null;
   let to: string | null = null;
+  let roster_id: number | null = null;
   let team_placements: TeamTournamentPlacement[] = [];
   let filtered_team_placements: TeamTournamentPlacement[] = [];
   let podium_style: { [key: number]: string } = { 1: 'gold', 2: 'silver', 3: 'bronze' };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mode_strings: any = $LL.MODES;
 
   function toDate(unix_timestamp: number) {
     return new Date(unix_timestamp * 1000).toLocaleDateString();
@@ -54,6 +59,9 @@
         return item.date_end <= Date.parse(String(to)) / 1000;
       });
     }
+    if(roster_id) {
+      filtered_team_placements = filtered_team_placements.filter((item) => item.rosters.some((r) => r.roster_id === roster_id));
+    }
 
     filtered_team_placements = filtered_team_placements.sort((a, b) => {
       return b.date_start - a.date_start;
@@ -78,6 +86,17 @@
             <div class="flex flex-row items-center">
               <div class="w-12 mx-2">{$LL.COMMON.TO()}</div>
               <input class="w-48" name="to" type="date" bind:value={to} />
+            </div>
+            <div class="flex flex-row items-center">
+              <div class="w-12 mx-2">{$LL.TEAMS.PROFILE.ROSTER()}</div>
+              <select bind:value={roster_id}>
+                <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
+                {#each team.rosters as roster}
+                  <option value={roster.id}>
+                    {roster.name} ({game_abbreviations[roster.game]} {mode_strings[roster.mode.toUpperCase()]()})
+                  </option>
+                {/each}
+              </select>
             </div>
           </div>
           <div class="ml-1 my-2">

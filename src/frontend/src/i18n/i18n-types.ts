@@ -2862,6 +2862,10 @@ type RootTranslation = {
 			 */
 			MANAGERS: string
 			/**
+			 * R​o​s​t​e​r
+			 */
+			ROSTER: string
+			/**
 			 * R​o​s​t​e​r​s
 			 */
 			ROSTERS: string
@@ -8175,6 +8179,10 @@ export type TranslationFunctions = {
 			 * Managers
 			 */
 			MANAGERS: () => LocalizedString
+			/**
+			 * Roster
+			 */
+			ROSTER: () => LocalizedString
 			/**
 			 * Rosters
 			 */

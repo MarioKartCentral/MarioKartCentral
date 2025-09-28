@@ -756,6 +756,7 @@ const en_us: BaseTranslation = {
       REGISTERED: 'Registered',
       MAIN_LANGUAGE: 'Main Language',
       MANAGERS: 'Managers',
+      ROSTER: 'Roster',
       ROSTERS: 'Rosters',
       PLAYER: 'player',
       PLAYERS: 'players',
