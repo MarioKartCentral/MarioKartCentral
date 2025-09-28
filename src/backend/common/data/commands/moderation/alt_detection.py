@@ -105,9 +105,13 @@ class ListAltFlagsCommand(Command[AltFlagList]):
             # Get count for pagination
             count_query = """SELECT COUNT(*) FROM alt_flags.alt_flags
                     WHERE (:type IS NULL OR type = :type)
-                    AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')"""
+                    AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')
+                    AND (:from_date IS NULL OR date >= :from_date)
+                    AND (:to_date IS NULL OR date <= :to_date)"""
             async with db.execute(count_query, {"type": self.filter.type,
-                                                "exclude_fingerprints": self.filter.exclude_fingerprints}) as cursor:
+                                                "exclude_fingerprints": self.filter.exclude_fingerprints,
+                                                "from_date": self.filter.from_date,
+                                                "to_date": self.filter.to_date}) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 count = row[0]
@@ -120,6 +124,8 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                     SELECT id FROM alt_flags.alt_flags
                     WHERE (:type IS NULL OR type = :type)
                     AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')
+                    AND (:from_date IS NULL OR date >= :from_date)
+                    AND (:to_date IS NULL OR date <= :to_date)
                     ORDER BY date DESC 
                     LIMIT :limit OFFSET :offset
                 ) as pf
@@ -133,7 +139,9 @@ class ListAltFlagsCommand(Command[AltFlagList]):
             
             flag_dict: dict[int, AltFlag] = {}
             async with db.execute(get_flags_query, {"limit": limit, "offset": offset, "type": self.filter.type,
-                                                    "exclude_fingerprints": self.filter.exclude_fingerprints}) as cursor:
+                                                    "exclude_fingerprints": self.filter.exclude_fingerprints,
+                                                    "from_date": self.filter.from_date,
+                                                    "to_date": self.filter.to_date}) as cursor:
                 rows = await cursor.fetchall()
                 for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, user_id, player_id, player_name, player_country, player_banned in rows:
                     # Create flag if we haven't seen it yet

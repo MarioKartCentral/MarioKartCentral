@@ -26,6 +26,8 @@ class IPCheckResponse:
 class AltFlagFilter:
     type: str | None = None
     exclude_fingerprints: bool = False
+    from_date: int | None = None
+    to_date: int | None = None
     page: int | None = None
 
 @dataclass

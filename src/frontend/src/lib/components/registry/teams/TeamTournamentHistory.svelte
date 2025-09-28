@@ -54,6 +54,11 @@
     if (mode) {
       filtered_team_placements = filtered_team_placements.filter((item) => item.mode === mode);
     }
+    if (from) {
+      filtered_team_placements = filtered_team_placements.filter((item) => {
+        return item.date_end >= Date.parse(String(from)) / 1000;
+      });
+    }
     if (to) {
       filtered_team_placements = filtered_team_placements.filter((item) => {
         return item.date_end <= Date.parse(String(to)) / 1000;
