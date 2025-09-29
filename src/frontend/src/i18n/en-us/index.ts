@@ -588,7 +588,8 @@ const en_us: BaseTranslation = {
       SEND_PASSWORD_RESET_FAILED: 'Failed to send player a password reset email',
       HIDE_HIDDEN_TEAM_REGISTRATIONS: 'Hide hidden entries',
       SHOW_HIDDEN_TEAM_REGISTRATIONS: 'Show hidden entries',
-      TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM: 'Are you sure you would like to toggle this registration\'s visibility?',
+      TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM:
+        "Are you sure you would like to toggle this registration's visibility?",
       TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: 'Failed to toggle visibility',
     },
     SHADOW_PLAYERS: {
