@@ -99,13 +99,13 @@
                         <tr class="row-{i % 2}">
                             <td><Flag country_code={claim.player.country_code}/></td>
                             <td>
-                                <a href="{$page.params.lang}/registry/players/profile?id={claim.player.id}">
+                                <a href="/{$page.params.lang}/registry/players/profile?id={claim.player.id}">
                                     {claim.player.name}
                                 </a>
                             </td>
                             <td><Flag country_code={claim.claimed_player.country_code}/></td>
                             <td>
-                                <a href="{$page.params.lang}/registry/players/profile?id={claim.claimed_player.id}">
+                                <a href="/{$page.params.lang}/registry/players/profile?id={claim.claimed_player.id}">
                                     {claim.claimed_player.name}
                                 </a>
                             </td>

@@ -43,7 +43,8 @@ def get_all_jobs():
         ip_match_detection,
         persistent_cookie_detection,
         fingerprint_match_detection,
-        db_backup
+        db_backup,
+        close_tournament_registrations
     )
     if not _jobs:
         # _jobs.extend(log_processor.get_jobs())
@@ -59,4 +60,5 @@ def get_all_jobs():
         _jobs.extend(persistent_cookie_detection.get_jobs())
         _jobs.extend(fingerprint_match_detection.get_jobs())
         _jobs.extend(db_backup.get_jobs())
+        _jobs.extend(close_tournament_registrations.get_jobs())
     return _jobs

@@ -34,6 +34,7 @@
     teams_only: false,
     team_members_only: false,
     min_representatives: null,
+    max_representatives: null,
     host_status_required: false,
     mii_name_required: false,
     require_single_fc: false,
@@ -57,6 +58,7 @@
     bagger_clause_enabled: false,
     logo_file: null,
     remove_logo: false,
+    sync_team_rosters: false,
   };
 
   let is_edit = tournament_id ? true : false; // if we specified a tournament id, assume we're editing that tournament
@@ -104,6 +106,12 @@
     data.date_end = Number(date_end);
     data.registration_deadline = registration_deadline;
 
+    if(data.min_representatives && data.max_representatives && data.min_representatives > data.max_representatives) {
+      alert($LL.TOURNAMENTS.MANAGE.MIN_LESS_THAN_MAX_REPS());
+      working = false;
+      return;
+    }
+
     let payload = data;
     console.log(payload);
     const endpoint = '/api/tournaments/create';
@@ -149,6 +157,12 @@
     data.date_start = Number(date_start);
     data.date_end = Number(date_end);
     data.registration_deadline = registration_deadline;
+
+    if(data.min_representatives && data.max_representatives && data.min_representatives > data.max_representatives) {
+      alert($LL.TOURNAMENTS.MANAGE.MIN_LESS_THAN_MAX_REPS());
+      working = false;
+      return;
+    }
 
     let payload = data;
     console.log(payload);

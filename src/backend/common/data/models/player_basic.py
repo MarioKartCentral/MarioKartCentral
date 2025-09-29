@@ -7,3 +7,4 @@ class PlayerBasic:
     id: int
     name: str
     country_code: CountryCode
+    is_banned: bool

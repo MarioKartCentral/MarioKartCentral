@@ -37,6 +37,10 @@ span.badge {
   background-color: #00bd6e;
   border: 1px solid #047942;
 }
+.ineligible_badge {
+  background-color: #a8a8a8;
+  border: 1px solid #929292;
+}
 
 .game_mkt_badge {
   background-color: #a1385d;
