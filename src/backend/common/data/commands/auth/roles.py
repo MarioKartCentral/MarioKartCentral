@@ -362,7 +362,7 @@ class UpdateRoleExpirationCommand(Command[None]):
                     JOIN permissions p ON rp.permission_id = p.id
                     JOIN roles r2
                     WHERE ur.user_id = :granter_user_id AND r2.name = :role_name AND r1.position < r2.position
-                    AND rp.is_denied = 0 AND (:is_ban = 0 OR p.name = :permission_name)
+                    AND rp.is_denied = 0 AND (:is_ban = 1 OR p.name = :permission_name)
                 )
                 """, {'granter_user_id': self.granter_user_id, 'role_name': self.role, 'permission_name': permissions.MANAGE_USER_ROLES, 'is_ban': self.is_ban}) as cursor:
                 row = await cursor.fetchone()
