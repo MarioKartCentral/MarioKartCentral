@@ -585,5 +585,5 @@ class CloseTournamentRegistrationsCommand(Command[None]):
     async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect() as db:
             now = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("UPDATE tournaments SET registrations_open = 0 WHERE registrations_open = 1 AND registration_deadline > ?", (now,))
+            await db.execute("UPDATE tournaments SET registrations_open = 0 WHERE registrations_open = 1 AND registration_deadline < ?", (now,))
             await db.commit()
