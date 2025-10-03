@@ -174,7 +174,7 @@
                 </div>
                 <div class="right field">
                     {#if transfer.roster_leave}
-                        <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}">
+                        <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}" title={transfer.roster_leave.roster_name}>
                             <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color}/>
                         </a>
                     {:else}
@@ -182,7 +182,7 @@
                     {/if}
                     <ArrowRight/>
                     {#if transfer.roster_join}
-                        <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_join.team_id}">
+                        <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_join.team_id}" title={transfer.roster_join.roster_name}>
                             <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color}/>
                         </a>
                     {:else}
