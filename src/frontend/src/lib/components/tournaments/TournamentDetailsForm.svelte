@@ -76,7 +76,7 @@
     if (!data.is_viewable) {
       data.is_public = false;
     }
-    if(!data.team_members_only) {
+    if (!data.team_members_only) {
       data.sync_team_rosters = false;
     }
     update_function();
@@ -288,7 +288,12 @@
                 <label for="team_members_only">{$LL.TOURNAMENTS.MANAGE.TEAM_MEMBERS_ONLY()}</label>
               </div>
               <div>
-                <select name="team_members_only" bind:value={data.team_members_only} on:change={updateData} disabled={is_edit}>
+                <select
+                  name="team_members_only"
+                  bind:value={data.team_members_only}
+                  on:change={updateData}
+                  disabled={is_edit}
+                >
                   <option value={false}>{$LL.COMMON.NO()}</option>
                   <option value={true}>{$LL.COMMON.YES()}</option>
                 </select>
@@ -301,7 +306,12 @@
                     <label for="sync_team_rosters">{$LL.TOURNAMENTS.MANAGE.SYNC_TEAM_ROSTERS()}</label>
                   </div>
                   <div>
-                    <select name="sync_team_rosters" bind:value={data.sync_team_rosters} on:change={updateData} disabled={is_edit}>
+                    <select
+                      name="sync_team_rosters"
+                      bind:value={data.sync_team_rosters}
+                      on:change={updateData}
+                      disabled={is_edit}
+                    >
                       <option value={false}>{$LL.COMMON.NO()}</option>
                       <option value={true}>{$LL.COMMON.YES()}</option>
                     </select>

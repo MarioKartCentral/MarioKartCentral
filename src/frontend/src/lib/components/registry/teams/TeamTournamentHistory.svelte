@@ -64,8 +64,10 @@
         return item.date_end <= Date.parse(String(to)) / 1000;
       });
     }
-    if(roster_id) {
-      filtered_team_placements = filtered_team_placements.filter((item) => item.rosters.some((r) => r.roster_id === roster_id));
+    if (roster_id) {
+      filtered_team_placements = filtered_team_placements.filter((item) =>
+        item.rosters.some((r) => r.roster_id === roster_id),
+      );
     }
 
     filtered_team_placements = filtered_team_placements.sort((a, b) => {
@@ -98,7 +100,8 @@
                 <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
                 {#each team.rosters as roster}
                   <option value={roster.id}>
-                    {roster.name} ({game_abbreviations[roster.game]} {mode_strings[roster.mode.toUpperCase()]()})
+                    {roster.name} ({game_abbreviations[roster.game]}
+                    {mode_strings[roster.mode.toUpperCase()]()})
                   </option>
                 {/each}
               </select>

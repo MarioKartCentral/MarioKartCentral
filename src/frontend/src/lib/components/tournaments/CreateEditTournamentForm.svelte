@@ -106,7 +106,7 @@
     data.date_end = Number(date_end);
     data.registration_deadline = registration_deadline;
 
-    if(data.min_representatives && data.max_representatives && data.min_representatives > data.max_representatives) {
+    if (data.min_representatives && data.max_representatives && data.min_representatives > data.max_representatives) {
       alert($LL.TOURNAMENTS.MANAGE.MIN_LESS_THAN_MAX_REPS());
       working = false;
       return;
@@ -158,7 +158,7 @@
     data.date_end = Number(date_end);
     data.registration_deadline = registration_deadline;
 
-    if(data.min_representatives && data.max_representatives && data.min_representatives > data.max_representatives) {
+    if (data.min_representatives && data.max_representatives && data.min_representatives > data.max_representatives) {
       alert($LL.TOURNAMENTS.MANAGE.MIN_LESS_THAN_MAX_REPS());
       working = false;
       return;
