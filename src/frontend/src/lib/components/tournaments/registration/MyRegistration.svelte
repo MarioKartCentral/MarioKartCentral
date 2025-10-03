@@ -68,7 +68,7 @@
               <div>
                 {$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}
               </div>
-              {#if reg.squad}
+              {#if tournament.min_players_checkin}
                 <div>
                   ({reg.squad.players.filter((p) => p.is_checked_in).length}/{tournament.min_players_checkin})
                 </div>

@@ -45,6 +45,7 @@
         teams_only: tournament.teams_only,
         team_members_only: tournament.team_members_only,
         min_representatives: tournament.min_representatives,
+        max_representatives: tournament.max_representatives,
         host_status_required: tournament.host_status_required,
         mii_name_required: tournament.mii_name_required,
         require_single_fc: tournament.require_single_fc,
@@ -66,6 +67,7 @@
         series_stats_include: tournament.series_stats_include,
         verified_fc_required: tournament.verified_fc_required,
         bagger_clause_enabled: tournament.bagger_clause_enabled,
+        sync_team_rosters: tournament.sync_team_rosters,
         logo_file: null,
         remove_logo: false,
       };

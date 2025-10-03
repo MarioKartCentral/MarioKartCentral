@@ -54,6 +54,7 @@
       data.teams_only = false;
       data.team_members_only = false;
       data.min_representatives = null;
+      data.max_representatives = null;
     }
     if (!data.checkins_enabled) {
       data.checkins_open = false;
@@ -74,6 +75,9 @@
     }
     if (!data.is_viewable) {
       data.is_public = false;
+    }
+    if(!data.team_members_only) {
+      data.sync_team_rosters = false;
     }
     update_function();
   }
@@ -284,12 +288,27 @@
                 <label for="team_members_only">{$LL.TOURNAMENTS.MANAGE.TEAM_MEMBERS_ONLY()}</label>
               </div>
               <div>
-                <select name="team_members_only" bind:value={data.team_members_only} disabled={is_edit}>
+                <select name="team_members_only" bind:value={data.team_members_only} on:change={updateData} disabled={is_edit}>
                   <option value={false}>{$LL.COMMON.NO()}</option>
                   <option value={true}>{$LL.COMMON.YES()}</option>
                 </select>
               </div>
             </div>
+            {#if data.team_members_only}
+              <div class="indented">
+                <div class="indented option">
+                  <div>
+                    <label for="sync_team_rosters">{$LL.TOURNAMENTS.MANAGE.SYNC_TEAM_ROSTERS()}</label>
+                  </div>
+                  <div>
+                    <select name="sync_team_rosters" bind:value={data.sync_team_rosters} on:change={updateData} disabled={is_edit}>
+                      <option value={false}>{$LL.COMMON.NO()}</option>
+                      <option value={true}>{$LL.COMMON.YES()}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            {/if}
             <div class="indented option">
               <div>
                 <label for="min_representatives">{$LL.TOURNAMENTS.MANAGE.MIN_REPRESENTATIVES()}</label>
@@ -309,6 +328,24 @@
           {/if}
         </div>
       {/if}
+    </div>
+    <div class="indented">
+      <div class="indented">
+        <div class="indented option">
+          <div>
+            <label for="max_representatives">{$LL.TOURNAMENTS.MANAGE.MAX_REPRESENTATIVES()}</label>
+          </div>
+          <div>
+            <input
+              class="number"
+              type="number"
+              name="max_representatives"
+              bind:value={data.max_representatives}
+              min="0"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   {/if}
   {#if !data.teams_allowed}

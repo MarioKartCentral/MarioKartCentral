@@ -91,7 +91,7 @@
             <col class="select" />
             <tbody>
               {#each results as result}
-                <tr on:click={() => set_option(result)}>
+                <tr on:click={() => set_option(result)} title="Player ID: {result.id}">
                   <td on:click={() => set_option(result)}>
                     <Flag country_code={result.country_code} />
                   </td>
