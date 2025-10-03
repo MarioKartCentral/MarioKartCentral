@@ -398,6 +398,8 @@ const fr: Translation = {
       IP_USER_COUNT: '{count} utilisateurs',
       IP_HISTORY: "Historique de l'IP",
       NUM_TIMES: '{count} fois',
+      EXCLUDE_FINGERPRINTS: 'Exclude fingerprints',
+      INCLUDE_FINGERPRINTS: 'Include fingerprints',
       TABLE: {
         PLAYERS: 'Joueurs',
         TYPE: 'Type',
@@ -589,6 +591,11 @@ const fr: Translation = {
       SEND_PASSWORD_RESET_CONFIRM: 'Are you sure you want to send this player a password reset email?',
       SEND_PASSWORD_RESET_SUCCESS: 'Successfully sent the player a password reset email!',
       SEND_PASSWORD_RESET_FAILED: 'Failed to send player a password reset email',
+      HIDE_HIDDEN_TEAM_REGISTRATIONS: 'Hide hidden entries',
+      SHOW_HIDDEN_TEAM_REGISTRATIONS: 'Show hidden entries',
+      TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM:
+        "Are you sure you would like to toggle this registration's visibility?",
+      TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: 'Failed to toggle visibility',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
@@ -755,6 +762,7 @@ const fr: Translation = {
       REGISTERED: 'Date de création',
       MAIN_LANGUAGE: 'Langue Principale',
       MANAGERS: 'Managers',
+      ROSTER: 'Roster',
       ROSTERS: 'Effectifs',
       PLAYER: 'joueur',
       PLAYERS: 'joueurs',
@@ -1040,6 +1048,7 @@ const fr: Translation = {
       LINK_DISCORD_TO_REGISTER: 'Veuillez lier votre compte Discord pour participer aux tournois sur MKCentral.',
       CONFIRM_EMAIL_TO_REGISTER:
         'Veuillez confirmer votre e-mail et compléter votre inscription de joueur pour participer aux tournois sur MKCentral.',
+      INELIGIBLE: 'Ineligible',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'Sélection un template',
@@ -1098,6 +1107,9 @@ const fr: Translation = {
       TOURNAMENT_RULESET: 'Règlement du tournoi',
       TOURNAMENT_REGISTRATION: 'Inscription au tournoi',
       TOURNAMENT_STATUS: 'Statut du tournoi',
+      SYNC_TEAM_ROSTERS: 'Remove players who leave their team from squads after registrations have closed?',
+      MAX_REPRESENTATIVES: 'Max # of squad representatives',
+      MIN_LESS_THAN_MAX_REPS: 'Min representatives must be less than or equal to max representatives',
     },
     PLACEMENTS: {
       EDIT_PLACEMENTS: 'Modifier les placements',

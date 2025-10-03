@@ -33,7 +33,7 @@ async def list_alt_flags(request: Request, filter: AltFlagFilter) -> JSONRespons
 @bind_request_query(PlayerAltFlagRequestData)
 @require_permission(permissions.VIEW_ALT_FLAGS)
 async def view_player_alt_flags(request: Request, body: PlayerAltFlagRequestData) -> JSONResponse:
-    flags = await handle(ViewPlayerAltFlagsCommand(body.player_id))
+    flags = await handle(ViewPlayerAltFlagsCommand(body.player_id, body.exclude_fingerprints))
     return JSONResponse(flags)
 
 @require_permission(permissions.VIEW_USER_LOGINS)
