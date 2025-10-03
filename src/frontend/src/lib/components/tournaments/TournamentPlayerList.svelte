@@ -5,7 +5,7 @@
   import Flag from '../common/Flag.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
-  import PlayerName from './registration/PlayerName.svelte';
+  import TournamentPlayerName from './registration/TournamentPlayerName.svelte';
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import Dropdown from '../common/Dropdown.svelte';
   import DropdownItem from '../common/DropdownItem.svelte';
@@ -222,8 +222,8 @@
           <Flag country_code={player.country_code}/>
         </td>
         <td>
-          <PlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_squad_captain} is_representative={player.is_representative}
-          is_bagger_clause={player.is_bagger_clause}/>
+          <TournamentPlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_squad_captain} is_representative={player.is_representative}
+          is_bagger_clause={player.is_bagger_clause} is_eligible={player.is_eligible} is_banned={player.is_banned}/>
         </td>
         {#if tournament.mii_name_required && exclude_invites}
           <td class="mobile-hide">{player.mii_name}</td>
@@ -268,7 +268,7 @@
                 </DropdownItem>
                 {#if !player.is_invite}
                   <DropdownItem on:click={() => makeCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN()}</DropdownItem>
-                  {#if tournament.teams_only}
+                  {#if (tournament.min_representatives && tournament.min_representatives > 0) || (tournament.max_representatives && tournament.max_representatives > 0)}
                     {#if !player.is_representative}
                       <DropdownItem on:click={() => addRepresentative(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE()}</DropdownItem>
                     {:else}

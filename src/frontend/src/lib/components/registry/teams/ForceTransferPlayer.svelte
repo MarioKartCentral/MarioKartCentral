@@ -69,6 +69,9 @@
             alert(`${$LL.MODERATOR.FORCE_TRANSFER_FAILED()}: ${result['title']}`);
         }
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mode_strings: any = $LL.MODES;
 </script>
 
 <PlayerSearch bind:player={player} on:change={getPlayerRosters}/>
@@ -84,7 +87,7 @@
                     {#each player.rosters as roster}
                         <option value={roster}>
                             {roster.roster_name}
-                            ({roster.game.toUpperCase()})
+                            ({roster.game.toUpperCase()} {mode_strings[roster.mode.toUpperCase()]()})
                             {#if roster.is_bagger_clause}
                                 ({$LL.COMMON.BAGGER()})
                             {/if}

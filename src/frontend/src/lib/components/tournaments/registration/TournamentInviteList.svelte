@@ -171,12 +171,12 @@
     {#if user_info.player}
       <SoloTournamentFields {tournament} friend_codes={user_info.player.friend_codes} />
       <br />
-      <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_ID}: {curr_invite?.id}</div>
+      <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_ID()}: {curr_invite?.id}</div>
       {#if tournament.squad_tag_required}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG}: {curr_invite?.tag}</div>
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG()}: {curr_invite?.tag}</div>
       {/if}
       {#if tournament.squad_name_required}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME}: {curr_invite?.name}</div>
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME()}: {curr_invite?.name}</div>
       {/if}
       <br />
       <div>

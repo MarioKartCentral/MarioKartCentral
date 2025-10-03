@@ -1450,6 +1450,14 @@ type RootTranslation = {
 			 * @param {number} count
 			 */
 			NUM_TIMES: RequiredParams<'count'>
+			/**
+			 * E​x​c​l​u​d​e​ ​f​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			EXCLUDE_FINGERPRINTS: string
+			/**
+			 * I​n​c​l​u​d​e​ ​f​i​n​g​e​r​p​r​i​n​t​s
+			 */
+			INCLUDE_FINGERPRINTS: string
 			TABLE: {
 				/**
 				 * P​l​a​y​e​r​s
@@ -2222,6 +2230,22 @@ type RootTranslation = {
 			 * F​a​i​l​e​d​ ​t​o​ ​s​e​n​d​ ​p​l​a​y​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​r​e​s​e​t​ ​e​m​a​i​l
 			 */
 			SEND_PASSWORD_RESET_FAILED: string
+			/**
+			 * H​i​d​e​ ​h​i​d​d​e​n​ ​e​n​t​r​i​e​s
+			 */
+			HIDE_HIDDEN_TEAM_REGISTRATIONS: string
+			/**
+			 * S​h​o​w​ ​h​i​d​d​e​n​ ​e​n​t​r​i​e​s
+			 */
+			SHOW_HIDDEN_TEAM_REGISTRATIONS: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​t​o​g​g​l​e​ ​t​h​i​s​ ​r​e​g​i​s​t​r​a​t​i​o​n​'​s​ ​v​i​s​i​b​i​l​i​t​y​?
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM: string
+			/**
+			 * F​a​i​l​e​d​ ​t​o​ ​t​o​g​g​l​e​ ​v​i​s​i​b​i​l​i​t​y
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: string
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -2837,6 +2861,10 @@ type RootTranslation = {
 			 * M​a​n​a​g​e​r​s
 			 */
 			MANAGERS: string
+			/**
+			 * R​o​s​t​e​r
+			 */
+			ROSTER: string
 			/**
 			 * R​o​s​t​e​r​s
 			 */
@@ -3914,6 +3942,10 @@ type RootTranslation = {
 			 * P​l​e​a​s​e​ ​c​o​n​f​i​r​m​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​n​d​ ​c​o​m​p​l​e​t​e​ ​t​h​e​ ​p​l​a​y​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​ ​t​o​ ​p​a​r​t​i​c​i​p​a​t​e​ ​i​n​ ​t​o​u​r​n​a​m​e​n​t​s​ ​o​n​ ​M​K​C​e​n​t​r​a​l​.
 			 */
 			CONFIRM_EMAIL_TO_REGISTER: string
+			/**
+			 * I​n​e​l​i​g​i​b​l​e
+			 */
+			INELIGIBLE: string
 		}
 		MANAGE: {
 			/**
@@ -4136,6 +4168,18 @@ type RootTranslation = {
 			 * T​o​u​r​n​a​m​e​n​t​ ​S​t​a​t​u​s
 			 */
 			TOURNAMENT_STATUS: string
+			/**
+			 * R​e​m​o​v​e​ ​p​l​a​y​e​r​s​ ​w​h​o​ ​l​e​a​v​e​ ​t​h​e​i​r​ ​t​e​a​m​ ​f​r​o​m​ ​s​q​u​a​d​s​ ​a​f​t​e​r​ ​r​e​g​i​s​t​r​a​t​i​o​n​s​ ​h​a​v​e​ ​c​l​o​s​e​d​?
+			 */
+			SYNC_TEAM_ROSTERS: string
+			/**
+			 * M​a​x​ ​#​ ​o​f​ ​s​q​u​a​d​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s
+			 */
+			MAX_REPRESENTATIVES: string
+			/**
+			 * M​i​n​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​ ​m​u​s​t​ ​b​e​ ​l​e​s​s​ ​t​h​a​n​ ​o​r​ ​e​q​u​a​l​ ​t​o​ ​m​a​x​ ​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s
+			 */
+			MIN_LESS_THAN_MAX_REPS: string
 		}
 		PLACEMENTS: {
 			/**
@@ -6807,6 +6851,14 @@ export type TranslationFunctions = {
 			 * {count} times
 			 */
 			NUM_TIMES: (arg: { count: number }) => LocalizedString
+			/**
+			 * Exclude fingerprints
+			 */
+			EXCLUDE_FINGERPRINTS: () => LocalizedString
+			/**
+			 * Include fingerprints
+			 */
+			INCLUDE_FINGERPRINTS: () => LocalizedString
 			TABLE: {
 				/**
 				 * Players
@@ -7511,6 +7563,22 @@ export type TranslationFunctions = {
 			 * Failed to send player a password reset email
 			 */
 			SEND_PASSWORD_RESET_FAILED: () => LocalizedString
+			/**
+			 * Hide hidden entries
+			 */
+			HIDE_HIDDEN_TEAM_REGISTRATIONS: () => LocalizedString
+			/**
+			 * Show hidden entries
+			 */
+			SHOW_HIDDEN_TEAM_REGISTRATIONS: () => LocalizedString
+			/**
+			 * Are you sure you would like to toggle this registration's visibility?
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM: () => LocalizedString
+			/**
+			 * Failed to toggle visibility
+			 */
+			TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: () => LocalizedString
 		}
 		SHADOW_PLAYERS: {
 			/**
@@ -8111,6 +8179,10 @@ export type TranslationFunctions = {
 			 * Managers
 			 */
 			MANAGERS: () => LocalizedString
+			/**
+			 * Roster
+			 */
+			ROSTER: () => LocalizedString
 			/**
 			 * Rosters
 			 */
@@ -9163,6 +9235,10 @@ export type TranslationFunctions = {
 			 * Please confirm your email and complete the player registration to participate in tournaments on MKCentral.
 			 */
 			CONFIRM_EMAIL_TO_REGISTER: () => LocalizedString
+			/**
+			 * Ineligible
+			 */
+			INELIGIBLE: () => LocalizedString
 		}
 		MANAGE: {
 			/**
@@ -9385,6 +9461,18 @@ export type TranslationFunctions = {
 			 * Tournament Status
 			 */
 			TOURNAMENT_STATUS: () => LocalizedString
+			/**
+			 * Remove players who leave their team from squads after registrations have closed?
+			 */
+			SYNC_TEAM_ROSTERS: () => LocalizedString
+			/**
+			 * Max # of squad representatives
+			 */
+			MAX_REPRESENTATIVES: () => LocalizedString
+			/**
+			 * Min representatives must be less than or equal to max representatives
+			 */
+			MIN_LESS_THAN_MAX_REPS: () => LocalizedString
 		}
 		PLACEMENTS: {
 			/**
