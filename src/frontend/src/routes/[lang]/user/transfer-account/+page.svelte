@@ -53,34 +53,35 @@
         <Section header={$LL.LOGIN.TRANSFER_ACCOUNT_HEADER()}>
             <div>
                 {$LL.LOGIN.TRANSFER_ACCOUNT_DETAILS()}
-            <div>
-                <PlayerSearch bind:player={player}/>
-            </div>
-            {#if player}
-                <div class="option">
-                    <span class="agree-terms">
-                        <input name="terms" type="checkbox" bind:checked={agree_terms}/>
-                    </span>
-                    <div class="terms-label">
-                        <a href="/{$page.params.lang}/user/terms" target="_blank">
-                            {$LL.LOGIN.AGREE_TO_TERMS()}
-                        </a>
-                    </div>
-                </div>
-                <div class="option">
-                    <span class="agree-terms">
-                        <input name="privacy" type="checkbox" bind:checked={agree_policy}/>
-                    </span>
-                    <div class="terms-label">
-                        <a href="/{$page.params.lang}/user/privacy-policy" target="_blank">
-                            {$LL.LOGIN.AGREE_TO_PRIVACY_POLICY()}
-                        </a>
-                    </div>
-                </div>
                 <div>
-                    <Button {working} on:click={transfer_account} disabled={!agree_policy || !agree_terms}>{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
+                    <PlayerSearch bind:player={player}/>
                 </div>
-            {/if}
+                {#if player}
+                    <div class="option">
+                        <span class="agree-terms">
+                            <input name="terms" type="checkbox" bind:checked={agree_terms}/>
+                        </span>
+                        <div class="terms-label">
+                            <a href="/{$page.params.lang}/user/terms" target="_blank">
+                                {$LL.LOGIN.AGREE_TO_TERMS()}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="option">
+                        <span class="agree-terms">
+                            <input name="privacy" type="checkbox" bind:checked={agree_policy}/>
+                        </span>
+                        <div class="terms-label">
+                            <a href="/{$page.params.lang}/user/privacy-policy" target="_blank">
+                                {$LL.LOGIN.AGREE_TO_PRIVACY_POLICY()}
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <Button {working} on:click={transfer_account} disabled={!agree_policy || !agree_terms}>{$LL.LOGIN.TRANSFER_ACCOUNT()}</Button>
+                    </div>
+                {/if}
+            </div>
         </Section>
     {:else}
         {$LL.COMMON.LOGOUT_REQUIRED()}

@@ -41,6 +41,7 @@
     teams_only: false,
     team_members_only: false,
     min_representatives: null,
+    max_representatives: null,
     host_status_required: false,
     mii_name_required: false,
     require_single_fc: false,
@@ -64,6 +65,7 @@
     bagger_clause_enabled: false,
     logo_file: null,
     remove_logo: false,
+    sync_team_rosters: false,
   };
 
   function updateData() {

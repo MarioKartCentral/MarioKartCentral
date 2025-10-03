@@ -32,6 +32,7 @@ export function makeStats(tournaments: TournamentWithPlacements[]) {
             id: player.player_id,
             name: player.name,
             country_code: player.country_code,
+            is_banned: player.is_banned,
             gold: 0,
             silver: 0,
             bronze: 0,
