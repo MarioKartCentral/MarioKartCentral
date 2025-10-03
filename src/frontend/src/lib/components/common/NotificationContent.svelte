@@ -3,7 +3,7 @@
   import { InfoCircleSolid } from 'flowbite-svelte-icons';
   import Caution from '../icons/Caution.svelte';
   import LL from '$i18n/i18n-svelte';
-  import { locale } from "$i18n/i18n-svelte";
+  import { locale } from '$i18n/i18n-svelte';
 
   export let type: number;
   export let content_id: number;
@@ -22,13 +22,13 @@
 <div class="container">
   <div class="icon">
     {#if type === 1}
-      <Caution color="#F1B21C"/>
+      <Caution color="#F1B21C" />
     {:else if type === 2}
-      <Caution color="red"/>
+      <Caution color="red" />
     {:else if type === 3}
-      <InfoCircleSolid color="#3FD14D"/>
+      <InfoCircleSolid color="#3FD14D" />
     {:else}
-      <InfoCircleSolid color="#4DBBFF"/>
+      <InfoCircleSolid color="#4DBBFF" />
     {/if}
   </div>
   <div class="unread-dot {!is_read ? 'unread-dot-show' : ''}"></div>
@@ -38,7 +38,7 @@
     </div>
     <p>
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html DOMPurify.sanitize(notificationContent[content_id.toString()](content_args), {ALLOWED_TAGS: ['strong']})}
+      {@html DOMPurify.sanitize(notificationContent[content_id.toString()](content_args), { ALLOWED_TAGS: ['strong'] })}
     </p>
   </div>
 </div>

@@ -39,10 +39,10 @@
     if (filters.country != null && filters.country != '') {
       url += '&country=' + filters.country;
     }
-    if(is_shadow !== null) {
+    if (is_shadow !== null) {
       url += `&is_shadow=${is_shadow}`;
     }
-    if(filters.sort_by_newest) {
+    if (filters.sort_by_newest) {
       url += `&sort_by_newest=${filters.sort_by_newest}`;
     }
     url += '&page=' + currentPage;
@@ -71,8 +71,8 @@
 
 <form on:submit|preventDefault={search}>
   <div class="flex">
-    <FCTypeSelect all_option hide_labels bind:type={filters.fc_type}/>
-    <CountrySelect bind:value={filters.country} is_filter={true}/>
+    <FCTypeSelect all_option hide_labels bind:type={filters.fc_type} />
+    <CountrySelect bind:value={filters.country} is_filter={true} />
     <select bind:value={filters.sort_by_newest}>
       <option value={false}>{$LL.COMMON.SORT_BY_ALPHABETICAL()}</option>
       <option value={true}>{$LL.COMMON.SORT_BY_NEWEST()}</option>
@@ -84,12 +84,12 @@
 <div class="player_list">
   {totalPlayers}
   {$LL.PLAYERS.PLAYERS()}
-  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+  <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
   {#if totalPlayers}
     <Table>
       <col class="country_code" />
       <col class="name" />
-      <col class="friend_codes mobile-hide"/>
+      <col class="friend_codes mobile-hide" />
       <thead>
         <tr>
           <th></th>
@@ -102,19 +102,21 @@
           <tr class="row-{i % 2}">
             <td><Flag country_code={player.country_code} /></td>
             <td>
-              <a href="/{$page.params.lang}/registry/players/profile?id={player.id}" class={player.is_banned ? 'banned_name' : ''}>{player.name}</a>
+              <a
+                href="/{$page.params.lang}/registry/players/profile?id={player.id}"
+                class={player.is_banned ? 'banned_name' : ''}>{player.name}</a
+              >
             </td>
             <td class="mobile-hide">
-              <FriendCodeDisplay friend_codes={player.friend_codes}/>
+              <FriendCodeDisplay friend_codes={player.friend_codes} />
             </td>
           </tr>
         {/each}
       </tbody>
     </Table>
   {/if}
-  <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
+  <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
 </div>
-
 
 <style>
   col.country_code {

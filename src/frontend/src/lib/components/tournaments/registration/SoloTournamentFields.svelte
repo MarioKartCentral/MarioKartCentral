@@ -24,7 +24,7 @@
     <span class="item-label">
       <label for="selected_fc_id">{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_FC()}</label>
     </span>
-    
+
     <select name="selected_fc_id" value={selected_fc_id} required>
       <option value={null} selected disabled>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_FRIEND_CODE()}</option>
       {#each friend_codes.filter((f) => f.is_active) as fc}
@@ -38,7 +38,7 @@
     <span class="item-label">
       <label for="mii_name">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_MII_NAME()}</label>
     </span>
-    <Input name="mii_name" maxlength={tournament.game === 'mkt' ? 12 : 10} value={mii_name} required no_white_space/>
+    <Input name="mii_name" maxlength={tournament.game === 'mkt' ? 12 : 10} value={mii_name} required no_white_space />
   </div>
 {/if}
 {#if tournament.host_status_required}
@@ -48,8 +48,16 @@
     </span>
     <select name="can_host" value={Boolean(can_host)} required>
       <option value={false}>{$LL.COMMON.NO()}</option>
-      <option value={true} disabled={!check_tournament_permission(user_info, tournament_permissions.register_host, tournament.id, 
-      tournament.series_id, true)}>{$LL.COMMON.YES()}</option>
+      <option
+        value={true}
+        disabled={!check_tournament_permission(
+          user_info,
+          tournament_permissions.register_host,
+          tournament.id,
+          tournament.series_id,
+          true,
+        )}>{$LL.COMMON.YES()}</option
+      >
     </select>
   </div>
 {/if}

@@ -69,14 +69,16 @@
             <td class="text_center bold {getColorClass(r)}"
               >{stats_mode === StatsMode.TEAM_MEDALS ? r.medals_placement : r.appearances_placement}</td
             >
-            <td class={getColorClass(r)}><TagBadge tag={r.roster_tag ? r.roster_tag : r.team_tag} color={r.team_color} /></td>
+            <td class={getColorClass(r)}
+              ><TagBadge tag={r.roster_tag ? r.roster_tag : r.team_tag} color={r.team_color} /></td
+            >
             <td class={getColorClass(r)}>
               <span class="white">
                 <a href={`/${$page.params.lang}/registry/teams/profile?id=${r.team_id}`}>
                   {r.roster_name ? r.roster_name : r.team_name}
                 </a>
               </span>
-              </td>
+            </td>
             {#if stats_mode === StatsMode.TEAM_MEDALS}
               <td class="text_center {getColorClass(r)} {r.gold > 0 ? 'bold' : ''}">{r.gold > 0 ? r.gold : '—'}</td>
               <td class="text_center {getColorClass(r)} {r.silver > 0 ? 'bold' : ''}"

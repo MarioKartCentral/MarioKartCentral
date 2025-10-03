@@ -58,19 +58,19 @@
     flex-direction: column;
     min-height: 100vh;
   }
-  
+
   header {
     position: sticky;
     top: 0;
     z-index: 700;
   }
-  
+
   .container {
     flex: 1 0 auto;
     display: flex;
     flex-direction: column;
   }
-  
+
   main {
     flex: 1 0 auto;
     padding-top: 30px;
@@ -78,7 +78,7 @@
     padding-left: 5px;
     padding-right: 5px;
   }
-  
+
   footer {
     flex-shrink: 0;
   }

@@ -77,9 +77,12 @@
 
 {#if user_info.is_checked && tournament && data}
   {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
-      <CreateEditTournamentForm tournament_id={tournament.id} {data} 
-      series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)} /> 
+    <CreateEditTournamentForm
+      tournament_id={tournament.id}
+      {data}
+      series_restrict={!check_permission(user_info, tournament_permissions.edit_tournament)}
+    />
   {:else}
-      {$LL.COMMON.NO_PERMISSION()}
+    {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/if}

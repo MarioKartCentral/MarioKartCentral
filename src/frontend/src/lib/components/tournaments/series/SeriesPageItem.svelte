@@ -11,8 +11,11 @@
   export let series: TournamentSeriesBasic;
 </script>
 
-<div class={series.is_public ? "" : "unpublished"}>
-  <Section header="{series.series_name} {series.is_public ? "" : `(${$LL.TOURNAMENTS.UNPUBLISHED()})`}" href="/{$page.params.lang}/tournaments/series/details?id={series.id}">
+<div class={series.is_public ? '' : 'unpublished'}>
+  <Section
+    header="{series.series_name} {series.is_public ? '' : `(${$LL.TOURNAMENTS.UNPUBLISHED()})`}"
+    href="/{$page.params.lang}/tournaments/series/details?id={series.id}"
+  >
     <div class="container">
       {#if series.logo}
         <div class="img">
@@ -32,11 +35,13 @@
       <div class="description">
         <MarkdownBox content={series.short_description} />
         <hr />
-        <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}">{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a>
+        <a href="/{$page.params.lang}/tournaments/series/details?id={series.id}"
+          >{$LL.TOURNAMENTS.SERIES.MORE_DETAILS()}</a
+        >
       </div>
       {#if series.discord_invite}
         <div class="invite">
-          <DiscordInviteButton href={series.discord_invite}/>
+          <DiscordInviteButton href={series.discord_invite} />
         </div>
       {/if}
     </div>

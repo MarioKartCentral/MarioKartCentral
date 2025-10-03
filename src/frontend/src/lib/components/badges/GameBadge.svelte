@@ -6,4 +6,4 @@
   export let style = '';
 </script>
 
-<Badge badgeClass='game_{game}_badge wide' {style}>{game_abbreviations[game]}</Badge>
+<Badge badgeClass="game_{game}_badge wide" {style}>{game_abbreviations[game]}</Badge>

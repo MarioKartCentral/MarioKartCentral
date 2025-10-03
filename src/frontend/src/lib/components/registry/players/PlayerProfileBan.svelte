@@ -10,7 +10,7 @@
     dateStyle: 'medium',
     timeStyle: 'short',
   };
-  const unbanText = getUnbanText()
+  const unbanText = getUnbanText();
 
   function getUnbanText() {
     if (ban_info.is_indefinite) {
@@ -19,15 +19,15 @@
     if (ban_info.unban_date) {
       return new Date(ban_info.unban_date * 1000).toLocaleString($page.params.lang, options);
     }
-    return ""
+    return '';
   }
 </script>
 
 <div class="container">
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  {@html DOMPurify.sanitize($LL.PLAYER_BAN.THIS_PLAYER_IS_BANNED(), {ALLOWED_TAGS: ['strong']})} <br />
+  {@html DOMPurify.sanitize($LL.PLAYER_BAN.THIS_PLAYER_IS_BANNED(), { ALLOWED_TAGS: ['strong'] })} <br />
   <strong>{$LL.PLAYER_BAN.REASON()}</strong>{`: ${ban_info.reason}`} <br />
-  {#if unbanText }
+  {#if unbanText}
     <strong>{$LL.PLAYER_BAN.UNBAN_DATE()}</strong>{`: ${unbanText}`}
   {/if}
 </div>

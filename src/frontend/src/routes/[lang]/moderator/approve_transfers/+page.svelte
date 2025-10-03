@@ -15,12 +15,11 @@
 
 {#if check_permission(user_info, permissions.manage_transfers)}
   <Section header={$LL.MODERATOR.PENDING_TRANSFERS()}>
-    <TransferList approval_status="pending"/>
+    <TransferList approval_status="pending" />
   </Section>
   <Section header={$LL.MODERATOR.MANUALLY_TRANSFER_PLAYER()}>
-    <ForceTransferPlayer/>
+    <ForceTransferPlayer />
   </Section>
 {:else}
   {$LL.COMMON.NO_PERMISSION()}
 {/if}
-

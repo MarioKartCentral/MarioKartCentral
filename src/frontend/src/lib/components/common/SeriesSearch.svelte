@@ -54,10 +54,9 @@
 
   async function set_option(series: TournamentSeriesBasic | null) {
     series_id = series ? series.id : null;
-    if(series) {
+    if (series) {
       await get_series(series.id);
-    }
-    else {
+    } else {
       option = null;
     }
     dispatch('change'); // do this so we can run an on:change handler in parent component
@@ -74,7 +73,7 @@
             <tr on:click={() => set_option(result)}>
               <td>
                 {#if result.logo}
-                  <img src={result.logo} alt={result.series_name}/>
+                  <img src={result.logo} alt={result.series_name} />
                 {/if}
               </td>
               <td>
@@ -89,7 +88,7 @@
     <div>
       {option.series_name}
       {#if !lock}
-        <CancelButton on:click={() => set_option(null)}/>
+        <CancelButton on:click={() => set_option(null)} />
       {/if}
     </div>
   {/if}

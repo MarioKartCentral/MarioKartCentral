@@ -20,14 +20,14 @@
 
   let pending_teams: Team[] = [];
   let pending_rosters: TeamRoster[] = [];
-  
+
   let denied_team_page = 1;
   let denied_team_total_pages = 1;
   let denied_teams: Team[] = [];
 
   let denied_roster_page = 1;
   let denied_roster_total_pages = 1;
-  let denied_rosters: TeamRoster[] = []
+  let denied_rosters: TeamRoster[] = [];
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -44,7 +44,7 @@
 
   async function getDeniedTeams() {
     const res = await fetch(`/api/registry/teams/deniedTeams?page=${denied_team_page}`);
-    if(res.status === 200) {
+    if (res.status === 200) {
       const body: TeamList = await res.json();
       denied_teams = body.teams;
       denied_team_total_pages = body.page_count;
@@ -82,7 +82,7 @@
 
   async function approveTeam(team: Team) {
     let conf = window.confirm($LL.MODERATOR.APPROVE_TEAM_CONFIRM());
-    if(!conf) {
+    if (!conf) {
       return;
     }
     const res = await fetch(`/api/registry/teams/${team.id}/approve`, {
@@ -99,7 +99,7 @@
 
   async function denyTeam(team: Team) {
     let conf = window.confirm($LL.MODERATOR.DENY_TEAM_CONFIRM());
-    if(!conf) {
+    if (!conf) {
       return;
     }
     const res = await fetch(`/api/registry/teams/${team.id}/deny`, {
@@ -116,7 +116,7 @@
 
   async function approveRoster(roster: TeamRoster) {
     let conf = window.confirm($LL.MODERATOR.APPROVE_ROSTER_CONFIRM());
-    if(!conf) {
+    if (!conf) {
       return;
     }
     const res = await fetch(`/api/registry/teams/${roster.team_id}/approveRoster/${roster.id}`, {
@@ -133,7 +133,7 @@
 
   async function denyRoster(roster: TeamRoster) {
     let conf = window.confirm($LL.MODERATOR.DENY_ROSTER_CONFIRM());
-    if(!conf) {
+    if (!conf) {
       return;
     }
     const res = await fetch(`/api/registry/teams/${roster.team_id}/denyRoster/${roster.id}`, {
@@ -152,163 +152,183 @@
 {#if check_permission(user_info, permissions.manage_teams)}
   <Section header={$LL.MODERATOR.PENDING_TEAMS()}>
     {#if pending_teams.length}
-    <Table>
-      <col class="tag" />
-      <col class="name" />
-      <col class="game-mode"/>
-      <col class="date mobile-hide" />
-      <col class="approve" />
-      <thead>
-        <tr>
-          <th>{$LL.COMMON.TAG()}</th>
-          <th>{$LL.COMMON.NAME()}</th>
-          <th>{$LL.COMMON.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-          <th>{$LL.MODERATOR.APPROVE()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each pending_teams as team, i}
-          <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
-              <TagBadge tag={team.tag} color={team.color}/>
-            </a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
-            <td>
-              <GameBadge game={team.rosters[0].game}/>
-              <ModeBadge mode={team.rosters[0].mode}/>
-            </td>
-            <td class="mobile-hide">{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
-            <td>
-              <ConfirmButton on:click={() => approveTeam(team)}/>
-              <CancelButton on:click={() => denyTeam(team)}/>
-            </td>
+      <Table>
+        <col class="tag" />
+        <col class="name" />
+        <col class="game-mode" />
+        <col class="date mobile-hide" />
+        <col class="approve" />
+        <thead>
+          <tr>
+            <th>{$LL.COMMON.TAG()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th>{$LL.COMMON.GAME_MODE()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+            <th>{$LL.MODERATOR.APPROVE()}</th>
           </tr>
-        {/each}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {#each pending_teams as team, i}
+            <tr class="row-{i % 2}">
+              <td
+                ><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+                  <TagBadge tag={team.tag} color={team.color} />
+                </a></td
+              >
+              <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
+              <td>
+                <GameBadge game={team.rosters[0].game} />
+                <ModeBadge mode={team.rosters[0].mode} />
+              </td>
+              <td class="mobile-hide">{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
+              <td>
+                <ConfirmButton on:click={() => approveTeam(team)} />
+                <CancelButton on:click={() => denyTeam(team)} />
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
     {:else}
       {$LL.MODERATOR.NO_PENDING_TEAMS()}
     {/if}
-    
   </Section>
   <Section header={$LL.MODERATOR.PENDING_ROSTERS()}>
     {#if pending_rosters.length}
-    <Table>
-      <col class="tag" />
-      <col class="name" />
-      <col class="game-mode"/>
-      <col class="date mobile-hide" />
-      <col class="approve" />
-      <thead>
-        <tr>
-          <th>{$LL.COMMON.TAG()}</th>
-          <th>{$LL.COMMON.NAME()}</th>
-          <th>{$LL.COMMON.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-          <th>{$LL.MODERATOR.APPROVE()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each pending_rosters as roster, i}
-          <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
-              <TagBadge tag={roster.tag} color={roster.color}/>
-            </a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
-            <td>
-              <GameBadge game={roster.game}/>
-              <ModeBadge mode={roster.mode}/>
-            </td>
-            <td class="mobile-hide">{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
-            <td>
-              <ConfirmButton on:click={() => approveRoster(roster)}/>
-              <CancelButton on:click={() => denyRoster(roster)}/>
-            </td>
+      <Table>
+        <col class="tag" />
+        <col class="name" />
+        <col class="game-mode" />
+        <col class="date mobile-hide" />
+        <col class="approve" />
+        <thead>
+          <tr>
+            <th>{$LL.COMMON.TAG()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th>{$LL.COMMON.GAME_MODE()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+            <th>{$LL.MODERATOR.APPROVE()}</th>
           </tr>
-        {/each}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {#each pending_rosters as roster, i}
+            <tr class="row-{i % 2}">
+              <td
+                ><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
+                  <TagBadge tag={roster.tag} color={roster.color} />
+                </a></td
+              >
+              <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
+              <td>
+                <GameBadge game={roster.game} />
+                <ModeBadge mode={roster.mode} />
+              </td>
+              <td class="mobile-hide">{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
+              <td>
+                <ConfirmButton on:click={() => approveRoster(roster)} />
+                <CancelButton on:click={() => denyRoster(roster)} />
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
     {:else}
       {$LL.MODERATOR.NO_PENDING_ROSTERS()}
     {/if}
-    
   </Section>
   <Section header={$LL.MODERATOR.DENIED_TEAMS()}>
     {#if denied_teams.length}
-    <PageNavigation bind:currentPage={denied_team_page} bind:totalPages={denied_team_total_pages} refresh_function={getDeniedTeams}/>
-    <Table>
-      <col class="tag" />
-      <col class="name" />
-      <col class="game-mode"/>
-      <col class="date mobile-hide" />
-      <thead>
-        <tr>
-          <th>{$LL.COMMON.TAG()}</th>
-          <th>{$LL.COMMON.NAME()}</th>
-          <th>{$LL.COMMON.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each denied_teams as team, i}
-          <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
-              <TagBadge tag={team.tag} color={team.color}/>
-            </a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
-            <td>
-              <GameBadge game={team.rosters[0].game}/>
-              <ModeBadge mode={team.rosters[0].mode}/>
-            </td>
-            <td class="mobile-hide">{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
+      <PageNavigation
+        bind:currentPage={denied_team_page}
+        bind:totalPages={denied_team_total_pages}
+        refresh_function={getDeniedTeams}
+      />
+      <Table>
+        <col class="tag" />
+        <col class="name" />
+        <col class="game-mode" />
+        <col class="date mobile-hide" />
+        <thead>
+          <tr>
+            <th>{$LL.COMMON.TAG()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th>{$LL.COMMON.GAME_MODE()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
           </tr>
-        {/each}
-      </tbody>
-    </Table>
-    <PageNavigation bind:currentPage={denied_team_page} bind:totalPages={denied_team_total_pages} refresh_function={getDeniedTeams}/>
+        </thead>
+        <tbody>
+          {#each denied_teams as team, i}
+            <tr class="row-{i % 2}">
+              <td
+                ><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+                  <TagBadge tag={team.tag} color={team.color} />
+                </a></td
+              >
+              <td><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a></td>
+              <td>
+                <GameBadge game={team.rosters[0].game} />
+                <ModeBadge mode={team.rosters[0].mode} />
+              </td>
+              <td class="mobile-hide">{new Date(team.creation_date * 1000).toLocaleString($locale, options)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+      <PageNavigation
+        bind:currentPage={denied_team_page}
+        bind:totalPages={denied_team_total_pages}
+        refresh_function={getDeniedTeams}
+      />
     {:else}
       {$LL.MODERATOR.NO_DENIED_TEAMS()}
     {/if}
-    
   </Section>
   <Section header={$LL.MODERATOR.DENIED_ROSTERS()}>
     {#if denied_rosters.length}
-    <PageNavigation bind:currentPage={denied_roster_page} bind:totalPages={denied_roster_total_pages} refresh_function={getDeniedRosters}/>
-    <Table>
-      <col class="tag" />
-      <col class="name" />
-      <col class="game-mode"/>
-      <col class="date mobile-hide" />
-      <thead>
-        <tr>
-          <th>{$LL.COMMON.TAG()}</th>
-          <th>{$LL.COMMON.NAME()}</th>
-          <th>{$LL.COMMON.GAME_MODE()}</th>
-          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each denied_rosters as roster, i}
-          <tr class="row-{i % 2}">
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
-              <TagBadge tag={roster.tag} color={roster.color}/>
-            </a></td>
-            <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
-            <td>
-              <GameBadge game={roster.game}/>
-              <ModeBadge mode={roster.mode}/>
-            </td>
-            <td class="mobile-hide">{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
+      <PageNavigation
+        bind:currentPage={denied_roster_page}
+        bind:totalPages={denied_roster_total_pages}
+        refresh_function={getDeniedRosters}
+      />
+      <Table>
+        <col class="tag" />
+        <col class="name" />
+        <col class="game-mode" />
+        <col class="date mobile-hide" />
+        <thead>
+          <tr>
+            <th>{$LL.COMMON.TAG()}</th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th>{$LL.COMMON.GAME_MODE()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
           </tr>
-        {/each}
-      </tbody>
-    </Table>
-    <PageNavigation bind:currentPage={denied_roster_page} bind:totalPages={denied_roster_total_pages} refresh_function={getDeniedRosters}/>
+        </thead>
+        <tbody>
+          {#each denied_rosters as roster, i}
+            <tr class="row-{i % 2}">
+              <td
+                ><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
+                  <TagBadge tag={roster.tag} color={roster.color} />
+                </a></td
+              >
+              <td><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">{roster.name}</a></td>
+              <td>
+                <GameBadge game={roster.game} />
+                <ModeBadge mode={roster.mode} />
+              </td>
+              <td class="mobile-hide">{new Date(roster.creation_date * 1000).toLocaleString($locale, options)}</td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+      <PageNavigation
+        bind:currentPage={denied_roster_page}
+        bind:totalPages={denied_roster_total_pages}
+        refresh_function={getDeniedRosters}
+      />
     {:else}
       {$LL.MODERATOR.NO_DENIED_ROSTERS()}
     {/if}
-    
   </Section>
 {:else}
   {$LL.COMMON.NO_PERMISSION()}

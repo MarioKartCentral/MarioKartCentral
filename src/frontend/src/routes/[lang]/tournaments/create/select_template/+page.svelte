@@ -6,9 +6,9 @@
   import LL from '$i18n/i18n-svelte';
 
   let user_info: UserInfo;
-    user.subscribe((value) => {
-        user_info = value;
-    });
+  user.subscribe((value) => {
+    user_info = value;
+  });
 </script>
 
 {#if user_info.is_checked}
@@ -18,4 +18,3 @@
     {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {/if}
-

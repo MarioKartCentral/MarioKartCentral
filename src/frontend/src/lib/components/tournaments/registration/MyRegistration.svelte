@@ -19,13 +19,13 @@
   }
 
   async function toggleCheckin(player: TournamentPlayer | null) {
-    if(!player) return;
+    if (!player) return;
     working = true;
     const payload = {
       tournament_id: tournament.id,
       registration_id: player.registration_id,
-      player_id: player.player_id
-    }
+      player_id: player.player_id,
+    };
     const endpoint = `/api/tournaments/${tournament.id}/toggleCheckin`;
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -47,7 +47,7 @@
     <div>
       {$LL.TOURNAMENTS.REGISTRATIONS.MY_INVITES()}
     </div>
-    <TournamentInviteList {tournament} squads={getInvitedSquads()}/>
+    <TournamentInviteList {tournament} squads={getInvitedSquads()} />
   {/if}
 {/if}
 {#each registration.registrations.filter((r) => !r.is_invite) as reg}
@@ -56,13 +56,15 @@
       <div class="section">
         {#if tournament.checkins_open}
           {#if reg.player && !reg.player.is_checked_in}
-            <Button {working} on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button>
+            <Button {working} on:click={() => toggleCheckin(reg.player)}
+              >{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_BUTTON()}</Button
+            >
             <div>
               {$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_REMINDER_WINDOW_OPEN()}
             </div>
           {:else if reg.player}
             <div class="flex">
-              <BadgeCheckSolid/>
+              <BadgeCheckSolid />
               <div>
                 {$LL.TOURNAMENTS.REGISTRATIONS.CHECKED_IN()}
               </div>
@@ -73,7 +75,9 @@
               {/if}
             </div>
             <div>
-              <Button {working} size="xs" on:click={() => toggleCheckin(reg.player)}>{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button>
+              <Button {working} size="xs" on:click={() => toggleCheckin(reg.player)}
+                >{$LL.TOURNAMENTS.REGISTRATIONS.CHECK_OUT()}</Button
+              >
             </div>
           {/if}
         {:else}
@@ -81,7 +85,7 @@
         {/if}
       </div>
     {/if}
-    {#if tournament.verification_required && ((!reg.squad.is_approved) || (reg.player && !reg.player.is_approved))}
+    {#if tournament.verification_required && (!reg.squad.is_approved || (reg.player && !reg.player.is_approved))}
       <div class="section">
         <div class="pending">
           {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_APPROVAL()}
@@ -89,7 +93,7 @@
         {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_PENDING_MESSAGE()}
       </div>
     {/if}
-    <MySquad {tournament} registration={reg}/>
+    <MySquad {tournament} registration={reg} />
   </div>
 {/each}
 

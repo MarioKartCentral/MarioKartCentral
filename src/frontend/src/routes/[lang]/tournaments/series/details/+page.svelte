@@ -47,7 +47,7 @@
 
 {#if series}
   <SeriesInfo {series} />
-  <SeriesPosts {series}/>
+  <SeriesPosts {series} />
   {#if tournaments}
     <SeriesPodiums {tournaments} />
     <SeriesStats {stats} />

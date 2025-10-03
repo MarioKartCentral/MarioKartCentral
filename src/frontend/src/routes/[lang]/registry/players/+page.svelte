@@ -5,5 +5,5 @@
 </script>
 
 <Section header={$LL.PLAYERS.LIST.PLAYER_LISTING()}>
-  <PlayerList/>
+  <PlayerList />
 </Section>

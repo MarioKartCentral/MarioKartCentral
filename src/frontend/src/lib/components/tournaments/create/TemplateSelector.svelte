@@ -27,14 +27,18 @@
 <Section header={$LL.TOURNAMENTS.MANAGE.SELECT_TEMPLATE()}>
   <div slot="header_content">
     {#if series_id}
-      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.MANAGE.BACK_TO_SERIES()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}"
+        >{$LL.TOURNAMENTS.MANAGE.BACK_TO_SERIES()}</Button
+      >
     {/if}
   </div>
   <Table>
     <tr class="row-1">
       <td class="left">
         {#if series_id}
-          <a href="/{$page.params.lang}/tournaments/series/create_tournament?id={series_id}">{$LL.TOURNAMENTS.MANAGE.START_FROM_SCRATCH()}</a>
+          <a href="/{$page.params.lang}/tournaments/series/create_tournament?id={series_id}"
+            >{$LL.TOURNAMENTS.MANAGE.START_FROM_SCRATCH()}</a
+          >
         {:else}
           <a href="/{$page.params.lang}/tournaments/create">{$LL.TOURNAMENTS.MANAGE.START_FROM_SCRATCH()}</a>
         {/if}

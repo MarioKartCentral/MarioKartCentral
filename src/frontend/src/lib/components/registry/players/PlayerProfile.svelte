@@ -47,15 +47,13 @@
   <div slot="header_content">
     {#if user_info.player_id == player.id}
       <Button href="/{$page.params.lang}/registry/invites">{$LL.PLAYERS.PROFILE.INVITES()}</Button>
-      <Button href="/{$page.params.lang}/registry/players/edit-profile"
-        >{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button
-      >
+      <Button href="/{$page.params.lang}/registry/players/edit-profile">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button>
     {/if}
   </div>
   <div class="wrapper">
     <div class="grid-container">
       <div class="avatar" style="grid-area: a;">
-        <Avatar size="xl" src={avatar_url} border alt={player.name}/>
+        <Avatar size="xl" src={avatar_url} border alt={player.name} />
       </div>
       <div class="mobile-centered" style="grid-area: b;">
         <div class="name">
@@ -64,7 +62,7 @@
           {/if}
           {player.name}
         </div>
-        <PlayerNameHistory {player}/>
+        <PlayerNameHistory {player} />
       </div>
       {#if player.friend_codes.length > 0}
         <div class="mobile-centered" style="grid-area: c;">
@@ -72,50 +70,51 @@
             <div class="mobile-centered">
               <b>{$LL.FRIEND_CODES.FRIEND_CODES()}:</b>
             </div>
-            {#each player.friend_codes.filter((f) => f.is_active).toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]) as fc}
+            {#each player.friend_codes
+              .filter((f) => f.is_active)
+              .toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]) as fc}
               <div>
-                <FCTypeBadge type={fc.type}/>
+                <FCTypeBadge type={fc.type} />
                 {fc.fc}
               </div>
             {/each}
           </div>
         </div>
-        
       {/if}
       {#if player.rosters.length > 0}
-        <div class="mobile-centered"style="grid-area: d;">
+        <div class="mobile-centered" style="grid-area: d;">
           <div class="item">
             <div class="mobile-centered">
               <b>{$LL.PLAYERS.PROFILE.TEAMS()}</b>
             </div>
-            
+
             {#each sort_rosters(player.rosters) as r}
               <div class="teams">
                 <div class="badges">
-                  <GameBadge game={r.game}/>
-                  <ModeBadge mode={r.mode}/>
+                  <GameBadge game={r.game} />
+                  <ModeBadge mode={r.mode} />
                 </div>
                 <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
                   {r.roster_name}
                   {#if r.is_bagger_clause}
-                    <BaggerBadge/>
+                    <BaggerBadge />
                   {/if}
                 </a>
               </div>
             {/each}
           </div>
         </div>
-        
       {/if}
       <div class="item mobile-centered" style="grid-area: e;">
-        {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()} {new Date(player.join_date * 1000).toLocaleString($locale, options)}
+        {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()}
+        {new Date(player.join_date * 1000).toLocaleString($locale, options)}
       </div>
       {#if player.roles.length}
         <div class="item centered" style="grid-area: f;">
           <div>
             {#each player.roles as role}
               <div>
-                <RoleBadge {role}/>
+                <RoleBadge {role} />
               </div>
             {/each}
           </div>
@@ -123,16 +122,15 @@
       {/if}
       {#if !player.user_settings || !player.user_settings.hide_discord || check_permission(user_info, permissions.edit_player)}
         <div class="item centered" style="grid-area: g;">
-          <DiscordDisplay discord={player.discord}/>
+          <DiscordDisplay discord={player.discord} />
         </div>
       {/if}
       {#if player.user_settings && player.user_settings.about_me}
         <div class="about_me" style="grid-area: h;">
-            {player.user_settings.about_me}
+          {player.user_settings.about_me}
         </div>
       {/if}
     </div>
-    
   </div>
 </Section>
 
@@ -144,33 +142,33 @@
     column-gap: 20px;
     margin: 10px 0;
     grid-template-columns: 1fr 2fr 2fr;
-    @media(max-width:1023px) {
+    @media (max-width: 1023px) {
       justify-content: center;
     }
   }
   div.grid-container {
     display: grid;
     column-gap: 20px;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       margin-left: 20px;
-      grid-template-areas: 
-      "a b h"
-      "a c h"
-      "f d h"
-      "g e h"
-      "g . h";
-    }
-    @media(max-width: 1023px) {
       grid-template-areas:
-      "a"
-      "b"
-      "f"
-      "g"
-      "c"
-      "d"
-      "e"
-      "h";
-    } 
+        'a b h'
+        'a c h'
+        'f d h'
+        'g e h'
+        'g . h';
+    }
+    @media (max-width: 1023px) {
+      grid-template-areas:
+        'a'
+        'b'
+        'f'
+        'g'
+        'c'
+        'd'
+        'e'
+        'h';
+    }
   }
   div.name {
     font-size: 1.5em;
@@ -187,11 +185,10 @@
     word-break: break-word;
     white-space: pre-line;
     overflow-y: auto;
-    @media(min-width: 1024px) {
+    @media (min-width: 1024px) {
       margin-left: auto;
       margin-right: auto;
     }
-    
   }
   div.avatar {
     display: flex;
@@ -209,7 +206,7 @@
   }
   div.mobile-centered {
     display: flex;
-    @media(max-width:1023px) {
+    @media (max-width: 1023px) {
       justify-content: center;
     }
   }
@@ -221,7 +218,7 @@
   div.badges {
     display: flex;
     flex-wrap: wrap;
-    @media(max-width: 1023px) {
+    @media (max-width: 1023px) {
       max-width: 110px;
       margin-bottom: 5px;
     }

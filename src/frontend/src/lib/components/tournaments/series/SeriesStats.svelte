@@ -12,10 +12,14 @@
   let stats_mode: StatsMode = stats.roster_stats.length > 0 ? StatsMode.TEAM_MEDALS : StatsMode.PLAYER_MEDALS;
 
   $: sortedRosters =
-    stats_mode === StatsMode.TEAM_MEDALS ? stats.roster_stats.sort(compareMedals) : stats.roster_stats.sort((a, b) => b.appearances - a.appearances);
+    stats_mode === StatsMode.TEAM_MEDALS
+      ? stats.roster_stats.sort(compareMedals)
+      : stats.roster_stats.sort((a, b) => b.appearances - a.appearances);
 
   $: sortedPlayers =
-    stats_mode === StatsMode.PLAYER_MEDALS ? stats.player_stats.sort(compareMedals) : stats.player_stats.sort((a, b) => b.appearances - a.appearances);
+    stats_mode === StatsMode.PLAYER_MEDALS
+      ? stats.player_stats.sort(compareMedals)
+      : stats.player_stats.sort((a, b) => b.appearances - a.appearances);
 </script>
 
 <Section header="Stats">

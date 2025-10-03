@@ -54,7 +54,7 @@
   }
   .markdown-box :global(h5) {
     display: block;
-    font-size: .83em;
+    font-size: 0.83em;
     margin-top: 1.67em;
     margin-bottom: 1.67em;
     margin-left: 0;
@@ -63,7 +63,7 @@
   }
   .markdown-box :global(h6) {
     display: block;
-    font-size: .67em;
+    font-size: 0.67em;
     margin-top: 2.33em;
     margin-bottom: 2.33em;
     margin-left: 0;

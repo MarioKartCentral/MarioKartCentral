@@ -45,14 +45,14 @@
     if (mode) {
       filtered_history = filtered_history.filter((item) => item.mode === mode);
     }
-    if(!show_hidden || !check_permission($user, permissions.edit_player)) {
+    if (!show_hidden || !check_permission($user, permissions.edit_player)) {
       filtered_history = filtered_history.filter((item) => !item.is_hidden);
     }
   }
 
   async function toggleTransferItemVisibility(record: PlayerTransferItem) {
     let conf = window.confirm($LL.PLAYERS.PROFILE.TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM());
-    if(!conf) return;
+    if (!conf) return;
     const endpoint = `/api/registry/players/${player.id}/toggleTransferItemVisibility/${record.id}`;
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -77,7 +77,7 @@
       <div>
         <form on:submit|preventDefault={filterData}>
           <div class="flex flex-row flex-wrap items-center justify-center">
-            <GameModeSelect bind:game bind:mode hide_labels is_team all_option inline/>
+            <GameModeSelect bind:game bind:mode hide_labels is_team all_option inline />
             {#if check_permission($user, permissions.edit_player)}
               <div class="ml-1 my-2">
                 <select bind:value={show_hidden}>
@@ -96,20 +96,18 @@
             <tr>
               <th>Team</th>
               <th>Registration Period</th>
-              <th/>
+              <th />
             </tr>
           </thead>
           <tbody>
             {#each filtered_history as record, i}
-              <tr class="row-{i % 2} {record.is_hidden ? "hidden-item" : ""}">
+              <tr class="row-{i % 2} {record.is_hidden ? 'hidden-item' : ''}">
                 <td>
-                  <a
-                    href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}"
-                  >
+                  <a href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}">
                     <!-- prefer roster name, but use team name as fallback -->
                     {record.roster_name ? record.roster_name : record.team_name}
                     {#if record.is_bagger_clause}
-                      <BaggerBadge/>
+                      <BaggerBadge />
                     {/if}
                   </a>
                 </td>

@@ -1,24 +1,30 @@
 <script lang="ts">
-  import { page } from "$app/stores";
-  import { XCompanySolid, YoutubeSolid, GithubSolid } from "flowbite-svelte-icons";
-  import Twitch from "$lib/components/icons/Twitch.svelte";
+  import { page } from '$app/stores';
+  import { XCompanySolid, YoutubeSolid, GithubSolid } from 'flowbite-svelte-icons';
+  import Twitch from '$lib/components/icons/Twitch.svelte';
 </script>
 
 <div class="footer">
   <div class="footer-social">
     <ul>
-      <li><a href="https://www.youtube.com/c/MarioKartCentral" rel="external" title="YouTube">
-        <YoutubeSolid/>
-      </a></li>
-      <li><a href="https://twitter.com/mk_central" rel="external" title="Twitter">
-        <XCompanySolid/>
-      </a></li>
-      <li><a href="https://www.twitch.tv/mariokartcentral" rel="external" title="Twitch">
-        <Twitch/>
-      </a></li>
+      <li>
+        <a href="https://www.youtube.com/c/MarioKartCentral" rel="external" title="YouTube">
+          <YoutubeSolid />
+        </a>
+      </li>
+      <li>
+        <a href="https://twitter.com/mk_central" rel="external" title="Twitter">
+          <XCompanySolid />
+        </a>
+      </li>
+      <li>
+        <a href="https://www.twitch.tv/mariokartcentral" rel="external" title="Twitch">
+          <Twitch />
+        </a>
+      </li>
       <li>
         <a href="https://github.com/MarioKartCentral/MarioKartCentral" rel="external" title="Github">
-          <GithubSolid/>
+          <GithubSolid />
         </a>
       </li>
     </ul>

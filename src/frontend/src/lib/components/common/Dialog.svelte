@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import CancelButton from "./buttons/CancelButton.svelte";
+  import { createEventDispatcher } from 'svelte';
+  import CancelButton from './buttons/CancelButton.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -29,7 +29,7 @@
           {/if}
         </div>
         <div class="exit">
-          <CancelButton on:click={close}/>
+          <CancelButton on:click={close} />
         </div>
       </div>
       <div class="content">

@@ -26,10 +26,19 @@
   $: hoverTextClass = isLightColor ? 'hover:text-gray-800' : 'hover:text-white';
 </script>
 
-<Button pill={circle} class="{extra_classes} {circle ? '!p-2' : ''} {hoverTextClass}" on:click {size} {href} {type} disabled={working || disabled} {color}>
+<Button
+  pill={circle}
+  class="{extra_classes} {circle ? '!p-2' : ''} {hoverTextClass}"
+  on:click
+  {size}
+  {href}
+  {type}
+  disabled={working || disabled}
+  {color}
+>
   {#if working}
     <div class="flex gap-2 items-center">
-      <Spinner size=4/>
+      <Spinner size="4" />
       {$LL.COMMON.WORKING()}
     </div>
   {:else}

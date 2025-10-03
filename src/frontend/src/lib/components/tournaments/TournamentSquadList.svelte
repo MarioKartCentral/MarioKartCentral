@@ -36,12 +36,12 @@
 
   function is_squad_eligible(squad: TournamentSquad) {
     if (tournament.min_squad_size !== null) {
-      if (squad.players.filter(p => !p.is_invite).length < tournament.min_squad_size) {
+      if (squad.players.filter((p) => !p.is_invite).length < tournament.min_squad_size) {
         return false;
       }
     }
-    if(tournament.min_players_checkin !== null) {
-      if(squad.players.filter(p => p.is_checked_in).length < tournament.min_players_checkin) {
+    if (tournament.min_players_checkin !== null) {
+      if (squad.players.filter((p) => p.is_checked_in).length < tournament.min_players_checkin) {
         return false;
       }
     }
@@ -88,7 +88,7 @@
   }
 
   function sortSquadsByName() {
-    if(sorted_by !== 'name') {
+    if (sorted_by !== 'name') {
       squads.sort((a, b) => String(a.name).toLowerCase().localeCompare(String(b.name).toLowerCase()));
     }
     // sort in reverse if already sorted by name
@@ -100,10 +100,9 @@
   }
 
   function sortSquadsByRegistrationDate() {
-    if(sorted_by !== 'register-date') {
+    if (sorted_by !== 'register-date') {
       squads.sort((a, b) => a.timestamp - b.timestamp);
-    }
-    else {
+    } else {
       squads.reverse();
     }
     squads = squads;
@@ -123,7 +122,7 @@
   <col class="eligible mobile-hide" />
   <col class="date mobile-hide" />
   {#if is_privileged}
-    <col class="actions"/>
+    <col class="actions" />
   {/if}
   <thead>
     <tr>
@@ -141,7 +140,9 @@
       <th>
         {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
         <button class="show-players" on:click={toggle_all_players}>
-          {all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
+          {all_toggle_on
+            ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS()
+            : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
         </button>
       </th>
       <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE()}</th>
@@ -151,7 +152,7 @@
         </button>
       </th>
       {#if is_privileged}
-        <th/>
+        <th />
       {/if}
     </tr>
   </thead>
@@ -162,7 +163,7 @@
           <td>{squad.id}</td>
           {#if tournament.squad_tag_required}
             <td>
-              <TagBadge tag={squad.tag} color={squad.color}/>
+              <TagBadge tag={squad.tag} color={squad.color} />
             </td>
           {/if}
           {#if tournament.squad_name_required}
@@ -188,15 +189,21 @@
           <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
           {#if is_privileged}
             <td>
-              <ChevronDownSolid class="cursor-pointer"/>
+              <ChevronDownSolid class="cursor-pointer" />
               <Dropdown>
                 {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
-                  <DropdownItem on:click={() => add_player_dialog.open(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</DropdownItem>
+                  <DropdownItem on:click={() => add_player_dialog.open(squad)}
+                    >{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</DropdownItem
+                  >
                 {/if}
                 <DropdownItem on:click={() => edit_squad_dialog.open(squad)}>{$LL.COMMON.EDIT()}</DropdownItem>
-                <DropdownItem on:click={() => unregisterSquad(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
+                <DropdownItem on:click={() => unregisterSquad(squad)}
+                  >{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem
+                >
                 {#if tournament.teams_allowed}
-                  <DropdownItem on:click={() => manage_rosters_dialog.open(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</DropdownItem>
+                  <DropdownItem on:click={() => manage_rosters_dialog.open(squad)}
+                    >{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</DropdownItem
+                  >
                 {/if}
               </Dropdown>
             </td>
@@ -205,7 +212,7 @@
         {#if squad_data[squad.id].display_players}
           <tr class="inner">
             <td colspan="10">
-              <TournamentPlayerList {tournament} players={squad.players} {is_privileged}/>
+              <TournamentPlayerList {tournament} players={squad.players} {is_privileged} />
             </td>
           </tr>
         {/if}
@@ -214,9 +221,9 @@
   </tbody>
 </Table>
 
-<AddPlayerToSquad bind:this={add_player_dialog} {tournament}/>
-<EditSquadDialog bind:this={edit_squad_dialog} {tournament} is_privileged={true}/>
-<ManageSquadRosters bind:this={manage_rosters_dialog} {tournament} is_privileged={true}/>
+<AddPlayerToSquad bind:this={add_player_dialog} {tournament} />
+<EditSquadDialog bind:this={edit_squad_dialog} {tournament} is_privileged={true} />
+<ManageSquadRosters bind:this={manage_rosters_dialog} {tournament} is_privileged={true} />
 
 <style>
   button.show-players {

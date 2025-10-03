@@ -9,5 +9,5 @@
 </script>
 
 <Badge badgeClass="tag_badge" style="background-color:{color_val};border: 1px solid {color_val}">
-  {tag ? tag : "-"}
+  {tag ? tag : '-'}
 </Badge>

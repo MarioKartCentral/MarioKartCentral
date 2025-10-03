@@ -23,23 +23,23 @@
     is_historical: boolean | null;
     game: string | null;
     mode: string | null;
-  }
+  };
 
   let filter: SeriesFilter = {
     name: '',
     is_historical: false,
     game: null,
-    mode: null, 
+    mode: null,
   };
 
   async function fetchData() {
     let filter_strings = [];
-    for(const [key, value] of Object.entries(filter)) {
-      if(value !== null) {
+    for (const [key, value] of Object.entries(filter)) {
+      if (value !== null) {
         filter_strings.push(`${key}=${value}`);
       }
     }
-    const filter_string = filter_strings.join("&");
+    const filter_string = filter_strings.join('&');
     const res = await fetch(`/api/tournaments/series/list?${filter_string}`);
     if (res.status === 200) {
       const body: TournamentSeriesBasic[] = await res.json();
@@ -58,13 +58,13 @@
   </div>
   <form on:submit|preventDefault={fetchData}>
     <div class="options">
-      <GameModeSelect bind:game={filter.game} bind:mode={filter.mode} flex inline hide_labels all_option/>
+      <GameModeSelect bind:game={filter.game} bind:mode={filter.mode} flex inline hide_labels all_option />
       <select bind:value={filter.is_historical}>
         <option value={null}>{$LL.TOURNAMENTS.SERIES.ALL_SERIES()}</option>
         <option value={false}>{$LL.TOURNAMENTS.SERIES.ACTIVE_SERIES()}</option>
         <option value={true}>{$LL.TOURNAMENTS.SERIES.HISTORICAL_SERIES()}</option>
       </select>
-      <input bind:value={filter.name} placeholder={$LL.TOURNAMENTS.SEARCH_SERIES()}/>
+      <input bind:value={filter.name} placeholder={$LL.TOURNAMENTS.SEARCH_SERIES()} />
       <Button type="submit">{$LL.COMMON.FILTER()}</Button>
     </div>
   </form>

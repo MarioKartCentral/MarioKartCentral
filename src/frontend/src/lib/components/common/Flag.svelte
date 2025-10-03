@@ -1,19 +1,19 @@
 <script lang="ts">
   export let country_code: string | null;
-  export let size: "large" | "small" = "large"
-  
+  export let size: 'large' | 'small' = 'large';
+
   const flags = import.meta.glob<string>('../../assets/flags/*.png', { query: { url: true }, import: 'default' });
-  
+
   const getFlag = async (code: string) => {
     const path = `../../assets/flags/${code.toUpperCase()}.png`;
     const module = await flags[path]?.();
     return module;
-  }
+  };
 
   let flagUrl = '';
-  
+
   $: if (country_code) {
-    getFlag(country_code).then(url => {
+    getFlag(country_code).then((url) => {
       flagUrl = url || '';
     });
   }

@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { Dropdown } from "flowbite-svelte";
+  import { Dropdown } from 'flowbite-svelte';
 
-    export let placement: "top"|"bottom"|"left"|"right"="bottom";
-    export let open = false;
-    export let scroll = false;
+  export let placement: 'top' | 'bottom' | 'left' | 'right' = 'bottom';
+  export let open = false;
+  export let scroll = false;
 </script>
 
 <Dropdown class="bg-gray-600 text-white {scroll ? 'max-h-64 overflow-y-auto' : ''}" {placement} bind:open>
-    <slot/>
+  <slot />
 </Dropdown>

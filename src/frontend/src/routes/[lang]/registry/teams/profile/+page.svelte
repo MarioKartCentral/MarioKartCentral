@@ -62,9 +62,7 @@
           <Button href="/{$page.params.lang}/registry/teams/mod/manage_rosters?id={id}"
             >{$LL.TEAMS.PROFILE.MANAGE_ROSTERS()}</Button
           >
-          <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}"
-            >{$LL.TEAMS.PROFILE.EDIT_TEAM()}</Button
-          >
+          <Button href="/{$page.params.lang}/registry/teams/mod/edit?id={id}">{$LL.TEAMS.PROFILE.EDIT_TEAM()}</Button>
           <Button href="/{$page.params.lang}/registry/teams/manage_roles?id={id}">{$LL.ROLES.MANAGE_ROLES()}</Button>
         </div>
       </Section>
@@ -107,7 +105,7 @@
     {$LL.COMMON.NO_PERMISSION()}
   {/if}
 {:else if not_found}
-    {$LL.TEAMS.PROFILE.TEAM_NOT_FOUND()}
+  {$LL.TEAMS.PROFILE.TEAM_NOT_FOUND()}
 {/if}
 
 <style>

@@ -35,9 +35,7 @@
       </div>
       <div class="name">
         <h3>
-          <a
-            class="text-lg font-bold p-1"
-            href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
+          <a class="text-lg font-bold p-1" href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
             >{tournament.name}
           </a>
         </h3>
@@ -46,8 +44,8 @@
         <div class="badges flex flex-col p-1">
           <GameBadge game={tournament.game} />
           <ModeBadge mode={tournament.mode} />
-          <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
-          <OrganizerBadge organizer={tournament.organizer}/>
+          <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed} />
+          <OrganizerBadge organizer={tournament.organizer} />
         </div>
         <div class="dates">
           <div class="date-item">
@@ -64,7 +62,6 @@
             </b>
           </div>
         </div>
-        
       </div>
     </div>
     <!-- Logo Section -->

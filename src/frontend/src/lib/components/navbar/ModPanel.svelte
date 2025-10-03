@@ -20,14 +20,13 @@
     <DropdownItem href="/{$page.params.lang}/moderator/approve_teams">
       {$LL.NAVBAR.MOD_PANEL.APPROVE_TEAMS()}
       {#if user_info.mod_notifications?.pending_teams}
-        <AlertCount count={user_info.mod_notifications.pending_teams}/>
+        <AlertCount count={user_info.mod_notifications.pending_teams} />
       {/if}
-      
     </DropdownItem>
     <DropdownItem href="/{$page.params.lang}/moderator/approve_team_edits">
       {$LL.NAVBAR.MOD_PANEL.TEAM_NAME_TAG_CHANGES()}
       {#if user_info.mod_notifications?.pending_team_edits}
-        <AlertCount count={user_info.mod_notifications.pending_team_edits}/>
+        <AlertCount count={user_info.mod_notifications.pending_team_edits} />
       {/if}
     </DropdownItem>
   {/if}
@@ -35,7 +34,7 @@
     <DropdownItem href="/{$page.params.lang}/moderator/approve_transfers">
       {$LL.NAVBAR.MOD_PANEL.APPROVE_TRANSFERS()}
       {#if user_info.mod_notifications?.pending_transfers}
-        <AlertCount count={user_info.mod_notifications.pending_transfers}/>
+        <AlertCount count={user_info.mod_notifications.pending_transfers} />
       {/if}
     </DropdownItem>
   {/if}
@@ -53,7 +52,7 @@
     <DropdownItem href="/{$page.params.lang}/moderator/approve_player_names">
       {$LL.NAVBAR.MOD_PANEL.PLAYER_NAME_CHANGES()}
       {#if user_info.mod_notifications?.pending_player_name_changes}
-        <AlertCount count={user_info.mod_notifications.pending_player_name_changes}/>
+        <AlertCount count={user_info.mod_notifications.pending_player_name_changes} />
       {/if}
     </DropdownItem>
     <DropdownItem href="/{$page.params.lang}/moderator/friend_code_edits">
@@ -67,7 +66,7 @@
     <DropdownItem href="/{$page.params.lang}/moderator/player_claims">
       {$LL.NAVBAR.MOD_PANEL.PLAYER_CLAIMS()}
       {#if user_info.mod_notifications?.pending_player_claims}
-        <AlertCount count={user_info.mod_notifications.pending_player_claims}/>
+        <AlertCount count={user_info.mod_notifications.pending_player_claims} />
       {/if}
     </DropdownItem>
   {/if}
@@ -98,17 +97,15 @@
   {/if}
   {#if check_permission(user_info, permissions.view_fingerprints)}
     <DropdownItem href="/{$page.params.lang}/moderator/fingerprints">
-        {$LL.NAVBAR.MOD_PANEL.FINGERPRINTS()}
+      {$LL.NAVBAR.MOD_PANEL.FINGERPRINTS()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.view_basic_ip_info)}
     <DropdownItem href="/{$page.params.lang}/moderator/ip_search">
-        {$LL.NAVBAR.MOD_PANEL.IP_SEARCH()}
+      {$LL.NAVBAR.MOD_PANEL.IP_SEARCH()}
     </DropdownItem>
   {/if}
   {#if check_permission(user_info, permissions.create_db_backups)}
-    <DropdownItem href="/{$page.params.lang}/admin/backup_db">
-        Backup Database
-    </DropdownItem>
+    <DropdownItem href="/{$page.params.lang}/admin/backup_db">Backup Database</DropdownItem>
   {/if}
 </Dropdown>

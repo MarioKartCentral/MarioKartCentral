@@ -91,10 +91,16 @@
 </script>
 
 <form method="POST" on:submit|preventDefault={is_edit ? editSeries : createSeries}>
-  <Section header={is_edit ? $LL.TOURNAMENTS.SERIES.EDIT_TOURNAMENT_SERIES() : $LL.TOURNAMENTS.SERIES.CREATE_TOURNAMENT_SERIES()}>
+  <Section
+    header={is_edit
+      ? $LL.TOURNAMENTS.SERIES.EDIT_TOURNAMENT_SERIES()
+      : $LL.TOURNAMENTS.SERIES.CREATE_TOURNAMENT_SERIES()}
+  >
     <div slot="header_content">
       {#if series_id}
-        <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES()}</Button>
+        <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}"
+          >{$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES()}</Button
+        >
       {/if}
     </div>
     <div class="option">
@@ -102,7 +108,7 @@
         <label for="series_name">{$LL.TOURNAMENTS.SERIES.SERIES_NAME()}</label>
       </div>
       <div>
-        <input type="text" name="series_name" bind:value={data.series_name} minlength="1" maxlength=64 required />
+        <input type="text" name="series_name" bind:value={data.series_name} minlength="1" maxlength="64" required />
       </div>
     </div>
     <div class="option hidden">
@@ -126,14 +132,14 @@
         <label for="discord_invite">{$LL.TOURNAMENTS.SERIES.SERIES_DISCORD_INVITE()}</label>
       </div>
       <div>
-        <input type="text" name="discord_invite" bind:value={data.discord_invite}/>
+        <input type="text" name="discord_invite" bind:value={data.discord_invite} />
       </div>
     </div>
     <div class="logo">
       <div>
         <label for="logo">{$LL.TOURNAMENTS.SERIES.SERIES_LOGO()}</label>
       </div>
-      <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo}/>
+      <LogoUpload bind:file={data.logo_file} bind:logo_url={data.logo} bind:remove_logo={data.remove_logo} />
     </div>
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.EVENT_DEFAULTS()}>
@@ -155,25 +161,25 @@
           <label for="location">{$LL.TOURNAMENTS.MANAGE.LOCATION()}</label>
         </div>
         <div>
-          <input name="location" type="text" bind:value={data.location} maxlength=64/>
+          <input name="location" type="text" bind:value={data.location} maxlength="64" />
         </div>
       </div>
     {/if}
     <div class="option">
       <GameModeSelect bind:game={data.game} bind:mode={data.mode} />
-    </div> 
+    </div>
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.SHORT_DESCRIPTION()}>
-    <textarea bind:value={data.short_description} maxlength=500/>
+    <textarea bind:value={data.short_description} maxlength="500" />
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.SERIES_DESCRIPTION()}>
     <div class="option">
-      <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData}/>
+      <MarkdownTextArea name="description" bind:value={data.description} on:change={updateData} />
     </div>
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.SERIES_RULESET()}>
     <div class="option">
-      <MarkdownTextArea name="ruleset" bind:value={data.ruleset} on:change={updateData}/>
+      <MarkdownTextArea name="ruleset" bind:value={data.ruleset} on:change={updateData} />
     </div>
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.VISIBILITY()}>

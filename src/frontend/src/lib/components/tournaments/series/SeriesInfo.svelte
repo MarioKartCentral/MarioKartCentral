@@ -16,14 +16,14 @@
   user.subscribe((value) => {
     user_info = value;
   });
-
 </script>
 
 <Section header={$LL.TOURNAMENTS.SERIES.SERIES_INFO()}>
   <div slot="header_content">
     <Button href="/{$page.params.lang}/tournaments/series">{$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES_LISTING()}</Button>
     {#if check_series_permission(user_info, series_permissions.edit_series, series.id)}
-      <Button href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">{$LL.TOURNAMENTS.SERIES.EDIT()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">{$LL.TOURNAMENTS.SERIES.EDIT()}</Button
+      >
     {/if}
     {#if check_series_permission(user_info, series_permissions.create_tournament, series.id)}
       <Button href="/{$page.params.lang}/tournaments/series/create_tournament/select_template?id={series.id}"
@@ -31,10 +31,14 @@
       >
     {/if}
     {#if check_series_permission(user_info, series_permissions.create_tournament_template, series.id)}
-      <Button href="/{$page.params.lang}/tournaments/series/templates?id={series.id}">{$LL.TOURNAMENTS.SERIES.MANAGE_TEMPLATES()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/templates?id={series.id}"
+        >{$LL.TOURNAMENTS.SERIES.MANAGE_TEMPLATES()}</Button
+      >
     {/if}
     {#if check_series_permission(user_info, series_permissions.manage_series_roles, series.id)}
-      <Button href="/{$page.params.lang}/tournaments/series/manage_roles?id={series.id}">{$LL.ROLES.MANAGE_ROLES()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/manage_roles?id={series.id}"
+        >{$LL.ROLES.MANAGE_ROLES()}</Button
+      >
     {/if}
   </div>
   <div class="container">
@@ -48,10 +52,10 @@
     </div>
     {#if series.discord_invite}
       <div class="invite">
-        <DiscordInviteButton href={series.discord_invite}/>
+        <DiscordInviteButton href={series.discord_invite} />
       </div>
     {/if}
-    
+
     <MarkdownBox content={series.description ? series.description : series.short_description} />
   </div>
 </Section>

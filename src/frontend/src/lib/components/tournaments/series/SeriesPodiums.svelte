@@ -13,19 +13,18 @@
 
   const isPodium = (value: TournamentPlacement) => value.placement && value.placement <= 3;
   const comparePlacements = (a: TournamentPlacement, b: TournamentPlacement) => {
-    if(a.placement === null) {
-      if(b.placement !== null) {
+    if (a.placement === null) {
+      if (b.placement !== null) {
         return 1;
-      }
-      else {
+      } else {
         return 0;
       }
     }
-    if(b.placement === null) {
+    if (b.placement === null) {
       return -1;
     }
     return a.placement - b.placement;
-  }
+  };
 
   for (let i = 0; i < tournaments.length; i++) {
     tournaments[i].placements = tournaments[i].placements.filter(isPodium).sort(comparePlacements);

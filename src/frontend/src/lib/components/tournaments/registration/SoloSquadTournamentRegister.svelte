@@ -81,7 +81,7 @@
       <span class="item-label">
         <label for="is_bagger_clause">{$LL.TOURNAMENTS.REGISTRATIONS.BAGGER_SELECT()}</label>
       </span>
-      
+
       <select name="is_bagger_clause" required>
         <option value={false}>{$LL.COMMON.NO()}</option>
         <option value={true}>{$LL.COMMON.YES()}</option>
@@ -101,4 +101,3 @@
     margin: 10px 0;
   }
 </style>
-

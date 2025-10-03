@@ -28,10 +28,10 @@
   };
 
   async function leaveRoster() {
-    let conf = window.confirm($LL.TEAMS.PROFILE.LEAVE_ROSTER_CONFIRM({roster_name: roster.name}));
-    if(!conf) return;
+    let conf = window.confirm($LL.TEAMS.PROFILE.LEAVE_ROSTER_CONFIRM({ roster_name: roster.name }));
+    if (!conf) return;
     const payload = {
-      roster_id: roster.id
+      roster_id: roster.id,
     };
     const endpoint = '/api/registry/teams/leave';
     const response = await fetch(endpoint, {
@@ -55,8 +55,8 @@
     {roster.name}
   </div>
   <div class="badges">
-    <GameBadge game={roster.game}/>
-    <ModeBadge mode={roster.mode}/>
+    <GameBadge game={roster.game} />
+    <ModeBadge mode={roster.mode} />
   </div>
   {roster.players.length}
   {roster.players.length !== 1 ? $LL.TEAMS.PROFILE.PLAYERS() : $LL.TEAMS.PROFILE.PLAYER()}
@@ -79,7 +79,7 @@
           <tr class="row-{i % 2} {user_info.player_id === player.player_id ? 'me' : ''}">
             <td><Flag country_code={player.country_code} /></td>
             <td>
-              <RosterPlayerName {player}/>
+              <RosterPlayerName {player} />
             </td>
             <td class="mobile-hide">
               {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i}

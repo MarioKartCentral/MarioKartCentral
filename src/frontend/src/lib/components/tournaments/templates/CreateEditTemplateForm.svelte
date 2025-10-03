@@ -130,10 +130,7 @@
 </script>
 
 {#if data_retrieved}
-  {#if check_series_permission(user_info,
-    is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template,
-    data.series_id
-  )}
+  {#if check_series_permission(user_info, is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template, data.series_id)}
     <form method="POST" on:submit|preventDefault={is_edit ? editTemplate : createTemplate}>
       <Section header={$LL.TOURNAMENTS.TEMPLATES.TEMPLATE_DETAILS()}>
         <div>
