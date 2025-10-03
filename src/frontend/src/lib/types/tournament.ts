@@ -21,6 +21,7 @@ export type TournamentBasic = {
   teams_only: boolean;
   team_members_only: boolean;
   min_representatives: number | null;
+  max_representatives: number | null;
   host_status_required: boolean;
   mii_name_required: boolean;
   require_single_fc: boolean;
@@ -42,6 +43,7 @@ export type TournamentBasic = {
   series_stats_include: boolean;
   verified_fc_required: boolean;
   bagger_clause_enabled: boolean;
+  sync_team_rosters: boolean;
 };
 
 export type Tournament = {

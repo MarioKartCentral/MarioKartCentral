@@ -16,7 +16,7 @@
 <div class="color-select">
     <select {name} bind:value={color}>
         {#each sorted_colors as c}
-            <option value={c.id}>{color_strings[c.label]()}</option>
+            <option value={c.id} style="background-color:{c.value}">{color_strings[c.label]()}</option>
         {/each}
     </select>
     <TagBadge {tag} {color}/>
