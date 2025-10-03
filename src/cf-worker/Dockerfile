@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:20.9.0-bookworm-slim
+FROM --platform=linux/amd64 node:20.9.0-bookworm-slim
 WORKDIR /usr/src/app
 RUN chown node:node /usr/src/app
 USER node
