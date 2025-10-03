@@ -22,6 +22,8 @@
 
     let type: string | null = null;
     let exclude_fingerprints = true;
+    let from: string | null = null;
+    let to: string | null = null;
 
     async function fetchData() {
         let url = `/api/moderator/altFlags?page=${currentPage}`;
@@ -30,6 +32,12 @@
         }
         if(exclude_fingerprints) {
             url += `&exclude_fingerprints=true`
+        }
+        if(from) {
+            url += `&from_date=${Date.parse(String(from)) / 1000}`
+        }
+        if(to) {
+            url += `&to_date=${Date.parse(String(to)) / 1000}`
         }
         const res = await fetch(url);
         if(res.status === 200) {
@@ -54,7 +62,7 @@
     {#if check_permission(user_info, permissions.view_alt_flags)}
         <Section header={$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}>
             {#if totalFlags}
-                <div>
+                <div class="flex gap-4 items-center">
                     <select bind:value={type} on:change={filter}>
                         <option value={null}>
                             All Flags
@@ -73,9 +81,17 @@
                         </option>
                     </select>
                     <select bind:value={exclude_fingerprints} on:change={fetchData}>
-                        <option value={true}>Exclude Fingerprints</option>
-                        <option value={false}>Include Fingerprints</option>
+                        <option value={true}>{$LL.MODERATOR.ALT_DETECTION.EXCLUDE_FINGERPRINTS()}</option>
+                        <option value={false}>{$LL.MODERATOR.ALT_DETECTION.INCLUDE_FINGERPRINTS()}</option>
                     </select>
+                    <div class="flex gap-4 items-center">
+                        {$LL.COMMON.FROM()}
+                        <input name="from" type="date" bind:value={from} on:change={filter}/>
+                    </div>
+                    <div class="flex gap-4 items-center">
+                        {$LL.COMMON.TO()}
+                        <input name="to" type="date" bind:value={to} on:change={filter}/>
+                    </div>
                 </div>
                 <PageNavigation bind:currentPage={currentPage} bind:totalPages={totalPages} refresh_function={fetchData}/>
                 {#key flags}

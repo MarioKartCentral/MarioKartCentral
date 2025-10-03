@@ -75,7 +75,7 @@ class ListPostsCommand(Command[PostList]):
 
     async def handle(self, db_wrapper, s3_wrapper):
         filter = self.filter
-        query = """SELECT DISTINCT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code
+        query = """SELECT DISTINCT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned
                     FROM posts p
                     LEFT JOIN players pl ON p.created_by = pl.id
                     WHERE (is_global = :is_global)
@@ -100,10 +100,10 @@ class ListPostsCommand(Command[PostList]):
             async with db.execute(post_query, {**query_dict, "limit": limit, "offset": offset}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country = row
+                    post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country, player_banned = row
                     created_by = None
                     if player_id:
-                        created_by = PlayerBasic(player_id, player_name, player_country)
+                        created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
                     posts.append(PostBasic(post_id, title, bool(is_public), bool(is_global), creation_date, created_by))
 
             count_query = f"SELECT COUNT(*) FROM ({query})"
@@ -126,7 +126,7 @@ class GetPostCommand(Command[Post]):
     tournament_id: int | None
 
     async def handle(self, db_wrapper, s3_wrapper):
-        query = """SELECT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code
+        query = """SELECT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned
                     FROM posts p
                     LEFT JOIN players pl ON p.created_by = pl.id
                     WHERE p.id = :id
@@ -144,10 +144,10 @@ class GetPostCommand(Command[Post]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Post not found", status=404)
-                post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country = row
+                post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country, player_banned = row
                 created_by = None
                 if player_id:
-                    created_by = PlayerBasic(player_id, player_name, player_country)
+                    created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
         s3_body = await s3_wrapper.get_object(s3.POST_BUCKET, f"{self.id}.json")
         if not s3_body:
             raise Problem("Failed to get post S3 data")
