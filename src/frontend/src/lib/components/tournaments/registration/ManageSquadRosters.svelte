@@ -140,6 +140,7 @@
     }
     div.add-roster {
         margin-top: 10px;
+        min-height: 200px;
     }
     div.button {
         margin-top: 5px;

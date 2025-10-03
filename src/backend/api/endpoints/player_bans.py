@@ -67,7 +67,7 @@ async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Respo
     ban_list = await handle(ListBannedPlayersCommand(PlayerBanFilter(player_id=player_id)))
     user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
     if user_id is not None:
-        await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, BANNED, expires_on))
+        await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, BANNED, expires_on, is_ban=True))
     player_ban = await handle(EditPlayerBanCommand(player_id, banned_by_id, body))        
     return JSONResponse(player_ban, status_code=200, background=BackgroundTask(notify))
 
