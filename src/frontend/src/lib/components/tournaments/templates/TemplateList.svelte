@@ -45,7 +45,7 @@
       {/if}
     {/if}
     {#if series_id}
-      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.TEMPLATES.CREATE_TEMPLATE()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES()}</Button>
     {/if}
   </div>
   <Table>

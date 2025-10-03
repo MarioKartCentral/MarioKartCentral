@@ -328,6 +328,7 @@ class UpdateRoleExpirationCommand(Command[None]):
     target_player_id: int
     role: str
     expires_on: int | None = None
+    is_ban: bool = False
 
     async def handle(self, db_wrapper, s3_wrapper) -> None:
         async with db_wrapper.connect() as db:
@@ -352,7 +353,7 @@ class UpdateRoleExpirationCommand(Command[None]):
         
             # to have permission to grant a role, we should have a role which is both higher
             # in the role hierarchy than the role we wish to grant, and has the MANAGE_USER_ROLES
-            # permission.
+            # permission. if it's a ban, we don't need the MANAGE_USER_ROLES permission
             async with db.execute("""
                 SELECT EXISTS(
                     SELECT 1 FROM roles r1
@@ -360,10 +361,10 @@ class UpdateRoleExpirationCommand(Command[None]):
                     JOIN role_permissions rp ON ur.role_id = rp.role_id
                     JOIN permissions p ON rp.permission_id = p.id
                     JOIN roles r2
-                    WHERE ur.user_id = ? AND r2.name = ? AND r1.position < r2.position
-                    AND rp.is_denied = 0 AND p.name = ?
+                    WHERE ur.user_id = :granter_user_id AND r2.name = :role_name AND r1.position < r2.position
+                    AND rp.is_denied = 0 AND (:is_ban = 1 OR p.name = :permission_name)
                 )
-                """, (self.granter_user_id, self.role, permissions.MANAGE_USER_ROLES)) as cursor:
+                """, {'granter_user_id': self.granter_user_id, 'role_name': self.role, 'permission_name': permissions.MANAGE_USER_ROLES, 'is_ban': self.is_ban}) as cursor:
                 row = await cursor.fetchone()
                 can_grant = row is not None and bool(row[0])
 

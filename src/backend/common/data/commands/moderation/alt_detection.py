@@ -105,9 +105,13 @@ class ListAltFlagsCommand(Command[AltFlagList]):
             # Get count for pagination
             count_query = """SELECT COUNT(*) FROM alt_flags.alt_flags
                     WHERE (:type IS NULL OR type = :type)
-                    AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')"""
+                    AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')
+                    AND (:from_date IS NULL OR date >= :from_date)
+                    AND (:to_date IS NULL OR date <= :to_date)"""
             async with db.execute(count_query, {"type": self.filter.type,
-                                                "exclude_fingerprints": self.filter.exclude_fingerprints}) as cursor:
+                                                "exclude_fingerprints": self.filter.exclude_fingerprints,
+                                                "from_date": self.filter.from_date,
+                                                "to_date": self.filter.to_date}) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 count = row[0]
@@ -115,11 +119,13 @@ class ListAltFlagsCommand(Command[AltFlagList]):
 
             get_flags_query = """
                 SELECT f.id, f.type, f.flag_key, f.data, f.score, f.date, l.fingerprint,
-                       u.id as user_id, p.id as player_id, p.name as player_name, p.country_code
+                       u.id as user_id, p.id as player_id, p.name as player_name, p.country_code, p.is_banned
                 FROM (
                     SELECT id FROM alt_flags.alt_flags
                     WHERE (:type IS NULL OR type = :type)
                     AND (:exclude_fingerprints=0 OR type != 'fingerprint_match')
+                    AND (:from_date IS NULL OR date >= :from_date)
+                    AND (:to_date IS NULL OR date <= :to_date)
                     ORDER BY date DESC 
                     LIMIT :limit OFFSET :offset
                 ) as pf
@@ -133,9 +139,11 @@ class ListAltFlagsCommand(Command[AltFlagList]):
             
             flag_dict: dict[int, AltFlag] = {}
             async with db.execute(get_flags_query, {"limit": limit, "offset": offset, "type": self.filter.type,
-                                                    "exclude_fingerprints": self.filter.exclude_fingerprints}) as cursor:
+                                                    "exclude_fingerprints": self.filter.exclude_fingerprints,
+                                                    "from_date": self.filter.from_date,
+                                                    "to_date": self.filter.to_date}) as cursor:
                 rows = await cursor.fetchall()
-                for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, user_id, player_id, player_name, player_country in rows:
+                for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, user_id, player_id, player_name, player_country, player_banned in rows:
                     # Create flag if we haven't seen it yet
                     if flag_id not in flag_dict:
                         flag_dict[flag_id] = AltFlag(flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, [])
@@ -144,7 +152,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                     if user_id is not None:
                         player = None
                         if player_id is not None:
-                            player = PlayerBasic(player_id, player_name, player_country)
+                            player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
                         flag_user = AltFlagUser(user_id, player)
                         flag_dict[flag_id].users.append(flag_user)
 
@@ -153,13 +161,14 @@ class ListAltFlagsCommand(Command[AltFlagList]):
 @dataclass
 class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
     player_id: int
+    exclude_fingerprints: bool
 
     async def handle(self, db_wrapper, s3_wrapper):
         # get alt flag info
         async with db_wrapper.connect(db_name="main", attach=["user_activity", "alt_flags"], readonly=True) as db:
 
             get_user_player_info = """
-                SELECT u.id as user_id, p.id, p.name, p.country_code
+                SELECT u.id as user_id, p.id, p.name, p.country_code, p.is_banned
                 FROM main.users u
                 JOIN main.players p ON u.player_id = p.id
                 WHERE p.id = :player_id
@@ -168,8 +177,8 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player not found", status=404)
-                user_id, player_id, player_name, player_country = row
-                current_player = PlayerBasic(player_id, player_name, player_country)
+                user_id, player_id, player_name, player_country, player_banned = row
+                current_player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
                 current_user = AltFlagUser(user_id, current_player)
                 
 
@@ -180,9 +189,10 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 JOIN alt_flags.user_alt_flags uf ON f.id = uf.flag_id
                 LEFT JOIN user_activity.user_logins l ON f.login_id = l.id
                 WHERE uf.user_id = :user_id
+                AND (:exclude_fingerprints=0 OR f.type != 'fingerprint_match')
                 ORDER BY f.date DESC
             """
-            async with db.execute(get_player_flags_command, {"user_id": user_id}) as cursor:
+            async with db.execute(get_player_flags_command, {"user_id": user_id, "exclude_fingerprints": self.exclude_fingerprints}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     flag_id, type, flag_key, data, score, date, fingerprint_hash = row
@@ -191,7 +201,7 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
 
            # get other players with the same flags
             get_flag_players_command = """
-                SELECT u.id, p.id, p.name, p.country_code, uf2.flag_id
+                SELECT u.id, p.id, p.name, p.country_code, p.is_banned, uf2.flag_id
                 FROM alt_flags.user_alt_flags uf1
                 JOIN alt_flags.user_alt_flags uf2 ON uf1.flag_id = uf2.flag_id
                 JOIN main.users u ON uf2.user_id = u.id
@@ -202,12 +212,12 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
             async with db.execute(get_flag_players_command, {"user_id": user_id}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    user_id, player_id, player_name, player_country, flag_id = row
+                    user_id, player_id, player_name, player_country, player_banned, flag_id = row
                     flag = flag_dict.get(flag_id)
                     if flag:
                         current_player = None
                         if player_id:
-                            current_player = PlayerBasic(player_id, player_name, player_country)
+                            current_player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
                         flag.users.append(AltFlagUser(user_id, current_player))
             
             return list(flag_dict.values())
@@ -283,7 +293,7 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
             async with db.execute("""SELECT ip.id, ip.ip_address, ip.is_mobile, ip.is_vpn,
                                     ip.country, ip.region, ip.city, ip.asn,
                                     uip.user_id, tr.id, tr.date_earliest,
-                                    tr.date_latest, tr.times, p.id, p.name, p.country_code
+                                    tr.date_latest, tr.times, p.id, p.name, p.country_code, p.is_banned
                                     FROM user_activity.ip_addresses ip
                                     JOIN user_activity.user_ips uip ON ip.id = uip.ip_address_id
                                     JOIN user_activity.user_ip_time_ranges tr ON uip.id = tr.user_ip_id
@@ -295,7 +305,7 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                 for row in rows:
                     (ip_id, ip_address, is_mobile, is_vpn, ip_country, ip_region, ip_city, ip_asn,
                         user_id, time_range_id,
-                        date_earliest, date_latest, times, player_id, player_name, player_country) = row
+                        date_earliest, date_latest, times, player_id, player_name, player_country, player_banned) = row
                     if not self.has_ip_permission:
                         ip_address = None
                         ip_city = None
@@ -303,7 +313,7 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                     ip_time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
                     player = None
                     if player_id:
-                        player = PlayerBasic(player_id, player_name, player_country)
+                        player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
                     player_time_range = PlayerIPTimeRange(ip_time_range, player)
                     time_ranges.append(player_time_range)
         ip_history = IPHistory(self.ip_id, time_ranges)

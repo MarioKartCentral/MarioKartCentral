@@ -8,7 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
-  import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
+  import TournamentPlayerName from '$lib/components/tournaments/registration/TournamentPlayerName.svelte';
   export let player: PlayerInfo;
 
   let mode: string | null = null;
@@ -167,9 +167,9 @@
                         {#each placement.partners as partner, i}
                           <div>
                             {#if i + 1 < placement.partners.length}
-                              <PlayerName player_id={partner.player_id} name="{partner.player_name}," />
+                              <TournamentPlayerName player_id={partner.player_id} name="{partner.player_name}," />
                             {:else}
-                              <PlayerName player_id={partner.player_id} name={partner.player_name}/>
+                              <TournamentPlayerName player_id={partner.player_id} name={partner.player_name}/>
                             {/if}
                           </div>
                         {/each}

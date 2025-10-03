@@ -395,6 +395,8 @@ const ja: Translation = {
       IP_USER_COUNT: '{count} users',
       IP_HISTORY: 'IP History',
       NUM_TIMES: '{count} times',
+      EXCLUDE_FINGERPRINTS: 'Exclude fingerprints',
+      INCLUDE_FINGERPRINTS: 'Include fingerprints',
       TABLE: {
         PLAYERS: 'Players',
         TYPE: 'Type',
@@ -586,6 +588,11 @@ const ja: Translation = {
       SEND_PASSWORD_RESET_CONFIRM: 'Are you sure you want to send this player a password reset email?',
       SEND_PASSWORD_RESET_SUCCESS: 'Successfully sent the player a password reset email!',
       SEND_PASSWORD_RESET_FAILED: 'Failed to send player a password reset email',
+      HIDE_HIDDEN_TEAM_REGISTRATIONS: 'Hide hidden entries',
+      SHOW_HIDDEN_TEAM_REGISTRATIONS: 'Show hidden entries',
+      TOGGLE_TEAM_REGISTRATION_VISIBILITY_CONFIRM:
+        "Are you sure you would like to toggle this registration's visibility?",
+      TOGGLE_TEAM_REGISTRATION_VISIBILITY_FAILED: 'Failed to toggle visibility',
     },
     SHADOW_PLAYERS: {
       UNCLAIMED_PLAYER_DESCRIPTION:
@@ -749,6 +756,7 @@ const ja: Translation = {
       REGISTERED: '登録済み',
       MAIN_LANGUAGE: '主な使用言語',
       MANAGERS: 'マネージャー',
+      ROSTER: 'Roster',
       ROSTERS: 'Rosters',
       PLAYER: 'プレイヤー',
       PLAYERS: 'プレイヤー',
@@ -1030,6 +1038,7 @@ const ja: Translation = {
       SIGN_IN_REGISTER_TO_REGISTER: 'MKCentralで大会に参加するには、サインインするか登録する必要があります',
       LINK_DISCORD_TO_REGISTER: 'MKCentralの大会に参加するには、Discordアカウントと連携して下さい。',
       CONFIRM_EMAIL_TO_REGISTER: 'MKCentralの大会に参加するには、Eメールを確認し、プレイヤー登録を完了してください。',
+      INELIGIBLE: 'Ineligible',
     },
     MANAGE: {
       SELECT_TEMPLATE: 'テンプレート選択',
@@ -1087,6 +1096,9 @@ const ja: Translation = {
       TOURNAMENT_RULESET: '大会ルールセット',
       TOURNAMENT_REGISTRATION: '大会申し込み',
       TOURNAMENT_STATUS: '大会状況',
+      SYNC_TEAM_ROSTERS: 'Remove players who leave their team from squads after registrations have closed?',
+      MAX_REPRESENTATIVES: 'Max # of squad representatives',
+      MIN_LESS_THAN_MAX_REPS: 'Min representatives must be less than or equal to max representatives',
     },
     PLACEMENTS: {
       EDIT_PLACEMENTS: '大会結果登録',

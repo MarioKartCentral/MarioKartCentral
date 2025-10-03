@@ -200,6 +200,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 AND t.teams_allowed = 0
                 AND (t.min_squad_size IS NULL OR t.min_squad_size <= 4)
                 AND tp.player_id = ?
+                AND tp.is_invite = 0
                 AND s.is_registered = 1
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
