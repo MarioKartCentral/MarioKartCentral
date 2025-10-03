@@ -8,10 +8,12 @@ export type TournamentPlayer = {
   timestamp: number;
   is_checked_in: boolean;
   is_approved: boolean;
+  is_eligible: boolean;
   mii_name: string | null;
   can_host: boolean;
   name: string;
   country_code: string;
+  is_banned: boolean;
   discord: Discord | null;
   selected_fc_id: number | null;
   friend_codes: FriendCode[];
