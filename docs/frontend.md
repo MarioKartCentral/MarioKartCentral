@@ -737,9 +737,9 @@ To start development:
 
 1. Open the project in VS Code with the Remote-Containers extension
 2. Open the `MarioKartCentral.code-workspace` workspace file
-3. Access the application at http://localhost:5000
-4. Frontend URLs follow the pattern `localhost:5000/[lang]/...`
-5. API endpoints are accessed via `localhost:5000/api/...`
+3. Access the application at http://localhost:5001
+4. Frontend URLs follow the pattern `localhost:5001/[lang]/...`
+5. API endpoints are accessed via `localhost:5001/api/...`
 
 The development environment features hot reloading for both the frontend and backend, meaning code changes are automatically applied without needing to restart the services manually.
 
