@@ -38,7 +38,7 @@
     min_player_count: number | null;
     sort_by_newest: boolean;
     page: number;
-  }
+  };
 
   let filters: TeamFilter = {
     game: null,
@@ -49,20 +49,18 @@
     sort_by_newest: false,
     min_player_count: null,
     page: 1,
-  }
+  };
 
   const min_players = 6;
-  let active_historical_filter = "min_players";
+  let active_historical_filter = 'min_players';
   $: {
-    if(active_historical_filter === "min_players") {
+    if (active_historical_filter === 'min_players') {
       filters.min_player_count = min_players;
       filters.is_historical = false;
-    }
-    else if (active_historical_filter === "active") {
+    } else if (active_historical_filter === 'active') {
       filters.min_player_count = null;
       filters.is_historical = false;
-    }
-    else {
+    } else {
       filters.min_player_count = null;
       filters.is_historical = true;
     }
@@ -72,18 +70,17 @@
     teams = [];
     let url = '/api/registry/teams?';
     let filter_strings = [];
-    if(filters.is_historical) {
+    if (filters.is_historical) {
       filters.is_active = null;
-    }
-    else {
+    } else {
       filters.is_active = true;
     }
-    for(const [key, value] of Object.entries(filters)) {
-      if(value !== null) {
+    for (const [key, value] of Object.entries(filters)) {
+      if (value !== null) {
         filter_strings.push(`${key}=${value}`);
       }
     }
-    url += filter_strings.join("&");
+    url += filter_strings.join('&');
     const res = await fetch(url);
     if (res.status === 200) {
       const body: TeamList = await res.json();
@@ -109,14 +106,14 @@
 <form on:submit|preventDefault={search}>
   <div class="flex">
     <div class="option">
-      <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode}/>
+      <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode} />
     </div>
     <div class="option">
-      <input class="search" bind:value={filters.name_or_tag} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()}/>
+      <input class="search" bind:value={filters.name_or_tag} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()} />
     </div>
     <div class="option">
       <select bind:value={active_historical_filter}>
-        <option value="min_players">{$LL.TEAMS.LIST.ACTIVE_TEAMS_MIN_PLAYERS({count: min_players})}</option>
+        <option value="min_players">{$LL.TEAMS.LIST.ACTIVE_TEAMS_MIN_PLAYERS({ count: min_players })}</option>
         <option value="active">{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
         <option value="historical">{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
       </select>
@@ -132,8 +129,8 @@
     </div>
   </div>
 </form>
-{$LL.TEAMS.LIST.TEAM_COUNT({count: totalTeams})}
-<PageNavigation bind:currentPage={filters.page} bind:totalPages={totalPages} refresh_function={fetchData}/>
+{$LL.TEAMS.LIST.TEAM_COUNT({ count: totalTeams })}
+<PageNavigation bind:currentPage={filters.page} bind:totalPages refresh_function={fetchData} />
 <Table>
   <col class="tag" />
   <col class="name" />
@@ -151,7 +148,9 @@
     {#each teams as team, i}
       <tr class="row-{i % 2}">
         <td>
-          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}"> <TagBadge tag={team.tag} color={team.color}/> </a>
+          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+            <TagBadge tag={team.tag} color={team.color} />
+          </a>
         </td>
         <td>
           <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
@@ -176,7 +175,7 @@
     {/each}
   </tbody>
 </Table>
-<PageNavigation bind:currentPage={filters.page} bind:totalPages={totalPages} refresh_function={fetchData}/>
+<PageNavigation bind:currentPage={filters.page} bind:totalPages refresh_function={fetchData} />
 
 <style>
   col.tag {

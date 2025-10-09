@@ -20,10 +20,10 @@
 
 {#if invites}
   <Section header={$LL.INVITES.TEAM_INVITES()}>
-    <TeamInvites invites={invites.team_invites}/>
+    <TeamInvites invites={invites.team_invites} />
   </Section>
 
   <Section header={$LL.INVITES.TOURNAMENT_INVITES()}>
-    <TournamentInvites invites={invites.tournament_invites}/>
+    <TournamentInvites invites={invites.tournament_invites} />
   </Section>
 {/if}

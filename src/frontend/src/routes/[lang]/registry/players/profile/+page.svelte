@@ -50,7 +50,7 @@
     permissions.edit_player,
     permissions.view_alt_flags,
     permissions.edit_user,
-  ]
+  ];
 
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
@@ -84,22 +84,22 @@
 
   async function sendPasswordReset() {
     let conf = window.confirm($LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_CONFIRM());
-    if(!conf) return;
+    if (!conf) return;
     const payload = {
       player_id: player.id,
     };
     const endpoint = '/api/user/send_player_password_reset';
     const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
     const result = await response.json();
 
     if (response.status < 300) {
-        alert($LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_SUCCESS());
+      alert($LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_SUCCESS());
     } else {
-        alert(`${$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_FAILED()}: ${result['title']}`);
+      alert(`${$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_FAILED()}: ${result['title']}`);
     }
   }
 </script>
@@ -113,7 +113,7 @@
     <PlayerProfileBan ban_info={player.ban_info} />
   {/if}
 
-  {#if mod_permissions.some(p => check_permission(user_info, p))}
+  {#if mod_permissions.some((p) => check_permission(user_info, p))}
     <Section header={$LL.NAVBAR.MODERATOR()}>
       <div slot="header_content">
         {#if check_permission(user_info, permissions.ban_player)}
@@ -145,8 +145,10 @@
               />
             {/key}
           </Dialog>
-          <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}">{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button>
-          <Button on:click={() => show_notes = !show_notes}>
+          <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}"
+            >{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button
+          >
+          <Button on:click={() => (show_notes = !show_notes)}>
             {#if show_notes}
               {$LL.PLAYERS.PROFILE.HIDE_PLAYER_NOTES()}
             {:else}
@@ -159,18 +161,20 @@
           {/if}
         {/if}
         {#if check_permission(user_info, permissions.edit_user) && player.user_settings}
-          <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}">{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button>
+          <Button href="/{$page.params.lang}/moderator/users/edit?id={player.user_settings.user_id}"
+            >{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</Button
+          >
         {/if}
         {#if check_permission(user_info, permissions.view_alt_flags)}
-          <PlayerAltFlags bind:this={altDialog} player_id={player.id}/>
+          <PlayerAltFlags bind:this={altDialog} player_id={player.id} />
           <Button on:click={altDialog.open}>{$LL.MODERATOR.ALT_DETECTION.ALT_FLAGS()}</Button>
         {/if}
         {#if check_permission(user_info, permissions.view_user_logins)}
-          <PlayerLogins bind:this={loginDialog} player_id={player.id}/>
+          <PlayerLogins bind:this={loginDialog} player_id={player.id} />
           <Button on:click={loginDialog.open}>{$LL.MODERATOR.ALT_DETECTION.LOGIN_HISTORY()}</Button>
         {/if}
         {#if check_permission(user_info, permissions.view_basic_ip_info)}
-          <PlayerIpDialog bind:this={ipDialog} player_id={player.id}/>
+          <PlayerIpDialog bind:this={ipDialog} player_id={player.id} />
           <Button on:click={ipDialog.open}>{$LL.MODERATOR.ALT_DETECTION.IP_HISTORY()}</Button>
         {/if}
       </div>
@@ -186,5 +190,5 @@
     <ClaimPlayer {player} />
   {/if}
 {:else if !player_found}
-    {$LL.PLAYERS.PROFILE.PLAYER_NOT_FOUND()}
+  {$LL.PLAYERS.PROFILE.PLAYER_NOT_FOUND()}
 {/if}
