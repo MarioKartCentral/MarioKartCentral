@@ -17,7 +17,7 @@
         if(!player || is_privileged) return [];
         // get all games where we have reached the FC limit
         let maxed_types = Object.keys(fc_limits).filter(
-            (type) => player.friend_codes.filter((fc) => fc.type === type && fc.is_active).length >= fc_limits[type]
+            (type) => player!.friend_codes.filter((fc) => fc.type === type && fc.is_active).length >= fc_limits[type]
         );
         return maxed_types;
     }

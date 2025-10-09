@@ -85,6 +85,7 @@ function getEntriesForLocale(locale) {
     `/${locale}/user/privacy-policy`,
     `/${locale}/user/reset-password`,
     `/${locale}/user/terms`,
+    `/${locale}/user/transfer-account`,
   ];
 }
 

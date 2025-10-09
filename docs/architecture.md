@@ -37,6 +37,7 @@ flowchart LR
 The system consists of several key components that work together:
 
 ### Reverse Proxy
+
 - All traffic to our website goes through a [Cloudflare Worker](https://developers.cloudflare.com/workers/)
 - Routes requests to backend or frontend based on UI
 - Handles language detection and redirects
@@ -44,13 +45,15 @@ The system consists of several key components that work together:
 - Code can be found in [/src/cf-worker/src/index.ts](/src/cf-worker/src/index.ts)
 
 ### Frontend
+
 - Built with [Svelte](https://svelte.dev/) and TypeScript
-- Uses [TailwindCSS](https://tailwindcss.com/) and [Flowbite](https://flowbite.com/) for UI components 
+- Uses [TailwindCSS](https://tailwindcss.com/) and [Flowbite](https://flowbite.com/) for UI components
 - Uses [typesafe-i18n](https://github.com/ivanhofer/typesafe-i18n) for internationalization
 - Statically generated and served as static files in production
 - Code can be found in [`/src/frontend/`](/src/frontend/)
 
 ### Backend API
+
 - RESTful web API that handles all interactions with the database
 - Built with Python using the [Starlette](https://www.starlette.io/) framework
 - Automatically generated OpenAPI schema
@@ -58,21 +61,25 @@ The system consists of several key components that work together:
 - For detailed implementation patterns, see [Backend Architecture](backend.md)
 
 ### Database
+
 - SQLite database which lives on the same file system as the backend API
 - Used for storing the majority of data required to run the site
 - For complete schema details, see [Database Schema](database.md)
 - For details on accessing data, see [Backend Architecture: Storage](backend.md#storage)
 
 ### Object Storage
+
 - Cloud-hosted object storage for storing large files such as images, large text descriptions etc.
 - Assumes an S3-Compatible API, however in production we are using [Wasabi](https://wasabi.com/cloud-object-storage) rather than AWS
 - For details on how this integrates with the backend, see [Backend Architecture: Storage](backend.md#storage)
 
 ### Email Service
+
 - Handles sending emails for account verification, password resets, and notifications
 - Supports both Amazon SES and SMTP delivery methods
 
 ### Background Worker
+
 - Python service for scheduled jobs
 - Does not expose any endpoints to users
 - Directly accesses the SQLite database
@@ -97,9 +104,9 @@ flowchart LR
         Mailpit["**Email Testing**<br>*Mailpit*"]
     end
 
-    User -->|"localhost:5000"| Worker
+    User -->|"localhost:5001"| Worker
     User -->|"localhost:9001"| S3
-    User -->|"localhost:7000"| SQLiteWeb
+    User -->|"localhost:7001"| SQLiteWeb
     User -->|"localhost:8025"| Mailpit
 
     Worker -->|"/api/*"| Backend
@@ -114,6 +121,7 @@ flowchart LR
 ```
 
 In the local development environment, all services are orchestrated using [Docker Compose](https://docs.docker.com/compose/). The services listed at the start of this document are implemented as follows:
+
 - **Reverse Proxy**: Cloudflare worker emulated using [Wrangler](https://developers.cloudflare.com/workers/wrangler/).
 - **Frontend**: Svelte application served by [Vite](https://vite.dev/), enabling hot-module reloading
 - **Backend API**: Python web server hosted inside a docker container
@@ -123,14 +131,16 @@ In the local development environment, all services are orchestrated using [Docke
 - **Email Service**: [Mailpit](https://mailpit.axllent.org/) captures all outgoing emails during development for testing without sending real emails
 
 In addition we have the following services running:
+
 - A web-based SQLite database browser for interacting with the database [sqlite-web](https://github.com/coleifer/sqlite-web)
 - An API tester, [Swagger UI](https://swagger.io/tools/swagger-ui/), which provides a nice user interface for testing the backend API
 - A web-based UI for MinIO, [MinIO Console](https://github.com/minio/console) is set up to explore the objects
 
 The following routes are exposed for interacting with the development environment:
-- Website (via Cloudflare Worker): http://localhost:5000/
-- Swagger UI: http://localhost:5000/swagger/
-- SQLite Web: http://localhost:7000/
+
+- Website (via Cloudflare Worker): http://localhost:5001/
+- Swagger UI: http://localhost:5001/swagger/
+- SQLite Web: http://localhost:7001/
 - MinIO Console: http://localhost:9001/
 - Mailpit Email Interface: http://localhost:8025/
 
@@ -141,22 +151,22 @@ For detailed setup instructions, see [Developer Onboarding](onboarding.md).
 ```mermaid
 flowchart LR
     User(("End User"))
-    
+
     subgraph "Cloudflare"
         Worker["**Reverse Proxy**<br>*Cloudflare Worker*"]
     end
-    
+
     subgraph "Hetzner VPS with Dokku"
         Backend["**Backend API**<br>*Starlette (Python)*"]
         DB["**Database**<br>*SQLite*"]
         BGWorker["**Background Worker**<br>*Python*"]
     end
-    
+
     subgraph "Wasabi S3"
         Assets["Assets Storage"]
         StaticSite["Static Frontend<br/>Prebuilt Svelte Site"]
     end
-    
+
     subgraph "AWS"
         SES["**Email Service**<br>*Amazon SES*"]
     end
@@ -171,6 +181,7 @@ flowchart LR
 ```
 
 In production, we have a [Hetzner VPS](https://www.hetzner.com/cloud/) running [Dokku](https://dokku.com/) to manage the apps. The core services are implemented as follows:
+
 - **Reverse Proxy**: Cloudflare worker deployed and running on Cloudflare
 - **Frontend**: Svelte app is statically generated and uploaded to the object storage with routing fully handled by the Cloudflare worker
 - **Backend API**: Python web server hosted inside a docker container managed by Dokku
