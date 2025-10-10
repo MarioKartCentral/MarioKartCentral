@@ -6,4 +6,4 @@ USER node
 COPY --chown=node:node ["package.json", "package-lock.json*", "./"]
 RUN npm install
 COPY . .
-CMD npx wrangler dev --port 5000 --ip 0.0.0.0 --local
+CMD npx wrangler dev --port 5000 --ip 0.0.0.0
