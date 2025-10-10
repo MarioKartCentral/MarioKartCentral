@@ -1,16 +1,16 @@
 <script lang="ts">
   import type { Notification } from '$lib/types/notification';
-  import Section from "$lib/components/common/Section.svelte";
+  import Section from '$lib/components/common/Section.svelte';
   import LL from '$i18n/i18n-svelte';
-  import PageNavigation from "$lib/components/common/PageNavigation.svelte";
-  import NotificationContent from "$lib/components/common/NotificationContent.svelte";
-  import { goto } from "$app/navigation";
-  import Button from "$lib/components/common/buttons/Button.svelte";
-  import { have_unread_notification, user } from "$lib/stores/stores";
-  import { DotsVerticalOutline } from "flowbite-svelte-icons";
+  import PageNavigation from '$lib/components/common/PageNavigation.svelte';
+  import NotificationContent from '$lib/components/common/NotificationContent.svelte';
+  import { goto } from '$app/navigation';
+  import Button from '$lib/components/common/buttons/Button.svelte';
+  import { have_unread_notification, user } from '$lib/stores/stores';
+  import { DotsVerticalOutline } from 'flowbite-svelte-icons';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
-  import DropdownItem from "$lib/components/common/DropdownItem.svelte";
-  import type { UserInfo } from "$lib/types/user-info";
+  import DropdownItem from '$lib/components/common/DropdownItem.svelte';
+  import type { UserInfo } from '$lib/types/user-info';
 
   const maxNotificationsPerPage = 50;
   const dropdownOpenStatus: { [key: string]: boolean } = {};
@@ -27,19 +27,22 @@
       }));
     }
     isInitialLoad = false;
-  })
+  });
 
   // subscribing to user store allows us to only fetch notifications if the user is logged in
   let user_info: UserInfo;
   user.subscribe((value) => {
-      user_info = value;
+    user_info = value;
   });
   $: user_info?.id !== null && fetchNotifications();
 
-  $: pageCount = Math.ceil(notifications.length / maxNotificationsPerPage)
-  $: notificationList = notifications.slice((currentPage-1)*maxNotificationsPerPage, currentPage*maxNotificationsPerPage)
-  $: hasUnread = notifications.some(n => !n.is_read)
-  $: isLoggedIn = user_info.id !== null
+  $: pageCount = Math.ceil(notifications.length / maxNotificationsPerPage);
+  $: notificationList = notifications.slice(
+    (currentPage - 1) * maxNotificationsPerPage,
+    currentPage * maxNotificationsPerPage,
+  );
+  $: hasUnread = notifications.some((n) => !n.is_read);
+  $: isLoggedIn = user_info.id !== null;
 
   async function fetchNotifications() {
     const res = await fetch('/api/notifications/list');
@@ -63,7 +66,7 @@
         is_read: n.id === id ? isRead : n.is_read,
       }));
     }
-    have_unread_notification.update((n) => !isRead ? n+1 : n-1);
+    have_unread_notification.update((n) => (!isRead ? n + 1 : n - 1));
   }
 
   async function makeAllNotificationsAsRead() {
@@ -85,12 +88,12 @@
   }
 
   function handleChangeStatus(id: number, is_read: boolean) {
-    changeReadStatus(id, !is_read)
-    dropdownOpenStatus[id] = false
+    changeReadStatus(id, !is_read);
+    dropdownOpenStatus[id] = false;
   }
 
   async function handleClick(id: number, link: string, is_read: boolean) {
-    if(!is_read) {
+    if (!is_read) {
       await changeReadStatus(id, true);
     }
     goto(link);
@@ -112,25 +115,28 @@
         {/if}
       </div>
       <div class="notification-count">
-        <PageNavigation bind:currentPage={currentPage} bind:totalPages={pageCount} refresh_function={() => {}}/>
-        {notifications.length} {$LL.NAVBAR.NOTIFICATIONS()}
+        <PageNavigation bind:currentPage bind:totalPages={pageCount} refresh_function={() => {}} />
+        {notifications.length}
+        {$LL.NAVBAR.NOTIFICATIONS()}
       </div>
       {#if notifications.length}
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
       {/if}
-      {#each notificationList as { id, type, content_id, content_args, link, created_date, is_read}}
+      {#each notificationList as { id, type, content_id, content_args, link, created_date, is_read }}
         <button class="content-wrapper hover:bg-primary-700" on:click={() => handleClick(id, link, is_read)}>
-          <NotificationContent {type} {content_id} {content_args} {created_date} {is_read}/>
+          <NotificationContent {type} {content_id} {content_args} {created_date} {is_read} />
         </button>
         <button>
-          <DotsVerticalOutline class="hover:text-yellow-300"/>
+          <DotsVerticalOutline class="hover:text-yellow-300" />
           <Dropdown bind:open={dropdownOpenStatus[id]}>
-            <DropdownItem on:click={() => handleChangeStatus(id, is_read)}>{is_read ? $LL.NOTIFICATION.MARK_UNREAD() : $LL.NOTIFICATION.MARK_READ()}</DropdownItem>
+            <DropdownItem on:click={() => handleChangeStatus(id, is_read)}
+              >{is_read ? $LL.NOTIFICATION.MARK_UNREAD() : $LL.NOTIFICATION.MARK_READ()}</DropdownItem
+            >
           </Dropdown>
         </button>
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
       {/each}
-      <PageNavigation bind:currentPage={currentPage} bind:totalPages={pageCount} refresh_function={() => {}}/>
+      <PageNavigation bind:currentPage bind:totalPages={pageCount} refresh_function={() => {}} />
     </Section>
   {/if}
 {/if}

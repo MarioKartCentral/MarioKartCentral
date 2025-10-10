@@ -77,24 +77,22 @@
     const res = await fetch(`/api/registry/players/bans?player_id=${player.id}`);
     if (res.status === 200) {
       const data: BanListData = await res.json();
-      if (data.ban_count === 1)
-        banInfo = data.ban_list[0];
+      if (data.ban_count === 1) banInfo = data.ban_list[0];
     }
-  };
+  }
 
   function handleCancel() {
     player = null;
-  };
+  }
 
   function getQueryString(filter: BanFilter | BanHistoricalFilter) {
     let params = [];
     let key: keyof (BanFilter | BanHistoricalFilter);
     for (key in filter) {
-      if (filter[key] !== null)
-        params.push(`${key}=${filter[key]}`);
+      if (filter[key] !== null) params.push(`${key}=${filter[key]}`);
     }
-    return params.join("&");
-  };
+    return params.join('&');
+  }
 
   async function updateBanList(isPageChange: boolean) {
     banFilter.page = isPageChange ? currentBanPage : 1;
@@ -102,13 +100,12 @@
     if (res.status === 200) {
       banListData = await res.json();
     }
-  };
+  }
   async function updateHistoricalBanList(isPageChange: boolean) {
     banHistoricalFilter.page = isPageChange ? currentHistPage : 1;
     const res = await fetch(`/api/registry/players/historicalBans?${getQueryString(banHistoricalFilter)}`);
-    if (res.status === 200)
-      historicalBanListData = await res.json();
-  };
+    if (res.status === 200) historicalBanListData = await res.json();
+  }
 
   onMount(async () => {
     updateBanList(false);
@@ -122,39 +119,50 @@
 
 {#if check_permission(user_info, permissions.ban_player)}
   <Section header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-    <PlayerSearch bind:player={player} is_banned={false}/>
+    <PlayerSearch bind:player is_banned={false} />
     {#if player}
       {#if banInfo}
         <strong>{$LL.PLAYER_BAN.THE_PLAYER_IS_ALREADY_BANNED()}</strong>
-        <hr/>
-        <ViewEditBan {banInfo}/>
+        <hr />
+        <ViewEditBan {banInfo} />
       {:else}
-        <br/>
-        <BanPlayerForm playerId={player.id} playerName={player.name} {handleCancel}/>
+        <br />
+        <BanPlayerForm playerId={player.id} playerName={player.name} {handleCancel} />
       {/if}
     {/if}
   </Section>
 
   <Section header={$LL.PLAYER_BAN.LIST_OF_BANNED_PLAYERS()}>
-    <BanListFilter bind:filter={banFilter} handleSubmit={() => updateBanList(false)}/>
+    <BanListFilter bind:filter={banFilter} handleSubmit={() => updateBanList(false)} />
     <div class="player-count">
-      <PageNavigation bind:currentPage={currentBanPage} bind:totalPages={banListData.page_count} refresh_function={() => updateBanList(true)}/>
-      {banListData.ban_count} {$LL.PLAYER_BAN.PLAYER(banListData.ban_count)}
+      <PageNavigation
+        bind:currentPage={currentBanPage}
+        bind:totalPages={banListData.page_count}
+        refresh_function={() => updateBanList(true)}
+      />
+      {banListData.ban_count}
+      {$LL.PLAYER_BAN.PLAYER(banListData.ban_count)}
     </div>
     <BanList banInfoDetailedArray={banListData.ban_list} />
   </Section>
 
   <Section header={$LL.PLAYER_BAN.LIST_OF_HISTORICAL_BANS()}>
-    <BanListHistoricalFilter bind:filter={banHistoricalFilter} handleSubmit={() => updateHistoricalBanList(false)}/>
+    <BanListHistoricalFilter bind:filter={banHistoricalFilter} handleSubmit={() => updateHistoricalBanList(false)} />
     <div class="player-count">
-      <PageNavigation bind:currentPage={currentHistPage} bind:totalPages={historicalBanListData.page_count} refresh_function={() => updateHistoricalBanList(true)}/>
-      {historicalBanListData.ban_count} {$LL.PLAYER_BAN.PLAYER(historicalBanListData.ban_count)}
+      <PageNavigation
+        bind:currentPage={currentHistPage}
+        bind:totalPages={historicalBanListData.page_count}
+        refresh_function={() => updateHistoricalBanList(true)}
+      />
+      {historicalBanListData.ban_count}
+      {$LL.PLAYER_BAN.PLAYER(historicalBanListData.ban_count)}
     </div>
-    <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical/>
+    <BanList banInfoDetailedArray={historicalBanListData.ban_list} isHistorical />
   </Section>
 {:else}
   {$LL.COMMON.NO_PERMISSION()}
 {/if}
+
 <style>
   hr {
     margin: 10px 0px;

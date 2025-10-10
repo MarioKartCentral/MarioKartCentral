@@ -41,11 +41,14 @@
   $: unselected_players = all_players.filter((p) => !players.some((p2) => p2.player_id === p.player_id));
   $: num_captains = players.filter((p) => p.is_captain).length;
   $: num_reps = players.filter((p) => p.is_captain || p.is_representative).length;
-  $: can_register = ((!tournament.min_squad_size || num_captains === 1) && !(tournament.min_representatives && num_reps !== tournament.min_representatives) 
-    && (!tournament.team_members_only || !tournament.min_squad_size || players.length >= tournament.min_squad_size) && (!tournament.max_squad_size || players.length <= tournament.max_squad_size));
+  $: can_register =
+    (!tournament.min_squad_size || num_captains === 1) &&
+    !(tournament.min_representatives && num_reps !== tournament.min_representatives) &&
+    (!tournament.team_members_only || !tournament.min_squad_size || players.length >= tournament.min_squad_size) &&
+    (!tournament.max_squad_size || players.length <= tournament.max_squad_size);
 
   onMount(async () => {
-    if(is_privileged) return; 
+    if (is_privileged) return;
     const res = await fetch(
       `/api/registry/teams/getRegisterable?tournament_id=${tournament.id}&game=${tournament.game}&mode=${tournament.mode}`,
     );
@@ -58,28 +61,33 @@
 
   async function selectRosterFromSearch(roster: TeamRoster | null) {
     selected_roster = null;
-    if(!roster) return;
-    if(selected_rosters.some((r) => r.id == roster.id)) return;
+    if (!roster) return;
+    if (selected_rosters.some((r) => r.id == roster.id)) return;
 
     // do an API request to get the players in the team
     const url = `/api/registry/teams/${roster.team_id}`;
     const res = await fetch(url);
-    if(res.status !== 200) {
-        alert(`Error ${res.status}`);
+    if (res.status !== 200) {
+      alert(`Error ${res.status}`);
     }
     const body = await res.json();
     let team: Team = body;
-    for(let r of team.rosters) {
-        if(r.id === roster.id) {
-            roster.players = r.players;
-        }
+    for (let r of team.rosters) {
+      if (r.id === roster.id) {
+        roster.players = r.players;
+      }
     }
     selected_rosters.push(roster);
-    for(let p of roster.players) {
-        if(players.some((p2) => p2.player_id === p.player_id)) {
-            continue;
-        }
-        players.push({...p, is_captain: p.is_manager, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false});
+    for (let p of roster.players) {
+      if (players.some((p2) => p2.player_id === p.player_id)) {
+        continue;
+      }
+      players.push({
+        ...p,
+        is_captain: p.is_manager,
+        is_representative: false,
+        is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false,
+      });
     }
     selected_rosters = selected_rosters;
     players = players;
@@ -90,12 +98,17 @@
       return;
     }
     selected_rosters.push(roster);
-    for(let p of roster.players) {
+    for (let p of roster.players) {
       // if player is already in our list don't add them
-      if(players.some((p2) => p2.player_id === p.player_id)) {
+      if (players.some((p2) => p2.player_id === p.player_id)) {
         continue;
       }
-      players.push({...p, is_captain: p.is_manager, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false});
+      players.push({
+        ...p,
+        is_captain: p.is_manager,
+        is_representative: false,
+        is_bagger_clause: tournament.bagger_clause_enabled ? p.is_bagger_clause : false,
+      });
     }
     // rosters = rosters;
     players = players;
@@ -111,12 +124,12 @@
   }
 
   function toggleCaptain(player: TeamTournamentPlayer) {
-    if(player.is_captain) {
+    if (player.is_captain) {
       player.is_captain = false;
       players = players;
       return;
     }
-    for(let p of players) {
+    for (let p of players) {
       p.is_captain = false;
     }
     player.is_captain = true;
@@ -140,9 +153,14 @@
   }
 
   function addPlayer(player: RosterPlayer | null) {
-    if(!player) return;
-    if(!players.some((p) => p.player_id === player.player_id)) {
-      players.push({...player, is_captain: false, is_representative: false, is_bagger_clause: tournament.bagger_clause_enabled ? player.is_bagger_clause : false});
+    if (!player) return;
+    if (!players.some((p) => p.player_id === player.player_id)) {
+      players.push({
+        ...player,
+        is_captain: false,
+        is_representative: false,
+        is_bagger_clause: tournament.bagger_clause_enabled ? player.is_bagger_clause : false,
+      });
     }
     selected_player = null;
     players = players;
@@ -155,7 +173,7 @@
       squad_name: selected_rosters[0].name,
       squad_tag: selected_rosters[0].tag,
       roster_ids: selected_rosters.map((r) => r.id),
-      players: players
+      players: players,
     };
     const endpoint = `/api/tournaments/${tournament.id}/${is_privileged ? 'forceRegisterTeam' : 'registerTeam'}`;
     const response = await fetch(endpoint, {
@@ -172,19 +190,26 @@
       alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_FAILED()}: ${result['title']}`);
     }
   }
-
 </script>
 
 {#if is_privileged || (check_registrations_open(tournament) && rosters.length)}
   <div class="team_register">
     <div>
       <b>
-        {is_privileged ? $LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_TEAM() : $LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TEAM()}
+        {is_privileged
+          ? $LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_TEAM()
+          : $LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TEAM()}
       </b>
     </div>
     {#if is_privileged}
-      <RosterSearch bind:roster={selected_roster} game={tournament.game} mode={tournament.mode} is_active={is_privileged ? null : true}
-      is_historical={null} on:change={() => selectRosterFromSearch(selected_roster)}/>
+      <RosterSearch
+        bind:roster={selected_roster}
+        game={tournament.game}
+        mode={tournament.mode}
+        is_active={is_privileged ? null : true}
+        is_historical={null}
+        on:change={() => selectRosterFromSearch(selected_roster)}
+      />
     {:else if unselected_rosters.length}
       <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>
         <option value={null}>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_TEAM()}</option>
@@ -202,27 +227,27 @@
         </div>
         {#each selected_rosters as roster, i}
           <div>
-            <TagBadge tag={roster.tag} color={roster.color}/>
+            <TagBadge tag={roster.tag} color={roster.color} />
             {roster.name}
             {#if i === 0}
-              <PrimaryBadge/>
+              <PrimaryBadge />
             {/if}
-            <CancelButton on:click={() => removeRoster(roster)}/>
+            <CancelButton on:click={() => removeRoster(roster)} />
           </div>
         {/each}
       </div>
       <div class="section">
         <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_COLOR_SELECT()}</div>
-        <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color}/>
+        <ColorSelect tag={selected_rosters[0].tag} bind:color={squad_color} />
       </div>
       {#if players.length}
         <div class="section">
           <b>{$LL.TOURNAMENTS.REGISTRATIONS.SELECTED_PLAYERS()}</b>
           <Table>
-            <col class="country"/>
-            <col class="name"/>
+            <col class="country" />
+            <col class="name" />
             <col class="friend-codes mobile-hide" />
-            <col class="actions"/>
+            <col class="actions" />
             <thead>
               <tr>
                 <th />
@@ -235,26 +260,40 @@
               {#each players as player, i}
                 <tr class="row-{i % 2}">
                   <td>
-                    <Flag country_code={player.country_code}/>
+                    <Flag country_code={player.country_code} />
                   </td>
                   <td>
-                    <TournamentPlayerName player_id={player.player_id} name={player.name} is_squad_captain={player.is_captain}
-                    is_representative={player.is_representative} is_bagger_clause={player.is_bagger_clause} is_banned={player.is_banned}/>
+                    <TournamentPlayerName
+                      player_id={player.player_id}
+                      name={player.name}
+                      is_squad_captain={player.is_captain}
+                      is_representative={player.is_representative}
+                      is_bagger_clause={player.is_bagger_clause}
+                      is_banned={player.is_banned}
+                    />
                   </td>
                   <td class="mobile-hide">
-                    <FriendCodeDisplay friend_codes={player.friend_codes}/>
+                    <FriendCodeDisplay friend_codes={player.friend_codes} />
                   </td>
                   <td>
-                    <ChevronDownSolid class="cursor-pointer"/>
+                    <ChevronDownSolid class="cursor-pointer" />
                     <Dropdown>
-                      <DropdownItem on:click={() => toggleCaptain(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_CAPTAIN()}</DropdownItem>
+                      <DropdownItem on:click={() => toggleCaptain(player)}
+                        >{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_CAPTAIN()}</DropdownItem
+                      >
                       {#if !player.is_captain}
-                        <DropdownItem on:click={() => toggleRep(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_REPRESENTATIVE()}</DropdownItem>
+                        <DropdownItem on:click={() => toggleRep(player)}
+                          >{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_REPRESENTATIVE()}</DropdownItem
+                        >
                       {/if}
                       {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
-                        <DropdownItem on:click={() => toggleBagger(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_BAGGER()}</DropdownItem>
+                        <DropdownItem on:click={() => toggleBagger(player)}
+                          >{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_BAGGER()}</DropdownItem
+                        >
                       {/if}
-                      <DropdownItem on:click={() => removePlayer(player)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
+                      <DropdownItem on:click={() => removePlayer(player)}
+                        >{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem
+                      >
                     </Dropdown>
                   </td>
                 </tr>
@@ -285,20 +324,27 @@
         {/if}
         {#if tournament.min_representatives && num_reps !== tournament.min_representatives}
           <div>
-            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_REPRESENTATIVES({min_representatives: tournament.min_representatives})}
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_REPRESENTATIVES({
+              min_representatives: tournament.min_representatives,
+            })}
           </div>
         {/if}
         {#if tournament.team_members_only && tournament.min_squad_size && players.length < tournament.min_squad_size}
           <div>
-            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_MORE_PLAYERS({count: tournament.min_squad_size - players.length})}
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_MORE_PLAYERS({ count: tournament.min_squad_size - players.length })}
           </div>
         {/if}
         {#if tournament.max_squad_size && players.length > tournament.max_squad_size}
           <div>
-            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_LESS_PLAYERS({max_squad_size: tournament.max_squad_size, count: tournament.max_squad_size - players.length})}
+            {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_LESS_PLAYERS({
+              max_squad_size: tournament.max_squad_size,
+              count: tournament.max_squad_size - players.length,
+            })}
           </div>
         {/if}
-        <Button on:click={register} {working} disabled={!can_register}>{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button>
+        <Button on:click={register} {working} disabled={!can_register}
+          >{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button
+        >
       </div>
     {/if}
   </div>

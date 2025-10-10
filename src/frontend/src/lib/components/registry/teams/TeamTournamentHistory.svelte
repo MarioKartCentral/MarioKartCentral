@@ -64,8 +64,10 @@
         return item.date_end <= Date.parse(String(to)) / 1000;
       });
     }
-    if(roster_id) {
-      filtered_team_placements = filtered_team_placements.filter((item) => item.rosters.some((r) => r.roster_id === roster_id));
+    if (roster_id) {
+      filtered_team_placements = filtered_team_placements.filter((item) =>
+        item.rosters.some((r) => r.roster_id === roster_id),
+      );
     }
 
     filtered_team_placements = filtered_team_placements.sort((a, b) => {
@@ -82,7 +84,7 @@
     <div class="w-full m-auto">
       <form on:submit|preventDefault={filterData}>
         <div class="flex flex-row flex-wrap items-center justify-center gap-2">
-          <GameModeSelect bind:game bind:mode all_option hide_labels is_team inline/>
+          <GameModeSelect bind:game bind:mode all_option hide_labels is_team inline />
           <div class="flex flex-row flex-wrap items-center justify-center gap-2">
             <div class="flex flex-row items-center">
               <div class="w-12 mx-2">{$LL.COMMON.FROM()}</div>
@@ -98,7 +100,8 @@
                 <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
                 {#each team.rosters as roster}
                   <option value={roster.id}>
-                    {roster.name} ({game_abbreviations[roster.game]} {mode_strings[roster.mode.toUpperCase()]()})
+                    {roster.name} ({game_abbreviations[roster.game]}
+                    {mode_strings[roster.mode.toUpperCase()]()})
                   </option>
                 {/each}
               </select>
@@ -111,10 +114,10 @@
       </form>
       <div>
         <Table>
-          <col class="tournament"/>
-          <col class="team mobile-hide"/>
-          <col class="date mobile-hide"/>
-          <col class="placement"/>
+          <col class="tournament" />
+          <col class="team mobile-hide" />
+          <col class="date mobile-hide" />
+          <col class="placement" />
           <thead>
             <tr>
               <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
@@ -125,21 +128,21 @@
           </thead>
           <tbody>
             {#each filtered_team_placements as placement, i}
-              <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
+              <tr
+                class={placement.placement && placement.placement <= 3
+                  ? podium_style[placement.placement]
+                  : `row-${i % 2}`}
+              >
                 <td>
-                  <a
-                    href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
-                  >
+                  <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                     {placement.tournament_name}
                   </a>
                 </td>
-                  <td class="mobile-hide">
-                    <a
-                      href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
-                    >
-                      {placement.squad_name}
-                    </a>
-                  </td>
+                <td class="mobile-hide">
+                  <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+                    {placement.squad_name}
+                  </a>
+                </td>
 
                 <td class="mobile-hide">
                   {toDate(placement.date_start)}
@@ -149,7 +152,7 @@
                   {#if placement.is_disqualified}
                     {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
                   {:else}
-                    {placement.placement ? $LL.COMMON.ORDINAL_SUFFIX({val: placement.placement}) : '-'}
+                    {placement.placement ? $LL.COMMON.ORDINAL_SUFFIX({ val: placement.placement }) : '-'}
                     {placement.placement_description ? ' - ' + placement.placement_description : ''}
                   {/if}
                 </td>
@@ -176,7 +179,7 @@
     width: 20%;
   }
   .gold {
-    background-color: rgba(255, 254, 149, 0.30);
+    background-color: rgba(255, 254, 149, 0.3);
     color: #fffab0;
   }
   .silver {
@@ -184,7 +187,7 @@
     color: #dcfffc;
   }
   .bronze {
-    background-color: rgba(255, 158, 110, 0.30);
+    background-color: rgba(255, 158, 110, 0.3);
     color: #ffcbae;
   }
 </style>

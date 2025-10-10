@@ -18,5 +18,5 @@
 </svelte:head>
 
 {#if player}
-  <PlayerProfileEdit {player}/>
+  <PlayerProfileEdit {player} />
 {/if}

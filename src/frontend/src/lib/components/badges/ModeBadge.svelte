@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Badge from "./Badge.svelte";
-  import LL from "$i18n/i18n-svelte";
+  import Badge from './Badge.svelte';
+  import LL from '$i18n/i18n-svelte';
 
   export let mode: string;
   export let style = '';
@@ -9,4 +9,4 @@
   const mode_strings: any = $LL.MODES;
 </script>
 
-<Badge badgeClass='mode_{mode.toLowerCase()}_badge wide' {style}>{mode_strings[mode.toUpperCase()]()}</Badge>
+<Badge badgeClass="mode_{mode.toLowerCase()}_badge wide" {style}>{mode_strings[mode.toUpperCase()]()}</Badge>

@@ -20,6 +20,9 @@
 </script>
 
 {#if template_id}
-  <CreateEditTemplateForm {template_id} is_edit={true}
-  series_restrict={!check_permission(user_info, series_permissions.edit_tournament_template)} />
+  <CreateEditTemplateForm
+    {template_id}
+    is_edit={true}
+    series_restrict={!check_permission(user_info, series_permissions.edit_tournament_template)}
+  />
 {/if}

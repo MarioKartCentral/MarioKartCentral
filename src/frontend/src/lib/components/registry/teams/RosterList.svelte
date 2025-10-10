@@ -3,8 +3,8 @@
   import Table from '$lib/components/common/Table.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
-  import RecruitingBadge from '$lib/components/badges/RecruitingBadge.svelte'
-  import TagBadge from '$lib/components/badges/TagBadge.svelte';  
+  import RecruitingBadge from '$lib/components/badges/RecruitingBadge.svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import LL from '$i18n/i18n-svelte';
   import { sortFilterRosters } from '$lib/util/util';
   import { page } from '$app/stores';
@@ -34,7 +34,7 @@
         <td>
           <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{roster.name}</a>
         </td>
-        <td>     
+        <td>
           <GameBadge game={roster.game} />
           <ModeBadge mode={roster.mode} />
           <RecruitingBadge recruiting={roster.is_recruiting} />
