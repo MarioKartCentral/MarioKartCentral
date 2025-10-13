@@ -5,8 +5,8 @@ span.badge {
   color: white;
   border-radius: 4px;
   padding: 2px 6px;
-  font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans',
-    sans-serif;
+  font-family:
+    'Segoe UI', 'Helvetica Neue', Helvetica, Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', sans-serif;
   font-size: 13px;
   min-width: 50px;
 }

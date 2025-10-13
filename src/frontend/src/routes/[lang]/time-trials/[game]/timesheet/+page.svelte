@@ -184,7 +184,7 @@
   // Reactive statement to refetch when any relevant data changes
   $: if (gameId && selectedPlayer !== null) {
     // Touch filter variables to make them reactive dependencies
-    includeUnvalidated, includeProofless, includeOutdated;
+    (includeUnvalidated, includeProofless, includeOutdated);
     fetchTimesheet();
   }
 
