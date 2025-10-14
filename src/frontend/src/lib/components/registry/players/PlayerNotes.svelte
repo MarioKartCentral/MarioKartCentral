@@ -21,7 +21,7 @@
           >{notes.edited_by.name}</a
         >
       {/if}
-      {' - '}
+      <span>-</span>
       <span>{new Date(notes.date * 1000).toLocaleString($page.params.lang, options)}</span>
     </div>
   {:else}
