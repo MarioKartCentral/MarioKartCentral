@@ -37,17 +37,6 @@
   let tracks: string[] = [];
   let countries: string[] = [];
 
-  // Get tracks from constants based on game
-  $: {
-    if (game === 'mkworld') {
-      tracks = Object.values(MKWORLD_TRACK_ABBREVIATIONS);
-      // Load filters from URL after tracks are available
-      if (typeof window !== 'undefined') {
-        loadFiltersFromURL();
-      }
-    }
-  }
-
   async function loadLeaderboard() {
     // Don't load if no track is selected or if running during SSR
     if (!selectedTrack || typeof window === 'undefined') {
@@ -237,6 +226,10 @@
   }
 
   onMount(() => {
+    // Get tracks from constants based on game
+    if (game === 'mkworld') {
+      tracks = Object.values(MKWORLD_TRACK_ABBREVIATIONS);
+    }
     // Load filters from URL parameters
     loadFiltersFromURL();
     // Initial load
