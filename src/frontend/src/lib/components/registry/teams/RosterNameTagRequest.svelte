@@ -66,7 +66,7 @@
     </div>
   {/if}
   {#if pending_requests.length}
-    {#each pending_requests as r}
+    {#each pending_requests as r (r.id)}
       <div>
         {$LL.TEAMS.EDIT.NAME_TAG_CHANGE_PENDING()}
       </div>

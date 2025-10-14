@@ -117,7 +117,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each team_requests as r, i}
+      {#each team_requests as r, i (r.id)}
         <tr class="row-{i % 2}">
           <td>
             <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">

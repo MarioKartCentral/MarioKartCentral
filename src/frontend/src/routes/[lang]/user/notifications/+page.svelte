@@ -122,7 +122,7 @@
       {#if notifications.length}
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
       {/if}
-      {#each notificationList as { id, type, content_id, content_args, link, created_date, is_read }}
+      {#each notificationList as { id, type, content_id, content_args, link, created_date, is_read } (id)}
         <button class="content-wrapper hover:bg-primary-700" on:click={() => handleClick(id, link, is_read)}>
           <NotificationContent {type} {content_id} {content_args} {created_date} {is_read} />
         </button>

@@ -79,7 +79,7 @@
   }
 </script>
 
-{#each friend_codes as fc}
+{#each friend_codes as fc (fc.id)}
   <div class="flex">
     <FCTypeBadge type={fc.type} />
     {fc.fc}

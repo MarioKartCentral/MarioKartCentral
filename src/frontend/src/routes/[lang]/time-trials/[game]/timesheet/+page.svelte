@@ -369,7 +369,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {#each timeTrials as trial}
+                  {#each timeTrials as trial (trial.id)}
                     <tr class="hover:bg-gray-700">
                       <!-- Track Column -->
                       <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
@@ -390,7 +390,7 @@
                         <div class="flex items-center space-x-2">
                           {#if trial.proofs && trial.proofs.length > 0}
                             <!-- Proof icons -->
-                            {#each trial.proofs as proof}
+                            {#each trial.proofs as proof (proof.id)}
                               {@const iconInfo = getProofIcon(proof.url, proof.type)}
                               <a
                                 href={proof.url}

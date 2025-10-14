@@ -27,7 +27,7 @@
       {:else}
         <option value={null} disabled selected>{$LL.FRIEND_CODES.SELECT_TYPE()}</option>
       {/if}
-      {#each fc_types as type}
+      {#each fc_types as type, index (index)}
         <option value={disabled_types.includes(type) ? null : type} disabled={disabled_types.includes(type)}>
           {type_strings[type.toUpperCase()]()}
         </option>

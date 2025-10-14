@@ -12,7 +12,7 @@
   };
 </script>
 
-{#each history.ips as p}
+{#each history.ips as p (p.id)}
   <IpInfo ip={p.ip_address} />
   <div class="history-container">
     <div>

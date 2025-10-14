@@ -90,7 +90,7 @@
 <Dialog bind:this={manage_rosters_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}>
   {#if squad}
     <div class="registered-rosters">
-      {#each squad.rosters as roster}
+      {#each squad.rosters as roster (roster.roster_id)}
         <div class="team-roster">
           <div>
             <TagBadge tag={roster.roster_tag} />
@@ -123,7 +123,7 @@
         <div>
           <select bind:value={selected_roster}>
             <option value={null}>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_ROSTER()}</option>
-            {#each registerable_rosters as roster}
+            {#each registerable_rosters as roster (roster.id)}
               <option value={roster}>{roster.name}</option>
             {/each}
           </select>

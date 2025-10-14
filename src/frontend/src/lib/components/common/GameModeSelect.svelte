@@ -55,7 +55,7 @@
           <option value={null} disabled selected>{$LL.MODES.SELECT()}</option>
         {/if}
         {#if game}
-          {#each is_team ? valid_team_modes[game] : valid_modes[game] as mode}
+          {#each is_team ? valid_team_modes[game] : valid_modes[game] as mode, index (index)}
             <option value={mode}>{mode_strings[mode.toUpperCase()]()}</option>
           {/each}
         {/if}

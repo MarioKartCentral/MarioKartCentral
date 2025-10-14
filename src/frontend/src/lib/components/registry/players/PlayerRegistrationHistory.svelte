@@ -100,7 +100,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each filtered_history as record, i}
+            {#each filtered_history as record, i (record.id)}
               <tr class="row-{i % 2} {record.is_hidden ? 'hidden-item' : ''}">
                 <td>
                   <a href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}">

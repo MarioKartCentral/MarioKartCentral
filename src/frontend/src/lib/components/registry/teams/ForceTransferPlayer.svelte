@@ -84,7 +84,7 @@
           <option value={null}>
             {$LL.COMMON.NONE()}
           </option>
-          {#each player.rosters as roster}
+          {#each player.rosters as roster (roster.roster_id)}
             <option value={roster}>
               {roster.roster_name}
               ({roster.game.toUpperCase()}

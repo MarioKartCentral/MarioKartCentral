@@ -28,7 +28,7 @@
   linkText={$LL.HOMEPAGE.VIEW_ALL_ANNOUNCEMENTS()}
   link="/{$page.params.lang}/posts"
 >
-  {#each posts.slice(0, 5) as post}
+  {#each posts.slice(0, 5) as post (post.id)}
     <PostListItem {post} />
   {/each}
 </HomeSection>

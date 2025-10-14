@@ -69,7 +69,7 @@
     {#if show_results}
       <div class="table">
         <Table show_padding={false}>
-          {#each results as result}
+          {#each results as result (result.id)}
             <tr on:click={() => set_option(result)}>
               <td>
                 {#if result.logo}

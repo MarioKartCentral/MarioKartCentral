@@ -24,7 +24,7 @@
     <div class="history">
       {$LL.PLAYERS.PROFILE.NAME_CHANGE_HISTORY()}
     </div>
-    {#each sorted_changes as change, i}
+    {#each sorted_changes as change, i (change.id)}
       <div class="flex name-change">
         <div>
           {change.old_name}

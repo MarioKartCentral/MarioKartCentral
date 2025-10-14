@@ -44,7 +44,7 @@
         {/if}
       </td>
     </tr>
-    {#each templates as template, i}
+    {#each templates as template, i (template.id)}
       <tr class="row-{i % 2}">
         <td class="left">
           {#if series_id}

@@ -93,7 +93,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each claims as claim, i}
+          {#each claims as claim, i (claim.id)}
             <tr class="row-{i % 2}">
               <td><Flag country_code={claim.player.country_code} /></td>
               <td>

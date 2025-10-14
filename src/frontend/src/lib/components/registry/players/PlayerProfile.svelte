@@ -72,7 +72,7 @@
             </div>
             {#each player.friend_codes
               .filter((f) => f.is_active)
-              .toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]) as fc}
+              .toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]) as fc (fc.id)}
               <div>
                 <FCTypeBadge type={fc.type} />
                 {fc.fc}
@@ -88,7 +88,7 @@
               <b>{$LL.PLAYERS.PROFILE.TEAMS()}</b>
             </div>
 
-            {#each sort_rosters(player.rosters) as r}
+            {#each sort_rosters(player.rosters) as r (r.roster_id)}
               <div class="teams">
                 <div class="badges">
                   <GameBadge game={r.game} />
@@ -112,7 +112,7 @@
       {#if player.roles.length}
         <div class="item centered" style="grid-area: f;">
           <div>
-            {#each player.roles as role}
+            {#each player.roles as role (role.id)}
               <div>
                 <RoleBadge {role} />
               </div>

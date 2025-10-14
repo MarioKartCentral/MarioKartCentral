@@ -32,7 +32,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each invites as invite, i}
+      {#each invites as invite, i (invite.invite_id)}
         <tr class="row-{i % 2}">
           <td>
             <a href="/{$page.params.lang}/tournaments/details?id={invite.tournament_id}">

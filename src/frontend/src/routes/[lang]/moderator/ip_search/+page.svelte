@@ -61,7 +61,7 @@
       <Section header={$LL.MODERATOR.ALT_DETECTION.IP_ADDRESSES()}>
         {$LL.MODERATOR.ALT_DETECTION.IP_ADDRESS_COUNT({ count: count })}
         <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
-        {#each results as result}
+        {#each results as result (result.id)}
           <IpInfo ip={result} />
         {/each}
         <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />

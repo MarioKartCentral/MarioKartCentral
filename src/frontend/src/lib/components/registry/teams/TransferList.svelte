@@ -151,7 +151,7 @@
 {#if transfers.length}
   <PageNavigation bind:currentPage={page_number} totalPages={total_pages} refresh_function={fetchData} />
   <div class="transfers">
-    {#each transfers as transfer}
+    {#each transfers as transfer (transfer.invite_id)}
       <div class="row">
         <div class="date field">
           {new Date(transfer.date * 1000).toLocaleString($locale, options)}

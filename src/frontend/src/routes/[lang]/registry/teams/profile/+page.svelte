@@ -91,7 +91,7 @@
       </div>
       {#key game}
         {#key mode}
-          {#each filter_team_page_rosters(team) as roster}
+          {#each filter_team_page_rosters(team) as roster (roster.id)}
             <TeamRoster {roster} />
           {:else}
             {$LL.TEAMS.PROFILE.NO_ACTIVE_ROSTERS()}

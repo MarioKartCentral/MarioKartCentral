@@ -184,7 +184,7 @@
         <input class="token-name" bind:value={token_name} placeholder={$LL.API_TOKENS.TOKEN_NAME_HERE()} />
         <Button on:click={createToken} disabled={!token_name.length} {working}>{$LL.API_TOKENS.CREATE_TOKEN()}</Button>
       </div>
-      {#each edit_user.tokens as token}
+      {#each edit_user.tokens as token (token.token_id)}
         <ApiTokenDisplay {token} is_privileged={true} />
       {/each}
     </Section>
