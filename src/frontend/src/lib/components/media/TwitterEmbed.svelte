@@ -52,16 +52,16 @@
     return null;
   }
 
-  let timeout: number | null = setTimeout(() => {
+  let timeout: number | undefined = setTimeout(() => {
     useCustomCard = true;
-    tweetId = extractTweetId(url);
     throw new Error('Twitter script loading timeout');
   }, 15000);
 
   function handleScriptLoad() {
     scriptLoaded = true;
     const checkTwttr = () => {
-      if (window.twttr?.widgets) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((window as any).twttr?.widgets) {
         return;
       } else {
         setTimeout(checkTwttr, 300);
@@ -88,9 +88,11 @@
     try {
       isLoading = true;
       if (!tweetId) throw new Error('Could not extract tweet ID');
-      if (!window.twttr?.widgets) throw new Error('Twitter widgets API not available');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (!(window as any).twttr?.widgets) throw new Error('Twitter widgets API not available');
       const tweetElement = await Promise.race([
-        window.twttr.widgets.createTweet(tweetId, tweetContainer, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).twttr.widgets.createTweet(tweetId, tweetContainer, {
           theme: theme,
           dnt: true,
           conversation: 'none',
@@ -137,7 +139,8 @@
   }
 
   onMount(() => {
-    scriptLoaded = Boolean(window.twttr);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    scriptLoaded = Boolean((window as any).twttr);
   });
 </script>
 
