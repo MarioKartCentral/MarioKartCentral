@@ -32,7 +32,10 @@
   user.subscribe((value) => {
     user_info = value;
   });
-  $: user_info.id !== null && fetchUnreadNotifications();
+
+  $: if (user_info.id !== null) {
+    fetchUnreadNotifications();
+  }
 
   async function fetchUnreadNotifications() {
     const res = await fetch('/api/notifications/list?is_read=0');

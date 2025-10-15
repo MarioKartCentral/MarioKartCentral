@@ -34,7 +34,9 @@
   user.subscribe((value) => {
     user_info = value;
   });
-  $: user_info?.id !== null && fetchNotifications();
+  $: if (user_info?.id !== null) {
+    fetchNotifications();
+  }
 
   $: pageCount = Math.ceil(notifications.length / maxNotificationsPerPage);
   $: notificationList = notifications.slice(
