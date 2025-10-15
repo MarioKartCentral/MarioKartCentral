@@ -22,7 +22,7 @@
     timeout = setTimeout(get_results, 300);
   }
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   async function get_series(id: number) {
     const res = await fetch(`/api/tournaments/series/${id}`);

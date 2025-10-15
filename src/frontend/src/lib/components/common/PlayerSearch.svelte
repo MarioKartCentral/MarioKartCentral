@@ -28,7 +28,7 @@
     timeout = setTimeout(get_results, 300);
   }
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   async function get_results() {
     if (!query) {

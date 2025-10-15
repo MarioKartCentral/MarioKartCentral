@@ -21,7 +21,7 @@
   let show_results = false;
   let timeout: number;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   async function handle_search() {
     if (timeout) {

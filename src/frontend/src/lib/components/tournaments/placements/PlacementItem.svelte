@@ -7,7 +7,7 @@
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ dq: null; placement_change: null }>();
 
   export let placement: PlacementOrganizer;
   export let is_edit: boolean;

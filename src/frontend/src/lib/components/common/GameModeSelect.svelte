@@ -14,7 +14,7 @@
   export let inline = false;
   export let is_team = false;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mode_strings: any = $LL.MODES;
