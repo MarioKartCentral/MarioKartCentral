@@ -42,10 +42,6 @@ export default defineConfig(
     },
     rules: {
       'svelte/no-navigation-without-resolve': 'off',
-      // these are linting errors caused by $: reactive statements in Svelte 4
-      'svelte/require-event-dispatcher-types': 'warn',
-      'svelte/no-reactive-reassign': 'warn',
-      '@typescript-eslint/no-unused-expressions': 'warn',
     },
   },
   {
