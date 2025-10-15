@@ -137,7 +137,7 @@
     }
   });
 
-  async function fetchTimesheet() {
+  async function fetchTimesheet(includeUnvalidated: boolean, includeProofless: boolean, includeOutdated: boolean) {
     // Get playerId from selectedPlayer if available, otherwise from URL
     const currentPlayerId = selectedPlayer === null ? null : selectedPlayer.id;
 
@@ -183,9 +183,7 @@
 
   // Reactive statement to refetch when any relevant data changes
   $: if (gameId && selectedPlayer !== null) {
-    // Touch filter variables to make them reactive dependencies
-    (includeUnvalidated, includeProofless, includeOutdated);
-    fetchTimesheet();
+    fetchTimesheet(includeUnvalidated, includeProofless, includeOutdated);
   }
 
   function updatePlayer(player: PlayerInfo | null) {
@@ -203,7 +201,7 @@
       window.history.replaceState({}, '', newUrl.toString());
     }
 
-    fetchTimesheet();
+    fetchTimesheet(includeUnvalidated, includeProofless, includeOutdated);
   }
 
   // Watch for user login/logout changes
@@ -332,7 +330,10 @@
         {:else if errorMessage}
           <div class="bg-red-900/20 border border-red-800 rounded-lg p-4">
             <p class="text-red-400">{errorMessage}</p>
-            <Button extra_classes="mt-2" on:click={fetchTimesheet}>Retry</Button>
+            <Button
+              extra_classes="mt-2"
+              on:click={() => fetchTimesheet(includeUnvalidated, includeProofless, includeOutdated)}>Retry</Button
+            >
           </div>
         {:else if timeTrials.length === 0}
           <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
