@@ -115,7 +115,7 @@
         {/if}
       </div>
       <div class="notification-count">
-        <PageNavigation bind:currentPage bind:totalPages={pageCount} refresh_function={() => {}} />
+        <PageNavigation bind:currentPage totalPages={pageCount} refresh_function={() => {}} />
         {notifications.length}
         {$LL.NAVBAR.NOTIFICATIONS()}
       </div>
@@ -136,7 +136,7 @@
         </button>
         <div class="my-1 h-px bg-gray-500 dark:bg-gray-600"></div>
       {/each}
-      <PageNavigation bind:currentPage bind:totalPages={pageCount} refresh_function={() => {}} />
+      <PageNavigation bind:currentPage totalPages={pageCount} refresh_function={() => {}} />
     </Section>
   {/if}
 {/if}
