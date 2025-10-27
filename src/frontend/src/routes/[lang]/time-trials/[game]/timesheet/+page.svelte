@@ -3,7 +3,13 @@
   import { page } from '$app/stores';
   import { user } from '$lib/stores/stores';
   import { check_permission, permissions } from '$lib/util/permissions';
-  import { GAMES, getTrackFromAbbreviation, MKWORLD_TRACKS, MKWORLD_TRACK_TRANSLATION_IDS, type GameId } from '$lib/util/gameConstants';
+  import {
+    GAMES,
+    getTrackFromAbbreviation,
+    MKWORLD_TRACKS,
+    MKWORLD_TRACK_TRANSLATION_IDS,
+    type GameId,
+  } from '$lib/util/gameConstants';
   import { formatTimeMs } from '$lib/util/timeTrialUtils';
   import type { TimeTrial, ErrorResponse } from '$lib/types/time-trials';
   import type { UserInfo } from '$lib/types/user-info';

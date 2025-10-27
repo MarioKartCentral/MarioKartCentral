@@ -20,7 +20,7 @@
   $: gameName = GAMES[game] || 'Unknown Game';
 
   function getTranslatedTrackName(game: GameId, track: string): string {
-    if(GAMES[game] === GAMES.mkworld) {
+    if (GAMES[game] === GAMES.mkworld) {
       const trackId = MKWORLD_TRACK_TRANSLATION_IDS[track as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
       return $LL.MARIO_KART_WORLD.TRACKS[trackId as keyof typeof $LL.MARIO_KART_WORLD.TRACKS]();
     }
