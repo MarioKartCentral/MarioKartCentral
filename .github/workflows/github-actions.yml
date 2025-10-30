@@ -40,7 +40,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.9.0'
+          node-version: "24.10.0"
       - name: Install cf-worker dependencies
         run: npm ci
   frontend:
@@ -53,7 +53,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20.9.0'
+          node-version: "24.10.0"
       - name: Install frontend dependencies
         run: npm ci
       - name: Lint
