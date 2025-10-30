@@ -1434,7 +1434,7 @@ const es: Translation = {
     ZM: 'Zambia',
     ZW: 'Zimbabue',
   },
-    MARIO_KART_WORLD: {
+  MARIO_KART_WORLD: {
     TRACKS: {
       MARIO_BROS_CIRCUIT: 'Circuito Mario Bros.',
       CROWN_CITY: 'Ciudad Corona',
@@ -1461,8 +1461,8 @@ const es: Translation = {
       DRY_BONES_BURNOUT: 'Caverna Ósea',
       MOO_MOO_MEADOWS: 'Pradera Mu-Mu',
       CHOCO_MOUNTAIN: 'Monte Chocolate',
-      TOADS_FACTORY: "Fábrica de Toad",
-      BOWSERS_CASTLE: "Castillo de Bowser",
+      TOADS_FACTORY: 'Fábrica de Toad',
+      BOWSERS_CASTLE: 'Castillo de Bowser',
       ACORN_HEIGHTS: 'Aldea Arbórea',
       MARIO_CIRCUIT: 'Circuito Mario',
       RAINBOW_ROAD: 'Senda Arco Iris',
