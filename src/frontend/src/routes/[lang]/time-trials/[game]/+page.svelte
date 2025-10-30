@@ -1,6 +1,12 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { GAMES, TRACKS_BY_GAME, getTrackAbbreviation, type GameId } from '$lib/util/gameConstants';
+  import {
+    GAMES,
+    TRACKS_BY_GAME,
+    MKWORLD_TRACK_TRANSLATION_IDS,
+    getTrackAbbreviation,
+    type GameId,
+  } from '$lib/util/gameConstants';
   import Section from '$lib/components/common/Section.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import SubmitButton from '$lib/components/time-trials/SubmitButton.svelte';
@@ -12,6 +18,14 @@
   $: game = $page.params.game as GameId;
   $: tracks = TRACKS_BY_GAME[game] || [];
   $: gameName = GAMES[game] || 'Unknown Game';
+
+  function getTranslatedTrackName(game: GameId, track: string): string {
+    if (GAMES[game] === GAMES.mkworld) {
+      const trackId = MKWORLD_TRACK_TRANSLATION_IDS[track as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
+      return $LL.MARIO_KART_WORLD.TRACKS[trackId as keyof typeof $LL.MARIO_KART_WORLD.TRACKS]();
+    }
+    return track;
+  }
 </script>
 
 <div class="tracks-container">
@@ -60,7 +74,7 @@
           extra_classes="flex items-center"
           href={`/${$page.params.lang}/time-trials/${game}/leaderboard?track=${getTrackAbbreviation(game, track)}`}
         >
-          {track}
+          {getTranslatedTrackName(game, track) || track}
         </Button>
       {/each}
     </div>
