@@ -50,7 +50,7 @@
     <TournamentInviteList {tournament} squads={getInvitedSquads()} />
   {/if}
 {/if}
-{#each registration.registrations.filter((r) => !r.is_invite) as reg}
+{#each registration.registrations.filter((r) => !r.is_invite) as reg, index (index)}
   <div class="registration">
     {#if tournament.checkins_enabled}
       <div class="section">

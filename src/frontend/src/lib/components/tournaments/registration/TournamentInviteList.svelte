@@ -134,7 +134,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each squads as squad, i}
+    {#each squads as squad, i (squad.id)}
       <tr class="row-{i % 2}">
         <td>{squad.id}</td>
         {#if tournament.squad_tag_required}

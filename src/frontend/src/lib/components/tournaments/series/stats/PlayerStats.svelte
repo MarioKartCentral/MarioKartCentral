@@ -62,7 +62,7 @@
           {/if}
         </tr>
       </thead>
-      {#each playersArray as p, i}
+      {#each playersArray as p, i (p.id)}
         {#if (stats_mode === StatsMode.PLAYER_MEDALS && (p.gold > 0 || p.silver > 0 || p.bronze > 0)) || (stats_mode === StatsMode.PLAYER_APPEARANCES && p.appearances_placement < 25)}
           <tr class="row-{i % 2}">
             <td class={'text_center bold ' + getColorClass(p)}>

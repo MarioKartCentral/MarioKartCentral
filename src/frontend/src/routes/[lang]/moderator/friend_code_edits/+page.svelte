@@ -63,7 +63,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each fc_changes as c, i}
+          {#each fc_changes as c, i (c.id)}
             <tr class="row-{i % 2}">
               <td>
                 <a href="/{$page.params.lang}/registry/players/profile?id={c.player.id}">

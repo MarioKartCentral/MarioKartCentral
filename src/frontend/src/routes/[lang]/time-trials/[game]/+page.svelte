@@ -53,7 +53,7 @@
 
   <Section header="Select a Track">
     <div class="tracks-grid">
-      {#each tracks as track}
+      {#each tracks as track, index (index)}
         <Button
           color="primary"
           size="lg"

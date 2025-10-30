@@ -59,7 +59,7 @@
       {#if roles.length}
         <div class="select">
           <select bind:value={selected_role}>
-            {#each roles.toSorted((a, b) => a.position - b.position) as role}
+            {#each roles.toSorted((a, b) => a.position - b.position) as role (role.id)}
               <option value={role}>{role.name}</option>
             {/each}
           </select>

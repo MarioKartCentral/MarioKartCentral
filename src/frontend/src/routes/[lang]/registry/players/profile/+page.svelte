@@ -37,7 +37,6 @@
   });
 
   let id = 0;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let player_found = true;
   let player: PlayerInfo;
   let banInfo: BanInfoDetailed | null = null;

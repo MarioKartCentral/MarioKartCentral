@@ -39,7 +39,7 @@
   {$LL.POSTS.POST_COUNT({ count: postCount })}
 </div>
 <PageNavigation {currentPage} {totalPages} refresh_function={fetchData} />
-{#each posts as post}
+{#each posts as post (post.id)}
   <PostListItem {post} {series_id} {tournament_id} />
 {/each}
 <PageNavigation {currentPage} {totalPages} refresh_function={fetchData} />

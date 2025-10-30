@@ -15,7 +15,7 @@
 
 <div class="color-select">
   <select {name} bind:value={color}>
-    {#each sorted_colors as c}
+    {#each sorted_colors as c (c.id)}
       <option value={c.id} style="background-color:{c.value}">{color_strings[c.label]()}</option>
     {/each}
   </select>

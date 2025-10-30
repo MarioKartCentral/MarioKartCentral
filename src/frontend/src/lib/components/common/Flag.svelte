@@ -14,6 +14,7 @@
 
   $: if (country_code) {
     getFlag(country_code).then((url) => {
+      // eslint-disable-next-line svelte/infinite-reactive-loop
       flagUrl = url || '';
     });
   }

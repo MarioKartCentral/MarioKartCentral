@@ -64,17 +64,17 @@
   {#if registrations_loaded}
     <div>
       <select bind:value={setting} on:change={fetchData}>
-        <option value={'any'}>
+        <option value="any">
           {$LL.TOURNAMENTS.REGISTRATIONS.ALL_REGISTRATIONS({ is_squad: tournament.is_squad })}
         </option>
         {#if tournament.is_squad || tournament.checkins_enabled}
-          <option value={'eligible'}>{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE_ONLY()}</option>
+          <option value="eligible">{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE_ONLY()}</option>
         {/if}
         {#if tournament.host_status_required}
-          <option value={'hosts'}>{$LL.TOURNAMENTS.REGISTRATIONS.HOSTS_ONLY()}</option>
+          <option value="hosts">{$LL.TOURNAMENTS.REGISTRATIONS.HOSTS_ONLY()}</option>
         {/if}
         {#if tournament.verification_required && check_tournament_permission(user_info, tournament_permissions.manage_tournament_registrations, tournament.id, tournament.series_id)}
-          <option value={'pending'}>{$LL.TOURNAMENTS.REGISTRATIONS.PENDING()}</option>
+          <option value="pending">{$LL.TOURNAMENTS.REGISTRATIONS.PENDING()}</option>
         {/if}
       </select>
     </div>

@@ -168,7 +168,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each pending_teams as team, i}
+          {#each pending_teams as team, i (team.id)}
             <tr class="row-{i % 2}">
               <td
                 ><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
@@ -211,7 +211,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each pending_rosters as roster, i}
+          {#each pending_rosters as roster, i (roster.id)}
             <tr class="row-{i % 2}">
               <td
                 ><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">
@@ -257,7 +257,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each denied_teams as team, i}
+          {#each denied_teams as team, i (team.id)}
             <tr class="row-{i % 2}">
               <td
                 ><a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
@@ -304,7 +304,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each denied_rosters as roster, i}
+          {#each denied_rosters as roster, i (roster.id)}
             <tr class="row-{i % 2}">
               <td
                 ><a href="/{$page.params.lang}/registry/teams/profile?id={roster.team_id}">

@@ -20,7 +20,7 @@
     </div>
   {:else if squad.players.length <= 4}
     <div class="flex players">
-      {#each squad.players as p}
+      {#each squad.players as p (p.player_id)}
         <div class="name">
           <a href="/{$page.params.lang}/registry/players/profile?id={p.player_id}">
             <Flag country_code={p.country_code} size="small" />

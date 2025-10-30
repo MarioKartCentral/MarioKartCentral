@@ -71,7 +71,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each users as u, i}
+            {#each users as u, i (u.id)}
               <tr class="row-{i % 2}">
                 <td>
                   <a href="/{$page.params.lang}/moderator/users/edit?id={u.id}">

@@ -28,7 +28,7 @@
     timeout = setTimeout(get_results, 300);
   }
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   async function get_results() {
     if (!query) {
@@ -90,7 +90,7 @@
             <col class="mobile-hide fc" />
             <col class="select" />
             <tbody>
-              {#each results as result}
+              {#each results as result (result.id)}
                 <tr on:click={() => set_option(result)} title="Player ID: {result.id}">
                   <td on:click={() => set_option(result)}>
                     <Flag country_code={result.country_code} />

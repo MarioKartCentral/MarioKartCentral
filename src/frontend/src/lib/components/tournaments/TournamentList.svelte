@@ -122,7 +122,7 @@
     {$LL.TOURNAMENTS.TOURNAMENT_COUNT({ count: totalTournaments })}
   </div>
   {#key tournaments}
-    {#each tournaments as tournament}
+    {#each tournaments as tournament (tournament.id)}
       <TournamentPageItem {tournament} />
     {/each}
   {/key}

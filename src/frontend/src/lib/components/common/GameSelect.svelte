@@ -28,7 +28,7 @@
       {:else}
         <option value={null} disabled selected>{$LL.GAMES.SELECT()}</option>
       {/if}
-      {#each is_team ? valid_team_games : valid_games as game}
+      {#each is_team ? valid_team_games : valid_games as game, index (index)}
         <option value={disabled_games.includes(game) ? null : game} disabled={disabled_games.includes(game)}>
           {game_strings[game.toUpperCase()]()}
         </option>

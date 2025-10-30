@@ -108,7 +108,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each name_requests as r, i}
+      {#each name_requests as r, i (r.id)}
         <tr class="row-{i % 2}">
           <td>
             <Flag country_code={r.player_country} />

@@ -42,7 +42,7 @@
   <ChevronDownSolid size="sm" class="hidden md:inline ml-1 text-white" />
 </button>
 <Dropdown>
-  {#each sortedLanguages as l}
+  {#each sortedLanguages as l (l.value)}
     <DropdownItem on:click={() => setLanguage(l.value)}>
       <div class="item">
         {l.nativeName}

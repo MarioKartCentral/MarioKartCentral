@@ -28,7 +28,7 @@
 >
   {#if latestTeams.length}
     <div class="flex flex-col gap-[5px]">
-      {#each latestTeams as team}
+      {#each latestTeams as team (team.id)}
         <div class="row">
           <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
             <TagBadge tag={team.tag} color={team.color} />

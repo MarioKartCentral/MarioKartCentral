@@ -24,7 +24,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each sortFilterRosters(team.rosters) as roster, i}
+    {#each sortFilterRosters(team.rosters) as roster, i (roster.id)}
       <tr class="row-{i % 2}">
         <td>
           <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">

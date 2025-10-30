@@ -29,7 +29,7 @@
 
   $: liClass = twMerge(
     `block py-2 pe-4 ps-3 desktop:p-0 rounded-sm desktop:border-0`,
-    active ? activeClass ?? context.activeClass : nonActiveClass ?? context.nonActiveClass,
+    active ? (activeClass ?? context.activeClass) : (nonActiveClass ?? context.nonActiveClass),
     $$props.class,
     has_dropdown ? 'cursor-pointer' : '',
     checkSelectedNav(nav_name),

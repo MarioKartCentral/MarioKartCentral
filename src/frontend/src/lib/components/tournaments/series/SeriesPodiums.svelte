@@ -66,7 +66,7 @@
     <col class="left" />
     <col class="right" />
     <tbody>
-      {#each tournaments as t, i}
+      {#each tournaments as t, i (t.id)}
         <tr class="row-{i % 2}">
           <td class="left">
             <div class="row_top tournament_name">
@@ -85,7 +85,7 @@
               ).toLocaleDateString($locale, options)}
             </div>
             <div>
-              {#each t.placements as p}
+              {#each t.placements as p (p.registration_id)}
                 <span class={getColor(p.placement) + ' bold'}>
                   {getMedal(p.placement)}
                   {#if p.squad.rosters.length}
@@ -97,19 +97,17 @@
                       {p.squad.name}
                     </a>
                   {:else}
-                    {#each p.squad.players as player, i}
+                    {#each p.squad.players as player, i (player.id)}
                       {#if i < 4}
                         <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
                           {player.name}
                         </a>
                         {#if player !== p.squad.players[p.squad.players.length - 1]}
-                          <span class="white_color">
-                            {' / '}
-                          </span>
+                          <span class="white_color">/</span>
                         {/if}
                       {/if}
                       {#if i === 4}
-                        <span class="white_color">{' ...'}</span>
+                        <span class="white_color">...</span>
                       {/if}
                     {/each}
                   {/if}

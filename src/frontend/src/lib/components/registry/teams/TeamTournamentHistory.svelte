@@ -98,7 +98,7 @@
               <div class="w-12 mx-2">{$LL.TEAMS.PROFILE.ROSTER()}</div>
               <select bind:value={roster_id}>
                 <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
-                {#each team.rosters as roster}
+                {#each team.rosters as roster (roster.id)}
                   <option value={roster.id}>
                     {roster.name} ({game_abbreviations[roster.game]}
                     {mode_strings[roster.mode.toUpperCase()]()})
@@ -127,7 +127,7 @@
             </tr>
           </thead>
           <tbody>
-            {#each filtered_team_placements as placement, i}
+            {#each filtered_team_placements as placement, i (placement.registration_id)}
               <tr
                 class={placement.placement && placement.placement <= 3
                   ? podium_style[placement.placement]

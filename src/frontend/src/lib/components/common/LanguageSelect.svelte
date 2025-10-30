@@ -17,7 +17,7 @@
 </script>
 
 <select name="language" value={language}>
-  {#each languages as l}
+  {#each languages as l (l.value)}
     <option value={l.value}>{language_strings[l.getLang]()}</option>
   {/each}
 </select>

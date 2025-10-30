@@ -43,7 +43,7 @@
     {#if team.managers.length}
       <div>
         <b>{$LL.TEAMS.PROFILE.MANAGERS()}</b>
-        {#each team.managers as m, i}
+        {#each team.managers as m, i (m.id)}
           <a href="/{$page.params.lang}/registry/players/profile?id={m.id}">
             {i == team.managers.length - 1 ? m.name : `${m.name}, `}
           </a>

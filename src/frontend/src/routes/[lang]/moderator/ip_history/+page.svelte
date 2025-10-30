@@ -42,7 +42,7 @@
         {#if history.history.length}
           <IpInfo ip={history.history[0].time_range.ip_address} />
         {/if}
-        {#each history.history as p}
+        {#each history.history as p, index (index)}
           <div class="history-container">
             <div>
               {#if p.player}

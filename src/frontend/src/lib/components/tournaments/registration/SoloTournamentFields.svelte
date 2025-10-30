@@ -27,7 +27,7 @@
 
     <select name="selected_fc_id" value={selected_fc_id} required>
       <option value={null} selected disabled>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_FRIEND_CODE()}</option>
-      {#each friend_codes.filter((f) => f.is_active) as fc}
+      {#each friend_codes.filter((f) => f.is_active) as fc (fc.id)}
         <option value={fc.id}>{fc.fc}</option>
       {/each}
     </select>

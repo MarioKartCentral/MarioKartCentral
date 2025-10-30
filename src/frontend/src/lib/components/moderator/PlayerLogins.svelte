@@ -70,7 +70,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each logins.logins as login, i}
+        {#each logins.logins as login, i (login.id)}
           <tr class="row-{i % 2}">
             <td>{new Date(login.date * 1000).toLocaleString($locale, options)}</td>
             {#if check_permission(user_info, permissions.view_fingerprints)}

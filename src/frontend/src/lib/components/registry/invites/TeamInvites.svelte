@@ -109,7 +109,7 @@
 
 {#if invites.length}
   <div class="invites">
-    {#each invites as invite}
+    {#each invites as invite (invite.invite_id)}
       <div class="row">
         <div class="date field">
           {new Date(invite.date * 1000).toLocaleString($locale, options)}
@@ -150,7 +150,7 @@
   {#if leaveable_rosters.length}
     {$LL.INVITES.SELECT_LEAVE_ROSTER()}
     <select bind:value={leave_roster_id}>
-      {#each leaveable_rosters as r}
+      {#each leaveable_rosters as r (r.roster_id)}
         <option value={r.roster_id}>{r.roster_name}</option>
       {/each}
     </select>

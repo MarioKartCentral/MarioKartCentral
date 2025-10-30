@@ -50,7 +50,7 @@
     {#if selected_fc_id && other_fcs.length}
       <div class="selected">{$LL.FRIEND_CODES.OTHER_FCS()}</div>
     {/if}
-    {#each other_fcs as fc}
+    {#each other_fcs as fc (fc.id)}
       <div>
         <FCTypeBadge type={fc.type} />
         {fc.fc}

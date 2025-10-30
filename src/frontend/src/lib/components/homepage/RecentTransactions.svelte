@@ -35,7 +35,7 @@
 >
   {#if transfers.length}
     <div class="flex flex-col gap-[5px]">
-      {#each transfers as transfer}
+      {#each transfers as transfer (transfer.invite_id)}
         <div class="row">
           <div class="left">
             <div class="flex items-center gap-[8px] mb-[5px] mt-[-5px]">

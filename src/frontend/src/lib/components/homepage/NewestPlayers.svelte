@@ -36,7 +36,7 @@
 >
   {#if latestPlayers.length}
     <div class="flex flex-col {extend ? 'gap7' : 'gap-[5px]'}">
-      {#each latestPlayers as player}
+      {#each latestPlayers as player (player.id)}
         <div class="row">
           <div class="flag">
             <Flag country_code={player.country_code} />

@@ -98,7 +98,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each players as player, i}
+        {#each players as player, i (player.id)}
           <tr class="row-{i % 2}">
             <td><Flag country_code={player.country_code} /></td>
             <td>

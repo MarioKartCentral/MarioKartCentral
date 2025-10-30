@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import CancelButton from './buttons/CancelButton.svelte';
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ close: null }>();
 
   let dialog: HTMLDialogElement;
   export let header: string | null = null;

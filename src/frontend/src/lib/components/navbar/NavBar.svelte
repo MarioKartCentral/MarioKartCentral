@@ -153,7 +153,7 @@
       <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
-      {#each Object.entries(GAMES) as [gameId, gameName]}
+      {#each Object.entries(GAMES) as [gameId, gameName] (gameId)}
         <DropdownItem href="/{$page.params.lang}/time-trials/{gameId}">{gameName}</DropdownItem>
       {/each}
       <DropdownItem href="/{$page.params.lang}/time-trials/mkworld/timesheet"

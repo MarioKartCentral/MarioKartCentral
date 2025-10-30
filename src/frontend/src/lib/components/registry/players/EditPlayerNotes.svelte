@@ -8,7 +8,7 @@
   export let notes = '';
 
   let newNotes = notes;
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ cancel: null }>();
 
   async function editNotes(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
     const data = new FormData(event.currentTarget);

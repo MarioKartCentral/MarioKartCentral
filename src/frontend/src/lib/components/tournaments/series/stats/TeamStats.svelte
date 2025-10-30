@@ -63,7 +63,7 @@
           {/if}
         </tr>
       </thead>
-      {#each rostersArray as r, i}
+      {#each rostersArray as r, i (r.roster_id)}
         {#if (stats_mode === StatsMode.TEAM_MEDALS && (r.gold > 0 || r.silver > 0 || r.bronze > 0)) || (stats_mode === StatsMode.TEAM_APPEARANCES && r.appearances_placement < 25)}
           <tr class="row-{i % 2}">
             <td class="text_center bold {getColorClass(r)}"

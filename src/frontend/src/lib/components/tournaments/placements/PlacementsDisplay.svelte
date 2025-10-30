@@ -44,7 +44,7 @@
         </button>
       {/if}
     </div>
-    {#each show_all ? placement_list : placement_list.slice(0, num_display) as placement}
+    {#each show_all ? placement_list : placement_list.slice(0, num_display) as placement (placement.id)}
       <PlacementItem {placement} is_edit={false} />
     {/each}
   </Section>
