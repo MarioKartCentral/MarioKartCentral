@@ -13,21 +13,21 @@
     day: 'numeric',
     hour12: true,
   };
-  
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const language_strings: any = $LL.LANGUAGES;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const language_strings: any = $LL.LANGUAGES;
 </script>
 
 <div class="wrapper">
   {#if team.logo}
     <div class="avatar">
-      <Avatar size="xl" src={team.logo} border alt={team.name} class="bg-transparent"/>
+      <Avatar size="xl" src={team.logo} border alt={team.name} class="bg-transparent" />
     </div>
   {/if}
-  
+
   <div class="team_details">
     <div class="tag">
-      <TagBadge tag={team.tag} color={team.color}/>
+      <TagBadge tag={team.tag} color={team.color} />
     </div>
     <div class="name">
       <b>{team.name}</b>
@@ -38,7 +38,7 @@
     </div>
     <div>
       <b>{$LL.TEAMS.PROFILE.MAIN_LANGUAGE()}</b>
-      {language_strings[team.language.toUpperCase().replace("-", "_")]()}
+      {language_strings[team.language.toUpperCase().replace('-', '_')]()}
     </div>
     {#if team.managers.length}
       <div>
@@ -71,7 +71,7 @@
     flex-direction: column;
     justify-content: center;
     grid-column-start: 2;
-    @media(min-width:800px) {
+    @media (min-width: 800px) {
       justify-content: left;
     }
   }
@@ -91,13 +91,13 @@
     white-space: pre-line;
     max-height: 200px;
     overflow-y: auto;
-    @media(min-width: 800px) {
+    @media (min-width: 800px) {
       justify-content: left;
       margin-left: auto;
       margin-right: auto;
     }
   }
-  div.avatar { 
+  div.avatar {
     min-width: 150px;
     margin-bottom: 20px;
   }

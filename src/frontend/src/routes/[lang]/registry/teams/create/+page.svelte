@@ -18,8 +18,8 @@
     user_info = value;
   });
 
-  let tag = "";
-  let logo_file = "";
+  let tag = '';
+  let logo_file = '';
   let working = false;
 
   async function createTeam(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
@@ -45,7 +45,7 @@
     };
     console.log(payload);
     let endpoint = '/api/registry/teams/request';
-    if(check_permission(user_info, permissions.manage_teams)) {
+    if (check_permission(user_info, permissions.manage_teams)) {
       endpoint = '/api/registry/teams/create';
     }
     const response = await fetch(endpoint, {
@@ -57,10 +57,9 @@
     const result = await response.json();
     if (response.status < 300) {
       let team_id = result['id'];
-      if(team_id) {
+      if (team_id) {
         window.location.href = `/${$page.params.lang}/registry/teams/profile?id=${team_id}`;
-      }
-      else {
+      } else {
         goto(`/${$page.params.lang}/registry/teams`);
       }
       alert('Your team has been sent to MKCentral staff for approval.');
@@ -73,38 +72,37 @@
 <form method="post" on:submit|preventDefault={createTeam}>
   <Section header={$LL.TEAMS.GENERAL_INFO()}>
     <div class="option">
-      <GameModeSelect is_team flex/>
+      <GameModeSelect is_team flex />
     </div>
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
-      <Input name="name" type="text" required no_white_space minlength={2} maxlength={32}/>
+      <Input name="name" type="text" required no_white_space minlength={2} maxlength={32} />
     </div>
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.TEAM_TAG()}</label>
-      <Input name="tag" type="text" bind:value={tag} required maxlength={8} no_white_space/>
-    </div>    
+      <Input name="tag" type="text" bind:value={tag} required maxlength={8} no_white_space />
+    </div>
   </Section>
   <Section header={$LL.TEAMS.EDIT.CUSTOMIZATION()}>
     <div class="option">
       <label for="color">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
-      <ColorSelect tag={tag}/>
+      <ColorSelect {tag} />
     </div>
     <div class="option">
       <label for="logo">{$LL.TEAMS.EDIT.TEAM_LOGO()}</label>
-      <LogoUpload bind:file={logo_file}/>
+      <LogoUpload bind:file={logo_file} />
     </div>
-    
   </Section>
   <Section header={$LL.TEAMS.EDIT.MISC_INFO()}>
     <div class="option">
       <label for="language">{$LL.TEAMS.PROFILE.MAIN_LANGUAGE()}</label>
-      <LanguageSelect/>
+      <LanguageSelect />
     </div>
     <div class="option">
       <div>
         <label for="description">{$LL.TEAMS.EDIT.TEAM_DESCRIPTION()}</label>
       </div>
-      <textarea name="description" maxlength=200/>
+      <textarea name="description" maxlength="200" />
     </div>
     <div class="option">
       <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>

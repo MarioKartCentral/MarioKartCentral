@@ -26,7 +26,7 @@
 
 {#if id}
   {#if check_series_permission(user_info, series_permissions.create_tournament, id)}
-    <CreateEditTournamentForm {template_id} series_restrict={true} series_id={id}/>
+    <CreateEditTournamentForm {template_id} series_restrict={true} series_id={id} />
   {:else}
     {$LL.COMMON.NO_PERMISSION()}
   {/if}

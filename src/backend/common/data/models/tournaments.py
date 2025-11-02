@@ -39,10 +39,12 @@ class TournamentDBFields():
     show_on_profiles: bool
     require_single_fc: bool
     min_representatives: int | None
+    max_representatives: int | None
     bagger_clause_enabled: bool
     use_series_ruleset: bool
     organizer: str
     location: str | None
+    sync_team_rosters: bool
 
 @dataclass
 class TournamentS3Fields():
@@ -88,10 +90,12 @@ class EditTournamentRequestData():
     is_deleted: bool
     show_on_profiles: bool
     min_representatives: int | None
+    max_representatives: int | None
     bagger_clause_enabled: bool
     use_series_ruleset: bool
     organizer: str | None
     location: str | None
+    sync_team_rosters: bool
     # s3-only fields below
     description: str
     ruleset: str

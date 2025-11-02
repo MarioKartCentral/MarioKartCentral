@@ -25,7 +25,7 @@
           <LinkButton href="https://lounge.mkcentral.com/mkworld">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/WR6JKPn2v9"/>
+          <DiscordInviteButton href="https://discord.gg/WR6JKPn2v9" />
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@
           <LinkButton href="https://lounge.mkcentral.com/mk8dx">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/revmGkE"/>
+          <DiscordInviteButton href="https://discord.gg/revmGkE" />
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
           <LinkButton href="https://200-lounge.com/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/dfdRkFu"/>
+          <DiscordInviteButton href="https://discord.gg/dfdRkFu" />
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
           <LinkButton href="http://www.mariokarttour.net/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/vYr3bQQHFY"/>
+          <DiscordInviteButton href="https://discord.gg/vYr3bQQHFY" />
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@
           <LinkButton href="https://mkwlounge.gg">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/mkw"/>
+          <DiscordInviteButton href="https://discord.gg/mkw" />
         </div>
       </div>
     </div>
@@ -99,7 +99,7 @@
       <img class="w-32 h-32" src={LogoMK7} alt="MK7 Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/cZZp9DdQ5e"/>
+          <DiscordInviteButton href="https://discord.gg/cZZp9DdQ5e" />
         </div>
       </div>
     </div>

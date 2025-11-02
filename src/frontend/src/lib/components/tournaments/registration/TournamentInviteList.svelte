@@ -125,7 +125,9 @@
       <th>
         {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
         <button class="show-players" on:click={toggle_all_players}>
-          {all_toggle_on ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS() : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
+          {all_toggle_on
+            ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS()
+            : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
         </button>
       </th>
       <th>{$LL.INVITES.ACCEPT()}</th>
@@ -137,7 +139,7 @@
         <td>{squad.id}</td>
         {#if tournament.squad_tag_required}
           <td>
-            <TagBadge tag={squad.tag} color={squad.color}/>
+            <TagBadge tag={squad.tag} color={squad.color} />
           </td>
         {/if}
         {#if tournament.squad_name_required}
@@ -150,9 +152,8 @@
           </button></td
         >
         <td>
-          <ConfirmButton on:click={() => inviteDialog(squad)}/>
-          <CancelButton on:click={() => declineInvite(squad)}/>
-
+          <ConfirmButton on:click={() => inviteDialog(squad)} />
+          <CancelButton on:click={() => declineInvite(squad)} />
         </td>
       </tr>
       {#if squad_data[squad.id].display_players}
@@ -171,12 +172,12 @@
     {#if user_info.player}
       <SoloTournamentFields {tournament} friend_codes={user_info.player.friend_codes} />
       <br />
-      <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_ID}: {curr_invite?.id}</div>
+      <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_ID()}: {curr_invite?.id}</div>
       {#if tournament.squad_tag_required}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG}: {curr_invite?.tag}</div>
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_TAG()}: {curr_invite?.tag}</div>
       {/if}
       {#if tournament.squad_name_required}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME}: {curr_invite?.name}</div>
+        <div>{$LL.TOURNAMENTS.REGISTRATIONS.SQUAD_NAME()}: {curr_invite?.name}</div>
       {/if}
       <br />
       <div>
@@ -184,7 +185,6 @@
         <Button type="button" on:click={accept_dialog.close}>{$LL.COMMON.CANCEL()}</Button>
       </div>
     {/if}
-    
   </form>
 </Dialog>
 

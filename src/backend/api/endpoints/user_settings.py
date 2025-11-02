@@ -1,6 +1,7 @@
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Route
+from api import appsettings
 from api.auth import require_logged_in, require_permission, get_user_info
 from common.auth import permissions
 from api.data import handle
@@ -31,9 +32,9 @@ async def edit_settings(request: Request, body: EditUserSettingsRequestData) -> 
 
     # set language and color_scheme cookies
     if body.language is not None:
-        resp.set_cookie('language', body.language, secure=True, httponly=True, max_age=int(timedelta(days=365).total_seconds()))
+        resp.set_cookie('language', body.language, secure=appsettings.SECURE_HTTP_COOKIES, httponly=True, max_age=int(timedelta(days=365).total_seconds()))
     if body.color_scheme is not None:
-        resp.set_cookie('color_scheme', body.color_scheme, secure=True, httponly=True)
+        resp.set_cookie('color_scheme', body.color_scheme, secure=appsettings.SECURE_HTTP_COOKIES, httponly=True)
 
     return resp
 
@@ -49,7 +50,7 @@ async def edit_player_user_settings(request: Request, body: EditPlayerUserSettin
 @get_user_info
 async def edit_language(request: Request, body: SetLanguageRequestData) -> JSONResponse:
     resp = JSONResponse({}, status_code=200)
-    resp.set_cookie('language', body.language, secure=True, httponly=True, max_age=int(timedelta(days=365).total_seconds()))
+    resp.set_cookie('language', body.language, secure=appsettings.SECURE_HTTP_COOKIES, httponly=True, max_age=int(timedelta(days=365).total_seconds()))
     if request.state.user:
         command_body = EditUserSettingsRequestData(language=body.language)
         command = EditUserSettingsCommand(request.state.user.id, command_body)

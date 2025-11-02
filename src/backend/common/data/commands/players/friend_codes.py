@@ -139,20 +139,20 @@ class ListFriendCodeEditsCommand(Command[FriendCodeEditList]):
             edits: list[FriendCodeEdit] = []
             async with db.execute(f"""SELECT e.id, e.old_fc, e.new_fc, e.is_active, e.date,
                                         f.id, f.type, f.fc, f.is_verified, f.is_primary, f.is_active,
-                                        f.description, f.creation_date, p.id, p.name, p.country_code,
-                                        p2.id, p2.name, p2.country_code
+                                        f.description, f.creation_date, p.id, p.name, p.country_code, p.is_banned,
+                                        p2.id, p2.name, p2.country_code, p2.is_banned
                                         {edit_query} ORDER BY e.date DESC LIMIT ? OFFSET ?
                                   """, (limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (edit_id, old_fc, new_fc, edit_active, edit_date, fc_id, fc_type, fc_fc, is_verified, is_primary, is_active,
-                    description, creation_date, player_id, player_name, player_country, handled_by_id, handled_by_name, 
-                    handled_by_country) = row
-                    player = PlayerBasic(player_id, player_name, player_country)
+                    description, creation_date, player_id, player_name, player_country, player_banned, handled_by_id, handled_by_name, 
+                    handled_by_country, handled_by_banned) = row
+                    player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
                     fc = FriendCode(fc_id, fc_fc, fc_type, player_id, is_verified, is_primary, creation_date, description, is_active)
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
                     edit = FriendCodeEdit(edit_id, old_fc, new_fc, edit_active, edit_date, fc, player, handled_by)
                     edits.append(edit)
         

@@ -16,7 +16,7 @@
   export let is_banned: boolean | null = null;
   export let show_add_button: boolean = true;
   export let query = '';
-  
+
   let results: PlayerInfo[] = [];
   let timeout: number;
   let show_results = false;
@@ -31,33 +31,33 @@
   const dispatch = createEventDispatcher();
 
   async function get_results() {
-    if(!query) {
+    if (!query) {
       results = [];
       return;
     }
     let query_parameters = [];
-    query_parameters.push("detailed=true");
-    query_parameters.push("matching_fcs_only=true");
+    query_parameters.push('detailed=true');
+    query_parameters.push('matching_fcs_only=true');
     query_parameters.push(`include_shadow_players=${include_shadow_players}`);
-    if(query) {
+    if (query) {
       query_parameters.push(`name_or_fc=${query}`);
     }
-    if(fc_type) {
+    if (fc_type) {
       query_parameters.push(`fc_type=${fc_type}`);
     }
-    if(registration_id) {
+    if (registration_id) {
       query_parameters.push(`registration_id=${registration_id}`);
     }
-    if(is_shadow !== null) {
+    if (is_shadow !== null) {
       query_parameters.push(`is_shadow=${is_shadow}`);
     }
-    if(has_connected_user !== null) {
+    if (has_connected_user !== null) {
       query_parameters.push(`has_connected_user=${has_connected_user}`);
     }
-    if(is_banned !== null) {
+    if (is_banned !== null) {
       query_parameters.push(`is_banned=${is_banned}`);
     }
-    const query_string = query_parameters.length ? query_parameters.join("&") : "";
+    const query_string = query_parameters.length ? query_parameters.join('&') : '';
 
     const url = `/api/registry/players?${query_string}`;
     const res = await fetch(url);
@@ -88,12 +88,12 @@
             <col class="country" />
             <col class="name" />
             <col class="mobile-hide fc" />
-            <col class="select"/>
+            <col class="select" />
             <tbody>
               {#each results as result}
-                <tr on:click={() => set_option(result)}>
+                <tr on:click={() => set_option(result)} title="Player ID: {result.id}">
                   <td on:click={() => set_option(result)}>
-                    <Flag country_code={result.country_code}/>
+                    <Flag country_code={result.country_code} />
                   </td>
                   <td on:click={() => set_option(result)}>
                     {result.name}
@@ -105,7 +105,7 @@
                   </td>
                   <td on:click={() => set_option(result)}>
                     {#if show_add_button}
-                      <UserAddSolid size="lg"/>
+                      <UserAddSolid size="lg" />
                     {/if}
                   </td>
                 </tr>
@@ -117,9 +117,9 @@
     {/if}
   {:else}
     <div>
-      <Flag country_code={player.country_code}/>
+      <Flag country_code={player.country_code} />
       {player.name}
-      <CancelButton on:click={() => set_option(null)}/>
+      <CancelButton on:click={() => set_option(null)} />
     </div>
   {/if}
 </div>

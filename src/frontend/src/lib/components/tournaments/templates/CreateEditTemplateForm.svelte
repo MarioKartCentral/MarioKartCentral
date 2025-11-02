@@ -41,6 +41,7 @@
     teams_only: false,
     team_members_only: false,
     min_representatives: null,
+    max_representatives: null,
     host_status_required: false,
     mii_name_required: false,
     require_single_fc: false,
@@ -64,6 +65,7 @@
     bagger_clause_enabled: false,
     logo_file: null,
     remove_logo: false,
+    sync_team_rosters: false,
   };
 
   function updateData() {
@@ -130,10 +132,7 @@
 </script>
 
 {#if data_retrieved}
-  {#if check_series_permission(user_info,
-    is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template,
-    data.series_id
-  )}
+  {#if check_series_permission(user_info, is_edit ? series_permissions.edit_tournament_template : series_permissions.create_tournament_template, data.series_id)}
     <form method="POST" on:submit|preventDefault={is_edit ? editTemplate : createTemplate}>
       <Section header={$LL.TOURNAMENTS.TEMPLATES.TEMPLATE_DETAILS()}>
         <div>

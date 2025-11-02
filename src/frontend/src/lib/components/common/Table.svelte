@@ -27,7 +27,7 @@
   table :global(tr) {
     border-top: 1px solid theme('colors.primary.600' / 30%);
   }
-  
+
   table :global(th) {
     padding: 5px 10px;
   }
@@ -48,13 +48,12 @@
   }
   /* Style for a table row containing the logged in user */
   table :global(tr.me) {
-    background-color: theme('colors.primary.200'/ 30%) ;
+    background-color: theme('colors.primary.200'/ 30%);
   }
 
-  @media(max-width: 1024px) {
+  @media (max-width: 1024px) {
     table :global(.mobile-hide) {
       display: none;
     }
   }
-  
 </style>

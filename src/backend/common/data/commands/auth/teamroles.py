@@ -86,13 +86,30 @@ class GrantTeamRoleCommand(Command[None]):
                 if role_id is None:
                     raise Problem("Role not found", status=404)
                 
+            # check all the rosters the target player is in, if any of them already have 4 leaders then throw an error
             if self.role == team_roles.LEADER:
-                async with db.execute("SELECT COUNT(user_id) FROM user_team_roles WHERE role_id = ? AND team_id = ?", (role_id, self.team_id)) as cursor:
+                async with db.execute("""SELECT MAX(roster_count)
+                                      FROM (
+                                        SELECT tr.id, COUNT(utr.user_id) AS roster_count
+                                        FROM user_team_roles utr
+                                        JOIN team_rosters tr ON tr.team_id = utr.team_id
+                                        JOIN team_members tm ON tm.roster_id = tr.id
+                                        JOIN users u ON u.player_id = tm.player_id
+                                        WHERE utr.role_id = ? AND utr.team_id = ? AND tm.leave_date IS NULL 
+                                        AND u.id = utr.user_id
+                                        AND tm.roster_id IN (
+                                            SELECT tm.roster_id
+                                            FROM team_members tm
+                                            WHERE tm.leave_date IS NULL AND tm.player_id = ?
+                                        )
+                                        GROUP BY tr.id
+                                      )""", (role_id, self.team_id, self.target_player_id)) as cursor:
                     row = await cursor.fetchone()
                     if row:
                         count = row[0]
-                        if count >= 4:
-                            raise Problem("Teams can only have a maximum of 4 leaders", status=400)
+                        print(count)
+                        if count is not None and count >= 4:
+                            raise Problem("Team rosters can only have a maximum of 4 leaders", status=400)
             
             async with db.execute("SELECT user_id FROM user_team_roles WHERE user_id = ? AND role_id = ? AND team_id = ?", (target_user_id, role_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()

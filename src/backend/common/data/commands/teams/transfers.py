@@ -60,14 +60,14 @@ class ApproveTransferCommand(Command[None]):
                 await db.executemany("UPDATE tournament_players SET is_bagger_clause = ? WHERE id = ?", bagger_registration_ids)
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
-                # get all team tournament rosters the player is in where the tournament hasn't ended yet
+                # get all team tournament rosters the player is in where registrations haven't closed yet
                 async with db.execute("""SELECT p.registration_id FROM tournament_players p
                                     JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
                                     AND p.is_bagger_clause = ?""",
-                                    (player_id, roster_leave_id, curr_time, True, True, is_bagger_clause)) as cursor:
+                                    (player_id, roster_leave_id, is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     registration_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
@@ -76,15 +76,43 @@ class ApproveTransferCommand(Command[None]):
                                     JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
                                     AND p.is_bagger_clause = ?""",
-                                    (player_id, roster_id, curr_time, True, True, is_bagger_clause)) as cursor:
+                                    (player_id, roster_id, is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         if row[0] in registration_ids:
                             registration_ids.remove(row[0])
                 # finally remove the player from all the tournaments they shouldn't be in
                 await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (player_id,))
+
+                # get all team tournament rosters the player is in where registrations have closed and they should be marked as ineligible
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 0 AND t.team_members_only = 1
+                                    AND t.sync_team_rosters = 1 AND t.date_end > ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (player_id, roster_leave_id, curr_time, is_bagger_clause)) as cursor:
+                    rows = await cursor.fetchall()
+                    registration_ids: list[int] = [row[0] for row in rows]
+                # if any of these squads the player was in previously are also linked to the new roster,
+                # (such as when transferring between two rosters of same team), we don't want to mark them as ineligible
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 0 AND t.team_members_only = 1
+                                    AND t.sync_team_rosters = 1 AND t.date_end > ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (player_id, roster_id, curr_time, is_bagger_clause)) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        if row[0] in registration_ids:
+                            registration_ids.remove(row[0])
+                # finally mark the player as ineligible from any tournaments their old team was in
+                await db.execute(f"UPDATE tournament_players SET is_eligible = 0 WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (player_id,))
 
             # next we want to automatically add the transferred player to any team tournaments where that team is registered
             # and registrations are open
@@ -318,14 +346,14 @@ class ForceTransferPlayerCommand(Command[None]):
                              VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.roster_id, curr_time, self.roster_leave_id, True, "approved", self.is_bagger_clause))
             if team_member_id:
                 await db.execute("UPDATE team_members SET leave_date = ? WHERE id = ?", (curr_time, team_member_id))
-                # get all team tournament rosters the player is in where the tournament hasn't ended yet
+                # get all team tournament rosters the player is in where registrations haven't closed yet
                 async with db.execute("""SELECT p.registration_id FROM tournament_players p
                                     JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
                                     AND p.is_bagger_clause = ?""",
-                                    (self.player_id, self.roster_leave_id, curr_time, True, True, self.is_bagger_clause)) as cursor:
+                                    (self.player_id, self.roster_leave_id, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     registration_ids: list[int] = [row[0] for row in rows]
                 # if any of these squads the player was in previously are also linked to the new roster,
@@ -334,15 +362,43 @@ class ForceTransferPlayerCommand(Command[None]):
                                     JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
                                     AND p.is_bagger_clause = ?""",
-                                    (self.player_id, self.roster_id, curr_time, True, True, self.is_bagger_clause)) as cursor:
+                                    (self.player_id, self.roster_id, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         if row[0] in registration_ids:
                             registration_ids.remove(row[0])
                 # finally remove the player from all the tournaments they shouldn't be in
                 await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
+
+                # get all team tournament rosters the player is in where registrations have closed and they should be marked as ineligible
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 0 AND t.team_members_only = 1
+                                    AND t.sync_team_rosters = 1 AND t.date_end > ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (self.player_id, self.roster_leave_id, curr_time, self.is_bagger_clause)) as cursor:
+                    rows = await cursor.fetchall()
+                    registration_ids: list[int] = [row[0] for row in rows]
+                # if any of these squads the player was in previously are also linked to the new roster,
+                # (such as when transferring between two rosters of same team), we don't want to mark them as ineligible
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 0 AND t.team_members_only = 1
+                                    AND t.sync_team_rosters = 1 AND t.date_end > ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (self.player_id, self.roster_id, curr_time, self.is_bagger_clause)) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        if row[0] in registration_ids:
+                            registration_ids.remove(row[0])
+                # finally mark the player as ineligible from any tournaments their old team was in
+                await db.execute(f"UPDATE tournament_players SET is_eligible = 0 WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
 
             # next we want to automatically add the transferred player to any team tournaments where that team is registered
             # and registrations are open

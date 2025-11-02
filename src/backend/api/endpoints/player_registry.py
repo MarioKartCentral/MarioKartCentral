@@ -179,6 +179,13 @@ async def get_player_transfer_history(request: Request) -> JSONResponse:
     result = await handle(command)
     return JSONResponse(result)
 
+@require_permission(permissions.EDIT_PLAYER)
+async def toggle_transfer_item_visibility(request: Request) -> JSONResponse:
+    player_id = int(request.path_params['player_id'])
+    item_id = int(request.path_params['item_id'])
+    await handle(ToggleTransferHistoryItemVisibilityCommand(item_id, player_id))
+    return JSONResponse({})
+
 @bind_request_body(ClaimPlayerRequestData)
 @require_logged_in()
 async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONResponse:
@@ -252,4 +259,5 @@ routes = [
     Route('/api/registry/players/denyClaim', deny_player_claim, methods=['POST']), # dispatches notification
     Route('/api/registry/players/claims', list_player_claims),
     Route('/api/registry/players/merge', merge_players, methods=['POST']),
+    Route('/api/registry/players/{player_id:int}/toggleTransferItemVisibility/{item_id:int}', toggle_transfer_item_visibility, methods=['POST']),
 ]

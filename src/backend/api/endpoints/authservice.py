@@ -57,9 +57,9 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
         await handle(LogFingerprintCommand(body.fingerprint))
         
     resp = JSONResponse(return_user, status_code=200, background=BackgroundTask(log_ip_fingerprint))
-    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()), secure=appsettings.SECURE_HTTP_COOKIES, httponly=True)
     if not persistent_session_id:
-        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=appsettings.SECURE_HTTP_COOKIES, httponly=True)
     return resp
 
 @bind_request_body(SignupRequestData)
@@ -105,9 +105,9 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
         await handle(LogFingerprintCommand(body.fingerprint))
 
     resp = JSONResponse(user, status_code=201, background=BackgroundTask(send_email_and_log))
-    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
+    resp.set_cookie('session', session.session_id, max_age=int(session.max_age.total_seconds()), secure=appsettings.SECURE_HTTP_COOKIES, httponly=True)
     if not persistent_session_id:
-        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=True, httponly=True)
+        resp.set_cookie('persistentSession', session.persistent_session_id, max_age=int(session.max_age.total_seconds()), secure=appsettings.SECURE_HTTP_COOKIES, httponly=True)
     return resp
 
 @require_logged_in(session_only=True)

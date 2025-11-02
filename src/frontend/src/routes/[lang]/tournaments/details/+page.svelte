@@ -42,7 +42,9 @@
     <Accordion>
       <AccordionItem open>
         <span slot="header">{$LL.TOURNAMENTS.DESCRIPTION()}</span>
-        <MarkdownBox content={tournament.use_series_description ? String(tournament.series_description) : tournament.description} />
+        <MarkdownBox
+          content={tournament.use_series_description ? String(tournament.series_description) : tournament.description}
+        />
       </AccordionItem>
       <AccordionItem open>
         <span slot="header">{$LL.TOURNAMENTS.RULES()}</span>
@@ -50,8 +52,8 @@
       </AccordionItem>
     </Accordion>
   </Section>
-  <TournamentPosts {tournament}/>
-  <PlacementsDisplay {tournament}/>
+  <TournamentPosts {tournament} />
+  <PlacementsDisplay {tournament} />
   <TournamentRegisterPanel {tournament} />
   <Section header={$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATIONS()}>
     <TournamentRegistrations {tournament} />

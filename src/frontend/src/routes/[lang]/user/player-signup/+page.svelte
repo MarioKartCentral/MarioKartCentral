@@ -30,7 +30,16 @@
       if (fc === '') {
         continue;
       }
-      friend_codes.push({ id: 0, fc: fc.replaceAll(" ", "-"), type: types[i], is_primary: true, description: null, is_verified: false, is_active: true, creation_date: 0 });
+      friend_codes.push({
+        id: 0,
+        fc: fc.replaceAll(' ', '-'),
+        type: types[i],
+        is_primary: true,
+        description: null,
+        is_verified: false,
+        is_active: true,
+        creation_date: 0,
+      });
     }
 
     const payload = {
@@ -64,7 +73,7 @@
   {$LL.COMMON.LOGIN_REQUIRED()}
 {:else}
   <Section header={$LL.DISCORD.DISCORD()}>
-    <LinkDiscord/>
+    <LinkDiscord />
   </Section>
   <Section header={$LL.PLAYERS.PLAYER_SIGNUP.PLAYER_SIGNUP()}>
     <form method="post" on:submit|preventDefault={register}>
@@ -78,37 +87,37 @@
         <span class="item-label">
           <label for="country">{$LL.COMMON.COUNTRY()}</label>
         </span>
-        <CountrySelect is_required={true}/>
+        <CountrySelect is_required={true} />
       </div>
       <div class="field">
         <span class="item-label">
           <label for="switch_fc">{$LL.PLAYERS.PLAYER_SIGNUP.SWITCH_FC()}</label>
         </span>
-        <FcInput name="switch_fc" selected_type="switch"/>
+        <FcInput name="switch_fc" selected_type="switch" />
       </div>
       <div class="field">
         <span class="item-label">
           <label for="mkt_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKT_FC()}</label>
         </span>
-        <FcInput name="mkt_fc" selected_type="mkt"/>
+        <FcInput name="mkt_fc" selected_type="mkt" />
       </div>
       <div class="field">
         <span class="item-label">
           <label for="mkw_fc">{$LL.PLAYERS.PLAYER_SIGNUP.MKW_FC()}</label>
         </span>
-        <FcInput name="mkw_fc" selected_type="mkw"/>
+        <FcInput name="mkw_fc" selected_type="mkw" />
       </div>
       <div class="field">
         <span class="item-label">
           <label for="3ds_fc">{$LL.PLAYERS.PLAYER_SIGNUP['3DS_FC']()}</label>
         </span>
-        <FcInput name="3ds_fc" selected_type="3ds"/>
+        <FcInput name="3ds_fc" selected_type="3ds" />
       </div>
       <div class="field">
         <span class="item-label">
           <label for="nnid">{$LL.PLAYERS.PLAYER_SIGNUP.NNID()}</label>
         </span>
-        <FcInput name="nnid" selected_type="nnid"/>
+        <FcInput name="nnid" selected_type="nnid" />
       </div>
       <Button type="submit" {working}>{$LL.PLAYERS.PLAYER_SIGNUP.REGISTER()}</Button>
     </form>

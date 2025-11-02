@@ -17,7 +17,6 @@ span.badge {
   width: 110px;
 }
 .captain_badge {
-  width: 60px;
   font-weight: 700;
   background-color: #029dbd;
   border: 1px solid #027d99;
@@ -36,6 +35,10 @@ span.badge {
   font-weight: 700;
   background-color: #00bd6e;
   border: 1px solid #047942;
+}
+.ineligible_badge {
+  background-color: #a8a8a8;
+  border: 1px solid #929292;
 }
 
 .game_mkt_badge {

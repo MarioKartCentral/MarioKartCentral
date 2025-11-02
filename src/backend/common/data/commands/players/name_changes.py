@@ -46,14 +46,15 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
                                 JOIN players p ON r.player_id = p.id
                                 LEFT JOIN players p2 ON r.handled_by = p2.id
                                 WHERE r.approval_status = ? ORDER BY r.date DESC"""
-            async with db.execute(f"""SELECT p.id, p.country_code, r.id, r.old_name, r.new_name, r.date, r.approval_status, r.handled_by, p2.name, p2.country_code
+            async with db.execute(f"""SELECT p.id, p.country_code, r.id, r.old_name, r.new_name, r.date, r.approval_status, r.handled_by, p2.name, p2.country_code, p2.is_banned
                                   {request_query} LIMIT ? OFFSET ?""", (filter.approval_status, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_country, request_id, old_name, new_name, date, approval_status, handled_by_id, handled_by_name, handled_by_country = row
+                    (player_id, player_country, request_id, old_name, new_name, date, approval_status,
+                      handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
                     name_requests.append(PlayerNameRequest(request_id, player_id, player_country, old_name, new_name, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"

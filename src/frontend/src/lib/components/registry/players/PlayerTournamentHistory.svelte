@@ -8,7 +8,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
-  import PlayerName from '$lib/components/tournaments/registration/PlayerName.svelte';
+  import TournamentPlayerName from '$lib/components/tournaments/registration/TournamentPlayerName.svelte';
   export let player: PlayerInfo;
 
   let mode: string | null = null;
@@ -106,7 +106,7 @@
     <div class="w-full m-auto">
       <form on:submit|preventDefault={filterData}>
         <div class="flex flex-row flex-wrap items-center justify-center gap-2">
-          <GameModeSelect bind:game bind:mode all_option hide_labels is_team inline/>
+          <GameModeSelect bind:game bind:mode all_option hide_labels is_team inline />
           <div class="flex flex-row flex-wrap items-center justify-center gap-2">
             <div class="flex flex-row items-center">
               <div class="w-12 mx-2">{$LL.COMMON.FROM()}</div>
@@ -127,10 +127,10 @@
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.SOLO_TOURNAMENTS()}</h2>
         <div>
           <Table>
-            <col class="tournament"/>
-            <col class="date mobile-hide"/>
-            <col class="team mobile-hide"/>
-            <col class="placement"/>
+            <col class="tournament" />
+            <col class="date mobile-hide" />
+            <col class="team mobile-hide" />
+            <col class="placement" />
             <thead>
               <tr>
                 <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
@@ -141,11 +141,13 @@
             </thead>
             <tbody>
               {#each filtered_solo_placements as placement, i}
-                <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
+                <tr
+                  class={placement.placement && placement.placement <= 3
+                    ? podium_style[placement.placement]
+                    : `row-${i % 2}`}
+                >
                   <td>
-                    <a
-                      href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
-                    >
+                    <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                       {placement.tournament_name}
                     </a>
                   </td>
@@ -155,9 +157,7 @@
                   </td>
                   {#if placement.squad_name}
                     <td class="mobile-hide">
-                      <a
-                        href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
-                      >
+                      <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                         {placement.squad_name}
                       </a>
                     </td>
@@ -167,9 +167,9 @@
                         {#each placement.partners as partner, i}
                           <div>
                             {#if i + 1 < placement.partners.length}
-                              <PlayerName player_id={partner.player_id} name="{partner.player_name}," />
+                              <TournamentPlayerName player_id={partner.player_id} name="{partner.player_name}," />
                             {:else}
-                              <PlayerName player_id={partner.player_id} name={partner.player_name}/>
+                              <TournamentPlayerName player_id={partner.player_id} name={partner.player_name} />
                             {/if}
                           </div>
                         {/each}
@@ -198,10 +198,10 @@
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2>
         <div>
           <Table>
-            <col class="tournament"/>
-            <col class="team mobile-hide"/>
-            <col class="date mobile-hide"/>
-            <col class="placement"/>
+            <col class="tournament" />
+            <col class="team mobile-hide" />
+            <col class="date mobile-hide" />
+            <col class="placement" />
             <thead>
               <tr>
                 <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
@@ -212,11 +212,13 @@
             </thead>
             <tbody>
               {#each filtered_team_placements as placement, i}
-                <tr class="{placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : `row-${i % 2}`}">
+                <tr
+                  class={placement.placement && placement.placement <= 3
+                    ? podium_style[placement.placement]
+                    : `row-${i % 2}`}
+                >
                   <td>
-                    <a
-                      href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}"
-                    >
+                    <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                       {placement.tournament_name}
                     </a>
                   </td>
@@ -227,14 +229,11 @@
                   {#if placement.registration_id != null && placement.squad_name != null}
                     <td class="mobile-hide">
                       {#if placement.team_id}
-                        <a
-                          href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}"
-                        >
+                        <a href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}">
                           {placement.squad_name}
                         </a>
                       {:else}
-                        <a
-                          href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                        <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                           {placement.squad_name}
                         </a>
                       {/if}
@@ -274,7 +273,7 @@
     width: 20%;
   }
   .gold {
-    background-color: rgba(255, 254, 149, 0.30);
+    background-color: rgba(255, 254, 149, 0.3);
     color: #fffab0;
   }
   .silver {
@@ -282,7 +281,7 @@
     color: #dcfffc;
   }
   .bronze {
-    background-color: rgba(255, 158, 110, 0.30);
+    background-color: rgba(255, 158, 110, 0.3);
     color: #ffcbae;
   }
 </style>

@@ -20,7 +20,11 @@
     user_info = value;
   });
 
-  let type = tournament.is_squad ? (tournament.teams_allowed ? $LL.TOURNAMENTS.TYPES.TEAM() : $LL.TOURNAMENTS.TYPES.SQUAD()) : $LL.TOURNAMENTS.TYPES.SOLO();
+  let type = tournament.is_squad
+    ? tournament.teams_allowed
+      ? $LL.TOURNAMENTS.TYPES.TEAM()
+      : $LL.TOURNAMENTS.TYPES.SQUAD()
+    : $LL.TOURNAMENTS.TYPES.SOLO();
   let date_start = new Date(tournament.date_start * 1000);
   let date_end = new Date(tournament.date_end * 1000);
   let registration_deadline = tournament.registration_deadline
@@ -41,11 +45,16 @@
 <Section header={$LL.TOURNAMENTS.INFO.INFO()}>
   <div slot="header_content">
     {#if check_tournament_permission(user_info, tournament_permissions.edit_tournament, tournament.id, tournament.series_id)}
-      <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}">{$LL.TOURNAMENTS.EDIT_TOURNAMENT()}</Button>
-      <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}">{$LL.TOURNAMENTS.EDIT_PLACEMENTS()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/edit?id={tournament.id}"
+        >{$LL.TOURNAMENTS.EDIT_TOURNAMENT()}</Button
+      >
+      <Button href="/{$page.params.lang}/tournaments/edit_placements?id={tournament.id}"
+        >{$LL.TOURNAMENTS.EDIT_PLACEMENTS()}</Button
+      >
     {/if}
     {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_roles, tournament.id, tournament.series_id)}
-      <Button href="/{$page.params.lang}/tournaments/manage_roles?id={tournament.id}">{$LL.ROLES.MANAGE_ROLES()}</Button>
+      <Button href="/{$page.params.lang}/tournaments/manage_roles?id={tournament.id}">{$LL.ROLES.MANAGE_ROLES()}</Button
+      >
     {/if}
   </div>
   <div class="centered">
@@ -56,12 +65,11 @@
       {tournament.name}
     </div>
     <div class="badges">
-      <GameBadge game={tournament.game}/>
-      <ModeBadge mode={tournament.mode}/>
-      <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed}/>
-      <OrganizerBadge organizer={tournament.organizer}/>
+      <GameBadge game={tournament.game} />
+      <ModeBadge mode={tournament.mode} />
+      <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed} />
+      <OrganizerBadge organizer={tournament.organizer} />
     </div>
-    
   </div>
   <hr />
   <div class="wrapper">
@@ -72,7 +80,10 @@
           {date_start.toLocaleString($locale, options)} - {date_end.toLocaleString($locale, options)}
         </li>
         {#if registration_deadline}
-          <li><b>{$LL.TOURNAMENTS.INFO.REGISTRATION_DEADLINE()}</b> {registration_deadline.toLocaleString($locale, options)}</li>
+          <li>
+            <b>{$LL.TOURNAMENTS.INFO.REGISTRATION_DEADLINE()}</b>
+            {registration_deadline.toLocaleString($locale, options)}
+          </li>
         {/if}
         {#if tournament.location}
           <li><b>{$LL.TOURNAMENTS.INFO.LOCATION()}</b> {tournament.location}</li>
@@ -89,7 +100,12 @@
           {/if}
         {/if}
         {#if tournament.series_name}
-          <li><b>{$LL.TOURNAMENTS.INFO.PART_OF_SERIES()}</b> <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}">{tournament.series_name}</a></li>
+          <li>
+            <b>{$LL.TOURNAMENTS.INFO.PART_OF_SERIES()}</b>
+            <a href="/{$page.params.lang}/tournaments/series/details?id={tournament.series_id}"
+              >{tournament.series_name}</a
+            >
+          </li>
         {/if}
       </ul>
     </div>

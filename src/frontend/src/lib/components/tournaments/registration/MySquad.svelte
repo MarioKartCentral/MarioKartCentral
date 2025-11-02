@@ -47,7 +47,7 @@
       registration_id: registration.squad.id,
       player_id: player.id,
       is_representative: false,
-      is_bagger_clause: invite_as_bagger
+      is_bagger_clause: invite_as_bagger,
     };
     const endpoint = `/api/tournaments/${tournament.id}/invitePlayer`;
     const response = await fetch(endpoint, {
@@ -124,7 +124,7 @@
 {/if}
 <div>
   {#if tournament.squad_tag_required}
-    <TagBadge tag={registration.squad.tag} color={registration.squad.color}/>
+    <TagBadge tag={registration.squad.tag} color={registration.squad.color} />
   {/if}
   {#if tournament.squad_name_required}
     {registration.squad.name}
@@ -132,22 +132,21 @@
 </div>
 {#if tournament.is_squad}
   <div>
-    {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({count: registered_players.length})}
+    {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({ count: registered_players.length })}
   </div>
 {/if}
-<TournamentPlayerList {tournament} players={registered_players} {registration}/>
+<TournamentPlayerList {tournament} players={registered_players} {registration} />
 
 {#if invited_players.length > 0}
   <div>
-    {$LL.TOURNAMENTS.REGISTRATIONS.INVITED_PLAYER_COUNT({count: invited_players.length})}
+    {$LL.TOURNAMENTS.REGISTRATIONS.INVITED_PLAYER_COUNT({ count: invited_players.length })}
   </div>
-  <TournamentPlayerList {tournament} players={invited_players} {registration} exclude_invites={false}/>
+  <TournamentPlayerList {tournament} players={invited_players} {registration} exclude_invites={false} />
 {/if}
 
 {#if check_registrations_open(tournament) && registration.is_squad_captain}
   <!-- If registrations are open and our squad is not full and we are the squad captain -->
-  {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) &&
-    (!tournament.max_squad_size || registration.squad.players.length < tournament.max_squad_size)}
+  {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) && (!tournament.max_squad_size || registration.squad.players.length < tournament.max_squad_size)}
     <div>
       <div><b>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYERS()}</b></div>
       <PlayerSearch
@@ -169,7 +168,9 @@
         </div>
       {/if}
       <div class="section">
-        <Button {working} on:click={() => invitePlayer(invite_player)}>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYER()}</Button>
+        <Button {working} on:click={() => invitePlayer(invite_player)}
+          >{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYER()}</Button
+        >
       </div>
     {/if}
   {/if}
@@ -180,14 +181,21 @@
     {/if}
     <Button on:click={unregisterSquad}>{$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_SQUAD()}</Button>
     {#if tournament.teams_allowed}
-      <Button on:click={() => manage_rosters_dialog.open(registration.squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</Button>
+      <Button on:click={() => manage_rosters_dialog.open(registration.squad)}
+        >{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</Button
+      >
     {/if}
   </div>
 {/if}
 
 <Dialog bind:this={edit_squad_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD_REGISTRATION()}>
   <form method="POST" on:submit|preventDefault={editSquad}>
-    <SquadTournamentFields {tournament} squad_color={registration.squad.color} squad_name={registration.squad.name} squad_tag={registration.squad.tag} />
+    <SquadTournamentFields
+      {tournament}
+      squad_color={registration.squad.color}
+      squad_name={registration.squad.name}
+      squad_tag={registration.squad.tag}
+    />
     <br />
     <div>
       <Button {working} type="submit">{$LL.TOURNAMENTS.REGISTRATIONS.EDIT_SQUAD()}</Button>
@@ -195,7 +203,7 @@
     </div>
   </form>
 </Dialog>
-<ManageSquadRosters bind:this={manage_rosters_dialog} {tournament}/>
+<ManageSquadRosters bind:this={manage_rosters_dialog} {tournament} />
 
 <style>
   div.section {

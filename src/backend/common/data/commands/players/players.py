@@ -291,11 +291,12 @@ class ListPlayersCommand(Command[PlayerList]):
                     fc_where_clauses.append("fc LIKE ?")
                     variable_parameters.append(f"%{filter.friend_code}%")
 
-                # check names and friend codes
+                # check names and friend codes and discord ids
                 if filter.name_or_fc:
-                    fc_where_clauses.append("(f.fc LIKE ? OR p2.name LIKE ?)")
+                    fc_where_clauses.append("(f.fc LIKE ? OR p2.name LIKE ? OR d2.discord_id = ?)")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
+                    variable_parameters.append(filter.name_or_fc)
 
                 if filter.fc_type is not None:
                     # used when manually registering players for a tournament,
@@ -308,7 +309,12 @@ class ListPlayersCommand(Command[PlayerList]):
                     variable_parameters.append(filter.fc_type)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
-                where_clauses.append(f"p.id IN (SELECT p2.id FROM players p2 LEFT JOIN friend_codes f ON p2.id = f.player_id WHERE {fc_where_clauses_str})")
+                where_clauses.append(f"""p.id IN 
+                                            (SELECT p2.id FROM players p2 
+                                            LEFT JOIN friend_codes f ON p2.id = f.player_id
+                                            LEFT JOIN users u2 ON u2.player_id = p2.id
+                                            LEFT JOIN user_discords d2 ON u2.id = d2.user_id
+                                            WHERE {fc_where_clauses_str})""")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
             order_by = 'p.join_date' if filter.sort_by_newest else 'name'
@@ -420,7 +426,7 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
     async def handle(self, db_wrapper: DBWrapper):
         history: list[PlayerTransferItem] = []
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.join_date, tm.leave_date, tm.is_bagger_clause, tr.name as "roster_name"
+            async with db.execute('''SELECT t.id, t.name as "team_name", tr.game, tr.mode, tm.id, tm.join_date, tm.leave_date, tm.is_bagger_clause, tm.is_hidden, tr.name as "roster_name"
                 FROM team_members as tm
                 JOIN team_rosters as tr
                 ON tm.roster_id = tr.id
@@ -432,7 +438,17 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                 (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    team_id, team_name, game, mode, join_date, leave_date, is_bagger_clause, roster_name = row
-                    history.append(PlayerTransferItem(team_id, team_name, game, mode, join_date, leave_date, bool(is_bagger_clause), roster_name))
+                    team_id, team_name, game, mode, item_id, join_date, leave_date, is_bagger_clause, is_hidden, roster_name = row
+                    history.append(PlayerTransferItem(item_id, team_id, team_name, game, mode, join_date, leave_date, bool(is_bagger_clause), roster_name, bool(is_hidden)))
                 results = PlayerTransferHistory(history)
                 return results
+
+@dataclass
+class ToggleTransferHistoryItemVisibilityCommand(Command[None]):
+    item_id: int
+    player_id: int
+
+    async def handle(self, db_wrapper: DBWrapper):
+        async with db_wrapper.connect() as db:
+            await db.execute("UPDATE team_members SET is_hidden = NOT is_hidden WHERE id = ? AND player_id = ?", (self.item_id, self.player_id))
+            await db.commit()

@@ -14,7 +14,7 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
         edits: list[RosterEdit] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
-                                  t.color, t.id, re.handled_by, p.name, p.country_code 
+                                  t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
                                   FROM roster_edits re JOIN team_rosters r ON re.roster_id = r.id
                                   JOIN teams t ON r.team_id = t.id
                                   LEFT JOIN players p ON re.handled_by = p.id
@@ -23,10 +23,10 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, roster_id, old_name, new_name, old_tag, new_tag, date, 
-                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country) = row
+                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
                     edits.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
         return edits
     
@@ -175,17 +175,30 @@ class LeaveRosterCommand(Command[None]):
             # players leaving a roster goes into the transfer history too
             await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
                              VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, leave_date, self.roster_id, True, "approved", False))
-            # get all team tournament rosters the player is in where the tournament hasn't ended yet
+            # get all team tournament rosters the player is in where registrations haven't closed yet
             async with db.execute("""SELECT p.registration_id FROM tournament_players p
                                 JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                 JOIN tournaments t ON p.tournament_id = t.id
                                 WHERE p.player_id = ? AND s.roster_id = ?
-                                AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
-                                (self.player_id, self.roster_id, leave_date, True, True)) as cursor:
+                                AND t.registrations_open = 1 AND t.team_members_only = 1""",
+                                (self.player_id, self.roster_id)) as cursor:
                 rows = await cursor.fetchall()
                 registration_ids: list[int] = [row[0] for row in rows]
             # finally remove the player from all the tournaments they shouldn't be in
             await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
+
+            # get all team tournament rosters the player is in where registrations have closed and they should be marked as ineligible
+            async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                JOIN tournaments t ON p.tournament_id = t.id
+                                WHERE p.player_id = ? AND s.roster_id = ?
+                                AND t.registrations_open = 0 AND t.team_members_only = 1
+                                AND t.sync_team_rosters = 1 AND t.date_end > ?""",
+                                (self.player_id, self.roster_id, leave_date)) as cursor:
+                rows = await cursor.fetchall()
+                registration_ids: list[int] = [row[0] for row in rows]
+            # finally mark the player as ineligible from any tournaments their old team was in
+            await db.execute(f"UPDATE tournament_players SET is_eligible = 0 WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
 
             # remove user's team roles if they are no longer in a roster for this team
             if user_id is not None:
@@ -347,15 +360,15 @@ class ListRosterEditRequestsCommand(Command[RosterEditList]):
                                 LEFT JOIN players p ON re.handled_by = p.id
                                 WHERE re.approval_status = ?"""
             async with db.execute(f"""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
-                                  t.color, t.id, re.handled_by, p.name, p.country_code 
+                                  t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
                                   {request_query} ORDER BY re.date LIMIT ? OFFSET ?""", (filter.approval_status, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, roster_id, old_name, new_name, old_tag, new_tag, date, 
-                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country) = row
+                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country)
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
                     requests.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"
@@ -570,17 +583,32 @@ class EditTeamMemberCommand(Command[None]):
                 await db.execute("""INSERT INTO team_transfers(player_id, roster_id, date, roster_leave_id, is_accepted, approval_status, is_bagger_clause)
                                     VALUES(?, ?, ?, ?, ?, ?, ?)""", (self.player_id, None, self.leave_date, self.roster_id, True, "approved", member_is_bagger))
 
-                # get all team tournament rosters the player is in where the tournament hasn't ended yet
+                # get all team tournament rosters the player is in where registrations haven't closed yet
                 async with db.execute("""SELECT p.registration_id FROM tournament_players p
                                     JOIN team_squad_registrations s ON p.registration_id = s.registration_id
                                     JOIN tournaments t ON p.tournament_id = t.id
                                     WHERE p.player_id = ? AND s.roster_id = ?
-                                    AND (t.date_end > ? OR t.registrations_open = ?) AND t.team_members_only = ?""",
-                                    (self.player_id, self.roster_id, self.leave_date, True, True)) as cursor:
+                                    AND t.registrations_open = 1 AND t.team_members_only = 1
+                                    AND p.is_bagger_clause = ?""",
+                                    (self.player_id, self.roster_id, self.is_bagger_clause)) as cursor:
                     rows = await cursor.fetchall()
                     registration_ids: list[int] = [row[0] for row in rows]
                 # finally remove the player from all the tournaments they shouldn't be in
                 await db.execute(f"DELETE FROM tournament_players WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
+
+                # get all team tournament rosters the player is in where registrations have closed and they should be marked as ineligible
+                async with db.execute("""SELECT p.registration_id FROM tournament_players p
+                                    JOIN team_squad_registrations s ON p.registration_id = s.registration_id
+                                    JOIN tournaments t ON p.tournament_id = t.id
+                                    WHERE p.player_id = ? AND s.roster_id = ?
+                                    AND t.registrations_open = 0 AND t.team_members_only = 1
+                                    AND t.sync_team_rosters = 1 AND t.date_end > ?
+                                    AND p.is_bagger_clause = ?""",
+                                    (self.player_id, self.roster_id, self.leave_date, self.is_bagger_clause)) as cursor:
+                    rows = await cursor.fetchall()
+                    registration_ids: list[int] = [row[0] for row in rows]
+                # finally mark the player as ineligible from any tournaments their old team was in
+                await db.execute(f"UPDATE tournament_players SET is_eligible = 0 WHERE player_id = ? AND registration_id IN ({','.join(map(str, registration_ids))})", (self.player_id,))
                     
                 # remove user's team roles if they are no longer in a roster for this team
                 if user_id is not None:

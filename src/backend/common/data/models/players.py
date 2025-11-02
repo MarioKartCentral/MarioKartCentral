@@ -38,6 +38,7 @@ class PlayerRoster:
 
 @dataclass
 class PlayerTransferItem:
+    id: int
     team_id: int
     team_name: str
     game: str
@@ -46,6 +47,7 @@ class PlayerTransferItem:
     leave_date: int | None
     is_bagger_clause: bool
     roster_name: str
+    is_hidden: bool
 
 @dataclass
 class PlayerTransferHistory:
