@@ -1,11 +1,25 @@
-from typing import Awaitable, Callable, Concatenate
+from collections.abc import Awaitable, Callable
+from typing import Concatenate
 from starlette.requests import Request
 from starlette.responses import Response
+from opentelemetry import trace
 from api.data import handle
 from api.utils.responses import ProblemResponse
 from common.data.commands import *
 from common.data.models import Problem, User
 from common.auth import permissions, series_permissions, tournament_permissions
+
+def _set_user_span_attributes(user: User | None):
+    """Add user context to the current span for tracing."""
+    span = trace.get_current_span()
+    if span.is_recording():
+        if user:
+            span.set_attribute("user.id", user.id)
+            if user.player_id:
+                span.set_attribute("user.player_id", user.player_id)
+            span.set_attribute("user.authenticated", True)
+        else:
+            span.set_attribute("user.authenticated", False)
 
 # returns user and session ID
 # session_only: only use cookies and not authorization header
@@ -30,6 +44,7 @@ def get_user_info[**P](handle_request: Callable[Concatenate[Request, P], Awaitab
         user, session_id = await get_user(request)
         request.state.session_id = session_id
         request.state.user = user
+        _set_user_span_attributes(user)
         return await handle_request(request, *args, **kwargs)
     return wrapper
 
@@ -38,12 +53,14 @@ def require_logged_in(session_only: bool=False):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
             if not user:
+                _set_user_span_attributes(None)
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
             
             request.state.session_id = session_id
             request.state.user = user
+            _set_user_span_attributes(user)
             return await handle_request(request, *args, **kwargs)
         return wrapper
     return require_logged_in_decorator
@@ -54,6 +71,7 @@ def require_permission(permission_name: str, check_denied_only: bool=False, sess
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
             if not user:
+                _set_user_span_attributes(None)
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -62,8 +80,20 @@ def require_permission(permission_name: str, check_denied_only: bool=False, sess
             if user_has_permission:
                 request.state.session_id = session_id
                 request.state.user = user
+                _set_user_span_attributes(user)
+                # Add permission check result to span
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.granted", True)
                 return await handle_request(request, *args, **kwargs)
             else:
+                _set_user_span_attributes(user)
+                # Add permission denial to span
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.granted", False)
                 raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
         return wrapper
     return has_permission_decorator
@@ -73,6 +103,7 @@ def require_team_permission(permission_name: str, check_denied_only: bool=False,
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
             if not user:
+                _set_user_span_attributes(None)
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -91,8 +122,23 @@ def require_team_permission(permission_name: str, check_denied_only: bool=False,
             if user_has_permission:
                 request.state.session_id = session_id
                 request.state.user = user
+                _set_user_span_attributes(user)
+                # Add permission check result to span
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.scope", "team")
+                    span.set_attribute("auth.team_id", int(team_id))
+                    span.set_attribute("auth.granted", True)
                 return await handle_request(request, *args, **kwargs)
             else:
+                _set_user_span_attributes(user)
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.scope", "team")
+                    span.set_attribute("auth.team_id", int(team_id))
+                    span.set_attribute("auth.granted", False)
                 raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
         return wrapper
     return has_permission_decorator
@@ -102,6 +148,7 @@ def require_series_permission(permission_name: str, check_denied_only: bool=Fals
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
             if not user:
+                _set_user_span_attributes(None)
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -122,8 +169,25 @@ def require_series_permission(permission_name: str, check_denied_only: bool=Fals
             if user_has_permission:
                 request.state.session_id = session_id
                 request.state.user = user
+                _set_user_span_attributes(user)
+                # Add permission check result to span
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.scope", "series")
+                    if series_id is not None:
+                        span.set_attribute("auth.series_id", series_id)
+                    span.set_attribute("auth.granted", True)
                 return await handle_request(request, *args, **kwargs)
             else:
+                _set_user_span_attributes(user)
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.scope", "series")
+                    if series_id is not None:
+                        span.set_attribute("auth.series_id", series_id)
+                    span.set_attribute("auth.granted", False)
                 raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
         return wrapper
     return has_permission_decorator
@@ -133,6 +197,7 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool=
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             user, session_id = await get_user(request, session_only)
             if not user:
+                _set_user_span_attributes(None)
                 resp = ProblemResponse(Problem("Not logged in", status=401))
                 resp.delete_cookie("session")
                 return resp
@@ -152,8 +217,23 @@ def require_tournament_permission(permission_name: str, check_denied_only: bool=
             if user_has_permission:
                 request.state.session_id = session_id
                 request.state.user = user
+                _set_user_span_attributes(user)
+                # Add permission check result to span
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.scope", "tournament")
+                    span.set_attribute("auth.tournament_id", int(tournament_id))
+                    span.set_attribute("auth.granted", True)
                 return await handle_request(request, *args, **kwargs)
             else:
+                _set_user_span_attributes(user)
+                span = trace.get_current_span()
+                if span.is_recording():
+                    span.set_attribute("auth.permission", permission_name)
+                    span.set_attribute("auth.scope", "tournament")
+                    span.set_attribute("auth.tournament_id", int(tournament_id))
+                    span.set_attribute("auth.granted", False)
                 raise Problem("Insufficient permission", f"User does not have required permission \'{permission_name}\'", status=401)
         return wrapper
     return has_permission_decorator

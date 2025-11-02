@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from datetime import timezone
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from datetime import datetime, timezone
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class InvitePlayerCommand(Command[None]):
     player_id: int
@@ -62,7 +61,6 @@ class InvitePlayerCommand(Command[None]):
                              (self.player_id, self.roster_id, creation_date, self.is_bagger_clause, False, "pending"))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DeleteInviteCommand(Command[None]):
     player_id: int
@@ -84,7 +82,6 @@ class DeleteInviteCommand(Command[None]):
                     raise Problem("Invite not found", status=404)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class AcceptInviteCommand(Command[None]):
     invite_id: int
@@ -121,7 +118,6 @@ class AcceptInviteCommand(Command[None]):
             await db.execute("UPDATE team_transfers SET roster_leave_id = ?, is_accepted = ?, date = ? WHERE id = ?", (self.roster_leave_id, True, now, self.invite_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DeclineInviteCommand(Command[None]):
     invite_id: int

@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from datetime import timezone
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from datetime import datetime, timezone
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class ApproveTransferCommand(Command[None]):
     invite_id: int
@@ -131,7 +130,6 @@ class ApproveTransferCommand(Command[None]):
                     await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, leave_team_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyTransferCommand(Command[None]):
     invite_id: int
@@ -268,7 +266,6 @@ class ViewTransfersCommand(Command[TransferList]):
                 page_count = int(transfer_count / limit) + (1 if transfer_count % limit else 0)
         return TransferList(transfers, transfer_count, page_count)
     
-@save_to_command_log
 @dataclass
 class ForceTransferPlayerCommand(Command[None]):
     player_id: int
@@ -393,7 +390,6 @@ class ForceTransferPlayerCommand(Command[None]):
 
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ToggleTeamMemberBaggerCommand(Command[None]):
     roster_id: int

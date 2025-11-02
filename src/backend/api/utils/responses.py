@@ -1,5 +1,6 @@
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Concatenate
+from typing import Any, Concatenate
 import msgspec
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse as StarletteJSONResponse

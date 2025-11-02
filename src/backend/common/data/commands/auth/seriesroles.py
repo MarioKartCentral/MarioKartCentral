@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from common.auth import series_permissions
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -57,7 +57,6 @@ class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
             role_info = SeriesRoleInfo(self.role_id, role_name, position, permissions, players, self.series_id)
             return role_info
 
-@save_to_command_log
 @dataclass
 class GrantSeriesRoleCommand(Command[None]):
     granter_user_id: int
@@ -130,7 +129,6 @@ class GrantSeriesRoleCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
             
-@save_to_command_log
 @dataclass
 class RemoveSeriesRoleCommand(Command[None]):
     remover_user_id: int

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from common.auth import team_permissions, team_roles
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 @dataclass
@@ -30,7 +30,6 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
                     edits.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
         return edits
     
-@save_to_command_log
 @dataclass
 class CreateRosterCommand(Command[None]):
     team_id: int
@@ -83,7 +82,6 @@ class CreateRosterCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             await db.commit()
 
-@save_to_command_log     
 @dataclass
 class EditRosterCommand(Command[None]):
     roster_id: int
@@ -141,7 +139,6 @@ class EditRosterCommand(Command[None]):
                              (self.team_id, name, tag, self.is_recruiting, self.is_active, self.approval_status, self.roster_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ManagerEditRosterCommand(Command[None]):
     roster_id: int
@@ -157,7 +154,6 @@ class ManagerEditRosterCommand(Command[None]):
                 await db.commit()
 
 
-@save_to_command_log
 @dataclass
 class LeaveRosterCommand(Command[None]):
     player_id: int
@@ -207,7 +203,6 @@ class LeaveRosterCommand(Command[None]):
                     await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, team_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class RequestEditRosterCommand(Command[None]):
     roster_id: int
@@ -253,7 +248,6 @@ class RequestEditRosterCommand(Command[None]):
                              (self.roster_id, roster_name, name, roster_tag, tag, creation_date, "pending"))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ApproveRosterCommand(Command[None]):
     team_id: int
@@ -276,7 +270,6 @@ class ApproveRosterCommand(Command[None]):
             await db.execute("UPDATE team_rosters SET approval_status = 'approved' WHERE id = ?", (self.roster_id,))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyRosterCommand(Command[None]):
     team_id: int
@@ -299,7 +292,6 @@ class DenyRosterCommand(Command[None]):
             await db.execute("UPDATE team_rosters SET approval_status = 'denied' WHERE id = ?", (self.roster_id,))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ApproveRosterEditCommand(Command[None]):
     request_id: int
@@ -324,7 +316,6 @@ class ApproveRosterEditCommand(Command[None]):
             await db.execute("UPDATE roster_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyRosterEditCommand(Command[None]):
     request_id: int
@@ -547,7 +538,6 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
                         player_fcs.append(FriendCode(fc_id, fc, type, player_id, bool(is_verified), bool(is_primary), creation_date, is_active=bool(is_active)))
             return rosters
 
-@save_to_command_log
 @dataclass
 class EditTeamMemberCommand(Command[None]):
     player_id: int

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 import msgspec
@@ -8,7 +8,6 @@ from typing import Any
 
 from common.data.s3 import POST_BUCKET, S3Wrapper
 
-@save_to_command_log
 @dataclass
 class CreatePostCommand(Command[int]):
     title: str

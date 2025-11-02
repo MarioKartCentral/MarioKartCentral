@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Dict
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone, timedelta
 import secrets
@@ -59,7 +58,7 @@ class CreateSessionCommand(Command[SessionInfo]):
                 INSERT INTO sessions(session_id, user_id, expires_on) 
                 VALUES (:session_id, :user_id, :expires_on)
             """
-            session_params: Dict[str, Any] = {
+            session_params: dict[str, Any] = {
                 "session_id": session_id, 
                 "user_id": self.user_id, 
                 "expires_on": int(expiration_date.timestamp())
@@ -95,7 +94,7 @@ class CreateSessionCommand(Command[SessionInfo]):
                 INSERT INTO user_logins(user_id, ip_address_id, session_id, persistent_session_id, fingerprint, had_persistent_session, date)
                 VALUES(:user_id, :ip_address_id, :session_id, :persistent_session_id, :fingerprint, :had_persistent_session, :date)
             """
-            login_params: Dict[str, Any] = {
+            login_params: dict[str, Any] = {
                 "user_id": self.user_id, 
                 "ip_address_id": ip_address_id, 
                 "session_id": session_id, 

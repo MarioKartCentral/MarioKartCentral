@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from typing import Any
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 
-@save_to_command_log
 @dataclass
 class CreateUserSettingsCommand(Command[None]):
     user_id: int
@@ -36,7 +35,6 @@ class GetUserSettingsCommand(Command[UserSettings | None]):
 
         return UserSettings(self.user_id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
     
-@save_to_command_log
 @dataclass
 class EditUserSettingsCommand(Command[bool]):
     user_id: int
@@ -66,7 +64,7 @@ class EditUserSettingsCommand(Command[bool]):
             raise Problem("Bad request body", detail="There are no values to set")
 
         async with db_wrapper.connect() as db:
-            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"""
+            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"
             variable_parameters.append(self.user_id)
             async with db.execute(update_query, variable_parameters) as cursor:
                 if cursor.rowcount != 1:
@@ -75,7 +73,6 @@ class EditUserSettingsCommand(Command[bool]):
             await db.commit()
             return True
         
-@save_to_command_log
 @dataclass
 class EditPlayerUserSettingsCommand(Command[None]):
     data: EditPlayerUserSettingsRequestData
@@ -109,7 +106,7 @@ class EditPlayerUserSettingsCommand(Command[None]):
             if not set_clauses:
                 raise Problem("Bad request body", detail="There are no values to set")
 
-            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"""
+            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"
             variable_parameters.append(user_id)
             await db.execute(update_query, variable_parameters)
             await db.commit()

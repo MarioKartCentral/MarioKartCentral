@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, List, Tuple
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
+from typing import Any
+from common.data.command import Command
+from common.data.db import DBWrapper
 
 class GranularityLevel(Enum):
     NONE = 0
@@ -27,7 +27,7 @@ class CompressUserActivityTimeRangesCommand(Command[None]):
     - > 30 days: 1 day windows
     """
     
-    def _get_compression_boundaries(self) -> List[Tuple[int, int, GranularityLevel]]:
+    def _get_compression_boundaries(self) -> list[tuple[int, int, GranularityLevel]]:
         """
         Returns a list of (timestamp_from, timestamp_to, target_granularity) tuples
         representing the time boundaries for each compression level

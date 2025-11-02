@@ -4,10 +4,10 @@ import asyncio
 import aiosqlite
 from datetime import datetime, timezone
 from dataclasses import dataclass
-from typing import List, Dict, Any, Tuple
+from typing import Any
 from pathlib import Path
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.s3 import DB_BACKUP_BUCKET, S3Wrapper
 
 
@@ -27,22 +27,22 @@ class DbBackupState:
 
 
 @dataclass
-class BackupDatabasesCommand(Command[List[BackupInfo]]):
+class BackupDatabasesCommand(Command[list[BackupInfo]]):
     """Create a backup of all database files and store it in S3, one file per DB"""
-    
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> List[BackupInfo]:
+
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> list[BackupInfo]:
         now = datetime.now(timezone.utc)
         backup_timestamp = int(now.timestamp())
         backup_set_prefix = now.strftime("%Y%m%d-%H%M%S")
-        
-        successful_backups: List[BackupInfo] = []
+
+        successful_backups: list[BackupInfo] = []
         
         # Helper function to create a single snapshot
         async def _perform_snapshot_creation(
             db_name_local: str,
             original_db_path_local: str,
             temp_snapshot_db_path_local: str
-        ) -> Tuple[str, str, bool, Exception | None]:
+        ) -> tuple[str, str, bool, Exception | None]:
             source_conn = None
             dest_conn = None
             temp_snapshot_path = Path(temp_snapshot_db_path_local)
@@ -150,20 +150,20 @@ class BackupSetInfo:
     backup_set_prefix: str  # Directory-like prefix in S3 (e.g., "YYYYMMDD-HHMMSS")
     created_at: int         # Unix timestamp derived from the prefix
     total_size_bytes: int   # Sum of sizes of all .db files in this set
-    s3_keys: List[str]      # List of full S3 keys for individual .db files in this set
+    s3_keys: list[str]      # List of full S3 keys for individual .db files in this set
 
 
 @dataclass
-class CleanupOldBackupsCommand(Command[List[str]]):
+class CleanupOldBackupsCommand(Command[list[str]]):
     """Remove old backup sets according to retention policy."""
     max_hourly_backup_days: int = 7
     max_backup_size_bytes: int = 1024 * 1024 * 1024 * 100  # 100 GB
 
-    async def handle(self, s3_wrapper: S3Wrapper) -> List[str]:
+    async def handle(self, s3_wrapper: S3Wrapper) -> list[str]:
         s3_objects = await s3_wrapper.list_objects(DB_BACKUP_BUCKET)
 
         # Group S3 objects by their common prefix (backup set)
-        backup_sets_data: Dict[str, Dict[str, Any]] = {}
+        backup_sets_data: dict[str, dict[str, Any]] = {}
         for obj in s3_objects:
             key = obj.get('Key', '')
             size = obj.get('Size', 0)
@@ -192,7 +192,7 @@ class CleanupOldBackupsCommand(Command[List[str]]):
             backup_sets_data[backup_set_prefix]['s3_keys'].append(key)
 
         # Convert grouped data to BackupSetInfo objects
-        all_backup_sets: List[BackupSetInfo] = []
+        all_backup_sets: list[BackupSetInfo] = []
         for prefix, data in backup_sets_data.items():
             all_backup_sets.append(BackupSetInfo(
                 backup_set_prefix=prefix,
@@ -207,14 +207,14 @@ class CleanupOldBackupsCommand(Command[List[str]]):
         # Sort by creation time (oldest first for cleanup logic)
         all_backup_sets.sort(key=lambda bs: bs.created_at)
 
-        deleted_backup_set_prefixes: List[str] = []
+        deleted_backup_set_prefixes: list[str] = []
         now_ts = datetime.now(timezone.utc).timestamp()
         hourly_cutoff_ts = now_ts - (self.max_hourly_backup_days * 24 * 60 * 60)
 
         # Identify backup sets to keep based on hourly/daily retention
-        backup_sets_to_keep: List[BackupSetInfo] = []
+        backup_sets_to_keep: list[BackupSetInfo] = []
         # For backups older than hourly_cutoff_ts, keep one per day (the newest for that day)
-        daily_kept_sets: Dict[str, BackupSetInfo] = {} 
+        daily_kept_sets: dict[str, BackupSetInfo] = {}
 
         for bs in all_backup_sets:
             backup_date = datetime.fromtimestamp(bs.created_at, tz=timezone.utc)

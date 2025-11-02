@@ -12,7 +12,7 @@ from opentelemetry.instrumentation.starlette import StarletteInstrumentor
 from common.telemetry import setup_telemetry
 
 if appsettings.DEBUG:
-    import debugpy
+    import debugpy # pyright: ignore[reportMissingTypeStubs]
     debugpy.listen(("0.0.0.0", 5678))
     debugpy.wait_for_client()  # blocks execution until client is attached
     

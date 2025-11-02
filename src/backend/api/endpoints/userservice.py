@@ -4,8 +4,7 @@ from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.data.commands import *
-from common.data.models import UserPlayer, EditUserRequestData
-from common.data.models.common import Problem
+from common.data.models import UserPlayer, EditUserRequestData, Problem
 from common.auth import pw_hasher
 
 @require_logged_in()

@@ -2,8 +2,7 @@ from typing import Any
 import aiohttp
 import msgspec
 
-from common.data.models.common import Problem
-from common.data.models.discord_integration import DiscordAccessTokenResponse, DiscordAuthCallbackData, DiscordUser
+from common.data.models import Problem, DiscordAccessTokenResponse, DiscordAuthCallbackData, DiscordUser
 
 class DiscordApi:
     def __init__(self, discord_client_id: str, discord_client_secret: str, redirect_uri: str | None = None):

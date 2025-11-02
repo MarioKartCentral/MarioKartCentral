@@ -1,9 +1,8 @@
 from datetime import timedelta
-from typing import List
 import logging
-from worker.data import handle
-from worker.jobs import Job
 from common.data.commands import BackupDatabasesCommand, CleanupOldBackupsCommand, DbBackupState, BackupInfo 
+from worker.data import handle
+from worker.jobs.base import Job
 
 class DatabaseBackupJob(Job):
     @property
@@ -19,7 +18,7 @@ class DatabaseBackupJob(Job):
         if not state:
             state = DbBackupState()
         
-        backup_results: List[BackupInfo] = await handle(BackupDatabasesCommand())
+        backup_results: list[BackupInfo] = await handle(BackupDatabasesCommand())
         
         if not backup_results:
             logging.info("Database backup run completed, but no databases were backed up.")
@@ -49,7 +48,7 @@ class DatabaseBackupCleanupJob(Job):
         return timedelta(hours=24)
     
     async def run(self):
-        deleted_backup_set_prefixes: List[str] = await handle(CleanupOldBackupsCommand())
+        deleted_backup_set_prefixes: list[str] = await handle(CleanupOldBackupsCommand())
         
         if deleted_backup_set_prefixes:
             logging.info(f"Removed {len(deleted_backup_set_prefixes)} old backup sets (prefixes): {', '.join(deleted_backup_set_prefixes)}")
@@ -57,7 +56,7 @@ class DatabaseBackupCleanupJob(Job):
             logging.info("Database backup cleanup job ran. No backup sets were deleted.")
 
 
-_jobs: List[Job] = []
+_jobs: list[Job] = []
 
 def get_jobs():
     if not _jobs:

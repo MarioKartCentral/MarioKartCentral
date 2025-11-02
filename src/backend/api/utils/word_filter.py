@@ -1,4 +1,5 @@
-from typing import Awaitable, Callable, Concatenate
+from collections.abc import Awaitable, Callable
+from typing import Concatenate
 from starlette.requests import Request
 from starlette.responses import Response
 from common.data.commands import *

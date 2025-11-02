@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Type
 from common.data.db.common import TableModel
 
 @dataclass
@@ -88,4 +87,4 @@ class UserIPTimeRange(TableModel):
             granularity INTEGER NOT NULL DEFAULT 0
         )"""
 
-all_tables: List[Type[TableModel]] = [UserLogin, IPAddress, UserIP, UserIPTimeRange]
+all_tables: list[type[TableModel]] = [UserLogin, IPAddress, UserIP, UserIPTimeRange]

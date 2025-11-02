@@ -3,14 +3,13 @@ from typing import Any
 
 import msgspec
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import Problem, Series, SeriesBasic, SeriesFilter, EditSeriesRequestData, CreateSeriesRequestData, SeriesS3Fields, User
 from common.auth import series_permissions
 from common.data.s3 import S3Wrapper, IMAGE_BUCKET, SERIES_BUCKET
 import base64
 
-@save_to_command_log
 @dataclass
 class CreateSeriesCommand(Command[None]):
     body: CreateSeriesRequestData
@@ -38,7 +37,6 @@ class CreateSeriesCommand(Command[None]):
                 await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class EditSeriesCommand(Command[None]):
     body: EditSeriesRequestData

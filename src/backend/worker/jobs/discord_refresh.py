@@ -1,7 +1,7 @@
 from datetime import timedelta
 from worker.data import handle
 from common.data.commands import RefreshDiscordAccessTokensCommand
-from worker.jobs import Job
+from worker.jobs.base import Job
 
 class RefreshDiscordTokensJob(Job):
     @property

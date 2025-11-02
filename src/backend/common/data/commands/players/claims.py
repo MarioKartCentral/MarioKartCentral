@@ -1,9 +1,8 @@
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
-@save_to_command_log
 @dataclass
 class ClaimPlayerCommand(Command[None]):
     player_id: int
@@ -32,7 +31,6 @@ class ClaimPlayerCommand(Command[None]):
                              (self.player_id, self.claimed_player_id, date, "pending"))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
     claim_id: int
@@ -62,7 +60,6 @@ class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
             await db.commit()
             return player_id, user_id, claimed_player_name
                
-@save_to_command_log
 @dataclass
 class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
     claim_id: int

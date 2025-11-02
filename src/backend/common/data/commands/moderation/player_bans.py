@@ -1,14 +1,13 @@
 from dataclasses import dataclass
-from typing import Literal, List
+from typing import Literal
 from datetime import datetime, timezone
 
 from aiosqlite import Connection
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class BanPlayerCommand(Command[PlayerBan]):
     player_id: int
@@ -53,7 +52,6 @@ class BanPlayerCommand(Command[PlayerBan]):
             await db.commit()
             return PlayerBan(*params)
 
-@save_to_command_log
 @dataclass
 class UnbanPlayerCommand(Command[PlayerBanHistorical]):
     player_id: int
@@ -86,7 +84,6 @@ class UnbanPlayerCommand(Command[PlayerBanHistorical]):
             await db.commit()
         return PlayerBanHistorical(player_id, banned_by, is_indefinite, ban_date, expiration_date, reason, comment, self.unbanned_by)
 
-@save_to_command_log
 @dataclass
 class EditPlayerBanCommand(Command[PlayerBan]):
     player_id: int
@@ -233,7 +230,7 @@ class ListBannedPlayersHistoricalCommand(Command[PlayerBanList]):
             return PlayerBanList(ban_list, ban_count, page_count)
 
 @dataclass
-class GetPlayersToUnbanCommand(Command[List[PlayerBanWithUserId]]):
+class GetPlayersToUnbanCommand(Command[list[PlayerBanWithUserId]]):
     async def handle(self, db_wrapper: DBWrapper):
         now = int(datetime.now(timezone.utc).timestamp())
 

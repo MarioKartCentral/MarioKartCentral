@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 @dataclass

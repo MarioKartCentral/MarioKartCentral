@@ -3,7 +3,7 @@ DuckDB administrative commands for schema management.
 """
 
 from dataclasses import dataclass
-from common.data.commands import Command
+from common.data.command import Command
 from common.data.duckdb.models import ALL_DUCKDB_TABLES
 from common.data.duckdb.wrapper import DuckDBWrapper
 

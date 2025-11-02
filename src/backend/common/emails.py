@@ -39,7 +39,7 @@ class SESEmailService(EmailService):
 
     async def send_email(self, to_email: str, subject: str, content: str) -> None:
         session = aiobotocore.session.get_session()
-        async with session.create_client(
+        async with session.create_client( # pyright: ignore[reportUnknownMemberType]
             service_name='ses',
             region_name=self.region,
             aws_access_key_id=self.access_key_id,

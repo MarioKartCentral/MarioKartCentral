@@ -5,22 +5,7 @@ from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
 from common.data.commands import *
-from common.data.models.time_trials_api import (
-    CreateTimeTrialRequestData,
-    EditProofDictRequired,
-    EditTimeTrialRequestData,
-    MarkProofInvalidRequestData,
-    MarkProofValidRequestData,
-    MarkTimeTrialInvalidRequestData,
-    LeaderboardResponseData,
-    TimeTrialResponseData,
-    ProofResponseData, 
-    ListProofsForValidationResponseData,
-    LeaderboardFilter,
-    TimesheetFilter,
-    TimesheetResponseData
-)
-from common.data.models import Problem
+from common.data.models import *
 
 
 @bind_request_body(CreateTimeTrialRequestData)

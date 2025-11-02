@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Dict, Any
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
+from typing import Any
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 import msgspec
 from common.data.s3 import S3Wrapper, FINGERPRINT_BUCKET
@@ -53,7 +53,7 @@ class CheckIPsCommand(Command[None]):
         ip_response_data = await ip_api.check_ips(ips_to_check)
         
         # Update the ip_addresses table with the check results
-        query_parameters: List[Dict[str, Any]] = [
+        query_parameters: list[dict[str, Any]] = [
             {
                 "id": ips_to_check[i].user_id,  # This is the ip_address.id
                 "is_mobile": ip_response_data[i].mobile, 

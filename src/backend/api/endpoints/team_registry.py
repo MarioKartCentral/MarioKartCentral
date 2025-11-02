@@ -7,10 +7,10 @@ from datetime import datetime
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions
 from common.auth import team_permissions
+from common.data import notifications
 from common.data.commands import *
 from common.data.models import *
 from api.utils.word_filter import check_word_filter
-import common.data.notifications as notifications
 
 # for moderator use, does not go to approval queue
 @bind_request_body(CreateTeamRequestData)

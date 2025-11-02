@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TypeVar, Generic, Type, Any, Optional, cast
+from typing import TypeVar, Generic, Any, cast
 import msgspec
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 
 T = TypeVar('T')
 
 @dataclass
-class GetJobStateCommand(Generic[T], Command[Optional[T]]):
+class GetJobStateCommand(Generic[T], Command[T | None]):
     job_name: str
-    state_type: Type[T] = field(default_factory=lambda: cast(Type[T], str))
+    state_type: type[T] = field(default_factory=lambda: cast(type[T], str))
 
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', readonly=True) as db:

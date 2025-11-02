@@ -5,11 +5,10 @@ from starlette.background import BackgroundTask
 from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from common.auth import permissions
+from common.auth import permissions, roles
+from common.data import notifications
 from common.data.commands import *
 from common.data.models import *
-from common.auth.roles import BANNED
-import common.data.notifications as notifications
 
 @bind_request_body(PlayerBanRequestData)
 @require_permission(permissions.BAN_PLAYER)
@@ -26,7 +25,7 @@ async def ban_player(request: Request, body: PlayerBanRequestData) -> Response:
     expires_on = None if body.is_indefinite else body.expiration_date
     user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
     if user_id is not None:
-        await handle(GrantRoleCommand(banned_by_id, player_id, BANNED, expires_on, True))
+        await handle(GrantRoleCommand(banned_by_id, player_id, roles.BANNED, expires_on, True))
     player_ban = await handle(BanPlayerCommand(player_id, banned_by_id, body))
     return JSONResponse(player_ban, status_code=200, background=BackgroundTask(notify))
 
@@ -42,7 +41,7 @@ async def unban_player(request: Request) -> Response:
     unbanned_by_id = request.state.user.id
     user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
     if user_id is not None:
-        await handle(RemoveRoleCommand(unbanned_by_id, player_id, BANNED, True))
+        await handle(RemoveRoleCommand(unbanned_by_id, player_id, roles.BANNED, True))
     player_unban = await handle(UnbanPlayerCommand(player_id, unbanned_by_id))
     return JSONResponse(player_unban, status_code=200, background=BackgroundTask(notify))
 
@@ -67,7 +66,7 @@ async def edit_player_ban(request: Request, body: PlayerBanRequestData) -> Respo
     ban_list = await handle(ListBannedPlayersCommand(PlayerBanFilter(player_id=player_id)))
     user_id = await handle(GetUserIdFromPlayerIdCommand(player_id))
     if user_id is not None:
-        await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, BANNED, expires_on))
+        await handle(UpdateRoleExpirationCommand(banned_by_id, player_id, roles.BANNED, expires_on))
     player_ban = await handle(EditPlayerBanCommand(player_id, banned_by_id, body))        
     return JSONResponse(player_ban, status_code=200, background=BackgroundTask(notify))
 

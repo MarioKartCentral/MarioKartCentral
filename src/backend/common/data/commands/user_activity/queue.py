@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from common.data.commands import Command
+from common.data.command import Command
 from urllib.parse import urlparse
 
-from common.data.db.db_wrapper import DBWrapper
+from common.data.db import DBWrapper
 
 @dataclass
 class EnqueueUserActivityCommand(Command[None]):

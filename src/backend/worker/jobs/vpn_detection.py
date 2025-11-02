@@ -3,10 +3,10 @@ from dataclasses import dataclass
 import json
 from typing import Any
 
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from worker.data import handle
-from worker.jobs import Job
-from common.data.commands import Command
+from worker.jobs.base import Job
 
 @dataclass
 class VPNDetectionState:

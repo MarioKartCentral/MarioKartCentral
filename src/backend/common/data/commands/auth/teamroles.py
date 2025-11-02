@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from common.auth import team_permissions, permissions, team_roles
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
         
@@ -57,7 +57,6 @@ class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
             role_info = TeamRoleInfo(self.role_id, role_name, position, permissions, players, self.team_id)
             return role_info
 
-@save_to_command_log
 @dataclass
 class GrantTeamRoleCommand(Command[None]):
     granter_user_id: int
@@ -151,7 +150,6 @@ class GrantTeamRoleCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
 
-@save_to_command_log
 @dataclass
 class RemoveTeamRoleCommand(Command[None]):
     remover_user_id: int

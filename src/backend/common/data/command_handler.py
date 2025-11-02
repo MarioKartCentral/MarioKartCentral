@@ -2,15 +2,16 @@
 Central command handler coordinating database and S3 operations.
 """
 
+from collections.abc import Callable
 from functools import partial
-from typing import Any, Callable, Dict, cast, get_type_hints
+from typing import Any, cast, get_type_hints
 import os
 import pathlib
 import logging
 import inspect
 
 from common.data.models import Problem
-from common.data.command import Command, needs_command_log
+from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.s3 import S3Wrapper, S3WrapperManager
 from common.data.duckdb.wrapper import DuckDBWrapper
@@ -26,7 +27,7 @@ logger = logging.getLogger(__name__)
 class CommandHandler:
     def __init__(
             self, 
-            db_paths: Dict[str, str], 
+            db_paths: dict[str, str], 
             db_directory: str, 
             s3_secret_key: str, 
             s3_access_key: str, 
@@ -34,7 +35,8 @@ class CommandHandler:
             discord_client_id: str,
             discord_client_secret: str,
             discord_oauth_redirect_uri: str | None = None,
-            email_service: EmailService | None = None) -> None:
+            email_service: EmailService | None = None,
+            additional_command_modules: list[str] | None = None) -> None:
         # Setup DuckDB database
         duckdb_dir = os.path.join(db_directory, "duckdb")
         pathlib.Path(duckdb_dir).mkdir(parents=True, exist_ok=True)
@@ -58,12 +60,33 @@ class CommandHandler:
         # Initialize telemetry
         self._tracer = trace.get_tracer(__name__)
 
-        self._dependency_resolvers: Dict[type, Callable[[], dict[str, Any]]] = {}
-        self._get_dependency_resolvers()
+        self._dependency_resolvers: dict[type, Callable[[], dict[str, Any]]] = {}
+        self._additional_command_modules = additional_command_modules or []
+        self._modules_loaded = False
+
+    def _ensure_modules_loaded(self):
+        """Ensure all command modules are loaded. Safe to call multiple times."""
+        if self._modules_loaded:
+            return
+            
+        # Import common commands module (always included)
+        __import__("common.data.commands")
+
+        # Import additional command modules if provided
+        for module_path in self._additional_command_modules:
+            try:
+                __import__(module_path)
+                logger.info(f"Loaded additional command module: {module_path}")
+            except ImportError as e:
+                logger.error(f"Failed to import command module {module_path}: {e}")
+                raise
+        
+        self._modules_loaded = True
 
     def _get_dependency_resolvers(self):
-        # import all commands so that they are registered
-        import common.data.commands # pyright: ignore[reportUnusedImport]
+        """Build dependency resolvers for all discovered Command subclasses."""
+        self._ensure_modules_loaded()
+        
         for subclass in cast(list[type[Command[Any]]], Command.__subclasses__()):
             sig = inspect.signature(subclass.handle)
             hints = get_type_hints(subclass.handle)
@@ -107,6 +130,9 @@ class CommandHandler:
 
     async def __aenter__(self):
         self._s3_wrapper = await self._s3_wrapper_manager.__aenter__()
+        # Load command modules and build resolvers after initialization
+        if not self._modules_loaded:
+            self._get_dependency_resolvers()
         return self
     
     async def __aexit__(self, *args: Any):
@@ -124,12 +150,27 @@ class CommandHandler:
         
         kwargs = self._dependency_resolvers[command_type]()
 
-        with self._tracer.start_as_current_span(f"CommandHandler.handle: {command_type.__name__}"):
-            resp = await command.handle(**kwargs)
+        span_attributes = {
+            "command.type": command_type.__name__,
+            "command.module": command_type.__module__,
+        }
 
-        if needs_command_log(command_type):
-            from common.data.commands import SaveToCommandLogCommand
-            await self.handle(SaveToCommandLogCommand(command))
+        with self._tracer.start_as_current_span(
+            f"command.execute: {command_type.__name__}",
+            attributes=span_attributes
+        ):
+            try:
+                resp = await command.handle(**kwargs)                
+            except Exception:
+                # Log the exception for structured logging (span auto-records on exit)
+                logger.exception(
+                    f"Command {command_type.__name__} failed",
+                    extra={
+                        "command_type": command_type.__name__,
+                        "command_module": command_type.__module__,
+                    }
+                )
+                raise
 
         return resp
 

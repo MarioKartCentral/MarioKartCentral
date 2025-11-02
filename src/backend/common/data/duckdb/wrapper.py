@@ -2,7 +2,6 @@
 
 import aioduckdb
 from types import TracebackType
-from typing import Optional
 import logging
 import os
 
@@ -14,7 +13,7 @@ class DuckDBWrapperConnection:
     
     def __init__(self, db_path: str):
         self.db_path = db_path
-        self.conn: Optional[aioduckdb.Connection] = None
+        self.conn: aioduckdb.Connection | None = None
 
     async def __aenter__(self) -> aioduckdb.Connection:
         try:

@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, List
+from typing import Any
 import json
 from common.auth import team_roles
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 @dataclass
@@ -108,7 +108,6 @@ class GetUnreadNotificationsCountCommand(Command[int]):
                     raise Problem("Unable to fetch unread notifications count")
                 return int(row[0])
 
-@save_to_command_log
 @dataclass
 class DispatchNotificationCommand(Command[int]):
     user_ids: list[int]
@@ -202,12 +201,12 @@ class GetTypeFromPlayerFCCommand(Command[str]):
                 return row[0]
 
 @dataclass
-class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
+class GetTeamManagerAndLeaderUserIdsCommand(Command[list[int]]):
     team_id: int
 
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            user_ids: List[int] = []
+            user_ids: list[int] = []
             async with db.execute("""SELECT u.id FROM users u
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id

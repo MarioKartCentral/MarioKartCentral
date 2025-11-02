@@ -1,7 +1,6 @@
 import aiohttp
 import msgspec
-from common.data.models.common import Problem
-from common.data.models.moderation import IPCheckResponse, IPInfoBasic
+from common.data.models import Problem, IPCheckResponse, IPInfoBasic
 
 
 class IPApi:

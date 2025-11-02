@@ -1,10 +1,9 @@
 import re
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
-@save_to_command_log
 @dataclass
 class CreatePlayerCommand(Command[Player]):
     user_id: int | None
@@ -84,7 +83,6 @@ class CreatePlayerCommand(Command[Player]):
             await db.commit()
             return Player(int(player_id), name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
 
-@save_to_command_log
 @dataclass
 class UpdatePlayerCommand(Command[bool]):
     data: EditPlayerRequestData
@@ -385,7 +383,6 @@ class ListPlayersCommand(Command[PlayerList]):
                 
             return PlayerList(players, player_count, page_count)
 
-@save_to_command_log
 @dataclass
 class MergePlayersCommand(Command[None]):
     from_player_id: int

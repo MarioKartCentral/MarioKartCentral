@@ -1,17 +1,16 @@
 from dataclasses import dataclass
-from datetime import timezone
+from datetime import datetime, timezone
 
 import msgspec
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from common.data.s3 import IMAGE_BUCKET, SERIES_BUCKET, TOURNAMENTS_BUCKET, S3Wrapper
 from common.auth import tournament_permissions
 from aiosqlite import Row
 import base64
 
-@save_to_command_log
 @dataclass
 class CreateTournamentCommand(Command[int | None]):
     body: CreateTournamentRequestData
@@ -65,7 +64,6 @@ class CreateTournamentCommand(Command[int | None]):
             await db.commit()
         return tournament_id
           
-@save_to_command_log
 @dataclass
 class EditTournamentCommand(Command[None]):
     body: EditTournamentRequestData

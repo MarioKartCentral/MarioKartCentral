@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
-from common.data.models import *
 from common.auth import team_permissions
+from common.data.command import Command
+from common.data.db import DBWrapper
+from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class RegisterPlayerCommand(Command[None]):
     player_id: int
@@ -118,7 +117,6 @@ class RegisterPlayerCommand(Command[None]):
                 self.is_invite, selected_fc_id, self.is_representative, self.is_bagger_clause, self.is_approved))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class EditPlayerRegistrationCommand(Command[None]):
     tournament_id: int
@@ -232,7 +230,6 @@ class EditPlayerRegistrationCommand(Command[None]):
                 self.mii_name, self.can_host, self.is_invite, is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, is_bagger_clause, is_approved, registration_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class UnregisterPlayerCommand(Command[None]):
     tournament_id: int

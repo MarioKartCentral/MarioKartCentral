@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
-@save_to_command_log
 @dataclass
 class SetTournamentPlacementsCommand(Command[None]):
     tournament_id: int
@@ -65,7 +64,6 @@ class SetTournamentPlacementsCommand(Command[None]):
                                     ) VALUES (?, ?, ?, ?, ?, ?)""", params)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class SetTournamentPlacementsFromPlayerIDsCommand(Command[None]):
     tournament_id: int

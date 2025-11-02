@@ -1,9 +1,8 @@
-from datetime import timedelta, timezone
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from datetime import timedelta, timezone, datetime
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class RequestEditPlayerNameCommand(Command[None]):
     player_id: int
@@ -67,7 +66,6 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
 
         return PlayerNameRequestList(name_requests, request_count, page_count)
     
-@save_to_command_log
 @dataclass
 class ApprovePlayerNameRequestCommand(Command[None]):
     request_id: int
@@ -84,7 +82,6 @@ class ApprovePlayerNameRequestCommand(Command[None]):
             await db.execute("UPDATE player_name_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyPlayerNameRequestCommand(Command[None]):
     request_id: int

@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-from typing import Dict
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -44,7 +43,6 @@ class GetUserDataFromIdCommand(Command[UserAccountInfo | None]):
                 email_confirmed, force_password_reset, player_id = row
         return UserAccountInfo(self.id, player_id, bool(email_confirmed), bool(force_password_reset))
 
-@save_to_command_log
 @dataclass
 class CreateUserCommand(Command[UserAccountInfo]):
     email: str
@@ -264,7 +262,7 @@ class EditUserCommand(Command[None]):
                     password_hash = CASE WHEN :update_password = 1 THEN :password_hash ELSE password_hash END
                 WHERE user_id = :user_id
             """
-            params: Dict[str, Any] = {
+            params: dict[str, Any] = {
                 "email": self.email,
                 "email_confirmed": self.email_confirmed,
                 "force_password_reset": self.force_password_reset,

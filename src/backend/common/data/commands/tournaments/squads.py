@@ -1,13 +1,13 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Iterable
+from typing import Any
 from common.auth import team_permissions
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 
-@save_to_command_log
 @dataclass
 class CreateSquadCommand(Command[None]):
     squad_name: str | None
@@ -93,7 +93,6 @@ class CreateSquadCommand(Command[None]):
                 selected_fc_id, False, self.is_bagger_clause, self.is_approved))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class RegisterTeamTournamentCommand(Command[int | None]):
     tournament_id: int
@@ -230,7 +229,6 @@ class RegisterTeamTournamentCommand(Command[int | None]):
             await db.commit()
             return registration_id
 
-@save_to_command_log
 @dataclass
 class EditSquadCommand(Command[None]):
     tournament_id: int

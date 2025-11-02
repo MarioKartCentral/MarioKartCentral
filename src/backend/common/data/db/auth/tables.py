@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from ..common import TableModel
+from common.data.db.common import TableModel
 
 @dataclass
 class UserAuth(TableModel):

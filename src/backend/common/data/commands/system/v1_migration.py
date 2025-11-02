@@ -1,13 +1,11 @@
 
 from dataclasses import dataclass
 import msgspec
-from common.data.s3 import S3Wrapper, MKCV1_BUCKET
-from common.data.db.db_wrapper import DBWrapper
-from common.data.models.common import Problem
-from common.data.models.mkcv1 import *
-from common.data.models.users import UserLoginData
-from common.data.commands import Command, save_to_command_log
 from common.auth import roles, series_roles, team_roles
+from common.data.command import Command
+from common.data.db import DBWrapper
+from common.data.models import *
+from common.data.s3 import S3Wrapper, MKCV1_BUCKET
 
 
 @dataclass
@@ -58,7 +56,6 @@ class GetMKCV1UserByPlayerIDCommand(Command[NewMKCUser | None]):
                         return None
         return v1_user
 
-@save_to_command_log
 @dataclass
 class TransferMKCV1UserCommand(Command[UserLoginData]):
     email: str

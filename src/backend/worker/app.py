@@ -1,7 +1,6 @@
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import logging
-import time
 from common.telemetry import setup_telemetry
 from opentelemetry import trace
 from worker.data import on_startup
@@ -14,24 +13,32 @@ class JobRunner:
         self._longer_than_delay = False
         self._last_run = None
         self._task = None
+        self._tracer = trace.get_tracer("worker.jobs")
 
     def start(self):
         async def run_with_error_handler():
-            try:
-                start = time.time()
-                logging.info(f"Job '{self._job.name}' started")
-                await self._job.run()
-                end = time.time()
-                elapsed = timedelta(seconds=end - start)
-                logging.info(f"Job '{self._job.name}' completed in {elapsed}")
-            except Exception:
-                logging.error(f"Job '{self._job.name}' failed", exc_info=True)
+            with self._tracer.start_as_current_span(
+                f"job.run: {self._job.name}",
+                attributes={
+                    "job.name": self._job.name,
+                    "job.delay_seconds": self._job.delay.total_seconds(),
+                }
+            ):
+                try:
+                    await self._job.run()
+                except Exception:
+                    logging.error(
+                        f"Job '{self._job.name}' failed",
+                        exc_info=True,
+                        extra={"job_name": self._job.name}
+                    )
+                    raise
+        
         self._longer_than_delay = False
         self._last_run = datetime.now(timezone.utc)
         self._task = asyncio.create_task(run_with_error_handler())
 
     def tick(self):
-        trace.get_current_span().set_attribute("job_name", self._job.name)
         if self._last_run is None or self._task is None:
             self.start()
             return
@@ -40,29 +47,41 @@ class JobRunner:
         if time_since_last_run >= self._job.delay:
             if self._task.done():
                 if self._longer_than_delay:
-                    logging.info(f"Job '{self._job.name}' took {time_since_last_run}, when delay is {self._job.delay}")
+                    logging.warning(
+                        f"Job '{self._job.name}' took {time_since_last_run} (delay: {self._job.delay})",
+                        extra={
+                            "job_name": self._job.name,
+                            "duration_seconds": time_since_last_run.total_seconds(),
+                            "delay_seconds": self._job.delay.total_seconds(),
+                        }
+                    )
 
                 self.start()
             else:
                 if not self._longer_than_delay:
-                    logging.info(f"Job '{self._job.name}' is still running after delay of {self._job.delay}")
+                    logging.warning(
+                        f"Job '{self._job.name}' still running after {time_since_last_run} (delay: {self._job.delay})",
+                        extra={
+                            "job_name": self._job.name,
+                            "duration_seconds": time_since_last_run.total_seconds(),
+                            "delay_seconds": self._job.delay.total_seconds(),
+                        }
+                    )
                     self._longer_than_delay = True
 
 
 async def main():
     await on_startup()
     jobs = [JobRunner(job) for job in get_all_jobs()]
-    tracer = trace.get_tracer("worker")
     while True:
         for job in jobs:
-            with tracer.start_as_current_span("job_tick"):
-                job.tick()
+            job.tick()
         await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
     if settings.DEBUG:
-        import debugpy
+        import debugpy # pyright: ignore[reportMissingTypeStubs]
         debugpy.listen(("0.0.0.0", 5678))
         debugpy.wait_for_client()  # blocks execution until client is attached
 

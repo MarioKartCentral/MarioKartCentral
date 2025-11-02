@@ -7,7 +7,6 @@ proofs, and validation records.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List
 import uuid
 import datetime
 
@@ -42,7 +41,7 @@ class TimeTrial(DuckDBTableModel):
     game: str = ""
     track: str = ""
     time_ms: int = 0
-    proofs: List[TimeTrialProof] = field(default_factory=lambda: [])
+    proofs: list[TimeTrialProof] = field(default_factory=lambda: [])
     is_invalid: bool = False
     validation_status: str = "proofless"
     created_at: str = field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc).isoformat())

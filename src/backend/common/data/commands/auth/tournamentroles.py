@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from common.auth import tournament_permissions
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
@@ -58,7 +58,6 @@ class GetTournamentRoleInfoCommand(Command[TournamentRoleInfo]):
             role_info = TournamentRoleInfo(self.role_id, role_name, position, permissions, players, self.tournament_id)
             return role_info
             
-@save_to_command_log
 @dataclass
 class GrantTournamentRoleCommand(Command[None]):
     granter_user_id: int
@@ -145,7 +144,6 @@ class GrantTournamentRoleCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
             
-@save_to_command_log
 @dataclass
 class RemoveTournamentRoleCommand(Command[None]):
     remover_user_id: int

@@ -1,13 +1,12 @@
 from dataclasses import dataclass
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from common.auth import team_roles
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from common.data.s3 import S3Wrapper, IMAGE_BUCKET
 import base64
 
-@save_to_command_log
 @dataclass
 class CreateTeamCommand(Command[int | None]):
     name: str
@@ -210,7 +209,6 @@ class GetTeamInfoCommand(Command[Team]):
             team.rosters = rosters
             return team
 
-@save_to_command_log
 @dataclass
 class EditTeamCommand(Command[None]):
     team_id: int
@@ -272,7 +270,6 @@ class EditTeamCommand(Command[None]):
                 await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ApproveDenyTeamCommand(Command[None]):
     team_id: int
@@ -288,7 +285,6 @@ class ApproveDenyTeamCommand(Command[None]):
                 await db.execute("UPDATE team_rosters SET approval_status = ? WHERE team_id = ? AND approval_status = 'pending'", (self.approval_status, self.team_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ManagerEditTeamCommand(Command[None]):
     team_id: int
@@ -330,7 +326,6 @@ class ManagerEditTeamCommand(Command[None]):
                 await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class RequestEditTeamCommand(Command[None]):
     team_id: int
@@ -386,7 +381,6 @@ class ViewTeamEditHistoryCommand(Command[list[TeamEdit]]):
                     edits.append(TeamEdit(request_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
         return edits
 
-@save_to_command_log
 @dataclass
 class ApproveTeamEditCommand(Command[None]):
     request_id: int
@@ -403,7 +397,6 @@ class ApproveTeamEditCommand(Command[None]):
             await db.execute("UPDATE team_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyTeamEditCommand(Command[None]):
     request_id: int
@@ -559,7 +552,6 @@ class ListTeamsCommand(Command[TeamList]):
             return TeamList(team_list, team_count, page_count)
     
 
-@save_to_command_log
 @dataclass
 class MergeTeamsCommand(Command[None]):
     from_team_id: int

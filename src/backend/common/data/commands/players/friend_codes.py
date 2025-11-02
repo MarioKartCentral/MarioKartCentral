@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 import re
 
-from common.data.commands import Command, save_to_command_log
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
-@save_to_command_log
 @dataclass
 class CreateFriendCodeCommand(Command[None]):
     player_id: int
@@ -56,7 +55,6 @@ class CreateFriendCodeCommand(Command[None]):
             await db.execute("INSERT INTO friend_code_edits(fc_id, new_fc, date) VALUES(?, ?, ?)", (fc_id, self.fc, now)) # log friend code creation
             await db.commit()
 
-@save_to_command_log    
 @dataclass
 class EditFriendCodeCommand(Command[None]):
     player_id: int
@@ -104,7 +102,6 @@ class EditFriendCodeCommand(Command[None]):
                                  (self.id, old_fc, new_fc, is_active, self.mod_player_id, now))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class SetPrimaryFCCommand(Command[None]):
     id: int

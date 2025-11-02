@@ -5,10 +5,10 @@ from api.auth import require_logged_in, require_tournament_permission, check_tou
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import tournament_permissions
+from common.data import notifications
 from common.data.commands import *
 from common.data.models import *
 from api.utils.word_filter import check_word_filter
-import common.data.notifications as notifications
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)

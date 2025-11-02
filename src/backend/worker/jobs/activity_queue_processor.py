@@ -1,7 +1,7 @@
 from datetime import timedelta
-from worker.data import handle
 from common.data.commands import ProcessUserActivityQueueCommand
-from worker.jobs import Job
+from worker.data import handle
+from worker.jobs.base import Job
 
 class ProcessUserActivityQueueJob(Job):
     @property

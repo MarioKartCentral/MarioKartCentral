@@ -3,9 +3,8 @@ import re
 from dataclasses import dataclass
 import logging
 from common.auth import permissions, roles, team_permissions, team_roles, series_permissions, series_roles, tournament_permissions, tournament_roles
-from common.data.commands import Command
-from common.data.db import all_dbs
-from common.data.db.db_wrapper import DBWrapper
+from common.data.command import Command
+from common.data.db import all_dbs, DBWrapper
 from common.data.duckdb.wrapper import DuckDBWrapper
 from common.data.models import Problem
 
