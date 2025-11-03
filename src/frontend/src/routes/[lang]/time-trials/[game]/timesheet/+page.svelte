@@ -3,7 +3,13 @@
   import { page } from '$app/stores';
   import { user } from '$lib/stores/stores';
   import { check_permission, permissions } from '$lib/util/permissions';
-  import { GAMES, getTrackFromAbbreviation, MKWORLD_TRACKS, type GameId } from '$lib/util/gameConstants';
+  import {
+    GAMES,
+    getTrackFromAbbreviation,
+    MKWORLD_TRACKS,
+    MKWORLD_TRACK_TRANSLATION_IDS,
+    type GameId,
+  } from '$lib/util/gameConstants';
   import { formatTimeMs } from '$lib/util/timeTrialUtils';
   import type { TimeTrial, ErrorResponse } from '$lib/types/time-trials';
   import type { UserInfo } from '$lib/types/user-info';
@@ -56,7 +62,8 @@
   function getTrackDisplayName(trackAbbr: string): string {
     if (gameId === 'mkworld') {
       const fullName = getTrackFromAbbreviation(gameId, trackAbbr);
-      return fullName || trackAbbr;
+      const nameId = MKWORLD_TRACK_TRANSLATION_IDS[fullName as keyof typeof MKWORLD_TRACK_TRANSLATION_IDS];
+      return $LL.MARIO_KART_WORLD.TRACKS[nameId as keyof typeof $LL.MARIO_KART_WORLD.TRACKS]();
     }
     return trackAbbr;
   }
