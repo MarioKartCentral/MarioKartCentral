@@ -63,7 +63,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each banInfoDetailedArray as bid, i}
+    {#each banInfoDetailedArray as bid, i (i)}
       <tr class="row-{i % 2}">
         <td><Flag country_code={bid.player_country_code} /></td>
         <td><a href="/{$page.params.lang}/registry/players/profile?id={bid.player_id}">{bid.player_name}</a></td>

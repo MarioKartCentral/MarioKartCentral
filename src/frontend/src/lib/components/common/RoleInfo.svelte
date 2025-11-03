@@ -123,7 +123,7 @@
           {/if}
           <col class="remove" />
           <tbody>
-            {#each role_info.players as player}
+            {#each role_info.players as player (player.id)}
               <tr>
                 <td><Flag country_code={player.country_code} /></td>
                 <td>

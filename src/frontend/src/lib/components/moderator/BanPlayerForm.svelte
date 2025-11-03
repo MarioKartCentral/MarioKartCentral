@@ -113,7 +113,7 @@
       <label for="reason">{$LL.PLAYER_BAN.REASON()}</label> <br />
       <select name="reason" bind:value={reason} required>
         <option value={null} disabled>{$LL.PLAYER_BAN.SELECT_REASON()}</option>
-        {#each default_player_ban_options as o}
+        {#each default_player_ban_options as o, index (index)}
           <option value={o}>{o}</option>
         {/each}
       </select>

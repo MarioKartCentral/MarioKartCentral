@@ -9,6 +9,18 @@
   let isValidTweet: boolean = false;
   let isLoading: boolean = true;
   let currentUrl: string = '';
+  let scriptLoaded: boolean | null = null;
+  let useCustomCard: boolean = false;
+
+  interface CustomCard {
+    tweetId: string | null;
+    username: string | null;
+  }
+
+  let customCard: CustomCard = {
+    tweetId: null,
+    username: null,
+  };
 
   function extractTweetId(url: string): string | null {
     const patterns = [
@@ -40,73 +52,26 @@
     return null;
   }
 
-  async function loadTwitterScript(): Promise<void> {
-    return new Promise((resolve, reject) => {
+  let timeout: number | undefined = setTimeout(() => {
+    useCustomCard = true;
+    throw new Error('Twitter script loading timeout');
+  }, 15000);
+
+  function handleScriptLoad() {
+    scriptLoaded = true;
+    const checkTwttr = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((window as any).twttr) {
-        resolve();
+      if ((window as any).twttr?.widgets) {
         return;
+      } else {
+        setTimeout(checkTwttr, 300);
       }
-
-      const script = document.createElement('script');
-      script.src = 'https://platform.twitter.com/widgets.js';
-      script.async = true;
-      script.charset = 'utf-8';
-
-      const timeout = setTimeout(() => {
-        reject(new Error('Twitter script loading timeout'));
-      }, 15000);
-
-      script.onload = () => {
-        clearTimeout(timeout);
-        const checkTwttr = () => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          if ((window as any).twttr?.widgets) {
-            resolve();
-          } else {
-            setTimeout(checkTwttr, 300);
-          }
-        };
-        checkTwttr();
-      };
-
-      script.onerror = () => {
-        clearTimeout(timeout);
-        reject(new Error('Failed to load Twitter widgets'));
-      };
-
-      document.head.appendChild(script);
-    });
+    };
+    checkTwttr();
   }
 
-  function createCustomTweetCard(tweetId: string, username: string) {
-    const card = document.createElement('div');
-    card.className = 'custom-tweet-card';
-    card.innerHTML = `
-            <div class="tweet-card-header">
-                <div class="tweet-avatar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                </div>
-                <div class="tweet-info">
-                    <span class="tweet-username">@${username}</span>
-                    <span class="tweet-separator">•</span>
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="tweet-link">
-                        View on X
-                    </a>
-                </div>
-            </div>
-            <div class="tweet-content">
-                <p>This tweet couldn't be loaded automatically.</p>
-            </div>
-            <div class="tweet-footer">
-                <a href="${url}" target="_blank" rel="noopener noreferrer" class="view-tweet-btn">
-                    View Tweet on X →
-                </a>
-            </div>
-        `;
-    return card;
+  function handleScriptError() {
+    clearTimeout(timeout);
   }
 
   function checkTweetRendered(container: HTMLElement): boolean {
@@ -117,65 +82,47 @@
 
   async function loadTweetEmbed() {
     if (!isValidTweet || !tweetContainer) return;
-
+    useCustomCard = false;
+    const tweetId = extractTweetId(url);
+    const username = extractUsername(url);
     try {
       isLoading = true;
-      const tweetId = extractTweetId(url);
-      const username = extractUsername(url);
-
       if (!tweetId) throw new Error('Could not extract tweet ID');
-
-      tweetContainer.innerHTML = '';
-
-      try {
-        await loadTwitterScript();
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (!(window as any).twttr?.widgets) throw new Error('Twitter widgets API not available');
+      const tweetElement = await Promise.race([
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((window as any).twttr?.widgets) {
-          const tweetElement = await Promise.race([
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window as any).twttr.widgets.createTweet(tweetId, tweetContainer, {
-              theme: theme,
-              dnt: true,
-              conversation: 'none',
-              cards: 'visible',
-            }),
-            new Promise((_, reject) => {
-              setTimeout(() => reject(new Error('createTweet timeout')), 10000);
-            }),
-          ]);
-
-          if (tweetElement) {
-            if (checkTweetRendered(tweetContainer)) {
-              isLoading = false;
-            } else {
-              setTimeout(() => {
-                isLoading = false;
-              }, 500);
-            }
-            return;
-          }
+        (window as any).twttr.widgets.createTweet(tweetId, tweetContainer, {
+          theme: theme,
+          dnt: true,
+          conversation: 'none',
+          cards: 'visible',
+        }),
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('createTweet timeout')), 10000);
+        }),
+      ]);
+      if (tweetElement) {
+        if (checkTweetRendered(tweetContainer)) {
+          isLoading = false;
+          return;
         }
-
-        throw new Error('Twitter widgets API not available');
-      } catch (widgetError) {
-        tweetContainer.innerHTML = '';
-        const customCard = createCustomTweetCard(tweetId, username || 'unknown');
-        tweetContainer.appendChild(customCard);
-        isLoading = false;
+        setTimeout(() => {
+          isLoading = false;
+        }, 500);
       }
-    } catch (error) {
-      const tweetId = extractTweetId(url);
-      const username = extractUsername(url);
-
-      if (tweetId && username) {
-        tweetContainer.innerHTML = '';
-        const customCard = createCustomTweetCard(tweetId, username);
-        tweetContainer.appendChild(customCard);
+    } catch {
+      if (tweetId) {
+        customCard.tweetId = tweetId;
+        customCard.username = username || 'unknown';
+        useCustomCard = true;
       }
-
       isLoading = false;
     }
+  }
+
+  $: if (scriptLoaded) {
+    clearTimeout(timeout);
   }
 
   $: {
@@ -185,18 +132,28 @@
 
   $: if (url !== currentUrl) {
     currentUrl = url;
-    if (isValidTweet) {
-      loadTweetEmbed();
-    }
+  }
+
+  $: if (scriptLoaded && isValidTweet) {
+    loadTweetEmbed();
   }
 
   onMount(() => {
-    if (isValidTweet) {
-      loadTweetEmbed();
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    scriptLoaded = Boolean((window as any).twttr);
   });
 </script>
 
+<svelte:head>
+  {#if scriptLoaded === false}
+    <script
+      async
+      src="https://platform.twitter.com/widgets.js"
+      on:load={handleScriptLoad}
+      on:error={handleScriptError}
+    ></script>
+  {/if}
+</svelte:head>
 {#if isValidTweet}
   <div class="tweet-embed-container">
     {#if isLoading}
@@ -211,7 +168,32 @@
       </div>
     {/if}
 
-    <div bind:this={tweetContainer} class="tweet-container" class:fade-in={!isLoading}></div>
+    <div bind:this={tweetContainer} class="tweet-container" class:fade-in={!isLoading}>
+      {#if useCustomCard && customCard.tweetId}
+        <div class="custom-tweet-card">
+          <div class="tweet-card-header">
+            <div class="tweet-avatar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                />
+              </svg>
+            </div>
+            <div class="tweet-info">
+              <span class="tweet-username">@{customCard.username}</span>
+              <span class="tweet-separator">•</span>
+              <a href={url} target="_blank" rel="noopener noreferrer" class="tweet-link"> View on X </a>
+            </div>
+          </div>
+          <div class="tweet-content">
+            <p>This tweet couldn't be loaded automatically.</p>
+          </div>
+          <div class="tweet-footer">
+            <a href={url} target="_blank" rel="noopener noreferrer" class="view-tweet-btn"> View Tweet on X → </a>
+          </div>
+        </div>
+      {/if}
+    </div>
   </div>
 {:else}
   <div class="invalid-url">

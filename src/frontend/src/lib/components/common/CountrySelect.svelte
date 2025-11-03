@@ -29,7 +29,7 @@
   {#if is_filter}
     <option value={null}>{$LL.COUNTRIES.ALL()}</option>
   {/if}
-  {#each countries as country}
+  {#each countries as country, index (index)}
     <option value={country.country_code}>{country.translated_name}</option>
   {/each}
 </select>

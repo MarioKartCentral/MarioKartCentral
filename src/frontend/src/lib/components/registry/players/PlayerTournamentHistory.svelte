@@ -140,7 +140,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each filtered_solo_placements as placement, i}
+              {#each filtered_solo_placements as placement, i (placement.registration_id)}
                 <tr
                   class={placement.placement && placement.placement <= 3
                     ? podium_style[placement.placement]
@@ -164,7 +164,7 @@
                   {:else if placement.partners != null}
                     <td class="mobile-hide">
                       <div class="flex flex-row">
-                        {#each placement.partners as partner, i}
+                        {#each placement.partners as partner, i (partner.player_id)}
                           <div>
                             {#if i + 1 < placement.partners.length}
                               <TournamentPlayerName player_id={partner.player_id} name="{partner.player_name}," />
@@ -211,7 +211,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each filtered_team_placements as placement, i}
+              {#each filtered_team_placements as placement, i (placement.registration_id)}
                 <tr
                   class={placement.placement && placement.placement <= 3
                     ? podium_style[placement.placement]

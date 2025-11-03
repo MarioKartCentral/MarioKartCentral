@@ -49,10 +49,10 @@
       </tr>
     </thead>
     <tbody>
-      {#each flags as flag, i}
+      {#each flags as flag, i (flag.id)}
         <tr class="row-{i % 2}">
           <td class="players">
-            {#each flag.users as user}
+            {#each flag.users as user (user.user_id)}
               {#if user.player}
                 <a href="/{$page.params.lang}/registry/players/profile?id={user.player.id}">
                   <div class="player-name">
@@ -77,7 +77,7 @@
                 <Button on:click={() => toggle_details(i)}>{$LL.COMMON.HIDE()}</Button>
               </div>
               <div>
-                {#each jsonToFieldString(flag.data) as entry}
+                {#each jsonToFieldString(flag.data) as entry, index (index)}
                   <div>
                     {entry[0]}: {entry[1]}
                   </div>

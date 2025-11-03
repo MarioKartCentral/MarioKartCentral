@@ -75,14 +75,14 @@
         </tr>
       </thead>
       <tbody>
-        {#each roster.players as player, i}
+        {#each roster.players as player, i (player.player_id)}
           <tr class="row-{i % 2} {user_info.player_id === player.player_id ? 'me' : ''}">
             <td><Flag country_code={player.country_code} /></td>
             <td>
               <RosterPlayerName {player} />
             </td>
             <td class="mobile-hide">
-              {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i}
+              {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
                 {#if i === 0}
                   {fc.fc}
                 {/if}

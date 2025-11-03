@@ -70,7 +70,7 @@
   </form>
 </Section>
 
-{#each series as s}
+{#each series as s (s.id)}
   <SeriesPageItem series={s} />
 {/each}
 

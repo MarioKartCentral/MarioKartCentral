@@ -362,7 +362,7 @@
         <div class="flex-1">
           <select id="track" bind:value={selectedTrack} required>
             <option value="" disabled>Select a track...</option>
-            {#each currentTrackObjects as trackOpt}
+            {#each currentTrackObjects as trackOpt (trackOpt.value)}
               <option value={trackOpt.value}>{trackOpt.name}</option>
             {/each}
           </select>
@@ -481,7 +481,7 @@
               <div class="option">
                 <label for={`proof-type-${proof.id}`}>Type</label>
                 <select id={`proof-type-${proof.id}`} bind:value={proof.type} disabled={!canEditOrRemoveProof(proof)}>
-                  {#each proofTypeObjects as typeOpt}
+                  {#each proofTypeObjects as typeOpt (typeOpt.value)}
                     <option value={typeOpt.value}>{typeOpt.name}</option>
                   {/each}
                 </select>
@@ -490,7 +490,7 @@
                 <div class="option">
                   <label for={`proof-status-${proof.id}`}>Status</label>
                   <select id={`proof-status-${proof.id}`} bind:value={proof.status}>
-                    {#each validationStatusObjects as statusOpt}
+                    {#each validationStatusObjects as statusOpt (statusOpt.value)}
                       <option value={statusOpt.value}>{statusOpt.name}</option>
                     {/each}
                   </select>

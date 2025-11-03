@@ -213,7 +213,7 @@
     {:else if unselected_rosters.length}
       <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>
         <option value={null}>{$LL.TOURNAMENTS.REGISTRATIONS.SELECT_A_TEAM()}</option>
-        {#each unselected_rosters as roster}
+        {#each unselected_rosters as roster (roster.id)}
           <option value={roster}>
             {roster.name}
           </option>
@@ -225,7 +225,7 @@
         <div>
           <b>{$LL.TOURNAMENTS.REGISTRATIONS.SELECTED_ROSTERS()}</b>
         </div>
-        {#each selected_rosters as roster, i}
+        {#each selected_rosters as roster, i (roster.id)}
           <div>
             <TagBadge tag={roster.tag} color={roster.color} />
             {roster.name}
@@ -257,7 +257,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each players as player, i}
+              {#each players as player, i (player.player_id)}
                 <tr class="row-{i % 2}">
                   <td>
                     <Flag country_code={player.country_code} />
@@ -308,7 +308,7 @@
             <option value={null} disabled>
               {$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_SELECT()}
             </option>
-            {#each unselected_players as player}
+            {#each unselected_players as player (player.player_id)}
               <option value={player}>
                 {player.name}
               </option>

@@ -2,7 +2,6 @@ import type { FormattersInitializer } from 'typesafe-i18n';
 import type { Locales, Formatters } from './i18n-types';
 import { uppercase } from 'typesafe-i18n/formatters';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const initFormatters: FormattersInitializer<Locales, Formatters> = (locale: Locales) => {
   const formatters: Formatters = {
     // add your formatter functions here

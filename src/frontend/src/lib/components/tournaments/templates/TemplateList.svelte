@@ -53,7 +53,7 @@
     {/if}
   </div>
   <Table>
-    {#each templates as template, i}
+    {#each templates as template, i (template.id)}
       <tr class="row-{i % 2}">
         <td class="left">
           <a href="/{$page.params.lang}/tournaments/create?template_id={template.id}">{template.template_name}</a>

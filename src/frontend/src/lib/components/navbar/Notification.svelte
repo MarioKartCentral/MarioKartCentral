@@ -32,7 +32,10 @@
   user.subscribe((value) => {
     user_info = value;
   });
-  $: user_info.id !== null && fetchUnreadNotifications();
+
+  $: if (user_info.id !== null) {
+    fetchUnreadNotifications();
+  }
 
   async function fetchUnreadNotifications() {
     const res = await fetch('/api/notifications/list?is_read=0');
@@ -77,7 +80,7 @@
         ><div class="text-center">{$LL.NOTIFICATION.NO_UNREAD()}</div></DropdownHeader
       >
     {/if}
-    {#each notifications as { id, type, content_id, content_args, link, created_date, is_read }, idx}
+    {#each notifications as { id, type, content_id, content_args, link, created_date, is_read }, idx (id)}
       {#if idx < maxBellNotifications}
         <DropdownItem on:click={() => handleClick(id, link)}>
           <NotificationContent {type} {content_id} {content_args} {created_date} {is_read} />

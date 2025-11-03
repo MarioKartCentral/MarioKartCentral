@@ -24,7 +24,6 @@
     const { getFingerprint, getFingerprintData } = await import('@thumbmarkjs/thumbmarkjs');
     const fingerprint = await getFingerprint();
     const fingerprintData = await getFingerprintData();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const payload = {
       email: email,
       password: password,

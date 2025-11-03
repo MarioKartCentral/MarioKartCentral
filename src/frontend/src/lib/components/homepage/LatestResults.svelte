@@ -95,7 +95,7 @@
       </div>
     {/if}
     <div class="flex flex-col {playerPlacement ? 'mt-[14px]' : 'mt-[13px]'}">
-      {#each placement_list as placement}
+      {#each placement_list as placement (placement.id)}
         <PlacementItem {placement} is_edit={false} is_homepage={true} />
       {/each}
     </div>

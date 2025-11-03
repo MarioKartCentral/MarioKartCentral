@@ -30,7 +30,7 @@
 >
   <div>
     {#key tournaments}
-      {#each tournaments as tournament}
+      {#each tournaments as tournament (tournament.id)}
         <HomeTournamentPageItem {tournament} />
       {/each}
     {/key}

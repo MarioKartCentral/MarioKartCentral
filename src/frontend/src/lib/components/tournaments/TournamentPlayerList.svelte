@@ -216,7 +216,7 @@
     </tr>
   </thead>
   <tbody>
-    {#each get_players() as player, i}
+    {#each get_players() as player, i (player.id)}
       <tr class="row-{i % 2} {user_info.player?.id === player.player_id ? 'me' : ''}">
         <td>
           <Flag country_code={player.country_code} />

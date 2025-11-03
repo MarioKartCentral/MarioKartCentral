@@ -37,17 +37,6 @@
   let tracks: string[] = [];
   let countries: string[] = [];
 
-  // Get tracks from constants based on game
-  $: {
-    if (game === 'mkworld') {
-      tracks = Object.values(MKWORLD_TRACK_ABBREVIATIONS);
-      // Load filters from URL after tracks are available
-      if (typeof window !== 'undefined') {
-        loadFiltersFromURL();
-      }
-    }
-  }
-
   async function loadLeaderboard() {
     // Don't load if no track is selected or if running during SSR
     if (!selectedTrack || typeof window === 'undefined') {
@@ -237,6 +226,10 @@
   }
 
   onMount(() => {
+    // Get tracks from constants based on game
+    if (game === 'mkworld') {
+      tracks = Object.values(MKWORLD_TRACK_ABBREVIATIONS);
+    }
     // Load filters from URL parameters
     loadFiltersFromURL();
     // Initial load
@@ -292,7 +285,7 @@
           <div>
             <label for="track-select" class="block text-sm font-medium mb-2"> Track </label>
             <select id="track-select" bind:value={selectedTrack} class="w-full">
-              {#each tracks as track}
+              {#each tracks as track, index (index)}
                 <option value={track}>{getTrackDisplayName(track)}</option>
               {/each}
             </select>
@@ -303,7 +296,7 @@
             <label for="country-select" class="block text-sm font-medium mb-2"> Country </label>
             <select id="country-select" bind:value={selectedCountry} class="w-full">
               <option value="">{$LL.COUNTRIES.ALL()}</option>
-              {#each countries as country}
+              {#each countries as country, index (index)}
                 <option value={country}>{getCountryDisplayName(country)}</option>
               {/each}
             </select>
@@ -386,7 +379,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each records as record, index}
+              {#each records as record, index (record.id)}
                 <tr class="hover:bg-gray-700">
                   <td class="px-4 desktop:px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
                     #{index + 1}
@@ -423,7 +416,7 @@
                     <div class="flex items-center space-x-2">
                       {#if record.proofs && record.proofs.length > 0}
                         <!-- Proof icons -->
-                        {#each record.proofs as proof}
+                        {#each record.proofs as proof (proof.id)}
                           {@const iconInfo = getProofIcon(proof.url, proof.type)}
                           <a
                             href={proof.url}

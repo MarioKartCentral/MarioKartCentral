@@ -31,7 +31,7 @@
   {:else}
     <Section header={$LL.API_TOKENS.API_TOKENS()}>
       {#if tokens.length}
-        {#each tokens as token}
+        {#each tokens as token (token.token_id)}
           <ApiTokenDisplay {token} />
         {/each}
       {/if}

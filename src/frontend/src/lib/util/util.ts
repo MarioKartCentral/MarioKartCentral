@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Color } from '$lib/types/colors';
 import type { Tournament } from '$lib/types/tournament';
 import type { PlacementOrganizer } from '$lib/types/placement-organizer';

@@ -17,7 +17,7 @@
   let show_results = false;
   let timeout: number;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   async function handle_search() {
     if (timeout) {
@@ -70,7 +70,7 @@
             <col class="name" />
             <col class="select" />
             <tbody>
-              {#each results as result}
+              {#each results as result (result.id)}
                 <tr on:click={() => set_option(result)}>
                   <td>
                     <TagBadge tag={result.tag} color={result.color} />

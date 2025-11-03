@@ -23,7 +23,7 @@
     <div class="roster-select">
       <select bind:value={roster_id}>
         <option value={null}>{$LL.TEAMS.PROFILE.ALL_ROSTERS()}</option>
-        {#each sortFilterRosters(team.rosters) as roster}
+        {#each sortFilterRosters(team.rosters) as roster (roster.id)}
           <option value={roster.id}>{roster.name} ({game_abbreviations[roster.game]})</option>
         {/each}
       </select>
