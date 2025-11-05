@@ -3000,6 +3000,11 @@ type RootTranslation = {
 		 */
 		TITLE: string
 		/**
+		 * {​g​a​m​e​}​ ​T​i​m​e​ ​T​r​i​a​l​s
+		 * @param {string} game
+		 */
+		GAME_TITLE: RequiredParams<'game'>
+		/**
 		 * B​r​o​w​s​e​ ​l​e​a​d​e​r​b​o​a​r​d​s​,​ ​s​u​b​m​i​t​ ​y​o​u​r​ ​r​e​c​o​r​d​s​,​ ​a​n​d​ ​c​o​m​p​e​t​e​ ​f​o​r​ ​t​h​e​ ​t​o​p​ ​s​p​o​t​s​ ​i​n​ ​M​a​r​i​o​ ​K​a​r​t​ ​t​i​m​e​ ​t​r​i​a​l​s​ ​a​c​r​o​s​s​ ​v​a​r​i​o​u​s​ ​g​a​m​e​s​.
 		 */
 		DESCRIPTION: string
@@ -3315,6 +3320,10 @@ type RootTranslation = {
 		 * N​o​ ​e​v​i​d​e​n​c​e​ ​U​R​L​ ​p​r​o​v​i​d​e​d
 		 */
 		NO_EVIDENCE_PROVIDED: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​A​l​l​ ​G​a​m​e​s
+		 */
+		BACK_TO_ALL_GAMES: string
 	}
 	TOURNAMENTS: {
 		/**
@@ -8441,6 +8450,10 @@ export type TranslationFunctions = {
 		 */
 		TITLE: () => LocalizedString
 		/**
+		 * {game} Time Trials
+		 */
+		GAME_TITLE: (arg: { game: string }) => LocalizedString
+		/**
 		 * Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.
 		 */
 		DESCRIPTION: () => LocalizedString
@@ -8748,6 +8761,10 @@ export type TranslationFunctions = {
 		 * No evidence URL provided
 		 */
 		NO_EVIDENCE_PROVIDED: () => LocalizedString
+		/**
+		 * Back to All Games
+		 */
+		BACK_TO_ALL_GAMES: () => LocalizedString
 	}
 	TOURNAMENTS: {
 		/**

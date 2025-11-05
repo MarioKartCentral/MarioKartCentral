@@ -798,6 +798,7 @@ const en_us: BaseTranslation = {
   TIME_TRIALS: {
     PAGE_TITLE: 'Time Trials',
     TITLE: 'Time Trials',
+    GAME_TITLE: '{game:string} Time Trials',
     DESCRIPTION:
       'Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.',
     VIEW_TRACKS: 'View Tracks',
@@ -879,6 +880,7 @@ const en_us: BaseTranslation = {
     PERMISSION_REQUIRED: 'Permission Required',
     NO_PERMISSION_MESSAGE: "You don't have permission to validate time trial proofs.",
     NO_EVIDENCE_PROVIDED: 'No evidence URL provided',
+    BACK_TO_ALL_GAMES: 'Back to All Games',
   },
   TOURNAMENTS: {
     TOURNAMENT: 'Tournament',
