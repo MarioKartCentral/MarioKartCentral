@@ -889,10 +889,8 @@ const fr: Translation = {
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Montrer les temps en attente de validation',
       INCLUDE_AWAITING_VALIDATION: 'Inclure les temps envoyés en attente de validation',
-      
       PENDING_WITHOUT_PROOF: 'Montrer les temps sans preuve.',
       INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: 'Inclure les temps envoyés sans preuve',
-
       OUTDATED: 'Montrer les temps obsolètes',
       INCLUDE_OLDER_SUBMISSIONS: 'Inclure les anciens temps envoyés qui ont été battus',
     },

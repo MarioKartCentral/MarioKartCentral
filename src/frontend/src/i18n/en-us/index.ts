@@ -884,10 +884,8 @@ const en_us: BaseTranslation = {
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Show times pending validation',
       INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',
-      
       PENDING_WITHOUT_PROOF: 'Show times without proof',
       INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: 'Include times submitted without evidence',
-
       OUTDATED: 'Show outdated times',
       INCLUDE_OLDER_SUBMISSIONS: 'Include older submissions that have been beaten',
     },

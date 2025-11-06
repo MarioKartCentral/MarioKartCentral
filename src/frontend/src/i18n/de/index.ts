@@ -801,7 +801,8 @@ const de: Translation = {
       NO_TRANSFERS: 'Kein Transfer',
     },
   },
-  TIME_TRIALS: { //TODO
+  TIME_TRIALS: {
+    //TODO
     PAGE_TITLE: 'Time Trials',
     TITLE: 'Time Trials',
     GAME_TITLE: '{game} Time Trials',
@@ -887,7 +888,7 @@ const de: Translation = {
     NO_PERMISSION_MESSAGE: "You don't have permission to validate time trial proofs.",
     NO_EVIDENCE_PROVIDED: 'No evidence URL provided',
     BACK_TO_ALL_GAMES: 'Back to All Games',
-    SHOW_TIMES: { 
+    SHOW_TIMES: {
       PENDING_VALIDATION: 'Show times pending validation',
       INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',
       PENDING_WITHOUT_PROOF: 'Show times without proof',
