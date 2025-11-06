@@ -432,10 +432,10 @@ const fr: Translation = {
     TOURNAMENT_SERIES: 'Liste des séries de tournois',
     TOURNAMENT_TEMPLATES: 'Templates de tournoi',
     TIME_TRIALS: 'Contre-la-montre',
-    TIME_TRIALS_HOME: 'Time Trials Home',
-    SUBMIT_TIME_TRIAL: 'Submit Time Trial',
-    VALIDATE_PROOFS: 'Validate Proofs',
-    PLAYER_TIMESHEETS: 'Player Timesheets',
+    TIME_TRIALS_HOME: 'Menu des contre-la-montres',
+    SUBMIT_TIME_TRIAL: 'Envoyer un contre-la-montre',
+    VALIDATE_PROOFS: 'Valider des preuves',
+    PLAYER_TIMESHEETS: 'Tableau des temps des joueurs',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registre',
     PLAYERS: 'Joueurs',
@@ -805,7 +805,7 @@ const fr: Translation = {
     TITLE: 'Contre-la-montre',
     GAME_TITLE: 'Contre-la-montre {game}',
     DESCRIPTION:
-      'Parcourez les classements, soumettez vos records et visez les meilleures places pour les contre-la-montre de Mario Kart dans plusieurs jeux.',
+      'Parcourez les classements, envoyez vos records et visez les meilleures places pour les contre-la-montres de plusieurs jeux.',
     VIEW_TRACKS: 'Voir les circuits',
     SUBMIT_TIME_TRIAL: 'Envoyer un contre-la-montre',
     SUBMIT_TIME: 'Envoyer un temps', // Added
@@ -886,6 +886,16 @@ const fr: Translation = {
     NO_PERMISSION_MESSAGE: "Vous n'avez pas l'autorisation de valider les preuves des contre-la-montre.",
     NO_EVIDENCE_PROVIDED: 'Aucune URL de preuve fournie',
     BACK_TO_ALL_GAMES: 'Retour à tous les jeux',
+    SHOW_TIMES: {
+      PENDING_VALIDATION: 'Montrer les temps en attente de validation',
+      INCLUDE_AWAITING_VALIDATION: 'Inclure les temps envoyés en attente de validation',
+      
+      PENDING_WITHOUT_PROOF: 'Montrer les temps sans preuve.',
+      INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: 'Inclure les temps envoyés sans preuve',
+
+      OUTDATED: 'Montrer les temps obsolètes',
+      INCLUDE_OLDER_SUBMISSIONS: 'Inclure les anciens temps envoyés qui ont été battus',
+    },
   },
   TOURNAMENTS: {
     TOURNAMENT: 'Tournament',

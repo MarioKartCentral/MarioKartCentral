@@ -315,9 +315,9 @@
                 bind:checked={showPendingValidation}
                 class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
               />
-              <span>Show times pending validation</span>
+              <span>{$LL.TIME_TRIALS.SHOW_TIMES.PENDING_VALIDATION()}</span>
             </label>
-            <p class="text-xs mt-1">Include times awaiting validation review</p>
+            <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_AWAITING_VALIDATION()}</p>
           </div>
 
           <!-- Show Times Without Proof Checkbox -->
@@ -328,9 +328,9 @@
                 bind:checked={showTimesWithoutProof}
                 class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
               />
-              <span>Show times without proof</span>
+              <span>{$LL.TIME_TRIALS.SHOW_TIMES.PENDING_WITHOUT_PROOF()}</span>
             </label>
-            <p class="text-xs mt-1">Include times submitted without evidence</p>
+            <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_SUBMITTED_WITHOUT_EVIDENCE()}</p>
           </div>
         </div>
       </div>

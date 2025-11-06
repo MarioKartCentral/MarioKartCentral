@@ -3324,6 +3324,32 @@ type RootTranslation = {
 		 * B​a​c​k​ ​t​o​ ​A​l​l​ ​G​a​m​e​s
 		 */
 		BACK_TO_ALL_GAMES: string
+		SHOW_TIMES: {
+			/**
+			 * S​h​o​w​ ​t​i​m​e​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n
+			 */
+			PENDING_VALIDATION: string
+			/**
+			 * I​n​c​l​u​d​e​ ​t​i​m​e​s​ ​a​w​a​i​t​i​n​g​ ​v​a​l​i​d​a​t​i​o​n​ ​r​e​v​i​e​w
+			 */
+			INCLUDE_AWAITING_VALIDATION: string
+			/**
+			 * S​h​o​w​ ​t​i​m​e​s​ ​w​i​t​h​o​u​t​ ​p​r​o​o​f
+			 */
+			PENDING_WITHOUT_PROOF: string
+			/**
+			 * I​n​c​l​u​d​e​ ​t​i​m​e​s​ ​s​u​b​m​i​t​t​e​d​ ​w​i​t​h​o​u​t​ ​e​v​i​d​e​n​c​e
+			 */
+			INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: string
+			/**
+			 * S​h​o​w​ ​o​u​t​d​a​t​e​d​ ​t​i​m​e​s
+			 */
+			OUTDATED: string
+			/**
+			 * I​n​c​l​u​d​e​ ​o​l​d​e​r​ ​s​u​b​m​i​s​s​i​o​n​s​ ​t​h​a​t​ ​h​a​v​e​ ​b​e​e​n​ ​b​e​a​t​e​n
+			 */
+			INCLUDE_OLDER_SUBMISSIONS: string
+		}
 	}
 	TOURNAMENTS: {
 		/**
@@ -8765,6 +8791,32 @@ export type TranslationFunctions = {
 		 * Back to All Games
 		 */
 		BACK_TO_ALL_GAMES: () => LocalizedString
+		SHOW_TIMES: {
+			/**
+			 * Show times pending validation
+			 */
+			PENDING_VALIDATION: () => LocalizedString
+			/**
+			 * Include times awaiting validation review
+			 */
+			INCLUDE_AWAITING_VALIDATION: () => LocalizedString
+			/**
+			 * Show times without proof
+			 */
+			PENDING_WITHOUT_PROOF: () => LocalizedString
+			/**
+			 * Include times submitted without evidence
+			 */
+			INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: () => LocalizedString
+			/**
+			 * Show outdated times
+			 */
+			OUTDATED: () => LocalizedString
+			/**
+			 * Include older submissions that have been beaten
+			 */
+			INCLUDE_OLDER_SUBMISSIONS: () => LocalizedString
+		}
 	}
 	TOURNAMENTS: {
 		/**
