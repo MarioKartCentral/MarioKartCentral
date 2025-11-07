@@ -274,9 +274,9 @@
           <!-- First row: Player Search -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="player-search" class="block text-sm font-medium mb-2"> Player </label>
+              <label for="player-search" class="block text-sm font-medium mb-2">{$LL.TIME_TRIALS.PLAYER()}</label>
               <PlayerSearch bind:player={searchPlayer} show_add_button={false} bind:query={searchQuery} />
-              <p class="text-sm text-gray-400 mt-1">Search for a player to view their timesheet</p>
+              <p class="text-sm text-gray-400 mt-1">{$LL.TIME_TRIALS.SEARCH_FOR_A_PLAYER()}</p>
             </div>
           </div>
 
@@ -327,7 +327,7 @@
       {#key timeTrials}
         {#if !selectedPlayer}
           <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-            <p class="text-gray-400">Search for a player above to view their timesheet.</p>
+            <p class="text-gray-400">{$LL.TIME_TRIALS.SEARCH_FOR_A_PLAYER_ABOVE()}</p>
           </div>
         {:else if isLoading}
           <div class="flex justify-center items-center py-12">

@@ -3324,6 +3324,18 @@ type RootTranslation = {
 		 * B​a​c​k​ ​t​o​ ​A​l​l​ ​G​a​m​e​s
 		 */
 		BACK_TO_ALL_GAMES: string
+		/**
+		 * S​e​a​r​c​h​ ​f​o​r​ ​a​ ​p​l​a​y​e​r​ ​t​o​ ​v​i​e​w​ ​t​h​e​i​r​ ​t​i​m​e​s​h​e​e​t
+		 */
+		SEARCH_FOR_A_PLAYER: string
+		/**
+		 * P​l​a​y​e​r
+		 */
+		PLAYER: string
+		/**
+		 * S​e​a​r​c​h​ ​f​o​r​ ​a​ ​p​l​a​y​e​r​ ​a​b​o​v​e​ ​t​o​ ​v​i​e​w​ ​t​h​e​i​r​ ​t​i​m​e​s​h​e​e​t​.
+		 */
+		SEARCH_FOR_A_PLAYER_ABOVE: string
 		SHOW_TIMES: {
 			/**
 			 * S​h​o​w​ ​t​i​m​e​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n
@@ -8791,6 +8803,18 @@ export type TranslationFunctions = {
 		 * Back to All Games
 		 */
 		BACK_TO_ALL_GAMES: () => LocalizedString
+		/**
+		 * Search for a player to view their timesheet
+		 */
+		SEARCH_FOR_A_PLAYER: () => LocalizedString
+		/**
+		 * Player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * Search for a player above to view their timesheet.
+		 */
+		SEARCH_FOR_A_PLAYER_ABOVE: () => LocalizedString
 		SHOW_TIMES: {
 			/**
 			 * Show times pending validation

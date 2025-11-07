@@ -435,7 +435,7 @@ const fr: Translation = {
     TIME_TRIALS_HOME: 'Menu des contre-la-montres',
     SUBMIT_TIME_TRIAL: 'Envoyer un contre-la-montre',
     VALIDATE_PROOFS: 'Valider des preuves',
-    PLAYER_TIMESHEETS: 'Tableau des temps des joueurs',
+    PLAYER_TIMESHEETS: 'Temps des joueurs',
     LOUNGE: 'Lounge',
     REGISTRY: 'Registre',
     PLAYERS: 'Joueurs',
@@ -811,7 +811,7 @@ const fr: Translation = {
     SUBMIT_TIME: 'Envoyer un temps', // Added
     MY_SUBMISSIONS: 'Mes envois',
     LEADERBOARDS: 'Classements',
-    TIMESHEETS: 'Tableau des temps',
+    TIMESHEETS: 'Temps des joueurs',
     GAME_LEADERBOARD_TITLE: 'Classement {game}', // Renamed
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Contre-la-montre soumis avec succès!',
@@ -886,6 +886,9 @@ const fr: Translation = {
     NO_PERMISSION_MESSAGE: "Vous n'avez pas l'autorisation de valider les preuves des contre-la-montre.",
     NO_EVIDENCE_PROVIDED: 'Aucune URL de preuve fournie',
     BACK_TO_ALL_GAMES: 'Retour à tous les jeux',
+    SEARCH_FOR_A_PLAYER: 'Chercher un joueur pour afficher sa feuille de temps',
+    PLAYER: 'Joueur',
+    SEARCH_FOR_A_PLAYER_ABOVE: 'Recherchez un joueur ci-dessus pour afficher sa feuille de temps.',
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Montrer les temps en attente de validation',
       INCLUDE_AWAITING_VALIDATION: 'Inclure les temps envoyés en attente de validation',

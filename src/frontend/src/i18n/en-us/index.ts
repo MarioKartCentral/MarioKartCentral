@@ -881,6 +881,9 @@ const en_us: BaseTranslation = {
     NO_PERMISSION_MESSAGE: "You don't have permission to validate time trial proofs.",
     NO_EVIDENCE_PROVIDED: 'No evidence URL provided',
     BACK_TO_ALL_GAMES: 'Back to All Games',
+    SEARCH_FOR_A_PLAYER: 'Search for a player to view their timesheet',
+    PLAYER: 'Player',
+    SEARCH_FOR_A_PLAYER_ABOVE: 'Search for a player above to view their timesheet.',
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Show times pending validation',
       INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',
