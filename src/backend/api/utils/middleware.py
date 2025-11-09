@@ -1,4 +1,4 @@
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from api.utils.responses import ProblemResponse
 from common.data.models import Problem
 from starlette.background import BackgroundTasks
@@ -37,10 +37,10 @@ class ProblemExceptionMiddleware:
     """
     Catches any Problems that might have been raised during the middleware
     """
-    def __init__(self, app):
+    def __init__(self, app: ASGIApp):
         self.app = app
 
-    async def __call__(self, scope, receive, send):
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
         try:
             await self.app(scope, receive, send)
         except Problem as problem:
@@ -54,7 +54,7 @@ class ProblemExceptionMiddleware:
 
         
 class IPLoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, call_next):
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         time = datetime.now(timezone.utc)
         path = request.url.path
         

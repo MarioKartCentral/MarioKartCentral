@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Type
 
 class TableModel(ABC):
     @staticmethod
@@ -17,5 +16,5 @@ class IndexModel(ABC):
 @dataclass
 class DatabaseSchema:
     db_name: str
-    tables: List[Type[TableModel]]
-    indices: List[Type[IndexModel]]
+    tables: list[type[TableModel]]
+    indices: list[type[IndexModel]]

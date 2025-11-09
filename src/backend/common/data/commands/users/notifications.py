@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, List
+from typing import Any
 import json
 from common.auth import team_roles
 
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 @dataclass
@@ -12,7 +13,7 @@ class GetNotificationsCommand(Command[list[Notification]]):
     user_id: int
     data: NotificationFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         data = self.data
 
         where_clauses: list[str] = ['user_id = ?']
@@ -56,7 +57,7 @@ class MarkOneNotificationAsReadCommand(Command[int]):
     user_id: int
     data: MarkAsReadRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         is_read = 1 if self.data.is_read else 0
         notification_id = self.id
         user_id = self.user_id
@@ -84,7 +85,7 @@ class MarkAllNotificationsAsReadCommand(Command[int]):
     user_id: int
     data: MarkAsReadRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         is_read = 1 if self.data.is_read else 0
         user_id = self.user_id
 
@@ -99,7 +100,7 @@ class MarkAllNotificationsAsReadCommand(Command[int]):
 class GetUnreadNotificationsCountCommand(Command[int]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT COUNT (*) FROM notifications WHERE user_id = ? AND is_read = 0""", (self.user_id, )) as cursor:
                 row = await cursor.fetchone()
@@ -107,7 +108,6 @@ class GetUnreadNotificationsCountCommand(Command[int]):
                     raise Problem("Unable to fetch unread notifications count")
                 return int(row[0])
 
-@save_to_command_log
 @dataclass
 class DispatchNotificationCommand(Command[int]):
     user_ids: list[int]
@@ -116,7 +116,7 @@ class DispatchNotificationCommand(Command[int]):
     link: str | None
     notification_type: int = 0
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             created_date = int(datetime.now(timezone.utc).timestamp())
             row_args = [(user_id, self.notification_type, self.content_id, json.dumps(self.content_args), self.link, created_date) for user_id in self.user_ids]
@@ -132,7 +132,7 @@ class DispatchNotificationCommand(Command[int]):
 class GetPlayerNameCommand(Command[str]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> str:
+    async def handle(self, db_wrapper: DBWrapper) -> str:
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -144,7 +144,7 @@ class GetPlayerNameCommand(Command[str]):
 class GetUserIdFromPlayerIdCommand(Command[int | None]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -156,7 +156,7 @@ class GetUserIdFromPlayerIdCommand(Command[int | None]):
 class GetTeamNameFromIdCommand(Command[str]):
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -168,7 +168,7 @@ class GetTeamNameFromIdCommand(Command[str]):
 class GetSeriesNameFromIdCommand(Command[str]):
     series_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name FROM tournament_series WHERE id = ?", (self.series_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -180,7 +180,7 @@ class GetSeriesNameFromIdCommand(Command[str]):
 class GetTournamentNameFromIdCommand(Command[str]):
     tournament_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -192,7 +192,7 @@ class GetTournamentNameFromIdCommand(Command[str]):
 class GetTypeFromPlayerFCCommand(Command[str]):
     fc_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):# -> Any:
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT type FROM friend_codes WHERE id = ?", (self.fc_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -201,12 +201,12 @@ class GetTypeFromPlayerFCCommand(Command[str]):
                 return row[0]
 
 @dataclass
-class GetTeamManagerAndLeaderUserIdsCommand(Command[List[int]]):
+class GetTeamManagerAndLeaderUserIdsCommand(Command[list[int]]):
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            user_ids: List[int] = []
+            user_ids: list[int] = []
             async with db.execute("""SELECT u.id FROM users u
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
@@ -221,7 +221,7 @@ class GetNotificationSquadDataCommand(Command[NotificationDataTournamentSquad]):
     tournament_id: int
     registration_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT s.name, t.name, u.id FROM tournament_players tp 
                 JOIN users u ON tp.player_id = u.player_id 
@@ -238,7 +238,7 @@ class GetNotificationSquadDataCommand(Command[NotificationDataTournamentSquad]):
 class GetNotificationDataFromNameChangeRequestCommand(Command[NotificationDataUser]):
     request_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT u.id, r.player_id FROM users u 
                 JOIN player_name_edits r ON u.player_id = r.player_id 
@@ -253,7 +253,7 @@ class GetNotificationDataFromNameChangeRequestCommand(Command[NotificationDataUs
 class GetNotificationDataFromTeamTransfersCommand(Command[NotificationDataTeamTransfer]):
     invite_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT p.name, p.id, t.id, t.name, r.name FROM players p 
                 JOIN team_transfers tt ON p.id = tt.player_id 
@@ -270,7 +270,7 @@ class GetNotificationDataFromTeamTransfersCommand(Command[NotificationDataTeamTr
 class GetNotificationTeamDataFromEditRequestCommand(Command[NotificationDataTeam]):
     edit_request_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT t.id, t.name FROM teams t 
                 JOIN team_edits r ON t.id = r.team_id 
@@ -286,7 +286,7 @@ class GetNotificationTeamDataFromEditRequestCommand(Command[NotificationDataTeam
 class GetNotificationTeamRosterDataCommand(Command[NotificationDataTeamRoster]):
     roster_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT t.id, t.name, r.name FROM teams t 
                 JOIN team_rosters r ON t.id = r.team_id 
@@ -302,7 +302,7 @@ class GetNotificationTeamRosterDataCommand(Command[NotificationDataTeamRoster]):
 class GetNotificationTeamRosterDataFromRosterEditRequestCommand(Command[NotificationDataTeamRoster]):
     edit_request_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """SELECT t.id, t.name, r.new_name FROM teams t 
                 JOIN team_rosters tr ON tr.team_id = t.id 

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Literal
+from typing import Literal
 from common.data.models.common import Game, GameMode, FriendCodeType
 
 @dataclass
@@ -19,8 +19,8 @@ class XFUserBan:
 
 @dataclass
 class XenforoData:
-    xf_user: List[XFUser]
-    xf_user_ban: List[XFUserBan]
+    xf_user: list[XFUser]
+    xf_user_ban: list[XFUserBan]
 
 @dataclass
 class MKCEventPlacement:
@@ -251,22 +251,22 @@ class MKCSeriesTemplate:
 
 @dataclass
 class MKCData:
-    event_placements: List[MKCEventPlacement]
-    event_registrations: List[MKCEventRegistration]
-    events: List[MKCEvent]
-    player_bans: List[MKCPlayerBan]
-    player_optouts: List[MKCPlayerOptout]
-    player_roles: List[MKCPlayerRole]
-    players: List[MKCPlayer]
-    series_templates: List[MKCSeriesTemplate]
-    squad_memberships: List[MKCSquadMembership]
-    squads: List[MKCSquad]
-    team_memberships: List[MKCTeamMembership]
-    team_representatives: List[MKCTeamRepresentative]
-    team_rosters: List[MKCTeamRosters]
-    teams: List[MKCTeam]
-    tournament_series: List[MKCTournamentSeries]
-    transfers: List[MKCTransfer]
+    event_placements: list[MKCEventPlacement]
+    event_registrations: list[MKCEventRegistration]
+    events: list[MKCEvent]
+    player_bans: list[MKCPlayerBan]
+    player_optouts: list[MKCPlayerOptout]
+    player_roles: list[MKCPlayerRole]
+    players: list[MKCPlayer]
+    series_templates: list[MKCSeriesTemplate]
+    squad_memberships: list[MKCSquadMembership]
+    squads: list[MKCSquad]
+    team_memberships: list[MKCTeamMembership]
+    team_representatives: list[MKCTeamRepresentative]
+    team_rosters: list[MKCTeamRosters]
+    teams: list[MKCTeam]
+    tournament_series: list[MKCTournamentSeries]
+    transfers: list[MKCTransfer]
 
 @dataclass
 class MKCV1Data:

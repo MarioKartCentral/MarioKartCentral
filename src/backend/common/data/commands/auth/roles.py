@@ -1,30 +1,29 @@
-from dataclasses import dataclass
-from common.auth import permissions
-from common.data.commands import Command, save_to_command_log
-from common.data.models import *
-from common.auth.roles import BANNED
 from datetime import datetime, timezone
 import json
-import common.data.notifications as notifications
+from common.auth import permissions, roles
+from common.data import notifications
+from common.data.command import Command
+from common.data.db import DBWrapper
+from common.data.models import *
 
 @dataclass
 class ListRolesCommand(Command[list[Role]]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            roles: list[Role] = []
+            roles_list: list[Role] = []
             # ban info can be retrieved in its own endpoint
-            async with db.execute("SELECT id, name, position FROM roles WHERE name != ?", (BANNED,)) as cursor:
+            async with db.execute("SELECT id, name, position FROM roles WHERE name != ?", (roles.BANNED,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row
-                    roles.append(Role(id, name, position))
-            return roles
+                    roles_list.append(Role(id, name, position))
+            return roles_list
         
 @dataclass
 class GetRoleInfoCommand(Command[RoleInfo]):
     role_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name, position FROM roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -63,7 +62,7 @@ class GetRoleInfoCommand(Command[RoleInfo]):
 class GetUserRolePermissionsCommand(Command[tuple[list[UserRole], list[TeamRole], list[SeriesRole], list[TournamentRole]]]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             # user roles
             role_dict: dict[int, UserRole] = {}
@@ -203,7 +202,6 @@ class GetUserRolePermissionsCommand(Command[tuple[list[UserRole], list[TeamRole]
 
             return user_role_list, team_roles, series_roles, tournament_roles
             
-@save_to_command_log
 @dataclass
 class GrantRoleCommand(Command[None]):
     granter_user_id: int
@@ -212,7 +210,7 @@ class GrantRoleCommand(Command[None]):
     expires_on: int | None = None
     is_ban: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             timestamp = int(datetime.now(timezone.utc).timestamp())
             if self.expires_on and self.expires_on < timestamp:
@@ -265,7 +263,6 @@ class GrantRoleCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
             
-@save_to_command_log
 @dataclass
 class RemoveRoleCommand(Command[None]):
     remover_user_id: int
@@ -273,7 +270,7 @@ class RemoveRoleCommand(Command[None]):
     role: str
     is_ban: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             # get user id from player
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:
@@ -321,7 +318,6 @@ class RemoveRoleCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
             
-@save_to_command_log
 @dataclass
 class UpdateRoleExpirationCommand(Command[None]):
     granter_user_id: int
@@ -330,7 +326,7 @@ class UpdateRoleExpirationCommand(Command[None]):
     expires_on: int | None = None
     is_ban: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             timestamp = int(datetime.now(timezone.utc).timestamp())
             if self.expires_on and self.expires_on < timestamp:
@@ -379,7 +375,7 @@ class UpdateRoleExpirationCommand(Command[None]):
 
 @dataclass
 class RemoveExpiredRolesCommand(Command[None]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         timestamp = int(datetime.now(timezone.utc).timestamp())
         notif_rows: list[tuple[int, int, int, str, str, int]] = []
         

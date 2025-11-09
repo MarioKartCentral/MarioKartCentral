@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List, Type
 from common.data.db.common import TableModel
 
 @dataclass
@@ -22,4 +21,4 @@ class UserActivityQueue(TableModel):
             timestamp INTEGER NOT NULL
         )"""
 
-all_tables: List[Type[TableModel]] = [UserActivityQueue]
+all_tables: list[type[TableModel]] = [UserActivityQueue]

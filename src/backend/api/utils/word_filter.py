@@ -1,7 +1,8 @@
-from typing import Awaitable, Callable, Concatenate
+from collections.abc import Awaitable, Callable
+from typing import Concatenate
 from starlette.requests import Request
 from starlette.responses import Response
-from common.data.commands import CheckWordFilterCommand
+from common.data.commands import *
 from api.data import handle
 
 def check_word_filter[**P](handle_request: Callable[Concatenate[Request, P], Awaitable[Response]]):

@@ -12,26 +12,6 @@ from common.data.commands import *
 from common.data.models import *
 from urllib.parse import urlencode
 
-# Email configuration helper
-def create_email_config():
-    email_config = EmailServiceConfig(
-        from_email=appsettings.MKC_EMAIL_ADDRESS,
-        site_url=appsettings.SITE_URL,
-        use_ses=appsettings.USE_SES_FOR_EMAILS
-    )
-    
-    if appsettings.USE_SES_FOR_EMAILS:
-        if not appsettings.AWS_SES_ACCESS_KEY or not appsettings.AWS_SES_SECRET_KEY:
-            raise Problem("AWS SES access key and secret key must be set if SES is used", status=500)
-        email_config.ses_config = SESConfig(
-            access_key_id=appsettings.AWS_SES_ACCESS_KEY,
-            secret_access_key=str(appsettings.AWS_SES_SECRET_KEY),
-            region=appsettings.AWS_SES_REGION
-        )
-    else:
-        email_config.smtp_config = SMTPConfig(hostname=appsettings.MKC_EMAIL_HOSTNAME, port=appsettings.MKC_EMAIL_PORT)
-    
-    return email_config
 
 @bind_request_body(LoginRequestData)
 async def log_in(request: Request, body: LoginRequestData) -> Response:
@@ -62,8 +42,7 @@ async def log_in(request: Request, body: LoginRequestData) -> Response:
     # return info about the user so the frontend can know what's going on
     if user.force_password_reset:
         async def send_password_reset():
-            email_config = create_email_config()
-            command = SendPasswordResetEmailCommand(body.email, email_config)
+            command = SendPasswordResetEmailCommand(body.email)
             await handle(command)   
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
     
@@ -103,8 +82,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
                                                 mkc_user.team_roles))
         return_user = UserAccountInfo(user.id, user.player_id, user.email_confirmed, user.force_password_reset)
         async def send_password_reset():
-            email_config = create_email_config()
-            command = SendPasswordResetEmailCommand(body.email, email_config)
+            command = SendPasswordResetEmailCommand(body.email)
             await handle(command)   
         return JSONResponse(return_user, background=BackgroundTask(send_password_reset))
         
@@ -118,8 +96,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 
     # in the background after the response is sent, send a confirmation email and log user IP/fingerprint
     async def send_email_and_log():
-        email_config = create_email_config()
-        command = SendEmailVerificationCommand(user.id, email_config)
+        command = SendEmailVerificationCommand(user.id)
         await handle(command)
         
         if appsettings.ENABLE_IP_LOGGING:
@@ -143,8 +120,7 @@ async def log_out(request: Request) -> Response:
 
 @require_logged_in()
 async def send_confirmation_email(request: Request) -> Response:
-    email_config = create_email_config()
-    command = SendEmailVerificationCommand(request.state.user.id, email_config)
+    command = SendEmailVerificationCommand(request.state.user.id)
     await handle(command)
     return JSONResponse({})
 
@@ -156,16 +132,14 @@ async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSON
 
 @bind_request_body(ForgotPasswordRequestData)
 async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
-    email_config = create_email_config()
-    command = SendPasswordResetEmailCommand(body.email, email_config)
+    command = SendPasswordResetEmailCommand(body.email)
     await handle(command)
     return JSONResponse({})
 
 @bind_request_body(SendPlayerPasswordResetRequestData)
 @require_permission(permissions.EDIT_PLAYER)
 async def send_player_password_reset(request: Request, body: SendPlayerPasswordResetRequestData) -> JSONResponse:
-    email_config = create_email_config()
-    command = SendPasswordResetToPlayerCommand(body.player_id, email_config)
+    command = SendPasswordResetToPlayerCommand(body.player_id)
     await handle(command)
     return JSONResponse({})
 
@@ -203,8 +177,7 @@ async def transfer_account(request: Request, body: TransferAccountRequestData):
         mkc_user.user_roles, mkc_user.series_roles,
         mkc_user.team_roles))
     async def send_password_reset():
-        email_config = create_email_config()
-        command = SendPasswordResetEmailCommand(user.email, email_config)
+        command = SendPasswordResetEmailCommand(user.email)
         await handle(command)
     return JSONResponse({}, background=BackgroundTask(send_password_reset))
 
@@ -215,8 +188,7 @@ async def change_email(request: Request, body: ChangeEmailRequestData):
     await handle(command)
 
     async def send_confirmation_email():
-        email_config = create_email_config()
-        command = SendEmailVerificationCommand(request.state.user.id, email_config)
+        command = SendEmailVerificationCommand(request.state.user.id)
         await handle(command)
     return JSONResponse({}, background=BackgroundTask(send_confirmation_email))
 
@@ -247,14 +219,7 @@ async def discord_callback(request: Request, discord_auth_data: DiscordAuthCallb
     assert discord_auth_data.code is not None
     try:
         if appsettings.ENABLE_DISCORD:
-            command = LinkUserDiscordCommand(
-                user_data.id, 
-                discord_auth_data, 
-                appsettings.DISCORD_CLIENT_ID, 
-                str(appsettings.DISCORD_CLIENT_SECRET), 
-                appsettings.ENV,
-                appsettings.DISCORD_OAUTH_CALLBACK 
-            )
+            command = LinkUserDiscordCommand(user_data.id, discord_auth_data)
         else:
             command = CreateFakeUserDiscordCommand(user_data.id)
         await handle(command)
@@ -284,7 +249,7 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
 
 @require_logged_in()
 async def delete_discord_data(request: Request) -> JSONResponse:
-    command = DeleteUserDiscordDataCommand(request.state.user.id, appsettings.DISCORD_CLIENT_ID, str(appsettings.DISCORD_CLIENT_SECRET))
+    command = DeleteUserDiscordDataCommand(request.state.user.id)
     await handle(command)
     return JSONResponse({})
 

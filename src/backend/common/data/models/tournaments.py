@@ -134,7 +134,7 @@ class TournamentList:
     page_count: int
 
 @dataclass
-class TournamentFilter():
+class TournamentFilter:
     name: str | None = None
     game: Game | None = None
     mode: GameMode | None = None
@@ -146,7 +146,7 @@ class TournamentFilter():
     page: int | None = None
 
 @dataclass
-class TournamentInvite():
+class TournamentInvite:
     invite_id: int
     tournament_id: int
     timestamp: int

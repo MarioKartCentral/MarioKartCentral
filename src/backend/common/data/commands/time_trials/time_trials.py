@@ -1,26 +1,17 @@
+from collections.abc import AsyncIterator, Iterable
 from dataclasses import dataclass, field
-from typing import List, Optional
+from logging import getLogger
+from typing import cast
 from datetime import datetime, timezone
 import msgspec
 import uuid
-from common.data.commands import Command
-from common.data.db.db_wrapper import DBWrapper
-from common.data.models import *
-from common.data.models import Problem
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.duckdb.models import TimeTrial, TimeTrialProof
-from common.data.models.time_trials_api import (
-    ProofRequestData,
-    ProofWithValidationStatusResponseData,
-    ListProofsForValidationResponseData,
-    TimeTrialResponseData,
-    ProofResponseData,
-    EditProofDictRequired,
-    TimesheetFilter,
-)
-from common.data.s3 import S3Wrapper
+from common.data.duckdb.wrapper import DuckDBWrapper
+from common.data.models import *
 
-
-def calculate_validation_status(proofs_data: List[TimeTrialProof], record_is_invalid: bool = False) -> str:
+def calculate_validation_status(proofs_data: list[TimeTrialProof], record_is_invalid: bool = False) -> str:
     """
     Calculate the validation status for a time trial record based on the new logic:
     - valid: there exists a proof with status "valid" 
@@ -56,9 +47,9 @@ class CreateTimeTrialCommand(Command[TimeTrial]):
     game: str
     track: str
     time_ms: int
-    proofs: List[ProofRequestData] = field(default_factory=lambda: [])
+    proofs: list[ProofRequestData] = field(default_factory=lambda: [])
     
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> TimeTrial:
+    async def handle(self, duckdb_wrapper: DuckDBWrapper) -> TimeTrial:
         # Input validation following established patterns
         if self.time_ms <= 0:
             raise Problem("Time must be positive", status=400)
@@ -107,7 +98,7 @@ class CreateTimeTrialCommand(Command[TimeTrial]):
             updated_at=now
         )
 
-        async with db_wrapper.duckdb.connection() as conn:
+        async with duckdb_wrapper.connection() as conn:
             insert_time_trial_query = """
                 INSERT INTO time_trials (id, version, player_id, game, track, time_ms, proofs, is_invalid, validation_status, created_at, updated_at)
                 VALUES ($id, $version, $player_id, $game, $track, $time_ms, $proofs, $is_invalid, $validation_status, $created_at, $updated_at)
@@ -130,16 +121,16 @@ class CreateTimeTrialCommand(Command[TimeTrial]):
 
 
 @dataclass
-class GetTimeTrialCommand(Command[Optional[TimeTrialResponseData]]):
+class GetTimeTrialCommand(Command[TimeTrialResponseData | None]):
     """Retrieve a specific time trial by ID."""
     
     trial_id: str
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> Optional[TimeTrialResponseData]:
+    async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> TimeTrialResponseData | None:
         if not self.trial_id.strip():
             raise Problem("Trial ID is required", status=400)
-        
-        async with db_wrapper.duckdb.connection() as conn:
+
+        async with duckdb_wrapper.connection() as conn:
             # Retrieve time trial record with embedded proofs
             get_time_trial_query = f"""
                 SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.created_at, tt.updated_at, tt.validation_status
@@ -147,12 +138,12 @@ class GetTimeTrialCommand(Command[Optional[TimeTrialResponseData]]):
                 WHERE tt.id = $trial_id
             """
             async with conn.execute(get_time_trial_query, {"trial_id": self.trial_id}) as cursor:
-                row = await cursor.fetchone()
+                row = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
                 if row is None:
                     return None
 
         (id, version, player_id, game, track, time_ms, proofs_json, created_at, updated_at, validation_status) = row
-        proofs_obj = msgspec.json.decode(proofs_json, type=List[TimeTrialProof]) if proofs_json else []
+        proofs_obj = msgspec.json.decode(proofs_json, type=list[TimeTrialProof]) if proofs_json else []
 
         player_name, player_country_code = None, None
         async with db_wrapper.connect() as conn:
@@ -200,7 +191,7 @@ class MarkProofInvalidCommand(Command[None]):
     validated_by_player_id: int
     version: int
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
+    async def handle(self, duckdb_wrapper: DuckDBWrapper) -> None:
         # Input validation
         if not self.proof_id.strip():
             raise Problem("Proof ID is required", status=400)
@@ -209,7 +200,7 @@ class MarkProofInvalidCommand(Command[None]):
             
         now_iso = datetime.now(timezone.utc).isoformat()
 
-        async with db_wrapper.duckdb.connection() as conn:
+        async with duckdb_wrapper.connection() as conn:
             # Find the time trial that contains this proof_id in its embedded proofs
             find_trial_query = """
                 SELECT proofs, is_invalid, version 
@@ -217,7 +208,7 @@ class MarkProofInvalidCommand(Command[None]):
                 WHERE id = $trial_id
             """
             async with conn.execute(find_trial_query, {"trial_id": self.time_trial_id}) as cursor:
-                trial_rows = await cursor.fetchone()
+                trial_rows = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
                 if not trial_rows:
                     raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
             
@@ -231,7 +222,7 @@ class MarkProofInvalidCommand(Command[None]):
             if is_invalid:
                 raise Problem(f"Time trial {self.time_trial_id} is marked as invalid", status=400)
 
-            proofs_data = msgspec.json.decode(proofs_json, type=List[TimeTrialProof]) if proofs_json else []
+            proofs_data = msgspec.json.decode(proofs_json, type=list[TimeTrialProof]) if proofs_json else []
 
             proof_data = None
             for proof in proofs_data:
@@ -273,7 +264,7 @@ class MarkProofValidCommand(Command[None]):
     validated_by_player_id: int
     version: int
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
+    async def handle(self, duckdb_wrapper: DuckDBWrapper) -> None:
         if not self.proof_id.strip():
             raise Problem("Proof ID is required", status=400)
         if self.validated_by_player_id < 0:
@@ -281,7 +272,7 @@ class MarkProofValidCommand(Command[None]):
             
         now_iso = datetime.now(timezone.utc).isoformat()
 
-        async with db_wrapper.duckdb.connection() as conn:
+        async with duckdb_wrapper.connection() as conn:
             # Find the time trial that contains this proof_id in its embedded proofs
             find_trial_query = """
                 SELECT proofs, is_invalid, version 
@@ -289,7 +280,7 @@ class MarkProofValidCommand(Command[None]):
                 WHERE id = $time_trial_id
             """
             async with conn.execute(find_trial_query, {"time_trial_id": self.time_trial_id}) as cursor:
-                trial_rows = await cursor.fetchone()
+                trial_rows = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
                 if not trial_rows:
                     raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
             
@@ -302,7 +293,7 @@ class MarkProofValidCommand(Command[None]):
             if is_invalid:
                 raise Problem(f"Time trial {self.time_trial_id} is marked as invalid", status=400)
 
-            proofs_data = msgspec.json.decode(proofs_json, type=List[TimeTrialProof]) if proofs_json else []
+            proofs_data = msgspec.json.decode(proofs_json, type=list[TimeTrialProof]) if proofs_json else []
 
             proof_data = None
             for proof in proofs_data:
@@ -340,8 +331,8 @@ class MarkProofValidCommand(Command[None]):
 class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData]):
     """List all proofs with their validation statuses."""
     
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> ListProofsForValidationResponseData:
-        async with db_wrapper.duckdb.connection() as conn:
+    async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> ListProofsForValidationResponseData:
+        async with duckdb_wrapper.connection() as conn:
             get_all_time_trials_query = f"""
                 SELECT 
                     tt.id, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.version
@@ -351,19 +342,19 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
             """
 
             async with conn.execute(get_all_time_trials_query) as cursor:
-                all_trial_rows = await cursor.fetchall()
+                all_trial_rows = cast(Iterable[tuple[Any, ...]], await cursor.fetchall()) # pyright: ignore[reportUnknownMemberType]
 
-        response_proofs: List[ProofWithValidationStatusResponseData] = []
-        player_ids = set()
+        response_proofs: list[ProofWithValidationStatusResponseData] = []
+        player_ids: set[int] = set()
         for trial_row in all_trial_rows:
             tt_id, tt_player_id, tt_game, tt_track, tt_time_ms, tt_proofs_json, tt_version = trial_row
             
             try:
                 # Parse embedded proofs
-                proofs_data = msgspec.json.decode(tt_proofs_json, type=List[TimeTrialProof]) if tt_proofs_json else []
+                proofs_data = msgspec.json.decode(tt_proofs_json, type=list[TimeTrialProof]) if tt_proofs_json else []
             except msgspec.DecodeError:
                 # Skip malformed time trial records
-                print(f"Error decoding JSON for time_trial_id {tt_id}")
+                getLogger().error(f"Error decoding JSON for time_trial_id {tt_id}")
                 continue
 
             player_ids.add(tt_player_id)
@@ -430,13 +421,13 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
 
 
 @dataclass
-class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
+class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
     game: str
     track: str
     include_unvalidated: bool = False  # Include records with unvalidated proofs
     include_proofless: bool = False    # Include records without proofs
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> List[TimeTrialResponseData]:
+    async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> list[TimeTrialResponseData]:
         # Build validation status filter (additive logic)
         validation_filters = ["tt.validation_status = 'valid'"]  # Always include valid
         
@@ -473,12 +464,12 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
             ORDER BY time_ms ASC, created_at ASC
         """
 
-        player_ids = set()
-        
-        records: List[TimeTrialResponseData] = []
-        async with db_wrapper.duckdb.connection() as conn:
+        player_ids: set[int] = set()
+
+        records: list[TimeTrialResponseData] = []
+        async with duckdb_wrapper.connection() as conn:
             async with conn.execute(query, query_params) as cursor:
-                async for row in cursor:
+                async for row in cast(AsyncIterator[tuple[Any, ...]], cursor):
                     try:
                         id, version, player_id, game, track, time_ms, proofs_str, created_at, updated_at, validation_status = row
                         # Parse proofs JSON and filter out invalid ones for response
@@ -518,7 +509,7 @@ class GetLeaderboardCommand(Command[List[TimeTrialResponseData]]):
                         records.append(record)
                         
                     except Exception as e:
-                        print(f"Error processing leaderboard record {row[0]}: {e}")
+                        getLogger().error(f"Error processing leaderboard record {row[0]}: {e}")
                         continue
         
         async with db_wrapper.connect() as conn:
@@ -551,7 +542,7 @@ class MarkTimeTrialInvalidCommand(Command[None]):
     validated_by_player_id: str
     version: int
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> None:
         # Input validation
         if not self.time_trial_id.strip():
             raise Problem("Time trial ID is required", status=400)
@@ -560,7 +551,7 @@ class MarkTimeTrialInvalidCommand(Command[None]):
             
         now_iso = datetime.now(timezone.utc).isoformat()
 
-        async with db_wrapper.duckdb.connection() as conn:
+        async with duckdb_wrapper.connection() as conn:
             # Check if the time trial exists and get current version
             check_trial_query = """
                 SELECT id, is_invalid, version 
@@ -568,7 +559,7 @@ class MarkTimeTrialInvalidCommand(Command[None]):
                 WHERE id = $time_trial_id
             """
             async with conn.execute(check_trial_query, {"time_trial_id": self.time_trial_id}) as cursor:
-                trial_row = await cursor.fetchone()
+                trial_row = cast(tuple[str, bool, int] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
                 if not trial_row:
                     raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
             
@@ -602,14 +593,14 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
     game: str
     track: str
     time_ms: int
-    proofs: List[EditProofDictRequired]
+    proofs: list[EditProofDictRequired]
     version: int
     current_player_id: int  # ID of logged-in player making the edit
     player_id: int | None
     is_invalid: bool | None
     can_validate: bool = False
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> TimeTrialResponseData:
+    async def handle(self, duckdb_wrapper: DuckDBWrapper) -> TimeTrialResponseData:
         if not self.time_trial_id.strip():
             raise Problem("Time trial ID is required", status=400)
         if not self.game.strip():
@@ -622,7 +613,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
         now_iso = datetime.now(timezone.utc).isoformat()
         new_version = self.version + 1
 
-        async with db_wrapper.duckdb.connection() as conn:
+        async with duckdb_wrapper.connection() as conn:
             # Get current time trial
             get_trial_query = f"""
                 SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, 
@@ -632,7 +623,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             """
             
             async with conn.execute(get_trial_query, {"time_trial_id": self.time_trial_id}) as cursor:
-                row = await cursor.fetchone()
+                row = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
                 if not row:
                     raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
             
@@ -663,10 +654,10 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             is_invalid = self.is_invalid if self.is_invalid is not None else bool(current_is_invalid)
 
             # Parse current proofs
-            current_proofs_data = msgspec.json.decode(current_proofs_json, type=List[TimeTrialProof]) if current_proofs_json else []
+            current_proofs_data = msgspec.json.decode(current_proofs_json, type=list[TimeTrialProof]) if current_proofs_json else []
             
             # Process proof changes
-            updated_proofs: List[TimeTrialProof] = []
+            updated_proofs: list[TimeTrialProof] = []
             core_fields_changed: bool = (
                 self.game != current_game or 
                 self.track != current_track or 
@@ -813,12 +804,12 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             )
 
 @dataclass
-class GetTimesheetCommand(Command[List[TimeTrialResponseData]]):
+class GetTimesheetCommand(Command[list[TimeTrialResponseData]]):
     """Get all time trials for a specific player and game across all tracks."""
     
     filter: TimesheetFilter
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> List[TimeTrialResponseData]:
+    async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> list[TimeTrialResponseData]:
         if not self.filter.player_id:
             raise Problem("Player ID is required", status=400)
         if not self.filter.game.strip():
@@ -833,7 +824,7 @@ class GetTimesheetCommand(Command[List[TimeTrialResponseData]]):
                 
         player_name, player_country_code = player_row
 
-        async with db_wrapper.duckdb.connection() as conn:
+        async with duckdb_wrapper.connection() as conn:
             validation_filters = ["tt.validation_status = 'valid'"]  # Always include valid
             
             if self.filter.include_unvalidated:
@@ -880,20 +871,20 @@ class GetTimesheetCommand(Command[List[TimeTrialResponseData]]):
                     ORDER BY tt.track ASC, tt.time_ms ASC, tt.created_at DESC
                 """
 
-            records = []
+            records: list[TimeTrialResponseData] = []
             async with conn.execute(query, {
                 "player_id": self.filter.player_id,
                 "game": self.filter.game
             }) as cursor:
-                async for row in cursor:
+                async for row in cast(AsyncIterator[tuple[Any, ...]], cursor):
                     (trial_id, version, player_id, game, track, time_ms, 
                      proofs_json, created_at, updated_at, validation_status) = row
 
                     # Parse proofs and filter out invalid ones (like leaderboard does)
-                    response_proofs = []
+                    response_proofs: list[ProofResponseData] = []
                     if proofs_json:
                         try:
-                            proofs_data = msgspec.json.decode(proofs_json, type=List[TimeTrialProof])
+                            proofs_data = msgspec.json.decode(proofs_json, type=list[TimeTrialProof])
                             for proof in proofs_data:
                                 # Only include proofs that are not marked as invalid
                                 if proof.status != "invalid":

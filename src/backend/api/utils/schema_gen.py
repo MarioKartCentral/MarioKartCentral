@@ -1,7 +1,7 @@
 import dataclasses
 import re
-from types import NoneType, UnionType
-from typing import Any, Literal, Optional, Union, get_args, get_origin
+from types import NoneType
+from typing import Any, Literal, cast, get_args, get_origin, get_type_hints
 import msgspec
 from starlette.requests import Request
 from starlette.routing import BaseRoute, Route
@@ -13,7 +13,8 @@ PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
 class SchemaGenerator(BaseSchemaGenerator):
     @staticmethod
-    def type_to_openapi(typ: type[Any], is_nullable=False) -> dict[str, Any]:
+    def type_to_openapi(typ: Any, is_nullable: bool=False, root_type: Any | None = None) -> dict[str, Any]:
+        root_type = root_type or typ
         if typ == str:
             type_str = "string"
         elif typ == int:
@@ -24,29 +25,22 @@ class SchemaGenerator(BaseSchemaGenerator):
             type_str = "number"
         elif get_origin(typ) is Literal:
             enum = list(get_args(typ))
-            enum_type = type(enum[0]) # type: ignore
+            enum_type = cast(type[Any], type(enum[0]))
             if not(all(enum_type == type(enum_val) for enum_val in enum)):
-                raise Problem("Literal contains values of different types", f"Literal contains values of different types: {typ}")
+                raise Problem("Literal contains values of different types", f"Literal contains values of different types: {typ}. Root type: {root_type}")
             if is_nullable:
                 enum += [None]
-            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable) # type: ignore
+            base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable, root_type)
             base_openapi["enum"] = enum
             return base_openapi
-        elif get_origin(typ) is Optional:
-            base_type = get_args(typ)[0]
-            base_schema = SchemaGenerator.type_to_openapi(base_type, is_nullable=True)
-            return base_schema
-        elif get_origin(typ) is Union or get_origin(typ) is UnionType:
-            args = get_args(typ)
-            if NoneType in args:
-                is_nullable = True
-                args = [a for a in args if a != NoneType]
+        elif typ == typ | None: # Check if it's an optional type
+            args = [a for a in get_args(typ) if a != NoneType]
+            if len(args) != 1:
+                raise Problem("Unable to handle union types with more than one non-None type", f"Type: {typ}. Root type: {root_type}")
 
-            if len(args) == 1:
-                return SchemaGenerator.type_to_openapi(args[0], is_nullable)
-            raise Problem("Unable to handle union types with more than one non-None type", f"Type: {typ}")
+            return SchemaGenerator.type_to_openapi(args[0], is_nullable=True, root_type=root_type)
         else:
-            raise Problem("Failed to map request param to type", f"Unhandled type in schema generation: {typ}")
+            raise Problem("Failed to map request param to type", f"Unhandled type in schema generation: {typ}. Root type: {root_type}")
         return { "type": type_str, "nullable": is_nullable }
 
     def get_schema(self, routes: list[BaseRoute]):
@@ -69,9 +63,11 @@ class SchemaGenerator(BaseSchemaGenerator):
                 if spec_types.query_type is not None:
                     if dataclasses.is_dataclass(spec_types.query_type):
                         params: list[dict[str, Any]] = []
+                        
+                        type_hints = get_type_hints(spec_types.query_type)
                         for field in dataclasses.fields(spec_types.query_type):
-                            param_schema = SchemaGenerator.type_to_openapi(field.type) # type: ignore
-
+                            field_type = type_hints[field.name]
+                            param_schema = SchemaGenerator.type_to_openapi(field_type, root_type=spec_types.query_type)
                             is_required = True
                             if field.default is not dataclasses.MISSING:
                                 param_schema["default"] = field.default

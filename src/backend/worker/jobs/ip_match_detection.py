@@ -3,9 +3,10 @@ from dataclasses import dataclass
 import json
 from typing import Any
 
+from common.data.command import Command
+from common.data.db import DBWrapper
 from worker.data import handle
-from worker.jobs import Job
-from common.data.commands import Command
+from worker.jobs.base import Job
 
 @dataclass
 class IPMatchDetectionState:
@@ -16,7 +17,7 @@ class IPMatchDetectionState:
 class DetectIPMatchesCommand(Command[IPMatchDetectionState]):
     state: IPMatchDetectionState
 
-    async def handle(self, db_wrapper, s3_wrapper) -> IPMatchDetectionState:
+    async def handle(self, db_wrapper: DBWrapper) -> IPMatchDetectionState:
         async with db_wrapper.connect(db_name='user_activity', readonly=True) as db:
             get_maxs_query = """
                 SELECT

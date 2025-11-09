@@ -31,14 +31,15 @@ services:
       AWS_SES_ACCESS_KEY: ${AWS_SES_ACCESS_KEY:-}
       AWS_SES_SECRET_KEY: ${AWS_SES_SECRET_KEY:-}
       USE_SES_FOR_EMAILS: ${USE_SES_FOR_EMAILS:-false}
-      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
-      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-Authorization=Basic ${GRAFANA_CLOUD_OTLP_TOKEN:-}}
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18890
       OTEL_PYTHON_LOG_LEVEL: info
       OTEL_SERVICE_NAME: mkc-api-dev
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
+    depends_on:
+      - aspire-dashboard
 
   worker:
     build:
@@ -61,15 +62,16 @@ services:
       ENV: Development
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
-      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
-      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
-      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-Authorization=Basic ${GRAFANA_CLOUD_OTLP_TOKEN:-}}
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:18890
       OTEL_PYTHON_LOG_LEVEL: info
       OTEL_SERVICE_NAME: mkc-worker-dev
     volumes:
       - mkc-db:/var/lib/mkc-api/data
       - ./src/backend:/usr/src/app
-
+    depends_on:
+      - aspire-dashboard
+    
   frontend:
     build: ./src/frontend
     ports:
@@ -109,6 +111,7 @@ services:
       - PERSIST_AUTHORIZATION=true
     ports:
       - 80:8080
+
   sqlite-web:
     image: "coleifer/sqlite-web"
     environment:
@@ -130,6 +133,15 @@ services:
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    container_name: aspire-dashboard
+    ports:
+      - 18888:18888 # Dashboard UI
+    environment:
+      - ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+
 
 volumes:
   mkc-db:

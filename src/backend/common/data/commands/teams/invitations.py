@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from datetime import timezone
-from common.data.commands import Command, save_to_command_log
+from datetime import datetime, timezone
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class InvitePlayerCommand(Command[None]):
     player_id: int
@@ -11,7 +11,7 @@ class InvitePlayerCommand(Command[None]):
     team_id: int
     is_bagger_clause: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT team_id, game, approval_status FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -61,14 +61,13 @@ class InvitePlayerCommand(Command[None]):
                              (self.player_id, self.roster_id, creation_date, self.is_bagger_clause, False, "pending"))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DeleteInviteCommand(Command[None]):
     player_id: int
     roster_id: int
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT team_id FROM team_rosters WHERE id = ?", (self.roster_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -83,14 +82,13 @@ class DeleteInviteCommand(Command[None]):
                     raise Problem("Invite not found", status=404)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class AcceptInviteCommand(Command[None]):
     invite_id: int
     roster_leave_id: int | None
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             # check if invite exists and to make sure we're the same player as the invite
             async with db.execute("SELECT r.game, i.player_id, i.is_bagger_clause FROM team_transfers i JOIN team_rosters r ON i.roster_id = r.id WHERE i.id = ?", (self.invite_id,)) as cursor:
@@ -120,14 +118,13 @@ class AcceptInviteCommand(Command[None]):
             await db.execute("UPDATE team_transfers SET roster_leave_id = ?, is_accepted = ?, date = ? WHERE id = ?", (self.roster_leave_id, True, now, self.invite_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DeclineInviteCommand(Command[None]):
     invite_id: int
     player_id: int
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             # check if invite exists and to make sure we're the same player as the invite
             async with db.execute("SELECT player_id FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:

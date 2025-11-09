@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 from typing import Any
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
 
-@save_to_command_log
 @dataclass
 class CreateUserSettingsCommand(Command[None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             async with db.execute("INSERT INTO user_settings(user_id) VALUES (?)", (self.user_id,)) as cursor:
                 rows_inserted = cursor.rowcount
@@ -23,7 +23,7 @@ class CreateUserSettingsCommand(Command[None]):
 class GetUserSettingsCommand(Command[UserSettings | None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT avatar, about_me, language, 
                 color_scheme, timezone, hide_discord FROM user_settings WHERE user_id = ?""", (self.user_id,)) as cursor:
@@ -35,13 +35,12 @@ class GetUserSettingsCommand(Command[UserSettings | None]):
 
         return UserSettings(self.user_id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
     
-@save_to_command_log
 @dataclass
 class EditUserSettingsCommand(Command[bool]):
     user_id: int
     data: EditUserSettingsRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         data = self.data
         set_clauses: list[str] = []
         variable_parameters: list[Any] = []
@@ -65,7 +64,7 @@ class EditUserSettingsCommand(Command[bool]):
             raise Problem("Bad request body", detail="There are no values to set")
 
         async with db_wrapper.connect() as db:
-            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"""
+            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"
             variable_parameters.append(self.user_id)
             async with db.execute(update_query, variable_parameters) as cursor:
                 if cursor.rowcount != 1:
@@ -74,12 +73,11 @@ class EditUserSettingsCommand(Command[bool]):
             await db.commit()
             return True
         
-@save_to_command_log
 @dataclass
 class EditPlayerUserSettingsCommand(Command[None]):
     data: EditPlayerUserSettingsRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             data = self.data
             if data.about_me and len(data.about_me) > 500:
@@ -108,7 +106,7 @@ class EditPlayerUserSettingsCommand(Command[None]):
             if not set_clauses:
                 raise Problem("Bad request body", detail="There are no values to set")
 
-            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"""
+            update_query = f"UPDATE user_settings SET {', '.join(set_clauses)} WHERE user_id = ?"
             variable_parameters.append(user_id)
             await db.execute(update_query, variable_parameters)
             await db.commit()

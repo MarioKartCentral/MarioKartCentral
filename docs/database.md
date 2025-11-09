@@ -22,7 +22,6 @@
 - [Sessions Database (sessions.db)](#sessions-database-sessionsdb)
 - [Alt Flags Database (alt_flags.db)](#alt-flags-database-alt_flagsdb)
 - [Player Notes Database (player_notes.db)](#player-notes-database-player_notesdb)
-- [Command Logs Database (command_logs.db)](#command-logs-database-command_logsdb)
 - [Database Migrations](#database-migrations)
   - [Migration Capabilities](#migration-capabilities)
   - [Migration Limitations](#migration-limitations)
@@ -392,19 +391,6 @@ erDiagram
 - Provides staff-only documentation about players
 - Supports internal communication for moderation purposes
 - Separated to isolate sensitive player information from main database
-
-## Command Logs Database (command_logs.db)
-
-```mermaid
-erDiagram
-    CommandLog
-```
-
-**CommandLog**
-- Temporary storage for recent system commands
-- Periodically archived to S3 for long-term storage
-- Used for auditing and potential data recovery
-- Separated for performance and data isolation reasons
 
 ## Database Migrations
 

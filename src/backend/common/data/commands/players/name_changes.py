@@ -1,14 +1,14 @@
-from datetime import timedelta, timezone
-from common.data.commands import Command, save_to_command_log
+from datetime import timedelta, timezone, datetime
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class RequestEditPlayerNameCommand(Command[None]):
     player_id: int
     name: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         if len(self.name) > 24:
             raise Problem("Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect() as db:
@@ -33,7 +33,7 @@ class RequestEditPlayerNameCommand(Command[None]):
 class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
     filter: PlayerNameRequestFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             filter = self.filter
             limit = 20
@@ -67,13 +67,12 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
 
         return PlayerNameRequestList(name_requests, request_count, page_count)
     
-@save_to_command_log
 @dataclass
 class ApprovePlayerNameRequestCommand(Command[None]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT player_id, new_name FROM player_name_edits WHERE id = ?", (self.request_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -84,13 +83,12 @@ class ApprovePlayerNameRequestCommand(Command[None]):
             await db.execute("UPDATE player_name_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyPlayerNameRequestCommand(Command[None]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("UPDATE player_name_edits SET approval_status = 'denied', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id)) as cursor:
                 rowcount = cursor.rowcount

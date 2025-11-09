@@ -1,16 +1,16 @@
 from datetime import datetime, timedelta, timezone
-import aiohttp
-import msgspec
 from dataclasses import dataclass
-from common.data.commands import Command
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
-from common.data.s3 import IMAGE_BUCKET
+from common.data.s3 import IMAGE_BUCKET, S3Wrapper
+from common.discord import DiscordApi
 
 @dataclass
 class CreateFakeUserDiscordCommand(Command[None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         expires_on = 0
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens']) as db:
             await db.execute("DELETE FROM user_discords WHERE user_id = :user_id", 
@@ -48,37 +48,9 @@ class CreateFakeUserDiscordCommand(Command[None]):
 class LinkUserDiscordCommand(Command[None]):
     user_id: int
     data: DiscordAuthCallbackData
-    discord_client_id: str
-    discord_client_secret: str
-    enable: str | None
-    discord_oauth_callback: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
-        code = self.data.code
-        body: dict[str, Any] = {
-            "code": code,
-            "redirect_uri": self.discord_oauth_callback,
-            "grant_type": 'authorization_code'
-        }
-        headers = {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-        async with aiohttp.ClientSession() as session:
-            base_url = 'https://discord.com/api/v10'
-            auth = aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)
-            async with session.post(f'{base_url}/oauth2/token', data=body, headers=headers, auth=auth) as resp:
-                if int(resp.status/100) != 2:
-                    raise Problem(f"Discord returned an error code while trying to authenticate: {resp.status}") 
-                resp_bytes = await resp.content.read()
-                token_resp = msgspec.json.decode(resp_bytes, type=DiscordAccessTokenResponse)
-            user_headers = {
-                'authorization': f'{token_resp.token_type} {token_resp.access_token}'
-            }
-            async with session.get(f'{base_url}/users/@me', headers=user_headers) as resp:
-                if int(resp.status/100) != 2:
-                    raise Problem(f"Discord returned an error code while fetching user data: {resp.status}") 
-                resp_bytes = await resp.content.read()
-                discord_user = msgspec.json.decode(resp_bytes, type=DiscordUser)
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
+        token_resp, discord_user = await discord_api.handle_auth_callback(self.data)
         expires_in = timedelta(seconds=token_resp.expires_in)
         expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
         
@@ -119,7 +91,7 @@ class LinkUserDiscordCommand(Command[None]):
 class GetUserDiscordCommand(Command[MyDiscordData | None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             query = """
                 SELECT discord_id, username, discriminator, global_name, avatar 
@@ -137,7 +109,7 @@ class GetUserDiscordCommand(Command[MyDiscordData | None]):
 class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
     user_id: int
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens'], readonly=True) as db:
             tokens_query = """
                 SELECT dt.access_token, dt.token_expires_on 
@@ -161,46 +133,35 @@ class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
         if now >= token_expiration:
             raise Problem("Token is expired, please relink Discord account", status=400)
         
-        headers = { 'authorization': f'Bearer {access_token}' }
-        base_url = 'https://discord.com/api/v10'
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'{base_url}/users/@me', headers=headers) as resp:
-                if resp.status == 401:
-                    raise Problem("Token is expired, please relink Discord account", status=400)
-                if int(resp.status/100) != 2:
-                    raise Problem(f"Discord returned an error code while fetching user data: {resp.status}") 
-                resp_bytes = await resp.content.read()
-                discord_user = msgspec.json.decode(resp_bytes, type=DiscordUser)
-                
-                async with db_wrapper.connect() as db:
-                    update_query = """
-                        UPDATE user_discords 
-                        SET discord_id = :discord_id, 
-                            username = :username, 
-                            discriminator = :discriminator, 
-                            global_name = :global_name, 
-                            avatar = :avatar 
-                        WHERE user_id = :user_id
-                    """
-                    params: dict[str, Any] = {
-                        "discord_id": discord_user.id,
-                        "username": discord_user.username,
-                        "discriminator": discord_user.discriminator,
-                        "global_name": discord_user.global_name,
-                        "avatar": discord_user.avatar,
-                        "user_id": self.user_id
-                    }
-                    await db.execute(update_query, params)
-                    await db.commit()
+        discord_user = await discord_api.get_user(access_token)
+        async with db_wrapper.connect() as db:
+            update_query = """
+                UPDATE user_discords 
+                SET discord_id = :discord_id, 
+                    username = :username, 
+                    discriminator = :discriminator, 
+                    global_name = :global_name, 
+                    avatar = :avatar 
+                WHERE user_id = :user_id
+            """
+            params: dict[str, Any] = {
+                "discord_id": discord_user.id,
+                "username": discord_user.username,
+                "discriminator": discord_user.discriminator,
+                "global_name": discord_user.global_name,
+                "avatar": discord_user.avatar,
+                "user_id": self.user_id
+            }
+            await db.execute(update_query, params)
+            await db.commit()
+
         return MyDiscordData(discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar, self.user_id)
     
 @dataclass
 class DeleteUserDiscordDataCommand(Command[None]):
     user_id: int
-    discord_client_id: str
-    discord_client_secret: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
         async with db_wrapper.connect(db_name='discord_tokens', readonly=True) as db:
             tokens_query = """
                 SELECT access_token, token_expires_on 
@@ -219,20 +180,7 @@ class DeleteUserDiscordDataCommand(Command[None]):
             now = datetime.now(timezone.utc)
             
             if now < token_expiration:
-                data: dict[str, str] = {
-                    'token': access_token,
-                    'token_type_hint': 'access_token'
-                }
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-                base_url = 'https://discord.com/api/v10'
-                async with aiohttp.ClientSession() as session:
-                    auth = aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)
-                    async with session.post(f'{base_url}/oauth2/token/revoke', data=data, headers=headers, auth=auth) as resp:
-                        # 401 means unauthorized which means token is revoked already
-                        if resp.status != 401 and int(resp.status/100) != 2:
-                            raise Problem(f"Discord returned an error code: {resp.status}")
+                await discord_api.revoke_token(access_token)
         
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens']) as db:
             await db.execute("DELETE FROM user_discords WHERE user_id = :user_id", {"user_id": self.user_id})
@@ -242,10 +190,7 @@ class DeleteUserDiscordDataCommand(Command[None]):
 
 @dataclass
 class RefreshDiscordAccessTokensCommand(Command[None]):
-    discord_client_id: str
-    discord_client_secret: str
-
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
         now = datetime.now(timezone.utc)
         from_time = int(now.timestamp())
         to_time = int((now + timedelta(days=1)).timestamp())
@@ -265,33 +210,20 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
         
         refreshed_tokens: list[dict[str, Any]] = []
         
-        async with aiohttp.ClientSession() as session:
-            for user_id, refresh_token in tokens_to_refresh:
-                data: dict[str, str] = {
-                    'grant_type': 'refresh_token',
-                    'refresh_token': refresh_token
-                }
-                headers: dict[str, str] = {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-                base_url = 'https://discord.com/api/v10'
+        for user_id, refresh_token in tokens_to_refresh:
+            token_resp = await discord_api.refresh_token(refresh_token)
+            if not token_resp:
+                continue
 
-                auth = aiohttp.BasicAuth(self.discord_client_id, self.discord_client_secret)                
-                async with session.post(f'{base_url}/oauth2/token', data=data, headers=headers, auth=auth) as resp:
-                    # If we don't get a 200 response, just ignore this token and move on
-                    if int(resp.status/100) != 2:
-                        continue
-                    resp_bytes = await resp.content.read()
-                    token_resp = msgspec.json.decode(resp_bytes, type=DiscordAccessTokenResponse)
-                    expires_in = timedelta(seconds=token_resp.expires_in)
-                    expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
-                    
-                    refreshed_tokens.append({
-                        "access_token": token_resp.access_token,
-                        "token_expires_on": expires_on,
-                        "refresh_token": token_resp.refresh_token,
-                        "user_id": user_id
-                    })
+            expires_in = timedelta(seconds=token_resp.expires_in)
+            expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
+            
+            refreshed_tokens.append({
+                "access_token": token_resp.access_token,
+                "token_expires_on": expires_on,
+                "refresh_token": token_resp.refresh_token,
+                "user_id": user_id
+            })
         
         if refreshed_tokens:
             async with db_wrapper.connect(db_name='discord_tokens') as db:
@@ -309,7 +241,7 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
 class SyncDiscordAvatarCommand(Command[str | None]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper, discord_api: DiscordApi):
         discord_id = None
         avatar = None
         
@@ -322,14 +254,7 @@ class SyncDiscordAvatarCommand(Command[str | None]):
                 if not avatar:
                     return None
 
-        avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{avatar}.png?size=256"
-        
-        image_data = None
-        async with aiohttp.ClientSession() as session:
-            async with session.get(avatar_url) as resp:
-                if resp.status != 200:
-                    raise Problem(f"Failed to fetch Discord avatar: {resp.status}")
-                image_data = await resp.read()
+        image_data = await discord_api.get_avatar(discord_id, avatar)
 
         filename = f"avatars/{discord_id}_{avatar}.png"
         await s3_wrapper.put_object(
@@ -354,7 +279,7 @@ class SyncDiscordAvatarCommand(Command[str | None]):
 class RemoveDiscordAvatarCommand(Command[None]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()

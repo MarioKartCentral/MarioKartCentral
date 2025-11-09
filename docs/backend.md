@@ -85,12 +85,11 @@ The common library acts as the core domain layer of our application, shared by b
 Commands are implemented using Python dataclasses and encapsulate a unit of work against the database. Each command has access to both database and S3 storage wrappers for persistence. Here's a simple example:
 
 ```python
-@save_to_command_log
 @dataclass
 class GetPlayerNameCommand(Command[str | None]):
     player_id: int
     
-    async def handle(self, db_wrapper, s3_wrapper) -> str | None:
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> str | None:
         async with db_wrapper.connect() as db:
             async with db.execute(
                 "SELECT name FROM players WHERE id = ?", 
@@ -99,13 +98,6 @@ class GetPlayerNameCommand(Command[str | None]):
                 row = await cursor.fetchone()
                 return row[0] if row else None
 ```
-
-Commands that modify data should be decorated with `@save_to_command_log` to enable:
-- Audit trails for tracking changes
-- Debugging of production issues 
-- Data recovery capabilities
-
-Note: Commands that handle sensitive data (like password hashes or auth tokens) should not use `@save_to_command_log` to prevent logging private information.
 
 Commands are organized by domain (auth, players, teams, etc) and both the `api` and `worker` projects expose a `handle` function to execute commands with the necessary dependencies.
 
@@ -359,16 +351,15 @@ class FunFactTable(TableModel):
 # common/data/commands/fun_facts.py
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
 from common.data.models import Problem, FunFact, CreateFunFactRequest
 
-@save_to_command_log
 @dataclass
 class CreateFunFactCommand(Command[tuple[FunFact, str]]):
     user_id: int
     fact: str
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         if len(self.fact) > CreateFunFactRequest.MAX_LENGTH:
             raise Problem(
                 "Fun fact too long",
@@ -406,7 +397,7 @@ class CreateFunFactCommand(Command[tuple[FunFact, str]]):
 class ListFunFactsCommand(Command[list[FunFact]]):
     filter: FunFactFilter
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             offset = (self.filter.page - 1) * self.filter.page_size
             query = """
@@ -436,10 +427,10 @@ from api.auth import require_logged_in, require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from api.utils.word_filter import check_word_filter
+from common.data import notifications
 from common.data.commands import *
 from common.data.models import *
 from common.auth import permissions
-import common.data.notifications as notifications
 
 @bind_request_body(CreateFunFactRequest)
 @check_word_filter  # Check for inappropriate content

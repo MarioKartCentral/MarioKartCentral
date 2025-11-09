@@ -1,19 +1,19 @@
 from dataclasses import dataclass
-from common.data.commands import Command
-from common.data.models.common import Problem
-from typing import Optional
+from common.data.command import Command
+from common.data.db import DBWrapper
+from common.data.models import Problem
 
 @dataclass
 class PlayerLoungeInfo:
     id: int
-    switch_fc: Optional[str]
+    switch_fc: str | None
     country_code: str
 
 @dataclass
 class GetPlayerLoungeInfoCommand(Command[PlayerLoungeInfo]):
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> PlayerLoungeInfo:
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerLoungeInfo:
         async with db_wrapper.connect(readonly=True) as db:
             query = """
                 SELECT 

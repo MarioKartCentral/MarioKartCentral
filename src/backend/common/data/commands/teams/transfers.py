@@ -1,14 +1,14 @@
 from dataclasses import dataclass
-from datetime import timezone
-from common.data.commands import Command, save_to_command_log
+from datetime import datetime, timezone
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 
-@save_to_command_log
 @dataclass
 class ApproveTransferCommand(Command[None]):
     invite_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT tt.player_id, tt.roster_id, tt.roster_leave_id, tt.is_accepted, tt.is_bagger_clause, tt.approval_status, r1.team_id, r2.team_id, u.id
                                   FROM team_transfers tt
@@ -158,13 +158,12 @@ class ApproveTransferCommand(Command[None]):
                     await db.execute("DELETE FROM user_team_roles WHERE user_id = ? AND team_id = ?", (user_id, leave_team_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyTransferCommand(Command[None]):
     invite_id: int
     send_back: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT player_id, roster_id, roster_leave_id, is_accepted FROM team_transfers WHERE id = ?", (self.invite_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -182,7 +181,7 @@ class ViewTransfersCommand(Command[TransferList]):
     filter: TransferFilter
     approval_status: Approval = "pending"
     
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         transfers: list[TeamTransfer] = []
 
         filter = self.filter
@@ -295,7 +294,6 @@ class ViewTransfersCommand(Command[TransferList]):
                 page_count = int(transfer_count / limit) + (1 if transfer_count % limit else 0)
         return TransferList(transfers, transfer_count, page_count)
     
-@save_to_command_log
 @dataclass
 class ForceTransferPlayerCommand(Command[None]):
     player_id: int
@@ -304,7 +302,7 @@ class ForceTransferPlayerCommand(Command[None]):
     roster_leave_id: int | None
     is_bagger_clause: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT p.id, u.id FROM players p
                                     LEFT JOIN users u ON u.player_id = p.id
@@ -448,13 +446,12 @@ class ForceTransferPlayerCommand(Command[None]):
 
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ToggleTeamMemberBaggerCommand(Command[None]):
     roster_id: int
     player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT m.id, m.is_bagger_clause, r.game FROM team_members m
                                   JOIN team_rosters r ON m.roster_id = r.id

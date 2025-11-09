@@ -1,7 +1,7 @@
 from datetime import timedelta
+from common.data.commands import CompressUserActivityTimeRangesCommand
 from worker.data import handle
-from common.data.commands.user_activity.compression import CompressUserActivityTimeRangesCommand
-from worker.jobs import Job
+from worker.jobs.base import Job
 
 class CompressUserActivityTimeRangesJob(Job):
     @property

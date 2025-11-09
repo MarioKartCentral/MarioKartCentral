@@ -1,21 +1,21 @@
 from dataclasses import dataclass
-from datetime import timezone
+from datetime import datetime, timezone
 
 import msgspec
 
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
+from common.data.s3 import IMAGE_BUCKET, SERIES_BUCKET, TOURNAMENTS_BUCKET, S3Wrapper
 from common.auth import tournament_permissions
-import common.data.s3 as s3
 from aiosqlite import Row
 import base64
 
-@save_to_command_log
 @dataclass
 class CreateTournamentCommand(Command[int | None]):
     body: CreateTournamentRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
         # check for invalid body parameters
         if not b.is_squad and b.teams_allowed:
@@ -57,20 +57,19 @@ class CreateTournamentCommand(Command[int | None]):
 
             s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
-            await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
+            await s3_wrapper.put_object(TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
             if b.logo_file:
                 logo_data = base64.b64decode(b.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             await db.commit()
         return tournament_id
           
-@save_to_command_log
 @dataclass
 class EditTournamentCommand(Command[None]):
     body: EditTournamentRequestData
     id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
         
         async with db_wrapper.connect() as db:
@@ -135,21 +134,21 @@ class EditTournamentCommand(Command[None]):
             
             s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
-            await s3_wrapper.put_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
+            await s3_wrapper.put_object(TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
             if b.logo_file:
                 logo_filename = f"tournament_logos/{self.id}.png"
                 logo_data = base64.b64decode(b.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             elif b.remove_logo:
                 logo_filename = f"tournament_logos/{self.id}.png"
-                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
+                await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
             
 @dataclass
 class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             db.row_factory = Row
             async with db.execute("""SELECT * FROM tournaments WHERE id = ?""", (self.id,)) as cursor:
@@ -161,7 +160,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                 row = await cursor.fetchone()
                 assert row is not None
                 logo = row[0]
-            s3_body = await s3_wrapper.get_object(s3.TOURNAMENTS_BUCKET, f'{self.id}.json')
+            s3_body = await s3_wrapper.get_object(TOURNAMENTS_BUCKET, f'{self.id}.json')
             if s3_body is None:
                 raise Problem('No tournament found', status=404)
             s3_fields = msgspec.json.decode(s3_body, type=TournamentS3Fields)
@@ -215,7 +214,7 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                                                        series_description=None,
                                                        series_ruleset=None)
             if tournament_data.series_id:
-                s3_body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{tournament_data.series_id}.json')
+                s3_body = await s3_wrapper.get_object(SERIES_BUCKET, f'{tournament_data.series_id}.json')
                 if s3_body:
                     async with db.execute("SELECT name, url, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
                         row = await cursor.fetchone()
@@ -236,7 +235,7 @@ class GetTournamentListCommand(Command[TournamentList]):
     filter: TournamentFilter
     user: User | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []
@@ -349,7 +348,7 @@ class GetTournamentListCommand(Command[TournamentList]):
 class CheckIfSquadTournament(Command[bool]):
     tournament_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -362,7 +361,7 @@ class CheckIfSquadTournament(Command[bool]):
 class CheckTournamentVisibilityCommand(Command[bool]):
     tournament_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT is_viewable FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -375,9 +374,9 @@ class CheckTournamentVisibilityCommand(Command[bool]):
 class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]):
     series_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         cache_key = f'series_tournaments_{self.series_id}.json'
-        s3_object = await s3_wrapper.get_object_metadata_and_body(s3.SERIES_BUCKET, cache_key)
+        s3_object = await s3_wrapper.get_object_metadata_and_body(SERIES_BUCKET, cache_key)
 
         if s3_object:
             last_modified = s3_object['LastModified']
@@ -623,7 +622,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                 
                 # Store the result in S3 cache
                 await s3_wrapper.put_object(
-                    s3.SERIES_BUCKET,
+                    SERIES_BUCKET,
                     f'series_tournaments_{self.series_id}.json',
                     msgspec.json.encode(tournaments)
                 )

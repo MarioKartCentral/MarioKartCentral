@@ -1,8 +1,9 @@
 from datetime import timedelta
+
+from common.data import notifications
 from common.data.commands import GetPlayersToUnbanCommand, UnbanPlayerCommand, DispatchNotificationCommand
-import common.data.notifications as notifications
 from worker.data import handle
-from worker.jobs import Job
+from worker.jobs.base import Job
 
 class UnbanPlayersCheckerJob(Job):
     @property

@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from common.auth import team_roles
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
-import common.data.s3 as s3
+from common.data.s3 import S3Wrapper, IMAGE_BUCKET
 import base64
 
-@save_to_command_log
 @dataclass
 class CreateTeamCommand(Command[int | None]):
     name: str
@@ -24,7 +24,7 @@ class CreateTeamCommand(Command[int | None]):
     is_privileged: bool
     user_id: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             name = self.name.strip()
             tag = self.tag.strip()
@@ -82,7 +82,7 @@ class CreateTeamCommand(Command[int | None]):
                 await db.execute("INSERT INTO user_team_roles(user_id, role_id, team_id) VALUES (?, 0, ?)", (self.user_id, team_id))
             if self.logo_file:
                 logo_data = base64.b64decode(self.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             await db.commit()
             return team_id
 
@@ -90,7 +90,7 @@ class CreateTeamCommand(Command[int | None]):
 class GetTeamInfoCommand(Command[Team]):
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name, tag, description, creation_date, language, color, logo, approval_status, is_historical FROM teams WHERE id = ?",
                 (self.team_id,)) as cursor:
@@ -209,7 +209,6 @@ class GetTeamInfoCommand(Command[Team]):
             team.rosters = rosters
             return team
 
-@save_to_command_log
 @dataclass
 class EditTeamCommand(Command[None]):
     team_id: int
@@ -225,7 +224,7 @@ class EditTeamCommand(Command[None]):
     is_privileged: bool
     mod_player_id: int | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         if len(self.name) > 32:
             raise Problem("Team name must be 32 characters or less", status=400)
         if len(self.tag) > 8:
@@ -265,19 +264,18 @@ class EditTeamCommand(Command[None]):
             if self.logo_file:
                 logo_filename = f"team_logos/{self.team_id}.png"
                 logo_data = base64.b64decode(self.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             elif self.remove_logo:
                 logo_filename = f"team_logos/{self.team_id}.png"
-                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
+                await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ApproveDenyTeamCommand(Command[None]):
     team_id: int
     approval_status: Approval
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("UPDATE teams SET approval_status = ? WHERE id = ?", (self.approval_status, self.team_id)) as cursor:
                 updated_rows = cursor.rowcount
@@ -287,7 +285,6 @@ class ApproveDenyTeamCommand(Command[None]):
                 await db.execute("UPDATE team_rosters SET approval_status = ? WHERE team_id = ? AND approval_status = 'pending'", (self.approval_status, self.team_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ManagerEditTeamCommand(Command[None]):
     team_id: int
@@ -297,7 +294,7 @@ class ManagerEditTeamCommand(Command[None]):
     logo_file: str | None
     remove_logo: bool
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         if len(self.description) > 500:
             raise Problem("Team description must be 500 characters or less", status=400)
         async with db_wrapper.connect() as db:
@@ -323,20 +320,19 @@ class ManagerEditTeamCommand(Command[None]):
             if self.logo_file:
                 logo_filename = f"team_logos/{self.team_id}.png"
                 logo_data = base64.b64decode(self.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             elif self.remove_logo:
                 logo_filename = f"team_logos/{self.team_id}.png"
-                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
+                await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class RequestEditTeamCommand(Command[None]):
     team_id: int
     name: str
     tag: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         if len(self.name) > 32:
             raise Problem("Team name must be 32 characters or less", status=400)
         if len(self.tag) > 8:
@@ -366,7 +362,7 @@ class RequestEditTeamCommand(Command[None]):
 class ViewTeamEditHistoryCommand(Command[list[TeamEdit]]):
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         edits: list[TeamEdit] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT r.id, r.team_id, r.old_name, r.new_name, r.old_tag, r.new_tag, r.date, r.approval_status, r.handled_by, p.name, p.country_code, p.is_banned, t.color
@@ -385,13 +381,12 @@ class ViewTeamEditHistoryCommand(Command[list[TeamEdit]]):
                     edits.append(TeamEdit(request_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
         return edits
 
-@save_to_command_log
 @dataclass
 class ApproveTeamEditCommand(Command[None]):
     request_id: int
     mod_player_id: int | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT team_id, new_name, new_tag FROM team_edits WHERE id = ?", (self.request_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -402,13 +397,12 @@ class ApproveTeamEditCommand(Command[None]):
             await db.execute("UPDATE team_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class DenyTeamEditCommand(Command[None]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("UPDATE team_edits SET approval_status = 'denied', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id)) as cursor:
                 rowcount = cursor.rowcount
@@ -420,7 +414,7 @@ class DenyTeamEditCommand(Command[None]):
 class ListTeamEditRequestsCommand(Command[TeamEditList]):
     filter: TeamEditFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         requests: list[TeamEdit] = []
         filter = self.filter
         limit = 20
@@ -461,7 +455,7 @@ class ListTeamsCommand(Command[TeamList]):
     filter: TeamFilter
     approval_status: Approval | None = "approved"
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
         async with db_wrapper.connect() as db:
 
@@ -558,13 +552,12 @@ class ListTeamsCommand(Command[TeamList]):
             return TeamList(team_list, team_count, page_count)
     
 
-@save_to_command_log
 @dataclass
 class MergeTeamsCommand(Command[None]):
     from_team_id: int
     to_team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         if self.from_team_id == self.to_team_id:
             raise Problem("Team IDs are equal", status=400)
         async with db_wrapper.connect() as db:

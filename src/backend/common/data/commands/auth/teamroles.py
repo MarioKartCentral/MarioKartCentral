@@ -1,12 +1,13 @@
 from dataclasses import dataclass
 from common.auth import team_permissions, permissions, team_roles
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
         
 @dataclass
 class ListTeamRolesCommand(Command[list[Role]]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             roles: list[Role] = []
             async with db.execute("SELECT id, name, position FROM team_roles") as cursor:
@@ -21,7 +22,7 @@ class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
     role_id: int
     team_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper) -> TeamRoleInfo:
+    async def handle(self, db_wrapper: DBWrapper) -> TeamRoleInfo:
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT name, position FROM team_roles WHERE id = ?", (self.role_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -56,7 +57,6 @@ class GetTeamRoleInfoCommand(Command[TeamRoleInfo]):
             role_info = TeamRoleInfo(self.role_id, role_name, position, permissions, players, self.team_id)
             return role_info
 
-@save_to_command_log
 @dataclass
 class GrantTeamRoleCommand(Command[None]):
     granter_user_id: int
@@ -65,7 +65,7 @@ class GrantTeamRoleCommand(Command[None]):
     role: str
     expires_on: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             timestamp = int(datetime.now(timezone.utc).timestamp())
             if self.expires_on and self.expires_on < timestamp:
@@ -167,7 +167,6 @@ class GrantTeamRoleCommand(Command[None]):
             except Exception:
                 raise Problem("Unexpected error")
 
-@save_to_command_log
 @dataclass
 class RemoveTeamRoleCommand(Command[None]):
     remover_user_id: int
@@ -175,7 +174,7 @@ class RemoveTeamRoleCommand(Command[None]):
     team_id: int
     role: str
 
-    async def handle(self, db_wrapper, s3_wrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
             # get user id from player
             async with db.execute("SELECT id FROM users WHERE player_id = ?", (self.target_player_id,)) as cursor:

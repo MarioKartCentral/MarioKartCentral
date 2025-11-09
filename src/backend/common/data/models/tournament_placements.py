@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from common.data.models import TournamentSquadDetails
+from common.data.models.squads import TournamentSquadDetails
 from common.data.models.tournament_registrations import TournamentPlayerDetailsShort
 from common.data.models.teams import RosterBasic
 

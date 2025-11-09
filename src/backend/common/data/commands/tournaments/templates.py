@@ -1,17 +1,17 @@
 from typing import Any
 from dataclasses import asdict, dataclass
 import msgspec
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import Problem, TemplateFilter, TournamentTemplate, TournamentTemplateMinimal, TournamentTemplateRequestData
-import common.data.s3 as s3
+from common.data.s3 import S3Wrapper, TEMPLATES_BUCKET
 
 
-@save_to_command_log
 @dataclass
 class CreateTournamentTemplateCommand(Command[None]):
     body: TournamentTemplateRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
 
         # we only need to put the template name and series ID into the database for querying, the rest can go into s3 since we won't be querying this
@@ -29,15 +29,14 @@ class CreateTournamentTemplateCommand(Command[None]):
         s3_body = {"id": template_id}
         s3_body.update(asdict(self.body))
         s3_message = bytes(msgspec.json.encode(s3_body))
-        await s3_wrapper.put_object(s3.TEMPLATES_BUCKET, f'{template_id}.json', s3_message)
+        await s3_wrapper.put_object(TEMPLATES_BUCKET, f'{template_id}.json', s3_message)
 
-@save_to_command_log
 @dataclass
 class EditTournamentTemplateCommand(Command[None]):
     body: TournamentTemplateRequestData
     template_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
 
         async with db_wrapper.connect() as db:
@@ -50,7 +49,7 @@ class EditTournamentTemplateCommand(Command[None]):
                 raise Problem('No template found', status=404)
             
 
-            s3_data = await s3_wrapper.get_object(s3.TEMPLATES_BUCKET, f'{self.template_id}.json')
+            s3_data = await s3_wrapper.get_object(TEMPLATES_BUCKET, f'{self.template_id}.json')
             if s3_data is None:
                 raise Problem("No template found", status=404)
             
@@ -59,15 +58,15 @@ class EditTournamentTemplateCommand(Command[None]):
             json_body.update(updated_values)
 
             s3_message = bytes(msgspec.json.encode(json_body))
-            await s3_wrapper.put_object(s3.TEMPLATES_BUCKET, f'{self.template_id}.json', s3_message)
+            await s3_wrapper.put_object(TEMPLATES_BUCKET, f'{self.template_id}.json', s3_message)
             await db.commit()
 
 @dataclass
 class GetTournamentTemplateDataCommand(Command[TournamentTemplate]):
     template_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
-        body = await s3_wrapper.get_object(s3.TEMPLATES_BUCKET, f'{self.template_id}.json')
+    async def handle(self, s3_wrapper: S3Wrapper):
+        body = await s3_wrapper.get_object(TEMPLATES_BUCKET, f'{self.template_id}.json')
         if body is None:
             raise Problem('No template found', status=404)
         template_data = msgspec.json.decode(body, type=TournamentTemplate)
@@ -78,7 +77,7 @@ class GetTournamentTemplateDataCommand(Command[TournamentTemplate]):
 class GetTournamentTemplateListCommand(Command[list[TournamentTemplateMinimal]]):
     filter: TemplateFilter
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []

@@ -5,11 +5,8 @@ Database wrapper providing unified access to SQLite and DuckDB.
 from dataclasses import dataclass
 import logging
 import sqlite3
-from types import TracebackType
 import aiosqlite
-from typing import Dict, List
-
-from common.data.duckdb.wrapper import DuckDBWrapper
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +15,7 @@ logger = logging.getLogger(__name__)
 class DBWrapperConnection():
     connection: aiosqlite.Connection
     readonly: bool
-    attach: Dict[str, str]
+    attach: dict[str, str]
     autocommit: bool
     foreign_keys: bool = True
 
@@ -33,19 +30,18 @@ class DBWrapperConnection():
             await db.execute(f"ATTACH DATABASE :path AS :name", {"path": path, "name": name})
 
         def set_autocommit(new_autocommit_value: bool):
-            self.connection._conn.autocommit = new_autocommit_value # type: ignore - aiosqlite does not expose autocommit, so need to use internal connection
+            self.connection._conn.autocommit = new_autocommit_value # pyright: ignore[reportPrivateUsage]
 
-        await self.connection._execute(set_autocommit, self.autocommit) # type: ignore
+        await self.connection._execute(set_autocommit, self.autocommit) # pyright: ignore[reportUnknownMemberType, reportPrivateUsage]
         return db
 
-    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+    async def __aexit__(self, *_: Any) -> None:
         await self.connection.close()
 
 
 @dataclass
 class DBWrapper():
-    db_paths: Dict[str, str]
-    duckdb: DuckDBWrapper
+    db_paths: dict[str, str]
 
     def reset_db(self, db_name: str = 'main'):
         """Resets the specified database file. Defaults to 'main'."""
@@ -56,13 +52,16 @@ class DBWrapper():
         else:
             raise ValueError(f"Database '{db_name}' not configured for reset.")
 
-    def connect(self, db_name: str = 'main', attach: List[str] = [], readonly=False, autocommit=False, foreign_keys: bool = True):
+    def connect(self, db_name: str = 'main', attach: list[str] | None = None, readonly: bool = False, autocommit: bool = False, foreign_keys: bool = True):
         """Connects to the specified database."""
         path = self.db_paths.get(db_name)
         if not path:
             raise ValueError(f"Database '{db_name}' not configured.")
 
-        attach_dict: Dict[str, str] = {}
+        if not attach:
+            attach = []
+
+        attach_dict: dict[str, str] = {}
         for db in attach:
             if db not in self.db_paths:
                 raise ValueError(f"Database '{db}' not configured.")

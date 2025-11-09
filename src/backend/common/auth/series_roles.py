@@ -13,7 +13,7 @@ default_roles = [
     (3, BANNED, 99)
 ]
 
-id_by_default_role = { name: roleid for roleid, name, pos in default_roles} # type: ignore
+id_by_default_role = { name: roleid for roleid, name, _ in default_roles}
 
 default_permissions_by_default_role: dict[str, list[str]] = {
     ADMINISTRATOR: [ 

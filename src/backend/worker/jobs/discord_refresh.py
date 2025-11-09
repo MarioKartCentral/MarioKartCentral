@@ -1,8 +1,7 @@
 from datetime import timedelta
 from worker.data import handle
 from common.data.commands import RefreshDiscordAccessTokensCommand
-from worker.jobs import Job
-from worker.settings import DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET
+from worker.jobs.base import Job
 
 class RefreshDiscordTokensJob(Job):
     @property
@@ -14,7 +13,7 @@ class RefreshDiscordTokensJob(Job):
         return timedelta(minutes=5)
     
     async def run(self):
-        await handle(RefreshDiscordAccessTokensCommand(DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET))
+        await handle(RefreshDiscordAccessTokensCommand())
 
 _jobs: list[Job] = []
 

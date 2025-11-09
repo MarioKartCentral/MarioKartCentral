@@ -9,7 +9,6 @@ from datetime import datetime
 TOURNAMENTS_BUCKET = "mkc-tournaments"
 TEMPLATES_BUCKET = "mkc-templates"
 SERIES_BUCKET = "mkc-series"
-COMMAND_LOG_BUCKET = "mkc-commandlog"
 MKCV1_BUCKET = "mkc-v1data"
 POST_BUCKET = "mkc-posts"
 FINGERPRINT_BUCKET = "mkc-fingerprints"
@@ -69,9 +68,6 @@ class S3Wrapper:
 
     async def delete_object(self, bucket_name: str, key: str):
         await self._client.delete_object(Bucket=bucket_name, Key=key)
-    
-
-
 
 @dataclass
 class S3WrapperManager:
@@ -83,7 +79,7 @@ class S3WrapperManager:
     async def __aenter__(self) -> S3Wrapper:
         session = aiobotocore.session.get_session()
         self.client = await session.create_client( # pyright: ignore[reportUnknownMemberType]
-            's3',
+            service_name='s3',
             aws_secret_access_key=self.s3_secret_key,
             aws_access_key_id=self.s3_access_key,
             endpoint_url=self.s3_endpoint).__aenter__()

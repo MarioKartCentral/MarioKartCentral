@@ -1,0 +1,16 @@
+{
+    "typeCheckingMode": "strict",
+    "pythonVersion": "3.12",
+    "deprecateTypingAliases": true,
+    "reportCallInDefaultInitializer": "error",
+    "reportImplicitStringConcatenation": "error",
+    "reportImportCycles": "error",
+    "reportPropertyTypeMismatch": "error",
+    "reportUninitializedInstanceVariable": "error",
+    "reportUnnecessaryTypeIgnoreComment": "error",
+    "executionEnvironments": [
+        {
+            "root": "./src/backend"
+        }
+    ]
+}

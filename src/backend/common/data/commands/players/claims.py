@@ -1,14 +1,14 @@
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
-@save_to_command_log
 @dataclass
 class ClaimPlayerCommand(Command[None]):
     player_id: int
     claimed_player_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -31,12 +31,11 @@ class ClaimPlayerCommand(Command[None]):
                              (self.player_id, self.claimed_player_id, date, "pending"))
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
     claim_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             # get the user id of requesting user as well as claimed player's info for notifications
             async with db.execute("""SELECT c.player_id, u.id, c.claimed_player_id, p.name
@@ -61,12 +60,11 @@ class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
             await db.commit()
             return player_id, user_id, claimed_player_name
                
-@save_to_command_log
 @dataclass
 class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
     claim_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             # get the user id of requesting user as well as claimed player's info for notifications
             async with db.execute("""SELECT c.player_id, u.id, p.name
@@ -84,7 +82,7 @@ class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
 
 @dataclass
 class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT c.id, c.date, c.approval_status,
                                   c.player_id, p1.name, p1.country_code, p1.is_banned,

@@ -3,14 +3,14 @@ Time trials API request and response models.
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, TypedDict
+from typing import TypedDict
 
 
 class EditProofDict(TypedDict, total=False):
     """Type definition for proof data dictionaries in edit operations."""
-    id: Optional[str]  # None for new proofs
+    id: str | None  # None for new proofs
     deleted: bool
-    status: Optional[str]  # Only included when staff sets validation status
+    status: str | None  # Only included when staff sets validation status
 
 
 class EditProofDictRequired(EditProofDict, total=True):
@@ -32,8 +32,8 @@ class CreateTimeTrialRequestData:
     game: str
     track: str
     time_ms: int
-    proofs: List[ProofRequestData]
-    player_id: Optional[int] = None
+    proofs: list[ProofRequestData]
+    player_id: int | None = None
 
 
 @dataclass
@@ -42,9 +42,9 @@ class ProofResponseData:
     url: str
     type: str
     created_at: str
-    status: Optional[str] = "unvalidated"
-    validator_id: Optional[int] = None
-    validated_at: Optional[str] = None
+    status: str | None = "unvalidated"
+    validator_id: int | None = None
+    validated_at: str | None = None
 
 
 @dataclass
@@ -56,12 +56,12 @@ class TimeTrialResponseData:
     game: str
     track: str
     time_ms: int
-    proofs: List[ProofResponseData]
+    proofs: list[ProofResponseData]
     created_at: str
     updated_at: str
     validation_status: str = "proofless"
-    player_name: Optional[str] = None
-    player_country_code: Optional[str] = None
+    player_name: str | None = None
+    player_country_code: str | None = None
 
 
 @dataclass
@@ -76,14 +76,14 @@ class ProofWithValidationStatusResponseData:
     track: str 
     time_ms: int
     version: int
-    player_name: Optional[str] = None
-    player_country_code: Optional[str] = None
+    player_name: str | None = None
+    player_country_code: str | None = None
 
 
 @dataclass
 class ListProofsForValidationResponseData:
     """Response data for listing proofs with their validation statuses."""
-    proofs: List[ProofWithValidationStatusResponseData]
+    proofs: list[ProofWithValidationStatusResponseData]
 
 
 @dataclass
@@ -97,7 +97,7 @@ class LeaderboardFilter:
 @dataclass
 class LeaderboardResponseData:
     """Response data for leaderboard queries."""
-    records: List[TimeTrialResponseData]
+    records: list[TimeTrialResponseData]
 
 
 @dataclass
@@ -121,10 +121,10 @@ class MarkTimeTrialInvalidRequestData:
 @dataclass
 class EditProofData:
     """Data for editing a proof within a time trial."""
-    id: Optional[str] = None  # None for new proofs
+    id: str | None = None  # None for new proofs
     url: str = ""
     type: str = ""
-    status: Optional[str] = None  # Only editable by validators
+    status: str | None = None  # Only editable by validators
     deleted: bool = False  # Mark for deletion
 
 
@@ -134,10 +134,10 @@ class EditTimeTrialRequestData:
     game: str
     track: str
     time_ms: int
-    proofs: List[EditProofData]
+    proofs: list[EditProofData]
     version: int
-    player_id: Optional[int] = None  # Only editable by validators
-    is_invalid: Optional[bool] = None  # Only editable by validators
+    player_id: int | None = None  # Only editable by validators
+    is_invalid: bool | None = None  # Only editable by validators
 
 
 @dataclass
@@ -153,4 +153,4 @@ class TimesheetFilter:
 @dataclass
 class TimesheetResponseData:
     """Response data for timesheet queries."""
-    records: List[TimeTrialResponseData]
+    records: list[TimeTrialResponseData]

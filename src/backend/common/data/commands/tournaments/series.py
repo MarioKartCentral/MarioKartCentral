@@ -3,18 +3,18 @@ from typing import Any
 
 import msgspec
 
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import Problem, Series, SeriesBasic, SeriesFilter, EditSeriesRequestData, CreateSeriesRequestData, SeriesS3Fields, User
 from common.auth import series_permissions
-import common.data.s3 as s3
+from common.data.s3 import S3Wrapper, IMAGE_BUCKET, SERIES_BUCKET
 import base64
 
-@save_to_command_log
 @dataclass
 class CreateSeriesCommand(Command[None]):
     body: CreateSeriesRequestData
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
         # store minimal data about each series in the SQLite DB
         async with db_wrapper.connect() as db:
@@ -31,19 +31,18 @@ class CreateSeriesCommand(Command[None]):
 
             s3_body = SeriesS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
-            await s3_wrapper.put_object(s3.SERIES_BUCKET, f'{series_id}.json', s3_message)
+            await s3_wrapper.put_object(SERIES_BUCKET, f'{series_id}.json', s3_message)
             if b.logo_file:
                 logo_data = base64.b64decode(b.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             await db.commit()
 
-@save_to_command_log
 @dataclass
 class EditSeriesCommand(Command[None]):
     body: EditSeriesRequestData
     series_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT logo FROM tournament_series WHERE id = ?", (self.series_id,)) as cursor:
@@ -74,21 +73,21 @@ class EditSeriesCommand(Command[None]):
 
             s3_body = SeriesS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
-            await s3_wrapper.put_object(s3.SERIES_BUCKET, f'{self.series_id}.json', s3_message)
+            await s3_wrapper.put_object(SERIES_BUCKET, f'{self.series_id}.json', s3_message)
             if b.logo_file:
                 logo_filename = f"series_logos/{self.series_id}.png"
                 logo_data = base64.b64decode(b.logo_file)
-                await s3_wrapper.put_object(s3.IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
             elif b.remove_logo:
                 logo_filename = f"series_logos/{self.series_id}.png"
-                await s3_wrapper.delete_object(s3.IMAGE_BUCKET, key=logo_filename)
+                await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
 
 @dataclass
 class GetSeriesDataCommand(Command[Series]):
     series_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("""SELECT id, name, url, display_order, game, mode, is_historical, is_public, short_description,
                                     logo, organizer, location, discord_invite FROM tournament_series WHERE id = ?""", (self.series_id,)) as cursor:
@@ -96,7 +95,7 @@ class GetSeriesDataCommand(Command[Series]):
                 if not row:
                     raise Problem("Series not found", status=404)
                 series_id, name, url, display_order, game, mode, is_historical, is_public, short_description, logo, organizer, location, discord_invite = row
-        body = await s3_wrapper.get_object(s3.SERIES_BUCKET, f'{self.series_id}.json')
+        body = await s3_wrapper.get_object(SERIES_BUCKET, f'{self.series_id}.json')
         if body is None:
             raise Problem('No series found', status=404)
         s3_data = msgspec.json.decode(body, type=SeriesS3Fields)
@@ -109,7 +108,7 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
     filter: SeriesFilter
     user: User | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []
@@ -176,7 +175,7 @@ class GetSeriesListCommand(Command[list[SeriesBasic]]):
 class CheckSeriesVisibilityCommand(Command[bool]):
     series_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT is_public FROM tournament_series WHERE id = ?", (self.series_id,)) as cursor:
                 row = await cursor.fetchone()

@@ -1,5 +1,6 @@
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Concatenate
+from typing import Any, Concatenate
 import msgspec
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse as StarletteJSONResponse
@@ -12,7 +13,7 @@ class RouteSpecTypes:
     body_type: type[Any] | None = None
 
 
-def bind_request_query[T](type: type[T]): # pyright: ignore[reportInvalidTypeVarUse]
+def bind_request_query[T](type: type[T]):
     def decorator[**P](handle_request: Callable[Concatenate[Request, T, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs):
             all_params = dict(request.query_params.__dict__)
@@ -36,7 +37,7 @@ def bind_request_query[T](type: type[T]): # pyright: ignore[reportInvalidTypeVar
         return wrapper
     return decorator
 
-def bind_request_body[T](type: type[T]): # pyright: ignore[reportInvalidTypeVarUse]
+def bind_request_body[T](type: type[T]):
     def decorator[**P](handle_request: Callable[Concatenate[Request, T, P], Awaitable[Response]]):
         async def wrapper(request: Request, *args: P.args, **kwargs: P.kwargs) -> Response:
             body_bytes = await request.body()

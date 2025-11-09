@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from common.data.commands import Command
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 import secrets
 
@@ -9,7 +10,7 @@ class CreateAPITokenCommand(Command[None]):
     mod_user_id: int
     name: str
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name='main', attach=["auth"]) as db:
             exists_query = "SELECT EXISTS(SELECT 1 FROM users WHERE id = :user_id)"
             async with db.execute(exists_query, {"user_id": self.user_id}) as cursor:
@@ -43,7 +44,7 @@ class DeleteAPITokenCommand(Command[None]):
     token_id: str
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name="auth") as db:
             async with db.execute("SELECT token_id FROM api_tokens WHERE token_id = ? AND user_id = ?", (self.token_id, self.user_id)) as cursor:
                 row = await cursor.fetchone()
@@ -55,8 +56,8 @@ class DeleteAPITokenCommand(Command[None]):
 @dataclass
 class GetUserFromAPITokenCommand(Command[User | None]):
     token_id: str
+    async def handle(self, db_wrapper: DBWrapper):
 
-    async def handle(self, db_wrapper, s3_wrapper):
         async with db_wrapper.connect(db_name="main", attach=["auth"]) as db:
             async with db.execute("SELECT u.id, u.player_id FROM users u JOIN auth.api_tokens a ON u.id = a.user_id WHERE token_id = ?", (self.token_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -69,7 +70,7 @@ class GetUserFromAPITokenCommand(Command[User | None]):
 class GetUserAPITokensCommand(Command[list[APIToken]]):
     user_id: int
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(db_name="auth") as db:
             async with db.execute("SELECT token_id, user_id, name FROM api_tokens WHERE user_id = ?", (self.user_id,)) as cursor:
                 rows = await cursor.fetchall()

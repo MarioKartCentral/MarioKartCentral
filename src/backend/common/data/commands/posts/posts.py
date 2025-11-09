@@ -1,12 +1,13 @@
 from dataclasses import dataclass
-from common.data.commands import Command, save_to_command_log
+from common.data.command import Command
+from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
-import common.data.s3 as s3
 import msgspec
 from typing import Any
 
-@save_to_command_log
+from common.data.s3 import POST_BUCKET, S3Wrapper
+
 @dataclass
 class CreatePostCommand(Command[int]):
     title: str
@@ -17,7 +18,7 @@ class CreatePostCommand(Command[int]):
     series_id: int | None = None
     tournament_id: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper) -> int:
         async with db_wrapper.connect() as db:
             creation_date = int(datetime.now(timezone.utc).timestamp())
             row = await db.execute_insert("""INSERT INTO posts(title, is_public, is_global, creation_date, created_by)
@@ -33,7 +34,7 @@ class CreatePostCommand(Command[int]):
         
         s3_body = PostS3Fields(self.content)
         s3_message = bytes(msgspec.json.encode(s3_body))
-        await s3_wrapper.put_object(s3.POST_BUCKET, f"{post_id}.json", s3_message)
+        await s3_wrapper.put_object(POST_BUCKET, f"{post_id}.json", s3_message)
         return post_id
     
 @dataclass
@@ -46,7 +47,7 @@ class EditPostCommand(Command[None]):
     series_id: int | None = None
     tournament_id: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""UPDATE posts SET title = :title, is_public = :is_public, is_global = :is_global
                                 WHERE id = :id
@@ -63,7 +64,7 @@ class EditPostCommand(Command[None]):
             await db.commit()
         s3_body = PostS3Fields(self.content)
         s3_message = bytes(msgspec.json.encode(s3_body))
-        await s3_wrapper.put_object(s3.POST_BUCKET, f"{self.id}.json", s3_message)
+        await s3_wrapper.put_object(POST_BUCKET, f"{self.id}.json", s3_message)
 
 @dataclass
 class ListPostsCommand(Command[PostList]):
@@ -73,7 +74,7 @@ class ListPostsCommand(Command[PostList]):
     series_id: int | None = None
     tournament_id: int | None = None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
         query = """SELECT DISTINCT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned
                     FROM posts p
@@ -125,7 +126,7 @@ class GetPostCommand(Command[Post]):
     series_id: int | None
     tournament_id: int | None
 
-    async def handle(self, db_wrapper, s3_wrapper):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         query = """SELECT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned
                     FROM posts p
                     LEFT JOIN players pl ON p.created_by = pl.id
@@ -148,7 +149,7 @@ class GetPostCommand(Command[Post]):
                 created_by = None
                 if player_id:
                     created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
-        s3_body = await s3_wrapper.get_object(s3.POST_BUCKET, f"{self.id}.json")
+        s3_body = await s3_wrapper.get_object(POST_BUCKET, f"{self.id}.json")
         if not s3_body:
             raise Problem("Failed to get post S3 data")
         post_data = msgspec.json.decode(s3_body, type=PostS3Fields)

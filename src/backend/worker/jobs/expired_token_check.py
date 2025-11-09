@@ -1,7 +1,7 @@
 from datetime import timedelta
-from worker.data import handle
-from worker.jobs import Job
 from common.data.commands import RemoveExpiredTokensCommand
+from worker.data import handle
+from worker.jobs.base import Job
 
 class RemoveExpiredTokensJob(Job):
     @property
