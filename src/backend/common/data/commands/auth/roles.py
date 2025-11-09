@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import json
-from common.auth import permissions, roles
+from common.auth import permissions, roles as user_roles
 from common.data import notifications
 from common.data.command import Command
 from common.data.db import DBWrapper
@@ -12,7 +12,7 @@ class ListRolesCommand(Command[list[Role]]):
         async with db_wrapper.connect(readonly=True) as db:
             roles_list: list[Role] = []
             # ban info can be retrieved in its own endpoint
-            async with db.execute("SELECT id, name, position FROM roles WHERE name != ?", (roles.BANNED,)) as cursor:
+            async with db.execute("SELECT id, name, position FROM roles WHERE name != ?", (user_roles.BANNED,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     id, name, position = row

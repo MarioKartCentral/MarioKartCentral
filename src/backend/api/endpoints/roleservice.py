@@ -4,7 +4,7 @@ from starlette.background import BackgroundTask
 from api.auth import require_permission, require_team_permission, require_series_permission, require_tournament_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body
-from common.auth import permissions, roles
+from common.auth import permissions, roles as user_roles
 from common.data import notifications
 from common.data.commands import *
 from common.data.models import *
@@ -24,7 +24,7 @@ async def role_info(request: Request) -> JSONResponse:
 @require_permission(permissions.MANAGE_USER_ROLES)
 async def grant_role_to_player(request: Request, body: GrantRoleRequestData) -> JSONResponse:
     async def notify():
-        if body.role_name != roles.BANNED:
+        if body.role_name != user_roles.BANNED:
             user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
             if user_id is None:
                 return
@@ -39,7 +39,7 @@ async def grant_role_to_player(request: Request, body: GrantRoleRequestData) -> 
 @require_permission(permissions.MANAGE_USER_ROLES)
 async def remove_role_from_player(request: Request, body: RemoveRoleRequestData) -> JSONResponse:
     async def notify():
-        if body.role_name != roles.BANNED:
+        if body.role_name != user_roles.BANNED:
             user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
             if user_id is None:
                 return
