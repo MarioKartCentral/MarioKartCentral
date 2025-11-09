@@ -6,11 +6,10 @@ from api.auth import require_permission, require_logged_in
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from api.utils.word_filter import check_word_filter
-from common.data import notifications
-from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
-
+from common.data import notifications
+from common.auth import permissions
 
 @bind_request_body(CreatePlayerRequestData)
 @check_word_filter

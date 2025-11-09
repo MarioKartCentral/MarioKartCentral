@@ -4,10 +4,10 @@ from starlette.background import BackgroundTask
 from api.auth import require_logged_in, require_tournament_permission, check_tournament_visiblity
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from common.auth import tournament_permissions
-from common.data import notifications
 from common.data.commands import *
 from common.data.models import *
+from common.auth import tournament_permissions
+from common.data import notifications
 from api.utils.word_filter import check_word_filter
 
 # endpoint used when a user creates their own squad
