@@ -795,8 +795,10 @@ const ja: Translation = {
     },
   },
   TIME_TRIALS: {
+    //TODO
     PAGE_TITLE: 'Time Trials',
     TITLE: 'Time Trials',
+    GAME_TITLE: '{game} Time Trials',
     DESCRIPTION:
       'Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.',
     VIEW_TRACKS: 'View Tracks',
@@ -878,6 +880,18 @@ const ja: Translation = {
     PERMISSION_REQUIRED: 'Permission Required',
     NO_PERMISSION_MESSAGE: "You don't have permission to validate time trial proofs.",
     NO_EVIDENCE_PROVIDED: 'No evidence URL provided',
+    BACK_TO_ALL_GAMES: 'Back to All Games',
+    SEARCH_FOR_A_PLAYER: 'Search for a player to view their timesheet',
+    PLAYER: 'Player',
+    SEARCH_FOR_A_PLAYER_ABOVE: 'Search for a player above to view their timesheet.',
+    SHOW_TIMES: {
+      PENDING_VALIDATION: 'Show times pending validation',
+      INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',
+      PENDING_WITHOUT_PROOF: 'Show times without proof',
+      INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: 'Include times submitted without evidence',
+      OUTDATED: 'Show outdated times',
+      INCLUDE_OLDER_SUBMISSIONS: 'Include older submissions that have been beaten',
+    },
   },
   TOURNAMENTS: {
     TOURNAMENT: 'Tournament',
