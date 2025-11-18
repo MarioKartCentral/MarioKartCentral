@@ -3038,6 +3038,11 @@ type RootTranslation = {
 		 */
 		GAME_LEADERBOARD_TITLE: RequiredParams<'game'>
 		/**
+		 * {​g​a​m​e​}​ ​L​e​a​d​e​r​b​o​a​r​d​s
+		 * @param {string} game
+		 */
+		GAME_LEADERBOARDS: RequiredParams<'game'>
+		/**
 		 * {​t​r​a​c​k​}​ ​-​ ​{​c​a​t​e​g​o​r​y​}​ ​(​{​g​a​m​e​}​)
 		 * @param {string} category
 		 * @param {string} game
@@ -3289,6 +3294,10 @@ type RootTranslation = {
 		 */
 		PROOF_EVIDENCE: string
 		/**
+		 * P​r​o​o​f
+		 */
+		PROOF: string
+		/**
 		 * W​a​t​c​h​ ​V​i​d​e​o
 		 */
 		WATCH_VIDEO: string
@@ -3336,6 +3345,10 @@ type RootTranslation = {
 		 * S​e​a​r​c​h​ ​f​o​r​ ​a​ ​p​l​a​y​e​r​ ​a​b​o​v​e​ ​t​o​ ​v​i​e​w​ ​t​h​e​i​r​ ​t​i​m​e​s​h​e​e​t​.
 		 */
 		SEARCH_FOR_A_PLAYER_ABOVE: string
+		/**
+		 * L​o​g​i​n​ ​t​o​ ​S​u​b​m​i​t
+		 */
+		LOGIN_TO_SUBMIT: string
 		SHOW_TIMES: {
 			/**
 			 * S​h​o​w​ ​t​i​m​e​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n
@@ -8524,6 +8537,10 @@ export type TranslationFunctions = {
 		 */
 		GAME_LEADERBOARD_TITLE: (arg: { game: string }) => LocalizedString
 		/**
+		 * {game} Leaderboards
+		 */
+		GAME_LEADERBOARDS: (arg: { game: string }) => LocalizedString
+		/**
 		 * {track} - {category} ({game})
 		 */
 		TRACK_LEADERBOARD_PAGE_TITLE: (arg: { category: string, game: string, track: string }) => LocalizedString
@@ -8768,6 +8785,10 @@ export type TranslationFunctions = {
 		 */
 		PROOF_EVIDENCE: () => LocalizedString
 		/**
+		 * Proof
+		 */
+		PROOF: () => LocalizedString
+		/**
 		 * Watch Video
 		 */
 		WATCH_VIDEO: () => LocalizedString
@@ -8815,6 +8836,10 @@ export type TranslationFunctions = {
 		 * Search for a player above to view their timesheet.
 		 */
 		SEARCH_FOR_A_PLAYER_ABOVE: () => LocalizedString
+		/**
+		 * Login to Submit
+		 */
+		LOGIN_TO_SUBMIT: () => LocalizedString
 		SHOW_TIMES: {
 			/**
 			 * Show times pending validation

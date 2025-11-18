@@ -813,6 +813,7 @@ const fr: Translation = {
     LEADERBOARDS: 'Classements',
     TIMESHEETS: 'Temps des joueurs',
     GAME_LEADERBOARD_TITLE: 'Classement {game}', // Renamed
+    GAME_LEADERBOARDS: 'Classements {game}',
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Contre-la-montre soumis avec succès!',
     SUBMIT_ERROR: 'Erreur lors de la soumission du contre-la-montre.',
@@ -877,6 +878,7 @@ const fr: Translation = {
     VALUE_NOT_SPECIFIED: 'Valeur non spécifiée',
     PROOF_SUBMISSION: 'Soumission de preuve',
     PROOF_EVIDENCE: 'Preuve',
+    PROOF: 'Preuve',
     WATCH_VIDEO: 'Regarder la vidéo',
     VIEW_FULL_SIZE: 'Voir en entier',
     TIME: 'Temps',
@@ -889,6 +891,7 @@ const fr: Translation = {
     SEARCH_FOR_A_PLAYER: 'Chercher un joueur pour afficher sa feuille de temps',
     PLAYER: 'Joueur',
     SEARCH_FOR_A_PLAYER_ABOVE: 'Recherchez un joueur ci-dessus pour afficher sa feuille de temps.',
+    LOGIN_TO_SUBMIT: 'Se connecter pour envoyer un temps',
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Montrer les temps en attente de validation',
       INCLUDE_AWAITING_VALIDATION: 'Inclure les temps envoyés en attente de validation',

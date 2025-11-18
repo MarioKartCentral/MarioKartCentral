@@ -276,7 +276,7 @@
   </div>
 </div>
 
-<Section header="{getGameDisplayName(game)} {$LL.TIME_TRIALS.LEADERBOARDS()}">
+<Section header={$LL.TIME_TRIALS.GAME_LEADERBOARDS({ game: getGameDisplayName(game) })}>
   <div class="space-y-6">
     <!-- Filters -->
     <div class="filters rounded-lg border border-gray-700 p-6">
@@ -285,7 +285,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Track Filter -->
           <div>
-            <label for="track-select" class="block text-sm font-medium mb-2"> Track </label>
+            <label for="track-select" class="block text-sm font-medium mb-2">
+              {$LL.TIME_TRIALS.TRACK_NAME_LABEL()}
+            </label>
             <select id="track-select" bind:value={selectedTrack} class="w-full">
               {#each tracks as track, index (index)}
                 <option value={track}>{getTrackDisplayName(track)}</option>
@@ -295,7 +297,7 @@
 
           <!-- Country Filter -->
           <div>
-            <label for="country-select" class="block text-sm font-medium mb-2"> Country </label>
+            <label for="country-select" class="block text-sm font-medium mb-2">{$LL.COMMON.COUNTRY()}</label>
             <select id="country-select" bind:value={selectedCountry} class="w-full">
               <option value="">{$LL.COUNTRIES.ALL()}</option>
               {#each countries as country, index (index)}
@@ -358,20 +360,24 @@
           <table class="w-full">
             <thead class="bg-primary-800">
               <tr>
-                <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"> Rank </th>
-                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider min-w-32">
-                  Player
+                <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  {$LL.TIME_TRIALS.RANK()}
                 </th>
-                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider"> Time </th>
+                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider min-w-32">
+                  {$LL.TIME_TRIALS.PLAYER()}
+                </th>
+                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider"
+                  >{$LL.TIME_TRIALS.TIME()}</th
+                >
                 <th
                   class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden laptop:table-cell"
                 >
-                  Proof
+                  {$LL.TIME_TRIALS.PROOF_EVIDENCE()}
                 </th>
                 <th
                   class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell"
                 >
-                  Date
+                  {$LL.COMMON.DATE()}
                 </th>
                 {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                   <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">

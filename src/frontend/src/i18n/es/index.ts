@@ -813,6 +813,7 @@ const es: Translation = {
     LEADERBOARDS: 'Leaderboards',
     TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game} Leaderboard', // Renamed
+    GAME_LEADERBOARDS: '{game} Leaderboards',
     TRACK_LEADERBOARD_PAGE_TITLE: '{track} - {category} ({game})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',
     SUBMIT_ERROR: 'Error submitting time trial.',
@@ -877,6 +878,7 @@ const es: Translation = {
     VALUE_NOT_SPECIFIED: 'Value not specified',
     PROOF_SUBMISSION: 'Proof Submission',
     PROOF_EVIDENCE: 'Proof Evidence',
+    PROOF: 'Proof',
     WATCH_VIDEO: 'Watch Video',
     VIEW_FULL_SIZE: 'View Full Size',
     TIME: 'Time',
@@ -889,6 +891,7 @@ const es: Translation = {
     SEARCH_FOR_A_PLAYER: 'Search for a player to view their timesheet',
     PLAYER: 'Player',
     SEARCH_FOR_A_PLAYER_ABOVE: 'Search for a player above to view their timesheet.',
+    LOGIN_TO_SUBMIT: 'Login to Submit',
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Show times pending validation',
       INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',

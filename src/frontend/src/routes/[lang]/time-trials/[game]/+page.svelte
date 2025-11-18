@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <Section header="Select a Track">
+  <Section header={$LL.TIME_TRIALS.SELECT_TRACK()}>
     <div class="tracks-grid">
       {#each tracks as track, index (index)}
         <Button
