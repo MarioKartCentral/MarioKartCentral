@@ -892,6 +892,8 @@ const fr: Translation = {
     PLAYER: 'Joueur',
     SEARCH_FOR_A_PLAYER_ABOVE: 'Recherchez un joueur ci-dessus pour afficher sa feuille de temps.',
     LOGIN_TO_SUBMIT: 'Se connecter pour envoyer un temps',
+    NO_RECORDS_FOUND: 'Aucun record trouvé pour ce circuit avec les filtres sélectionnés.',
+    BACK_TO_GAME_HOMEPAGE: "Retour à la page d'accueil du jeu",
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Montrer les temps en attente de validation',
       INCLUDE_AWAITING_VALIDATION: 'Inclure les temps envoyés en attente de validation',

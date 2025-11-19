@@ -263,7 +263,7 @@
     <div class="flex items-center gap-3">
       <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
         <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game homepage
+        {$LL.TIME_TRIALS.BACK_TO_GAME_HOMEPAGE()}
       </Button>
     </div>
 
@@ -351,7 +351,7 @@
       </div>
     {:else if records.length === 0}
       <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-        <p class="text-gray-400">No records found for this track with the selected filters.</p>
+        <p class="text-gray-400">{$LL.TIME_TRIALS.NO_RECORDS_FOUND()}</p>
       </div>
     {:else}
       <!-- Leaderboard Table -->

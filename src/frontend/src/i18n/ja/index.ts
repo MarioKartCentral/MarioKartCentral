@@ -887,6 +887,8 @@ const ja: Translation = {
     PLAYER: 'Player',
     SEARCH_FOR_A_PLAYER_ABOVE: 'Search for a player above to view their timesheet.',
     LOGIN_TO_SUBMIT: 'Login to Submit',
+    NO_RECORDS_FOUND: 'No records found for this track with the selected filters.',
+    BACK_TO_GAME_HOMEPAGE: 'Back to Game homepage',
     SHOW_TIMES: {
       PENDING_VALIDATION: 'Show times pending validation',
       INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',

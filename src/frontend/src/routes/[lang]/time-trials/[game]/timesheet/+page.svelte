@@ -234,7 +234,7 @@
     <div class="flex items-center gap-3">
       <Button href="/{$page.params.lang}/time-trials/{gameId}" extra_classes="back-button text-white mb-4">
         <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game homepage
+        {$LL.TIME_TRIALS.BACK_TO_GAME_HOMEPAGE()}
       </Button>
     </div>
 

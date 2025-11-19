@@ -3349,6 +3349,14 @@ type RootTranslation = {
 		 * L​o​g​i​n​ ​t​o​ ​S​u​b​m​i​t
 		 */
 		LOGIN_TO_SUBMIT: string
+		/**
+		 * N​o​ ​r​e​c​o​r​d​s​ ​f​o​u​n​d​ ​f​o​r​ ​t​h​i​s​ ​t​r​c​k​ ​w​i​t​h​ ​t​h​e​ ​s​e​l​e​c​t​e​d​ ​f​i​l​t​e​r​s
+		 */
+		NO_RECORDS_FOUND: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​G​a​m​e​ ​h​o​m​e​p​a​g​e
+		 */
+		BACK_TO_GAME_HOMEPAGE: string
 		SHOW_TIMES: {
 			/**
 			 * S​h​o​w​ ​t​i​m​e​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n
@@ -8840,6 +8848,14 @@ export type TranslationFunctions = {
 		 * Login to Submit
 		 */
 		LOGIN_TO_SUBMIT: () => LocalizedString
+		/**
+		 * No records found for this trck with the selected filters
+		 */
+		NO_RECORDS_FOUND: () => LocalizedString
+		/**
+		 * Back to Game homepage
+		 */
+		BACK_TO_GAME_HOMEPAGE: () => LocalizedString
 		SHOW_TIMES: {
 			/**
 			 * Show times pending validation
