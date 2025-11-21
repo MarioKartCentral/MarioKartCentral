@@ -8,6 +8,7 @@
   import { locale } from '$i18n/i18n-svelte';
   import type { TournamentWithPlacements } from '$lib/types/tournament';
   import type { TournamentPlacement } from '$lib/types/tournament-placement';
+  import LL from '$i18n/i18n-svelte';
 
   export let tournaments: TournamentWithPlacements[];
 
@@ -61,7 +62,7 @@
   }
 </script>
 
-<Section header="Tournament History">
+<Section header={$LL.TOURNAMENTS.HISTORY.TOURNAMENT_HISTORY()}>
   <Table>
     <col class="left" />
     <col class="right" />

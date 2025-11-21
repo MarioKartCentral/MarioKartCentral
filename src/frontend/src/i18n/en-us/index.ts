@@ -1175,6 +1175,7 @@ const en_us: BaseTranslation = {
       ACTIVE_SERIES: 'Active Series',
       HISTORICAL_SERIES: 'Historical Series',
       SERIES_DISCORD_INVITE: 'Discord Invite Link',
+      STATS: 'Stats',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Tournament Templates',

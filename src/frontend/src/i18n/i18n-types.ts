@@ -4446,6 +4446,10 @@ type RootTranslation = {
 			 * D​i​s​c​o​r​d​ ​I​n​v​i​t​e​ ​L​i​n​k
 			 */
 			SERIES_DISCORD_INVITE: string
+			/**
+			 * S​t​a​t​s
+			 */
+			STATS: string
 		}
 		TEMPLATES: {
 			/**
@@ -9927,6 +9931,10 @@ export type TranslationFunctions = {
 			 * Discord Invite Link
 			 */
 			SERIES_DISCORD_INVITE: () => LocalizedString
+			/**
+			 * Stats
+			 */
+			STATS: () => LocalizedString
 		}
 		TEMPLATES: {
 			/**

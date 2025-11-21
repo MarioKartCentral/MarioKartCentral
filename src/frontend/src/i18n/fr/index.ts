@@ -1184,11 +1184,12 @@ const fr: Translation = {
       ACTIVE_SERIES: 'Séries actives',
       HISTORICAL_SERIES: 'Séries historiques',
       SERIES_DISCORD_INVITE: "Lien d'invitation Discord",
+      STATS: 'Statistiques',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Templates de tournoi',
       TEMPLATE_DETAILS: 'Détail du template',
-      TEMPLATE_NAME: 'Nom du template',
+      TEMPLATE_NAME: 'Nom du template', 
       CREATE_TEMPLATE: 'Créer le template',
       EDIT_TEMPLATE: 'Modifier le template',
       CREATE_TEMPLATE_SUCCESS: 'Le template de tournoi a bien été créé !',

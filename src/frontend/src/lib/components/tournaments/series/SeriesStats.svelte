@@ -6,6 +6,7 @@
   import { compareMedals } from '$lib/util/series_stats';
   import { StatsMode } from '$lib/types/tournament';
   import type { CombinedSeriesStats } from '$lib/types/series-stats';
+  import LL from '$i18n/i18n-svelte';
 
   export let stats: CombinedSeriesStats;
 
@@ -22,7 +23,7 @@
       : stats.player_stats.sort((a, b) => b.appearances - a.appearances);
 </script>
 
-<Section header="Stats">
+<Section header={$LL.TOURNAMENTS.SERIES.STATS()}>
   {#if stats_mode === StatsMode.TEAM_MEDALS || stats_mode === StatsMode.TEAM_APPEARANCES}
     <div class="stats_container">
       <Button on:click={() => (stats_mode = StatsMode.TEAM_MEDALS)}>Podium Finishes</Button>

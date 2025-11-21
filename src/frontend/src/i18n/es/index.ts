@@ -1182,6 +1182,7 @@ const es: Translation = {
       ACTIVE_SERIES: 'Series en activo',
       HISTORICAL_SERIES: 'Series inactivas',
       SERIES_DISCORD_INVITE: 'Invitación al servidor de Discord',
+      STATS: 'Stats',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: 'Plantillas de torneos',

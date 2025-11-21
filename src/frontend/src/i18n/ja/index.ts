@@ -1174,6 +1174,7 @@ const ja: Translation = {
       ACTIVE_SERIES: 'Active Series',
       HISTORICAL_SERIES: 'Historical Series',
       SERIES_DISCORD_INVITE: 'Discord招待リンク',
+      STATS: 'Stats',
     },
     TEMPLATES: {
       TOURNAMENT_TEMPLATES: '大会テンプレート',
