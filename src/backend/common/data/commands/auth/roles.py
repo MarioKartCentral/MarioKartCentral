@@ -5,6 +5,7 @@ from common.data import notifications
 from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import *
+from common.data import notifications
 
 @dataclass
 class ListRolesCommand(Command[list[Role]]):
