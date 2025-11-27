@@ -426,27 +426,24 @@ We use several key layout components to structure content:
 The `Table` component provides consistent styling and structure for tabular data:
 
 ```html
-<Table>
-  <col class="name" />
-  <col class="game" />
-  <col class="status" />
-  
-  <thead>
-    <tr>
-      <th>{$LL.COMMON.NAME()}</th>
-      <th>{$LL.COMMON.GAME()}</th>
-      <th>{$LL.COMMON.STATUS()}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each items as item}
-      <tr>
-        <td>{item.name}</td>
-        <td><GameBadge game={item.game} /></td>
-        <td>{item.status}</td>
-      </tr>
-    {/each}
-  </tbody>
+<Table data={items} let:item>
+  <colgroup slot="colgroup">
+    <col class="name" />
+    <col class="game" />
+    <col class="status" />
+  </colgroup>
+
+  <tr slot="header">
+    <th>{$LL.COMMON.NAME()}</th>
+    <th>{$LL.COMMON.GAME()}</th>
+    <th>{$LL.COMMON.STATUS()}</th>
+  </tr>
+
+  <tr>
+    <td>{item.name}</td>
+    <td><GameBadge game={item.game} /></td>
+    <td>{item.status}</td>
+  </tr>
 </Table>
 ```
 
