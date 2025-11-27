@@ -798,6 +798,7 @@ const en_us: BaseTranslation = {
   TIME_TRIALS: {
     PAGE_TITLE: 'Time Trials',
     TITLE: 'Time Trials',
+    GAME_TITLE: '{game:string} Time Trials',
     DESCRIPTION:
       'Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.',
     VIEW_TRACKS: 'View Tracks',
@@ -807,6 +808,7 @@ const en_us: BaseTranslation = {
     LEADERBOARDS: 'Leaderboards',
     TIMESHEETS: 'Timesheets',
     GAME_LEADERBOARD_TITLE: '{game:string} Leaderboard', // Renamed
+    GAME_LEADERBOARDS: '{game:string} Leaderboards',
     TRACK_LEADERBOARD_PAGE_TITLE: '{track:string} - {category:string} ({game:string})', // Renamed
     SUBMIT_SUCCESS: 'Time trial submitted successfully!',
     SUBMIT_ERROR: 'Error submitting time trial.',
@@ -871,6 +873,7 @@ const en_us: BaseTranslation = {
     VALUE_NOT_SPECIFIED: 'Value not specified',
     PROOF_SUBMISSION: 'Proof Submission',
     PROOF_EVIDENCE: 'Proof Evidence',
+    PROOF: 'Proof',
     WATCH_VIDEO: 'Watch Video',
     VIEW_FULL_SIZE: 'View Full Size',
     TIME: 'Time',
@@ -879,6 +882,21 @@ const en_us: BaseTranslation = {
     PERMISSION_REQUIRED: 'Permission Required',
     NO_PERMISSION_MESSAGE: "You don't have permission to validate time trial proofs.",
     NO_EVIDENCE_PROVIDED: 'No evidence URL provided',
+    BACK_TO_ALL_GAMES: 'Back to All Games',
+    SEARCH_FOR_A_PLAYER: 'Search for a player to view their timesheet',
+    PLAYER: 'Player',
+    SEARCH_FOR_A_PLAYER_ABOVE: 'Search for a player above to view their timesheet.',
+    LOGIN_TO_SUBMIT: 'Login to Submit',
+    NO_RECORDS_FOUND: 'No records found for this trck with the selected filters',
+    BACK_TO_GAME_HOMEPAGE: 'Back to Game homepage',
+    SHOW_TIMES: {
+      PENDING_VALIDATION: 'Show times pending validation',
+      INCLUDE_AWAITING_VALIDATION: 'Include times awaiting validation review',
+      PENDING_WITHOUT_PROOF: 'Show times without proof',
+      INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: 'Include times submitted without evidence',
+      OUTDATED: 'Show outdated times',
+      INCLUDE_OLDER_SUBMISSIONS: 'Include older submissions that have been beaten',
+    },
   },
   TOURNAMENTS: {
     TOURNAMENT: 'Tournament',

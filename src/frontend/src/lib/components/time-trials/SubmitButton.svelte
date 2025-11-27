@@ -50,7 +50,7 @@
     if (user_info?.id === null) {
       return {
         icon: LockOutline,
-        text: 'Login to Submit',
+        text: $LL.TIME_TRIALS.LOGIN_TO_SUBMIT(),
         disabled: true,
         color: 'alternative' as const,
         show: true,

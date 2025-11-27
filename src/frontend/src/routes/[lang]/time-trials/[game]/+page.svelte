@@ -31,12 +31,12 @@
 <div class="tracks-container">
   <Button href={`/${$page.params.lang}/time-trials`} extra_classes="back-button text-white mb-4">
     <ArrowLeftOutline class="w-4 h-4 mr-2" />
-    Back to All Games
+    {$LL.TIME_TRIALS.BACK_TO_ALL_GAMES()}
   </Button>
 
   <div class="game-header">
     <div class="flex items-center gap-3">
-      <h1 class="text-white">{gameName} Time Trials</h1>
+      <h1 class="text-white">{$LL.TIME_TRIALS.GAME_TITLE({ game: gameName })}</h1>
     </div>
 
     <div class="flex justify-center items-center gap-2 flex-wrap">
@@ -65,7 +65,7 @@
     </div>
   </div>
 
-  <Section header="Select a Track">
+  <Section header={$LL.TIME_TRIALS.SELECT_TRACK()}>
     <div class="tracks-grid">
       {#each tracks as track, index (index)}
         <Button

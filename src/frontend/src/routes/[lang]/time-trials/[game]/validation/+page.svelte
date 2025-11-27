@@ -222,7 +222,7 @@
 <div class="container mx-auto p-4">
   <Button href="/{$page.params.lang}/time-trials/{gameFilter}" extra_classes="back-button text-white mb-4">
     <ArrowLeftOutline class="w-4 h-4 mr-2" />
-    Back to Game homepage
+    {$LL.TIME_TRIALS.BACK_TO_GAME_HOMEPAGE()}
   </Button>
   <h1 class="text-2xl font-bold mb-4">{$LL.TIME_TRIALS.VALIDATION_HEADER()}</h1>
 

@@ -263,7 +263,7 @@
     <div class="flex items-center gap-3">
       <Button href="/{$page.params.lang}/time-trials/{game}" extra_classes="back-button text-white mb-4">
         <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game homepage
+        {$LL.TIME_TRIALS.BACK_TO_GAME_HOMEPAGE()}
       </Button>
     </div>
 
@@ -276,7 +276,7 @@
   </div>
 </div>
 
-<Section header="{getGameDisplayName(game)} {$LL.TIME_TRIALS.LEADERBOARDS()}">
+<Section header={$LL.TIME_TRIALS.GAME_LEADERBOARDS({ game: getGameDisplayName(game) })}>
   <div class="space-y-6">
     <!-- Filters -->
     <div class="filters rounded-lg border border-gray-700 p-6">
@@ -285,7 +285,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Track Filter -->
           <div>
-            <label for="track-select" class="block text-sm font-medium mb-2"> Track </label>
+            <label for="track-select" class="block text-sm font-medium mb-2">
+              {$LL.TIME_TRIALS.TRACK_NAME_LABEL()}
+            </label>
             <select id="track-select" bind:value={selectedTrack} class="w-full">
               {#each tracks as track, index (index)}
                 <option value={track}>{getTrackDisplayName(track)}</option>
@@ -295,7 +297,7 @@
 
           <!-- Country Filter -->
           <div>
-            <label for="country-select" class="block text-sm font-medium mb-2"> Country </label>
+            <label for="country-select" class="block text-sm font-medium mb-2">{$LL.COMMON.COUNTRY()}</label>
             <select id="country-select" bind:value={selectedCountry} class="w-full">
               <option value="">{$LL.COUNTRIES.ALL()}</option>
               {#each countries as country, index (index)}
@@ -315,9 +317,9 @@
                 bind:checked={showPendingValidation}
                 class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
               />
-              <span>Show times pending validation</span>
+              <span>{$LL.TIME_TRIALS.SHOW_TIMES.PENDING_VALIDATION()}</span>
             </label>
-            <p class="text-xs mt-1">Include times awaiting validation review</p>
+            <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_AWAITING_VALIDATION()}</p>
           </div>
 
           <!-- Show Times Without Proof Checkbox -->
@@ -328,9 +330,9 @@
                 bind:checked={showTimesWithoutProof}
                 class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
               />
-              <span>Show times without proof</span>
+              <span>{$LL.TIME_TRIALS.SHOW_TIMES.PENDING_WITHOUT_PROOF()}</span>
             </label>
-            <p class="text-xs mt-1">Include times submitted without evidence</p>
+            <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_SUBMITTED_WITHOUT_EVIDENCE()}</p>
           </div>
         </div>
       </div>
@@ -349,7 +351,7 @@
       </div>
     {:else if records.length === 0}
       <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-        <p class="text-gray-400">No records found for this track with the selected filters.</p>
+        <p class="text-gray-400">{$LL.TIME_TRIALS.NO_RECORDS_FOUND()}</p>
       </div>
     {:else}
       <!-- Leaderboard Table -->
@@ -358,20 +360,24 @@
           <table class="w-full">
             <thead class="bg-primary-800">
               <tr>
-                <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"> Rank </th>
-                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider min-w-32">
-                  Player
+                <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                  {$LL.TIME_TRIALS.RANK()}
                 </th>
-                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider"> Time </th>
+                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider min-w-32">
+                  {$LL.TIME_TRIALS.PLAYER()}
+                </th>
+                <th class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider"
+                  >{$LL.TIME_TRIALS.TIME()}</th
+                >
                 <th
                   class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden laptop:table-cell"
                 >
-                  Proof
+                  {$LL.TIME_TRIALS.PROOF_EVIDENCE()}
                 </th>
                 <th
                   class="px-4 desktop:px-6 text-left text-xs font-medium uppercase tracking-wider hidden desktop:table-cell"
                 >
-                  Date
+                  {$LL.COMMON.DATE()}
                 </th>
                 {#if $user && check_permission($user, permissions.validate_time_trial_proof)}
                   <th class="px-4 desktop:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
