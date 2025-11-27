@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { TeamEditRequest, TeamEditList } from '$lib/types/team-edit-request';
-  import Table from '../common/Table.svelte';
+  import Table from '../common/table/Table.svelte';
   import LL from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
   import TagBadge from '../badges/TagBadge.svelte';
@@ -81,95 +81,92 @@
 {#if team_requests.length}
   {$LL.MODERATOR.TEAM_EDIT_COUNT({ count: totalChanges })}
   <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
-  <Table>
-    <col class="tag" />
-    <col class="name" />
-    <col class="date mobile-hide" />
-    {#if approval_status === 'pending'}
-      <col class="approve" />
-    {/if}
-    {#if approval_status !== 'pending'}
-      <col class="handled-by mobile-hide" />
-    {/if}
-    {#if approval_status === 'approved'}
-      <col class="delete" />
-    {/if}
-    <thead>
-      <tr>
-        <th>
-          {$LL.COMMON.TAG()}
-        </th>
-        <th>
-          {$LL.COMMON.NAME()}
-        </th>
-        <th class="mobile-hide">
-          {$LL.COMMON.DATE()}
-        </th>
-        {#if approval_status === 'pending'}
-          <th>{$LL.MODERATOR.APPROVE()}</th>
-        {/if}
-        {#if approval_status !== 'pending'}
-          <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
-        {/if}
-        {#if approval_status === 'approved'}
-          <th>{$LL.COMMON.DELETE()}</th>
-        {/if}
-      </tr>
-    </thead>
-    <tbody>
-      {#each team_requests as r, i (r.id)}
-        <tr class="row-{i % 2}">
-          <td>
-            <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
-              <div class="flex">
-                <TagBadge tag={r.old_tag} color={r.color} />
-                {#if r.old_tag !== r.new_tag}
-                  <ArrowRight />
-                  <TagBadge tag={r.new_tag} color={r.color} />
-                {/if}
+  <Table data={team_requests} let:item={request}>
+    <colgroup slot="colgroup">
+      <col class="tag" />
+      <col class="name" />
+      <col class="date mobile-hide" />
+      {#if approval_status === 'pending'}
+        <col class="approve" />
+      {/if}
+      {#if approval_status !== 'pending'}
+        <col class="handled-by mobile-hide" />
+      {/if}
+      {#if approval_status === 'approved'}
+        <col class="delete" />
+      {/if}
+    </colgroup>
+    <tr slot="header">
+      <th>
+        {$LL.COMMON.TAG()}
+      </th>
+      <th>
+        {$LL.COMMON.NAME()}
+      </th>
+      <th class="mobile-hide">
+        {$LL.COMMON.DATE()}
+      </th>
+      {#if approval_status === 'pending'}
+        <th>{$LL.MODERATOR.APPROVE()}</th>
+      {/if}
+      {#if approval_status !== 'pending'}
+        <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
+      {/if}
+      {#if approval_status === 'approved'}
+        <th>{$LL.COMMON.DELETE()}</th>
+      {/if}
+    </tr>
+
+    <tr class="row">
+      <td>
+        <a href="/{$page.params.lang}/registry/teams/profile?id={request.team_id}">
+          <div class="flex">
+            <TagBadge tag={request.old_tag} color={request.color} />
+            {#if request.old_tag !== request.new_tag}
+              <ArrowRight />
+              <TagBadge tag={request.new_tag} color={request.color} />
+            {/if}
+          </div>
+        </a>
+      </td>
+      <td>
+        <a href="/{$page.params.lang}/registry/teams/profile?id={request.team_id}">
+          <div class="flex">
+            {request.old_name}
+            {#if request.old_name !== request.new_name}
+              <ArrowRight />
+              {request.new_name}
+            {/if}
+          </div>
+        </a>
+      </td>
+      <td class="mobile-hide">{new Date(request.date * 1000).toLocaleString($locale, options)}</td>
+      {#if approval_status === 'pending'}
+        <td>
+          <ConfirmButton on:click={() => approveTeamRequest(request)} />
+          <CancelButton on:click={() => denyTeamRequest(request)} />
+        </td>
+      {/if}
+      {#if approval_status !== 'pending'}
+        <td class="mobile-hide">
+          {#if request.handled_by}
+            <a href="/{$page.params.lang}/registry/players/profile?id={request.handled_by.id}">
+              <div class="flex handled-by">
+                <Flag country_code={request.handled_by.country_code} />
+                <div>
+                  {request.handled_by.name}
+                </div>
               </div>
             </a>
-          </td>
-          <td>
-            <a href="/{$page.params.lang}/registry/teams/profile?id={r.team_id}">
-              <div class="flex">
-                {r.old_name}
-                {#if r.old_name !== r.new_name}
-                  <ArrowRight />
-                  {r.new_name}
-                {/if}
-              </div>
-            </a>
-          </td>
-          <td class="mobile-hide">{new Date(r.date * 1000).toLocaleString($locale, options)}</td>
-          {#if approval_status === 'pending'}
-            <td>
-              <ConfirmButton on:click={() => approveTeamRequest(r)} />
-              <CancelButton on:click={() => denyTeamRequest(r)} />
-            </td>
           {/if}
-          {#if approval_status !== 'pending'}
-            <td class="mobile-hide">
-              {#if r.handled_by}
-                <a href="/{$page.params.lang}/registry/players/profile?id={r.handled_by.id}">
-                  <div class="flex handled-by">
-                    <Flag country_code={r.handled_by.country_code} />
-                    <div>
-                      {r.handled_by.name}
-                    </div>
-                  </div>
-                </a>
-              {/if}
-            </td>
-          {/if}
-          {#if approval_status === 'approved'}
-            <td>
-              <Button on:click={() => denyTeamRequest(r)}>{$LL.COMMON.DELETE()}</Button>
-            </td>
-          {/if}
-        </tr>
-      {/each}
-    </tbody>
+        </td>
+      {/if}
+      {#if approval_status === 'approved'}
+        <td>
+          <Button on:click={() => denyTeamRequest(request)}>{$LL.COMMON.DELETE()}</Button>
+        </td>
+      {/if}
+    </tr>
   </Table>
   <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
 {:else}

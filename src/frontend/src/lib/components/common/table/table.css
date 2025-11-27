@@ -1,0 +1,35 @@
+table th {
+  padding: 5px 10px;
+}
+
+table td {
+  padding: 10px;
+  text-align: left;
+}
+
+table tbody tr:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(235, 255, 255, 0.15);
+}
+
+tbody tr:nth-child(odd) {
+  background-color: rgba(235, 255, 255, 0.1);
+}
+
+table tr.inner {
+  background-color: rgba(235, 255, 255, 0.05);
+}
+
+/* Style for a table row containing the logged in user */
+table tr.me {
+  background-color: theme('colors.primary.200'/ 30%);
+}
+
+@media (max-width: 1024px) {
+  table .mobile-hide {
+    display: none;
+  }
+}

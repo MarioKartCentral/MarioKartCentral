@@ -7,7 +7,7 @@
   import type { FriendCodeEdit, FriendCodeEditList } from '$lib/types/friend-code-edit';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
   import { onMount } from 'svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
@@ -47,75 +47,72 @@
   <Section header="Friend Code Changes">
     <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
     {#if totalChanges > 0}
-      <Table>
-        <col class="player" />
-        <col class="date mobile-hide" />
-        <col class="fc-type mobile-hide" />
-        <col class="fc-info" />
-        <col class="handled-by mobile-hide" />
-        <thead>
-          <tr>
-            <th>{$LL.COMMON.PLAYER()}</th>
-            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-            <th class="mobile-hide" />
-            <th />
-            <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each fc_changes as c, i (c.id)}
-            <tr class="row-{i % 2}">
-              <td>
-                <a href="/{$page.params.lang}/registry/players/profile?id={c.player.id}">
-                  <div class="flex player">
-                    <Flag country_code={c.player.country_code} />
-                    <div>
-                      {c.player.name}
-                    </div>
-                  </div>
-                </a>
-              </td>
-              <td class="mobile-hide">
-                {new Date(c.date * 1000).toLocaleString($locale, options)}
-              </td>
-              <td class="mobile-hide">
-                <FcTypeBadge type={c.fc.type} />
-              </td>
-              <td>
-                <div class="flex fc">
-                  {#if c.new_fc}
-                    {#if c.old_fc}
-                      {c.old_fc}
-                      <ArrowRight />
-                    {/if}
-                    {c.new_fc}
-                    {#if c.old_fc === null}
-                      <NewBadge />
-                    {/if}
-                  {:else}
-                    {c.fc.fc}
-                  {/if}
-                  {#if c.is_active !== null}
-                    <ArrowRight />
-                    {c.is_active ? $LL.FRIEND_CODES.ACTIVE() : $LL.FRIEND_CODES.INACTIVE()}
-                  {/if}
+      <Table data={fc_changes} let:item={fcChange}>
+        <colgroup slot="colgroup">
+          <col class="player" />
+          <col class="date mobile-hide" />
+          <col class="fc-type mobile-hide" />
+          <col class="fc-info" />
+          <col class="handled-by mobile-hide" />
+        </colgroup>
+        <tr slot="header">
+          <th>{$LL.COMMON.PLAYER()}</th>
+          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+          <th class="mobile-hide" />
+          <th />
+          <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
+        </tr>
+
+        <tr class="row">
+          <td>
+            <a href="/{$page.params.lang}/registry/players/profile?id={fcChange.player.id}">
+              <div class="flex player">
+                <Flag country_code={fcChange.player.country_code} />
+                <div>
+                  {fcChange.player.name}
                 </div>
-              </td>
-              <td class="mobile-hide">
-                {#if c.handled_by}
-                  <a href="/{$page.params.lang}/registry/players/profile?id={c.handled_by.id}">
-                    <div class="flex player">
-                      <Flag country_code={c.handled_by.country_code} />
-                      <div>
-                        {c.handled_by.name}
-                      </div>
-                    </div>
-                  </a>
+              </div>
+            </a>
+          </td>
+          <td class="mobile-hide">
+            {new Date(fcChange.date * 1000).toLocaleString($locale, options)}
+          </td>
+          <td class="mobile-hide">
+            <FcTypeBadge type={fcChange.fc.type} />
+          </td>
+          <td>
+            <div class="flex fc">
+              {#if fcChange.new_fc}
+                {#if fcChange.old_fc}
+                  {fcChange.old_fc}
+                  <ArrowRight />
                 {/if}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
+                {fcChange.new_fc}
+                {#if fcChange.old_fc === null}
+                  <NewBadge />
+                {/if}
+              {:else}
+                {fcChange.fc.fc}
+              {/if}
+              {#if fcChange.is_active !== null}
+                <ArrowRight />
+                {fcChange.is_active ? $LL.FRIEND_CODES.ACTIVE() : $LL.FRIEND_CODES.INACTIVE()}
+              {/if}
+            </div>
+          </td>
+          <td class="mobile-hide">
+            {#if fcChange.handled_by}
+              <a href="/{$page.params.lang}/registry/players/profile?id={fcChange.handled_by.id}">
+                <div class="flex player">
+                  <Flag country_code={fcChange.handled_by.country_code} />
+                  <div>
+                    {fcChange.handled_by.name}
+                  </div>
+                </div>
+              </a>
+            {/if}
+          </td>
+        </tr>
       </Table>
     {/if}
     <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />

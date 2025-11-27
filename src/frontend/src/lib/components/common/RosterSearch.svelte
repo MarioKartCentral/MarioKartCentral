@@ -2,7 +2,7 @@
   import type { Team, TeamList } from '$lib/types/team';
   import type { TeamRoster } from '$lib/types/team-roster';
   import { createEventDispatcher } from 'svelte';
-  import Table from './Table.svelte';
+  import Table from './table/Table.svelte';
   import TagBadge from '../badges/TagBadge.svelte';
   import { UserAddSolid } from 'flowbite-svelte-icons';
   import CancelButton from './buttons/CancelButton.svelte';
@@ -73,30 +73,29 @@
     {#if show_results}
       <div class="table-outer">
         <div class="table-inner">
-          <Table show_padding={false}>
-            <col class="tag" />
-            <col class="name" />
-            <col class="game" />
-            <col class="select" />
-            <tbody>
-              {#each results as result (result.id)}
-                <tr on:click={() => set_option(result)}>
-                  <td>
-                    <TagBadge tag={result.tag} color={result.color} />
-                  </td>
-                  <td>
-                    {result.name}
-                  </td>
-                  <td>
-                    <GameBadge game={result.game} />
-                    <ModeBadge mode={result.mode} />
-                  </td>
-                  <td>
-                    <UserAddSolid size="lg" />
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
+          <Table containerClass="rounded-none" data={results} let:item={result}>
+            <colgroup slot="colgroup">
+              <col class="tag" />
+              <col class="name" />
+              <col class="game" />
+              <col class="select" />
+            </colgroup>
+
+            <tr on:click={() => set_option(result)}>
+              <td>
+                <TagBadge tag={result.tag} color={result.color} />
+              </td>
+              <td>
+                {result.name}
+              </td>
+              <td>
+                <GameBadge game={result.game} />
+                <ModeBadge mode={result.mode} />
+              </td>
+              <td>
+                <UserAddSolid size="lg" />
+              </td>
+            </tr>
           </Table>
         </div>
       </div>

@@ -5,7 +5,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { check_permission, permissions } from '$lib/util/permissions';
   import type { PlayerClaim } from '$lib/types/player-claim';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
   import ConfirmButton from '$lib/components/common/buttons/ConfirmButton.svelte';
@@ -75,48 +75,45 @@
 {#if check_permission(user_info, permissions.manage_shadow_players)}
   <Section header={$LL.MODERATOR.UNAPPROVED_PLAYER_CLAIMS()}>
     {#if claims.length}
-      <Table>
-        <col class="country" />
-        <col class="player" />
-        <col class="country" />
-        <col class="claimed" />
-        <col class="date mobile-hide" />
-        <col class="approve" />
-        <thead>
-          <tr>
-            <th />
-            <th>{$LL.COMMON.PLAYER()}</th>
-            <th />
-            <th>{$LL.MODERATOR.CLAIMED_PLAYER()}</th>
-            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-            <th>{$LL.MODERATOR.APPROVE()}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each claims as claim, i (claim.id)}
-            <tr class="row-{i % 2}">
-              <td><Flag country_code={claim.player.country_code} /></td>
-              <td>
-                <a href="/{$page.params.lang}/registry/players/profile?id={claim.player.id}">
-                  {claim.player.name}
-                </a>
-              </td>
-              <td><Flag country_code={claim.claimed_player.country_code} /></td>
-              <td>
-                <a href="/{$page.params.lang}/registry/players/profile?id={claim.claimed_player.id}">
-                  {claim.claimed_player.name}
-                </a>
-              </td>
-              <td class="mobile-hide">
-                {new Date(claim.date * 1000).toLocaleString($locale, options)}
-              </td>
-              <td>
-                <ConfirmButton on:click={() => approveClaim(claim)} />
-                <CancelButton on:click={() => denyClaim(claim)} />
-              </td>
-            </tr>
-          {/each}
-        </tbody>
+      <Table data={claims} let:item={claim}>
+        <colgroup slot="colgroup">
+          <col class="country" />
+          <col class="player" />
+          <col class="country" />
+          <col class="claimed" />
+          <col class="date mobile-hide" />
+          <col class="approve" />
+        </colgroup>
+        <tr slot="header">
+          <th />
+          <th>{$LL.COMMON.PLAYER()}</th>
+          <th />
+          <th>{$LL.MODERATOR.CLAIMED_PLAYER()}</th>
+          <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+          <th>{$LL.MODERATOR.APPROVE()}</th>
+        </tr>
+
+        <tr class="row">
+          <td><Flag country_code={claim.player.country_code} /></td>
+          <td>
+            <a href="/{$page.params.lang}/registry/players/profile?id={claim.player.id}">
+              {claim.player.name}
+            </a>
+          </td>
+          <td><Flag country_code={claim.claimed_player.country_code} /></td>
+          <td>
+            <a href="/{$page.params.lang}/registry/players/profile?id={claim.claimed_player.id}">
+              {claim.claimed_player.name}
+            </a>
+          </td>
+          <td class="mobile-hide">
+            {new Date(claim.date * 1000).toLocaleString($locale, options)}
+          </td>
+          <td>
+            <ConfirmButton on:click={() => approveClaim(claim)} />
+            <CancelButton on:click={() => denyClaim(claim)} />
+          </td>
+        </tr>
       </Table>
     {:else}
       {$LL.MODERATOR.NO_PLAYER_CLAIMS()}

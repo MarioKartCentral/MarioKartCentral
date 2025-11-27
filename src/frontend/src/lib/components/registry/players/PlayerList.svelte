@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
   import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
@@ -86,33 +86,29 @@
   {$LL.PLAYERS.PLAYERS()}
   <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
   {#if totalPlayers}
-    <Table>
-      <col class="country_code" />
-      <col class="name" />
-      <col class="friend_codes mobile-hide" />
-      <thead>
-        <tr>
-          <th></th>
-          <th>{$LL.COMMON.NAME()}</th>
-          <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each players as player, i (player.id)}
-          <tr class="row-{i % 2}">
-            <td><Flag country_code={player.country_code} /></td>
-            <td>
-              <a
-                href="/{$page.params.lang}/registry/players/profile?id={player.id}"
-                class={player.is_banned ? 'banned_name' : ''}>{player.name}</a
-              >
-            </td>
-            <td class="mobile-hide">
-              <FriendCodeDisplay friend_codes={player.friend_codes} />
-            </td>
-          </tr>
-        {/each}
-      </tbody>
+    <Table data={players} let:item={player}>
+      <colgroup slot="colgroup">
+        <col class="country_code" />
+        <col class="name" />
+        <col class="friend_codes mobile-hide" />
+      </colgroup>
+      <tr slot="header">
+        <th></th>
+        <th>{$LL.COMMON.NAME()}</th>
+        <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
+      </tr>
+      <tr class="row">
+        <td><Flag country_code={player.country_code} /></td>
+        <td>
+          <a
+            href="/{$page.params.lang}/registry/players/profile?id={player.id}"
+            class={player.is_banned ? 'banned_name' : ''}>{player.name}</a
+          >
+        </td>
+        <td class="mobile-hide">
+          <FriendCodeDisplay friend_codes={player.friend_codes} />
+        </td>
+      </tr>
     </Table>
   {/if}
   <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />

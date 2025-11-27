@@ -3,7 +3,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { PlayerTransferItem } from '$lib/types/player-transfer';
   import Section from '$lib/components/common/Section.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -91,43 +91,38 @@
             </div>
           </div>
         </form>
-        <Table>
-          <thead>
-            <tr>
-              <th>Team</th>
-              <th>Registration Period</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {#each filtered_history as record, i (record.id)}
-              <tr class="row-{i % 2} {record.is_hidden ? 'hidden-item' : ''}">
-                <td>
-                  <a href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}">
-                    <!-- prefer roster name, but use team name as fallback -->
-                    {record.roster_name ? record.roster_name : record.team_name}
-                    {#if record.is_bagger_clause}
-                      <BaggerBadge />
-                    {/if}
-                  </a>
-                </td>
-                <td>
-                  {toDate(record.join_date)} - {record.leave_date ? toDate(record.leave_date) : 'Present'}
-                </td>
-                <td>
-                  {#if check_permission($user, permissions.edit_player)}
-                    <button class="link-button" on:click={() => toggleTransferItemVisibility(record)}>
-                      {#if !record.is_hidden}
-                        {$LL.COMMON.HIDE()}
-                      {:else}
-                        {$LL.COMMON.SHOW()}
-                      {/if}
-                    </button>
+        <Table data={filtered_history} let:item={record}>
+          <tr slot="header">
+            <th>Team</th>
+            <th>Registration Period</th>
+            <th />
+          </tr>
+
+          <tr class="row {record.is_hidden ? 'hidden-item' : ''}">
+            <td>
+              <a href="/{$page.params.lang}/registry/teams/profile?id={record.team_id}">
+                <!-- prefer roster name, but use team name as fallback -->
+                {record.roster_name ? record.roster_name : record.team_name}
+                {#if record.is_bagger_clause}
+                  <BaggerBadge />
+                {/if}
+              </a>
+            </td>
+            <td>
+              {toDate(record.join_date)} - {record.leave_date ? toDate(record.leave_date) : 'Present'}
+            </td>
+            <td>
+              {#if check_permission($user, permissions.edit_player)}
+                <button class="link-button" on:click={() => toggleTransferItemVisibility(record)}>
+                  {#if !record.is_hidden}
+                    {$LL.COMMON.HIDE()}
+                  {:else}
+                    {$LL.COMMON.SHOW()}
                   {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
+                </button>
+              {/if}
+            </td>
+          </tr>
         </Table>
       </div>
     </div>

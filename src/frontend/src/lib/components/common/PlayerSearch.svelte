@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PlayerInfo } from '$lib/types/player-info';
   import { createEventDispatcher } from 'svelte';
-  import Table from './Table.svelte';
+  import Table from './table/Table.svelte';
   import LL from '$i18n/i18n-svelte';
   import Flag from './Flag.svelte';
   import { UserAddSolid } from 'flowbite-svelte-icons';
@@ -84,33 +84,31 @@
     {#if show_results}
       <div class="table-outer">
         <div class="table-inner">
-          <Table show_padding={false}>
-            <col class="country" />
-            <col class="name" />
-            <col class="mobile-hide fc" />
-            <col class="select" />
-            <tbody>
-              {#each results as result (result.id)}
-                <tr on:click={() => set_option(result)} title="Player ID: {result.id}">
-                  <td on:click={() => set_option(result)}>
-                    <Flag country_code={result.country_code} />
-                  </td>
-                  <td on:click={() => set_option(result)}>
-                    {result.name}
-                  </td>
-                  <td class="mobile-hide" on:click={() => set_option(result)}>
-                    {#if result.friend_codes.length}
-                      {result.friend_codes[0].fc}
-                    {/if}
-                  </td>
-                  <td on:click={() => set_option(result)}>
-                    {#if show_add_button}
-                      <UserAddSolid size="lg" />
-                    {/if}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
+          <Table containerClass="rounded-none" data={results} let:item={result}>
+            <colgroup slot="colgroup">
+              <col class="country" />
+              <col class="name" />
+              <col class="mobile-hide fc" />
+              <col class="select" />
+            </colgroup>
+            <tr on:click={() => set_option(result)} title="Player ID: {result.id}">
+              <td on:click={() => set_option(result)}>
+                <Flag country_code={result.country_code} />
+              </td>
+              <td on:click={() => set_option(result)}>
+                {result.name}
+              </td>
+              <td class="mobile-hide" on:click={() => set_option(result)}>
+                {#if result.friend_codes.length}
+                  {result.friend_codes[0].fc}
+                {/if}
+              </td>
+              <td on:click={() => set_option(result)}>
+                {#if show_add_button}
+                  <UserAddSolid size="lg" />
+                {/if}
+              </td>
+            </tr>
           </Table>
         </div>
       </div>

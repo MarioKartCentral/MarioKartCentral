@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { TeamRoster } from '$lib/types/team-roster';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
@@ -297,76 +297,76 @@
   {roster.players.length !== 1 ? $LL.TEAMS.PROFILE.PLAYERS() : $LL.TEAMS.PROFILE.PLAYERS()}
   {#if roster.players.length}
     <div class="section">
-      <Table>
-        <col class="country" />
-        <col class="name" />
-        <col class="fc mobile-hide" />
-        <col class="join_date mobile-hide" />
-        <col class="manage_player" />
-        <thead>
-          <tr>
-            <th></th>
-            <th>{$LL.COMMON.NAME()}</th>
-            <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
-            <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {#each roster.players as player, i (player.player_id)}
-            <tr class="row-{i % 2} {user_info.player_id === player.player_id ? 'me' : ''}">
-              <td><Flag country_code={player.country_code} /></td>
-              <td>
-                <RosterPlayerName {player} />
-              </td>
-              <td class="mobile-hide">
-                {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
-                  {#if i === 0}
-                    {fc.fc}
-                  {/if}
-                {/each}
-              </td>
-              <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
-              <td>
-                <ChevronDownSolid class="cursor-pointer" />
-                <Dropdown>
-                  {#if can_kick(player)}
-                    <DropdownItem on:click={() => kickDialog(player)}>
-                      {$LL.TEAMS.EDIT.KICK_PLAYER()}
-                    </DropdownItem>
-                  {/if}
-                  {#if check_team_permission(user_info, team_permissions.manage_team_roles, roster.team_id)}
-                    {#if player.is_leader}
-                      <DropdownItem on:click={() => removeTeamRole(player, 'Leader')}>
-                        {$LL.TEAMS.EDIT.REMOVE_LEADER()}
-                      </DropdownItem>
-                    {:else if !player.is_manager}
-                      <DropdownItem on:click={() => grantTeamRole(player, 'Leader')}>
-                        {$LL.TEAMS.EDIT.MAKE_LEADER()}
-                      </DropdownItem>
-                    {/if}
-                  {/if}
-                  {#if check_permission(user_info, team_permissions.manage_team_roles)}
-                    {#if player.is_manager}
-                      <DropdownItem on:click={() => removeTeamRole(player, 'Manager')}>
-                        {$LL.TEAMS.EDIT.REMOVE_MANAGER()}
-                      </DropdownItem>
-                    {:else}
-                      <DropdownItem on:click={() => grantTeamRole(player, 'Manager')}>
-                        {$LL.TEAMS.EDIT.MAKE_MANAGER()}
-                      </DropdownItem>
-                    {/if}
-                  {/if}
-                  {#if roster.game === 'mkw' && check_permission(user_info, permissions.manage_transfers)}
-                    <DropdownItem on:click={() => toggleBagger(player)}>
-                      {$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE()}
-                    </DropdownItem>
-                  {/if}
-                </Dropdown>
-              </td>
-            </tr>
-          {/each}
-        </tbody>
+      <Table data={roster.players} let:item={player}>
+        <colgroup slot="colgroup">
+          <col class="country" />
+          <col class="name" />
+          <col class="fc mobile-hide" />
+          <col class="join_date mobile-hide" />
+          <col class="manage_player" />
+        </colgroup>
+        <tr slot="header">
+          <th></th>
+          <th>{$LL.COMMON.NAME()}</th>
+          <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
+          <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
+          <th />
+        </tr>
+        <tr class="row" class:me={user_info.player_id === player.player_id}>
+          <td>
+            <Flag country_code={player.country_code} />
+          </td>
+          <td>
+            <RosterPlayerName {player} />
+          </td>
+          <td class="mobile-hide">
+            {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
+              {#if i === 0}
+                {fc.fc}
+              {/if}
+            {/each}
+          </td>
+          <td class="mobile-hide">
+            {new Date(player.join_date * 1000).toLocaleString($locale, options)}
+          </td>
+          <td>
+            <ChevronDownSolid class="cursor-pointer" />
+            <Dropdown>
+              {#if can_kick(player)}
+                <DropdownItem on:click={() => kickDialog(player)}>
+                  {$LL.TEAMS.EDIT.KICK_PLAYER()}
+                </DropdownItem>
+              {/if}
+              {#if check_team_permission(user_info, team_permissions.manage_team_roles, roster.team_id)}
+                {#if player.is_leader}
+                  <DropdownItem on:click={() => removeTeamRole(player, 'Leader')}>
+                    {$LL.TEAMS.EDIT.REMOVE_LEADER()}
+                  </DropdownItem>
+                {:else if !player.is_manager}
+                  <DropdownItem on:click={() => grantTeamRole(player, 'Leader')}>
+                    {$LL.TEAMS.EDIT.MAKE_LEADER()}
+                  </DropdownItem>
+                {/if}
+              {/if}
+              {#if check_permission(user_info, team_permissions.manage_team_roles)}
+                {#if player.is_manager}
+                  <DropdownItem on:click={() => removeTeamRole(player, 'Manager')}>
+                    {$LL.TEAMS.EDIT.REMOVE_MANAGER()}
+                  </DropdownItem>
+                {:else}
+                  <DropdownItem on:click={() => grantTeamRole(player, 'Manager')}>
+                    {$LL.TEAMS.EDIT.MAKE_MANAGER()}
+                  </DropdownItem>
+                {/if}
+              {/if}
+              {#if roster.game === 'mkw' && check_permission(user_info, permissions.manage_transfers)}
+                <DropdownItem on:click={() => toggleBagger(player)}>
+                  {$LL.TEAMS.EDIT.TOGGLE_BAGGER_CLAUSE()}
+                </DropdownItem>
+              {/if}
+            </Dropdown>
+          </td>
+        </tr>
       </Table>
     </div>
   {/if}
@@ -374,45 +374,46 @@
     {#if roster.invites.length}
       <div class="section">
         <h3>{$LL.TEAMS.EDIT.INVITATIONS()}</h3>
-        <Table>
-          <col class="country" />
-          <col class="name" />
-          <col class="fc mobile-hide" />
-          <col class="join_date mobile-hide" />
-          <col class="manage_player" />
-          <thead>
-            <tr>
-              <th></th>
-              <th>{$LL.COMMON.NAME()}</th>
-              <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
-              <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {#each roster.invites as player (player.player_id)}
-              <tr>
-                <td><Flag country_code={player.country_code} /></td>
-                <td>
-                  <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">
-                    {player.name}
-                  </a>
-                  {#if player.is_bagger_clause}
-                    <BaggerBadge />
-                  {/if}
-                </td>
-                <td class="mobile-hide"
-                  >{player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}</td
-                >
-                <td class="mobile-hide">{new Date(player.invite_date * 1000).toLocaleString($locale, options)}</td>
-                <td>
-                  <Button {working} on:click={() => retractInvite(player.player_id)}
-                    >{$LL.TEAMS.EDIT.RETRACT_INVITE()}</Button
-                  >
-                </td>
-              </tr>
-            {/each}
-          </tbody>
+        <Table data={roster.invites} let:item={player}>
+          <colgroup slot="colgroup">
+            <col class="country" />
+            <col class="name" />
+            <col class="fc mobile-hide" />
+            <col class="join_date mobile-hide" />
+            <col class="manage_player" />
+          </colgroup>
+          <tr slot="header">
+            <th></th>
+            <th>{$LL.COMMON.NAME()}</th>
+            <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
+            <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
+            <th />
+          </tr>
+
+          <tr>
+            <td>
+              <Flag country_code={player.country_code} />
+            </td>
+            <td>
+              <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}">
+                {player.name}
+              </a>
+              {#if player.is_bagger_clause}
+                <BaggerBadge />
+              {/if}
+            </td>
+            <td class="mobile-hide">
+              {player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}
+            </td>
+            <td class="mobile-hide">
+              {new Date(player.invite_date * 1000).toLocaleString($locale, options)}
+            </td>
+            <td>
+              <Button {working} on:click={() => retractInvite(player.player_id)}>
+                {$LL.TEAMS.EDIT.RETRACT_INVITE()}
+              </Button>
+            </td>
+          </tr>
         </Table>
       </div>
     {/if}

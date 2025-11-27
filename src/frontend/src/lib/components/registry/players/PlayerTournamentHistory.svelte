@@ -4,7 +4,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import type { PlayerTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
@@ -126,69 +126,63 @@
       {#if filtered_solo_placements.length > 0}
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.SOLO_TOURNAMENTS()}</h2>
         <div>
-          <Table>
-            <col class="tournament" />
-            <col class="date mobile-hide" />
-            <col class="team mobile-hide" />
-            <col class="placement" />
-            <thead>
-              <tr>
-                <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
-                <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-                <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.PARTNERS()}</th>
-                <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each filtered_solo_placements as placement, i (placement.registration_id)}
-                <tr
-                  class={placement.placement && placement.placement <= 3
-                    ? podium_style[placement.placement]
-                    : `row-${i % 2}`}
-                >
-                  <td>
-                    <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
-                      {placement.tournament_name}
-                    </a>
-                  </td>
-                  <td class="mobile-hide">
-                    {toDate(placement.date_start)}
-                    {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
-                  </td>
-                  {#if placement.squad_name}
-                    <td class="mobile-hide">
-                      <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
-                        {placement.squad_name}
-                      </a>
-                    </td>
-                  {:else if placement.partners != null}
-                    <td class="mobile-hide">
-                      <div class="flex flex-row">
-                        {#each placement.partners as partner, i (partner.player_id)}
-                          <div>
-                            {#if i + 1 < placement.partners.length}
-                              <TournamentPlayerName player_id={partner.player_id} name="{partner.player_name}," />
-                            {:else}
-                              <TournamentPlayerName player_id={partner.player_id} name={partner.player_name} />
-                            {/if}
-                          </div>
-                        {/each}
+          <Table data={filtered_solo_placements} let:item={placement}>
+            <colgroup slot="colgroup">
+              <col class="tournament" />
+              <col class="date mobile-hide" />
+              <col class="team mobile-hide" />
+              <col class="placement" />
+            </colgroup>
+
+            <tr slot="header">
+              <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
+              <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+              <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.PARTNERS()}</th>
+              <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
+            </tr>
+
+            <tr class={placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : 'row'}>
+              <td>
+                <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                  {placement.tournament_name}
+                </a>
+              </td>
+              <td class="mobile-hide">
+                {toDate(placement.date_start)}
+                {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
+              </td>
+              {#if placement.squad_name}
+                <td class="mobile-hide">
+                  <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                    {placement.squad_name}
+                  </a>
+                </td>
+              {:else if placement.partners != null}
+                <td class="mobile-hide">
+                  <div class="flex flex-row">
+                    {#each placement.partners as partner, i (partner.player_id)}
+                      <div>
+                        {#if i + 1 < placement.partners.length}
+                          <TournamentPlayerName player_id={partner.player_id} name="{partner.player_name}," />
+                        {:else}
+                          <TournamentPlayerName player_id={partner.player_id} name={partner.player_name} />
+                        {/if}
                       </div>
-                    </td>
-                  {:else}
-                    <td></td>
-                  {/if}
-                  <td>
-                    {#if placement.is_disqualified}
-                      {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
-                    {:else}
-                      {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
-                      {placement.placement_description ? ' - ' + placement.placement_description : ''}
-                    {/if}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
+                    {/each}
+                  </div>
+                </td>
+              {:else}
+                <td></td>
+              {/if}
+              <td>
+                {#if placement.is_disqualified}
+                  {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
+                {:else}
+                  {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
+                  {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                {/if}
+              </td>
+            </tr>
           </Table>
         </div>
       {/if}
@@ -197,61 +191,55 @@
       {#if filtered_team_placements.length > 0}
         <h2 class="text-xl font-bold">{$LL.TOURNAMENTS.HISTORY.TEAM_TOURNAMENTS()}</h2>
         <div>
-          <Table>
-            <col class="tournament" />
-            <col class="team mobile-hide" />
-            <col class="date mobile-hide" />
-            <col class="placement" />
-            <thead>
-              <tr>
-                <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
-                <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-                <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.TEAM()}</th>
-                <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each filtered_team_placements as placement, i (placement.registration_id)}
-                <tr
-                  class={placement.placement && placement.placement <= 3
-                    ? podium_style[placement.placement]
-                    : `row-${i % 2}`}
-                >
-                  <td>
-                    <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
-                      {placement.tournament_name}
+          <Table data={filtered_team_placements} let:item={placement}>
+            <colgroup slot="colgroup">
+              <col class="tournament" />
+              <col class="team mobile-hide" />
+              <col class="date mobile-hide" />
+              <col class="placement" />
+            </colgroup>
+
+            <tr slot="header">
+              <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
+              <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+              <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.TEAM()}</th>
+              <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
+            </tr>
+
+            <tr class={placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : 'row'}>
+              <td>
+                <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                  {placement.tournament_name}
+                </a>
+              </td>
+              <td class="mobile-hide">
+                {toDate(placement.date_start)}
+                {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
+              </td>
+              {#if placement.registration_id != null && placement.squad_name != null}
+                <td class="mobile-hide">
+                  {#if placement.team_id}
+                    <a href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}">
+                      {placement.squad_name}
                     </a>
-                  </td>
-                  <td class="mobile-hide">
-                    {toDate(placement.date_start)}
-                    {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
-                  </td>
-                  {#if placement.registration_id != null && placement.squad_name != null}
-                    <td class="mobile-hide">
-                      {#if placement.team_id}
-                        <a href="/{$page.params.lang}/registry/teams/profile?id={placement.team_id}">
-                          {placement.squad_name}
-                        </a>
-                      {:else}
-                        <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
-                          {placement.squad_name}
-                        </a>
-                      {/if}
-                    </td>
                   {:else}
-                    <td></td>
+                    <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                      {placement.squad_name}
+                    </a>
                   {/if}
-                  <td>
-                    {#if placement.is_disqualified}
-                      {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
-                    {:else}
-                      {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
-                      {placement.placement_description ? ' - ' + placement.placement_description : ''}
-                    {/if}
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
+                </td>
+              {:else}
+                <td></td>
+              {/if}
+              <td>
+                {#if placement.is_disqualified}
+                  {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
+                {:else}
+                  {placement.placement ? toOrdinalSuffix(placement.placement) : '-'}
+                  {placement.placement_description ? ' - ' + placement.placement_description : ''}
+                {/if}
+              </td>
+            </tr>
           </Table>
         </div>
       {/if}
