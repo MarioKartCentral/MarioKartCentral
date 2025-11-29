@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import { afterNavigate, replaceState } from '$app/navigation';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import Section from '$lib/components/common/Section.svelte';
@@ -36,12 +37,12 @@
   let showTimesWithoutProof = false;
   let tracks: string[] = [];
   let countries: string[] = [];
+  let routerReady: boolean = false;
 
   async function loadLeaderboard() {
     // Don't load if no track is selected or if running during SSR
-    if (!selectedTrack || typeof window === 'undefined') {
-      return;
-    }
+    if (!routerReady) return;
+    if (!selectedTrack) return;
 
     try {
       loading = true;
@@ -173,8 +174,7 @@
     }
 
     // Update URL without triggering navigation
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState({}, '', newUrl);
+    replaceState(`${$page.url.pathname}?${params.toString()}`, {});
   }
 
   function getProofIcon(proofUrl: string, proofType: string) {
@@ -232,22 +232,26 @@
     if (game === 'mkworld') {
       tracks = Object.values(MKWORLD_TRACK_ABBREVIATIONS);
     }
-    // Load filters from URL parameters
+  });
+
+  afterNavigate(() => {
+    routerReady = true;
     loadFiltersFromURL();
-    // Initial load
     loadLeaderboard();
   });
 
   // Watch for filter changes, reload data, and update URL (but don't call during SSR)
-  $: if (
-    typeof window !== 'undefined' &&
-    (selectedTrack ||
-      selectedCountry !== undefined ||
-      showPendingValidation !== undefined ||
-      showTimesWithoutProof !== undefined)
-  ) {
-    loadLeaderboard();
-    updateURL();
+  $: {
+    if (
+      routerReady &&
+      (selectedTrack ||
+        selectedCountry !== undefined ||
+        showPendingValidation !== undefined ||
+        showTimesWithoutProof !== undefined)
+    ) {
+      loadLeaderboard();
+      updateURL();
+    }
   }
 </script>
 
