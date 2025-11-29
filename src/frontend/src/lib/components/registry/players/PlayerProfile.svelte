@@ -122,7 +122,10 @@
       {/if}
       {#if !player.user_settings || !player.user_settings.hide_discord || check_permission(user_info, permissions.edit_player)}
         <div class="item centered" style="grid-area: g;">
-          <DiscordDisplay discord={player.discord} />
+          <DiscordDisplay
+            discord={player.discord}
+            enableUserIdToggle={check_permission(user_info, permissions.edit_player)}
+          />
         </div>
       {/if}
       {#if player.user_settings && player.user_settings.about_me}

@@ -168,7 +168,7 @@
           <div class="label">{$LL.DISCORD.DISCORD()}</div>
           <div>
             {#if edit_user.player?.discord}
-              <DiscordDisplay discord={edit_user.player.discord} />
+              <DiscordDisplay discord={edit_user.player.discord} enableUserIdToggle />
             {:else}
               {$LL.MODERATOR.MANAGE_USERS.USER_NO_DISCORD()}
             {/if}
