@@ -110,7 +110,7 @@
   }
 </script>
 
-<Table data={show_all ? squads : squads.slice(0, display_limit)} let:item={squad}>
+<Table multiRow data={show_all ? squads : squads.slice(0, display_limit)} let:item={squad}>
   <colgroup slot="colgroup">
     <col class="id" />
     {#if tournament.squad_tag_required}
@@ -156,7 +156,6 @@
       <th />
     {/if}
   </tr>
-
   <tr class="row">
     <td>{squad.id}</td>
     {#if tournament.squad_tag_required}
@@ -206,7 +205,7 @@
     {/if}
   </tr>
   {#if squad_data[squad.id].display_players}
-    <tr class="inner">
+    <tr class="row">
       <td colspan="10">
         <TournamentPlayerList {tournament} players={squad.players} {is_privileged} />
       </td>

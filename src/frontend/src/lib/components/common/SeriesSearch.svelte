@@ -69,7 +69,7 @@
     {#if show_results}
       <div class="table">
         <Table containerClass="rounded-none" data={results} let:item={result}>
-          <tr on:click={() => set_option(result)}>
+          <tr class="row" on:click={() => set_option(result)}>
             <td>
               {#if result.logo}
                 <img src={result.logo} alt={result.series_name} />

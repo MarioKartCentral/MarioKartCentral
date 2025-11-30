@@ -141,7 +141,7 @@
               <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
             </tr>
 
-            <tr class={placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : 'row'}>
+            <tr class="row {placement.placement && placement.placement <= 3 && podium_style[placement.placement]}">
               <td>
                 <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                   {placement.tournament_name}
@@ -206,7 +206,7 @@
               <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
             </tr>
 
-            <tr class={placement.placement && placement.placement <= 3 ? podium_style[placement.placement] : 'row'}>
+            <tr class="row {placement.placement && placement.placement <= 3 && podium_style[placement.placement]}">
               <td>
                 <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
                   {placement.tournament_name}
@@ -259,17 +259,5 @@
   }
   col.placement {
     width: 20%;
-  }
-  .gold {
-    background-color: rgba(255, 254, 149, 0.3);
-    color: #fffab0;
-  }
-  .silver {
-    background-color: rgba(195, 255, 255, 0.3);
-    color: #dcfffc;
-  }
-  .bronze {
-    background-color: rgba(255, 158, 110, 0.3);
-    color: #ffcbae;
   }
 </style>

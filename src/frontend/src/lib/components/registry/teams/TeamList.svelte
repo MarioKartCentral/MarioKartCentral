@@ -131,7 +131,7 @@
 </form>
 {$LL.TEAMS.LIST.TEAM_COUNT({ count: totalTeams })}
 <PageNavigation bind:currentPage={filters.page} bind:totalPages refresh_function={fetchData} />
-<Table data={teams} let:item={team}>
+<Table data={teams} let:item={team} multiRow>
   <colgroup slot="colgroup">
     <col class="tag" />
     <col class="name" />
@@ -164,7 +164,7 @@
     </td>
   </tr>
   {#if show_rosters[team.id]}
-    <tr class="inner">
+    <tr class="row">
       <td colspan="10">
         <RosterList {team} />
       </td>

@@ -171,16 +171,4 @@
   col.placement {
     width: 20%;
   }
-  .gold {
-    background-color: rgba(255, 254, 149, 0.3);
-    color: #fffab0;
-  }
-  .silver {
-    background-color: rgba(195, 255, 255, 0.3);
-    color: #dcfffc;
-  }
-  .bronze {
-    background-color: rgba(255, 158, 110, 0.3);
-    color: #ffcbae;
-  }
 </style>

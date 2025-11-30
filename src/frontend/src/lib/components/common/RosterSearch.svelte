@@ -81,7 +81,7 @@
               <col class="select" />
             </colgroup>
 
-            <tr on:click={() => set_option(result)}>
+            <tr class="row" on:click={() => set_option(result)}>
               <td>
                 <TagBadge tag={result.tag} color={result.color} />
               </td>

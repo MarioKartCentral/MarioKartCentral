@@ -7,25 +7,37 @@ table td {
   text-align: left;
 }
 
-table tbody tr:not(:last-child) {
+table[data-multi-row='false'] > tbody > tr:not(:last-child),
+table[data-multi-row='true'] > tbody:not(:last-child) {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-tbody tr:nth-child(even) {
+table[data-multi-row='false'] > tbody > tr.row:nth-child(even),
+table[data-multi-row='true'] > tbody:nth-of-type(even) {
   background-color: rgba(235, 255, 255, 0.15);
 }
 
-tbody tr:nth-child(odd) {
+table[data-multi-row='false'] > tbody > tr.row:nth-child(odd),
+table[data-multi-row='true'] > tbody:nth-of-type(odd) {
   background-color: rgba(235, 255, 255, 0.1);
-}
-
-table tr.inner {
-  background-color: rgba(235, 255, 255, 0.05);
 }
 
 /* Style for a table row containing the logged in user */
 table tr.me {
-  background-color: theme('colors.primary.200'/ 30%);
+  background-color: theme('colors.primary.200'/ 30%) !important;
+}
+
+.gold {
+  background-color: rgba(255, 254, 149, 0.3) !important;
+  color: #fffab0;
+}
+.silver {
+  background-color: rgba(195, 255, 255, 0.3) !important;
+  color: #dcfffc;
+}
+.bronze {
+  background-color: rgba(255, 158, 110, 0.3) !important;
+  color: #ffcbae;
 }
 
 @media (max-width: 1024px) {

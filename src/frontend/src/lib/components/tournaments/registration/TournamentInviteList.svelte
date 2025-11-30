@@ -103,7 +103,7 @@
   }
 </script>
 
-<Table data={squads} let:item={squad}>
+<Table multiRow data={squads} let:item={squad}>
   <colgroup slot="colgroup">
     <col class="id" />
     {#if tournament.squad_tag_required}
@@ -133,7 +133,6 @@
     </th>
     <th>{$LL.INVITES.ACCEPT()}</th>
   </tr>
-
   <tr class="row">
     <td>{squad.id}</td>
     {#if tournament.squad_tag_required}
@@ -156,7 +155,7 @@
     </td>
   </tr>
   {#if squad_data[squad.id].display_players}
-    <tr class="inner">
+    <tr class="row">
       <td colspan="10">
         <TournamentPlayerList {tournament} players={squad.players} />
       </td>

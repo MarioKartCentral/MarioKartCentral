@@ -91,7 +91,7 @@
               <col class="mobile-hide fc" />
               <col class="select" />
             </colgroup>
-            <tr on:click={() => set_option(result)} title="Player ID: {result.id}">
+            <tr class="row" on:click={() => set_option(result)} title="Player ID: {result.id}">
               <td on:click={() => set_option(result)}>
                 <Flag country_code={result.country_code} />
               </td>

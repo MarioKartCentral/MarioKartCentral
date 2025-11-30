@@ -124,7 +124,7 @@
             {/if}
             <col class="remove" />
           </colgroup>
-          <tr>
+          <tr class="row">
             <td>
               <Flag country_code={player.country_code} />
             </td>
