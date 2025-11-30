@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import { page } from '$app/stores';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
@@ -62,62 +62,60 @@
 </script>
 
 <Section header="Tournament History">
-  <Table>
-    <col class="left" />
-    <col class="right" />
-    <tbody>
-      {#each tournaments as t, i (t.id)}
-        <tr class="row-{i % 2}">
-          <td class="left">
-            <div class="row_top tournament_name">
-              <a href="/{$page.params.lang}/tournaments/details?id={t.id}">{t.name}</a>
-            </div>
-            <div>
-              <GameBadge game={t.game} />
-              <ModeBadge mode={t.mode} />
-              <TypeBadge is_squad={t.is_squad} teams_allowed={t.teams_allowed} />
-            </div>
-          </td>
-          <td class="right">
-            <div class="row_top">
-              {new Date(t.date_start * 1000).toLocaleDateString($locale, options)} - {new Date(
-                t.date_end * 1000,
-              ).toLocaleDateString($locale, options)}
-            </div>
-            <div>
-              {#each t.placements as p (p.registration_id)}
-                <span class={getColor(p.placement) + ' bold'}>
-                  {getMedal(p.placement)}
-                  {#if p.squad.rosters.length}
-                    <a href={`/${$page.params.lang}/registry/teams/profile?id=${p.squad.rosters[0].team_id}`}>
-                      {p.squad.rosters[0].team_name}
+  <Table data={tournaments} let:item={tournament}>
+    <colgroup slot="colgroup">
+      <col class="left" />
+      <col class="right" />
+    </colgroup>
+    <tr class="row">
+      <td class="left">
+        <div class="row_top tournament_name">
+          <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">{tournament.name}</a>
+        </div>
+        <div>
+          <GameBadge game={tournament.game} />
+          <ModeBadge mode={tournament.mode} />
+          <TypeBadge is_squad={tournament.is_squad} teams_allowed={tournament.teams_allowed} />
+        </div>
+      </td>
+      <td class="right">
+        <div class="row_top">
+          {new Date(tournament.date_start * 1000).toLocaleDateString($locale, options)} - {new Date(
+            tournament.date_end * 1000,
+          ).toLocaleDateString($locale, options)}
+        </div>
+        <div>
+          {#each tournament.placements as placement (placement.registration_id)}
+            <span class={getColor(placement.placement) + ' bold'}>
+              {getMedal(placement.placement)}
+              {#if placement.squad.rosters.length}
+                <a href={`/${$page.params.lang}/registry/teams/profile?id=${placement.squad.rosters[0].team_id}`}>
+                  {placement.squad.rosters[0].team_name}
+                </a>
+              {:else if placement.squad.name}
+                <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
+                  {placement.squad.name}
+                </a>
+              {:else}
+                {#each placement.squad.players as player, i (player.id)}
+                  {#if i < 4}
+                    <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
+                      {player.name}
                     </a>
-                  {:else if p.squad.name}
-                    <a href="/{$page.params.lang}/tournaments/details?id={t.id}">
-                      {p.squad.name}
-                    </a>
-                  {:else}
-                    {#each p.squad.players as player, i (player.id)}
-                      {#if i < 4}
-                        <a href={`/${$page.params.lang}/registry/players/profile?id=${player.player_id}`}>
-                          {player.name}
-                        </a>
-                        {#if player !== p.squad.players[p.squad.players.length - 1]}
-                          <span class="white_color">/</span>
-                        {/if}
-                      {/if}
-                      {#if i === 4}
-                        <span class="white_color">...</span>
-                      {/if}
-                    {/each}
+                    {#if player !== placement.squad.players[placement.squad.players.length - 1]}
+                      <span class="white_color">/</span>
+                    {/if}
                   {/if}
-                </span>
-              {/each}
-            </div>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
+                  {#if i === 4}
+                    <span class="white_color">...</span>
+                  {/if}
+                {/each}
+              {/if}
+            </span>
+          {/each}
+        </div>
+      </td>
+    </tr>
   </Table>
 </Section>
 

@@ -137,11 +137,11 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
-    border-bottom: 1px solid theme('colors.primary.600' / 30%);
-    border-left: 1px solid theme('colors.primary.600' / 30%);
-    border-right: 1px solid theme('colors.primary.600' / 30%);
     padding: 5px;
     font-size: 80%;
+  }
+  div.flex:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
   div.gold {
     background-color: rgba(255, 254, 149, 0.3);

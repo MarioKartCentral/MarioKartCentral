@@ -1,6 +1,6 @@
 <script lang="ts">
   import Flag from '$lib/components/common/Flag.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import { StatsMode } from '$lib/types/tournament';
   import { page } from '$app/stores';
   import type { PlayerSeriesStats } from '$lib/types/series-stats';
@@ -39,55 +39,54 @@
 {/if}
 <div class="table-container">
   <div class="compact-table">
-    <Table>
-      <col class="placement" />
-      <col class="flag" />
-      <col class="name" />
-      {#if stats_mode === StatsMode.PLAYER_MEDALS}
-        <col class="medals" />
-        <col class="medals" />
-        <col class="medals" />
-      {:else}
-        <col class="appearances" />
-      {/if}
-      <thead>
-        <tr>
-          <th></th>
-          <th></th>
-          <th></th>
+    <Table data={playersArray} let:item={player}>
+      <colgroup slot="colgroup">
+        <col class="placement" />
+        <col class="flag" />
+        <col class="name" />
+        {#if stats_mode === StatsMode.PLAYER_MEDALS}
+          <col class="medals" />
+          <col class="medals" />
+          <col class="medals" />
+        {:else}
+          <col class="appearances" />
+        {/if}
+      </colgroup>
+      <tr slot="header">
+        <th></th>
+        <th></th>
+        <th></th>
+        {#if stats_mode === StatsMode.PLAYER_MEDALS}
+          <th class="text_center">👑</th><th class="text_center">🥈</th><th class="text_center">🥉</th>
+        {:else}
+          <th class="bold text_center">Appearances</th>
+        {/if}
+      </tr>
+
+      {#if (stats_mode === StatsMode.PLAYER_MEDALS && (player.gold > 0 || player.silver > 0 || player.bronze > 0)) || (stats_mode === StatsMode.PLAYER_APPEARANCES && player.appearances_placement < 25)}
+        <tr class="row">
+          <td class={'text_center bold ' + getColorClass(player)}>
+            {stats_mode === StatsMode.PLAYER_MEDALS ? player.medals_placement : player.appearances_placement}
+          </td>
+          <td class={'text_center bold ' + getColorClass(player)}>
+            <Flag country_code={player.country_code} size="small" />
+          </td>
+          <td class={getColorClass(player)}>
+            <span class="white">
+              <a href={`/${$page.params.lang}/registry/players/profile?id=${player.id}`}>
+                {player.name}
+              </a>
+            </span>
+          </td>
           {#if stats_mode === StatsMode.PLAYER_MEDALS}
-            <th class="text_center">👑</th><th class="text_center">🥈</th><th class="text_center">🥉</th>
+            <td class="text_center bold {getColorClass(player)}">{player.gold > 0 ? player.gold : '—'}</td>
+            <td class="text_center bold {getColorClass(player)}">{player.silver > 0 ? player.silver : '—'}</td>
+            <td class="text_center bold {getColorClass(player)}">{player.bronze > 0 ? player.bronze : '—'}</td>
           {:else}
-            <th class="bold text_center">Appearances</th>
+            <td class="text_center bold {getColorClass(player)}">{player.appearances}</td>
           {/if}
         </tr>
-      </thead>
-      {#each playersArray as p, i (p.id)}
-        {#if (stats_mode === StatsMode.PLAYER_MEDALS && (p.gold > 0 || p.silver > 0 || p.bronze > 0)) || (stats_mode === StatsMode.PLAYER_APPEARANCES && p.appearances_placement < 25)}
-          <tr class="row-{i % 2}">
-            <td class={'text_center bold ' + getColorClass(p)}>
-              {stats_mode === StatsMode.PLAYER_MEDALS ? p.medals_placement : p.appearances_placement}
-            </td>
-            <td class={'text_center bold ' + getColorClass(p)}>
-              <Flag country_code={p.country_code} size="small" />
-            </td>
-            <td class={getColorClass(p)}>
-              <span class="white">
-                <a href={`/${$page.params.lang}/registry/players/profile?id=${p.id}`}>
-                  {p.name}
-                </a>
-              </span>
-            </td>
-            {#if stats_mode === StatsMode.PLAYER_MEDALS}
-              <td class="text_center bold {getColorClass(p)}">{p.gold > 0 ? p.gold : '—'}</td>
-              <td class="text_center bold {getColorClass(p)}">{p.silver > 0 ? p.silver : '—'}</td>
-              <td class="text_center bold {getColorClass(p)}">{p.bronze > 0 ? p.bronze : '—'}</td>
-            {:else}
-              <td class="text_center bold {getColorClass(p)}">{p.appearances}</td>
-            {/if}
-          </tr>
-        {/if}
-      {/each}
+      {/if}
     </Table>
   </div>
 </div>

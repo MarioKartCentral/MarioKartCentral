@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import type { TournamentTemplateMinimal } from '$lib/types/tournaments/create/tournament-template-minimal';
   import Section from '$lib/components/common/Section.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import { page } from '$app/stores';
   import { check_series_permission, series_permissions } from '$lib/util/permissions';
   import type { UserInfo } from '$lib/types/user-info';
@@ -52,36 +52,32 @@
       >
     {/if}
   </div>
-  <Table>
-    {#each templates as template, i (template.id)}
-      <tr class="row-{i % 2}">
-        <td class="left">
-          <a href="/{$page.params.lang}/tournaments/create?template_id={template.id}">{template.template_name}</a>
-        </td>
-        <td>
-          <div class="settings">
-            {#if check_series_permission(user_info, series_permissions.edit_tournament_template, series_id)}
-              <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}"
-                >{$LL.COMMON.EDIT()}</Button
+  <Table data={templates} let:item={template}>
+    <tr class="row">
+      <td class="left">
+        <a href="/{$page.params.lang}/tournaments/create?template_id={template.id}">{template.template_name}</a>
+      </td>
+      <td>
+        <div class="settings">
+          {#if check_series_permission(user_info, series_permissions.edit_tournament_template, series_id)}
+            <Button href="/{$page.params.lang}/tournaments/templates/edit?id={template.id}">{$LL.COMMON.EDIT()}</Button>
+          {/if}
+          {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
+            {#if series_id}
+              <Button
+                href="/{$page.params
+                  .lang}/tournaments/series/create_template?series_id={series_id}&template_id={template.id}"
+                >{$LL.TOURNAMENTS.TEMPLATES.DUPLICATE()}</Button
+              >
+            {:else}
+              <Button href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}"
+                >{$LL.TOURNAMENTS.TEMPLATES.DUPLICATE()}</Button
               >
             {/if}
-            {#if check_series_permission(user_info, series_permissions.create_tournament_template, series_id)}
-              {#if series_id}
-                <Button
-                  href="/{$page.params
-                    .lang}/tournaments/series/create_template?series_id={series_id}&template_id={template.id}"
-                  >{$LL.TOURNAMENTS.TEMPLATES.DUPLICATE()}</Button
-                >
-              {:else}
-                <Button href="/{$page.params.lang}/tournaments/templates/create?template_id={template.id}"
-                  >{$LL.TOURNAMENTS.TEMPLATES.DUPLICATE()}</Button
-                >
-              {/if}
-            {/if}
-          </div>
-        </td>
-      </tr>
-    {/each}
+          {/if}
+        </div>
+      </td>
+    </tr>
   </Table>
 </Section>
 
@@ -95,8 +91,5 @@
   }
   .settings {
     float: right;
-  }
-  .settings div {
-    padding: 0 5px;
   }
 </style>

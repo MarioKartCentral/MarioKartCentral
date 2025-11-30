@@ -4,7 +4,7 @@
   import type { Team } from '$lib/types/team';
   import type { TeamTournamentPlacement } from '$lib/types/tournament-placement';
   import Section from '$lib/components/common/Section.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
@@ -113,52 +113,45 @@
         </div>
       </form>
       <div>
-        <Table>
-          <col class="tournament" />
-          <col class="team mobile-hide" />
-          <col class="date mobile-hide" />
-          <col class="placement" />
-          <thead>
-            <tr>
-              <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
-              <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.TEAM()}</th>
-              <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-              <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each filtered_team_placements as placement, i (placement.registration_id)}
-              <tr
-                class={placement.placement && placement.placement <= 3
-                  ? podium_style[placement.placement]
-                  : `row-${i % 2}`}
-              >
-                <td>
-                  <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
-                    {placement.tournament_name}
-                  </a>
-                </td>
-                <td class="mobile-hide">
-                  <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
-                    {placement.squad_name}
-                  </a>
-                </td>
+        <Table data={filtered_team_placements} let:item={placement}>
+          <colgroup slot="colgroup">
+            <col class="tournament" />
+            <col class="team mobile-hide" />
+            <col class="date mobile-hide" />
+            <col class="placement" />
+          </colgroup>
+          <tr slot="header">
+            <th>{$LL.TOURNAMENTS.TOURNAMENT()}</th>
+            <th class="mobile-hide">{$LL.TOURNAMENTS.HISTORY.TEAM()}</th>
+            <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+            <th>{$LL.TOURNAMENTS.HISTORY.PLACEMENT()}</th>
+          </tr>
 
-                <td class="mobile-hide">
-                  {toDate(placement.date_start)}
-                  {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
-                </td>
-                <td>
-                  {#if placement.is_disqualified}
-                    {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
-                  {:else}
-                    {placement.placement ? $LL.COMMON.ORDINAL_SUFFIX({ val: placement.placement }) : '-'}
-                    {placement.placement_description ? ' - ' + placement.placement_description : ''}
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
+          <tr class="row {placement.placement && placement.placement <= 3 && podium_style[placement.placement]}">
+            <td>
+              <a href="/{$page.params.lang}/tournaments/details?id={placement.tournament_id}">
+                {placement.tournament_name}
+              </a>
+            </td>
+            <td class="mobile-hide">
+              <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+                {placement.squad_name}
+              </a>
+            </td>
+
+            <td class="mobile-hide">
+              {toDate(placement.date_start)}
+              {placement.date_end == placement.date_start ? '' : ' - ' + toDate(placement.date_end)}
+            </td>
+            <td>
+              {#if placement.is_disqualified}
+                {$LL.TOURNAMENTS.HISTORY.DISQUALIFIED()}
+              {:else}
+                {placement.placement ? $LL.COMMON.ORDINAL_SUFFIX({ val: placement.placement }) : '-'}
+                {placement.placement_description ? ' - ' + placement.placement_description : ''}
+              {/if}
+            </td>
+          </tr>
         </Table>
       </div>
     </div>
@@ -177,17 +170,5 @@
   }
   col.placement {
     width: 20%;
-  }
-  .gold {
-    background-color: rgba(255, 254, 149, 0.3);
-    color: #fffab0;
-  }
-  .silver {
-    background-color: rgba(195, 255, 255, 0.3);
-    color: #dcfffc;
-  }
-  .bronze {
-    background-color: rgba(255, 158, 110, 0.3);
-    color: #ffcbae;
   }
 </style>

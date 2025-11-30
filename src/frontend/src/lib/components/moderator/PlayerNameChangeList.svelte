@@ -2,7 +2,7 @@
   import type { PlayerNameChangeRequestList, PlayerNameChangeRequest } from '$lib/types/player-name-change-request';
   import { onMount } from 'svelte';
   import LL from '$i18n/i18n-svelte';
-  import Table from '../common/Table.svelte';
+  import Table from '../common/table/Table.svelte';
   import Flag from '../common/Flag.svelte';
   import { page } from '$app/stores';
   import ArrowRight from '../common/ArrowRight.svelte';
@@ -78,81 +78,78 @@
 <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
 {#if name_requests.length}
   {$LL.MODERATOR.NAME_CHANGE_COUNT({ count: totalChanges })}
-  <Table>
-    <col class="country" />
-    <col class="name" />
-    <col class="date mobile-hide" />
-    {#if approval_status === 'pending'}
-      <col class="approve" />
-    {/if}
-    {#if approval_status !== 'pending'}
-      <col class="handled-by mobile-hide" />
-    {/if}
-    {#if approval_status === 'approved'}
-      <col class="delete" />
-    {/if}
-    <thead>
-      <tr>
-        <th />
-        <th>{$LL.COMMON.NAME()}</th>
-        <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
-        {#if approval_status === 'pending'}
-          <th>{$LL.MODERATOR.APPROVE()}</th>
-        {/if}
-        {#if approval_status !== 'pending'}
-          <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
-        {/if}
-        {#if approval_status === 'approved'}
-          <th>{$LL.COMMON.DELETE()}</th>
-        {/if}
-      </tr>
-    </thead>
-    <tbody>
-      {#each name_requests as r, i (r.id)}
-        <tr class="row-{i % 2}">
-          <td>
-            <Flag country_code={r.player_country} />
-          </td>
-          <td>
-            <a href="/{$page.params.lang}/registry/players/profile?id={r.player_id}">
+  <Table data={name_requests} let:item={request}>
+    <colgroup slot="colgroup">
+      <col class="country" />
+      <col class="name" />
+      <col class="date mobile-hide" />
+      {#if approval_status === 'pending'}
+        <col class="approve" />
+      {/if}
+      {#if approval_status !== 'pending'}
+        <col class="handled-by mobile-hide" />
+      {/if}
+      {#if approval_status === 'approved'}
+        <col class="delete" />
+      {/if}
+    </colgroup>
+
+    <tr slot="header">
+      <th />
+      <th>{$LL.COMMON.NAME()}</th>
+      <th class="mobile-hide">{$LL.COMMON.DATE()}</th>
+      {#if approval_status === 'pending'}
+        <th>{$LL.MODERATOR.APPROVE()}</th>
+      {/if}
+      {#if approval_status !== 'pending'}
+        <th class="mobile-hide">{$LL.MODERATOR.HANDLED_BY()}</th>
+      {/if}
+      {#if approval_status === 'approved'}
+        <th>{$LL.COMMON.DELETE()}</th>
+      {/if}
+    </tr>
+    <tr class="row">
+      <td>
+        <Flag country_code={request.player_country} />
+      </td>
+      <td>
+        <a href="/{$page.params.lang}/registry/players/profile?id={request.player_id}">
+          <div class="flex">
+            {request.old_name}
+            <ArrowRight />
+            {request.new_name}
+          </div>
+        </a>
+      </td>
+      <td class="mobile-hide">
+        {new Date(request.date * 1000).toLocaleString($locale, options)}
+      </td>
+      {#if approval_status === 'pending'}
+        <td>
+          <ConfirmButton on:click={() => approveNameRequest(request)} />
+          <CancelButton on:click={() => denyNameRequest(request)} />
+        </td>
+      {/if}
+      {#if approval_status !== 'pending'}
+        <td class="mobile-hide">
+          {#if request.handled_by}
+            <a href="/{$page.params.lang}/registry/players/profile?id={request.handled_by.id}">
               <div class="flex">
-                {r.old_name}
-                <ArrowRight />
-                {r.new_name}
+                <Flag country_code={request.handled_by.country_code} />
+                <div>
+                  {request.handled_by.name}
+                </div>
               </div>
             </a>
-          </td>
-          <td class="mobile-hide">
-            {new Date(r.date * 1000).toLocaleString($locale, options)}
-          </td>
-          {#if approval_status === 'pending'}
-            <td>
-              <ConfirmButton on:click={() => approveNameRequest(r)} />
-              <CancelButton on:click={() => denyNameRequest(r)} />
-            </td>
           {/if}
-          {#if approval_status !== 'pending'}
-            <td class="mobile-hide">
-              {#if r.handled_by}
-                <a href="/{$page.params.lang}/registry/players/profile?id={r.handled_by.id}">
-                  <div class="flex">
-                    <Flag country_code={r.handled_by.country_code} />
-                    <div>
-                      {r.handled_by.name}
-                    </div>
-                  </div>
-                </a>
-              {/if}
-            </td>
-          {/if}
-          {#if approval_status === 'approved'}
-            <td>
-              <Button on:click={() => denyNameRequest(r)}>{$LL.COMMON.DELETE()}</Button>
-            </td>
-          {/if}
-        </tr>
-      {/each}
-    </tbody>
+        </td>
+      {/if}
+      {#if approval_status === 'approved'}
+        <td>
+          <Button on:click={() => denyNameRequest(request)}>{$LL.COMMON.DELETE()}</Button>
+        </td>
+      {/if}
+    </tr>
   </Table>
 {:else}
   {$LL.MODERATOR.NO_PENDING_NAME_REQUESTS()}

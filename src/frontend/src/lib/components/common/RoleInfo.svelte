@@ -2,7 +2,7 @@
   import type { Role } from '$lib/types/role';
   import type { RoleInfo } from '$lib/types/role';
   import { onMount } from 'svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from './table/Table.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import { page } from '$app/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
@@ -115,41 +115,41 @@
         </div>
       {/if}
       <div class="table">
-        <Table>
-          <col class="country" />
-          <col class="name" />
-          {#if is_expirable_role()}
-            <col class="until mobile-hide" />
-          {/if}
-          <col class="remove" />
-          <tbody>
-            {#each role_info.players as player (player.id)}
-              <tr>
-                <td><Flag country_code={player.country_code} /></td>
-                <td>
-                  <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">
-                    {player.name}
-                  </a>
-                </td>
-                {#if is_expirable_role()}
-                  <td class="mobile-hide">
-                    {#if player.expires_on}
-                      {$LL.ROLES.ROLE_EXPIRES_ON({
-                        date: new Date(player.expires_on * 1000).toLocaleString($locale, options),
-                      })}
-                    {/if}
-                  </td>
+        <Table data={role_info.players} let:item={player}>
+          <colgroup slot="colgroup">
+            <col class="country" />
+            <col class="name" />
+            {#if is_expirable_role()}
+              <col class="until mobile-hide" />
+            {/if}
+            <col class="remove" />
+          </colgroup>
+          <tr class="row">
+            <td>
+              <Flag country_code={player.country_code} />
+            </td>
+            <td>
+              <a href="/{$page.params.lang}/registry/players/profile?id={player.id}">
+                {player.name}
+              </a>
+            </td>
+            {#if is_expirable_role()}
+              <td class="mobile-hide">
+                {#if player.expires_on}
+                  {$LL.ROLES.ROLE_EXPIRES_ON({
+                    date: new Date(player.expires_on * 1000).toLocaleString($locale, options),
+                  })}
                 {/if}
-                <td style="text-align:right;">
-                  {#if user_position < role.position}
-                    <div class="close">
-                      <CancelButton on:click={() => removeRoleFromPlayer(player)} />
-                    </div>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
+              </td>
+            {/if}
+            <td style="text-align:right;">
+              {#if user_position < role.position}
+                <div class="close">
+                  <CancelButton on:click={() => removeRoleFromPlayer(player)} />
+                </div>
+              {/if}
+            </td>
+          </tr>
         </Table>
       </div>
     </div>

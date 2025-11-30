@@ -3,7 +3,7 @@
   import type { TournamentSquad } from '$lib/types/tournament-squad';
   import { locale } from '$i18n/i18n-svelte';
   import TournamentPlayerList from './TournamentPlayerList.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import Dropdown from '../common/Dropdown.svelte';
@@ -110,115 +110,107 @@
   }
 </script>
 
-<Table>
-  <col class="id" />
-  {#if tournament.squad_tag_required}
-    <col class="tag" />
-  {/if}
-  {#if tournament.squad_name_required}
-    <col class="name" />
-  {/if}
-  <col class="players" />
-  <col class="eligible mobile-hide" />
-  <col class="date mobile-hide" />
-  {#if is_privileged}
-    <col class="actions" />
-  {/if}
-  <thead>
-    <tr>
-      <th>ID</th>
-      {#if tournament.squad_tag_required}
-        <th>{$LL.COMMON.TAG()}</th>
-      {/if}
-      {#if tournament.squad_name_required}
-        <th>
-          <button class="show-players" on:click={sortSquadsByName}>
-            {$LL.COMMON.NAME()}
-          </button>
-        </th>
-      {/if}
+<Table multiRow data={show_all ? squads : squads.slice(0, display_limit)} let:item={squad}>
+  <colgroup slot="colgroup">
+    <col class="id" />
+    {#if tournament.squad_tag_required}
+      <col class="tag" />
+    {/if}
+    {#if tournament.squad_name_required}
+      <col class="name" />
+    {/if}
+    <col class="players" />
+    <col class="eligible mobile-hide" />
+    <col class="date mobile-hide" />
+    {#if is_privileged}
+      <col class="actions" />
+    {/if}
+  </colgroup>
+  <tr slot="header">
+    <th>ID</th>
+    {#if tournament.squad_tag_required}
+      <th>{$LL.COMMON.TAG()}</th>
+    {/if}
+    {#if tournament.squad_name_required}
       <th>
-        {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
-        <button class="show-players" on:click={toggle_all_players}>
-          {all_toggle_on
-            ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS()
-            : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
+        <button class="show-players" on:click={sortSquadsByName}>
+          {$LL.COMMON.NAME()}
         </button>
       </th>
-      <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE()}</th>
-      <th class="mobile-hide">
-        <button class="show-players" on:click={sortSquadsByRegistrationDate}>
-          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_DATE()}
-        </button>
-      </th>
-      {#if is_privileged}
-        <th />
-      {/if}
-    </tr>
-  </thead>
-  <tbody>
-    {#key [squads, show_all]}
-      {#each show_all ? squads : squads.slice(0, display_limit) as squad, i (squad.id)}
-        <tr class="row-{i % 2}">
-          <td>{squad.id}</td>
-          {#if tournament.squad_tag_required}
-            <td>
-              <TagBadge tag={squad.tag} color={squad.color} />
-            </td>
-          {/if}
-          {#if tournament.squad_name_required}
-            <td>
-              {#if squad.rosters.length}
-                <a href="/{$page.params.lang}/registry/teams/profile?id={squad.rosters[0].team_id}">
-                  {squad.name}
-                </a>
-              {:else}
-                {squad.name}
-              {/if}
-            </td>
-          {/if}
-          <td
-            >{squad.players.filter((p) => !p.is_invite).length}
-            <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
-              {squad_data[squad.id].display_players ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
-            </button></td
-          >
-          <td class="mobile-hide">
-            {is_squad_eligible(squad) ? $LL.COMMON.YES() : $LL.COMMON.NO()}
-          </td>
-          <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
-          {#if is_privileged}
-            <td>
-              <ChevronDownSolid class="cursor-pointer" />
-              <Dropdown>
-                {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
-                  <DropdownItem on:click={() => add_player_dialog.open(squad)}
-                    >{$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}</DropdownItem
-                  >
-                {/if}
-                <DropdownItem on:click={() => edit_squad_dialog.open(squad)}>{$LL.COMMON.EDIT()}</DropdownItem>
-                <DropdownItem on:click={() => unregisterSquad(squad)}
-                  >{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem
-                >
-                {#if tournament.teams_allowed}
-                  <DropdownItem on:click={() => manage_rosters_dialog.open(squad)}
-                    >{$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}</DropdownItem
-                  >
-                {/if}
-              </Dropdown>
-            </td>
-          {/if}
-        </tr>
-        {#if squad_data[squad.id].display_players}
-          <tr class="inner">
-            <td colspan="10">
-              <TournamentPlayerList {tournament} players={squad.players} {is_privileged} />
-            </td>
-          </tr>
+    {/if}
+    <th>
+      {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
+      <button class="show-players" on:click={toggle_all_players}>
+        {all_toggle_on
+          ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS()
+          : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
+      </button>
+    </th>
+    <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE()}</th>
+    <th class="mobile-hide">
+      <button class="show-players" on:click={sortSquadsByRegistrationDate}>
+        {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_DATE()}
+      </button>
+    </th>
+    {#if is_privileged}
+      <th />
+    {/if}
+  </tr>
+  <tr class="row">
+    <td>{squad.id}</td>
+    {#if tournament.squad_tag_required}
+      <td>
+        <TagBadge tag={squad.tag} color={squad.color} />
+      </td>
+    {/if}
+    {#if tournament.squad_name_required}
+      <td>
+        {#if squad.rosters.length}
+          <a href="/{$page.params.lang}/registry/teams/profile?id={squad.rosters[0].team_id}">
+            {squad.name}
+          </a>
+        {:else}
+          {squad.name}
         {/if}
-      {/each}
-    {/key}
-  </tbody>
+      </td>
+    {/if}
+    <td
+      >{squad.players.filter((p) => !p.is_invite).length}
+      <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
+        {squad_data[squad.id].display_players ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
+      </button></td
+    >
+    <td class="mobile-hide">
+      {is_squad_eligible(squad) ? $LL.COMMON.YES() : $LL.COMMON.NO()}
+    </td>
+    <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
+    {#if is_privileged}
+      <td>
+        <ChevronDownSolid class="cursor-pointer" />
+        <Dropdown>
+          {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
+            <DropdownItem on:click={() => add_player_dialog.open(squad)}>
+              {$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER()}
+            </DropdownItem>
+          {/if}
+          <DropdownItem on:click={() => edit_squad_dialog.open(squad)}>{$LL.COMMON.EDIT()}</DropdownItem>
+          <DropdownItem on:click={() => unregisterSquad(squad)}>{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem>
+          {#if tournament.teams_allowed}
+            <DropdownItem on:click={() => manage_rosters_dialog.open(squad)}>
+              {$LL.TOURNAMENTS.REGISTRATIONS.MANAGE_ROSTERS()}
+            </DropdownItem>
+          {/if}
+        </Dropdown>
+      </td>
+    {/if}
+  </tr>
+  {#if squad_data[squad.id].display_players}
+    <tr class="row">
+      <td colspan="10">
+        <TournamentPlayerList {tournament} players={squad.players} {is_privileged} />
+      </td>
+    </tr>
+  {/if}
 </Table>
 
 <AddPlayerToSquad bind:this={add_player_dialog} {tournament} />

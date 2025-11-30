@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { TournamentSeries, TournamentSeriesBasic } from '$lib/types/tournaments/series/tournament-series';
   import { onMount } from 'svelte';
-  import Table from './Table.svelte';
+  import Table from './table/Table.svelte';
   import { createEventDispatcher } from 'svelte';
   import CancelButton from './buttons/CancelButton.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -68,19 +68,17 @@
     <input placeholder={$LL.TOURNAMENTS.SEARCH_SERIES()} bind:value={query} on:input={handle_search} />
     {#if show_results}
       <div class="table">
-        <Table show_padding={false}>
-          {#each results as result (result.id)}
-            <tr on:click={() => set_option(result)}>
-              <td>
-                {#if result.logo}
-                  <img src={result.logo} alt={result.series_name} />
-                {/if}
-              </td>
-              <td>
-                {result.series_name}
-              </td>
-            </tr>
-          {/each}
+        <Table containerClass="rounded-none" data={results} let:item={result}>
+          <tr class="row" on:click={() => set_option(result)}>
+            <td>
+              {#if result.logo}
+                <img src={result.logo} alt={result.series_name} />
+              {/if}
+            </td>
+            <td>
+              {result.series_name}
+            </td>
+          </tr>
         </Table>
       </div>
     {/if}

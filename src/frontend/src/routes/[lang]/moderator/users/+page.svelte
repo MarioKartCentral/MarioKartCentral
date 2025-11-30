@@ -4,7 +4,7 @@
   import type { User } from '$lib/types/user';
   import { onMount } from 'svelte';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import { page } from '$app/stores';
   import type { UserInfo } from '$lib/types/user-info';
@@ -57,47 +57,44 @@
       {$LL.MODERATOR.MANAGE_USERS.USER_COUNT({ count: total_users })}
       <PageNavigation bind:currentPage={current_page} bind:totalPages={total_pages} refresh_function={fetchData} />
       {#if total_users}
-        <Table>
-          <col class="id" />
-          <col class="email" />
-          <col class="country" />
-          <col class="name" />
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>{$LL.LOGIN.EMAIL()}</th>
-              <th />
-              <th>{$LL.COMMON.PLAYER()}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each users as u, i (u.id)}
-              <tr class="row-{i % 2}">
-                <td>
-                  <a href="/{$page.params.lang}/moderator/users/edit?id={u.id}">
-                    {u.id}
-                  </a>
-                </td>
-                <td>
-                  <a href="/{$page.params.lang}/moderator/users/edit?id={u.id}">
-                    {u.email}
-                  </a>
-                </td>
-                <td>
-                  {#if u.player}
-                    <Flag country_code={u.player.country_code} />
-                  {/if}
-                </td>
-                <td>
-                  {#if u.player}
-                    <a href="/{$page.params.lang}/registry/players/profile?id={u.player.id}">
-                      {u.player.name}
-                    </a>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
+        <Table data={users} let:item={user}>
+          <colgroup slot="colgroup">
+            <col class="id" />
+            <col class="email" />
+            <col class="country" />
+            <col class="name" />
+          </colgroup>
+          <tr slot="header">
+            <th>ID</th>
+            <th>{$LL.LOGIN.EMAIL()}</th>
+            <th />
+            <th>{$LL.COMMON.PLAYER()}</th>
+          </tr>
+
+          <tr class="row">
+            <td>
+              <a href="/{$page.params.lang}/moderator/users/edit?id={user.id}">
+                {user.id}
+              </a>
+            </td>
+            <td>
+              <a href="/{$page.params.lang}/moderator/users/edit?id={user.id}">
+                {user.email}
+              </a>
+            </td>
+            <td>
+              {#if user.player}
+                <Flag country_code={user.player.country_code} />
+              {/if}
+            </td>
+            <td>
+              {#if user.player}
+                <a href="/{$page.params.lang}/registry/players/profile?id={user.player.id}">
+                  {user.player.name}
+                </a>
+              {/if}
+            </td>
+          </tr>
         </Table>
       {/if}
     </div>
