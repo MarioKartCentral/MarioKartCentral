@@ -69,6 +69,7 @@ const fr: Translation = {
     SHOW_BUTTON: '(montrer)',
     BACK: 'Retour',
     ACTIONS: 'Actions',
+    REDIRECTING: 'Redirecting',
     SAVE: 'Sauvegarder',
     SUBMIT: 'Envoyer',
     SUBMITTING: 'Submitting',
