@@ -7,9 +7,11 @@
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import { onMount } from 'svelte';
+  import { setToastState } from '$lib/stores/toast.svelte';
+  import Toast from '$lib/components/common/toast/Toast.svelte';
 
   export let data: LayoutData;
-
+  setToastState();
   setLocale(data.locale);
 
   let user_info: UserInfo;
@@ -44,6 +46,7 @@
   </header>
   <div class="container mx-auto">
     <main>
+      <Toast />
       <slot />
     </main>
   </div>
