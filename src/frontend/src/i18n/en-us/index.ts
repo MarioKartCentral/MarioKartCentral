@@ -66,6 +66,7 @@ const en_us: BaseTranslation = {
     SHOW_BUTTON: '(show)',
     BACK: 'Back',
     ACTIONS: 'Actions',
+    REDIRECTING: 'Redirecting',
     SAVE: 'Save',
     SUBMIT: 'Submit',
     SUBMITTING: 'Submitting',
