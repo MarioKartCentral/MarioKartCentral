@@ -391,7 +391,8 @@ class RemoveExpiredRolesCommand(Command[None]):
                 for user_id, role_name, player_id in rows:
                     content_args = json.dumps({'role': role_name})
                     notif_rows.append((user_id, notifications.WARNING, notifications.ROLE_REMOVE, content_args, f'/registry/players/profile?id={player_id}', timestamp))
-            await db.execute("DELETE FROM user_roles WHERE expires_on < ?", (timestamp,))
+                if rows:
+                    await db.execute("DELETE FROM user_roles WHERE expires_on < ?", (timestamp,))
 
             # user_team_roles
             query = """SELECT utr.user_id, r.name, u.player_id, t.id, t.name FROM user_team_roles utr
