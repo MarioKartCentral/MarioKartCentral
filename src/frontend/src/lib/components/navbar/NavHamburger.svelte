@@ -6,7 +6,7 @@
   export let menu_hidden: boolean;
   export let title = 'Open main menu';
 
-  let btnClass: string = `ms-3 desktop:hidden hover:bg-gray-500 focus:outline-none focus:ring-0`;
+  let btnClass: string = `ms-3 desktop:hidden hover:bg-black/20 hover:dark:bg-black/20 focus:outline-none focus:ring-0`;
 </script>
 
 <ToolbarButton
