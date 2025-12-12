@@ -19,21 +19,13 @@
     navUrl = value;
   });
 
-  function checkSelectedNav(name: string) {
-    if ($page.data.activeNavItem === name) {
-      return 'text-white font-bold underline underline-offset-4';
-    }
-    return '';
-  }
-
   $: active = navUrl ? href === navUrl : false;
 
   $: liClass = twMerge(
-    `block py-2 pe-4 ps-3 desktop:p-0 rounded-sm desktop:border-0`,
+    `text-white block py-2 pe-4 ps-3 desktop:p-0 rounded-sm desktop:border-0`,
     active ? (activeClass ?? context.activeClass) : (nonActiveClass ?? context.nonActiveClass),
     $$props.class,
     has_dropdown ? 'cursor-pointer' : '',
-    checkSelectedNav(nav_name),
   );
 </script>
 
@@ -54,6 +46,7 @@
     on:mouseleave
     on:mouseover
     class={liClass}
+    class:active={$page.data.activeNavItem === nav_name}
   >
     <span><slot /></span>
     {#if has_dropdown}
@@ -61,3 +54,21 @@
     {/if}
   </svelte:element>
 </li>
+
+<style>
+  @media (width >= 1100px) {
+    span {
+      position: relative;
+      height: 100%;
+    }
+
+    .active > span::after {
+      position: absolute;
+      background-color: white;
+      content: '';
+      height: 3px;
+      border-radius: 3px;
+      inset: auto 0 -6px 0;
+    }
+  }
+</style>
