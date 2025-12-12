@@ -12,7 +12,7 @@
   import NavUlist from './NavUlist.svelte';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import { ChevronDownOutline, BellSolid, BellOutline } from 'flowbite-svelte-icons';
+  import { BellSolid, BellOutline } from 'flowbite-svelte-icons';
   import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, series_permissions, permissions } from '$lib/util/permissions';
   import LoginRegister from '$lib/components/login/LoginRegister.svelte';
@@ -127,7 +127,6 @@
   <NavUlist bind:menu_hidden>
     <NavLi nav_name="REGISTRY" has_dropdown>
       {$LL.NAVBAR.REGISTRY()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       <DropdownItem href="/{$page.params.lang}/registry/players">{$LL.NAVBAR.PLAYERS()}</DropdownItem>
@@ -138,7 +137,6 @@
     </Dropdown>
     <NavLi nav_name="TOURNAMENTS" has_dropdown>
       {$LL.NAVBAR.TOURNAMENTS()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       <DropdownItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENT_LISTING()}</DropdownItem>
@@ -152,7 +150,6 @@
 
     <NavLi nav_name="TIME TRIALS" has_dropdown>
       {$LL.NAVBAR.TIME_TRIALS()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       {#each Object.entries(GAMES) as [gameId, gameName] (gameId)}
@@ -175,7 +172,6 @@
 
     <NavLi has_dropdown>
       {$LL.NAVBAR.DISCORD()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       <DropdownItem href="https://discord.gg/Pgd8xr6" target="_blank">Site Discord</DropdownItem>
@@ -190,7 +186,6 @@
         {#if mod_action_count}
           <AlertCount count={mod_action_count} />
         {/if}
-        <ChevronDownOutline class="inline" />
       </NavLi>
       <ModPanel />
     {/if}

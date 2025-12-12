@@ -2,6 +2,7 @@
   import { getContext } from 'svelte';
   import { twMerge } from 'tailwind-merge';
   import type { NavbarLiType } from 'flowbite-svelte/NavUl.svelte';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import { page } from '$app/stores';
 
   export let nav_name = '';
@@ -54,6 +55,9 @@
     on:mouseover
     class={liClass}
   >
-    <slot />
+    <span><slot /></span>
+    {#if has_dropdown}
+      <ChevronDownOutline class="inline" />
+    {/if}
   </svelte:element>
 </li>
