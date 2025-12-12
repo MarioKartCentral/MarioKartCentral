@@ -66,15 +66,17 @@
     <div class="nav-user-bar">
       <LanguagePicker />
     </div>
-    <div class="nav-user-bar cursor-pointer relative">
-      {#if unread_count}
-        <BellSolid size="lg" class="text-yellow-400" />
-        <AlertCount count={unread_count} placement="top-right" />
-      {:else}
-        <BellOutline size="lg" class="text-gray-300" />
-      {/if}
-    </div>
-    <Notification bind:this={notify} />
+    {#if user_info.id !== null}
+      <div class="nav-user-bar cursor-pointer relative">
+        {#if unread_count}
+          <BellSolid size="lg" class="text-yellow-400" />
+          <AlertCount count={unread_count} placement="top-right" />
+        {:else}
+          <BellOutline size="lg" class="text-gray-300" />
+        {/if}
+      </div>
+      <Notification bind:this={notify} />
+    {/if}
     {#if user_info.is_checked}
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">
