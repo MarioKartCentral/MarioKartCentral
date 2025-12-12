@@ -37,9 +37,9 @@
 </script>
 
 <button class="flex items-center rounded-md focus:outline-none focus:ring-0">
-  <GlobeSolid size="md" class="md:mr-2 text-gray-300" />
-  <span class="hidden md:inline text-white">{currentLanguage.nativeName}</span>
-  <ChevronDownSolid size="sm" class="hidden md:inline ml-1 text-white" />
+  <GlobeSolid size="md" class="text-gray-300" />
+  <span class="hidden text-white xl:inline xl:ml-2">{currentLanguage.nativeName}</span>
+  <ChevronDownSolid size="sm" class="hidden xl:inline ml-1 text-white" />
 </button>
 <Dropdown>
   {#each sortedLanguages as l (l.value)}
