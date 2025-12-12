@@ -63,7 +63,7 @@
     </NavBrand>
   </div>
   <div class="flex items-center desktop:order-2">
-    <div class="nav-user-bar cursor-pointer">
+    <div class="nav-user-bar">
       <LanguagePicker />
     </div>
     <div class="nav-user-bar cursor-pointer relative">
