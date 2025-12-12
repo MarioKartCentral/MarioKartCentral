@@ -81,7 +81,7 @@
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">
           <Avatar size="sm" src={avatar_url} />
-          <div class="username hidden sm:block">
+          <div class="username hidden xl:block">
             {user_info.player.name}
           </div>
         </div>
