@@ -3000,6 +3000,11 @@ type RootTranslation = {
 		 */
 		TITLE: string
 		/**
+		 * {​g​a​m​e​}​ ​T​i​m​e​ ​T​r​i​a​l​s
+		 * @param {string} game
+		 */
+		GAME_TITLE: RequiredParams<'game'>
+		/**
 		 * B​r​o​w​s​e​ ​l​e​a​d​e​r​b​o​a​r​d​s​,​ ​s​u​b​m​i​t​ ​y​o​u​r​ ​r​e​c​o​r​d​s​,​ ​a​n​d​ ​c​o​m​p​e​t​e​ ​f​o​r​ ​t​h​e​ ​t​o​p​ ​s​p​o​t​s​ ​i​n​ ​M​a​r​i​o​ ​K​a​r​t​ ​t​i​m​e​ ​t​r​i​a​l​s​ ​a​c​r​o​s​s​ ​v​a​r​i​o​u​s​ ​g​a​m​e​s​.
 		 */
 		DESCRIPTION: string
@@ -3032,6 +3037,11 @@ type RootTranslation = {
 		 * @param {string} game
 		 */
 		GAME_LEADERBOARD_TITLE: RequiredParams<'game'>
+		/**
+		 * {​g​a​m​e​}​ ​L​e​a​d​e​r​b​o​a​r​d​s
+		 * @param {string} game
+		 */
+		GAME_LEADERBOARDS: RequiredParams<'game'>
 		/**
 		 * {​t​r​a​c​k​}​ ​-​ ​{​c​a​t​e​g​o​r​y​}​ ​(​{​g​a​m​e​}​)
 		 * @param {string} category
@@ -3284,6 +3294,10 @@ type RootTranslation = {
 		 */
 		PROOF_EVIDENCE: string
 		/**
+		 * P​r​o​o​f
+		 */
+		PROOF: string
+		/**
 		 * W​a​t​c​h​ ​V​i​d​e​o
 		 */
 		WATCH_VIDEO: string
@@ -3315,6 +3329,60 @@ type RootTranslation = {
 		 * N​o​ ​e​v​i​d​e​n​c​e​ ​U​R​L​ ​p​r​o​v​i​d​e​d
 		 */
 		NO_EVIDENCE_PROVIDED: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​A​l​l​ ​G​a​m​e​s
+		 */
+		BACK_TO_ALL_GAMES: string
+		/**
+		 * S​e​a​r​c​h​ ​f​o​r​ ​a​ ​p​l​a​y​e​r​ ​t​o​ ​v​i​e​w​ ​t​h​e​i​r​ ​t​i​m​e​s​h​e​e​t
+		 */
+		SEARCH_FOR_A_PLAYER: string
+		/**
+		 * P​l​a​y​e​r
+		 */
+		PLAYER: string
+		/**
+		 * S​e​a​r​c​h​ ​f​o​r​ ​a​ ​p​l​a​y​e​r​ ​a​b​o​v​e​ ​t​o​ ​v​i​e​w​ ​t​h​e​i​r​ ​t​i​m​e​s​h​e​e​t​.
+		 */
+		SEARCH_FOR_A_PLAYER_ABOVE: string
+		/**
+		 * L​o​g​i​n​ ​t​o​ ​S​u​b​m​i​t
+		 */
+		LOGIN_TO_SUBMIT: string
+		/**
+		 * N​o​ ​r​e​c​o​r​d​s​ ​f​o​u​n​d​ ​f​o​r​ ​t​h​i​s​ ​t​r​c​k​ ​w​i​t​h​ ​t​h​e​ ​s​e​l​e​c​t​e​d​ ​f​i​l​t​e​r​s
+		 */
+		NO_RECORDS_FOUND: string
+		/**
+		 * B​a​c​k​ ​t​o​ ​G​a​m​e​ ​h​o​m​e​p​a​g​e
+		 */
+		BACK_TO_GAME_HOMEPAGE: string
+		SHOW_TIMES: {
+			/**
+			 * S​h​o​w​ ​t​i​m​e​s​ ​p​e​n​d​i​n​g​ ​v​a​l​i​d​a​t​i​o​n
+			 */
+			PENDING_VALIDATION: string
+			/**
+			 * I​n​c​l​u​d​e​ ​t​i​m​e​s​ ​a​w​a​i​t​i​n​g​ ​v​a​l​i​d​a​t​i​o​n​ ​r​e​v​i​e​w
+			 */
+			INCLUDE_AWAITING_VALIDATION: string
+			/**
+			 * S​h​o​w​ ​t​i​m​e​s​ ​w​i​t​h​o​u​t​ ​p​r​o​o​f
+			 */
+			PENDING_WITHOUT_PROOF: string
+			/**
+			 * I​n​c​l​u​d​e​ ​t​i​m​e​s​ ​s​u​b​m​i​t​t​e​d​ ​w​i​t​h​o​u​t​ ​e​v​i​d​e​n​c​e
+			 */
+			INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: string
+			/**
+			 * S​h​o​w​ ​o​u​t​d​a​t​e​d​ ​t​i​m​e​s
+			 */
+			OUTDATED: string
+			/**
+			 * I​n​c​l​u​d​e​ ​o​l​d​e​r​ ​s​u​b​m​i​s​s​i​o​n​s​ ​t​h​a​t​ ​h​a​v​e​ ​b​e​e​n​ ​b​e​a​t​e​n
+			 */
+			INCLUDE_OLDER_SUBMISSIONS: string
+		}
 	}
 	TOURNAMENTS: {
 		/**
@@ -8441,6 +8509,10 @@ export type TranslationFunctions = {
 		 */
 		TITLE: () => LocalizedString
 		/**
+		 * {game} Time Trials
+		 */
+		GAME_TITLE: (arg: { game: string }) => LocalizedString
+		/**
 		 * Browse leaderboards, submit your records, and compete for the top spots in Mario Kart time trials across various games.
 		 */
 		DESCRIPTION: () => LocalizedString
@@ -8472,6 +8544,10 @@ export type TranslationFunctions = {
 		 * {game} Leaderboard
 		 */
 		GAME_LEADERBOARD_TITLE: (arg: { game: string }) => LocalizedString
+		/**
+		 * {game} Leaderboards
+		 */
+		GAME_LEADERBOARDS: (arg: { game: string }) => LocalizedString
 		/**
 		 * {track} - {category} ({game})
 		 */
@@ -8717,6 +8793,10 @@ export type TranslationFunctions = {
 		 */
 		PROOF_EVIDENCE: () => LocalizedString
 		/**
+		 * Proof
+		 */
+		PROOF: () => LocalizedString
+		/**
 		 * Watch Video
 		 */
 		WATCH_VIDEO: () => LocalizedString
@@ -8748,6 +8828,60 @@ export type TranslationFunctions = {
 		 * No evidence URL provided
 		 */
 		NO_EVIDENCE_PROVIDED: () => LocalizedString
+		/**
+		 * Back to All Games
+		 */
+		BACK_TO_ALL_GAMES: () => LocalizedString
+		/**
+		 * Search for a player to view their timesheet
+		 */
+		SEARCH_FOR_A_PLAYER: () => LocalizedString
+		/**
+		 * Player
+		 */
+		PLAYER: () => LocalizedString
+		/**
+		 * Search for a player above to view their timesheet.
+		 */
+		SEARCH_FOR_A_PLAYER_ABOVE: () => LocalizedString
+		/**
+		 * Login to Submit
+		 */
+		LOGIN_TO_SUBMIT: () => LocalizedString
+		/**
+		 * No records found for this trck with the selected filters
+		 */
+		NO_RECORDS_FOUND: () => LocalizedString
+		/**
+		 * Back to Game homepage
+		 */
+		BACK_TO_GAME_HOMEPAGE: () => LocalizedString
+		SHOW_TIMES: {
+			/**
+			 * Show times pending validation
+			 */
+			PENDING_VALIDATION: () => LocalizedString
+			/**
+			 * Include times awaiting validation review
+			 */
+			INCLUDE_AWAITING_VALIDATION: () => LocalizedString
+			/**
+			 * Show times without proof
+			 */
+			PENDING_WITHOUT_PROOF: () => LocalizedString
+			/**
+			 * Include times submitted without evidence
+			 */
+			INCLUDE_SUBMITTED_WITHOUT_EVIDENCE: () => LocalizedString
+			/**
+			 * Show outdated times
+			 */
+			OUTDATED: () => LocalizedString
+			/**
+			 * Include older submissions that have been beaten
+			 */
+			INCLUDE_OLDER_SUBMISSIONS: () => LocalizedString
+		}
 	}
 	TOURNAMENTS: {
 		/**
