@@ -262,6 +262,10 @@ type RootTranslation = {
 		 */
 		ACTIONS: string
 		/**
+		 * R​e​d​i​r​e​c​t​i​n​g
+		 */
+		REDIRECTING: string
+		/**
 		 * S​a​v​e
 		 */
 		SAVE: string
@@ -5876,6 +5880,10 @@ export type TranslationFunctions = {
 		 * Actions
 		 */
 		ACTIONS: () => LocalizedString
+		/**
+		 * Redirecting
+		 */
+		REDIRECTING: () => LocalizedString
 		/**
 		 * Save
 		 */
