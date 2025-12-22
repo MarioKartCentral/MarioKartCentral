@@ -71,7 +71,7 @@ services:
       - ./src/backend:/usr/src/app
     depends_on:
       - aspire-dashboard
-    
+
   frontend:
     build: ./src/frontend
     ports:
@@ -133,7 +133,7 @@ services:
       MP_DATABASE: /data/mailpit.db
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-      
+
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
     container_name: aspire-dashboard
@@ -141,7 +141,6 @@ services:
       - 18888:18888 # Dashboard UI
     environment:
       - ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
-
 
 volumes:
   mkc-db:

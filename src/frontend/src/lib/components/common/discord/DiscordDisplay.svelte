@@ -5,13 +5,14 @@
   import { Popover } from 'flowbite-svelte';
 
   export let discord: Discord | null;
+  export let enableUserIdToggle: boolean = false;
 </script>
 
 {#if discord}
   <div id="name">
-    <DiscordName {discord} />
+    <DiscordName {discord} {enableUserIdToggle} />
   </div>
   <Popover class="bg-gray-600 text-white">
-    <DiscordUser {discord} />
+    <DiscordUser {discord} displayJoinDate />
   </Popover>
 {/if}
