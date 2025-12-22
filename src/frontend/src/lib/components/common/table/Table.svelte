@@ -46,16 +46,3 @@
     {/if}
   </table>
 </div>
-
-<style>
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: small;
-    text-align: left;
-    word-break: break-word;
-  }
-  thead {
-    background-color: #3c7b53;
-  }
-</style>

@@ -1,3 +1,15 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: small;
+  text-align: left;
+  word-break: break-word;
+}
+
+table thead {
+  background-color: #3c7b53;
+}
+
 table th {
   padding: 5px 10px;
 }
