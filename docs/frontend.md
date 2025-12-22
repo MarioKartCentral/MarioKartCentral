@@ -644,8 +644,70 @@ Svelte stores are a mechanism for managing reactive state that can be shared acr
 Our main stores include:
 - `user`: Contains authentication state, user info, and permissions
 - `have_unread_notification`: Tracks unread notification count
+- `toast`: Displays API responses
 
 For more advanced usage, see the [Svelte store documentation](https://svelte.dev/tutorial/writable-stores).
+
+#### Toast Store
+Toast notifications are short-lived messages that display on-screen following interactions with the API. We communicate responses from the API to the user via the toast store. This uses a class-based store in conjunction with Svelte's [Context API](https://svelte.dev/tutorial/svelte/context-api). Notifications will be displayed via the `<Toast />` component which lives inside the root's `+layout.svelte`.
+
+To add a notification to the toast, retrieve the class instance by importing the `getToastState` function from `/src/lib/stores/toast.svelte.ts` and call the `push` method. This method accepts an object with the following properties:
+- `message` string
+- `color` string
+  - Current supported values are `success` and `danger`.
+- `redirect` object *optional*
+  - In some cases we may want to redirect the user to a different page after an action is complete.
+  - `href` string
+  - `isCancellable` boolean
+- `duration` number *optional*
+  - In milliseconds, the time we want to display the notification. If `redirect` is supplied, this will occur at the end of this duration unless cancelled by the user.
+  - Defaults to 3000ms for redirects and 10000ms otherwise.
+
+```svelte
+<script lang="ts">
+  import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
+  import { getToastState } from '$lib/stores/toast.svelte';
+  const toast = getToastState();
+  const tournamentId: string | null = $page.url.searchParams.get('id');
+
+  async function registerForTournament(tournamentId: number, payload: object) {
+    const response = await fetch(`/api/tournaments/${tournamentId}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      toast.push({
+        message: `${$LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_FAILED()}: ${result.title}`,
+        color: 'danger',
+      });
+      return;
+    }
+
+    toast.push({
+      message: $LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TOURNAMENT_SUCCESS(),
+      color: 'success',
+      redirect: {
+        href: `/${$page.params.lang}/tournaments/${tournamentId}`,
+        isCancellable: false,
+      },
+      duration: 2500,
+    });
+  }
+</script>
+
+{#if tournamentId}
+  <button
+    on:click={() =>
+      registerForTournament(Number(tournamentId), { selected_fc_id: 1, mii_name: 'Player', can_host: true })}
+  >
+    {$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}
+  </button>
+{/if}
+```
 
 ### API Communication
 
