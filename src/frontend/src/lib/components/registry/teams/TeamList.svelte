@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Team, TeamList } from '$lib/types/team';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import RosterList from '$lib/components/registry/teams/RosterList.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
@@ -131,49 +131,45 @@
 </form>
 {$LL.TEAMS.LIST.TEAM_COUNT({ count: totalTeams })}
 <PageNavigation bind:currentPage={filters.page} bind:totalPages refresh_function={fetchData} />
-<Table>
-  <col class="tag" />
-  <col class="name" />
-  <col class="rosters" />
-  <col class="registration_date" />
-  <thead>
-    <tr>
-      <th>{$LL.COMMON.TAG()}</th>
-      <th>{$LL.COMMON.NAME()}</th>
-      <th>{$LL.TEAMS.LIST.ROSTERS()}</th>
-      <th>{$LL.TEAMS.LIST.REGISTERED()}</th>
+<Table data={teams} let:item={team} multiRow>
+  <colgroup slot="colgroup">
+    <col class="tag" />
+    <col class="name" />
+    <col class="rosters" />
+    <col class="registration_date" />
+  </colgroup>
+  <tr slot="header">
+    <th>{$LL.COMMON.TAG()}</th>
+    <th>{$LL.COMMON.NAME()}</th>
+    <th>{$LL.TEAMS.LIST.ROSTERS()}</th>
+    <th>{$LL.TEAMS.LIST.REGISTERED()}</th>
+  </tr>
+  <tr class="row">
+    <td>
+      <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
+        <TagBadge tag={team.tag} color={team.color} />
+      </a>
+    </td>
+    <td>
+      <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
+    </td>
+    <td>
+      {sortFilterRosters(team.rosters).length}
+      <button class="show-hide" on:click={() => toggle_show_rosters(team.id)}>
+        {show_rosters[team.id] ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
+      </button>
+    </td>
+    <td>
+      {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
+    </td>
+  </tr>
+  {#if show_rosters[team.id]}
+    <tr class="row">
+      <td colspan="10">
+        <RosterList {team} />
+      </td>
     </tr>
-  </thead>
-  <tbody>
-    {#each teams as team, i (team.id)}
-      <tr class="row-{i % 2}">
-        <td>
-          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">
-            <TagBadge tag={team.tag} color={team.color} />
-          </a>
-        </td>
-        <td>
-          <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{team.name}</a>
-        </td>
-        <td>
-          {sortFilterRosters(team.rosters).length}
-          <button class="show-hide" on:click={() => toggle_show_rosters(team.id)}>
-            {show_rosters[team.id] ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
-          </button>
-        </td>
-        <td>
-          {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
-        </td>
-      </tr>
-      {#if show_rosters[team.id]}
-        <tr class="inner">
-          <td colspan="10">
-            <RosterList {team} />
-          </td>
-        </tr>
-      {/if}
-    {/each}
-  </tbody>
+  {/if}
 </Table>
 <PageNavigation bind:currentPage={filters.page} bind:totalPages refresh_function={fetchData} />
 

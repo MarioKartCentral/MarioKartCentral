@@ -1,0 +1,59 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: small;
+  text-align: left;
+  word-break: break-word;
+}
+
+table thead {
+  background-color: #3c7b53;
+}
+
+table th {
+  padding: 5px 10px;
+}
+
+table td {
+  padding: 10px;
+  text-align: left;
+}
+
+table[data-multi-row='false'] > tbody > tr:not(:last-child),
+table[data-multi-row='true'] > tbody:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+table[data-multi-row='false'] > tbody > tr.row:nth-child(even),
+table[data-multi-row='true'] > tbody:nth-of-type(even) {
+  background-color: rgba(235, 255, 255, 0.15);
+}
+
+table[data-multi-row='false'] > tbody > tr.row:nth-child(odd),
+table[data-multi-row='true'] > tbody:nth-of-type(odd) {
+  background-color: rgba(235, 255, 255, 0.1);
+}
+
+/* Style for a table row containing the logged in user */
+table tr.me {
+  background-color: theme('colors.primary.200'/ 30%) !important;
+}
+
+.gold {
+  background-color: rgba(255, 254, 149, 0.3) !important;
+  color: #fffab0;
+}
+.silver {
+  background-color: rgba(195, 255, 255, 0.3) !important;
+  color: #dcfffc;
+}
+.bronze {
+  background-color: rgba(255, 158, 110, 0.3) !important;
+  color: #ffcbae;
+}
+
+@media (max-width: 1024px) {
+  table .mobile-hide {
+    display: none;
+  }
+}

@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import LL from '$i18n/i18n-svelte';
   import type { PlayerUserLogins } from '$lib/types/logins';
-  import Table from '../common/Table.svelte';
+  import Table from '../common/table/Table.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import Button from '../common/buttons/Button.svelte';
   import { page } from '$app/stores';
@@ -54,121 +54,119 @@
 
 <Dialog bind:this={login_dialog} header={$LL.MODERATOR.ALT_DETECTION.LOGIN_HISTORY()}>
   {#if logins}
-    <Table>
-      <col class="date" />
-      <col class="fingerprint" />
-      <col class="ip-show" />
-      <col class="previous-cookie mobile-hide" />
-      <col class="logout-date mobile-hide" />
-      <thead>
-        <tr>
-          <th>{$LL.COMMON.DATE()}</th>
-          <th>{$LL.MODERATOR.ALT_DETECTION.FINGERPRINT()}</th>
-          <th>{$LL.MODERATOR.ALT_DETECTION.IP_ADDRESS()}</th>
-          <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.PREVIOUS_COOKIE()}</th>
-          <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.LOGOUT_DATE()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each logins.logins as login, i (login.id)}
-          <tr class="row-{i % 2}">
-            <td>{new Date(login.date * 1000).toLocaleString($locale, options)}</td>
-            {#if check_permission(user_info, permissions.view_fingerprints)}
-              <td>
-                <Button href="/{$page.params.lang}/moderator/fingerprints?hash={login.fingerprint}">
-                  {$LL.COMMON.VIEW()}
-                </Button>
-              </td>
+    <Table data={logins.logins} let:item={login} let:idx>
+      <colgroup slot="colgroup">
+        <col class="date" />
+        <col class="fingerprint" />
+        <col class="ip-show" />
+        <col class="previous-cookie mobile-hide" />
+        <col class="logout-date mobile-hide" />
+      </colgroup>
+      <tr slot="header">
+        <th>{$LL.COMMON.DATE()}</th>
+        <th>{$LL.MODERATOR.ALT_DETECTION.FINGERPRINT()}</th>
+        <th>{$LL.MODERATOR.ALT_DETECTION.IP_ADDRESS()}</th>
+        <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.PREVIOUS_COOKIE()}</th>
+        <th class="mobile-hide">{$LL.MODERATOR.ALT_DETECTION.LOGOUT_DATE()}</th>
+      </tr>
+      <tr class="row">
+        <td>{new Date(login.date * 1000).toLocaleString($locale, options)}</td>
+        {#if check_permission(user_info, permissions.view_fingerprints)}
+          <td>
+            <Button href="/{$page.params.lang}/moderator/fingerprints?hash={login.fingerprint}">
+              {$LL.COMMON.VIEW()}
+            </Button>
+          </td>
+        {:else}
+          <td>
+            {login.fingerprint}
+          </td>
+        {/if}
+        <td>
+          <Button on:click={() => toggle_ip(idx)}>
+            {#if show_ips.has(idx)}
+              {$LL.COMMON.HIDE()}
             {:else}
-              <td>
-                {login.fingerprint}
-              </td>
+              {$LL.COMMON.SHOW()}
             {/if}
-            <td>
-              <Button on:click={() => toggle_ip(i)}>
-                {#if show_ips.has(i)}
-                  {$LL.COMMON.HIDE()}
-                {:else}
-                  {$LL.COMMON.SHOW()}
-                {/if}
-              </Button>
-            </td>
-            <td class="mobile-hide">
-              {#if login.had_persistent_session}
-                {$LL.COMMON.YES()}
-              {:else}
-                {$LL.COMMON.NO()}
-              {/if}
-            </td>
-            <td class="mobile-hide">
-              {#if login.logout_date}
-                {new Date(login.logout_date * 1000).toLocaleString($locale, options)}
-              {:else}
-                -
-              {/if}
-            </td>
-          </tr>
-          {#if show_ips.has(i)}
-            <tr class="row-{i % 2}">
-              <td colspan="10">
-                <Table>
-                  <col class="ip-id mobile-hide" />
-                  {#if login.ip_address.ip_address}
-                    <col class="ip-address" />
-                  {/if}
-                  <col class="country mobile-hide" />
-                  <col class="is-mobile" />
-                  <col class="is-vpn" />
-                  <thead>
-                    <tr>
-                      <th class="mobile-hide">ID</th>
-                      {#if login.ip_address.ip_address}
-                        <th>{$LL.MODERATOR.ALT_DETECTION.IP_ADDRESS()}</th>
-                      {/if}
-                      <th class="mobile-hide">{$LL.COMMON.COUNTRY()}</th>
-                      <th>{$LL.MODERATOR.ALT_DETECTION.MOBILE()}</th>
-                      <th>{$LL.MODERATOR.ALT_DETECTION.VPN()}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="mobile-hide">
-                        <a href="/{$page.params.lang}/moderator/ip_history?id={login.ip_address.id}">
-                          {login.ip_address.id}
-                        </a>
-                      </td>
-                      {#if login.ip_address.ip_address}
-                        <td>
-                          <a href="/{$page.params.lang}/moderator/ip_history?id={login.ip_address.id}">
-                            {login.ip_address.ip_address}
-                          </a>
-                        </td>
-                      {/if}
-                      <td class="mobile-hide">
-                        {login.ip_address.country}
-                      </td>
-                      <td>
-                        {#if login.ip_address.is_mobile}
-                          {$LL.COMMON.YES()}
-                        {:else}
-                          {$LL.COMMON.NO()}
-                        {/if}
-                      </td>
-                      <td>
-                        {#if login.ip_address.is_vpn}
-                          {$LL.COMMON.YES()}
-                        {:else}
-                          {$LL.COMMON.NO()}
-                        {/if}
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </td>
-            </tr>
+          </Button>
+        </td>
+        <td class="mobile-hide">
+          {#if login.had_persistent_session}
+            {$LL.COMMON.YES()}
+          {:else}
+            {$LL.COMMON.NO()}
           {/if}
-        {/each}
-      </tbody>
+        </td>
+        <td class="mobile-hide">
+          {#if login.logout_date}
+            {new Date(login.logout_date * 1000).toLocaleString($locale, options)}
+          {:else}
+            -
+          {/if}
+        </td>
+      </tr>
+      {#if show_ips.has(idx)}
+        <tr class="row">
+          <td colspan="10">
+            <table>
+              <colgroup>
+                <col class="ip-id mobile-hide" />
+                {#if login.ip_address.ip_address}
+                  <col class="ip-address" />
+                {/if}
+                <col class="country mobile-hide" />
+                <col class="is-mobile" />
+                <col class="is-vpn" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="mobile-hide">ID</th>
+                  {#if login.ip_address.ip_address}
+                    <th>{$LL.MODERATOR.ALT_DETECTION.IP_ADDRESS()}</th>
+                  {/if}
+                  <th class="mobile-hide">{$LL.COMMON.COUNTRY()}</th>
+                  <th>{$LL.MODERATOR.ALT_DETECTION.MOBILE()}</th>
+                  <th>{$LL.MODERATOR.ALT_DETECTION.VPN()}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="mobile-hide">
+                    <a href="/{$page.params.lang}/moderator/ip_history?id={login.ip_address.id}">
+                      {login.ip_address.id}
+                    </a>
+                  </td>
+                  {#if login.ip_address.ip_address}
+                    <td>
+                      <a href="/{$page.params.lang}/moderator/ip_history?id={login.ip_address.id}">
+                        {login.ip_address.ip_address}
+                      </a>
+                    </td>
+                  {/if}
+                  <td class="mobile-hide">
+                    {login.ip_address.country}
+                  </td>
+                  <td>
+                    {#if login.ip_address.is_mobile}
+                      {$LL.COMMON.YES()}
+                    {:else}
+                      {$LL.COMMON.NO()}
+                    {/if}
+                  </td>
+                  <td>
+                    {#if login.ip_address.is_vpn}
+                      {$LL.COMMON.YES()}
+                    {:else}
+                      {$LL.COMMON.NO()}
+                    {/if}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      {/if}
     </Table>
   {/if}
 </Dialog>

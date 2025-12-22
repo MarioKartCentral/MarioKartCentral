@@ -2,7 +2,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import type { TournamentSquad } from '$lib/types/tournament-squad';
   import TournamentPlayerList from '$lib/components/tournaments/TournamentPlayerList.svelte';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
@@ -103,68 +103,64 @@
   }
 </script>
 
-<Table>
-  <col class="id" />
-  {#if tournament.squad_tag_required}
-    <col class="tag" />
-  {/if}
-  {#if tournament.squad_name_required}
-    <col class="name" />
-  {/if}
-  <col class="players" />
-  <col class="accept" />
-  <thead>
-    <tr>
-      <th>ID</th>
-      {#if tournament.squad_tag_required}
-        <th>{$LL.COMMON.TAG()}</th>
-      {/if}
-      {#if tournament.squad_name_required}
-        <th>{$LL.COMMON.NAME()}</th>
-      {/if}
-      <th>
-        {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
-        <button class="show-players" on:click={toggle_all_players}>
-          {all_toggle_on
-            ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS()
-            : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
-        </button>
-      </th>
-      <th>{$LL.INVITES.ACCEPT()}</th>
+<Table multiRow data={squads} let:item={squad}>
+  <colgroup slot="colgroup">
+    <col class="id" />
+    {#if tournament.squad_tag_required}
+      <col class="tag" />
+    {/if}
+    {#if tournament.squad_name_required}
+      <col class="name" />
+    {/if}
+    <col class="players" />
+    <col class="accept" />
+  </colgroup>
+  <tr slot="header">
+    <th>ID</th>
+    {#if tournament.squad_tag_required}
+      <th>{$LL.COMMON.TAG()}</th>
+    {/if}
+    {#if tournament.squad_name_required}
+      <th>{$LL.COMMON.NAME()}</th>
+    {/if}
+    <th>
+      {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
+      <button class="show-players" on:click={toggle_all_players}>
+        {all_toggle_on
+          ? $LL.TOURNAMENTS.REGISTRATIONS.HIDE_ALL_PLAYERS()
+          : $LL.TOURNAMENTS.REGISTRATIONS.SHOW_ALL_PLAYERS()}
+      </button>
+    </th>
+    <th>{$LL.INVITES.ACCEPT()}</th>
+  </tr>
+  <tr class="row">
+    <td>{squad.id}</td>
+    {#if tournament.squad_tag_required}
+      <td>
+        <TagBadge tag={squad.tag} color={squad.color} />
+      </td>
+    {/if}
+    {#if tournament.squad_name_required}
+      <td>{squad.name}</td>
+    {/if}
+    <td>
+      {squad.players.filter((p) => !p.is_invite).length}
+      <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
+        {squad_data[squad.id].display_players ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
+      </button>
+    </td>
+    <td>
+      <ConfirmButton on:click={() => inviteDialog(squad)} />
+      <CancelButton on:click={() => declineInvite(squad)} />
+    </td>
+  </tr>
+  {#if squad_data[squad.id].display_players}
+    <tr class="row">
+      <td colspan="10">
+        <TournamentPlayerList {tournament} players={squad.players} />
+      </td>
     </tr>
-  </thead>
-  <tbody>
-    {#each squads as squad, i (squad.id)}
-      <tr class="row-{i % 2}">
-        <td>{squad.id}</td>
-        {#if tournament.squad_tag_required}
-          <td>
-            <TagBadge tag={squad.tag} color={squad.color} />
-          </td>
-        {/if}
-        {#if tournament.squad_name_required}
-          <td>{squad.name}</td>
-        {/if}
-        <td
-          >{squad.players.filter((p) => !p.is_invite).length}
-          <button class="show-players" on:click={() => toggle_show_players(squad.id)}>
-            {squad_data[squad.id].display_players ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
-          </button></td
-        >
-        <td>
-          <ConfirmButton on:click={() => inviteDialog(squad)} />
-          <CancelButton on:click={() => declineInvite(squad)} />
-        </td>
-      </tr>
-      {#if squad_data[squad.id].display_players}
-        <tr class="inner">
-          <td colspan="10">
-            <TournamentPlayerList {tournament} players={squad.players} />
-          </td>
-        </tr>
-      {/if}
-    {/each}
-  </tbody>
+  {/if}
 </Table>
 
 <Dialog bind:this={accept_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.ACCEPT_SQUAD_INVITE()}>
