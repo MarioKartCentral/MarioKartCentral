@@ -1,7 +1,7 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import type { Team } from '$lib/types/team';
-  import TeamSearch from '$lib/components/common/TeamSearch.svelte';
+  import TeamSearch from '$lib/components/common/search/TeamSearch.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import { user } from '$lib/stores/stores';
@@ -53,13 +53,13 @@
         <div>
           {$LL.MODERATOR.OLD_TEAM()}:
         </div>
-        <TeamSearch bind:team={from_team} />
+        <TeamSearch bind:team={from_team} isActive isHistorical={false} />
       </div>
 
       {#if from_team}
         <div class="option">
           <div>{$LL.MODERATOR.NEW_TEAM()}:</div>
-          <TeamSearch bind:team={to_team} />
+          <TeamSearch bind:team={to_team} isActive isHistorical={false} />
         </div>
       {/if}
       {#if to_team}
