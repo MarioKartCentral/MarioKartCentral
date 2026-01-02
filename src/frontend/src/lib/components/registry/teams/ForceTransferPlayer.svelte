@@ -2,7 +2,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import type { PlayerRoster } from '$lib/types/player-roster';
-  import RosterSearch from '$lib/components/common/RosterSearch.svelte';
+  import RosterSearch from '$lib/components/common/search/RosterSearch.svelte';
   import type { TeamRoster } from '$lib/types/team-roster';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -103,7 +103,14 @@
     <div class="item">
       <div>{$LL.MODERATOR.NEW_ROSTER()}</div>
       {#key from_roster}
-        <RosterSearch bind:roster={to_roster} game={from_roster?.game} mode={from_roster?.mode} />
+        <RosterSearch
+          bind:roster={to_roster}
+          game={from_roster?.game}
+          mode={from_roster?.mode}
+          showId
+          isActive
+          isHistorical={false}
+        />
       {/key}
     </div>
     {#if !from_roster && to_roster?.game === 'mkw'}
