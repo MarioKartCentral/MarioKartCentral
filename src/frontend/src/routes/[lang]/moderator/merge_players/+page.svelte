@@ -1,7 +1,7 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import { user } from '$lib/stores/stores';
@@ -55,7 +55,7 @@
         <div>
           {$LL.MODERATOR.OLD_PLAYER()}:
         </div>
-        <PlayerSearch bind:player={from_player} />
+        <PlayerSearch bind:player={from_player} showId showFriendCode showProfileLink isShadow={false} />
       </div>
 
       {#if from_player}
@@ -63,7 +63,7 @@
           <div>
             {$LL.MODERATOR.NEW_PLAYER()}
           </div>
-          <PlayerSearch bind:player={to_player} />
+          <PlayerSearch bind:player={to_player} showId showFriendCode showProfileLink isShadow={false} />
         </div>
       {/if}
       {#if to_player}

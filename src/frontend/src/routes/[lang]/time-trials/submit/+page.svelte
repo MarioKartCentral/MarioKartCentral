@@ -17,7 +17,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import Input from '$lib/components/common/Input.svelte';
   import Section from '$lib/components/common/Section.svelte';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
   import type { ProofRequestData } from '$lib/types/time-trials';
 
@@ -251,7 +251,7 @@
         <div class="option">
           <label for="player">Submit for Player</label>
           <div class="flex-1">
-            <PlayerSearch bind:player={selectedPlayer} />
+            <PlayerSearch bind:player={selectedPlayer} showFriendCode showProfileLink isShadow={false} />
             {#if !selectedPlayer}
               <p class="text-sm text-gray-400 mt-1 ml-2">Leave empty to submit for yourself</p>
             {/if}

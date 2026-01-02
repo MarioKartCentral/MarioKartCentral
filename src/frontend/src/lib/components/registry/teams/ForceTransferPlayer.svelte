@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PlayerInfo } from '$lib/types/player-info';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import type { PlayerRoster } from '$lib/types/player-roster';
   import RosterSearch from '$lib/components/common/RosterSearch.svelte';
   import type { TeamRoster } from '$lib/types/team-roster';
@@ -8,6 +8,7 @@
   import LL from '$i18n/i18n-svelte';
 
   let player: PlayerInfo | null = null;
+  let playerRosters: PlayerRoster[] = [];
   let from_roster: PlayerRoster | null = null;
   let to_roster: TeamRoster | null = null;
   let is_bagger: boolean = false;
@@ -24,7 +25,8 @@
     }
   }
 
-  async function getPlayerRosters() {
+  async function getPlayerRosters(player: PlayerInfo | null) {
+    playerRosters = [];
     if (!player) {
       from_roster = null;
       to_roster = null;
@@ -37,8 +39,7 @@
       return;
     }
     const body: PlayerInfo = await res.json();
-    player.rosters = body.rosters;
-    player = player;
+    playerRosters = body.rosters;
   }
 
   async function transferPlayer() {
@@ -72,9 +73,11 @@
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mode_strings: any = $LL.MODES;
+
+  $: getPlayerRosters(player);
 </script>
 
-<PlayerSearch bind:player on:change={getPlayerRosters} />
+<PlayerSearch bind:player showId showFriendCode showProfileLink isShadow={false} />
 {#if player}
   <div class="transfer">
     <div class="item">
@@ -84,7 +87,7 @@
           <option value={null}>
             {$LL.COMMON.NONE()}
           </option>
-          {#each player.rosters as roster (roster.roster_id)}
+          {#each playerRosters as roster (roster.roster_id)}
             <option value={roster}>
               {roster.roster_name}
               ({roster.game.toUpperCase()}

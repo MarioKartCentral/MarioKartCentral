@@ -6,7 +6,7 @@
   import type { BanListData, BanInfoDetailed } from '$lib/types/ban-info';
   import type { UserInfo } from '$lib/types/user-info';
   import Section from '$lib/components/common/Section.svelte';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import BanPlayerForm from '$lib/components/moderator/BanPlayerForm.svelte';
   import ViewEditBan from '$lib/components/moderator/ViewEditBan.svelte';
   import BanListFilter from '$lib/components/moderator/BanListFilter.svelte';
@@ -119,7 +119,7 @@
 
 {#if check_permission(user_info, permissions.ban_player)}
   <Section header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-    <PlayerSearch bind:player is_banned={false} />
+    <PlayerSearch bind:player isBanned={false} showId showFriendCode showProfileLink isShadow={false} />
     {#if player}
       {#if banInfo}
         <strong>{$LL.PLAYER_BAN.THE_PLAYER_IS_ALREADY_BANNED()}</strong>

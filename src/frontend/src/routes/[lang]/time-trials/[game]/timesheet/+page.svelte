@@ -17,7 +17,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import Section from '$lib/components/common/Section.svelte';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import {
     XCompanySolid,
     YoutubeSolid,
@@ -46,7 +46,6 @@
   let errorMessage: string | null = null;
   let selectedPlayer: PlayerInfo | null = null;
   let searchPlayer: PlayerInfo | null = null; // For PlayerSearch component
-  let searchQuery: string = ' ';
 
   // Filter state
   let includeUnvalidated = true;
@@ -196,7 +195,6 @@
   function updatePlayer(player: PlayerInfo | null) {
     selectedPlayer = player;
     searchPlayer = null;
-    searchQuery = player?.name ?? '';
 
     if (typeof window !== 'undefined') {
       const newUrl = new URL(window.location.href);
@@ -275,7 +273,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label for="player-search" class="block text-sm font-medium mb-2">{$LL.TIME_TRIALS.PLAYER()}</label>
-              <PlayerSearch bind:player={searchPlayer} show_add_button={false} bind:query={searchQuery} />
+              <PlayerSearch bind:player={searchPlayer} showFriendCode isShadow={false} />
               <p class="text-sm text-gray-400 mt-1">{$LL.TIME_TRIALS.SEARCH_FOR_A_PLAYER()}</p>
             </div>
           </div>

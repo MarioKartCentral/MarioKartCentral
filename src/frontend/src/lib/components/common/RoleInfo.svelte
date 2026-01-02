@@ -6,7 +6,7 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import { page } from '$app/stores';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import type { Player } from '$lib/types/player';
@@ -100,7 +100,14 @@
           {$LL.ROLES.ADD_PLAYER()}
         </div>
         <div class="addplayer">
-          <PlayerSearch bind:player={selected_player} has_connected_user />
+          <PlayerSearch
+            bind:player={selected_player}
+            hasConnectedUser
+            showId
+            showFriendCode
+            showProfileLink
+            isShadow={false}
+          />
           {#if selected_player !== null}
             {#if is_expirable_role()}
               <label for="expires_on">{$LL.ROLES.UNTIL()}</label>

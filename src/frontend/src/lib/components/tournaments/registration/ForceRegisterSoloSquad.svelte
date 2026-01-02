@@ -3,7 +3,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import SoloTournamentFields from './SoloTournamentFields.svelte';
   import SquadTournamentFields from './SquadTournamentFields.svelte';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import TournamentStaffFields from './TournamentStaffFields.svelte';
   import CreateShadowPlayerDialog from '$lib/components/registry/players/CreateShadowPlayerDialog.svelte';
@@ -109,7 +109,14 @@
       <Button on:click={shadow_dialog.open}>{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
     {/if}
   </div>
-  <PlayerSearch bind:player fc_type={game_fc_types[tournament.game]} is_shadow={null} include_shadow_players={true} />
+  <PlayerSearch
+    bind:player
+    showFriendCode
+    fcType={game_fc_types[tournament.game]}
+    showId
+    includeShadowPlayers
+    showProfileLink
+  />
   {#if player}
     <form method="POST" on:submit|preventDefault={tournament.is_squad ? registerSquad : registerSolo}>
       <SquadTournamentFields {tournament} />
