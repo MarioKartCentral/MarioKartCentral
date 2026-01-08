@@ -96,9 +96,9 @@
   {#if role_info}
     <div class="role">
       {#if user_position < role.position}
-        <div>
+        <label for="player-search">
           {$LL.ROLES.ADD_PLAYER()}
-        </div>
+        </label>
         <div class="addplayer">
           <PlayerSearch
             bind:player={selected_player}

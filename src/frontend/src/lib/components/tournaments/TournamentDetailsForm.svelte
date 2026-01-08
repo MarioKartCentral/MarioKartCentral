@@ -123,7 +123,7 @@
   </div>
   <div class="option">
     <div>
-      <label for="tournament_series">{$LL.TOURNAMENTS.TOURNAMENT_SERIES()}</label>
+      <label for="series-search">{$LL.TOURNAMENTS.TOURNAMENT_SERIES()}</label>
     </div>
     <div>
       <SeriesSearch bind:series disabled={series_restrict} />

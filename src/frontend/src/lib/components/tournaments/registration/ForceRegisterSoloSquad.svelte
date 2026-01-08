@@ -100,11 +100,13 @@
 
 <div class="manual-register">
   <div class="register_player_text">
-    {#if tournament.is_squad}
-      {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_SQUAD()}
-    {:else}
-      {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_PLAYER()}
-    {/if}
+    <label for="player-search">
+      {#if tournament.is_squad}
+        {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_SQUAD()}
+      {:else}
+        {$LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_PLAYER()}
+      {/if}
+    </label>
     {#if check_permission(user_info, permissions.manage_shadow_players)}
       <Button on:click={shadow_dialog.open}>{$LL.PLAYERS.SHADOW_PLAYERS.CREATE_SHADOW_PLAYER()}</Button>
     {/if}

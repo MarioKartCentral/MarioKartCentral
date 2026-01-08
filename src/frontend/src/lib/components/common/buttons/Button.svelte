@@ -21,6 +21,7 @@
     | 'none'
     | undefined = undefined;
   export let working = false;
+  export let ariaLabel: string | undefined = undefined;
 
   $: isLightColor = color === 'yellow' || color === 'light' || color === 'alternative' || color === 'none';
   $: hoverTextClass = isLightColor ? 'hover:text-gray-800' : 'hover:text-white';
@@ -35,6 +36,7 @@
   {type}
   disabled={working || disabled}
   {color}
+  aria-label={ariaLabel}
 >
   {#if working}
     <div class="flex gap-2 items-center">

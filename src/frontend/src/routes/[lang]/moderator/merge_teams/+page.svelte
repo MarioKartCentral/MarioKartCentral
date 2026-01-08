@@ -50,16 +50,16 @@
   {#if check_permission(user_info, permissions.merge_teams)}
     <Section header={$LL.MODERATOR.MERGE_TEAMS()}>
       <div class="option">
-        <div>
+        <label for="old-team-search">
           {$LL.MODERATOR.OLD_TEAM()}:
-        </div>
-        <TeamSearch bind:team={from_team} isActive isHistorical={false} />
+        </label>
+        <TeamSearch id="old-team-search" bind:team={from_team} isActive isHistorical={false} />
       </div>
 
       {#if from_team}
         <div class="option">
-          <div>{$LL.MODERATOR.NEW_TEAM()}:</div>
-          <TeamSearch bind:team={to_team} isActive isHistorical={false} />
+          <label for="new-team-search">{$LL.MODERATOR.NEW_TEAM()}:</label>
+          <TeamSearch id="new-team-search" bind:team={to_team} isActive isHistorical={false} />
         </div>
       {/if}
       {#if to_team}

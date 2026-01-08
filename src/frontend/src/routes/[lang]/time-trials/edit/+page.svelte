@@ -419,7 +419,7 @@
 
       {#if canChangePlayer && showPlayerSearch}
         <div class="option">
-          <label for="player">New Player</label>
+          <label for="player-search">New Player</label>
           <div class="flex-1">
             <PlayerSearch bind:player={selectedPlayer} showFriendCode showProfileLink isShadow={false} />
             <p class="text-sm text-gray-400 mt-1 ml-2">Select a new player for this time trial</p>

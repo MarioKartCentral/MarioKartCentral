@@ -10,18 +10,21 @@
   export let game: string | null = null;
   export let isActive: boolean | null = null;
   export let isHistorical: boolean | null = null;
+  export let id: string = 'team-search';
+  export let ariaLabel: string | undefined = undefined;
+  export let ariaLabelledby: string | undefined = undefined;
 
   let searchQuery: string;
   let timeout: number | null;
-  let results: Team[];
-  let container: HTMLDivElement;
+  let results: Team[] | undefined;
+  let container: HTMLUListElement;
 
   async function handleSearch() {
     if (timeout) {
       clearTimeout(timeout);
     }
     if (!searchQuery) {
-      results = [];
+      results = undefined;
       return;
     }
     timeout = setTimeout(getResults, 300);
@@ -47,13 +50,17 @@
 </script>
 
 <Search
+  {id}
+  {ariaLabel}
+  {ariaLabelledby}
   placeholder={$LL.TEAMS.PROFILE.SEARCH_FOR_TEAMS()}
   bind:searchQuery
   bind:selected={team}
   bind:results
   bind:container
   oninput={handleSearch}
-  let:result
+  optionLabel={(option) => `ID: ${option.id}, ${option.name}`}
+  let:option
 >
   <div slot="selected" class="flex items-center gap-2" let:selected={team}>
     {#if team}
@@ -61,28 +68,29 @@
       <div class="flex items-center justify-center gap-1">
         <span>{team.name}</span>
         <a href="/{$page.params.lang}/registry/teams/profile?id={team.id}" target="_blank">
-          <ArrowUpRightFromSquareOutline size="sm" />
+          <ArrowUpRightFromSquareOutline size="sm" ariaLabel="Team Profile" />
         </a>
       </div>
     {/if}
   </div>
-  <td>
-    {result.id}
-  </td>
-  <td>
-    <TagBadge tag={result.tag} color={result.color} />
-  </td>
-  <td>
-    {result.name}
-  </td>
-  <td class="sm:table-cell w-[40px]">
+  <div class="w-[36px] whitespace-nowrap">
+    {option.id}
+  </div>
+  <div>
+    <TagBadge tag={option.tag} color={option.color} />
+  </div>
+  <div class="flex-1">
+    {option.name}
+  </div>
+  <div class="sm:block w-[40px] ml-4">
     <a
       on:click|stopPropagation
       on:keydown|stopPropagation
-      href="/{$page.params.lang}/registry/teams/profile?id={result.id}"
+      href="/{$page.params.lang}/registry/teams/profile?id={option.id}"
       target="_blank"
+      tabindex="-1"
     >
-      <ArrowUpRightFromSquareOutline size="md" />
+      <ArrowUpRightFromSquareOutline size="md" ariaLabel="Team Profile" aria-hidden="true" tabindex="-1" />
     </a>
-  </td>
+  </div>
 </Search>

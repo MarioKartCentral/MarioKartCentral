@@ -249,7 +249,7 @@
       </div>
       {#if hasValidatePermission}
         <div class="option">
-          <label for="player">Submit for Player</label>
+          <label for="player-search">Submit for Player</label>
           <div class="flex-1">
             <PlayerSearch bind:player={selectedPlayer} showFriendCode showProfileLink isShadow={false} />
             {#if !selectedPlayer}

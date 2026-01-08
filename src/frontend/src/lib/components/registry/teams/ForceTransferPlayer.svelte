@@ -77,7 +77,7 @@
   $: getPlayerRosters(player);
 </script>
 
-<PlayerSearch bind:player showId showFriendCode showProfileLink isShadow={false} />
+<PlayerSearch bind:player showId showFriendCode showProfileLink isShadow={false} ariaLabel="Search for player" />
 {#if player}
   <div class="transfer">
     <div class="item">
@@ -101,7 +101,7 @@
       </div>
     </div>
     <div class="item">
-      <div>{$LL.MODERATOR.NEW_ROSTER()}</div>
+      <label for="roster-search">{$LL.MODERATOR.NEW_ROSTER()}</label>
       {#key from_roster}
         <RosterSearch
           bind:roster={to_roster}

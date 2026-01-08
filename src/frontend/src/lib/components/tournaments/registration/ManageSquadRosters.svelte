@@ -108,7 +108,7 @@
     </div>
     <div class="add-roster">
       {#if is_privileged}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</div>
+        <label for="roster-search">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</label>
         <div>
           <RosterSearch bind:roster={selected_roster} game={tournament.game} mode={tournament.mode} />
         </div>

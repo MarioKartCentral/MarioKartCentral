@@ -119,7 +119,15 @@
 
 {#if check_permission(user_info, permissions.ban_player)}
   <Section header={$LL.PLAYER_BAN.BAN_PLAYER()}>
-    <PlayerSearch bind:player isBanned={false} showId showFriendCode showProfileLink isShadow={false} />
+    <PlayerSearch
+      bind:player
+      isBanned={false}
+      showId
+      showFriendCode
+      showProfileLink
+      isShadow={false}
+      ariaLabel="Search for player"
+    />
     {#if player}
       {#if banInfo}
         <strong>{$LL.PLAYER_BAN.THE_PLAYER_IS_ALREADY_BANNED()}</strong>

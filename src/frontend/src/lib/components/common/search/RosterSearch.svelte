@@ -13,18 +13,21 @@
   export let isActive: boolean | null = null;
   export let isHistorical: boolean | null = null;
   export let showId: boolean = false;
+  export let id: string = 'roster-search';
+  export let ariaLabel: string | undefined = undefined;
+  export let ariaLabelledby: string | undefined = undefined;
 
   let searchQuery: string;
   let timeout: number | null;
-  let results: TeamRoster[];
-  let container: HTMLDivElement;
+  let results: TeamRoster[] | undefined;
+  let container: HTMLUListElement;
 
   async function handleSearch() {
     if (timeout) {
       clearTimeout(timeout);
     }
     if (!searchQuery) {
-      results = [];
+      results = undefined;
       return;
     }
     timeout = setTimeout(getResults, 300);
@@ -46,20 +49,23 @@
     if (res.ok) {
       const body: TeamList = await res.json();
       const { teams } = body;
-      console.log(teams);
       results = teams.flatMap((t) => t.rosters.filter((r) => (!game || r.game === game) && (!mode || r.mode === mode)));
     }
   }
 </script>
 
 <Search
+  {id}
   placeholder={$LL.TEAMS.PROFILE.SEARCH_FOR_ROSTERS()}
+  {ariaLabel}
+  {ariaLabelledby}
   bind:searchQuery
   bind:selected={roster}
   bind:results
   bind:container
   oninput={handleSearch}
-  let:result
+  optionLabel={(option) => `ID: ${option.id}, ${option.name} (${option.mode})`}
+  let:option
 >
   <div slot="selected" class="flex items-center gap-2" let:selected={roster}>
     {#if roster}
@@ -68,18 +74,18 @@
     {/if}
   </div>
   {#if showId}
-    <td>
-      {result.id}
-    </td>
+    <div class="w-[36px] whitespace-nowrap">
+      {option.id}
+    </div>
   {/if}
-  <td>
-    <TagBadge tag={result.tag} color={result.color} />
-  </td>
-  <td>
-    {result.name}
-  </td>
-  <td>
-    <GameBadge game={result.game} />
-    <ModeBadge mode={result.mode} />
-  </td>
+  <div>
+    <TagBadge tag={option.tag} color={option.color} />
+  </div>
+  <div class="flex-1">
+    {option.name}
+  </div>
+  <div>
+    <GameBadge game={option.game} />
+    <ModeBadge mode={option.mode} />
+  </div>
 </Search>

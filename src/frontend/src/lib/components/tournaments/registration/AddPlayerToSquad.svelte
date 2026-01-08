@@ -73,6 +73,7 @@
         fcType={game_fc_types[tournament.game]}
         showProfileLink
         isShadow={false}
+        ariaLabel="Search for player"
       />
       {#if player}
         <form method="POST" on:submit|preventDefault={addPlayer}>

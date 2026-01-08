@@ -6,18 +6,21 @@
 
   export let series: TournamentSeries | null = null;
   export let disabled: boolean = false;
+  export let id: string = 'series-search';
+  export let ariaLabel: string | undefined = undefined;
+  export let ariaLabelledby: string | undefined = undefined;
 
   let searchQuery: string;
-  let results: TournamentSeriesBasic[];
+  let results: TournamentSeriesBasic[] | undefined;
   let timeout: number;
-  let container: HTMLDivElement;
+  let container: HTMLUListElement;
 
   async function handleSearch() {
     if (timeout) {
       clearTimeout(timeout);
     }
     if (!searchQuery) {
-      results = [];
+      results = undefined;
       return;
     }
     timeout = setTimeout(getResults, 300);
@@ -38,13 +41,17 @@
 </script>
 
 <Search
+  {id}
+  {ariaLabel}
+  {ariaLabelledby}
   placeholder={$LL.TOURNAMENTS.SEARCH_SERIES()}
   bind:searchQuery
   bind:selected={series}
   bind:results
-  let:result
+  let:option
   bind:container
   oninput={handleSearch}
+  optionLabel={(option) => `ID: ${option.id}, ${option.series_name}`}
   {disabled}
 >
   <div slot="selected" class="flex items-center gap-2" let:selected={series}>
@@ -52,14 +59,14 @@
       {series.series_name}
     {/if}
   </div>
-  <td>
-    {#if result.logo}
+  <div class="w-[40px]">
+    {#if option.logo}
       <LazyLoad>
-        <img src={result.logo} alt={result.series_name} />
+        <img src={option.logo} alt={option.series_name} />
       </LazyLoad>
     {/if}
-  </td>
-  <td>
-    {result.series_name}
-  </td>
+  </div>
+  <div class="flex-1">
+    {option.series_name}
+  </div>
 </Search>

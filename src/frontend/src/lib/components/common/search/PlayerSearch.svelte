@@ -17,18 +17,21 @@
   export let showId: boolean = false;
   export let showFriendCode: boolean = false;
   export let showProfileLink: boolean = false;
+  export let id: string = 'player-search';
+  export let ariaLabel: string | undefined = undefined;
+  export let ariaLabelledby: string | undefined = undefined;
 
   let searchQuery: string;
   let timeout: number | null;
-  let results: PlayerInfo[];
-  let container: HTMLDivElement;
+  let results: PlayerInfo[] | undefined;
+  let container: HTMLUListElement;
 
   async function handleSearch() {
     if (timeout) {
       clearTimeout(timeout);
     }
     if (!searchQuery) {
-      results = [];
+      results = undefined;
       return;
     }
     timeout = setTimeout(getResults, 300);
@@ -59,59 +62,66 @@
 </script>
 
 <Search
+  {id}
   placeholder={$LL.PLAYERS.LIST.SEARCH_BY()}
   bind:searchQuery
   bind:selected={player}
   bind:results
-  let:result
   bind:container
   oninput={handleSearch}
+  optionLabel={(option) => `ID: ${option.id}, ${option.name}`}
+  {ariaLabel}
+  {ariaLabelledby}
+  let:option
 >
   <div slot="selected" class="flex items-center gap-2" let:selected={player}>
     {#if player}
       <Flag country_code={player.country_code} />
       <div class="flex items-center justify-center gap-1">
-        <span>{player.name}</span>
+        <span>
+          {player.name}
+        </span>
         {#if showProfileLink}
           <a href="/{$page.params.lang}/registry/players/profile?id={player.id}" target="_blank">
-            <ArrowUpRightFromSquareOutline size="sm" />
+            <ArrowUpRightFromSquareOutline size="sm" ariaLabel="Player Profile" />
           </a>
         {/if}
       </div>
     {/if}
   </div>
   {#if showId}
-    <td class="w-[30px] whitespace-nowrap">
-      {result.id}
-    </td>
+    <div class="w-[45px] whitespace-nowrap">
+      {option.id}
+    </div>
   {/if}
-  <td class="w-[40px] h-[40px] !px-0">
+  <div class="w-[40px] !px-0">
     <LazyLoad root={container}>
-      <Flag country_code={result.country_code} />
+      <Flag country_code={option.country_code} />
     </LazyLoad>
-  </td>
-  <td>
+  </div>
+  <div class="flex-1">
     <span>
-      {result.name}
+      {option.name}
     </span>
-  </td>
+  </div>
   {#if showFriendCode}
-    <td class="hidden sm:table-cell">
-      {#if result.friend_codes.length}
-        {result.friend_codes[0].fc}
+    <div class="hidden sm:block">
+      {#if option.friend_codes.length}
+        {option.friend_codes[0].fc}
       {/if}
-    </td>
+    </div>
   {/if}
   {#if showProfileLink}
-    <td class="hidden sm:table-cell w-[40px]">
+    <div class="hidden sm:block ml-4">
       <a
         on:click|stopPropagation
         on:keydown|stopPropagation
-        href="/{$page.params.lang}/registry/players/profile?id={result.id}"
+        href="/{$page.params.lang}/registry/players/profile?id={option.id}"
         target="_blank"
+        tabindex="-1"
       >
-        <ArrowUpRightFromSquareOutline size="md" ariaLabel="Player Profile" />
+        <ArrowUpRightFromSquareOutline size="md" ariaLabel="Player Profile" aria-hidden="true" tabindex="-1" />
       </a>
-    </td>
+    </div>
   {/if}
 </Search>

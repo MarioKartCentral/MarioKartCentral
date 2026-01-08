@@ -52,7 +52,7 @@
       <div>
         {$LL.LOGIN.TRANSFER_ACCOUNT_DETAILS()}
         <div>
-          <PlayerSearch bind:player showFriendCode showProfileLink isShadow={false} />
+          <PlayerSearch bind:player showFriendCode showProfileLink isShadow={false} ariaLabel="Search for player" />
         </div>
         {#if player}
           <div class="option">

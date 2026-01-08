@@ -198,13 +198,13 @@
 
 {#if is_privileged || (check_registrations_open(tournament) && rosters.length)}
   <div class="team_register">
-    <div>
+    <label for="roster-search">
       <b>
         {is_privileged
           ? $LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_TEAM()
           : $LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TEAM()}
       </b>
-    </div>
+    </label>
     {#if is_privileged}
       <RosterSearch
         bind:roster={selected_roster}
