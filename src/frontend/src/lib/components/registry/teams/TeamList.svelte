@@ -122,7 +122,7 @@
       </select>
     </div>
     <div class="option">
-      <LanguageSelect  bind:language={filters.language} all />
+      <LanguageSelect bind:language={filters.language} all />
     </div>
     <div class="option">
       <select bind:value={filters.sort_by_newest}>
