@@ -282,6 +282,11 @@ type RootTranslation = {
 		 */
 		SEARCH: string
 		/**
+		 * {​c​o​u​n​t​|​{​0​:​ ​N​o​}​}​ ​R​e​s​u​l​t​{​{​s​}​}
+		 * @param {number} count
+		 */
+		RESULTS: RequiredParams<`count|{0:${string}}`>
+		/**
 		 * N​o​n​e
 		 */
 		NONE: string
@@ -5896,6 +5901,10 @@ export type TranslationFunctions = {
 		 * Search
 		 */
 		SEARCH: () => LocalizedString
+		/**
+		 * {count|{0: No}} Result{{s}}
+		 */
+		RESULTS: (arg: { count: number }) => LocalizedString
 		/**
 		 * None
 		 */

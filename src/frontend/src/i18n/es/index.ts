@@ -73,6 +73,7 @@ const es: Translation = {
     SUBMITTING: 'Submitting',
     CANCEL: 'Cancelar',
     SEARCH: 'Buscar',
+    RESULTS: '{count|{0: Sin}} resultado{{count:s}}',
     NONE: 'Ninguno',
     EDIT: 'Editar',
     FILTER: 'Filtrar',
