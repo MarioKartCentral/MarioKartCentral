@@ -11,6 +11,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { onMount } from 'svelte';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
+  import LanguageSelect from '$lib/components/common/LanguageSelect.svelte';
 
   let teams: Team[] = [];
 
@@ -36,6 +37,7 @@
     is_historical: boolean;
     is_active: boolean | null;
     min_player_count: number | null;
+    language: string | null;
     sort_by_newest: boolean;
     page: number;
   };
@@ -48,6 +50,7 @@
     is_active: null,
     sort_by_newest: false,
     min_player_count: null,
+    language: null,
     page: 1,
   };
 
@@ -117,6 +120,9 @@
         <option value="active">{$LL.TEAMS.LIST.ACTIVE_TEAMS()}</option>
         <option value="historical">{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
       </select>
+    </div>
+    <div class="option">
+      <LanguageSelect  bind:language={filters.language} all />
     </div>
     <div class="option">
       <select bind:value={filters.sort_by_newest}>

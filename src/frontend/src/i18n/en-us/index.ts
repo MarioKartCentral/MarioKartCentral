@@ -200,6 +200,7 @@ const en_us: BaseTranslation = {
     ES: 'Spanish',
     FR: 'French',
     JA: 'Japanese',
+    ALL: 'All Languages',
   },
   LOGIN: {
     LOGIN: 'Login',

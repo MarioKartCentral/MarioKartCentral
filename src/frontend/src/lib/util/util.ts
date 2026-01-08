@@ -131,6 +131,8 @@ export const valid_team_modes: { [key: string]: string[] } = {
   mkw: ['rt', 'ct'],
   mkt: ['vsrace'],
 };
+
+export const valid_languages = ['de', 'en_gb', 'en_us', 'fr', 'es', 'ja'];
 export const colors: Color[] = [
   {
     id: 0,
