@@ -32,7 +32,7 @@
       case 'ascending':
         return ChevronUpOutline;
       case 'descending':
-        return ChevronDownOutline
+        return ChevronDownOutline;
       default:
         return ChevronSortOutline;
     }
@@ -44,11 +44,7 @@
     <button on:click={handleClick}>
       <slot />
       <span aria-hidden="true">
-        <svelte:component
-          this={$icon}
-          tabindex="-1"
-          class="inline focus:outline-none"
-        />
+        <svelte:component this={$icon} tabindex="-1" class="inline focus:outline-none" />
       </span>
     </button>
   {:else}
