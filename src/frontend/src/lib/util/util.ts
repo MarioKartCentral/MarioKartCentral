@@ -2,6 +2,7 @@ import type { Color } from '$lib/types/colors';
 import type { Tournament } from '$lib/types/tournament';
 import type { PlacementOrganizer } from '$lib/types/placement-organizer';
 import type { TeamRoster } from '$lib/types/team-roster';
+import type { Language } from '$lib/types/languages';
 
 export function check_registrations_open(tournament: Tournament) {
   if (!tournament.registrations_open) {
@@ -132,7 +133,33 @@ export const valid_team_modes: { [key: string]: string[] } = {
   mkt: ['vsrace'],
 };
 
-export const valid_languages = ['de', 'en_gb', 'en_us', 'fr', 'es', 'ja'];
+export const valid_languages: Language[] = [
+  {
+    label: 'DE',
+    value: 'de',
+  },
+  {
+    label: 'EN_GB',
+    value: 'en-gb',
+  },
+  {
+    label: 'EN_US',
+    value: 'en-us',
+  },
+  {
+    label: 'FR',
+    value: 'fr',
+  },
+  {
+    label: 'ES',
+    value: 'es',
+  },
+  {
+    label: 'JA',
+    value: 'jp',
+  },
+];
+
 export const colors: Color[] = [
   {
     id: 0,
