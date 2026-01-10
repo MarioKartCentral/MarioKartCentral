@@ -734,6 +734,20 @@ type RootTranslation = {
 		 */
 		JA: string
 	}
+	LEGAL: {
+		/**
+		 * L​a​s​t​ ​U​p​d​a​t​e​d
+		 */
+		LAST_UPDATED: string
+		/**
+		 * P​r​i​v​a​c​y​ ​P​o​l​i​c​y
+		 */
+		PRIVACY_POLICY: string
+		/**
+		 * T​e​r​m​s​ ​o​f​ ​U​s​e
+		 */
+		TERMS: string
+	}
 	LOGIN: {
 		/**
 		 * L​o​g​i​n
@@ -6342,6 +6356,20 @@ export type TranslationFunctions = {
 		 * Japanese
 		 */
 		JA: () => LocalizedString
+	}
+	LEGAL: {
+		/**
+		 * Last Updated
+		 */
+		LAST_UPDATED: () => LocalizedString
+		/**
+		 * Privacy Policy
+		 */
+		PRIVACY_POLICY: () => LocalizedString
+		/**
+		 * Terms of Use
+		 */
+		TERMS: () => LocalizedString
 	}
 	LOGIN: {
 		/**

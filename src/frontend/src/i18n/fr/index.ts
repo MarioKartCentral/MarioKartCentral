@@ -204,6 +204,11 @@ const fr: Translation = {
     FR: 'Français',
     JA: 'Japonais',
   },
+  LEGAL: {
+    LAST_UPDATED: 'Last Updated',
+    PRIVACY_POLICY: 'Privacy Policy',
+    TERMS: 'Terms of Use',
+  },
   LOGIN: {
     LOGIN: 'Se Connecter',
     LOGOUT: 'Se Déconnecter',

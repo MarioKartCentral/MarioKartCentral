@@ -203,7 +203,11 @@ const es: Translation = {
     FR: 'Francés',
     JA: 'Japonés',
   },
-
+  LEGAL: {
+    LAST_UPDATED: 'Last Updated',
+    PRIVACY_POLICY: 'Privacy Policy',
+    TERMS: 'Terms of Use',
+  },
   LOGIN: {
     LOGIN: 'Login',
     LOGOUT: 'Cerrar sesión',

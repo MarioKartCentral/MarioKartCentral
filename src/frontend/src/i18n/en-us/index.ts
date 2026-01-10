@@ -201,6 +201,11 @@ const en_us: BaseTranslation = {
     FR: 'French',
     JA: 'Japanese',
   },
+  LEGAL: {
+    LAST_UPDATED: 'Last Updated',
+    PRIVACY_POLICY: 'Privacy Policy',
+    TERMS: 'Terms of Use',
+  },
   LOGIN: {
     LOGIN: 'Login',
     LOGOUT: 'Logout',

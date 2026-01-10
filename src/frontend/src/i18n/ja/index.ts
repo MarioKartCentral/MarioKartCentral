@@ -203,6 +203,11 @@ const ja: Translation = {
     FR: 'French',
     JA: 'Japanese',
   },
+  LEGAL: {
+    LAST_UPDATED: 'Last Updated',
+    PRIVACY_POLICY: 'プライバシーポリシー',
+    TERMS: '利用規約',
+  },
   LOGIN: {
     LOGIN: 'ログイン',
     LOGOUT: 'ログアウト',
