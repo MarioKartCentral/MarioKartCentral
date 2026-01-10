@@ -147,13 +147,15 @@
           <Button href="/{$page.params.lang}/registry/players/mod-edit-profile?id={player.id}"
             >{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</Button
           >
-          <Button on:click={() => (show_notes = !show_notes)}>
-            {#if show_notes}
-              {$LL.PLAYERS.PROFILE.HIDE_PLAYER_NOTES()}
-            {:else}
-              {$LL.PLAYERS.PROFILE.SHOW_PLAYER_NOTES()}
-            {/if}
-          </Button>
+          {#if player.notes}
+            <Button on:click={() => (show_notes = !show_notes)}>
+              {#if show_notes}
+                {$LL.PLAYERS.PROFILE.HIDE_PLAYER_NOTES()}
+              {:else}
+                {$LL.PLAYERS.PROFILE.SHOW_PLAYER_NOTES()}
+              {/if}
+            </Button>
+          {/if}
           <Button on:click={openEditPlayerNotesDialog}>{$LL.PLAYERS.PROFILE.EDIT_PLAYER_NOTES()}</Button>
           {#if player.user_settings}
             <Button on:click={sendPasswordReset}>{$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET()}</Button>
