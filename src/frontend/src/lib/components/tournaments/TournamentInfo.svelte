@@ -31,9 +31,12 @@
     ? new Date(tournament.registration_deadline * 1000)
     : null;
   const options: Intl.DateTimeFormatOptions = {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    hour12: true,
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short',
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
