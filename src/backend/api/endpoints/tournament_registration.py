@@ -12,8 +12,7 @@ from common.data import notifications
 from api.utils.word_filter import check_word_filter
 
 async def tournament_is_viewable(tournament_id: int) -> bool:
-    tournament = await handle(GetTournamentDataCommand(tournament_id))
-    return tournament.is_viewable
+    return await handle(CheckTournamentVisibilityCommand(tournament_id))
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
