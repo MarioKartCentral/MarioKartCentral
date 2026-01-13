@@ -9,6 +9,8 @@
   import LL from '$i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
+  import GameBadge from '$lib/components/badges/GameBadge.svelte';
+  import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import { user } from '$lib/stores/stores';
   import { check_permission, permissions } from '$lib/util/permissions';
 
@@ -93,8 +95,9 @@
         </form>
         <Table data={filtered_history} let:item={record}>
           <tr slot="header">
-            <th>Team</th>
-            <th>Registration Period</th>
+            <th class="w-1/2 sm:w-1/3">Team</th>
+            <th class="hidden sm:table-cell">Game</th>
+            <th class="w-2/5 sm:w-1/3">Registration Period</th>
             <th />
           </tr>
 
@@ -108,12 +111,18 @@
                 {/if}
               </a>
             </td>
+            <td class="hidden sm:table-cell">
+              <div class="md:flex">
+                <GameBadge game={record.game} />
+                <ModeBadge mode={record.mode} />
+              </div>
+            </td>
             <td>
               {toDate(record.join_date)} - {record.leave_date ? toDate(record.leave_date) : 'Present'}
             </td>
             <td>
               {#if check_permission($user, permissions.edit_player)}
-                <button class="link-button" on:click={() => toggleTransferItemVisibility(record)}>
+                <button class="link-button whitespace-nowrap" on:click={() => toggleTransferItemVisibility(record)}>
                   {#if !record.is_hidden}
                     {$LL.COMMON.HIDE()}
                   {:else}
