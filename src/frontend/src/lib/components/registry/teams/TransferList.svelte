@@ -132,7 +132,7 @@
 <form on:submit|preventDefault={search}>
   <div class="top">
     {#if !team_id}
-      <GameModeSelect bind:game bind:mode flex all_option hide_labels inline is_team />
+      <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
     {/if}
     <div class="option">
       <label for="from">{$LL.COMMON.FROM()}</label>

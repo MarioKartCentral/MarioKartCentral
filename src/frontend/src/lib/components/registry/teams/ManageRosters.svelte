@@ -86,9 +86,8 @@
   {#if check_team_permission(user_info, team_permissions.create_rosters, id)}
     <Section header={$LL.TEAMS.EDIT.NEW_ROSTER()}>
       <form method="post" on:submit|preventDefault={createRoster}>
-        <div class="option">
-          <GameModeSelect flex required is_team />
-        </div>
+        <GameModeSelect required is_team containerClass="mb-[10px] sm:flex sm:items-center" />
+        
 
         <div class="option">
           <div>

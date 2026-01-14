@@ -86,8 +86,8 @@
       <TeamProfile {team} />
     </Section>
     <Section header={$LL.TEAMS.PROFILE.ROSTERS()}>
-      <div class="filter">
-        <GameModeSelect bind:game bind:mode is_team flex inline hide_labels all_option />
+      <div class="filter flex gap-2 justify-center">
+        <GameModeSelect bind:game bind:mode is_team hide_labels all_option />
       </div>
       {#key game}
         {#key mode}

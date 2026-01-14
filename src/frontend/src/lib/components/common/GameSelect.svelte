@@ -4,7 +4,6 @@
 
   export let game: string | null = null;
   export let disabled = false;
-  export let flex = false;
   export let required = false;
   export let all_option = false;
   export let hide_labels = false;
@@ -15,34 +14,26 @@
   const game_strings: any = $LL.GAMES;
 </script>
 
-<div class={flex ? 'flex' : ''}>
-  {#if !hide_labels}
-    <div>
-      <label for="game">{$LL.COMMON.GAME()}</label>
-    </div>
-  {/if}
-  <div>
-    <select name="game" bind:value={game} on:change {disabled} {required}>
-      {#if all_option}
-        <option value={null} selected>{$LL.GAMES.ALL()}</option>
-      {:else}
-        <option value={null} disabled selected>{$LL.GAMES.SELECT()}</option>
-      {/if}
-      {#each is_team ? valid_team_games : valid_games as game, index (index)}
-        <option value={disabled_games.includes(game) ? null : game} disabled={disabled_games.includes(game)}>
-          {game_strings[game.toUpperCase()]()}
-        </option>
-      {/each}
-    </select>
-  </div>
+{#if !hide_labels}
+  <label for="game">{$LL.COMMON.GAME()}</label>
+{/if}
+<div>
+  <select name="game" bind:value={game} on:change {disabled} {required}>
+    {#if all_option}
+      <option value={null} selected>{$LL.GAMES.ALL()}</option>
+    {:else}
+      <option value={null} disabled selected>{$LL.GAMES.SELECT()}</option>
+    {/if}
+    {#each is_team ? valid_team_games : valid_games as game, index (index)}
+      <option value={disabled_games.includes(game) ? null : game} disabled={disabled_games.includes(game)}>
+        {game_strings[game.toUpperCase()]()}
+      </option>
+    {/each}
+  </select>
 </div>
 
 <style>
   select {
     width: 192px;
-  }
-  .flex {
-    display: flex;
-    align-items: center;
   }
 </style>

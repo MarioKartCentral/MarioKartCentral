@@ -104,10 +104,8 @@
 </script>
 
 <form on:submit|preventDefault={search}>
-  <div class="flex">
-    <div class="option">
-      <GameModeSelect all_option hide_labels inline is_team bind:game={filters.game} bind:mode={filters.mode} />
-    </div>
+  <div class="flex gap-2">
+    <GameModeSelect all_option hide_labels is_team bind:game={filters.game} bind:mode={filters.mode} />
     <div class="option">
       <input class="search" bind:value={filters.name_or_tag} type="text" placeholder={$LL.TEAMS.LIST.SEARCH_BY()} />
     </div>

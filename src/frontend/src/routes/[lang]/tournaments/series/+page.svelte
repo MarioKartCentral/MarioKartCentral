@@ -58,7 +58,7 @@
   </div>
   <form on:submit|preventDefault={fetchData}>
     <div class="options">
-      <GameModeSelect bind:game={filter.game} bind:mode={filter.mode} flex inline hide_labels all_option />
+      <GameModeSelect bind:game={filter.game} bind:mode={filter.mode} hide_labels all_option />
       <select bind:value={filter.is_historical}>
         <option value={null}>{$LL.TOURNAMENTS.SERIES.ALL_SERIES()}</option>
         <option value={false}>{$LL.TOURNAMENTS.SERIES.ACTIVE_SERIES()}</option>
