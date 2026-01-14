@@ -151,7 +151,7 @@ class EditRosterCommand(Command[None]):
 class ManagerEditRosterCommand(Command[None]):
     roster_id: int
     team_id: int
-    color: int
+    color: int | None
     is_recruiting: bool
 
     async def handle(self, db_wrapper: DBWrapper):

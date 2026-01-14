@@ -264,7 +264,7 @@ class ViewTransfersCommand(Command[TransferList]):
                     # need to get the game/mode from the roster that was left
                     game = join_roster_game
                     mode = join_roster_mode
-                    color = join_roster_color
+
                     if not game:
                         game = leave_roster_game
                     if not mode:
