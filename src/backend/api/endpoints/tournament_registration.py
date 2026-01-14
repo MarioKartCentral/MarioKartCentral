@@ -3,12 +3,16 @@ from starlette.routing import Route
 from starlette.background import BackgroundTask
 from api.auth import require_logged_in, require_tournament_permission, check_tournament_visiblity
 from api.data import handle
+from api.utils.notifications import dispatch_notification_if
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.data.commands import *
 from common.data.models import *
 from common.auth import tournament_permissions
 from common.data import notifications
 from api.utils.word_filter import check_word_filter
+
+async def tournament_is_viewable(tournament_id: int) -> bool:
+    return await handle(CheckTournamentVisibilityCommand(tournament_id))
 
 # endpoint used when a user creates their own squad
 @bind_request_body(CreateSquadRequestData)
@@ -42,7 +46,8 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
 @check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_team(request: Request, body: RegisterTeamRequestData) -> JSONResponse:
-    async def notify():
+    @dispatch_notification_if(tournament_is_viewable)
+    async def notify(tournament_id: int):
         if registration_id:
             data = await handle(GetNotificationSquadDataCommand(tournament_id, registration_id))
             await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_REGISTER_TEAM, {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.SUCCESS))
@@ -52,14 +57,15 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
     command = RegisterTeamTournamentCommand(tournament_id, body.squad_name, body.squad_tag, body.squad_color,
                                             player_id, body.roster_ids, body.players, True, is_privileged=True)
     registration_id = await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
 @check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_create_squad(request: Request, body: ForceCreateSquadRequestData) -> JSONResponse:
-    async def notify():
+    @dispatch_notification_if(tournament_is_viewable)
+    async def notify(tournament_id: int):
         tournament_name = await handle(GetTournamentNameFromIdCommand(tournament_id))
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -70,7 +76,7 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, tournament_id, 
         body.is_checked_in, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, body.is_approved, is_privileged=True)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 @bind_request_body(EditSquadRequestData)
 @check_word_filter
@@ -134,7 +140,8 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
 @check_word_filter
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_register_player(request: Request, body: ForceRegisterPlayerRequestData) -> JSONResponse:
-    async def notify():
+    @dispatch_notification_if(tournament_is_viewable)
+    async def notify(tournament_id: int):
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
             return
@@ -149,7 +156,7 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.registration_id, body.is_squad_captain, body.is_checked_in, 
         body.mii_name, body.can_host, body.is_invite, body.selected_fc_id, body.is_representative, body.is_bagger_clause, body.is_approved, True)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 @bind_request_body(EditPlayerRegistrationRequestData)
 @check_word_filter
@@ -255,7 +262,8 @@ async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> 
 @bind_request_body(StaffUnregisterPlayerRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> JSONResponse:
-    async def notify():
+    @dispatch_notification_if(tournament_is_viewable)
+    async def notify(tournament_id: int):
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
             return
@@ -269,7 +277,7 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
     tournament_id = request.path_params['tournament_id']
     command = UnregisterPlayerCommand(tournament_id, body.registration_id, body.player_id, True)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 @bind_request_body(MakeCaptainRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
@@ -342,7 +350,8 @@ async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -
 @bind_request_body(UnregisterSquadRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
 async def force_unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
-    async def notify():
+    @dispatch_notification_if(tournament_is_viewable)
+    async def notify(tournament_id: int):
         await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_UNREGISTER_TEAM, {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
 
     tournament_id = request.path_params['tournament_id']
@@ -354,7 +363,7 @@ async def force_unregister_squad(request: Request, body: UnregisterSquadRequestD
     
     command = UnregisterSquadCommand(tournament_id, body.registration_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 async def view_squad(request: Request) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
