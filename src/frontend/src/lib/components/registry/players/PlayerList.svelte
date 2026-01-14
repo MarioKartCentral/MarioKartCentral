@@ -6,6 +6,7 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
   import { onMount } from 'svelte';
+  import { locale } from '$i18n/i18n-svelte';
   import type { PlayerFilter } from '$lib/types/registry/players/player-filter';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import PageNavigation from '$lib/components/common/PageNavigation.svelte';
@@ -67,6 +68,10 @@
   }
 
   onMount(fetchData);
+
+  const options: Intl.DateTimeFormatOptions = {
+    dateStyle: 'medium',
+  };
 </script>
 
 <form on:submit|preventDefault={search}>
@@ -91,11 +96,13 @@
         <col class="country_code" />
         <col class="name" />
         <col class="friend_codes mobile-hide" />
+        <col class="registration-date hidden sm:table-column" />
       </colgroup>
       <tr slot="header">
         <th></th>
         <th>{$LL.COMMON.NAME()}</th>
         <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
+        <th class="hidden sm:table-cell">{$LL.PLAYERS.PROFILE.REGISTRATION_DATE()}</th>
       </tr>
       <tr class="row">
         <td><Flag country_code={player.country_code} /></td>
@@ -108,6 +115,9 @@
         <td class="mobile-hide">
           <FriendCodeDisplay friend_codes={player.friend_codes} />
         </td>
+        <td class="hidden sm:table-cell">
+          {new Intl.DateTimeFormat($locale, options).format(player.join_date * 1000)}
+        </td>
       </tr>
     </Table>
   {/if}
@@ -116,13 +126,16 @@
 
 <style>
   col.country_code {
-    width: 20%;
+    width: 1%;
   }
   col.name {
-    width: 40%;
+    width: 39%;
   }
   col.friend_codes {
-    width: 40%;
+    width: 30%;
+  }
+  col.registration-date {
+    width: 30%;
   }
   .banned_name {
     opacity: 0.7;
