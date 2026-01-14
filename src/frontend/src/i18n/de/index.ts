@@ -204,6 +204,10 @@ const de: Translation = {
     FR: 'Französisch',
     JA: 'Japanisch',
   },
+  LEGAL: {
+    TERMS: 'Terms of Use',
+    PRIVACY_POLICY: 'Privacy Policy',
+  },
   LOGIN: {
     LOGIN: 'Anmeldung',
     LOGOUT: 'Abmeldung',
