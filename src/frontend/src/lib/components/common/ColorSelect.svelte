@@ -5,6 +5,7 @@
 
   export let tag: string | null = '';
   export let color = 0;
+  export let id: string = 'color-select';
   export let name = 'color';
 
   let sorted_colors = colors.toSorted((a, b) => a.label.localeCompare(b.label));
@@ -14,7 +15,7 @@
 </script>
 
 <div class="color-select">
-  <select {name} bind:value={color}>
+  <select {id} {name} bind:value={color}>
     {#each sorted_colors as c (c.id)}
       <option value={c.id} style="background-color:{c.value}">{color_strings[c.label]()}</option>
     {/each}
