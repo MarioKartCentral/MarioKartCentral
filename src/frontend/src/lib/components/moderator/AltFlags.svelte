@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Table from '../common/Table.svelte';
+  import Table from '../common/table/Table.svelte';
   import LL from '$i18n/i18n-svelte';
   import type { AltFlag } from '$lib/types/alt-flag';
   import { page } from '$app/stores';
@@ -33,66 +33,63 @@
 </script>
 
 {#if flags.length}
-  <Table>
-    <col class="players" />
-    <col class="type" />
-    <col class="score" />
-    <col class="data mobile-hide" />
-    <col class="date mobile-hide" />
-    <thead>
-      <tr>
-        <th class="players">{$LL.MODERATOR.ALT_DETECTION.TABLE.PLAYERS()}</th>
-        <th class="type">{$LL.MODERATOR.ALT_DETECTION.TABLE.TYPE()}</th>
-        <th class="score">{$LL.MODERATOR.ALT_DETECTION.TABLE.SCORE()}</th>
-        <th class="data mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DATA()}</th>
-        <th class="date mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DETECTED_AT()}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each flags as flag, i (flag.id)}
-        <tr class="row-{i % 2}">
-          <td class="players">
-            {#each flag.users as user (user.user_id)}
-              {#if user.player}
-                <a href="/{$page.params.lang}/registry/players/profile?id={user.player.id}">
-                  <div class="player-name">
-                    <Flag country_code={user.player.country_code} />
-                    {user.player.name}
-                  </div>
-                </a>
-              {:else}
-                User ID {user.user_id}
-              {/if}
+  <Table data={flags} let:item={flag} let:idx>
+    <colgroup slot="colgroup">
+      <col class="players" />
+      <col class="type" />
+      <col class="score" />
+      <col class="data mobile-hide" />
+      <col class="date mobile-hide" />
+    </colgroup>
+    <tr slot="header">
+      <th class="players">{$LL.MODERATOR.ALT_DETECTION.TABLE.PLAYERS()}</th>
+      <th class="type">{$LL.MODERATOR.ALT_DETECTION.TABLE.TYPE()}</th>
+      <th class="score">{$LL.MODERATOR.ALT_DETECTION.TABLE.SCORE()}</th>
+      <th class="data mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DATA()}</th>
+      <th class="date mobile-hide">{$LL.MODERATOR.ALT_DETECTION.TABLE.DETECTED_AT()}</th>
+    </tr>
+
+    <tr class="row">
+      <td class="players">
+        {#each flag.users as user (user.user_id)}
+          {#if user.player}
+            <a href="/{$page.params.lang}/registry/players/profile?id={user.player.id}">
+              <div class="player-name">
+                <Flag country_code={user.player.country_code} />
+                {user.player.name}
+              </div>
+            </a>
+          {:else}
+            User ID {user.user_id}
+          {/if}
+        {/each}
+      </td>
+      <td class="type">
+        {flag.type}
+      </td>
+      <td class="score">
+        {flag.score}
+      </td>
+      <td class="data mobile-hide">
+        {#if show_details.has(idx)}
+          <div>
+            <Button on:click={() => toggle_details(idx)}>{$LL.COMMON.HIDE()}</Button>
+          </div>
+          <div>
+            {#each jsonToFieldString(flag.data) as entry, index (index)}
+              <div>
+                {entry[0]}: {entry[1]}
+              </div>
             {/each}
-          </td>
-          <td class="type">
-            {flag.type}
-          </td>
-          <td class="score">
-            {flag.score}
-          </td>
-          <td class="data mobile-hide">
-            {#if show_details.has(i)}
-              <div>
-                <Button on:click={() => toggle_details(i)}>{$LL.COMMON.HIDE()}</Button>
-              </div>
-              <div>
-                {#each jsonToFieldString(flag.data) as entry, index (index)}
-                  <div>
-                    {entry[0]}: {entry[1]}
-                  </div>
-                {/each}
-              </div>
-            {:else}
-              <Button on:click={() => toggle_details(i)}>{$LL.COMMON.SHOW()}</Button>
-            {/if}
-          </td>
-          <td class="date mobile-hide">
-            {new Date(flag.date * 1000).toLocaleString($locale, options)}
-          </td>
-        </tr>
-      {/each}
-    </tbody>
+          </div>
+        {:else}
+          <Button on:click={() => toggle_details(idx)}>{$LL.COMMON.SHOW()}</Button>
+        {/if}
+      </td>
+      <td class="date mobile-hide">
+        {new Date(flag.date * 1000).toLocaleString($locale, options)}
+      </td>
+    </tr>
   </Table>
 {/if}
 

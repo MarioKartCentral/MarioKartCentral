@@ -11,7 +11,7 @@
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import PrimaryBadge from '$lib/components/badges/PrimaryBadge.svelte';
   import type { TeamTournamentPlayer } from '$lib/types/team-tournament-player';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
@@ -243,62 +243,59 @@
       {#if players.length}
         <div class="section">
           <b>{$LL.TOURNAMENTS.REGISTRATIONS.SELECTED_PLAYERS()}</b>
-          <Table>
-            <col class="country" />
-            <col class="name" />
-            <col class="friend-codes mobile-hide" />
-            <col class="actions" />
-            <thead>
-              <tr>
-                <th />
-                <th>{$LL.COMMON.NAME()}</th>
-                <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
-                <th>{$LL.COMMON.ACTIONS()}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each players as player, i (player.player_id)}
-                <tr class="row-{i % 2}">
-                  <td>
-                    <Flag country_code={player.country_code} />
-                  </td>
-                  <td>
-                    <TournamentPlayerName
-                      player_id={player.player_id}
-                      name={player.name}
-                      is_squad_captain={player.is_captain}
-                      is_representative={player.is_representative}
-                      is_bagger_clause={player.is_bagger_clause}
-                      is_banned={player.is_banned}
-                    />
-                  </td>
-                  <td class="mobile-hide">
-                    <FriendCodeDisplay friend_codes={player.friend_codes} />
-                  </td>
-                  <td>
-                    <ChevronDownSolid class="cursor-pointer" />
-                    <Dropdown>
-                      <DropdownItem on:click={() => toggleCaptain(player)}
-                        >{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_CAPTAIN()}</DropdownItem
-                      >
-                      {#if !player.is_captain}
-                        <DropdownItem on:click={() => toggleRep(player)}
-                          >{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_REPRESENTATIVE()}</DropdownItem
-                        >
-                      {/if}
-                      {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
-                        <DropdownItem on:click={() => toggleBagger(player)}
-                          >{$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_BAGGER()}</DropdownItem
-                        >
-                      {/if}
-                      <DropdownItem on:click={() => removePlayer(player)}
-                        >{$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}</DropdownItem
-                      >
-                    </Dropdown>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
+          <Table data={players} let:item={player}>
+            <colgroup slot="colgroup">
+              <col class="country" />
+              <col class="name" />
+              <col class="friend-codes mobile-hide" />
+              <col class="actions" />
+            </colgroup>
+            <tr slot="header">
+              <th />
+              <th>{$LL.COMMON.NAME()}</th>
+              <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
+              <th>{$LL.COMMON.ACTIONS()}</th>
+            </tr>
+
+            <tr class="row">
+              <td>
+                <Flag country_code={player.country_code} />
+              </td>
+              <td>
+                <TournamentPlayerName
+                  player_id={player.player_id}
+                  name={player.name}
+                  is_squad_captain={player.is_captain}
+                  is_representative={player.is_representative}
+                  is_bagger_clause={player.is_bagger_clause}
+                  is_banned={player.is_banned}
+                />
+              </td>
+              <td class="mobile-hide">
+                <FriendCodeDisplay friend_codes={player.friend_codes} />
+              </td>
+              <td>
+                <ChevronDownSolid class="cursor-pointer" />
+                <Dropdown>
+                  <DropdownItem on:click={() => toggleCaptain(player)}>
+                    {$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_CAPTAIN()}
+                  </DropdownItem>
+                  {#if !player.is_captain}
+                    <DropdownItem on:click={() => toggleRep(player)}>
+                      {$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_REPRESENTATIVE()}
+                    </DropdownItem>
+                  {/if}
+                  {#if tournament.bagger_clause_enabled && !tournament.team_members_only}
+                    <DropdownItem on:click={() => toggleBagger(player)}>
+                      {$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_BAGGER()}
+                    </DropdownItem>
+                  {/if}
+                  <DropdownItem on:click={() => removePlayer(player)}>
+                    {$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}
+                  </DropdownItem>
+                </Dropdown>
+              </td>
+            </tr>
           </Table>
         </div>
       {/if}
@@ -342,9 +339,9 @@
             })}
           </div>
         {/if}
-        <Button on:click={register} {working} disabled={!can_register}
-          >{$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}</Button
-        >
+        <Button on:click={register} {working} disabled={!can_register}>
+          {$LL.TOURNAMENTS.REGISTRATIONS.REGISTER()}
+        </Button>
       </div>
     {/if}
   </div>

@@ -234,7 +234,7 @@
     <div class="flex items-center gap-3">
       <Button href="/{$page.params.lang}/time-trials/{gameId}" extra_classes="back-button text-white mb-4">
         <ArrowLeftOutline class="w-4 h-4 mr-2" />
-        Back to Game homepage
+        {$LL.TIME_TRIALS.BACK_TO_GAME_HOMEPAGE()}
       </Button>
     </div>
 
@@ -274,9 +274,9 @@
           <!-- First row: Player Search -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="player-search" class="block text-sm font-medium mb-2"> Player </label>
+              <label for="player-search" class="block text-sm font-medium mb-2">{$LL.TIME_TRIALS.PLAYER()}</label>
               <PlayerSearch bind:player={searchPlayer} show_add_button={false} bind:query={searchQuery} />
-              <p class="text-sm text-gray-400 mt-1">Search for a player to view their timesheet</p>
+              <p class="text-sm text-gray-400 mt-1">{$LL.TIME_TRIALS.SEARCH_FOR_A_PLAYER()}</p>
             </div>
           </div>
 
@@ -290,9 +290,9 @@
                   bind:checked={includeUnvalidated}
                   class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
                 />
-                <span>Show times pending validation</span>
+                <span>{$LL.TIME_TRIALS.SHOW_TIMES.PENDING_VALIDATION()}</span>
               </label>
-              <p class="text-xs mt-1">Include times awaiting validation review</p>
+              <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_AWAITING_VALIDATION()}</p>
             </div>
 
             <!-- Show Times Without Proof Checkbox -->
@@ -303,9 +303,9 @@
                   bind:checked={includeProofless}
                   class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
                 />
-                <span>Show times without proof</span>
+                <span>{$LL.TIME_TRIALS.SHOW_TIMES.PENDING_WITHOUT_PROOF()}</span>
               </label>
-              <p class="text-xs mt-1">Include times submitted without evidence</p>
+              <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_SUBMITTED_WITHOUT_EVIDENCE()}</p>
             </div>
 
             <!-- Show Outdated Times Checkbox -->
@@ -316,9 +316,9 @@
                   bind:checked={includeOutdated}
                   class="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
                 />
-                <span>Show outdated times</span>
+                <span>{$LL.TIME_TRIALS.SHOW_TIMES.OUTDATED()}</span>
               </label>
-              <p class="text-xs mt-1">Include older submissions that have been beaten</p>
+              <p class="text-xs mt-1">{$LL.TIME_TRIALS.SHOW_TIMES.INCLUDE_OLDER_SUBMISSIONS()}</p>
             </div>
           </div>
         </div>
@@ -327,7 +327,7 @@
       {#key timeTrials}
         {#if !selectedPlayer}
           <div class="bg-gray-800 rounded-lg p-8 text-center border border-gray-700">
-            <p class="text-gray-400">Search for a player above to view their timesheet.</p>
+            <p class="text-gray-400">{$LL.TIME_TRIALS.SEARCH_FOR_A_PLAYER_ABOVE()}</p>
           </div>
         {:else if isLoading}
           <div class="flex justify-center items-center py-12">

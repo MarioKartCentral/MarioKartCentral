@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { TeamRoster } from '$lib/types/team-roster';
-  import Table from '$lib/components/common/Table.svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
   import { LL, locale } from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
@@ -61,37 +61,39 @@
   {roster.players.length}
   {roster.players.length !== 1 ? $LL.TEAMS.PROFILE.PLAYERS() : $LL.TEAMS.PROFILE.PLAYER()}
   {#if roster.players.length}
-    <Table>
-      <col class="country" />
-      <col class="name" />
-      <col class="fc mobile-hide" />
-      <col class="join_date mobile-hide" />
-      <thead>
-        <tr>
-          <th></th>
-          <th>{$LL.COMMON.NAME()}</th>
-          <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
-          <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each roster.players as player, i (player.player_id)}
-          <tr class="row-{i % 2} {user_info.player_id === player.player_id ? 'me' : ''}">
-            <td><Flag country_code={player.country_code} /></td>
-            <td>
-              <RosterPlayerName {player} />
-            </td>
-            <td class="mobile-hide">
-              {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
-                {#if i === 0}
-                  {fc.fc}
-                {/if}
-              {/each}
-            </td>
-            <td class="mobile-hide">{new Date(player.join_date * 1000).toLocaleString($locale, options)}</td>
-          </tr>
-        {/each}
-      </tbody>
+    <Table data={roster.players} let:item={player}>
+      <colgroup slot="colgroup">
+        <col class="country" />
+        <col class="name" />
+        <col class="fc mobile-hide" />
+        <col class="join_date mobile-hide" />
+      </colgroup>
+
+      <tr slot="header">
+        <th></th>
+        <th>{$LL.COMMON.NAME()}</th>
+        <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODE()}</th>
+        <th class="mobile-hide">{$LL.TEAMS.PROFILE.JOIN_DATE()}</th>
+      </tr>
+
+      <tr class="row" class:me={user_info.player_id === player.player_id}>
+        <td>
+          <Flag country_code={player.country_code} />
+        </td>
+        <td>
+          <RosterPlayerName {player} />
+        </td>
+        <td class="mobile-hide">
+          {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
+            {#if i === 0}
+              {fc.fc}
+            {/if}
+          {/each}
+        </td>
+        <td class="mobile-hide">
+          {new Date(player.join_date * 1000).toLocaleString($locale, options)}
+        </td>
+      </tr>
     </Table>
   {/if}
   {#if roster.players.find((r) => r.player_id === user_info.player_id)}
@@ -122,9 +124,5 @@
   }
   col.join_date {
     width: 30%;
-  }
-  .banned_name {
-    opacity: 0.7;
-    text-decoration: line-through;
   }
 </style>
