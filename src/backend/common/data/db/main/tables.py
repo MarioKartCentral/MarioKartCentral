@@ -395,6 +395,7 @@ class TeamRoster(TableModel):
     mode: str
     name: str | None
     tag: str | None
+    color: int | None
     creation_date: int
     is_recruiting: bool
     is_active: bool
@@ -409,6 +410,7 @@ class TeamRoster(TableModel):
             mode TEXT NOT NULL,
             name TEXT,
             tag TEXT,
+            color INTEGER,
             creation_date INTEGER NOT NULL,
             is_recruiting BOOLEAN NOT NULL,
             is_active BOOLEAN NOT NULL,

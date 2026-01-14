@@ -222,9 +222,9 @@ class ViewTransfersCommand(Command[TransferList]):
             # since it's possible one of them doesn't exist.
             async with db.execute(f"""SELECT i.id, i.date, i.approval_status, i.is_bagger_clause,
                                     t1.id, t1.name, t1.tag, t1.color,
-                                    i.roster_id, r1.name, r1.tag, r1.game, r1.mode, 
+                                    i.roster_id, r1.name, r1.tag, r1.game, r1.mode, r1.color,
                                     t2.id, t2.name, t2.tag, t2.color,
-                                    i.roster_leave_id, r2.name, r2.tag, r2.game, r2.mode, 
+                                    i.roster_leave_id, r2.name, r2.tag, r2.game, r2.mode, r2.color,
                                     p.id, p.name, p.country_code
                                     FROM team_transfers i
                                     LEFT OUTER JOIN team_rosters r1 ON i.roster_id = r1.id
@@ -239,9 +239,9 @@ class ViewTransfersCommand(Command[TransferList]):
                 for row in rows:
                     (invite_id, date, approval_status, is_bagger_clause,
                      join_team_id, join_team_name, join_team_tag, join_team_color, 
-                     join_roster_id, join_roster_name, join_roster_tag, join_roster_game, join_roster_mode,
+                     join_roster_id, join_roster_name, join_roster_tag, join_roster_game, join_roster_mode, join_roster_color,
                      leave_team_id, leave_team_name, leave_team_tag, leave_team_color, 
-                     leave_roster_id, leave_roster_name, leave_roster_tag, leave_roster_game, leave_roster_mode,
+                     leave_roster_id, leave_roster_name, leave_roster_tag, leave_roster_game, leave_roster_mode, leave_roster_color,
                      player_id, player_name, player_country_code) = row
                     
                     if join_roster_id is not None:
@@ -249,30 +249,35 @@ class ViewTransfersCommand(Command[TransferList]):
                             join_roster_name = join_team_name
                         if join_roster_tag is None:
                             join_roster_tag = join_team_tag
+                        if join_roster_color is None:
+                            join_roster_color = join_team_color
 
                     if leave_roster_id is not None:
                         if leave_roster_name is None:
                             leave_roster_name = leave_team_name
                         if leave_roster_tag is None:
                             leave_roster_tag = leave_team_tag
+                        if leave_roster_color is None:
+                            leave_roster_color = leave_team_color
 
                     # in case the transfer is just a player leaving,
                     # need to get the game/mode from the roster that was left
                     game = join_roster_game
                     mode = join_roster_mode
+                    color = join_roster_color
                     if not game:
                         game = leave_roster_game
                     if not mode:
                         mode = leave_roster_mode
 
                     if leave_roster_id:
-                        leave_roster = RosterBasic(leave_team_id, leave_team_name, leave_team_tag, leave_team_color, leave_roster_id,
+                        leave_roster = RosterBasic(leave_team_id, leave_team_name, leave_team_tag, leave_roster_color if leave_roster_color else leave_team_color, leave_roster_id,
                                                    leave_roster_name, leave_roster_tag)
                     else:
                         leave_roster = None
 
                     if join_roster_id:
-                        join_roster = RosterBasic(join_team_id, join_team_name, join_team_tag, join_team_color, join_roster_id,
+                        join_roster = RosterBasic(join_team_id, join_team_name, join_team_tag, join_roster_color if join_roster_color else join_team_color, join_roster_id,
                                                      join_roster_name, join_roster_tag)
                     else:
                         join_roster = None

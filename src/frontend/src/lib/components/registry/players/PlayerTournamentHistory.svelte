@@ -106,7 +106,7 @@
     <div class="w-full m-auto">
       <form on:submit|preventDefault={filterData}>
         <div class="flex flex-row flex-wrap items-center justify-center gap-2">
-          <GameModeSelect bind:game bind:mode all_option hide_labels is_team inline />
+          <GameModeSelect bind:game bind:mode all_option hide_labels is_team />
           <div class="flex flex-row flex-wrap items-center justify-center gap-2">
             <div class="flex flex-row items-center">
               <div class="w-12 mx-2">{$LL.COMMON.FROM()}</div>

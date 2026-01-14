@@ -12,6 +12,7 @@
   import { check_team_permission, team_permissions } from '$lib/util/permissions';
   import { sortFilterRosters } from '$lib/util/util';
   import Input from '$lib/components/common/Input.svelte';
+  import ColorSelect from '$lib/components/common/ColorSelect.svelte';
 
   export let is_mod = false;
 
@@ -26,6 +27,15 @@
 
   let working = false;
 
+  let createParams = {
+    name: null,
+    game: null,
+    mode: null,
+    tag: null,
+    color: undefined,
+    is_recruiting: true,
+  };
+
   onMount(async () => {
     let param_id = $page.url.searchParams.get('id');
     id = Number(param_id);
@@ -37,19 +47,11 @@
     team = body;
   });
 
-  async function createRoster(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+  async function createRoster() {
     working = true;
-    const data = new FormData(event.currentTarget);
-    function getOptionalValue(name: string) {
-      return data.get(name) ? data.get(name)?.toString() : '';
-    }
     const payload = {
       team_id: team.id,
-      game: data.get('game')?.toString(),
-      mode: data.get('mode')?.toString(),
-      name: data.get('name')?.toString(),
-      tag: data.get('tag')?.toString(),
-      is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
+      ...createParams,
     };
     const endpoint = '/api/registry/teams/requestCreateRoster';
     const response = await fetch(endpoint, {
@@ -86,34 +88,40 @@
   {#if check_team_permission(user_info, team_permissions.create_rosters, id)}
     <Section header={$LL.TEAMS.EDIT.NEW_ROSTER()}>
       <form method="post" on:submit|preventDefault={createRoster}>
-        <div class="option">
-          <GameModeSelect flex required is_team />
-        </div>
-
-        <div class="option">
+        <GameModeSelect
+          required
+          is_team
+          bind:game={createParams.game}
+          bind:mode={createParams.mode}
+          containerClass="mb-[10px] sm:flex sm:items-center"
+        />
+        <div class="option sm:flex sm:items-center">
+          <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
           <div>
-            <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
-          </div>
-          <div>
-            <Input name="name" type="text" required maxlength={32} no_white_space />
-          </div>
-        </div>
-        <div class="option">
-          <div>
-            <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
-          </div>
-          <div>
-            <Input name="tag" type="text" required maxlength={8} />
+            <Input name="name" type="text" required maxlength={32} no_white_space bind:value={createParams.name} />
           </div>
         </div>
-        <div class="option">
+        <div class="option sm:flex sm:items-center">
+          <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
           <div>
-            <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
+            <Input name="tag" type="text" required maxlength={8} bind:value={createParams.tag} />
           </div>
+        </div>
+        <div class="option sm:flex sm:items-center">
+          <label for="new-roster-color-select">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
+          <ColorSelect
+            id="new-roster-color-select"
+            name="color"
+            bind:tag={createParams.tag}
+            bind:color={createParams.color}
+          />
+        </div>
+        <div class="option sm:flex sm:items-center">
+          <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
           <div>
-            <select name="recruiting">
-              <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-              <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
+            <select name="recruiting" bind:value={createParams.is_recruiting}>
+              <option value={true}>{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
+              <option value={false}>{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
             </select>
           </div>
         </div>
@@ -133,7 +141,5 @@
   }
   .option {
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
   }
 </style>

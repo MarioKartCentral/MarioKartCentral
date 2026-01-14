@@ -70,17 +70,17 @@
       <div>
         {$LL.TEAMS.EDIT.NAME_TAG_CHANGE_PENDING()}
       </div>
-      <div>
+      <div class="option">
         <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
         <input name="name" type="text" value={r.new_name} required disabled />
       </div>
-      <div>
+      <div class="option">
         <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
         <input name="tag" type="text" value={r.new_tag} required disabled />
       </div>
     {/each}
   {:else}
-    <div>
+    <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.ROSTER_NAME()}</label>
       <Input
         name="name"
@@ -92,7 +92,7 @@
         no_white_space
       />
     </div>
-    <div>
+    <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
       <Input
         name="tag"
@@ -104,7 +104,11 @@
         no_white_space
       />
     </div>
-    <Button type="submit" disabled={days_until_change > 0} {working}>{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button>
+    <div class="my-2">
+      <Button type="submit" disabled={days_until_change > 0} {working}
+        >{$LL.TEAMS.EDIT.REQUEST_NAME_TAG_CHANGE()}</Button
+      >
+    </div>
   {/if}
 </form>
 

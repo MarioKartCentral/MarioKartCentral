@@ -78,8 +78,8 @@
     <div>
       <div>
         <form on:submit|preventDefault={filterData}>
-          <div class="flex flex-row flex-wrap items-center justify-center">
-            <GameModeSelect bind:game bind:mode hide_labels is_team all_option inline />
+          <div class="flex gap-2 flex-row flex-wrap items-center justify-center">
+            <GameModeSelect bind:game bind:mode hide_labels is_team all_option />
             {#if check_permission($user, permissions.edit_player)}
               <div class="ml-1 my-2">
                 <select bind:value={show_hidden}>

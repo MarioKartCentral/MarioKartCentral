@@ -165,9 +165,8 @@
         </div>
       </div>
     {/if}
-    <div class="option">
-      <GameModeSelect bind:game={data.game} bind:mode={data.mode} />
-    </div>
+
+    <GameModeSelect bind:game={data.game} bind:mode={data.mode} containerClass="mb-[10px]" />
   </Section>
   <Section header={$LL.TOURNAMENTS.SERIES.SHORT_DESCRIPTION()}>
     <textarea bind:value={data.short_description} maxlength="500" />

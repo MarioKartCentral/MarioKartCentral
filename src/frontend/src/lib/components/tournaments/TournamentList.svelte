@@ -77,10 +77,8 @@
     {/if}
   </div>
   <form on:submit|preventDefault={search}>
-    <div class="flex">
-      <div class="option">
-        <GameModeSelect bind:game bind:mode flex all_option inline hide_labels />
-      </div>
+    <div class="flex gap-2">
+      <GameModeSelect bind:game bind:mode all_option hide_labels />
       <div class="option">
         <div>
           <input name="name" bind:value={name} placeholder={$LL.TOURNAMENTS.SEARCH_FOR_TOURNAMENTS()} />

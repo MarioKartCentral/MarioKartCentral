@@ -71,9 +71,8 @@
 
 <form method="post" on:submit|preventDefault={createTeam}>
   <Section header={$LL.TEAMS.GENERAL_INFO()}>
-    <div class="option">
-      <GameModeSelect is_team flex />
-    </div>
+    <GameModeSelect is_team containerClass="mb-[10px] flex items-center" />
+
     <div class="option">
       <label for="name">{$LL.TEAMS.EDIT.TEAM_NAME()}</label>
       <Input name="name" type="text" required no_white_space minlength={2} maxlength={32} />

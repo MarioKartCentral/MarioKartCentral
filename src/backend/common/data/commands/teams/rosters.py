@@ -14,7 +14,7 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
         edits: list[RosterEdit] = []
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
-                                  t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
+                                  r.color, t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
                                   FROM roster_edits re JOIN team_rosters r ON re.roster_id = r.id
                                   JOIN teams t ON r.team_id = t.id
                                   LEFT JOIN players p ON re.handled_by = p.id
@@ -23,11 +23,12 @@ class ViewRosterEditHistoryCommand(Command[list[RosterEdit]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, roster_id, old_name, new_name, old_tag, new_tag, date, 
-                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
+                     approval_status, roster_color, team_color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
                         handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
-                    edits.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
+                    roster_color = roster_color if roster_color else team_color
+                    edits.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, roster_color, date, approval_status, handled_by))
         return edits
     
 @dataclass
@@ -37,6 +38,7 @@ class CreateRosterCommand(Command[None]):
     mode: str
     name: str | None
     tag: str | None
+    color: int | None
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
@@ -60,26 +62,28 @@ class CreateRosterCommand(Command[None]):
             if self.mode not in valid_game_modes[self.game]:
                 raise Problem(f"Invalid mode (valid modes: {', '.join(valid_game_modes[self.game])})", status=400)
             # get team name and tag
-            async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+            async with db.execute("SELECT name, tag, color, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('No team found', status=404)
-                team_name, team_tag, team_approval = row
+                team_name, team_tag, team_color, team_approval = row
                 if team_approval != 'approved':
                     raise Problem('Cannot create roster if team is not approved')
-            # set name and tag to None if they are equal to main team so that they change if the team does
+            # set name, tag and color to None if they are equal to main team so that they change if the team does
             if self.name == team_name:
                 self.name = None
             if self.tag == team_tag:
                 self.tag = None
+            if self.color == team_color:
+                self.color = None
             # check to make sure we aren't making 2 rosters with the same name
             async with db.execute("SELECT name FROM team_rosters WHERE team_id = ? AND game = ? AND mode = ? AND name IS ?", (self.team_id, self.game, self.mode, self.name)) as cursor:
                 row = await cursor.fetchone()
                 if row is not None:
                     raise Problem('Only one roster per game/mode may use the same name', status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, color, creation_date, is_recruiting, is_active, approval_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.team_id, self.game, self.mode, self.name, self.tag, self.color, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             await db.commit()
 
 @dataclass
@@ -88,6 +92,7 @@ class EditRosterCommand(Command[None]):
     team_id: int
     name: str
     tag: str
+    color: int
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
@@ -101,21 +106,24 @@ class EditRosterCommand(Command[None]):
         if self.tag and len(self.tag) > 8:
             raise Problem("Roster tag must be 8 characters or less", status=400)
         async with db_wrapper.connect() as db:
-            # get team name and tag
-            async with db.execute("SELECT name, tag, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+            # get team name, tag and color
+            async with db.execute("SELECT name, tag, color, approval_status FROM teams WHERE id = ?", (self.team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('No team found', status=404)
-                team_name, team_tag, team_approval = row
+                team_name, team_tag, team_color, team_approval = row
                 if team_approval != "approved" and self.approval_status == "approved":
                     raise Problem("Team must be approved for roster to be approved")
-            # set name and tag to None if they are equal to main team so that they change if the team does
+            # set name, tag and color to None if they are equal to main team so that they change if the team does
             name = self.name
             tag = self.tag
+            color = self.color
             if self.name == team_name:
                 name = None
             if self.tag == team_tag:
                 tag = None
+            if self.color == team_color:
+                color = None
             # get the current roster's name and check if it exists
             async with db.execute("SELECT name, tag, game, mode FROM team_rosters WHERE id = ? AND team_id = ?", (self.roster_id, self.team_id)) as cursor:
                 row = await cursor.fetchone()
@@ -134,20 +142,29 @@ class EditRosterCommand(Command[None]):
                 old_tag = roster_tag if roster_tag else team_tag
                 await db.execute("""INSERT INTO roster_edits(roster_id, old_name, new_name, old_tag, new_tag, date, approval_status, handled_by)
                                     VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (self.roster_id, old_name, self.name, old_tag, self.tag, now, "approved", self.mod_player_id))
-            await db.execute("""UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, is_recruiting = ?, is_active = ?, approval_status = ?
+            await db.execute("""UPDATE team_rosters SET team_id = ?, name = ?, tag = ?, color = ?, is_recruiting = ?, is_active = ?, approval_status = ?
                                 WHERE id = ?""",
-                             (self.team_id, name, tag, self.is_recruiting, self.is_active, self.approval_status, self.roster_id))
+                             (self.team_id, name, tag, color, self.is_recruiting, self.is_active, self.approval_status, self.roster_id))
             await db.commit()
 
 @dataclass
 class ManagerEditRosterCommand(Command[None]):
     roster_id: int
     team_id: int
+    color: int
     is_recruiting: bool
 
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
-            async with db.execute("UPDATE team_rosters SET is_recruiting = ? WHERE id = ? AND team_id = ?", (self.is_recruiting, self.roster_id, self.team_id)) as cursor:
+            # set team color to None if they are equal to main team
+            async with db.execute("SELECT color FROM teams WHERE id = ?", (self.team_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem('No team found', status=404)
+                team_color, = row
+            if self.color == team_color:
+                self.color = None
+            async with db.execute("UPDATE team_rosters SET color = ?, is_recruiting = ? WHERE id = ? AND team_id = ?", (self.color, self.is_recruiting, self.roster_id, self.team_id)) as cursor:
                 rows = cursor.rowcount
                 if not rows:
                     raise Problem("Roster not found", status=404)
@@ -360,16 +377,17 @@ class ListRosterEditRequestsCommand(Command[RosterEditList]):
                                 LEFT JOIN players p ON re.handled_by = p.id
                                 WHERE re.approval_status = ?"""
             async with db.execute(f"""SELECT re.id, re.roster_id, re.old_name, re.new_name, re.old_tag, re.new_tag, re.date, re.approval_status,
-                                  t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
+                                  r.color, t.color, t.id, re.handled_by, p.name, p.country_code, p.is_banned
                                   {request_query} ORDER BY re.date LIMIT ? OFFSET ?""", (filter.approval_status, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, roster_id, old_name, new_name, old_tag, new_tag, date, 
-                     approval_status, color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
+                     approval_status, roster_color, team_color, team_id, handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
                         handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
-                    requests.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
+                    roster_color = roster_color if roster_color else team_color
+                    requests.append(RosterEdit(request_id, roster_id, team_id, old_name, old_tag, new_name, new_tag, roster_color, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"
             async with db.execute(count_query, (filter.approval_status,)) as cursor:
@@ -413,7 +431,7 @@ class ListRostersCommand(Command[RosterList]):
             from_where_clause = f"""FROM team_rosters r
                                         JOIN teams t ON r.team_id = t.id
                                         {where_clause}"""
-            rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag,
+            rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag, r.color,
                                         r.creation_date, r.is_recruiting, r.is_active, r.approval_status,
                                         t.name, t.tag, t.color
                                         {from_where_clause} LIMIT ? OFFSET ?
@@ -422,12 +440,13 @@ class ListRostersCommand(Command[RosterList]):
             async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting,
-                     is_active, approval_status, team_name, team_tag, team_color) = row
+                    (roster_id, team_id, game, mode, roster_name, roster_tag, roster_color, creation_date,
+                     is_recruiting, is_active, approval_status, team_name, team_tag, team_color) = row
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
+                    roster_color = roster_color if roster_color else team_color
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
-                                        creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
+                                        creation_date, is_recruiting, is_active, approval_status, roster_color, [], [])
                     rosters.append(roster)
 
             count_query = f"""SELECT COUNT(*) FROM (SELECT DISTINCT r.id {from_where_clause})"""
@@ -444,7 +463,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
     tournament_id: int
     game: Game
     mode: GameMode
-    
+
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             rosters_query = """
@@ -467,18 +486,19 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
             variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id, True)
             rosters: list[TeamRoster] = []
             roster_dict: dict[int, list[RosterPlayerInfo]] = {}
-            async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.creation_date,
+            async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.color, tr.creation_date,
                                   tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag, t.color
                                   {rosters_query}""",
                     variable_parameters) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (roster_id, team_id, game, mode, roster_name, roster_tag, creation_date, is_recruiting, 
+                    (roster_id, team_id, game, mode, roster_name, roster_tag, roster_color, creation_date, is_recruiting, 
                      is_active, approval_status, team_name, team_tag, team_color) = row
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
+                    roster_color = roster_color if roster_color else team_color
                     roster = TeamRoster(roster_id, team_id, game, mode, roster_name, roster_tag,
-                                        creation_date, is_recruiting, is_active, approval_status, team_color, [], [])
+                                        creation_date, is_recruiting, is_active, approval_status, roster_color, [], [])
                     roster_dict[roster.id] = roster.players
                     rosters.append(roster)
 

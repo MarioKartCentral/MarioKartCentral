@@ -31,6 +31,7 @@
   import { page } from '$app/stores';
   import { game_fc_types } from '$lib/util/util';
   import Input from '$lib/components/common/Input.svelte';
+  import ColorSelect from '$lib/components/common/ColorSelect.svelte';
 
   export let roster: TeamRoster;
   export let is_mod = false;
@@ -156,10 +157,12 @@
     function getOptionalValue(name: string) {
       return data.get(name) ? data.get(name)?.toString() : '';
     }
+    const color = data.get('color');
     const payload = {
       roster_id: roster.id,
       team_id: roster.team_id,
       is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
+      color: color && parseInt(color.toString()),
     };
     const endpoint = '/api/registry/teams/editRoster';
     const response = await fetch(endpoint, {
@@ -185,11 +188,13 @@
     function getOptionalValue(name: string) {
       return data.get(name) ? data.get(name)?.toString() : '';
     }
+    const color = data.get('color');
     const payload = {
       roster_id: roster.id,
       name: data.get('name')?.toString(),
       tag: data.get('tag')?.toString(),
       team_id: roster.team_id,
+      color: color && parseInt(color.toString()),
       is_recruiting: getOptionalValue('recruiting') === 'true' ? true : false,
       is_active: getOptionalValue('is_active') === 'true' ? true : false,
       approval_status: data.get('approval_status'),
@@ -458,15 +463,27 @@
 
 <Dialog bind:this={edit_dialog} header={$LL.TEAMS.EDIT.EDIT_ROSTER()}>
   <RosterNameTagRequest {roster} />
-  <br />
   <form method="post" on:submit|preventDefault={editRoster}>
-    <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
-    <select name="recruiting">
-      <option value="true">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option>
-      <option value="false">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option>
-    </select>
-    <br />
-    <Button {working} type="submit">{$LL.COMMON.SUBMIT()}</Button>
+    <div class="option">
+      <label for="roster-color-select">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
+      <ColorSelect id="roster-color-select" name="color" tag={roster.tag} color={roster.color} />
+    </div>
+    <div class="option">
+      <label for="recruiting">{$LL.TEAMS.EDIT.RECRUITMENT_STATUS()}</label>
+      <div>
+        <select name="recruiting">
+          <option value="true" selected={roster.is_recruiting}
+            >{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.RECRUITING()}</option
+          >
+          <option value="false" selected={!roster.is_recruiting}
+            >{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.NOT_RECRUITING()}</option
+          >
+        </select>
+      </div>
+    </div>
+    <div class="my-2">
+      <Button {working} type="submit">{$LL.COMMON.SUBMIT()}</Button>
+    </div>
   </form>
 </Dialog>
 
@@ -479,6 +496,12 @@
     <div class="option">
       <label for="tag">{$LL.TEAMS.EDIT.ROSTER_TAG()}</label>
       <Input name="tag" type="text" value={roster.tag} required maxlength={8} no_white_space />
+    </div>
+    <div class="option">
+      <label for="moderator-roster-color-select">{$LL.TEAMS.EDIT.TEAM_COLOR()}</label>
+      <div class="inline-block">
+        <ColorSelect id="moderator-roster-color-select" name="color" tag={roster.tag} color={roster.color} />
+      </div>
     </div>
     <div class="option">
       <label for="recruiting">{$LL.TEAMS.PROFILE.RECRUITMENT_STATUS.STATUS()}</label>

@@ -392,15 +392,15 @@ class GetSquadDetailsCommand(Command[TournamentSquadDetails]):
 
             rosters: list[RosterBasic] = []
             # get teams connected to squads
-            async with db.execute("""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+            async with db.execute("""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, tr.color, t.name, t.tag, t.color
                                   FROM team_squad_registrations tsr
                                   JOIN team_rosters tr ON tsr.roster_id = tr.id
                                   JOIN teams t ON tr.team_id = t.id
                                   WHERE tsr.registration_id = ?""", (self.registration_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    registration_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
-                    roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
+                    registration_id, roster_id, team_id, roster_name, roster_tag, roster_color, team_name, team_tag, team_color = row
+                    roster = RosterBasic(team_id, team_name, team_tag, roster_color if roster_color else team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
                     rosters.append(roster)
 
             async with db.execute("""SELECT t.id, t.player_id, t.is_squad_captain, t.is_representative, t.timestamp, t.is_checked_in, 
