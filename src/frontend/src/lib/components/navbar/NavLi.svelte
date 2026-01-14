@@ -2,6 +2,7 @@
   import { getContext } from 'svelte';
   import { twMerge } from 'tailwind-merge';
   import type { NavbarLiType } from 'flowbite-svelte/NavUl.svelte';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import { page } from '$app/stores';
 
   export let nav_name = '';
@@ -18,21 +19,13 @@
     navUrl = value;
   });
 
-  function checkSelectedNav(name: string) {
-    if ($page.data.activeNavItem === name) {
-      return 'text-white font-bold underline underline-offset-4';
-    }
-    return '';
-  }
-
   $: active = navUrl ? href === navUrl : false;
 
   $: liClass = twMerge(
-    `block py-2 pe-4 ps-3 desktop:p-0 rounded-sm desktop:border-0`,
+    `text-white block py-2 pe-4 ps-3 desktop:p-0 rounded-sm desktop:border-0`,
     active ? (activeClass ?? context.activeClass) : (nonActiveClass ?? context.nonActiveClass),
     $$props.class,
     has_dropdown ? 'cursor-pointer' : '',
-    checkSelectedNav(nav_name),
   );
 </script>
 
@@ -53,7 +46,29 @@
     on:mouseleave
     on:mouseover
     class={liClass}
+    class:active={$page.data.activeNavItem === nav_name}
   >
-    <slot />
+    <span><slot /></span>
+    {#if has_dropdown}
+      <ChevronDownOutline class="inline" />
+    {/if}
   </svelte:element>
 </li>
+
+<style>
+  @media (width >= 1100px) {
+    span {
+      position: relative;
+      height: 100%;
+    }
+
+    .active > span::after {
+      position: absolute;
+      background-color: white;
+      content: '';
+      height: 3px;
+      border-radius: 3px;
+      inset: auto 0 -6px 0;
+    }
+  }
+</style>

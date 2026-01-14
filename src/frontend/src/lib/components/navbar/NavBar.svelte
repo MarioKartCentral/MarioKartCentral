@@ -12,7 +12,7 @@
   import NavUlist from './NavUlist.svelte';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import { ChevronDownOutline, BellSolid, BellOutline } from 'flowbite-svelte-icons';
+  import { BellSolid, BellOutline } from 'flowbite-svelte-icons';
   import AlertCount from '$lib/components/common/AlertCount.svelte';
   import { check_permission, series_permissions, permissions } from '$lib/util/permissions';
   import LoginRegister from '$lib/components/login/LoginRegister.svelte';
@@ -63,23 +63,25 @@
     </NavBrand>
   </div>
   <div class="flex items-center desktop:order-2">
-    <div class="nav-user-bar cursor-pointer">
+    <div class="nav-user-bar">
       <LanguagePicker />
     </div>
-    <div class="nav-user-bar cursor-pointer relative">
-      {#if unread_count}
-        <BellSolid size="lg" class="text-yellow-400" />
-        <AlertCount count={unread_count} placement="top-right" />
-      {:else}
-        <BellOutline size="lg" class="text-gray-300" />
-      {/if}
-    </div>
-    <Notification bind:this={notify} />
+    {#if user_info.id !== null}
+      <div class="nav-user-bar cursor-pointer relative">
+        {#if unread_count}
+          <BellSolid size="lg" class="text-yellow-400" />
+          <AlertCount count={unread_count} placement="top-right" />
+        {:else}
+          <BellOutline size="lg" class="text-gray-300" />
+        {/if}
+      </div>
+      <Notification bind:this={notify} />
+    {/if}
     {#if user_info.is_checked}
       {#if user_info.player}
         <div class="flex items-center cursor-pointer nav-user-bar font-bold">
           <Avatar size="sm" src={avatar_url} />
-          <div class="username hidden sm:block">
+          <div class="username hidden xl:block">
             {user_info.player.name}
           </div>
         </div>
@@ -125,7 +127,6 @@
   <NavUlist bind:menu_hidden>
     <NavLi nav_name="REGISTRY" has_dropdown>
       {$LL.NAVBAR.REGISTRY()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       <DropdownItem href="/{$page.params.lang}/registry/players">{$LL.NAVBAR.PLAYERS()}</DropdownItem>
@@ -136,7 +137,6 @@
     </Dropdown>
     <NavLi nav_name="TOURNAMENTS" has_dropdown>
       {$LL.NAVBAR.TOURNAMENTS()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       <DropdownItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENT_LISTING()}</DropdownItem>
@@ -150,7 +150,6 @@
 
     <NavLi nav_name="TIME TRIALS" has_dropdown>
       {$LL.NAVBAR.TIME_TRIALS()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       {#each Object.entries(GAMES) as [gameId, gameName] (gameId)}
@@ -173,7 +172,6 @@
 
     <NavLi has_dropdown>
       {$LL.NAVBAR.DISCORD()}
-      <ChevronDownOutline class="inline" />
     </NavLi>
     <Dropdown>
       <DropdownItem href="https://discord.gg/Pgd8xr6" target="_blank">Site Discord</DropdownItem>
@@ -188,7 +186,6 @@
         {#if mod_action_count}
           <AlertCount count={mod_action_count} />
         {/if}
-        <ChevronDownOutline class="inline" />
       </NavLi>
       <ModPanel />
     {/if}
