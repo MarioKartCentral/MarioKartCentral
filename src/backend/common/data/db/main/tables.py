@@ -10,6 +10,7 @@ class Player(TableModel):
     is_shadow: bool
     is_banned: bool
     join_date: int
+    is_verified: bool
 
     @staticmethod
     def get_create_table_command():
@@ -20,7 +21,8 @@ class Player(TableModel):
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
             is_banned BOOLEAN NOT NULL,
-            join_date INTEGER NOT NULL DEFAULT 0
+            join_date INTEGER NOT NULL DEFAULT 0,
+            is_verified BOOLEAN NOT NULL DEFAULT 0
             )"""
 
 @dataclass

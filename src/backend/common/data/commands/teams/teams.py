@@ -103,16 +103,17 @@ class GetTeamInfoCommand(Command[Team]):
             # use a set for O(1) lookup
             managers = set[int]()
             leaders = set[int]()
-            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, tr.name FROM players p
+            async with db.execute("""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.is_verified, p.join_date, tr.name FROM players p
                 JOIN users u ON u.player_id = p.id
                 JOIN user_team_roles ur ON ur.user_id = u.id
                 JOIN team_roles tr ON tr.id = ur.role_id
                 WHERE ur.team_id = ? AND (tr.name = ? OR tr.name = ?)""", (self.team_id, team_roles.MANAGER, team_roles.LEADER)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, name, country_code, is_hidden, is_shadow, is_banned, join_date, role_name = row
+                    player_id, name, country_code, is_hidden, is_shadow, is_banned, is_verified, join_date, role_name = row
                     if role_name == team_roles.MANAGER:
-                        team.managers.append(Player(player_id, name, country_code, is_hidden, is_shadow, is_banned, join_date, None))
+                        team.managers.append(Player(player_id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned),
+                                                    bool(is_verified), join_date, None))
                         managers.add(player_id)
                     else:
                         leaders.add(player_id)
@@ -367,7 +368,8 @@ class ViewTeamEditHistoryCommand(Command[list[TeamEdit]]):
     async def handle(self, db_wrapper: DBWrapper):
         edits: list[TeamEdit] = []
         async with db_wrapper.connect() as db:
-            async with db.execute("""SELECT r.id, r.team_id, r.old_name, r.new_name, r.old_tag, r.new_tag, r.date, r.approval_status, r.handled_by, p.name, p.country_code, p.is_banned, t.color
+            async with db.execute("""SELECT r.id, r.team_id, r.old_name, r.new_name, r.old_tag, r.new_tag, r.date, r.approval_status, r.handled_by, p.name, p.country_code, 
+                                    p.is_banned, p.is_verified, t.color
                                     FROM team_edits r
                                     JOIN teams t ON r.team_id = t.id
                                     LEFT JOIN players p ON r.handled_by = p.id
@@ -376,10 +378,10 @@ class ViewTeamEditHistoryCommand(Command[list[TeamEdit]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, team_id, old_name, new_name, old_tag, new_tag, date, approval_status, 
-                     handled_by_id, handled_by_name, handled_by_country, handled_by_banned, color) = row
+                     handled_by_id, handled_by_name, handled_by_country, handled_by_banned, handled_by_verified, color) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned), bool(handled_by_verified))
                     edits.append(TeamEdit(request_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
         return edits
 
@@ -430,15 +432,16 @@ class ListTeamEditRequestsCommand(Command[TeamEditList]):
                             WHERE r.approval_status = ?"""
         
         async with db_wrapper.connect() as db:
-            async with db.execute(f"""SELECT r.id, r.team_id, r.old_name, r.new_name, r.old_tag, r.new_tag, r.date, r.approval_status, r.handled_by, p.name, p.country_code, p.is_banned, t.color
+            async with db.execute(f"""SELECT r.id, r.team_id, r.old_name, r.new_name, r.old_tag, r.new_tag, r.date, r.approval_status, r.handled_by, p.name, p.country_code, p.is_banned, 
+                                    p.is_verified, t.color
                                     {request_query} ORDER BY r.date DESC LIMIT ? OFFSET ?""", (filter.approval_status, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (request_id, team_id, old_name, new_name, old_tag, new_tag, date, approval_status, 
-                     handled_by_id, handled_by_name, handled_by_country, handled_by_banned, color) = row
+                     handled_by_id, handled_by_name, handled_by_country, handled_by_banned, handled_by_verified, color) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
+                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned), bool(handled_by_verified))
                     requests.append(TeamEdit(request_id, team_id, old_name, old_tag, new_name, new_tag, color, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"
