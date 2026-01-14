@@ -5,7 +5,7 @@
   import { locale } from '$i18n/i18n-svelte';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import type { RosterPlayer } from '$lib/types/roster-player';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import LL from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
@@ -424,8 +424,14 @@
     {/if}
     {#if roster.approval_status === 'approved' && roster.is_active && check_permission(user_info, permissions.invite_to_team, true)}
       <div class="section">
-        <b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b>
-        <PlayerSearch bind:player={invite_player} fc_type={game_fc_types[roster.game]} />
+        <label for="player-search"><b>{$LL.TEAMS.EDIT.INVITE_PLAYER()}</b></label>
+        <PlayerSearch
+          bind:player={invite_player}
+          showFriendCode
+          fcType={game_fc_types[roster.game]}
+          showProfileLink
+          isShadow={false}
+        />
         {#if invite_player}
           {#if roster.game === 'mkw'}
             <div class="mb-3">

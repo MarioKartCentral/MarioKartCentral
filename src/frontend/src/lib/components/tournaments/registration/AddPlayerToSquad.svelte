@@ -5,7 +5,7 @@
   import Dialog from '$lib/components/common/Dialog.svelte';
   import TournamentStaffFields from './TournamentStaffFields.svelte';
   import type { TournamentSquad } from '$lib/types/tournament-squad';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import LL from '$i18n/i18n-svelte';
   import { game_fc_types } from '$lib/util/util';
@@ -67,7 +67,14 @@
 <Dialog bind:this={add_player_dialog} header={$LL.TOURNAMENTS.REGISTRATIONS.ADD_PLAYER_TO_SQUAD()}>
   {#if squad}
     <div class="search">
-      <PlayerSearch bind:player fc_type={game_fc_types[tournament.game]} />
+      <PlayerSearch
+        bind:player
+        showFriendCode
+        fcType={game_fc_types[tournament.game]}
+        showProfileLink
+        isShadow={false}
+        ariaLabel="Search for player"
+      />
       {#if player}
         <form method="POST" on:submit|preventDefault={addPlayer}>
           <SoloTournamentFields {tournament} friend_codes={player.friend_codes} />

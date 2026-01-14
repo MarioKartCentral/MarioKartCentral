@@ -18,7 +18,7 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import Input from '$lib/components/common/Input.svelte';
   import Section from '$lib/components/common/Section.svelte';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
   import MediaEmbed from '$lib/components/media/MediaEmbed.svelte';
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
@@ -419,9 +419,9 @@
 
       {#if canChangePlayer && showPlayerSearch}
         <div class="option">
-          <label for="player">New Player</label>
+          <label for="player-search">New Player</label>
           <div class="flex-1">
-            <PlayerSearch bind:player={selectedPlayer} />
+            <PlayerSearch bind:player={selectedPlayer} showFriendCode showProfileLink isShadow={false} />
             <p class="text-sm text-gray-400 mt-1 ml-2">Select a new player for this time trial</p>
           </div>
         </div>

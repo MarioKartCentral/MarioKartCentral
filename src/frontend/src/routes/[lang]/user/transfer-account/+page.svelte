@@ -1,6 +1,6 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import { user } from '$lib/stores/stores';
@@ -52,7 +52,7 @@
       <div>
         {$LL.LOGIN.TRANSFER_ACCOUNT_DETAILS()}
         <div>
-          <PlayerSearch bind:player />
+          <PlayerSearch bind:player showFriendCode showProfileLink isShadow={false} ariaLabel="Search for player" />
         </div>
         {#if player}
           <div class="option">

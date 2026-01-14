@@ -71,6 +71,7 @@ const en_us: BaseTranslation = {
     SUBMITTING: 'Submitting',
     CANCEL: 'Cancel',
     SEARCH: 'Search',
+    RESULTS: '{count:number|{0: No}} Result{{count:s}}',
     NONE: 'None',
     EDIT: 'Edit',
     FILTER: 'Filter',

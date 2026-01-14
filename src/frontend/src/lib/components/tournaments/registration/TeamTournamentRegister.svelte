@@ -17,7 +17,7 @@
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import TournamentPlayerName from './TournamentPlayerName.svelte';
-  import RosterSearch from '$lib/components/common/RosterSearch.svelte';
+  import RosterSearch from '$lib/components/common/search/RosterSearch.svelte';
   import type { Team } from '$lib/types/team';
   import LL from '$i18n/i18n-svelte';
 
@@ -91,6 +91,10 @@
     }
     selected_rosters = selected_rosters;
     players = players;
+  }
+
+  $: {
+    if (is_privileged) selectRosterFromSearch(selected_roster);
   }
 
   function selectRosterFromList(roster: TeamRoster | null) {
@@ -194,21 +198,19 @@
 
 {#if is_privileged || (check_registrations_open(tournament) && rosters.length)}
   <div class="team_register">
-    <div>
+    <label for="roster-search">
       <b>
         {is_privileged
           ? $LL.TOURNAMENTS.REGISTRATIONS.MANUALLY_REGISTER_TEAM()
           : $LL.TOURNAMENTS.REGISTRATIONS.REGISTER_TEAM()}
       </b>
-    </div>
+    </label>
     {#if is_privileged}
       <RosterSearch
         bind:roster={selected_roster}
         game={tournament.game}
         mode={tournament.mode}
-        is_active={is_privileged ? null : true}
-        is_historical={null}
-        on:change={() => selectRosterFromSearch(selected_roster)}
+        isActive={is_privileged ? null : true}
       />
     {:else if unselected_rosters.length}
       <select bind:value={selected_roster} on:change={() => selectRosterFromList(selected_roster)}>

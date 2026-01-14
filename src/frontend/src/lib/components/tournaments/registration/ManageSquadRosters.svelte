@@ -8,7 +8,7 @@
   import type { TeamRoster } from '$lib/types/team-roster';
   import { onMount } from 'svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
-  import RosterSearch from '$lib/components/common/RosterSearch.svelte';
+  import RosterSearch from '$lib/components/common/search/RosterSearch.svelte';
   import LL from '$i18n/i18n-svelte';
 
   export let tournament: Tournament;
@@ -108,15 +108,9 @@
     </div>
     <div class="add-roster">
       {#if is_privileged}
-        <div>{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</div>
+        <label for="roster-search">{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</label>
         <div>
-          <RosterSearch
-            bind:roster={selected_roster}
-            game={tournament.game}
-            mode={tournament.mode}
-            is_active={null}
-            is_historical={null}
-          />
+          <RosterSearch bind:roster={selected_roster} game={tournament.game} mode={tournament.mode} />
         </div>
       {:else if registerable_rosters.length}
         <div>{$LL.TOURNAMENTS.REGISTRATIONS.ADD_ROSTER()}</div>

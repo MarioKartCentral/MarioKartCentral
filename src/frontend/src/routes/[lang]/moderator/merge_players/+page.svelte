@@ -1,7 +1,7 @@
 <script lang="ts">
   import Section from '$lib/components/common/Section.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
   import { user } from '$lib/stores/stores';
@@ -52,18 +52,28 @@
   {#if check_permission(user_info, permissions.merge_players)}
     <Section header={$LL.MODERATOR.MERGE_PLAYERS()}>
       <div class="option">
-        <div>
-          {$LL.MODERATOR.OLD_PLAYER()}:
-        </div>
-        <PlayerSearch bind:player={from_player} />
+        <label for="old-player-search">{$LL.MODERATOR.OLD_PLAYER()}</label>
+        <PlayerSearch
+          bind:player={from_player}
+          id="old-player-search"
+          showId
+          showFriendCode
+          showProfileLink
+          isShadow={false}
+        />
       </div>
 
       {#if from_player}
+        <label for="new-player-search">{$LL.MODERATOR.NEW_PLAYER()}</label>
         <div class="option">
-          <div>
-            {$LL.MODERATOR.NEW_PLAYER()}
-          </div>
-          <PlayerSearch bind:player={to_player} />
+          <PlayerSearch
+            bind:player={to_player}
+            id="new-player-search"
+            showId
+            showFriendCode
+            showProfileLink
+            isShadow={false}
+          />
         </div>
       {/if}
       {#if to_player}

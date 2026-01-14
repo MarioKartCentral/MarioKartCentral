@@ -74,6 +74,7 @@ const de: Translation = {
     SUBMITTING: 'Wird übermittelt',
     CANCEL: 'Abbrechen',
     SEARCH: 'Suchen',
+    RESULTS: '{count|{0: Keine}} Ergebnis{{count:se}}',
     NONE: 'Keine',
     EDIT: 'Bearbeiten',
     FILTER: 'Filter',

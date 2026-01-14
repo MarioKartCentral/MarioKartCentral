@@ -74,6 +74,7 @@ const ja: Translation = {
     SUBMITTING: 'Submitting',
     CANCEL: 'Cancel',
     SEARCH: 'Search',
+    RESULTS: '{count|{0: 0}} 結果',
     NONE: 'None',
     EDIT: '編集',
     FILTER: 'Filter',

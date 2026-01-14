@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { RegistrationDetails } from '$lib/types/tournaments/my-tournament-registration';
   import type { Tournament } from '$lib/types/tournament';
-  import PlayerSearch from '$lib/components/common/PlayerSearch.svelte';
+  import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import Dialog from '$lib/components/common/Dialog.svelte';
   import SquadTournamentFields from './SquadTournamentFields.svelte';
@@ -151,8 +151,11 @@
       <div><b>{$LL.TOURNAMENTS.REGISTRATIONS.INVITE_PLAYERS()}</b></div>
       <PlayerSearch
         bind:player={invite_player}
-        fc_type={game_fc_types[tournament.game]}
-        registration_id={tournament.team_members_only ? registration.squad.id : null}
+        showFriendCode
+        fcType={game_fc_types[tournament.game]}
+        registrationId={tournament.team_members_only ? registration.squad.id : null}
+        showProfileLink
+        isShadow={false}
       />
     </div>
     {#if invite_player}

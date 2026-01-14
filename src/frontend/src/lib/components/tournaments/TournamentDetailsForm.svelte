@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { CreateTournament } from '$lib/types/tournaments/create/create-tournament';
   import type { TournamentSeries } from '$lib/types/tournaments/series/tournament-series';
+  import { onMount } from 'svelte';
   import Section from '$lib/components/common/Section.svelte';
-  import SeriesSearch from '$lib/components/common/SeriesSearch.svelte';
+  import SeriesSearch from '../common/search/SeriesSearch.svelte';
   import GameModeSelect from '$lib/components/common/GameModeSelect.svelte';
   import MarkdownTextArea from '$lib/components/common/MarkdownTextArea.svelte';
   import LL from '$i18n/i18n-svelte';
@@ -14,7 +15,23 @@
   export let is_template = false; // used to get rid of dates stuff for template creation/edit pages
   export let is_edit = false; // only use when editing tournaments, not needed for templates
 
-  let series: TournamentSeries | null;
+  const series_id: number | null = data.series_id;
+  let series: TournamentSeries;
+
+  onMount(async () => {
+    if (series_id) {
+      series = await get_series(series_id);
+    }
+  });
+
+  async function get_series(id: number) {
+    const res = await fetch(`/api/tournaments/series/${id}`);
+    const body = await res.json();
+    if (!res.ok) {
+      throw Error(body.title);
+    }
+    return body as TournamentSeries;
+  }
 
   function getDateTimeLocal(n: number | null) {
     if (!n) {
@@ -24,6 +41,10 @@
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     let r = d.toISOString().slice(0, 16);
     return r;
+  }
+
+  $: {
+    data.series_id = series?.id || null;
   }
 
   function updateData() {
@@ -102,15 +123,10 @@
   </div>
   <div class="option">
     <div>
-      <label for="tournament_series">{$LL.TOURNAMENTS.TOURNAMENT_SERIES()}</label>
+      <label for="series-search">{$LL.TOURNAMENTS.TOURNAMENT_SERIES()}</label>
     </div>
     <div>
-      <SeriesSearch
-        bind:option={series}
-        bind:series_id={data.series_id}
-        lock={series_restrict}
-        on:change={updateData}
-      />
+      <SeriesSearch bind:series disabled={series_restrict} />
     </div>
   </div>
   {#if !is_template}
