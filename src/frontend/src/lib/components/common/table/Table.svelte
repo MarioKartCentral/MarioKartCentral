@@ -1,9 +1,39 @@
+<script context="module" lang="ts">
+  export interface TableHeaderSort {
+    activeSortIndex: Writable<number>;
+    sortDirection: Writable<'ascending' | 'descending'>;
+    toggleActive: (index: number) => void;
+  }
+</script>
+
 <script lang="ts" generics="T">
+  import { writable, type Writable } from 'svelte/store';
+  import { setContext } from 'svelte';
   import { slide } from 'svelte/transition';
   import './table.css';
   export let containerClass: string = 'overflow-hidden rounded-[4px] m-[10px]';
   export let multiRow = false;
   export let data: T[];
+
+  const activeSortIndex: Writable<number> = writable(-1);
+  const activeSortDirection: Writable<'ascending' | 'descending'> = writable('descending');
+
+  setContext<TableHeaderSort>('header-state', {
+    get activeSortIndex() {
+      return activeSortIndex;
+    },
+    get sortDirection() {
+      return activeSortDirection;
+    },
+    toggleActive(index: number) {
+      if (index === $activeSortIndex) {
+        $activeSortDirection = $activeSortDirection === 'descending' ? 'ascending' : 'descending';
+      } else {
+        $activeSortIndex = index;
+        $activeSortDirection = 'descending';
+      }
+    },
+  });
 </script>
 
 <div class={containerClass} transition:slide={{ duration: 400 }}>
