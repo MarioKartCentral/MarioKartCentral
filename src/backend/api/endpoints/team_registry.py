@@ -140,7 +140,7 @@ async def list_team_edit_requests(request: Request, filter: TeamEditFilter) -> J
 @check_word_filter
 @require_permission(permissions.MANAGE_TEAMS)
 async def create_roster(request: Request, body: CreateRosterRequestData) -> JSONResponse:
-    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, body.is_active, body.approval_status)
+    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.color, body.is_recruiting, body.is_active, body.approval_status)
     await handle(command)
     return JSONResponse({})
 
@@ -148,7 +148,7 @@ async def create_roster(request: Request, body: CreateRosterRequestData) -> JSON
 @check_word_filter
 @require_team_permission(team_permissions.CREATE_ROSTERS)
 async def request_create_roster(request: Request, body: RequestCreateRosterRequestData) -> JSONResponse:
-    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.is_recruiting, True, "pending")
+    command = CreateRosterCommand(body.team_id, body.game, body.mode, body.name, body.tag, body.color, body.is_recruiting, True, "pending")
     await handle(command)
     return JSONResponse({})
 
@@ -168,7 +168,7 @@ async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResp
         pass
 
     mod_player_id = request.state.user.player_id
-    command = EditRosterCommand(body.roster_id, body.team_id, body.name, body.tag, body.is_recruiting,
+    command = EditRosterCommand(body.roster_id, body.team_id, body.name, body.tag, body.color, body.is_recruiting,
                                 body.is_active, body.approval_status, mod_player_id)
     await handle(command)
     return JSONResponse({}, background=BackgroundTask(notify))
@@ -176,7 +176,7 @@ async def edit_roster(request: Request, body: EditRosterRequestData) -> JSONResp
 @bind_request_body(ManagerEditRosterRequestData)
 @require_team_permission(team_permissions.MANAGE_ROSTERS)
 async def manager_edit_roster(request: Request, body: ManagerEditRosterRequestData) -> JSONResponse:
-    command = ManagerEditRosterCommand(body.roster_id, body.team_id, body.is_recruiting)
+    command = ManagerEditRosterCommand(body.roster_id, body.team_id, body.color, body.is_recruiting)
     await handle(command)
     return JSONResponse({})
 

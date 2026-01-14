@@ -334,7 +334,7 @@ class GetTournamentRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                     squads[registration_id] = curr_squad
             # get teams connected to squads
             if teams_allowed:
-                async with db.execute(f"""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, t.name, t.tag, t.color
+                async with db.execute(f"""SELECT tsr.registration_id, tr.id, tr.team_id, tr.name, tr.tag, tr.color, t.name, t.tag, t.color
                                     FROM team_squad_registrations tsr
                                     JOIN team_rosters tr ON tsr.roster_id = tr.id
                                     JOIN teams t ON tr.team_id = t.id
@@ -345,8 +345,8 @@ class GetTournamentRegistrationsCommand(Command[list[TournamentSquadDetails]]):
                                     )""", variable_parameters) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        registration_id, roster_id, team_id, roster_name, roster_tag, team_name, team_tag, team_color = row
-                        roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
+                        registration_id, roster_id, team_id, roster_name, roster_tag, roster_color, team_name, team_tag, team_color = row
+                        roster = RosterBasic(team_id, team_name, team_tag, roster_color if roster_color else team_color, roster_id, roster_name if roster_name else team_name, roster_tag if roster_tag else team_tag)
                         squad = squads.get(registration_id, None)
                         if squad:
                             squad.rosters.append(roster)

@@ -435,6 +435,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     r.id,
                     r.name,
                     r.tag,
+                    r.color,
                     r.team_id,
                     t.name,
                     t.tag,
@@ -613,11 +614,11 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                 async with db.execute(squad_rosters_query, (series_id,)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        squad_id, roster_id, roster_name, roster_tag, team_id, team_name, team_tag, team_color = row
+                        squad_id, roster_id, roster_name, roster_tag, roster_color, team_id, team_name, team_tag, team_color = row
                         squad = squad_dict.get(squad_id, None)
                         if not squad:
                             continue
-                        roster = RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag)
+                        roster = RosterBasic(team_id, team_name, team_tag, roster_color if roster_color else team_color, roster_id, roster_name, roster_tag)
                         squad.rosters.append(roster)
                 
                 # Store the result in S3 cache

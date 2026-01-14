@@ -88,18 +88,19 @@ class GetInvitesForPlayerCommand(Command[PlayerInvites]):
         team_invites: list[TeamInvite] = []
         tournament_invites: list[TournamentInvite] = []
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("""SELECT i.id, i.date, i.is_bagger_clause, t.id, t.name, t.tag, t.color, r.id, r.name, r.tag, r.game, r.mode
+            async with db.execute("""SELECT i.id, i.date, i.is_bagger_clause, t.id, t.name, t.tag, t.color, r.id, r.name, r.tag, r.game, r.mode, r.color
                                     FROM team_transfers i
                                     JOIN team_rosters r ON i.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
                                     WHERE i.player_id = ? AND i.is_accepted = 0""", (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    invite_id, date, is_bagger_clause, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, game, mode = row
+                    invite_id, date, is_bagger_clause, team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag, game, mode, roster_color = row
                     roster_name = roster_name if roster_name is not None else team_name
                     roster_tag = roster_tag if roster_tag is not None else team_tag
+                    roster_color = roster_color if roster_color else team_color
                     team_invites.append(TeamInvite(invite_id, date, bool(is_bagger_clause), team_id, team_name, team_tag,
-                                                   team_color, roster_id, roster_name, roster_tag, game, mode))
+                                                   roster_color, roster_id, roster_name, roster_tag, game, mode))
             async with db.execute("""SELECT i.id, i.tournament_id, i.timestamp, i.is_bagger_clause, s.name, s.tag, s.color,
                                     t.name, t.game, t.mode
                                     FROM tournament_players i

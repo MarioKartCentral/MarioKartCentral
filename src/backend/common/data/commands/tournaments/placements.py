@@ -266,7 +266,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                     
             # get teams from team placements
             async with db.execute("""
-                SELECT DISTINCT s.id, tr.id, tr.name, tr.tag, teams.id, teams.name, teams.tag, teams.color
+                SELECT DISTINCT s.id, tr.id, tr.name, tr.tag, tr.color, teams.id, teams.name, teams.tag, teams.color
                 FROM tournament_players as tp 
                 INNER JOIN tournaments as t
                 ON tp.tournament_id = t.id 
@@ -287,18 +287,20 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 """, (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    registration_id, roster_id, roster_name, roster_tag, team_id, team_name, team_tag, team_color = row
+                    registration_id, roster_id, roster_name, roster_tag, roster_color, team_id, team_name, team_tag, team_color = row
                     placement_obj = team_placement_dict.get(registration_id, None)
                     if placement_obj:
                         if roster_name is None:
                             roster_name = team_name
                         if roster_tag is None:
                             roster_tag = team_tag
+                        if roster_color is None:
+                            roster_color = team_color
                         if placement_obj.squad_name is None:
                             placement_obj.squad_name = roster_name
                         if placement_obj.team_id is None:
                             placement_obj.team_id = team_id
-                        placement_obj.rosters.append(RosterBasic(team_id, team_name, team_tag, team_color, roster_id, roster_name, roster_tag))
+                        placement_obj.rosters.append(RosterBasic(team_id, team_name, team_tag, roster_color, roster_id, roster_name, roster_tag))
 
             results = PlayerTournamentResults(tournament_solo_and_squad_results, tournament_team_results)
             return results

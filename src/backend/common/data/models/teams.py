@@ -178,6 +178,7 @@ class RequestCreateRosterRequestData():
     mode: GameMode
     name: str | None
     tag: str | None
+    color: int | None
     is_recruiting: bool
 
 @dataclass
@@ -187,6 +188,7 @@ class CreateRosterRequestData():
     mode: GameMode
     name: str | None
     tag: str | None
+    color: int | None
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
@@ -197,6 +199,7 @@ class EditRosterRequestData():
     team_id: int
     name: str
     tag: str
+    color: int
     is_recruiting: bool
     is_active: bool
     approval_status: Approval
@@ -364,6 +367,7 @@ class EditRosterChangeRequestData():
 class ManagerEditRosterRequestData():
     roster_id: int
     team_id: int
+    color: int
     is_recruiting: bool
 
 @dataclass

@@ -144,7 +144,7 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             user = None if user_row is None else User(int(user_row[0]), self.id)
 
             rosters: list[PlayerRoster] = []
-            async with db.execute("""SELECT m.roster_id, m.join_date, t.id, t.name, t.tag, t.color, r.name, r.tag, r.game, r.mode, m.is_bagger_clause
+            async with db.execute("""SELECT m.roster_id, m.join_date, t.id, t.name, t.tag, t.color, r.name, r.tag, r.game, r.mode, r.color, m.is_bagger_clause
                                     FROM team_members m
                                     JOIN team_rosters r ON m.roster_id = r.id
                                     JOIN teams t ON r.team_id = t.id
@@ -152,10 +152,11 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                                     AND t.approval_status = 'approved'""", (self.id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode, is_bagger_clause = row
+                    roster_id, join_date, team_id, team_name, team_tag, team_color, roster_name, roster_tag, game, mode, roster_color, is_bagger_clause = row
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
-                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, color, roster_name, roster_tag, game, mode, bool(is_bagger_clause)))
+                    roster_color = roster_color if roster_color else team_color
+                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, roster_color, roster_name, roster_tag, game, mode, bool(is_bagger_clause)))
 
             ban_info = None
             if is_banned:

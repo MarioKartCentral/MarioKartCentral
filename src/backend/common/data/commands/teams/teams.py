@@ -71,8 +71,8 @@ class CreateTeamCommand(Command[int | None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (name, tag, self.description, creation_date, self.language, self.color, None, self.approval_status,
                 self.is_historical)) as cursor:
                 team_id = cursor.lastrowid
-            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, None, None, creation_date, self.is_recruiting, self.is_active, self.approval_status))
+            await db.execute("""INSERT INTO team_rosters(team_id, game, mode, name, tag, color, creation_date, is_recruiting, is_active, approval_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (team_id, self.game, self.mode, None, None, None, creation_date, self.is_recruiting, self.is_active, self.approval_status))
             logo_filename = f"team_logos/{team_id}.png"
             logo_path = f"/img/{logo_filename}"
             if self.logo_file:
@@ -97,8 +97,8 @@ class GetTeamInfoCommand(Command[Team]):
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem('Team not found', status=404)
-                team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical = row
-                team = Team(self.team_id, team_name, team_tag, description, team_date, language, color, logo, team_approval_status, is_historical, [], [])
+                team_name, team_tag, description, team_date, language, team_color, logo, team_approval_status, is_historical = row
+                team = Team(self.team_id, team_name, team_tag, description, team_date, language, team_color, logo, team_approval_status, is_historical, [], [])
 
             # use a set for O(1) lookup
             managers = set[int]()
@@ -120,16 +120,18 @@ class GetTeamInfoCommand(Command[Team]):
             # get all rosters for our team
             rosters: list[TeamRoster] = []
             roster_dict: dict[int, TeamRoster] = {}
-            async with db.execute("SELECT id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status FROM team_rosters WHERE team_id = ?",
+            async with db.execute("SELECT id, game, mode, name, tag, color, creation_date, is_recruiting, is_active, approval_status FROM team_rosters WHERE team_id = ?",
                 (self.team_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    roster_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, is_active, roster_approval_status = row
+                    roster_id, game, mode, roster_name, roster_tag, roster_color, roster_date, is_recruiting, is_active, roster_approval_status = row
                     if roster_name is None:
                         roster_name = team_name
                     if roster_tag is None:
                         roster_tag = team_tag
-                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, is_active, roster_approval_status, color, [], [])
+                    if roster_color is None:
+                        roster_color = team_color
+                    curr_roster = TeamRoster(roster_id, self.team_id, game, mode, roster_name, roster_tag, roster_date, is_recruiting, is_active, roster_approval_status, roster_color, [], [])
                     rosters.append(curr_roster)
                     roster_dict[curr_roster.id] = curr_roster
             
@@ -523,7 +525,7 @@ class ListTeamsCommand(Command[TeamList]):
                     (tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical) = row
                     team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, bool(is_historical), [], [])
                     teams[tid] = team
-            rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag, r.creation_date, r.is_recruiting,
+            rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag, r.color, r.creation_date, r.is_recruiting,
                                         r.is_active, r.approval_status
                                         FROM team_rosters r
                                         WHERE r.team_id IN (
@@ -532,10 +534,10 @@ class ListTeamsCommand(Command[TeamList]):
             async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    roster_id, team_id, game, mode, name, tag, creation_date, is_recruiting, is_active, approval_status = row
+                    roster_id, team_id, game, mode, name, tag, roster_color, creation_date, is_recruiting, is_active, approval_status = row
                     team = teams[team_id]
                     roster = TeamRoster(roster_id, team_id, game, mode, name if name else team.name, tag if tag else team.tag, creation_date,
-                                        bool(is_recruiting), bool(is_active), approval_status, team.color, [], [])
+                                        bool(is_recruiting), bool(is_active), approval_status, roster_color if roster_color else team.color, [], [])
                     team.rosters.append(roster)
             team_list = list(teams.values())
 
@@ -561,11 +563,11 @@ class MergeTeamsCommand(Command[None]):
         if self.from_team_id == self.to_team_id:
             raise Problem("Team IDs are equal", status=400)
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT name, tag FROM teams WHERE id = ?", (self.from_team_id,)) as cursor:
+            async with db.execute("SELECT name, tag, color FROM teams WHERE id = ?", (self.from_team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem(f"Team ID {self.from_team_id} not found", status=404)
-                old_name, old_tag = row
+                old_name, old_tag, old_color = row
             async with db.execute("SELECT id FROM teams WHERE id = ?", (self.to_team_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
@@ -573,6 +575,7 @@ class MergeTeamsCommand(Command[None]):
             # don't want to change the name/tag of a roster to the new team's name if it's the default value
             await db.execute("UPDATE team_rosters SET name = ? WHERE team_id = ? AND name IS NULL", (old_name, self.from_team_id))
             await db.execute("UPDATE team_rosters SET tag = ? WHERE team_id = ? AND tag IS NULL", (old_tag, self.from_team_id))
+            await db.execute("UPDATE team_rosters SET color = ? WHERE team_id = ? AND color IS NULL", (old_color, self.from_team_id))
 
             await db.execute("UPDATE team_rosters SET team_id = ? WHERE team_id = ?", (self.to_team_id, self.from_team_id))
             await db.execute("DELETE FROM user_team_roles WHERE team_id = ?", (self.from_team_id,))
