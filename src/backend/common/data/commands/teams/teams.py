@@ -513,7 +513,6 @@ class ListTeamsCommand(Command[TeamList]):
                                 {where_clause}
                                 ORDER BY {order_by} COLLATE NOCASE {desc}
                 """
-            roster_filter = f"""AND r.is_active == {filter.is_active}"""
             teams_query = f"""SELECT DISTINCT t.id, t.name, t.tag, t.description, t.creation_date, t.language,
                                     t.color, t.logo, t.approval_status, t.is_historical
                                     {team_from_where_clause} LIMIT ? OFFSET ?"""
@@ -529,7 +528,7 @@ class ListTeamsCommand(Command[TeamList]):
                                         FROM team_rosters r
                                         WHERE r.team_id IN (
                                             SELECT DISTINCT t.id {team_from_where_clause} LIMIT ? OFFSET ?
-                                        ) {roster_filter}"""
+                                        ) AND r.is_active == {filter.is_active}"""
             async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
