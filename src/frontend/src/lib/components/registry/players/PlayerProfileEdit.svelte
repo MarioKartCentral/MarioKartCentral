@@ -164,7 +164,7 @@
       <div class="option">
         <label for="language">{$LL.COMMON.LANGUAGE()}</label>
         <br />
-        <LanguageSelect bind:language={player.user_settings.language} />
+        <LanguageSelect bind:language={player.user_settings.language} all_option={false} />
       </div>
       <div class="option">
         <label for="hide_discord">{$LL.PLAYERS.PROFILE.SHOW_DISCORD_INFO()}</label>
