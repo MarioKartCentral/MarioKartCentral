@@ -20,3 +20,4 @@ from common.data.models.tournament_templates import *
 from common.data.models.tournaments import *
 from common.data.models.user_settings import *
 from common.data.models.users import *
+from common.data.models.verification import *

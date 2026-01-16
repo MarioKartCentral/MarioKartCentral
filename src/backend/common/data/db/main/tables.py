@@ -951,7 +951,7 @@ class PlayerVerificationRequest(TableModel):
             id INTEGER PRIMARY KEY,
             player_id INTEGER NOT NULL REFERENCES players(id),
             date INTEGER NOT NULL,
-            status TEXT NOT NULL
+            approval_status TEXT NOT NULL
         )"""
 
 @dataclass
@@ -967,7 +967,7 @@ class FriendCodeVerificationRequest(TableModel):
             id INTEGER PRIMARY KEY,
             fc_id INTEGER NOT NULL REFERENCES friend_codes(id),
             date INTEGER NOT NULL,
-            status TEXT NOT NULL
+            approval_status TEXT NOT NULL
         )"""
 
 @dataclass
@@ -985,7 +985,7 @@ class PlayerVerificationRequestLog(TableModel):
             id INTEGER PRIMARY KEY,
             verification_id INTEGER NOT NULL REFERENCES player_verification_requests(id),
             date INTEGER NOT NULL,
-            status TEXT NOT NULL,
+            approval_status TEXT NOT NULL,
             reason TEXT,
             handled_by INTEGER NOT NULL REFERENCES players(id)
         )"""
@@ -1005,7 +1005,7 @@ class FriendCodeVerificationRequestLog(TableModel):
             id INTEGER PRIMARY KEY,
             verification_id INTEGER NOT NULL REFERENCES friend_code_verification_requests(id),
             date INTEGER NOT NULL,
-            status TEXT NOT NULL,
+            approval_status TEXT NOT NULL,
             reason TEXT,
             handled_by INTEGER NOT NULL REFERENCES players(id)
         )"""
