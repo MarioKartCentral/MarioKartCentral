@@ -4,7 +4,7 @@
   import { createEventDispatcher } from 'svelte';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
-  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
 
   const dispatch = createEventDispatcher<{ dq: null; placement_change: null }>();
@@ -113,7 +113,7 @@
   {#if is_edit}
     <div class="actions">
       {$LL.COMMON.ACTIONS()}
-      <ChevronDownSolid />
+      <ChevronDownOutline />
     </div>
     <Dropdown>
       <DropdownItem>

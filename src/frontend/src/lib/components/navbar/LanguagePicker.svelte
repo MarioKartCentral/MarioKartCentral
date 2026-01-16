@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { GlobeSolid, ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { GlobeSolid, ChevronDownOutline } from 'flowbite-svelte-icons';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
@@ -39,7 +39,7 @@
 <button class="flex items-center rounded-md focus:outline-none focus:ring-0">
   <GlobeSolid size="md" class="text-gray-300" />
   <span class="hidden text-white xl:inline xl:ml-2">{currentLanguage.nativeName}</span>
-  <ChevronDownSolid size="sm" class="hidden xl:inline ml-1 text-white" />
+  <ChevronDownOutline size="sm" class="hidden xl:inline ml-1 text-white" />
 </button>
 <Dropdown>
   {#each sortedLanguages as l (l.value)}

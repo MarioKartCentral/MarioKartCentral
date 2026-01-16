@@ -6,7 +6,7 @@
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
   import TournamentPlayerName from './registration/TournamentPlayerName.svelte';
-  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import Dropdown from '../common/Dropdown.svelte';
   import DropdownItem from '../common/DropdownItem.svelte';
   import { check_registrations_open } from '$lib/util/util';
@@ -248,7 +248,7 @@
     {#if is_privileged || registration}
       <td>
         {#if is_privileged}
-          <ChevronDownSolid class="cursor-pointer" />
+          <ChevronDownOutline class="cursor-pointer" />
           <Dropdown>
             <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
             <DropdownItem on:click={() => unregisterPlayer(player)}>
@@ -256,7 +256,7 @@
             </DropdownItem>
           </Dropdown>
         {:else if user_info.player_id === player.player_id && check_registrations_open(tournament)}
-          <ChevronDownSolid class="cursor-pointer" />
+          <ChevronDownOutline class="cursor-pointer" />
           <Dropdown>
             {#if check_tournament_permission(user_info, tournament_permissions.register_tournament, tournament.id, tournament.series_id, true) && (tournament.require_single_fc || tournament.mii_name_required || tournament.host_status_required)}
               <DropdownItem on:click={() => edit_reg_dialog.open(player)}>
@@ -273,7 +273,7 @@
             </DropdownItem>
           </Dropdown>
         {:else if registration && registration.is_squad_captain && registration.squad.id === player.registration_id && check_registrations_open(tournament)}
-          <ChevronDownSolid class="cursor-pointer" />
+          <ChevronDownOutline class="cursor-pointer" />
           <Dropdown>
             <DropdownItem on:click={() => kickPlayer(player)}>
               {player.is_invite

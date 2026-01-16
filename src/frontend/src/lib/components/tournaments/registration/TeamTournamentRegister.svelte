@@ -13,7 +13,7 @@
   import type { TeamTournamentPlayer } from '$lib/types/team-tournament-player';
   import Table from '$lib/components/common/table/Table.svelte';
   import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
-  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import TournamentPlayerName from './TournamentPlayerName.svelte';
@@ -277,7 +277,7 @@
                 <FriendCodeDisplay friend_codes={player.friend_codes} />
               </td>
               <td>
-                <ChevronDownSolid class="cursor-pointer" />
+                <ChevronDownOutline class="cursor-pointer" />
                 <Dropdown>
                   <DropdownItem on:click={() => toggleCaptain(player)}>
                     {$LL.TOURNAMENTS.REGISTRATIONS.TOGGLE_CAPTAIN()}

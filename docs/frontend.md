@@ -454,7 +454,7 @@ The `Dropdown` component provides a consistent dropdown/popover menu:
 ```html
 <Button>
   {$LL.COMMON.ACTIONS()}
-  <ChevronDownSolid class="w-3 h-3 ms-2" />
+  <ChevronDownOutline class="w-3 h-3 ms-2" />
 </Button>
 
 <Dropdown>

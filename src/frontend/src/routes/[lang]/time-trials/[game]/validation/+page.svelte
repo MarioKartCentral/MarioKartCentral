@@ -43,7 +43,7 @@
   }
 
   onMount(async () => {
-    gameFilter = $page.params.game;
+    gameFilter = $page.params.game ?? null;
     isLoading = true;
   });
 
