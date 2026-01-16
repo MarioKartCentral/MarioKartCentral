@@ -15,6 +15,7 @@ class Player:
     is_hidden: bool
     is_shadow: bool
     is_banned: bool
+    is_verified: bool
     join_date: int
     discord: Discord | None
     
@@ -115,6 +116,7 @@ class PlayerFilter:
     is_hidden: bool | None = None
     is_shadow: bool | None = None
     is_banned: bool | None = None
+    is_verified: bool | None = None
     discord_id: str | None = None
     detailed: bool | None = None
     page: int | None = None

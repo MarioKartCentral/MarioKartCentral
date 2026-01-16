@@ -8,3 +8,4 @@ class PlayerBasic:
     name: str
     country_code: CountryCode
     is_banned: bool
+    is_verified: bool

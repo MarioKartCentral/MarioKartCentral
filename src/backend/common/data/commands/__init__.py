@@ -52,4 +52,6 @@ from common.data.commands.users.notifications import *
 from common.data.commands.users.settings import *
 from common.data.commands.users.users import *
 
+from common.data.commands.verification.verification import *
+
 from common.data.commands.worker.job_state import *
