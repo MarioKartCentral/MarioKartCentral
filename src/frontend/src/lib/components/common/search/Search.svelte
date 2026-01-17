@@ -103,11 +103,13 @@
         return;
       case 'Home':
         if (results.length) {
+          event.preventDefault();
           activeDescendant = getOptionId(results[0]);
         }
         return;
       case 'End':
         if (results.length) {
+          event.preventDefault();
           activeDescendant = getOptionId(results[results.length - 1]);
         }
         return;
@@ -128,6 +130,8 @@
           cancelContainer.querySelector('button')?.focus();
         }
         return;
+      case 'Tab':
+        handleOutclick();
     }
   }
 
@@ -185,6 +189,7 @@
     aria-disabled={disabled}
     aria-label={ariaLabel}
     aria-labelledby={ariaLabelledby}
+    aria-haspopup="listbox"
     bind:this={inputElement}
     bind:value={searchQuery}
     on:focusin={handleFocusin}

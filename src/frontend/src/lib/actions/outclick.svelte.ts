@@ -21,11 +21,9 @@ export const clickOutside: Action<HTMLElement, boolean | undefined, { 'on:outcli
 
   function addListeners() {
     document.addEventListener('click', checkOutclick);
-    document.addEventListener('focusin', checkOutclick);
   }
   function removeListeners() {
     document.removeEventListener('click', checkOutclick);
-    document.removeEventListener('focusin', checkOutclick);
   }
   if (active) {
     addListeners();
