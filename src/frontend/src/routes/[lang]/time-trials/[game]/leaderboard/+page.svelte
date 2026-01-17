@@ -9,9 +9,9 @@
   import LL from '$i18n/i18n-svelte';
   import { MKWORLD_TRACK_ABBREVIATIONS, MKWORLD_TRACK_TRANSLATION_IDS, type GameId } from '$lib/util/gameConstants';
   import {
-    XCompanySolid,
+    XSolid,
     YoutubeSolid,
-    CameraFotoSolid,
+    CameraPhotoSolid,
     VideoCameraSolid,
     ArrowLeftOutline,
     ChevronDownOutline,
@@ -184,9 +184,9 @@
     } else if (proofUrl.includes('twitch.tv')) {
       return { component: Twitch, title: 'Twitch Video' };
     } else if (proofUrl.includes('twitter.com') || proofUrl.includes('x.com')) {
-      return { component: XCompanySolid, title: 'X/Twitter Video' };
+      return { component: XSolid, title: 'X/Twitter Video' };
     } else if (proofType === 'Screenshot') {
-      return { component: CameraFotoSolid, title: 'Screenshot' };
+      return { component: CameraPhotoSolid, title: 'Screenshot' };
     } else {
       // For both "Video" and "Partial Video" types that don't match specific platforms
       return { component: VideoCameraSolid, title: 'Video' };

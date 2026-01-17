@@ -18,13 +18,7 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import Section from '$lib/components/common/Section.svelte';
   import PlayerSearch from '$lib/components/common/search/PlayerSearch.svelte';
-  import {
-    XCompanySolid,
-    YoutubeSolid,
-    CameraFotoSolid,
-    VideoCameraSolid,
-    ArrowLeftOutline,
-  } from 'flowbite-svelte-icons';
+  import { XSolid, YoutubeSolid, CameraPhotoSolid, VideoCameraSolid, ArrowLeftOutline } from 'flowbite-svelte-icons';
   import Twitch from '$lib/components/icons/Twitch.svelte';
   import MediaEmbed from '$lib/components/media/MediaEmbed.svelte';
   import { Popover } from 'flowbite-svelte';
@@ -90,9 +84,9 @@
     } else if (proofUrl.includes('twitch.tv')) {
       return { component: Twitch, title: 'Twitch Video' };
     } else if (proofUrl.includes('twitter.com') || proofUrl.includes('x.com')) {
-      return { component: XCompanySolid, title: 'X/Twitter Video' };
+      return { component: XSolid, title: 'X/Twitter Video' };
     } else if (proofType === 'Screenshot') {
-      return { component: CameraFotoSolid, title: 'Screenshot' };
+      return { component: CameraPhotoSolid, title: 'Screenshot' };
     } else {
       return { component: VideoCameraSolid, title: 'Video' };
     }

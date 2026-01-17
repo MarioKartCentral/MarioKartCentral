@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { XCompanySolid, YoutubeSolid, GithubSolid } from 'flowbite-svelte-icons';
+  import { XSolid, YoutubeSolid, GithubSolid } from 'flowbite-svelte-icons';
   import Twitch from '$lib/components/icons/Twitch.svelte';
 </script>
 
@@ -14,7 +14,7 @@
       </li>
       <li>
         <a href="https://twitter.com/mk_central" rel="external" title="Twitter">
-          <XCompanySolid />
+          <XSolid />
         </a>
       </li>
       <li>

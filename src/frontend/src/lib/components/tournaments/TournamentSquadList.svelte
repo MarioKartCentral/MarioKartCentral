@@ -5,7 +5,7 @@
   import TournamentPlayerList from './TournamentPlayerList.svelte';
   import Table from '$lib/components/common/table/Table.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
-  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import Dropdown from '../common/Dropdown.svelte';
   import DropdownItem from '../common/DropdownItem.svelte';
   import EditSquadDialog from './registration/EditSquadDialog.svelte';
@@ -186,7 +186,7 @@
     <td class="mobile-hide">{squad_data[squad.id].date.toLocaleString($locale, options)}</td>
     {#if is_privileged}
       <td>
-        <ChevronDownSolid class="cursor-pointer" />
+        <ChevronDownOutline class="cursor-pointer" />
         <Dropdown>
           {#if !tournament.max_squad_size || squad.players.length < tournament.max_squad_size}
             <DropdownItem on:click={() => add_player_dialog.open(squad)}>

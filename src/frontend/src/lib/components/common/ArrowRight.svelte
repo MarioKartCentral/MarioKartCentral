@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { ArrowRightSolid } from 'flowbite-svelte-icons';
+  import { ArrowRightOutline } from 'flowbite-svelte-icons';
 </script>
 
 <span class="arrow-right">
-  <ArrowRightSolid size="lg" />
+  <ArrowRightOutline size="lg" />
 </span>
 
 <style>
