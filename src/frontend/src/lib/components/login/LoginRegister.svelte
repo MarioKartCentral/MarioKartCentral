@@ -6,7 +6,7 @@
   import Tabs from '$lib/components/common/tabs/Tabs.svelte';
   import TabItem from '$lib/components/common/tabs/TabItem.svelte';
   import RegisterForm from './RegisterForm.svelte';
-
+  import { Thumbmark } from '@thumbmarkjs/thumbmarkjs';
   export let send_to: string | null = null;
 
   let working = false; // used to prevent double clicking
@@ -21,13 +21,12 @@
 
   async function loginOrSignup(isLogin: boolean) {
     working = true;
-    const { getFingerprint, getFingerprintData } = await import('@thumbmarkjs/thumbmarkjs');
-    const fingerprint = await getFingerprint();
-    const fingerprintData = await getFingerprintData();
+    const thumbmarkJS = new Thumbmark();
+    const { thumbmark, components } = await thumbmarkJS.get();
     const payload = {
       email: email,
       password: password,
-      fingerprint: { hash: fingerprint, data: fingerprintData },
+      fingerprint: { hash: thumbmark, data: components },
     };
 
     const endpoint = isLogin ? '/api/user/login' : '/api/user/signup';

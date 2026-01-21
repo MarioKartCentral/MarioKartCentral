@@ -12,7 +12,7 @@
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import RosterNameTagRequest from './RosterNameTagRequest.svelte';
-  import { ChevronDownSolid } from 'flowbite-svelte-icons';
+  import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import Dropdown from '$lib/components/common/Dropdown.svelte';
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import { user } from '$lib/stores/stores';
@@ -335,7 +335,7 @@
             {new Date(player.join_date * 1000).toLocaleString($locale, options)}
           </td>
           <td>
-            <ChevronDownSolid class="cursor-pointer" />
+            <ChevronDownOutline class="cursor-pointer" />
             <Dropdown>
               {#if can_kick(player)}
                 <DropdownItem on:click={() => kickDialog(player)}>
