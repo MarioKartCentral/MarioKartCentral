@@ -25,27 +25,36 @@ class RequestVerificationCommand(Command[None]):
                 if not self.verify_player and len(self.friend_code_ids) == 0:
                     raise Problem("At least one friend code must be provided if player is not requesting verification", status=400)
                 
-            for fc_id in self.friend_code_ids:
-                async with db.execute("SELECT type, fc, is_verified, is_active FROM friend_codes WHERE id = ? AND player_id = ?", (fc_id, self.player_id)) as cursor:
-                    row = await cursor.fetchone()
-                    if row is None:
-                        raise Problem(f"Friend code with ID {fc_id} not found", status=404)
-                    fc_type, fc_fc, fc_is_verified, fc_is_active = row
-
+            # dictionary to check that we've found every FC in our friend code ID list with 1 query
+            found_fcs = {f: False for f in self.friend_code_ids}
+            # For now we should only allow players to verify their Switch FCs
+            allowed_fc_types = ["switch"]
+            async with db.execute(f"""SELECT id, type, fc, is_verified, is_active FROM friend_codes WHERE player_id = ? AND id IN (
+                                  {','.join([str(f) for f in self.friend_code_ids])})""", (self.player_id,)) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    fc_id, fc_type, fc_fc, fc_is_verified, fc_is_active = row
+                    found_fcs[fc_id] = True
                     if bool(fc_is_verified):
                         raise Problem(f"FC with ID {fc_id} ({fc_fc}) is already verified", status=400)
                     if not bool(fc_is_active):
                         raise Problem(f"FC with ID {fc_id} ({fc_fc}) is inactive", status=400)
-                    
-                    # For now we should only allow players to verify their Switch FCs
-                    allowed_fc_types = ["switch"]
                     if fc_type not in allowed_fc_types:
                         raise Problem(f"FC with ID {fc_id} ({fc_fc})'s type cannot be verified ({fc_type})", status=400)
+                # check to make sure every FC was found from our select query
+                for fc_id, found in found_fcs.items():
+                    if found is False:
+                        raise Problem(f"Friend code with ID {fc_id} could not be found", status=404)
                     
-                async with db.execute("SELECT id FROM friend_code_verification_requests WHERE fc_id = ? AND approval_status = 'pending'", (fc_id,)) as cursor:
-                    row = await cursor.fetchone()
-                    if row is not None:
-                        raise Problem(f"Friend code with ID {fc_id} ({fc_fc}) already has a pending verification request", status=400)
+            async with db.execute(f"""SELECT v.id, v.fc_id, f.fc
+                                    FROM friend_code_verification_requests v
+                                    JOIN friend_codes f ON f.id = v.fc_id
+                                    WHERE approval_status = 'pending'
+                                    AND v.fc_id IN ({','.join([str(f) for f in self.friend_code_ids])})""") as cursor:
+                row = await cursor.fetchone()
+                if row:
+                    _, fc_id, fc_fc = row
+                    raise Problem(f"Friend code with ID {fc_id} ({fc_fc}) already has a pending verification request", status=400)
                     
             now = int(datetime.now(timezone.utc).timestamp())
             if self.verify_player:
@@ -58,4 +67,82 @@ class RequestVerificationCommand(Command[None]):
 
             await db.executemany("INSERT INTO friend_code_verification_requests(fc_id, date, approval_status) VALUES(?, ?, 'pending')",
                                  [(fc_id, now) for fc_id in self.friend_code_ids])
+            await db.commit()
+
+@dataclass
+class UpdateVerificationsCommand(Command[None]):
+    player_verifications: list[UpdatePlayerVerification]
+    fc_verifications: list[UpdateFriendCodeVerification]
+    staff_player_id: int
+
+    async def handle(self, db_wrapper: DBWrapper):
+        if len(self.player_verifications) == 0 and len(self.fc_verifications) == 0:
+            raise Problem("Must specify at least one player/FC verification", status=400)
+        
+        # Dictionary mapping Verification IDs to a dataclass with two values:
+        # update_data: Contains the new approval status we want to change the verification to (so our player_verifications/fc_verifications values)
+        # request: The currently existing verification request (set to None at the beginning in case it doesn't exist)
+        found_player_verifications: dict[int, CheckPlayerVerificationRequest] = {v.verification_id: CheckPlayerVerificationRequest(v, None) for v in self.player_verifications}
+        found_fc_verifications: dict[int, CheckFriendCodeVerificationRequest] = {v.verification_id: CheckFriendCodeVerificationRequest(v, None) for v in self.fc_verifications}
+        async with db_wrapper.connect() as db:
+            # get the player/FC verifications data from the database in 2 queries
+            async with db.execute(f"""SELECT id, player_id, date, approval_status FROM player_verification_requests WHERE id IN (
+                                  {','.join([str(v.verification_id) for v in self.player_verifications])})""") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    v_id, p_id, date, approval_status = row
+                    v = PlayerVerificationRequest(v_id, p_id, date, approval_status)
+                    found_player_verifications[v_id].request = v
+
+            async with db.execute(f"""SELECT id, fc_id, date, approval_status FROM friend_code_verification_requests WHERE id IN (
+                                  {','.join([str(v.verification_id) for v in self.fc_verifications])})""") as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    v_id, f_id, date, approval_status = row
+                    v = FriendCodeVerificationRequest(v_id, f_id, date, approval_status)
+                    found_fc_verifications[v_id].request = v
+
+            # checking all player verification requests to make sure everything is valid
+            for v_id, v_data in found_player_verifications.items():
+                if v_data.request is None:
+                    raise Problem(f"Player verification request with ID {v_id} could not be found", status=404)
+                # Raise an error if the verification status is the same as it was before
+                if v_data.update_data.approval_status == v_data.request.approval_status:
+                    raise Problem(f"Player verification request with ID {v_id} already has {v_data.update_data.approval_status} status", status=400)
+                # Raise an error if the verification was already approved/denied, as verification requests that have been approved/denied should be immutable
+                if v_data.request.approval_status == 'approved':
+                    raise Problem(f"Player verification request with ID {v_id} has already been {v_data.request.approval_status} and cannot be changed", status=400)
+                # Shouldn't be able to specify a reason when approving a verification request
+                if v_data.update_data.approval_status == 'approved' and v_data.update_data.reason:
+                    raise Problem(f"Player verification request with ID {v_id} should not have a reason specified when it is being approved", status=400)
+
+            # checking all friend code verification requests to make sure everything is valid  
+            for v_id, v_data in found_fc_verifications.items():
+                if v_data.request is None:
+                    raise Problem(f"Friend Code verification ID {v_id} could not be found", status=404)
+                # Raise an error if the verification status is the same as it was before
+                if v_data.update_data.approval_status == v_data.request.approval_status:
+                    raise Problem(f"Friend Code verification request with ID {v_id} already has {v_data.update_data.approval_status} status", status=400)
+                # Raise an error if the verification was already approved/denied, as verification requests that have been approved/denied should be immutable
+                if v_data.request.approval_status == 'approved':
+                    raise Problem(f"Friend Code verification request with ID {v_id} has already been {v_data.request.approval_status} and cannot be changed", status=400)
+                # Shouldn't be able to specify a reason when approving a verification request
+                if v_data.update_data.approval_status == 'approved' and v_data.update_data.reason:
+                    raise Problem(f"Friend Code verification request with ID {v_id} should not have a reason specified when it is being approved", status=400)
+                
+            now = int(datetime.now(timezone.utc).timestamp())
+
+            # update player verifications and log approval status changes
+            await db.executemany("""INSERT INTO player_verification_request_log(verification_id, date, approval_status, reason, handled_by) VALUES
+                                 (?, ?, ?, ?, ?)""", [(v.update_data.verification_id, now, v.update_data.approval_status, v.update_data.reason,
+                                                       self.staff_player_id) for v in found_player_verifications.values()])
+            await db.executemany("""UPDATE player_verification_requests SET approval_status = ? WHERE id = ?""", 
+                                 [(v.update_data.verification_id, v.update_data.approval_status) for v in found_player_verifications.values()])
+
+            # update friend code verifications and log approval status changes
+            await db.executemany("""INSERT INTO friend_code_verification_request_log(verification_id, date, approval_status, reason, handled_by) VALUES
+                                 (?, ?, ?, ?, ?)""", [(v.update_data.verification_id, now, v.update_data.approval_status, v.update_data.reason,
+                                                       self.staff_player_id) for v in found_fc_verifications.values()])
+            await db.executemany("""UPDATE friend_code_verification_requests SET approval_status = ? WHERE id = ?""", 
+                                 [(v.update_data.verification_id, v.update_data.approval_status) for v in found_fc_verifications.values()])
             await db.commit()
