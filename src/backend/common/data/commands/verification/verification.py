@@ -91,7 +91,7 @@ class UpdateVerificationsCommand(Command[None]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     v_id, p_id, date, approval_status = row
-                    v = PlayerVerificationRequest(v_id, p_id, date, approval_status)
+                    v = PlayerVerificationRequestBasic(v_id, p_id, date, approval_status)
                     found_player_verifications[v_id].request = v
 
             async with db.execute(f"""SELECT id, fc_id, date, approval_status FROM friend_code_verification_requests WHERE id IN (
@@ -99,7 +99,7 @@ class UpdateVerificationsCommand(Command[None]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     v_id, f_id, date, approval_status = row
-                    v = FriendCodeVerificationRequest(v_id, f_id, date, approval_status)
+                    v = FriendCodeVerificationRequestBasic(v_id, f_id, date, approval_status)
                     found_fc_verifications[v_id].request = v
 
             # checking all player verification requests to make sure everything is valid
@@ -146,3 +146,104 @@ class UpdateVerificationsCommand(Command[None]):
             await db.executemany("""UPDATE friend_code_verification_requests SET approval_status = ? WHERE id = ?""", 
                                  [(v.update_data.verification_id, v.update_data.approval_status) for v in found_fc_verifications.values()])
             await db.commit()
+
+@dataclass
+class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
+    filter: PlayerVerificationFilter
+
+    async def handle(self, db_wrapper: DBWrapper):
+        async with db_wrapper.connect(db_name="main", attach=["alt_flags"], readonly=True) as db:
+            filter = self.filter
+            limit = 20
+            offset = 0
+            if self.filter.page:
+                offset = (self.filter.page - 1) * limit
+
+            player_verif_from_where_clause = """FROM player_verification_requests pvr
+                JOIN players p ON pvr.player_id = p.id
+                WHERE (:from_date IS NULL OR pvr.date >= :from_date)
+                AND (:to_date IS NULL OR pvr.date <= :to_date)
+                AND (:player_id IS NULL OR pvr.player_id = :player_id)
+                AND (:handled_by IS NULL OR pvr.id IN (
+                    SELECT pvrl.verification_id 
+                    FROM player_verification_request_log pvrl
+                    WHERE pvrl.handled_by = :handled_by
+                ))"""
+            player_verif_query = f"""{player_verif_from_where_clause}
+                ORDER BY pvr.id DESC
+                LIMIT :limit OFFSET :offset"""
+            player_verif_query_params = {"from_date": filter.from_date,
+                                  "to_date": filter.to_date,
+                                  "player_id": filter.player_id,
+                                  "handled_by": filter.handled_by,
+                                  "approval_status": filter.approval_status,
+                                  "offset": offset,
+                                  "limit": limit}
+            
+            player_verifications: list[PlayerVerificationRequestDetailed] = []
+            # player_id_verif_dict is used to get verifications by player ID in the
+            # friend code and alt flag queries in O(1) time
+            player_id_verif_dict: dict[int, list[PlayerVerificationRequestDetailed]] = {}
+            async with db.execute(f"""SELECT pvr.id, pvr.date, pvr.approval_status,
+                                    p.id, p.name, p.country_code, p.is_banned, p.is_verified
+                                  {player_verif_query}""", player_verif_query_params) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    v_id, v_date, v_approval, p_id, p_name, p_country, p_banned, p_verified = row
+                    player = PlayerBasic(p_id, p_name, p_country, bool(p_banned), bool(p_verified))
+                    verification = PlayerVerificationRequestDetailed(v_id, v_date, v_approval, player, [], [])
+                    player_verifications.append(verification)
+                    if p_id not in player_id_verif_dict:
+                        player_id_verif_dict[p_id] = []
+                    player_id_verif_dict[p_id].append(verification)
+
+            # here we get pending FC verifications for any players that appear in the results of our earlier query.
+            # this is used on the frontend so staff can easily approve both player/FC verifications on the same page.
+            if filter.get_pending_fc_verifications:
+                fc_query = f"""SELECT fvr.id, fvr.date, fvr.approval_status, f.id, f.player_id, f.type,
+                    f.fc, f.is_verified, f.is_primary, f.is_active, f.description, f.creation_date
+                    FROM friend_code_verification_requests fvr
+                    JOIN friend_codes f ON fvr.fc_id = f.id
+                    WHERE approval_status = 'pending'
+                    AND f.player_id IN (SELECT pvr.player_id {player_verif_query})"""
+                async with db.execute(fc_query, player_verif_query_params) as cursor:
+                    rows = await cursor.fetchall()
+                    for row in rows:
+                        (v_id, v_date, v_approval, f_id, f_player_id, f_type, f_fc, f_verified, f_primary,
+                        f_active, f_description, f_date) = row
+                        fc = FriendCode(f_id, f_fc, f_type, f_player_id, bool(f_verified), bool(f_primary),
+                                        f_date, f_description, bool(f_active))
+                        # get all verifications linked to player with same player ID as the FC,
+                        # and add the pending FC verifications to it
+                        player_verifs = player_id_verif_dict[f_player_id]
+                        verification = FriendCodeVerificationRequest(v_id, v_date, v_approval, player_verifs[0].player, fc)
+                        for v in player_verifs:
+                            v.fc_verifications.append(verification)
+        
+            # next we count alt flags for every player in our verifications
+            alt_flag_query = f"""SELECT u.player_id, COUNT(af.id)
+                FROM alt_flags.alt_flags af
+                JOIN alt_flags.user_alt_flags uaf ON uaf.flag_id = af.id
+                JOIN users u ON u.id = uaf.user_id
+                WHERE u.player_id IN (
+                    SELECT p.id {player_verif_query}
+                )
+                GROUP BY u.player_id"""
+            async with db.execute(alt_flag_query, player_verif_query_params) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    player_id, alt_flag_count = row
+                    player_verifs = player_id_verif_dict[player_id]
+                    # add the player alt flag count to all verifications linked to that player ID
+                    for v in player_verifs:
+                        v.alt_flag_count = alt_flag_count
+
+            # get the total count and page count for verifications with these parameters
+            count_query = f"""SELECT COUNT(*) {player_verif_from_where_clause}"""
+            async with db.execute(count_query, player_verif_query_params) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                count = row[0]
+                page_count = (count + limit - 1) // limit
+
+            return PlayerVerificationList(player_verifications, count, page_count)
