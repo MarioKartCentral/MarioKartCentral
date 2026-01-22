@@ -86,7 +86,7 @@
     {#if !fc.is_active}
       ({$LL.FRIEND_CODES.INACTIVE()})
     {/if}
-    <EditSolid on:click={() => open_edit_dialog(fc)} />
+    <EditSolid on:click={() => open_edit_dialog(fc)} withEvents={true}/>
   </div>
 {/each}
 <div class="button">
