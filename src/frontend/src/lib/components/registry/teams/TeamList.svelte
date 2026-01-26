@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Team, TeamList } from '$lib/types/team';
   import Table from '$lib/components/common/table/Table.svelte';
+  import TableHeader from '$lib/components/common/table/TableHeader.svelte';
   import RosterList from '$lib/components/registry/teams/RosterList.svelte';
   import { locale } from '$i18n/i18n-svelte';
   import { page } from '$app/stores';
@@ -36,7 +37,7 @@
     is_historical: boolean;
     is_active: boolean | null;
     min_player_count: number | null;
-    sort_by_newest: boolean;
+    sort_by: string | null;
     page: number;
   };
 
@@ -46,7 +47,7 @@
     name_or_tag: null,
     is_historical: false,
     is_active: null,
-    sort_by_newest: false,
+    sort_by: null,
     min_player_count: null,
     page: 1,
   };
@@ -67,7 +68,6 @@
   }
 
   async function fetchData() {
-    teams = [];
     let url = '/api/registry/teams?';
     let filter_strings = [];
     if (filters.is_historical) {
@@ -82,15 +82,14 @@
     }
     url += filter_strings.join('&');
     const res = await fetch(url);
-    if (res.status === 200) {
-      const body: TeamList = await res.json();
-      for (let t of body.teams) {
-        teams.push(t);
-      }
-      teams = teams;
-      totalTeams = body.team_count;
-      totalPages = body.page_count;
+    if (!res.ok) {
+      teams = [];
+      return;
     }
+    const { teams: t, team_count, page_count }: TeamList = await res.json();
+    teams = t
+    totalTeams = team_count
+    totalPages = page_count
   }
 
   async function search() {
@@ -116,10 +115,12 @@
         <option value="historical">{$LL.TEAMS.LIST.HISTORICAL_TEAMS()}</option>
       </select>
     </div>
-    <div class="option">
-      <select bind:value={filters.sort_by_newest}>
-        <option value={false}>{$LL.COMMON.SORT_BY_ALPHABETICAL()}</option>
-        <option value={true}>{$LL.COMMON.SORT_BY_NEWEST()}</option>
+    <div class="option sm:hidden">
+      <select bind:value={filters.sort_by} on:change={search}>
+        <option value='name'>{$LL.COMMON.SORT_BY_ALPHABETICAL()} (A-Z)</option>
+        <option value='-name'>{$LL.COMMON.SORT_BY_ALPHABETICAL()} (Z-A)</option>
+        <option value='-creation_date'>{$LL.COMMON.SORT_BY_NEWEST()}</option>
+        <option value='creation_date'>{$LL.COMMON.SORT_BY_OLDEST()}</option>
       </select>
     </div>
     <div class="option">
@@ -129,7 +130,7 @@
 </form>
 {$LL.TEAMS.LIST.TEAM_COUNT({ count: totalTeams })}
 <PageNavigation bind:currentPage={filters.page} bind:totalPages refresh_function={fetchData} />
-<Table data={teams} let:item={team} multiRow>
+<Table data={teams} let:item={team} multiRow bind:sortKey={filters.sort_by}>
   <colgroup slot="colgroup">
     <col class="tag" />
     <col class="name" />
@@ -137,10 +138,10 @@
     <col class="registration_date" />
   </colgroup>
   <tr slot="header">
-    <th>{$LL.COMMON.TAG()}</th>
-    <th>{$LL.COMMON.NAME()}</th>
-    <th>{$LL.TEAMS.LIST.ROSTERS()}</th>
-    <th>{$LL.TEAMS.LIST.REGISTERED()}</th>
+    <TableHeader>{$LL.COMMON.TAG()}</TableHeader>
+    <TableHeader sortable active sortKey="name" onclick={search}>{$LL.COMMON.NAME()}</TableHeader>
+    <TableHeader>{$LL.TEAMS.LIST.ROSTERS()}</TableHeader>
+    <TableHeader sortable direction="descending" sortKey="creation_date" onclick={search} classes="hidden sm:table-cell">{$LL.TEAMS.LIST.REGISTERED()}</TableHeader>
   </tr>
   <tr class="row">
     <td>
@@ -157,7 +158,7 @@
         {show_rosters[team.id] ? $LL.COMMON.HIDE_BUTTON() : $LL.COMMON.SHOW_BUTTON()}
       </button>
     </td>
-    <td>
+    <td class="hidden sm:table-cell">
       {new Date(team.creation_date * 1000).toLocaleString($locale, options)}
     </td>
   </tr>
