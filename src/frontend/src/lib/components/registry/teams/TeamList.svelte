@@ -87,9 +87,9 @@
       return;
     }
     const { teams: t, team_count, page_count }: TeamList = await res.json();
-    teams = t
-    totalTeams = team_count
-    totalPages = page_count
+    teams = t;
+    totalTeams = team_count;
+    totalPages = page_count;
   }
 
   async function search() {
@@ -117,10 +117,10 @@
     </div>
     <div class="option sm:hidden">
       <select bind:value={filters.sort_by} on:change={search}>
-        <option value='name'>{$LL.COMMON.SORT_BY_ALPHABETICAL()} (A-Z)</option>
-        <option value='-name'>{$LL.COMMON.SORT_BY_ALPHABETICAL()} (Z-A)</option>
-        <option value='-creation_date'>{$LL.COMMON.SORT_BY_NEWEST()}</option>
-        <option value='creation_date'>{$LL.COMMON.SORT_BY_OLDEST()}</option>
+        <option value="name">{$LL.COMMON.SORT_BY_ALPHABETICAL()} (A-Z)</option>
+        <option value="-name">{$LL.COMMON.SORT_BY_ALPHABETICAL()} (Z-A)</option>
+        <option value="-creation_date">{$LL.COMMON.SORT_BY_NEWEST()}</option>
+        <option value="creation_date">{$LL.COMMON.SORT_BY_OLDEST()}</option>
       </select>
     </div>
     <div class="option">
@@ -141,7 +141,9 @@
     <TableHeader>{$LL.COMMON.TAG()}</TableHeader>
     <TableHeader sortable active sortKey="name" onclick={search}>{$LL.COMMON.NAME()}</TableHeader>
     <TableHeader>{$LL.TEAMS.LIST.ROSTERS()}</TableHeader>
-    <TableHeader sortable direction="descending" sortKey="creation_date" onclick={search} classes="hidden sm:table-cell">{$LL.TEAMS.LIST.REGISTERED()}</TableHeader>
+    <TableHeader sortable direction="descending" sortKey="creation_date" onclick={search} classes="hidden sm:table-cell"
+      >{$LL.TEAMS.LIST.REGISTERED()}</TableHeader
+    >
   </tr>
   <tr class="row">
     <td>

@@ -14,17 +14,17 @@
   export let containerClass: string = 'overflow-hidden rounded-[4px] m-[10px]';
   export let multiRow = false;
   export let data: T[];
-  export let sortKey: string | null = null
+  export let sortKey: string | null = null;
 
-  const sortKeyStore: Writable<string | null> = writable(sortKey)
-  $: $sortKeyStore = sortKey
-  const activeKey: Readable<string | null> = derived(sortKeyStore, $key => {
+  const sortKeyStore: Writable<string | null> = writable(sortKey);
+  $: $sortKeyStore = sortKey;
+  const activeKey: Readable<string | null> = derived(sortKeyStore, ($key) => {
     if (!$key) return null;
-    return $key.startsWith('-') ? $key.slice(1) : $key
-  })
-  const activeSortDirection: Readable<'ascending' | 'descending'> = derived(sortKeyStore, $key => {
-    return $key?.startsWith('-') ? 'descending' : 'ascending'
-  })
+    return $key.startsWith('-') ? $key.slice(1) : $key;
+  });
+  const activeSortDirection: Readable<'ascending' | 'descending'> = derived(sortKeyStore, ($key) => {
+    return $key?.startsWith('-') ? 'descending' : 'ascending';
+  });
 
   setContext<TableHeaderSort>('header-state', {
     get activeSortKey() {

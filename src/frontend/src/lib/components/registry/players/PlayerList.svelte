@@ -109,7 +109,8 @@
           direction="descending"
           sortKey="join_date"
           classes="hidden sm:table-cell"
-          onclick={search}>
+          onclick={search}
+        >
           {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()}
         </TableHeader>
       </tr>
