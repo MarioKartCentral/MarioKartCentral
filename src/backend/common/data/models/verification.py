@@ -52,6 +52,7 @@ class PlayerVerificationFilter:
     approval_status: VerificationApproval | None = None
     player_id: int | None = None
     country_code: CountryCode | None = None
+    country_code_exclude: CountryCode | None = None
     handled_by: int | None = None
     from_date: int | None = None
     to_date: int | None = None
