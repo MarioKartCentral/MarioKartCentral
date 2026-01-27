@@ -184,7 +184,8 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                                   "offset": offset,
                                   "limit": limit}
             
-            player_verifications: list[PlayerVerificationRequestDetailed] = []
+            # used so we can add the audit log to verifications later
+            player_verif_dict: dict[int, PlayerVerificationRequestDetailed] = {}
             # player_id_verif_dict is used to get verifications by player ID in the
             # friend code and alt flag queries in O(1) time
             player_id_verif_dict: dict[int, list[PlayerVerificationRequestDetailed]] = {}
@@ -196,7 +197,7 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                     v_id, v_date, v_approval, p_id, p_name, p_country, p_banned, p_verified = row
                     player = PlayerBasic(p_id, p_name, p_country, bool(p_banned), bool(p_verified))
                     verification = PlayerVerificationRequestDetailed(v_id, v_date, v_approval, player, [], [])
-                    player_verifications.append(verification)
+                    player_verif_dict[v_id] = verification
                     if p_id not in player_id_verif_dict:
                         player_id_verif_dict[p_id] = []
                     player_id_verif_dict[p_id].append(verification)
@@ -223,6 +224,25 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                         verification = FriendCodeVerificationRequest(v_id, v_date, v_approval, player_verifs[0].player, fc)
                         for v in player_verifs:
                             v.fc_verifications.append(verification)
+
+            # get the audit log for verifications in the list (sorted by date descending)
+            audit_log_query = f"""SELECT pvrl.id, pvrl.verification_id, pvrl.date, pvrl.approval_status,
+                                pvrl.reason, p.id, p.name, p.country_code, p.is_banned, p.is_verified
+                                FROM player_verification_request_log pvrl
+                                JOIN players p ON pvrl.handled_by = p.id
+                                WHERE pvrl.verification_id IN (
+                                    SELECT pvr.id {player_verif_query}
+                                )
+                                ORDER BY pvrl.date DESC"""
+            async with db.execute(audit_log_query, player_verif_query_params) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (log_id, v_id, log_date, log_approval, log_reason, 
+                     p_id, p_name, p_country, p_banned, p_verified) = row
+                    handled_by = PlayerBasic(p_id, p_name, p_country, bool(p_banned), bool(p_verified))
+                    log_item = VerificationLogItemBasic(log_id, v_id, log_date, log_approval, log_reason, handled_by)
+                    verification = player_verif_dict[v_id]
+                    verification.audit_log.append(log_item)
         
             # next we count alt flags for every player in our verifications
             alt_flag_query = f"""SELECT u.player_id, COUNT(af.id)
@@ -250,4 +270,4 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                 count = row[0]
                 page_count = (count + limit - 1) // limit
 
-            return PlayerVerificationList(player_verifications, count, page_count)
+            return PlayerVerificationList(list(player_verif_dict.values()), count, page_count)
