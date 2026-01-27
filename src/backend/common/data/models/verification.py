@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Literal
 from common.data.models.player_basic import PlayerBasic
 from common.data.models.friend_codes import FriendCode
+from common.data.models.common import CountryCode
 
 VerificationApproval = Literal["approved", "pending", "ticket", "denied"]
 
@@ -50,6 +51,7 @@ class CheckFriendCodeVerificationRequest:
 class PlayerVerificationFilter:
     approval_status: VerificationApproval | None = None
     player_id: int | None = None
+    country_code: CountryCode | None = None
     handled_by: int | None = None
     from_date: int | None = None
     to_date: int | None = None

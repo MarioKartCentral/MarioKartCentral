@@ -164,6 +164,7 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                 WHERE (:from_date IS NULL OR pvr.date >= :from_date)
                 AND (:to_date IS NULL OR pvr.date <= :to_date)
                 AND (:player_id IS NULL OR pvr.player_id = :player_id)
+                AND (:country_code IS NULL OR p.country_code = :country_code)
                 AND (:handled_by IS NULL OR pvr.id IN (
                     SELECT pvrl.verification_id 
                     FROM player_verification_request_log pvrl
@@ -175,6 +176,7 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
             player_verif_query_params = {"from_date": filter.from_date,
                                   "to_date": filter.to_date,
                                   "player_id": filter.player_id,
+                                  "country_code": filter.country_code,
                                   "handled_by": filter.handled_by,
                                   "approval_status": filter.approval_status,
                                   "offset": offset,
