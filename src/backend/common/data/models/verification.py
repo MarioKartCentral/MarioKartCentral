@@ -60,6 +60,18 @@ class PlayerVerificationFilter:
     page: int | None = None
 
 @dataclass
+class FriendCodeVerificationFilter:
+    approval_status: VerificationApproval | None = None
+    player_id: int | None = None
+    fc_id: int | None = None
+    country_code: CountryCode | None = None
+    country_code_exclude: CountryCode | None = None
+    handled_by: int | None = None
+    from_date: int | None = None
+    to_date: int | None = None
+    page: int | None = None
+
+@dataclass
 class VerificationLogItemBasic:
     id: int
     verification_id: int
@@ -96,6 +108,12 @@ class PlayerVerificationRequestDetailed(PlayerVerificationRequest):
 @dataclass
 class PlayerVerificationList:
     verifications: list[PlayerVerificationRequestDetailed]
+    count: int
+    page_count: int
+
+@dataclass
+class FriendCodeVerificationList:
+    verifications: list[FriendCodeVerificationRequestDetailed]
     count: int
     page_count: int
 

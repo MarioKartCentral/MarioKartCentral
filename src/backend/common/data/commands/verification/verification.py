@@ -159,20 +159,20 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
             if self.filter.page:
                 offset = (self.filter.page - 1) * limit
 
-            player_verif_from_where_clause = """FROM player_verification_requests pvr
-                JOIN players p ON pvr.player_id = p.id
-                WHERE (:from_date IS NULL OR pvr.date >= :from_date)
-                AND (:to_date IS NULL OR pvr.date <= :to_date)
-                AND (:player_id IS NULL OR pvr.player_id = :player_id)
+            player_verif_from_where_clause = """FROM player_verification_requests v
+                JOIN players p ON v.player_id = p.id
+                WHERE (:from_date IS NULL OR v.date >= :from_date)
+                AND (:to_date IS NULL OR v.date <= :to_date)
+                AND (:player_id IS NULL OR v.player_id = :player_id)
                 AND (:country_code IS NULL OR p.country_code = :country_code)
                 AND (:country_code_exclude IS NULL OR p.country_code != :country_code_exclude)
-                AND (:handled_by IS NULL OR pvr.id IN (
-                    SELECT pvrl.verification_id 
-                    FROM player_verification_request_log pvrl
-                    WHERE pvrl.handled_by = :handled_by
+                AND (:handled_by IS NULL OR v.id IN (
+                    SELECT vl.verification_id 
+                    FROM player_verification_request_log vl
+                    WHERE vl.handled_by = :handled_by
                 ))"""
             player_verif_query = f"""{player_verif_from_where_clause}
-                ORDER BY pvr.id DESC
+                ORDER BY v.id DESC
                 LIMIT :limit OFFSET :offset"""
             player_verif_query_params = {"from_date": filter.from_date,
                                   "to_date": filter.to_date,
@@ -189,7 +189,7 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
             # player_id_verif_dict is used to get verifications by player ID in the
             # friend code and alt flag queries in O(1) time
             player_id_verif_dict: dict[int, list[PlayerVerificationRequestDetailed]] = {}
-            async with db.execute(f"""SELECT pvr.id, pvr.date, pvr.approval_status,
+            async with db.execute(f"""SELECT v.id, v.date, v.approval_status,
                                     p.id, p.name, p.country_code, p.is_banned, p.is_verified
                                   {player_verif_query}""", player_verif_query_params) as cursor:
                 rows = await cursor.fetchall()
@@ -205,12 +205,12 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
             # here we get pending FC verifications for any players that appear in the results of our earlier query.
             # this is used on the frontend so staff can easily approve both player/FC verifications on the same page.
             if filter.get_pending_fc_verifications:
-                fc_query = f"""SELECT fvr.id, fvr.date, fvr.approval_status, f.id, f.player_id, f.type,
+                fc_query = f"""SELECT v.id, v.date, v.approval_status, f.id, f.player_id, f.type,
                     f.fc, f.is_verified, f.is_primary, f.is_active, f.description, f.creation_date
-                    FROM friend_code_verification_requests fvr
-                    JOIN friend_codes f ON fvr.fc_id = f.id
+                    FROM friend_code_verification_requests v
+                    JOIN friend_codes f ON v.fc_id = f.id
                     WHERE approval_status = 'pending'
-                    AND f.player_id IN (SELECT pvr.player_id {player_verif_query})"""
+                    AND f.player_id IN (SELECT v.player_id {player_verif_query})"""
                 async with db.execute(fc_query, player_verif_query_params) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
@@ -226,14 +226,14 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                             v.fc_verifications.append(verification)
 
             # get the audit log for verifications in the list (sorted by date descending)
-            audit_log_query = f"""SELECT pvrl.id, pvrl.verification_id, pvrl.date, pvrl.approval_status,
-                                pvrl.reason, p.id, p.name, p.country_code, p.is_banned, p.is_verified
-                                FROM player_verification_request_log pvrl
-                                JOIN players p ON pvrl.handled_by = p.id
-                                WHERE pvrl.verification_id IN (
-                                    SELECT pvr.id {player_verif_query}
+            audit_log_query = f"""SELECT vl.id, vl.verification_id, vl.date, vl.approval_status,
+                                vl.reason, p.id, p.name, p.country_code, p.is_banned, p.is_verified
+                                FROM player_verification_request_log vl
+                                JOIN players p ON vl.handled_by = p.id
+                                WHERE vl.verification_id IN (
+                                    SELECT v.id {player_verif_query}
                                 )
-                                ORDER BY pvrl.date DESC"""
+                                ORDER BY vl.date DESC"""
             async with db.execute(audit_log_query, player_verif_query_params) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
@@ -271,3 +271,87 @@ class ListPlayerVerificationsCommand(Command[PlayerVerificationList]):
                 page_count = (count + limit - 1) // limit
 
             return PlayerVerificationList(list(player_verif_dict.values()), count, page_count)
+        
+@dataclass
+class ListFriendCodeVerificationsCommand(Command[FriendCodeVerificationList]):
+    filter: FriendCodeVerificationFilter
+
+    async def handle(self, db_wrapper: DBWrapper):
+        async with db_wrapper.connect() as db:
+            filter = self.filter
+            limit = 20
+            offset = 0
+            if self.filter.page:
+                offset = (self.filter.page - 1) * limit
+
+            fc_verif_from_where_clause = """FROM friend_code_verification_requests v
+                JOIN friend_codes f ON v.fc_id = f.id
+                JOIN players p ON f.player_id = p.id
+                WHERE (:from_date IS NULL OR v.date >= :from_date)
+                AND (:to_date IS NULL OR v.date <= :to_date)
+                AND (:player_id IS NULL OR p.id = :player_id)
+                AND (:fc_id IS NULL OR f.id = :fc_id)
+                AND (:country_code IS NULL OR p.country_code = :country_code)
+                AND (:country_code_exclude IS NULL OR p.country_code != :country_code_exclude)
+                AND (:handled_by IS NULL OR v.id IN (
+                    SELECT vl.verification_id 
+                    FROM friend_code_verification_request_log vl
+                    WHERE vl.handled_by = :handled_by
+                ))"""
+            fc_verif_query = f"""{fc_verif_from_where_clause}
+                ORDER BY v.id DESC
+                LIMIT :limit OFFSET :offset"""
+            fc_verif_query_params = {"from_date": filter.from_date,
+                                  "to_date": filter.to_date,
+                                  "player_id": filter.player_id,
+                                  "fc_id": filter.fc_id,
+                                  "country_code": filter.country_code,
+                                  "country_code_exclude": filter.country_code_exclude,
+                                  "handled_by": filter.handled_by,
+                                  "approval_status": filter.approval_status,
+                                  "offset": offset,
+                                  "limit": limit}
+            
+            fc_verif_dict: dict[int, FriendCodeVerificationRequestDetailed] = {}
+            async with db.execute(f"""SELECT v.id, v.date, v.approval_status,
+                                    p.id, p.name, p.country_code, p.is_banned, p.is_verified,
+                                    f.id, f.fc, f.type, f.player_id, f.is_verified, f.is_primary,
+                                    f.creation_date, f.description, f.is_active
+                                    {fc_verif_query}""", fc_verif_query_params) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (v_id, v_date, v_approval, p_id, p_name, p_country, p_banned, p_verified,
+                     fc_id, fc_fc, fc_type, fc_p_id, fc_verified, fc_primary, fc_date, fc_desc, fc_active) = row
+                    player = PlayerBasic(p_id, p_name, p_country, bool(p_banned), bool(p_verified))
+                    fc = FriendCode(fc_id, fc_fc, fc_type, fc_p_id, bool(fc_verified), bool(fc_primary),
+                                    fc_date, fc_desc, bool(fc_active))
+                    verification = FriendCodeVerificationRequestDetailed(v_id, v_date, v_approval, player, fc, [])
+                    fc_verif_dict[v_id] = verification
+
+            audit_log_query = f"""SELECT vl.id, vl.verification_id, vl.date, vl.approval_status,
+                                vl.reason, p.id, p.name, p.country_code, p.is_banned, p.is_verified
+                                FROM friend_code_verification_request_log vl
+                                JOIN players p ON vl.handled_by = p.id
+                                WHERE vl.verification_id IN (
+                                    SELECT v.id {fc_verif_query}
+                                )
+                                ORDER BY vl.date DESC"""
+            async with db.execute(audit_log_query, fc_verif_query_params) as cursor:
+                rows = await cursor.fetchall()
+                for row in rows:
+                    (log_id, v_id, log_date, log_approval, log_reason, p_id,
+                     p_name, p_country, p_banned, p_verified) = row
+                    handled_by = PlayerBasic(p_id, p_name, p_country, bool(p_banned), bool(p_verified))
+                    log_item = VerificationLogItemBasic(log_id, v_id, log_date, log_approval, log_reason, handled_by)
+                    verification = fc_verif_dict[v_id]
+                    verification.audit_log.append(log_item)
+
+            # get the total count and page count for verifications with these parameters
+            count_query = f"""SELECT COUNT(*) {fc_verif_from_where_clause}"""
+            async with db.execute(count_query, fc_verif_query_params) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                count = row[0]
+                page_count = (count + limit - 1) // limit
+
+            return FriendCodeVerificationList(list(fc_verif_dict.values()), count, page_count)
