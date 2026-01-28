@@ -207,7 +207,7 @@
   {#if squad_data[squad.id].display_players}
     <tr class="row">
       <td colspan="10">
-        <TournamentPlayerList {tournament} players={squad.players} {is_privileged} />
+        <TournamentPlayerList {tournament} players={squad.players} {is_privileged} showInvites={is_privileged} />
       </td>
     </tr>
   {/if}
