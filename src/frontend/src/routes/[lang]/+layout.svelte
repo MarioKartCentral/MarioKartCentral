@@ -1,5 +1,4 @@
 <script lang="ts">
-  import '$lib/base.css';
   import { setLocale } from '$i18n/i18n-svelte';
   import NavBar from '$lib/components/navbar/NavBar.svelte';
   import type { LayoutData } from './$types';
