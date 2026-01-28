@@ -486,7 +486,7 @@ class GetRegisterableRostersCommand(Command[list[TeamRoster]]):
             variable_parameters = (self.user_id, team_permissions.REGISTER_TOURNAMENT, self.game, self.mode, "approved", True, self.tournament_id, True)
             rosters: list[TeamRoster] = []
             roster_dict: dict[int, list[RosterPlayerInfo]] = {}
-            async with db.execute(f"""SELECT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.color, tr.creation_date,
+            async with db.execute(f"""SELECT DISTINCT tr.id, tr.team_id, tr.game, tr.mode, tr.name, tr.tag, tr.color, tr.creation_date,
                                   tr.is_recruiting, tr.is_active, tr.approval_status, t.name, t.tag, t.color
                                   {rosters_query}""",
                     variable_parameters) as cursor:

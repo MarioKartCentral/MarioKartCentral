@@ -55,7 +55,6 @@
     if (res.status < 300) {
       const body: TeamRoster[] = await res.json();
       rosters = body;
-      console.log(rosters);
     }
   });
 
