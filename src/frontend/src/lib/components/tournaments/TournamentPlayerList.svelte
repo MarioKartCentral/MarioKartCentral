@@ -240,10 +240,10 @@
       {/if}
     </td>
     {#if tournament.host_status_required}
-      <td class="mobile-hide">{player.is_invite ? '-' : player.can_host ? 'Yes' : 'No'}</td>
+      <td class="mobile-hide">{player.is_invite ? '-' : player.can_host ? $LL.COMMON.YES() : $LL.COMMON.NO()}</td>
     {/if}
     {#if tournament.checkins_enabled}
-      <td class="mobile-hide">{player.is_invite ? '-' : player.is_checked_in ? 'Yes' : 'No'}</td>
+      <td class="mobile-hide">{player.is_invite ? '-' : player.is_checked_in ? $LL.COMMON.YES() : $LL.COMMON.NO()}</td>
     {/if}
 
     {#if is_privileged || registration}
