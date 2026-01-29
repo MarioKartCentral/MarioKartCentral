@@ -1,26 +1,21 @@
 <script lang="ts">
-  import { user } from '$lib/stores/stores';
-  import type { UserInfo } from '$lib/types/user-info';
-  import Button from '$lib/components/common/buttons/Button.svelte';
-  import type { MyDiscord } from '$lib/types/my-discord';
   import { onMount } from 'svelte';
-  import DiscordUser from './DiscordUser.svelte';
-  import { permissions, check_permission } from '$lib/util/permissions';
   import LL from '$i18n/i18n-svelte';
+  import { permissions, check_permission } from '$lib/util/permissions';
+  import { user as userStore } from '$lib/stores/stores';
+  import type { MyDiscord } from '$lib/types/my-discord';
+  import DiscordUser from './DiscordUser.svelte';
+  import Button from '$lib/components/common/buttons/Button.svelte';
 
-  let user_info: UserInfo;
-
-  user.subscribe((value) => {
-    user_info = value;
-  });
-
-  let linked_account: MyDiscord | null;
+  export let userId: number;
+  let linkedAccount: MyDiscord | null = null;
+  const forceEdit = check_permission($userStore, permissions.edit_user) && userId !== $userStore.id;
 
   onMount(async () => {
-    const res = await fetch('/api/user/my_discord');
-    if (res.status == 200) {
-      const body: MyDiscord | null = await res.json();
-      linked_account = body;
+    const endpoint = userId === $userStore.id ? '/api/user/my_discord' : `/api/user/${userId}/discord`;
+    const response = await fetch(endpoint);
+    if (response.ok) {
+      linkedAccount = await response.json();
     }
   });
 
@@ -29,109 +24,105 @@
   }
 
   async function refreshDiscordData() {
-    let endpoint = '/api/user/refresh_discord';
+    const endpoint = '/api/user/refresh_discord';
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
+
     const result = await response.json();
-    if (response.status === 200) {
-      linked_account = result;
-    } else {
+    if (!response.ok) {
       alert(`${$LL.DISCORD.REFRESH_ERROR()}: ${result['title']}`);
+      return;
     }
+
+    linkedAccount = result;
   }
 
   async function deleteDiscordData() {
-    let conf = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
-    if (!conf) return;
-    let endpoint = '/api/user/delete_discord';
+    const confirm = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
+    if (!confirm) return;
+    const endpoint = '/api/user/delete_discord';
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
     const result = await response.json();
-    if (response.status === 200) {
-      linked_account = null;
-    } else {
+    if (!response.ok) {
       alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
+      return;
     }
+
+    linkedAccount = null;
+  }
+
+  async function forceDeleteDiscordData() {
+    const confirm = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
+    if (!confirm) return;
+    const endpoint = `/api/user/${userId}/discord/forceDelete`;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) {
+      const result = await response.json();
+      alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
+      return;
+    }
+    linkedAccount = null;
   }
 
   async function syncDiscordAvatar() {
+    if (!linkedAccount) throw Error('No account linked');
+    if (forceEdit) throw Error("Cannot sync another player's avatar");
     const endpoint = '/api/user/sync_discord_avatar';
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
     const result = await response.json();
-    if (response.status === 200) {
-      window.location.reload(); // Refresh to show updated avatar
-    } else {
+    if (!response.ok) {
       alert(`${$LL.DISCORD.SYNC_AVATAR_ERROR()}: ${result['title']}`);
+      return;
     }
+
+    const { avatar } = result;
+
+    if (!$userStore.player?.user_settings) return;
+    $userStore.player.user_settings.avatar = avatar as string;
   }
 </script>
 
-{#if user_info.id === null}
+{#if $userStore.id === null}
   {$LL.DISCORD.SIGN_IN_REGISTER_TO_LINK()}
-{:else if linked_account !== undefined}
-  {#if linked_account === null}
-    <Button on:click={linkDiscord} disabled={!check_permission(user_info, permissions.link_discord, true)}
-      >{$LL.DISCORD.LINK_DISCORD()}</Button
-    >
-  {:else}
-    <div class="flex">
-      <DiscordUser discord={linked_account} />
-      <div class="section">
-        <div class="flex buttons">
-          <div class="disc_button">
-            <Button
-              size="xs"
-              extra_classes="w-32"
-              on:click={linkDiscord}
-              disabled={!check_permission(user_info, permissions.link_discord, true)}
-            >
-              {$LL.DISCORD.RELINK_DISCORD()}
-            </Button>
-          </div>
-          <div class="disc_button">
-            <Button size="xs" extra_classes="w-32" on:click={deleteDiscordData}>{$LL.DISCORD.UNLINK_DISCORD()}</Button>
-          </div>
-          <div class="disc_button">
-            <Button
-              size="xs"
-              extra_classes="w-32"
-              on:click={refreshDiscordData}
-              disabled={!check_permission(user_info, permissions.link_discord, true)}
-            >
-              {$LL.DISCORD.REFRESH()}
-            </Button>
-          </div>
-          <div class="disc_button">
-            <Button size="xs" extra_classes="w-32" on:click={syncDiscordAvatar}>
-              {$LL.DISCORD.SYNC_AVATAR()}
-            </Button>
-          </div>
-        </div>
-      </div>
+{:else}
+  <div class="flex items-center flex-wrap gap-2">
+    <DiscordUser discord={linkedAccount} />
+    <div class="flex items-center flex-wrap gap-2">
+      <Button
+        size="xs"
+        extra_classes="min-w-32"
+        on:click={linkDiscord}
+        disabled={forceEdit || !check_permission($userStore, permissions.link_discord, true)}
+      >
+        {linkedAccount ? $LL.DISCORD.RELINK_DISCORD() : $LL.DISCORD.LINK_DISCORD()}
+      </Button>
+      {#if linkedAccount}
+        <Button size="xs" extra_classes="min-w-32" on:click={forceEdit ? forceDeleteDiscordData : deleteDiscordData}>
+          {$LL.DISCORD.UNLINK_DISCORD()}
+        </Button>
+        <Button
+          size="xs"
+          extra_classes="min-w-32"
+          on:click={refreshDiscordData}
+          disabled={forceEdit || !check_permission($userStore, permissions.link_discord, true)}
+        >
+          {$LL.DISCORD.REFRESH()}
+        </Button>
+        <Button size="xs" extra_classes="min-w-32" on:click={syncDiscordAvatar} disabled={forceEdit}>
+          {$LL.DISCORD.SYNC_AVATAR()}
+        </Button>
+      {/if}
     </div>
-  {/if}
+  </div>
 {/if}
-
-<style>
-  div.flex {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  div.buttons {
-    max-width: 600px;
-  }
-  div.section {
-    margin: 5px 10px;
-  }
-  div.disc_button {
-    margin: 3px;
-  }
-</style>
