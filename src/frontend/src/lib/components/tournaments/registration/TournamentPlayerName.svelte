@@ -4,6 +4,7 @@
   import RepresentativeBadge from '$lib/components/badges/RepresentativeBadge.svelte';
   import BaggerBadge from '$lib/components/badges/BaggerBadge.svelte';
   import IneligibleBadge from '$lib/components/badges/IneligibleBadge.svelte';
+  import Badge from '$lib/components/badges/Badge.svelte';
 
   export let player_id: number;
   export let name: string;
@@ -12,6 +13,7 @@
   export let is_representative: boolean = false;
   export let is_bagger_clause: boolean = false;
   export let is_eligible = true;
+  export let is_invite: boolean = false;
 </script>
 
 <div class="{is_squad_captain ? 'captain' : is_representative ? 'representative' : ''} ">
@@ -31,6 +33,9 @@
   {/if}
   {#if !is_eligible}
     <IneligibleBadge />
+  {/if}
+  {#if is_invite}
+    <Badge badgeClass="ineligible_badge">Invited</Badge>
   {/if}
 </div>
 

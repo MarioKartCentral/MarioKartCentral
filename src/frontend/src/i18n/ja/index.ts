@@ -1026,7 +1026,7 @@ const ja: Translation = {
       DECLINE_INVITE_CONFIRM: '本当にこの招待を辞退しますか？',
       DECLINE_INVITE_FAILED: '招待辞退に失敗しました',
       MY_SQUAD: 'My Squad',
-      INVITED_PLAYER_COUNT: '{count} 招待 {{プレイヤー|プレイヤー}}', //TODO: update "player" / "players"
+      INVITED_PLAYER_COUNT: '{count} 招待',
       INVITE_PLAYERS: 'プレイヤー招待',
       INVITE_PLAYER: 'プレイヤー招待',
       UNREGISTER_SQUAD: 'スクワットの登録解除',
