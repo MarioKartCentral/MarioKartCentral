@@ -139,10 +139,12 @@
     <Button on:click={deleteAvatar}>{$LL.DISCORD.DELETE_AVATAR()}</Button>
   </Section>
 {/if}
-{#if player.id === user_info.player?.id}
+{#if player.user_settings}
   <Section header={$LL.DISCORD.DISCORD()}>
-    <LinkDiscord />
+    <LinkDiscord userId={player.user_settings.user_id} />
   </Section>
+{/if}
+{#if player.id === user_info.player?.id}
   <Section header={$LL.LOGIN.CHANGE_EMAIL()}>
     <ChangeEmail />
   </Section>
