@@ -76,7 +76,7 @@ class ListPostsCommand(Command[PostList]):
 
     async def handle(self, db_wrapper: DBWrapper):
         filter = self.filter
-        query = """SELECT DISTINCT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned
+        query = """SELECT DISTINCT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned, pl.is_verified
                     FROM posts p
                     LEFT JOIN players pl ON p.created_by = pl.id
                     WHERE (is_global = :is_global)
@@ -101,10 +101,10 @@ class ListPostsCommand(Command[PostList]):
             async with db.execute(post_query, {**query_dict, "limit": limit, "offset": offset}) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country, player_banned = row
+                    post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country, player_banned, player_verified = row
                     created_by = None
                     if player_id:
-                        created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
+                        created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned), bool(player_verified))
                     posts.append(PostBasic(post_id, title, bool(is_public), bool(is_global), creation_date, created_by))
 
             count_query = f"SELECT COUNT(*) FROM ({query})"
@@ -127,7 +127,7 @@ class GetPostCommand(Command[Post]):
     tournament_id: int | None
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        query = """SELECT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned
+        query = """SELECT p.id, p.title, p.is_public, p.is_global, p.creation_date, pl.id, pl.name, pl.country_code, pl.is_banned, pl.is_verified
                     FROM posts p
                     LEFT JOIN players pl ON p.created_by = pl.id
                     WHERE p.id = :id
@@ -145,10 +145,10 @@ class GetPostCommand(Command[Post]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Post not found", status=404)
-                post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country, player_banned = row
+                post_id, title, is_public, is_global, creation_date, player_id, player_name, player_country, player_banned, player_verified = row
                 created_by = None
                 if player_id:
-                    created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
+                    created_by = PlayerBasic(player_id, player_name, player_country, bool(player_banned), bool(player_verified))
         s3_body = await s3_wrapper.get_object(POST_BUCKET, f"{self.id}.json")
         if not s3_body:
             raise Problem("Failed to get post S3 data")

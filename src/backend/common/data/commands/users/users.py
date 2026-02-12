@@ -129,7 +129,7 @@ class ListUsersCommand(Command[UserList]):
                 WITH filtered_users AS (
                     SELECT u.id, u.player_id, u.join_date,
                            a.email, a.email_confirmed, a.force_password_reset,
-                           p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date as player_join_date
+                           p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.is_verified, p.join_date as player_join_date
                     FROM users u
                     JOIN auth.user_auth a ON u.id = a.user_id
                     LEFT JOIN players p ON u.player_id = p.id
@@ -137,7 +137,7 @@ class ListUsersCommand(Command[UserList]):
                 )
                 SELECT fu.id, fu.player_id, fu.join_date,
                        fu.email, fu.email_confirmed, fu.force_password_reset,
-                       fu.name, fu.country_code, fu.is_hidden, fu.is_shadow, fu.is_banned, fu.player_join_date,
+                       fu.name, fu.country_code, fu.is_hidden, fu.is_shadow, fu.is_banned, fu.is_verified, fu.player_join_date,
                        (SELECT COUNT(*) FROM filtered_users) as total_count
                 FROM filtered_users fu
                 ORDER BY fu.id
@@ -148,7 +148,7 @@ class ListUsersCommand(Command[UserList]):
             async with db.execute(query, {"name_or_email": self.filter.name_or_email, "limit": limit, "offset": offset}) as cursor:
                 async for row in cursor:
                     (user_id, player_id, join_date, email, email_confirmed_int, force_password_reset_int,
-                     player_name, country_code, is_hidden_int, is_shadow_int, is_banned_int, player_join_date,
+                     player_name, country_code, is_hidden_int, is_shadow_int, is_banned_int, is_verified_int, player_join_date,
                      total_count) = row
                     
                     if user_count == 0:
@@ -156,7 +156,8 @@ class ListUsersCommand(Command[UserList]):
 
                     player = None
                     if player_id is not None and player_name:
-                        player = Player(player_id, player_name, country_code, bool(is_hidden_int), bool(is_shadow_int), bool(is_banned_int), player_join_date, None)
+                        player = Player(player_id, player_name, country_code, bool(is_hidden_int), bool(is_shadow_int), bool(is_banned_int), 
+                                        bool(is_verified_int), player_join_date, None)
                     users.append(UserInfo(user_id, email, join_date, bool(email_confirmed_int), bool(force_password_reset_int), player))
         page_count = (user_count + limit - 1) // limit if user_count > 0 else 0
         return UserList(users, user_count, page_count)
@@ -171,7 +172,7 @@ class ViewUserCommand(Command[UserInfoDetailed]):
             query = """
                 SELECT u.id, u.player_id, u.join_date,
                        a.email, a.email_confirmed, a.force_password_reset,
-                       p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date as pjd,
+                       p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.is_verified, p.join_date as pjd,
                        d.discord_id, d.username, d.discriminator, d.global_name, d.avatar
                 FROM users u
                 JOIN auth.user_auth a ON u.id = a.user_id
@@ -184,14 +185,15 @@ class ViewUserCommand(Command[UserInfoDetailed]):
                 if not row:
                     raise Problem("User not found", status=404)
                 (user_id, player_id, join_date, email, email_confirmed_int, force_password_reset_int, player_name,
-                 country_code, is_hidden_int, is_shadow_int, is_banned_int, player_join_date, discord_id,
+                 country_code, is_hidden_int, is_shadow_int, is_banned_int, is_verified_int, player_join_date, discord_id,
                  discord_username, discord_discriminator, discord_global_name, discord_avatar) = row
                 player = None
                 if player_id is not None and player_name:
                     discord = None
                     if discord_id is not None:
                         discord = Discord(discord_id, discord_username, discord_discriminator, discord_global_name, discord_avatar)
-                    player = Player(player_id, player_name, country_code, bool(is_hidden_int), bool(is_shadow_int), bool(is_banned_int), player_join_date, discord)
+                    player = Player(player_id, player_name, country_code, bool(is_hidden_int), bool(is_shadow_int), bool(is_banned_int), 
+                                    bool(is_verified_int), player_join_date, discord)
 
             # admins should only be able to view API tokens for users with lower permissions than themselves (or themselves)
             is_privileged = True
