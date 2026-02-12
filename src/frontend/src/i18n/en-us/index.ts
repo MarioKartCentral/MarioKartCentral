@@ -201,6 +201,7 @@ const en_us: BaseTranslation = {
     ES: 'Spanish',
     FR: 'French',
     JA: 'Japanese',
+    ALL: 'All Languages',
   },
   LEGAL: {
     LAST_UPDATED: 'Last Updated',

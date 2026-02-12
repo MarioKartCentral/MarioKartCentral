@@ -738,6 +738,10 @@ type RootTranslation = {
 		 * J​a​p​a​n​e​s​e
 		 */
 		JA: string
+		/**
+		 * A​l​l​ ​L​a​n​g​u​a​g​e​s
+		 */
+		ALL: string
 	}
 	LEGAL: {
 		/**
@@ -6365,6 +6369,10 @@ export type TranslationFunctions = {
 		 * Japanese
 		 */
 		JA: () => LocalizedString
+		/**
+		 * All Languages
+		 */
+		ALL: () => LocalizedString
 	}
 	LEGAL: {
 		/**
