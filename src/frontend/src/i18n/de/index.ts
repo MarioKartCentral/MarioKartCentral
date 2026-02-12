@@ -1051,7 +1051,7 @@ const de: Translation = {
       TOGGLE_REPRESENTATIVE: 'Repräsentant umschalten',
       TOGGLE_BAGGER: 'Bagger umschalten',
       SELECT_ONE_CAPTAIN: 'Bitte wählen Sie genau einen Kapitän aus.',
-      SELECT_REPRESENTATIVES: 'Bitte wählen Sie genau {min_representatives} Kapitäne/ Repräsentanten.',
+      SELECT_REPRESENTATIVES: 'Bitte wählen Sie {count|formatNumberComparison} Kapitäne/ Repräsentanten.',
       SELECT_MORE_PLAYERS: 'Sie benötigen {count} mehr {{Spieler|Spieler}} um sich für dieses Turnier zu registrieren.', //TODO: update "player" / "players"
       SELECT_LESS_PLAYERS:
         'Die maximale Squadgröße für dieses Turnier beträgt {max_squad_size} Spieler, bitte entfernen Sie mindestens {count} Spieler.',
