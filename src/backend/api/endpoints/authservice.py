@@ -241,6 +241,13 @@ async def my_discord_data(request: Request) -> Response:
     discord_data = await handle(command)
     return JSONResponse(discord_data)
 
+@require_permission(permissions.EDIT_USER)
+async def get_discord_data(request: Request) -> Response:
+    user_id = request.path_params['user_id']
+    command = GetUserDiscordCommand(user_id)
+    discord_data = await handle(command)
+    return JSONResponse(discord_data)
+
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def refresh_discord_data(request: Request) -> JSONResponse:
     command = RefreshUserDiscordDataCommand(request.state.user.id)
@@ -252,6 +259,13 @@ async def delete_discord_data(request: Request) -> JSONResponse:
     command = DeleteUserDiscordDataCommand(request.state.user.id)
     await handle(command)
     return JSONResponse({})
+
+@require_permission(permissions.EDIT_USER)
+async def force_delete_discord_data(request: Request) -> Response:
+    user_id = request.path_params['user_id']
+    command = DeleteUserDiscordDataCommand(user_id)
+    await handle(command)
+    return Response(status_code=204)
 
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def sync_discord_avatar(request: Request) -> JSONResponse:
@@ -319,8 +333,10 @@ routes = [
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
+    Route('/api/user/{user_id:int}/discord', get_discord_data),
     Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
     Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
+    Route('/api/user/{user_id:int}/discord/forceDelete', force_delete_discord_data, methods=['POST']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
     Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
     Route('/api/user/{user_id:int}/create_api_token', create_api_token, methods=["POST"]),

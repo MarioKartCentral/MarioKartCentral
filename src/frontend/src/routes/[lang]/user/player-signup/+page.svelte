@@ -73,7 +73,7 @@
   {$LL.COMMON.LOGIN_REQUIRED()}
 {:else}
   <Section header={$LL.DISCORD.DISCORD()}>
-    <LinkDiscord />
+    <LinkDiscord userId={user_info.id} />
   </Section>
   <Section header={$LL.PLAYERS.PLAYER_SIGNUP.PLAYER_SIGNUP()}>
     <form method="post" on:submit|preventDefault={register}>
