@@ -1051,7 +1051,7 @@ const fr: Translation = {
       TOGGLE_REPRESENTATIVE: 'Basculer Représentant',
       TOGGLE_BAGGER: 'Basculer Bagger',
       SELECT_ONE_CAPTAIN: 'Veuillez sélectionner exactement un capitaine.',
-      SELECT_REPRESENTATIVES: 'Veuillez sélectionner exactement {min_representatives} capitaines/représentants.',
+      SELECT_REPRESENTATIVES: 'Veuillez sélectionner {count|formatNumberComparison} capitaines/représentants.',
       SELECT_MORE_PLAYERS:
         'Vous avez besoin de {count} {{player|joueur|joueurs}} supplémentaire{{s}} pour vous inscrire à ce tournoi.', //TODO: update "player" / "players"
       SELECT_LESS_PLAYERS:

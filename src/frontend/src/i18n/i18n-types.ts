@@ -2,6 +2,8 @@
 /* eslint-disable */
 import type { BaseTranslation as BaseTranslationType, LocalizedString, RequiredParams } from 'typesafe-i18n'
 
+import type { NumberComparison } from './custom-types'
+
 export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'en-us'
 
@@ -3879,7 +3881,7 @@ type RootTranslation = {
 			 */
 			MY_SQUAD: string
 			/**
-			 * {​c​o​u​n​t​}​ ​i​n​v​i​t​e​d​ ​{​{​p​l​a​y​e​r​|​p​l​a​y​e​r​s​}​}
+			 * {​c​o​u​n​t​}​ ​i​n​v​i​t​e​d
 			 * @param {number} count
 			 */
 			INVITED_PLAYER_COUNT: RequiredParams<'count'>
@@ -3952,10 +3954,10 @@ type RootTranslation = {
 			 */
 			SELECT_ONE_CAPTAIN: string
 			/**
-			 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​e​x​a​c​t​l​y​ ​{​m​i​n​_​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​}​ ​c​a​p​t​a​i​n​s​/​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​.
-			 * @param {number} min_representatives
+			 * P​l​e​a​s​e​ ​s​e​l​e​c​t​ ​{​c​o​u​n​t​|​f​o​r​m​a​t​N​u​m​b​e​r​C​o​m​p​a​r​i​s​o​n​}​ ​c​a​p​t​a​i​n​s​/​r​e​p​r​e​s​e​n​t​a​t​i​v​e​s​.
+			 * @param {NumberComparison} count
 			 */
-			SELECT_REPRESENTATIVES: RequiredParams<'min_representatives'>
+			SELECT_REPRESENTATIVES: RequiredParams<'count|formatNumberComparison'>
 			/**
 			 * Y​o​u​ ​n​e​e​d​ ​{​c​o​u​n​t​}​ ​m​o​r​e​ ​{​{​p​l​a​y​e​r​|​p​l​a​y​e​r​s​}​}​ ​t​o​ ​r​e​g​i​s​t​e​r​ ​f​o​r​ ​t​h​i​s​ ​t​o​u​r​n​a​m​e​n​t​.
 			 * @param {number} count
@@ -9387,7 +9389,7 @@ export type TranslationFunctions = {
 			 */
 			MY_SQUAD: () => LocalizedString
 			/**
-			 * {count} invited {{player|players}}
+			 * {count} invited
 			 */
 			INVITED_PLAYER_COUNT: (arg: { count: number }) => LocalizedString
 			/**
@@ -9459,9 +9461,9 @@ export type TranslationFunctions = {
 			 */
 			SELECT_ONE_CAPTAIN: () => LocalizedString
 			/**
-			 * Please select exactly {min_representatives} captains/representatives.
+			 * Please select {count|formatNumberComparison} captains/representatives.
 			 */
-			SELECT_REPRESENTATIVES: (arg: { min_representatives: number }) => LocalizedString
+			SELECT_REPRESENTATIVES: (arg: { count: NumberComparison }) => LocalizedString
 			/**
 			 * You need {count} more {{player|players}} to register for this tournament.
 			 */
@@ -11153,6 +11155,7 @@ export type TranslationFunctions = {
 export type Formatters = {
 	bold: (value: unknown | '' | string) => unknown
 	date: (value: Date) => unknown
+	formatNumberComparison: (value: NumberComparison) => unknown
 	ordinalSuffix: (value: number) => unknown
 	parsedate: (value: unknown) => unknown
 	uppercase: (value: unknown | string) => unknown

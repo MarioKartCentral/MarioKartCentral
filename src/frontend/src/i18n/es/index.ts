@@ -1048,7 +1048,7 @@ const es: Translation = {
       TOGGLE_REPRESENTATIVE: 'Alternar representante',
       TOGGLE_BAGGER: 'Alternar bagger',
       SELECT_ONE_CAPTAIN: 'Selecciona exactamente un capitán.',
-      SELECT_REPRESENTATIVES: 'Selecciona exactamente {min_representatives} capitanes/representantes.',
+      SELECT_REPRESENTATIVES: 'Por favor, selecciona {count|formatNumberComparison} capitanes/representantes.',
       SELECT_MORE_PLAYERS: 'Necesitas {count} {{jugador|jugadores}} más para inscribirte en este torneo.',
       SELECT_LESS_PLAYERS:
         'El tamaño máximo de escuadrón para este torneo es de {max_squad_size} jugadores, elimina al menos {count} jugadores.',

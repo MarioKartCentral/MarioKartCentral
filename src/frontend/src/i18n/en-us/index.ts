@@ -1044,7 +1044,7 @@ const en_us: BaseTranslation = {
       TOGGLE_REPRESENTATIVE: 'Toggle Representative',
       TOGGLE_BAGGER: 'Toggle Bagger',
       SELECT_ONE_CAPTAIN: 'Please select exactly one captain.',
-      SELECT_REPRESENTATIVES: 'Please select exactly {min_representatives:number} captains/representatives.',
+      SELECT_REPRESENTATIVES: 'Please select {count:NumberComparison|formatNumberComparison} captains/representatives.',
       SELECT_MORE_PLAYERS: 'You need {count:number} more {{player|players}} to register for this tournament.',
       SELECT_LESS_PLAYERS:
         "This tournament's max squad size is {max_squad_size:number} players, please remove at least {count:number} players.",
