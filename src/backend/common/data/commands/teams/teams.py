@@ -530,7 +530,7 @@ class ListTeamsCommand(Command[TeamList]):
                                         FROM team_rosters r
                                         WHERE r.team_id IN (
                                             SELECT DISTINCT t.id {team_from_where_clause} LIMIT ? OFFSET ?
-                                        )"""
+                                        ) AND r.is_active == {filter.is_active}"""
             async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
