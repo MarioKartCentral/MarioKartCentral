@@ -35,7 +35,7 @@
           {/if}
         </div>
       {/if}
-      <h3>
+      <h3 class="text-center">
         <a class="text-lg font-bold p-1" href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
           >{tournament.name}
         </a>
