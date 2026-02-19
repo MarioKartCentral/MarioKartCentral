@@ -37,39 +37,41 @@
     <div class="flex flex-col gap-[5px]">
       {#each transfers as transfer (transfer.invite_id)}
         <div class="row">
-          <div class="left">
-            <div class="flex items-center gap-[8px] mb-[5px] mt-[-5px]">
-              <div class="flag">
-                <Flag country_code={transfer.player_country_code} />
-              </div>
-              <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
-                {transfer.player_name}
-                {#if transfer.is_bagger_clause}
-                  <BaggerBadge />
-                {/if}
-              </a>
+          <div class="flex items-center gap-[8px] mb-1">
+            <div class="flag">
+              <Flag country_code={transfer.player_country_code} />
             </div>
-            <div class="badges">
-              <GameBadge game={transfer.game} />
-              <ModeBadge mode={transfer.mode} />
-            </div>
+            <a href="/{$page.params.lang}/registry/players/profile?id={transfer.player_id}">
+              {transfer.player_name}
+            </a>
+            {#if transfer.is_bagger_clause}
+              <BaggerBadge />
+            {/if}
           </div>
-          <div class="right">
-            {#if transfer.roster_leave}
-              <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}">
-                <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color} />
-              </a>
-            {:else}
-              {$LL.TEAMS.TRANSFERS.NO_TEAM()}
-            {/if}
-            <ArrowRight />
-            {#if transfer.roster_join}
-              <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_join.team_id}">
-                <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color} />
-              </a>
-            {:else}
-              {$LL.TEAMS.TRANSFERS.NO_TEAM()}
-            {/if}
+          <div class="flex items-center justify-between gap-4">
+            <div class="left">
+              <div class="badges flex flex-col sm:flex-row">
+                <GameBadge game={transfer.game} />
+                <ModeBadge mode={transfer.mode} />
+              </div>
+            </div>
+            <div class="right">
+              {#if transfer.roster_leave}
+                <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_leave.team_id}">
+                  <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color} />
+                </a>
+              {:else}
+                <i class="text-[9pt]">{$LL.TEAMS.TRANSFERS.NO_TEAM()}</i>
+              {/if}
+              <ArrowRight />
+              {#if transfer.roster_join}
+                <a href="/{$page.params.lang}/registry/teams/profile?id={transfer.roster_join.team_id}">
+                  <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color} />
+                </a>
+              {:else}
+                {$LL.TEAMS.TRANSFERS.NO_TEAM()}
+              {/if}
+            </div>
           </div>
         </div>
       {/each}
@@ -79,12 +81,9 @@
 
 <style>
   .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
     background-color: rgba(255, 255, 255, 0.15);
-    padding: 12px;
+    padding: 10px;
+    font-size: 0.9rem;
   }
   .row:nth-child(odd) {
     background-color: rgba(210, 210, 210, 0.15);
@@ -99,6 +98,6 @@
     gap: 5px;
   }
   .badges {
-    zoom: 90%;
+    zoom: 80%;
   }
 </style>

@@ -180,7 +180,7 @@
               <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color} />
             </a>
           {:else}
-            {$LL.TEAMS.TRANSFERS.NO_TEAM()}
+            <i>{$LL.TEAMS.TRANSFERS.NO_TEAM()}</i>
           {/if}
           <ArrowRight />
           {#if transfer.roster_join}
