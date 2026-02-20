@@ -17,7 +17,7 @@
     {#each squad.players as player (player.id)}
       <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}" class="truncate">
         <Flag country_code={player.country_code} size="small" />
-        {player.name}
+        <span class="ml-1">{player.name}</span>
       </a>
     {/each}
     {#if placement.description}
