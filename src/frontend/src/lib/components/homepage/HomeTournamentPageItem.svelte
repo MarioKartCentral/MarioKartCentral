@@ -91,7 +91,7 @@
     display: flex;
     justify-content: space-between;
     background-color: rgba(29, 33, 33, 0.8);
-    padding: 12px 10px;
+    padding: 12px 20px;
     margin: auto;
   }
   .container:nth-child(odd) {
