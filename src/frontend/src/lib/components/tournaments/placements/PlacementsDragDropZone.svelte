@@ -6,7 +6,6 @@
   import Button from '$lib/components/common/buttons/Button.svelte';
   import { sort_placement_list } from '$lib/util/util';
   import LL from '$i18n/i18n-svelte';
-
   export let tournament_id: number;
   export let placements: TournamentPlacement[];
   export let is_placements = true;
@@ -185,22 +184,23 @@
 </script>
 
 <section
-  class="zone {is_placements ? '' : 'scroll'}"
+  class="zone"
+  class:scroll={!is_placements}
   use:dndzone={{ items: placement_list }}
   on:consider={(e) => handleSort(e)}
   on:finalize={(e) => handleSort(e)}
 >
-  {#each placement_list as p (p.id)}
+  {#each placement_list as placement (placement.id)}
     <PlacementItem
-      placement={p}
-      is_edit={true}
+      {placement}
+      is_edit
+      extraClasses="flex items-center p-2 gap-4 text-[85%]"
       on:change={updatePlacements}
       on:dq={handleDQ}
-      on:placement_change={() => handlePlacementChange(p)}
+      on:placement_change={() => handlePlacementChange(placement)}
     />
   {/each}
 </section>
-
 {#if is_placements}
   <Button on:click={savePlacements}>{$LL.COMMON.SAVE()}</Button>
 {/if}

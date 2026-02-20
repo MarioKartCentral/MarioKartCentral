@@ -9,6 +9,7 @@
   import HomeSection from './HomeSection.svelte';
   import { user } from '$lib/stores/stores';
   import LL from '$i18n/i18n-svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
 
   export let style: string;
   let tournament: Tournament | null = null;
@@ -74,30 +75,30 @@
   {style}
 >
   {#if tournament && placement_list}
-    {#if tournament.logo}
-      <div class="flex w-full justify-center mt-[5px] mb-[10px]">
-        <a
-          href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
-          class="flex w-[300px] h-[80px] justify-center"
-        >
-          <img src={tournament.logo} alt={tournament.name} class="max-w-full max-h-full" />
+    <div class="mb-2">
+      {#if tournament.logo}
+        <div class="flex w-full justify-center mt-[5px] mb-[10px]">
+          <a
+            href="/{$page.params.lang}/tournaments/details?id={tournament.id}"
+            class="flex w-[300px] h-[80px] justify-center"
+          >
+            <img src={tournament.logo} alt={tournament.name} class="max-w-full max-h-full" />
+          </a>
+        </div>
+      {/if}
+      <div class="text-center font-bold">
+        <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
+          {tournament.name}
         </a>
       </div>
-    {/if}
-    <div class="text-center font-bold">
-      <a href="/{$page.params.lang}/tournaments/details?id={tournament.id}">
-        {tournament.name}
-      </a>
+      {#if playerPlacement}
+        <div class="text-center text-xl font-black">
+          {$LL.HOMEPAGE.YOU_PLACED({ placement: playerPlacement })}
+        </div>
+      {/if}
     </div>
-    {#if playerPlacement}
-      <div class="text-center text-xl font-black">
-        {$LL.HOMEPAGE.YOU_PLACED({ placement: playerPlacement })}
-      </div>
-    {/if}
-    <div class="flex flex-col {playerPlacement ? 'mt-[14px]' : 'mt-[13px]'}">
-      {#each placement_list as placement (placement.id)}
-        <PlacementItem {placement} is_edit={false} is_homepage={true} />
-      {/each}
-    </div>
+    <Table data={placement_list} let:item={placement} containerClass="overflow-hidden">
+      <PlacementItem {placement} is_edit={false} is_homepage />
+    </Table>
   {/if}
 </HomeSection>

@@ -6,12 +6,15 @@
   import DropdownItem from '$lib/components/common/DropdownItem.svelte';
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import LL from '$i18n/i18n-svelte';
+  import TagBadge from '$lib/components/badges/TagBadge.svelte';
+  import { twMerge } from 'tailwind-merge';
 
   const dispatch = createEventDispatcher<{ dq: null; placement_change: null }>();
 
   export let placement: PlacementOrganizer;
   export let is_edit: boolean;
   export let is_homepage = false;
+  export let extraClasses: string = '';
 
   let saved_placement = placement.placement;
 
@@ -28,6 +31,7 @@
       bg_class = 'bronze';
     }
   }
+  $: classes = twMerge(bg_class, extraClasses);
   function getPlacementChar(num: number | null) {
     if (num === null) {
       return '-';
@@ -79,15 +83,19 @@
   }
 </script>
 
-<div class="flex {bg_class}">
-  <div class="rank {is_homepage ? 'rank-homepage' : 'rank-tournament-page'}">
+<tr class={classes}>
+  <td class="rank w-[50px]">
     {getPlacementText(placement)}
-  </div>
-  <div class="info">
-    <SquadPlacementDisplay squad={placement.squad} />
-  </div>
-
-  <div class="description {is_homepage ? 'hidden' : ''}">
+  </td>
+  <td class="sm:table-cell w-[10ch]" class:hidden={!placement.squad.name && placement.squad.players.length <= 4}>
+    {#if placement.squad.tag}
+      <TagBadge tag={placement.squad.tag} color={placement.squad.color} />
+    {/if}
+  </td>
+  <td>
+    <SquadPlacementDisplay {placement} />
+  </td>
+  <td class="flex gap-2 {is_homepage ? 'hidden' : ''}">
     {#if placement.placement !== null}
       {#if is_edit}
         <input
@@ -105,84 +113,66 @@
             minlength="1"
           />
         {/if}
-      {:else if placement.description}
-        {placement.description}
       {/if}
     {/if}
-  </div>
+  </td>
   {#if is_edit}
-    <div class="actions">
-      {$LL.COMMON.ACTIONS()}
-      <ChevronDownOutline />
-    </div>
-    <Dropdown>
-      <DropdownItem>
-        <label for="tie">{$LL.TOURNAMENTS.PLACEMENTS.TIE()}</label>
-        <input id="tie" type="checkbox" bind:checked={placement.tie} on:change />
-      </DropdownItem>
-      <DropdownItem>
-        <label for="bound">{$LL.TOURNAMENTS.PLACEMENTS.LOWER_BOUND()}</label>
-        <input id="bound" type="checkbox" bind:checked={placement.bounded} on:change />
-      </DropdownItem>
-      <DropdownItem on:click={toggleDQ}>
-        {$LL.TOURNAMENTS.PLACEMENTS.TOGGLE_DQ()}
-      </DropdownItem>
-    </Dropdown>
+    <td>
+      <div class="actions">
+        {$LL.COMMON.ACTIONS()}
+        <ChevronDownOutline />
+      </div>
+      <Dropdown>
+        <DropdownItem>
+          <label for="tie">{$LL.TOURNAMENTS.PLACEMENTS.TIE()}</label>
+          <input id="tie" type="checkbox" bind:checked={placement.tie} on:change />
+        </DropdownItem>
+        <DropdownItem>
+          <label for="bound">{$LL.TOURNAMENTS.PLACEMENTS.LOWER_BOUND()}</label>
+          <input id="bound" type="checkbox" bind:checked={placement.bounded} on:change />
+        </DropdownItem>
+        <DropdownItem on:click={toggleDQ}>
+          {$LL.TOURNAMENTS.PLACEMENTS.TOGGLE_DQ()}
+        </DropdownItem>
+      </Dropdown>
+    </td>
   {/if}
-</div>
+</tr>
 
 <style>
-  div.flex {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 5px;
-    font-size: 80%;
-  }
-  div.flex:not(:last-child) {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  }
-  div.gold {
+  .gold {
     background-color: rgba(255, 254, 149, 0.3);
     color: #fffab0;
   }
-  div.silver {
+
+  .silver {
     background-color: rgba(195, 255, 255, 0.3);
     color: #dcfffc;
   }
-  div.bronze {
+
+  .bronze {
     background-color: rgba(255, 158, 110, 0.3);
     color: #ffcbae;
   }
-  div.other {
+
+  .other {
     background-color: rgba(255, 255, 255, 0.1);
   }
-  div.dq {
+
+  .dq {
     background-color: rgba(255, 0, 0, 0.2);
   }
+
   .pointer {
     cursor: pointer;
   }
+
   .rank {
-    display: block;
     text-align: center;
     font-size: 1.5em;
     font-weight: 600;
   }
-  .rank-homepage {
-    width: 50px;
-  }
-  .rank-tournament-page {
-    width: 75px;
-    @media (max-width: 600px) {
-      width: 50px;
-    }
-  }
-  .info {
-    min-width: 150px;
-    max-width: 400px;
-  }
+
   .actions {
     display: flex;
     width: 100px;
@@ -190,15 +180,12 @@
     cursor: pointer;
     padding: 5px;
   }
+
   input.title {
     width: 150px;
     height: 36px;
   }
-  div.description {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-  }
+
   input.placement-num {
     width: 50px;
     height: 36px;
