@@ -11,7 +11,6 @@
   function decreasePage() {
     if (currentPage > 1) {
       currentPage -= 1;
-      inputNumber = currentPage;
       refresh_function();
     }
   }
@@ -19,7 +18,6 @@
   function increasePage() {
     if (currentPage < totalPages) {
       currentPage += 1;
-      inputNumber = currentPage;
       refresh_function();
     }
   }
