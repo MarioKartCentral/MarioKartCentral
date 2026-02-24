@@ -1034,7 +1034,7 @@ const fr: Translation = {
       DECLINE_INVITE_CONFIRM: 'Êtes-vous sûr de vouloir refuser cette invitation ?',
       DECLINE_INVITE_FAILED: "Échec du refus de l’invitation de l'équipe",
       MY_SQUAD: 'Ma Squad',
-      INVITED_PLAYER_COUNT: '{count} invited {{joueur|joueurs}}', //TODO: update "player" / "players"
+      INVITED_PLAYER_COUNT: '{count} invited', //TODO: update "player" / "players"
       INVITE_PLAYERS: 'Inviter des joueurs',
       INVITE_PLAYER: 'Inviter un joueur',
       UNREGISTER_SQUAD: 'Squad Non-inscrite',

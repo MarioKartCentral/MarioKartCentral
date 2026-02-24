@@ -1027,7 +1027,7 @@ const en_us: BaseTranslation = {
       DECLINE_INVITE_CONFIRM: 'Are you sure you would like to decline this invite?',
       DECLINE_INVITE_FAILED: 'Failed to decline squad invite',
       MY_SQUAD: 'My Squad',
-      INVITED_PLAYER_COUNT: '{count:number} invited {{player|players}}',
+      INVITED_PLAYER_COUNT: '{count:number} invited',
       INVITE_PLAYERS: 'Invite Players',
       INVITE_PLAYER: 'Invite Player',
       UNREGISTER_SQUAD: 'Unregister Squad',
