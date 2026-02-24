@@ -1,56 +1,33 @@
 <script lang="ts">
-  import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import Flag from '$lib/components/common/Flag.svelte';
-  import type { TournamentSquad } from '$lib/types/tournament-squad';
+  import type { PlacementOrganizer } from '$lib/types/placement-organizer';
   import { page } from '$app/stores';
 
-  export let squad: TournamentSquad;
+  export let placement: PlacementOrganizer;
+  const { squad } = placement;
 </script>
 
-<div class="flex">
-  {#if squad.tag || squad.players.length > 4}
-    <div>
-      <TagBadge tag={squad.tag} color={squad.color} />
-    </div>
+{#if squad.name || squad.players.length > 4}
+  <span>{squad.name || `Squad ${squad.id}`}</span>
+  {#if placement.description}
+    <div class="text-white">{placement.description}</div>
   {/if}
-
-  {#if squad.name}
-    <div class="squad-name">
-      {squad.name}
-    </div>
-  {:else if squad.players.length <= 4}
-    <div class="flex players">
-      {#each squad.players as p (p.player_id)}
-        <div class="name">
-          <a href="/{$page.params.lang}/registry/players/profile?id={p.player_id}">
-            <Flag country_code={p.country_code} size="small" />
-            {p.name}
-          </a>
-        </div>
-      {/each}
-    </div>
-  {:else}
-    Squad {squad.id}
-  {/if}
-</div>
+{:else}
+  <div class="grid">
+    {#each squad.players as player (player.id)}
+      <a href="/{$page.params.lang}/registry/players/profile?id={player.player_id}" class="truncate">
+        <Flag country_code={player.country_code} size="small" />
+        <span class="ml-1">{player.name}</span>
+      </a>
+    {/each}
+    {#if placement.description}
+      <div class="self-center text-white">{placement.description}</div>
+    {/if}
+  </div>
+{/if}
 
 <style>
-  .flex {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .squad-name {
-    min-width: 150px;
-    @media (max-width: 600px) {
-      min-width: 100px;
-    }
-  }
-  .players {
-    max-width: 225px;
-  }
-  .name {
-    min-width: 75px;
+  .grid {
+    grid-template-columns: repeat(2, minmax(auto, 180px));
   }
 </style>
