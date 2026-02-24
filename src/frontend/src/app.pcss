@@ -2,3 +2,79 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CSS Reset, mostly copied from Josh Comeau: https://www.joshwcomeau.com/css/custom-css-reset/ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Custom CSS */
+body {
+  font-family: 'Titillium Web', sans-serif;
+  color: white;
+  background: #000000 url('$lib/assets/background_overlay.png') fixed;
+  background-size: 2500px;
+}
+input,
+textarea,
+select,
+input[type] {
+  background-color: theme('colors.primary.500'/ 40%);
+  color: white;
+  padding: 5px;
+  border-color: theme('colors.primary.800');
+  border-width: 2px;
+  border-radius: 2px;
+}
+select {
+  background-image: url("data:image/svg+xml,%3csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3e %3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' stroke='white' d='m1 1 4 4 4-4'/%3e %3c/svg%3e") !important;
+}
+option {
+  color: black;
+}
+input::placeholder {
+  color: lightgrey;
+}
+input[type='checkbox']:checked {
+  background-color: theme('colors.primary.500'/ 40%);
+}
+a:hover {
+  color: theme('colors.primary.300');
+}

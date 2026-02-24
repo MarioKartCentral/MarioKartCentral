@@ -20,8 +20,7 @@
   export let players: TournamentPlayer[];
   export let is_privileged = false;
   export let registration: RegistrationDetails | null = null;
-  export let exclude_invites = true;
-
+  export let showInvites: boolean = false;
   let user_info: UserInfo;
 
   user.subscribe((value) => {
@@ -31,8 +30,9 @@
   let edit_reg_dialog: EditPlayerRegistration;
 
   function get_players() {
-    if (!exclude_invites) {
-      return players;
+    if (showInvites) {
+      const isInvite = (player: TournamentPlayer) => (player.is_invite ? 1 : 0);
+      return players.sort((playerA, playerB) => isInvite(playerA) - isInvite(playerB));
     }
     return players.filter((p) => !p.is_invite);
   }
@@ -184,11 +184,11 @@
   <colgroup slot="colgroup">
     <col class="country" />
     <col class="name" />
-    {#if tournament.mii_name_required && exclude_invites}
+    {#if tournament.mii_name_required}
       <col class="mii-name mobile-hide" />
     {/if}
     <col class="friend-codes mobile-hide" />
-    {#if tournament.host_status_required && exclude_invites}
+    {#if tournament.host_status_required}
       <col class="can-host mobile-hide" />
     {/if}
     {#if tournament.checkins_enabled}
@@ -201,11 +201,11 @@
   <tr slot="header">
     <th />
     <th>{$LL.COMMON.NAME()}</th>
-    {#if tournament.mii_name_required && exclude_invites}
-      <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_NAME}</th>
+    {#if tournament.mii_name_required}
+      <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_NAME()}</th>
     {/if}
     <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
-    {#if tournament.host_status_required && exclude_invites}
+    {#if tournament.host_status_required}
       <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.CAN_HOST()}</th>
     {/if}
     {#if tournament.checkins_enabled}
@@ -228,21 +228,22 @@
         is_bagger_clause={player.is_bagger_clause}
         is_eligible={player.is_eligible}
         is_banned={player.is_banned}
+        is_invite={player.is_invite}
       />
     </td>
-    {#if tournament.mii_name_required && exclude_invites}
-      <td class="mobile-hide">{player.mii_name}</td>
+    {#if tournament.mii_name_required}
+      <td class="mobile-hide">{player.mii_name ?? '-'}</td>
     {/if}
     <td class="mobile-hide">
       {#if player.friend_codes.length > 0}
         <FriendCodeDisplay friend_codes={player.friend_codes} selected_fc_id={player.selected_fc_id} />
       {/if}
     </td>
-    {#if tournament.host_status_required && exclude_invites}
-      <td class="mobile-hide">{player.can_host ? 'Yes' : 'No'}</td>
+    {#if tournament.host_status_required}
+      <td class="mobile-hide">{player.is_invite ? '-' : player.can_host ? $LL.COMMON.YES() : $LL.COMMON.NO()}</td>
     {/if}
     {#if tournament.checkins_enabled}
-      <td class="mobile-hide">{player.is_checked_in ? 'Yes' : 'No'}</td>
+      <td class="mobile-hide">{player.is_invite ? '-' : player.is_checked_in ? $LL.COMMON.YES() : $LL.COMMON.NO()}</td>
     {/if}
 
     {#if is_privileged || registration}
@@ -250,9 +251,13 @@
         {#if is_privileged}
           <ChevronDownOutline class="cursor-pointer" />
           <Dropdown>
-            <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
+            {#if !player.is_invite}
+              <DropdownItem on:click={() => edit_reg_dialog.open(player, true)}>{$LL.COMMON.EDIT()}</DropdownItem>
+            {/if}
             <DropdownItem on:click={() => unregisterPlayer(player)}>
-              {$LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}
+              {player.is_invite
+                ? $LL.TOURNAMENTS.REGISTRATIONS.RETRACT_INVITE()
+                : $LL.TOURNAMENTS.REGISTRATIONS.REMOVE()}
             </DropdownItem>
           </Dropdown>
         {:else if user_info.player_id === player.player_id && check_registrations_open(tournament)}

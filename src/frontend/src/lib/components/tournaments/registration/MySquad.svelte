@@ -117,32 +117,30 @@
   }
 </script>
 
-{#if tournament.is_squad}
-  <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD()}</div>
-{:else}
-  <div>{$LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}</div>
-{/if}
-<div>
+<h2>
+  {tournament.is_squad ? $LL.TOURNAMENTS.REGISTRATIONS.MY_SQUAD() : $LL.TOURNAMENTS.REGISTRATIONS.MY_REGISTRATION()}
+</h2>
+<div class="flex gap-2">
   {#if tournament.squad_tag_required}
     <TagBadge tag={registration.squad.tag} color={registration.squad.color} />
   {/if}
-  {#if tournament.squad_name_required}
-    {registration.squad.name}
-  {/if}
+  <span>
+    {#if tournament.squad_name_required}
+      {registration.squad.name}
+    {/if}
+  </span>
 </div>
+
 {#if tournament.is_squad}
   <div>
     {$LL.TOURNAMENTS.REGISTRATIONS.PLAYER_COUNT({ count: registered_players.length })}
+    {#if invited_players.length > 0}<span
+        >({$LL.TOURNAMENTS.REGISTRATIONS.INVITED_PLAYER_COUNT({ count: invited_players.length })})</span
+      >{/if}
   </div>
 {/if}
-<TournamentPlayerList {tournament} players={registered_players} {registration} />
 
-{#if invited_players.length > 0}
-  <div>
-    {$LL.TOURNAMENTS.REGISTRATIONS.INVITED_PLAYER_COUNT({ count: invited_players.length })}
-  </div>
-  <TournamentPlayerList {tournament} players={invited_players} {registration} exclude_invites={false} />
-{/if}
+<TournamentPlayerList {tournament} players={registration.squad.players} showInvites {registration} />
 
 {#if check_registrations_open(tournament) && registration.is_squad_captain}
   <!-- If registrations are open and our squad is not full and we are the squad captain -->

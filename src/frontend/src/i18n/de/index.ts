@@ -1033,7 +1033,7 @@ const de: Translation = {
       DECLINE_INVITE_CONFIRM: 'Sind Sie sicher, dass Sie diese Einladung ablehnen möchten?',
       DECLINE_INVITE_FAILED: 'Squad-Einladung nicht abgelehnt',
       MY_SQUAD: 'Mein Squad',
-      INVITED_PLAYER_COUNT: '{count} eingeladene(r) {{Spieler|Spieler}}', //TODO: update "player" / "players"
+      INVITED_PLAYER_COUNT: '{count} eingeladene(r)',
       INVITE_PLAYERS: 'Spieler einladen',
       INVITE_PLAYER: 'Spieler einladen',
       UNREGISTER_SQUAD: 'Squad abmelden',
