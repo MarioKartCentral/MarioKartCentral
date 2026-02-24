@@ -454,84 +454,92 @@ class ListTeamEditRequestsCommand(Command[TeamEditList]):
 
 @dataclass
 class ListTeamsCommand(Command[TeamList]):
-    filter: TeamFilter
+    team_filter: TeamFilter
     approval_status: Approval | None = "approved"
 
     async def handle(self, db_wrapper: DBWrapper):
-        filter = self.filter
+        team_filter = self.team_filter
         async with db_wrapper.connect() as db:
 
-            where_clauses: list[str] = []
-            variable_parameters: list[Any] = []
+            limit: int = 50
+            offset: int = 0
+            
+            order_by = 't.creation_date' if team_filter.sort_by_newest else 't.name'
+            desc = 'DESC' if team_filter.sort_by_newest else ''
 
-            limit:int = 50
-            offset:int = 0
+            filter_query: dict[str, list[Any]] = {
+                "where_clauses": [],
+                "variable_parameters": []
+            }
 
-            if filter.page is not None:
-                offset = (filter.page - 1) * limit
+            if team_filter.page is not None:
+                offset = (team_filter.page - 1) * limit
 
-            def append_equal_filter(filter_value: Any, column_name: str):
+            def append_equal_filter(filter_query: dict[str, list[str]], filter_value: Any, column_name: str) -> None:
                 if filter_value is not None:
-                    where_clauses.append(f"{column_name} = ?")
-                    variable_parameters.append(filter_value)
+                    filter_query["where_clauses"].append(f"{column_name} = ?")
+                    filter_query["variable_parameters"].append(filter_value)
 
             # check both the team and team_roster fields with the same name for a match
-            def append_team_roster_like_filter(filter_value: Any, column_name: str):
+            def append_team_roster_like_filter(filter_query: dict[str, list[str]], filter_value: Any, column_name: str) -> None:
                 if filter_value is not None:
-                    where_clauses.append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
-                    variable_parameters.extend([f"%{filter_value}%", f"%{filter_value}%"])
+                    filter_query["where_clauses"].append(f"(t.{column_name} LIKE ? OR r.{column_name} LIKE ?)")
+                    filter_query["variable_parameters"].extend([f"%{filter_value}%", f"%{filter_value}%"])
 
-            if filter.name_or_tag is not None:
-                where_clauses.append("(t.name LIKE ? OR t.tag LIKE ? OR r.name LIKE ? OR r.tag LIKE ?)")
-                variable_parameters.extend([f"%{filter.name_or_tag}%"]*4)
+            if team_filter.name_or_tag is not None:
+                filter_query["where_clauses"].append("(t.name LIKE ? OR t.tag LIKE ? OR r.name LIKE ? OR r.tag LIKE ?)")
+                filter_query["variable_parameters"].extend([f"%{team_filter.name_or_tag}%"]*4)
 
-            append_team_roster_like_filter(filter.name, "name")
-            append_team_roster_like_filter(filter.tag, "tag")
-            append_equal_filter(filter.game, "r.game")
-            append_equal_filter(filter.mode, "r.mode")
-            append_equal_filter(filter.language, "t.language")
-            append_equal_filter(filter.is_recruiting, "r.is_recruiting")
-            append_equal_filter(filter.is_active, "r.is_active")
-            append_equal_filter(filter.is_historical, "t.is_historical")
+            append_team_roster_like_filter(filter_query, team_filter.name, "name")
+            append_team_roster_like_filter(filter_query, team_filter.tag, "tag")
+            append_equal_filter(filter_query, team_filter.language, "t.language")
+            append_equal_filter(filter_query, team_filter.is_historical, "t.is_historical")
+            append_equal_filter(filter_query, self.approval_status, "t.approval_status")
+            append_equal_filter(filter_query, team_filter.game, "r.game")
+            append_equal_filter(filter_query, team_filter.mode, "r.mode")
+            append_equal_filter(filter_query, team_filter.is_recruiting, "r.is_recruiting")
+            append_equal_filter(filter_query, team_filter.is_active, "r.is_active")
+            append_equal_filter(filter_query, self.approval_status, "r.approval_status")
 
-            if filter.min_player_count:
-                player_count_query = """SELECT r.team_id
-                                    FROM team_members m
-                                    JOIN team_rosters r ON m.roster_id = r.id
-                                    WHERE m.leave_date IS NULL AND r.is_active = 1
-                                    GROUP BY r.team_id
-                                    HAVING COUNT(r.team_id) >= ?"""
-                where_clauses.append(f"t.id IN ({player_count_query})")
-                variable_parameters.append(filter.min_player_count)
+            team_select = """
+                SELECT DISTINCT t.id, t.name, t.tag, t.description,
+                t.creation_date, t.language, t.color, t.logo,
+                t.approval_status, t.is_historical
+                FROM teams t
+                JOIN team_rosters r ON t.id = r.team_id
+            """
+            where_clause = "" if not filter_query["where_clauses"] else f"WHERE {' AND '.join(filter_query["where_clauses"])}"
+            having_clause = ""
 
-            if self.approval_status:
-                append_equal_filter(self.approval_status, "t.approval_status")
-                append_equal_filter(self.approval_status, "r.approval_status")
+            # Join team_members table only if querying active members
+            if team_filter.min_player_count:
+                filter_query["variable_parameters"].append(team_filter.min_player_count)
+                team_select +=  " LEFT JOIN team_members m on r.id = m.roster_id"
+                having_clause = "GROUP BY r.id HAVING COUNT(m.roster_id) >= ?"
 
-            where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            order_by = 't.creation_date' if filter.sort_by_newest else 't.name'
-            desc = 'DESC' if filter.sort_by_newest else ''
-            team_from_where_clause = f"""FROM teams t JOIN team_rosters r ON t.id = r.team_id
-                                {where_clause}
-                                ORDER BY {order_by} COLLATE NOCASE {desc}
-                """
-            teams_query = f"""SELECT DISTINCT t.id, t.name, t.tag, t.description, t.creation_date, t.language,
-                                    t.color, t.logo, t.approval_status, t.is_historical
-                                    {team_from_where_clause} LIMIT ? OFFSET ?"""
+            team_query = " ".join([
+                team_select,
+                where_clause,
+                having_clause,
+                f"ORDER BY {order_by} COLLATE NOCASE {desc}",
+                "LIMIT ? OFFSET ?"
+            ])
+
             teams: dict[int, Team] = {}
-            async with db.execute(teams_query, (*variable_parameters, limit, offset)) as cursor:
+            async with db.execute(team_query, (*filter_query["variable_parameters"], limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (tid, tname, ttag, description, tdate, lang, color, logo, tapprove, is_historical) = row
                     team = Team(tid, tname, ttag, description, tdate, lang, color, logo, tapprove, bool(is_historical), [], [])
                     teams[tid] = team
+
+            team_ids, team_list = teams.keys(), teams.values()
             rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag, r.color, r.creation_date, r.is_recruiting,
                                         r.is_active, r.approval_status
                                         FROM team_rosters r
-                                        WHERE r.team_id IN (
-                                            SELECT DISTINCT t.id {team_from_where_clause} LIMIT ? OFFSET ?
-                                        )"""
-            async with db.execute(rosters_query, (*variable_parameters, limit, offset)) as cursor:
+                                        WHERE r.team_id IN ({", ".join([str(tid) for tid in team_ids])}) LIMIT ? OFFSET ?
+                                        """
+            async with db.execute(rosters_query, (limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     roster_id, team_id, game, mode, name, tag, roster_color, creation_date, is_recruiting, is_active, approval_status = row
@@ -539,19 +547,11 @@ class ListTeamsCommand(Command[TeamList]):
                     roster = TeamRoster(roster_id, team_id, game, mode, name if name else team.name, tag if tag else team.tag, creation_date,
                                         bool(is_recruiting), bool(is_active), approval_status, roster_color if roster_color else team.color, [], [])
                     team.rosters.append(roster)
-            team_list = list(teams.values())
 
-            count_query = f"""SELECT COUNT(*) FROM (SELECT DISTINCT t.id {team_from_where_clause})"""
-            page_count: int = 0
-            team_count: int = 0
-            async with db.execute(count_query, variable_parameters) as cursor:
-                row = await cursor.fetchone()
-                assert row is not None
-                team_count = row[0]
-            
-            page_count = int(team_count / limit) + (1 if team_count % limit else 0)
-
-            return TeamList(team_list, team_count, page_count)
+            team_count: int = len(team_list)
+            page_count: int = int(team_count / limit) + (1 if team_count % limit else 0)
+  
+            return TeamList(list(team_list), team_count, page_count)
     
 
 @dataclass
