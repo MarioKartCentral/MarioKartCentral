@@ -5,7 +5,8 @@
   export let totalPages: number;
   export let refresh_function: () => void;
 
-  let input_number = currentPage;
+  let input_number = 1;
+  $: input_number = currentPage;
 
   function decreasePage() {
     if (currentPage > 1) {
