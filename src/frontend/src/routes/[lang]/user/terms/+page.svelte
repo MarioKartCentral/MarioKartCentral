@@ -99,10 +99,7 @@
     color: #4dabf7;
     text-decoration: underline;
   }
-  .terms :global(a:visited) {
-    color: #74c0fc;
-    text-decoration: underline;
-  }
+
   .terms :global(ol) {
     display: block;
     list-style-type: decimal;

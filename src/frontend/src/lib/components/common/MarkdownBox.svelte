@@ -83,10 +83,6 @@
     color: #03c744;
     text-decoration: underline;
   }
-  .markdown-box :global(a:visited) {
-    color: #05773e;
-    text-decoration: underline;
-  }
   .markdown-box :global(ol) {
     display: block;
     list-style-type: decimal;
