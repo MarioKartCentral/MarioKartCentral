@@ -318,8 +318,9 @@ class ListPlayersCommand(Command[PlayerList]):
                                             WHERE {fc_where_clauses_str})""")
 
             player_where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            order_by = 'p.join_date' if filter.sort_by_newest else 'name'
-            desc = 'DESC' if filter.sort_by_newest else ''
+            sort_by, sort_reverse = filter.sanitise_sort(filter.sort_by)
+            order_by = 'p.join_date' if sort_by == 'join_date' else 'name'
+            desc = 'DESC' if sort_reverse else ''
             player_from_where_clause = f"{player_where_clause} ORDER BY {order_by} COLLATE NOCASE {desc} LIMIT ? OFFSET ?"
             players_query = f"""SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date,
                                     d.discord_id, d.username, d.discriminator, d.global_name, d.avatar

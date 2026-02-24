@@ -509,8 +509,9 @@ class ListTeamsCommand(Command[TeamList]):
                 append_equal_filter(self.approval_status, "r.approval_status")
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            order_by = 't.creation_date' if filter.sort_by_newest else 't.name'
-            desc = 'DESC' if filter.sort_by_newest else ''
+            sort_by, sort_reverse = filter.sanitise_sort(filter.sort_by)
+            order_by = 't.creation_date' if sort_by == 'creation_date' else 't.name'
+            desc = 'DESC' if sort_reverse else ''
             team_from_where_clause = f"""FROM teams t JOIN team_rosters r ON t.id = r.team_id
                                 {where_clause}
                                 ORDER BY {order_by} COLLATE NOCASE {desc}

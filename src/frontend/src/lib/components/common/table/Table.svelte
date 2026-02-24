@@ -1,36 +1,43 @@
 <script context="module" lang="ts">
   export interface TableHeaderSort {
-    activeSortIndex: Writable<number>;
-    sortDirection: Writable<'ascending' | 'descending'>;
-    toggleActive: (index: number) => void;
+    activeSortKey: Readable<string | null>;
+    sortDirection: Readable<'ascending' | 'descending'>;
+    toggleActive: (key: string | null, initalDirection: 'ascending' | 'descending') => void;
   }
 </script>
 
 <script lang="ts" generics="T">
-  import { writable, type Writable } from 'svelte/store';
+  import { derived, writable, type Writable, type Readable } from 'svelte/store';
   import { setContext } from 'svelte';
   import { slide } from 'svelte/transition';
   import './table.css';
   export let containerClass: string = 'overflow-hidden rounded-[4px] m-[10px]';
   export let multiRow = false;
   export let data: T[];
+  export let sortKey: string | null = null;
 
-  const activeSortIndex: Writable<number> = writable(-1);
-  const activeSortDirection: Writable<'ascending' | 'descending'> = writable('descending');
+  const sortKeyStore: Writable<string | null> = writable(sortKey);
+  $: $sortKeyStore = sortKey;
+  const activeKey: Readable<string | null> = derived(sortKeyStore, ($key) => {
+    if (!$key) return null;
+    return $key.startsWith('-') ? $key.slice(1) : $key;
+  });
+  const activeSortDirection: Readable<'ascending' | 'descending'> = derived(sortKeyStore, ($key) => {
+    return $key?.startsWith('-') ? 'descending' : 'ascending';
+  });
 
   setContext<TableHeaderSort>('header-state', {
-    get activeSortIndex() {
-      return activeSortIndex;
+    get activeSortKey() {
+      return activeKey;
     },
     get sortDirection() {
       return activeSortDirection;
     },
-    toggleActive(index: number) {
-      if (index === $activeSortIndex) {
-        $activeSortDirection = $activeSortDirection === 'descending' ? 'ascending' : 'descending';
+    toggleActive(key: string | null, initialDirection: 'ascending' | 'descending') {
+      if (key === $activeKey) {
+        sortKey = $activeSortDirection === 'ascending' ? `-${key}` : key;
       } else {
-        $activeSortIndex = index;
-        $activeSortDirection = 'descending';
+        sortKey = initialDirection === 'descending' ? `-${key}` : key;
       }
     },
   });

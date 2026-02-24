@@ -85,6 +85,7 @@ const en_us: BaseTranslation = {
     NEW: 'New',
     SORT_BY_ALPHABETICAL: 'Alphabetical',
     SORT_BY_NEWEST: 'Newest',
+    SORT_BY_OLDEST: 'Oldest',
     WORKING: 'Working...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',

@@ -2,6 +2,7 @@
   import LL from '$i18n/i18n-svelte';
   import type { PlayerInfo } from '$lib/types/player-info';
   import Table from '$lib/components/common/table/Table.svelte';
+  import TableHeader from '$lib/components/common/table/TableHeader.svelte';
   import { page } from '$app/stores';
   import Flag from '$lib/components/common/Flag.svelte';
   import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
@@ -25,11 +26,10 @@
     country: null,
     fc: null,
     name_or_fc: null,
-    sort_by_newest: false,
+    sort_by: null,
   };
 
   async function fetchData() {
-    players = [];
     let url = '/api/registry/players?detailed=true&is_banned=false&is_hidden=false&matching_fcs_only=true';
     if (filters.fc_type != null && filters.fc_type != '') {
       url += '&fc_type=' + filters.fc_type;
@@ -43,23 +43,19 @@
     if (is_shadow !== null) {
       url += `&is_shadow=${is_shadow}`;
     }
-    if (filters.sort_by_newest) {
-      url += `&sort_by_newest=${filters.sort_by_newest}`;
+    if (filters.sort_by) {
+      url += `&sort_by=${filters.sort_by}`;
     }
     url += '&page=' + currentPage;
-    console.log(url);
     const res = await fetch(url);
-    if (res.status === 200) {
-      const body = await res.json();
-      console.log(body);
-      const body_players = body['player_list'];
-      for (let t of body_players) {
-        players.push(t);
-      }
-      players = players;
-      totalPlayers = body['player_count'];
-      totalPages = body['page_count'];
+    if (!res.ok) {
+      players = [];
+      return;
     }
+    const { player_list, player_count, page_count } = await res.json();
+    players = player_list;
+    totalPlayers = player_count;
+    totalPages = page_count;
   }
 
   async function search() {
@@ -78,9 +74,11 @@
   <div class="flex">
     <FCTypeSelect all_option hide_labels bind:type={filters.fc_type} />
     <CountrySelect bind:value={filters.country} is_filter={true} />
-    <select bind:value={filters.sort_by_newest}>
-      <option value={false}>{$LL.COMMON.SORT_BY_ALPHABETICAL()}</option>
-      <option value={true}>{$LL.COMMON.SORT_BY_NEWEST()}</option>
+    <select class="sm:hidden" bind:value={filters.sort_by} on:change={search}>
+      <option value="name">{$LL.COMMON.SORT_BY_ALPHABETICAL()} (A-Z)</option>
+      <option value="-name">{$LL.COMMON.SORT_BY_ALPHABETICAL()} (Z-A)</option>
+      <option value="-join_date">{$LL.COMMON.SORT_BY_NEWEST()}</option>
+      <option value="join_date">{$LL.COMMON.SORT_BY_OLDEST()}</option>
     </select>
     <input class="search" bind:value={filters.name_or_fc} type="text" placeholder={$LL.PLAYERS.LIST.SEARCH_BY()} />
     <Button type="submit">{$LL.COMMON.SEARCH()}</Button>
@@ -91,7 +89,7 @@
   {$LL.PLAYERS.PLAYERS()}
   <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
   {#if totalPlayers}
-    <Table data={players} let:item={player}>
+    <Table data={players} let:item={player} bind:sortKey={filters.sort_by}>
       <colgroup slot="colgroup">
         <col class="country_code" />
         <col class="name" />
@@ -99,10 +97,22 @@
         <col class="registration-date hidden sm:table-column" />
       </colgroup>
       <tr slot="header">
-        <th></th>
-        <th>{$LL.COMMON.NAME()}</th>
-        <th class="mobile-hide">{$LL.FRIEND_CODES.FRIEND_CODES()}</th>
-        <th class="hidden sm:table-cell">{$LL.PLAYERS.PROFILE.REGISTRATION_DATE()}</th>
+        <TableHeader />
+        <TableHeader sortable active sortKey="name" onclick={search}>
+          {$LL.COMMON.NAME()}
+        </TableHeader>
+        <TableHeader classes="mobile-hide">
+          {$LL.FRIEND_CODES.FRIEND_CODES()}
+        </TableHeader>
+        <TableHeader
+          sortable
+          direction="descending"
+          sortKey="join_date"
+          classes="hidden sm:table-cell"
+          onclick={search}
+        >
+          {$LL.PLAYERS.PROFILE.REGISTRATION_DATE()}
+        </TableHeader>
       </tr>
       <tr class="row">
         <td><Flag country_code={player.country_code} /></td>

@@ -87,6 +87,7 @@ const es: Translation = {
     NEW: 'Nuevo', //edited
     SORT_BY_ALPHABETICAL: 'Alfabético',
     SORT_BY_NEWEST: 'Más recientes',
+    SORT_BY_OLDEST: 'Oldest',
     WORKING: 'En proceso...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',

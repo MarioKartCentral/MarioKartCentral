@@ -1,50 +1,46 @@
-<script context="module" lang="ts">
-  let index: number = 0;
-</script>
-
 <script lang="ts">
   import { derived } from 'svelte/store';
   import { getContext } from 'svelte';
-  import { ChevronSortOutline, ChevronDownOutline, ChevronUpOutline } from 'flowbite-svelte-icons';
+  import { CaretSortSolid, CaretDownSolid, CaretUpSolid } from 'flowbite-svelte-icons';
   import type { TableHeaderSort } from './Table.svelte';
   export let sortable: boolean = false;
   export let active: boolean = false; // initial state
+  export let direction: 'ascending' | 'descending' = 'ascending';
+  export let classes: string = '';
+  export let sortKey: string | null = null;
   export let onclick: (sortDirection: 'ascending' | 'descending') => void = () => null;
 
   const context = getContext<TableHeaderSort>('header-state');
-  const colIndex = index++;
-
-  const { activeSortIndex, sortDirection, toggleActive } = context;
+  const { activeSortKey, sortDirection, toggleActive } = context;
 
   function handleClick() {
-    // the sort order cycle is descending -> ascending -> descending
-    toggleActive(colIndex);
+    toggleActive(sortKey, direction);
     onclick($sortDirection);
   }
 
   if (active) {
-    toggleActive(colIndex);
+    toggleActive(sortKey, direction);
   }
 
-  const icon = derived([activeSortIndex, sortDirection], ([$active, $sort]) => {
-    if (colIndex !== $active) return ChevronSortOutline;
+  const icon = derived([activeSortKey, sortDirection], ([$active, $sort]) => {
+    if (sortKey !== $active) return CaretSortSolid;
     switch ($sort) {
       case 'ascending':
-        return ChevronUpOutline;
+        return CaretUpSolid;
       case 'descending':
-        return ChevronDownOutline;
+        return CaretDownSolid;
       default:
-        return ChevronSortOutline;
+        return CaretSortSolid;
     }
   });
 </script>
 
-<th aria-sort={colIndex === $activeSortIndex ? $sortDirection : undefined}>
+<th class={classes} aria-sort={sortKey === $activeSortKey ? $sortDirection : undefined} data-key={sortKey ?? undefined}>
   {#if sortable}
     <button on:click={handleClick}>
       <slot />
       <span aria-hidden="true">
-        <svelte:component this={$icon} tabindex="-1" class="inline focus:outline-none" />
+        <svelte:component this={$icon} tabindex="-1" class="inline focus:outline-none" size="sm" />
       </span>
     </button>
   {:else}

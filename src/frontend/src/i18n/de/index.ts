@@ -90,6 +90,7 @@ const de: Translation = {
     NEW: 'Neu',
     SORT_BY_ALPHABETICAL: 'Alphabetisch',
     SORT_BY_NEWEST: 'Neuestes',
+    SORT_BY_OLDEST: 'Oldest',
     WORKING: 'Working...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
