@@ -268,11 +268,13 @@ async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarReques
 
 @bind_request_body(CreateAPITokenRequestData)
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
-async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> JSONResponse:
+async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> Response:
     user_id = request.path_params['user_id']
     command = CreateAPITokenCommand(user_id, request.state.user.id, body.name)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=201, headers={
+        'Location': '/api/user/api_tokens'
+    })
 
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
 async def user_api_tokens(request: Request) -> JSONResponse:
