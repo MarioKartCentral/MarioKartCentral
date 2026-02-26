@@ -80,12 +80,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+    
     if (response.status < 300) {
       alert($LL.LOGIN.SEND_PASSWORD_RESET_EMAIL_SUCCESS());
       email_sent = true;
     } else {
-      alert(`${$LL.LOGIN.SEND_PASSWORD_RESET_EMAIL_FAILURE()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.SEND_PASSWORD_RESET_EMAIL_FAILURE()}: ${title}`);
     }
   }
 </script>

@@ -131,10 +131,10 @@ async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> Resp
     return Response(status_code=204)
 
 @bind_request_body(ForgotPasswordRequestData)
-async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
+async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> Response:
     command = SendPasswordResetEmailCommand(body.email)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(SendPlayerPasswordResetRequestData)
 @require_permission(permissions.EDIT_PLAYER)
