@@ -60,7 +60,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     if (response.status < 300) {
       alert($LL.LOGIN.PASSWORD_RESET_SUCCESS());
       window.location.href = `/${$page.params.lang}/`;
@@ -81,7 +81,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     if (response.status < 300) {
       alert($LL.LOGIN.SEND_PASSWORD_RESET_EMAIL_SUCCESS());
       email_sent = true;

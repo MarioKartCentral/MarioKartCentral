@@ -88,7 +88,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     if (response.status < 300) {
       alert($LL.LOGIN.PASSWORD_RESET_SUCCESS());
       window.location.reload();

@@ -29,7 +29,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-  
+
     if (response.status < 300) {
       alert($LL.LOGIN.EMAIL_CONFIRMATION_SUCCESS());
       if (user_info.player_id) {
