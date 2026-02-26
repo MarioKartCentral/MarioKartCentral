@@ -125,10 +125,10 @@ async def send_confirmation_email(request: Request) -> Response:
     return Response(status_code=204)
 
 @bind_request_body(ConfirmEmailRequestData)
-async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSONResponse:
+async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> Response:
     command = VerifyEmailCommand(body.token_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ForgotPasswordRequestData)
 async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
