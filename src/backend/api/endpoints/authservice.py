@@ -157,11 +157,11 @@ async def reset_password_with_token(request: Request, body: ResetPasswordTokenRe
 
 @bind_request_body(ResetPasswordRequestData)
 @require_logged_in()
-async def reset_password(request: Request, body: ResetPasswordRequestData):
+async def reset_password(request: Request, body: ResetPasswordRequestData) -> Response:
     new_pw_hash = pw_hasher.hash(body.new_password)
     command = ResetPasswordCommand(request.state.user.id, body.old_password, new_pw_hash)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(TransferAccountRequestData)
 async def transfer_account(request: Request, body: TransferAccountRequestData):
