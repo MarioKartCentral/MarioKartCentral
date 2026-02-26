@@ -29,10 +29,9 @@
   }
 
   async function refreshDiscordData() {
-    let endpoint = '/api/user/refresh_discord';
+    let endpoint = '/api/user/my_discord';
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
     });
     const result = await response.json();
     if (response.status === 200) {

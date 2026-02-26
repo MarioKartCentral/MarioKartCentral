@@ -319,7 +319,7 @@ routes = [
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
-    Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
+    Route('/api/user/my_discord', refresh_discord_data, methods=['PATCH']),
     Route('/api/user/my_discord', delete_discord_data, methods=['DELETE']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
     Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
