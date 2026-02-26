@@ -138,10 +138,10 @@ async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> 
 
 @bind_request_body(SendPlayerPasswordResetRequestData)
 @require_permission(permissions.EDIT_PLAYER)
-async def send_player_password_reset(request: Request, body: SendPlayerPasswordResetRequestData) -> JSONResponse:
+async def send_player_password_reset(request: Request, body: SendPlayerPasswordResetRequestData) -> Response:
     command = SendPasswordResetToPlayerCommand(body.player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(CheckPasswordTokenRequestData)
 async def check_password_reset_token(request: Request, body: CheckPasswordTokenRequestData) -> JSONResponse:
