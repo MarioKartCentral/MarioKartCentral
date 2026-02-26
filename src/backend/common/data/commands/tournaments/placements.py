@@ -251,6 +251,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 AND t.is_public = 1
                 AND tp.registration_id IS NOT NULL
                 AND tp.player_id = ?
+                AND tp.is_invite = 0
                 AND s.is_registered = 1
                 AND (t.teams_allowed = 1 OR t.min_squad_size > 4)
                 ORDER BY t.date_start DESC;
@@ -281,6 +282,7 @@ class GetPlayerTournamentPlacementsCommand(Command[PlayerTournamentResults]):
                 AND t.is_public = 1
                 AND tp.registration_id IS NOT NULL
                 AND tp.player_id = ?
+                AND tp.is_invite = 0
                 AND s.is_registered = 1
                 AND (t.teams_allowed = 1 OR t.min_squad_size > 4)
                 ORDER BY t.date_start DESC;
