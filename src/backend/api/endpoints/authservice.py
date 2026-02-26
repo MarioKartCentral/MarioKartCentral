@@ -183,14 +183,14 @@ async def transfer_account(request: Request, body: TransferAccountRequestData) -
 
 @bind_request_body(ChangeEmailRequestData)
 @require_logged_in()
-async def change_email(request: Request, body: ChangeEmailRequestData):
+async def change_email(request: Request, body: ChangeEmailRequestData) -> Response:
     command = ChangeEmailCommand(request.state.user.id, body.new_email, body.password)
     await handle(command)
 
     async def send_confirmation_email():
         command = SendEmailVerificationCommand(request.state.user.id)
         await handle(command)
-    return JSONResponse({}, background=BackgroundTask(send_confirmation_email))
+    return Response(status_code=204, background=BackgroundTask(send_confirmation_email))
 
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
