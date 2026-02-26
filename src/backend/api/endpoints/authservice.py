@@ -149,11 +149,11 @@ async def check_password_reset_token(request: Request, body: CheckPasswordTokenR
     return JSONResponse(user_info)
 
 @bind_request_body(ResetPasswordTokenRequestData)
-async def reset_password_with_token(request: Request, body: ResetPasswordTokenRequestData) -> JSONResponse:
+async def reset_password_with_token(request: Request, body: ResetPasswordTokenRequestData) -> Response:
     new_password_hash = pw_hasher.hash(body.new_password)
     command = ResetPasswordWithTokenCommand(body.token_id, new_password_hash)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ResetPasswordRequestData)
 @require_logged_in()
