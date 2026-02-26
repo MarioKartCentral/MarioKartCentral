@@ -261,10 +261,10 @@ async def sync_discord_avatar(request: Request) -> JSONResponse:
 
 @bind_request_body(RemovePlayerAvatarRequestData)
 @require_permission(permissions.EDIT_PLAYER)
-async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> JSONResponse:
+async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> Response:
     command = RemoveDiscordAvatarCommand(body.player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(CreateAPITokenRequestData)
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
