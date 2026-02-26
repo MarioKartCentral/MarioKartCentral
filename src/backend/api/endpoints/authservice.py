@@ -114,7 +114,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 async def log_out(request: Request) -> Response:
     session_id = request.state.session_id
     await handle(DeleteSessionCommand(session_id))
-    resp = JSONResponse({}, status_code=200)
+    resp = Response(status_code=204)
     resp.delete_cookie('session')
     return resp
 
