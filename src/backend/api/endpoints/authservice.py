@@ -291,19 +291,19 @@ async def my_api_tokens(request: Request) -> JSONResponse:
 
 @bind_request_body(DeleteAPITokenRequestData)
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
-async def mod_delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+async def mod_delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> Response:
     user_id = request.path_params['user_id']
     command = DeleteAPITokenCommand(body.token_id, user_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(DeleteAPITokenRequestData)
 @require_logged_in(session_only=True)
-async def delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+async def delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> Response:
     user_id = request.state.user.id
     command = DeleteAPITokenCommand(body.token_id, user_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
