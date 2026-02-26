@@ -164,7 +164,7 @@ async def reset_password(request: Request, body: ResetPasswordRequestData) -> Re
     return Response(status_code=204)
 
 @bind_request_body(TransferAccountRequestData)
-async def transfer_account(request: Request, body: TransferAccountRequestData):
+async def transfer_account(request: Request, body: TransferAccountRequestData) -> Response:
     existing_user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
     if existing_user_id is not None:
         raise Problem("Your account has already been transferred to the new site, check the email associated with your account for a password reset", status=400)
@@ -179,7 +179,7 @@ async def transfer_account(request: Request, body: TransferAccountRequestData):
     async def send_password_reset():
         command = SendPasswordResetEmailCommand(user.email)
         await handle(command)
-    return JSONResponse({}, background=BackgroundTask(send_password_reset))
+    return Response(status_code=204, background=BackgroundTask(send_password_reset))
 
 @bind_request_body(ChangeEmailRequestData)
 @require_logged_in()
