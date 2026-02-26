@@ -122,7 +122,7 @@ async def log_out(request: Request) -> Response:
 async def send_confirmation_email(request: Request) -> Response:
     command = SendEmailVerificationCommand(request.state.user.id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ConfirmEmailRequestData)
 async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSONResponse:

@@ -47,14 +47,13 @@
     const endpoint = `/api/user/send_confirmation_email`;
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
     });
-    const result = await response.json();
     working = false;
     if (response.status < 300) {
       alert($LL.LOGIN.SEND_CONFIRMATION_EMAIL_SUCCESS());
     } else {
-      alert(`${$LL.LOGIN.SEND_CONFIRMATION_EMAIL_FAILURE()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.SEND_CONFIRMATION_EMAIL_FAILURE()}: ${title}`);
     }
   }
 </script>
