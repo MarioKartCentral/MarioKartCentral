@@ -10,7 +10,11 @@
   import Flag from '$lib/components/common/Flag.svelte';
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import PrimaryBadge from '$lib/components/badges/PrimaryBadge.svelte';
-  import type { TeamTournamentPlayer } from '$lib/types/team-tournament-player';
+  import type {
+    TeamTournamentPlayer,
+    TeamTournamentPlayerDetailed,
+    RegisterTeamRequestData,
+  } from '$lib/types/team-tournament-registration';
   import Table from '$lib/components/common/table/Table.svelte';
   import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
@@ -29,7 +33,7 @@
   let selected_roster: TeamRoster | null = null;
   let selected_rosters: TeamRoster[] = [];
 
-  let players: TeamTournamentPlayer[] = [];
+  let players: TeamTournamentPlayerDetailed[] = [];
 
   let squad_color = 1;
   let working = false;
@@ -171,12 +175,17 @@
 
   async function register() {
     working = true;
-    const payload = {
+    const payload: RegisterTeamRequestData = {
       squad_color: squad_color,
       squad_name: selected_rosters[0].name,
       squad_tag: selected_rosters[0].tag,
       roster_ids: selected_rosters.map((r) => r.id),
-      players: players,
+      players: players.map((player) => ({
+        player_id: player.player_id,
+        is_captain: player.is_captain,
+        is_representative: player.is_representative,
+        is_bagger_clause: player.is_bagger_clause,
+      })),
     };
     const endpoint = `/api/tournaments/${tournament.id}/${is_privileged ? 'forceRegisterTeam' : 'registerTeam'}`;
     const response = await fetch(endpoint, {
