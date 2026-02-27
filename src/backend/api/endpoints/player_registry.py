@@ -189,8 +189,8 @@ async def toggle_transfer_item_visibility(request: Request) -> JSONResponse:
 @require_logged_in()
 async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONResponse:
     command = ClaimPlayerCommand(request.state.user.player_id, body.player_id)
-    await handle(command)
-    return JSONResponse({})
+    claim = await handle(command)
+    return JSONResponse(claim, status_code=201)
 
 @bind_request_body(ApproveDenyPlayerClaimRequestData)
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
