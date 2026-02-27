@@ -40,11 +40,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+    
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Approving player claim failed: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`Approving player claim failed: ${title}`);
     }
   }
 
@@ -58,11 +59,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`Denying player claim failed: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`Denying player claim failed: ${title}`);
     }
   }
 

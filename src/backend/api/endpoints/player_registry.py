@@ -194,23 +194,23 @@ async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONRe
 
 @bind_request_body(ApproveDenyPlayerClaimRequestData)
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
-async def approve_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+async def approve_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> Response:
     command = ApprovePlayerClaimCommand(body.claim_id)
     player_id, user_id, claimed_player_name = await handle(command)
     async def notify():
         content_args = {"player_name": claimed_player_name}
         await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_APPROVED, content_args, f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(ApproveDenyPlayerClaimRequestData)
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
-async def deny_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+async def deny_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> Response:
     command = DenyPlayerClaimCommand(body.claim_id)
     player_id, user_id, claimed_player_name = await handle(command)
     async def notify():
         content_args = {"player_name": claimed_player_name}
         await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_DENIED, content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
 async def list_player_claims(request: Request) -> JSONResponse:
