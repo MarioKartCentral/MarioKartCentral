@@ -6,17 +6,24 @@ from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
 from common.data.models.discord_integration import Discord
 from common.data.models.player_basic import PlayerBasic
-    
+
 @dataclass
-class Player:
+class PlayerBase:
     id: int
     name: str
     country_code: CountryCode
     is_hidden: bool
+
+@dataclass
+class Player(PlayerBase):
     is_shadow: bool
     is_banned: bool
     join_date: int
     discord: Discord | None
+
+@dataclass
+class PlayerUpdate(PlayerBase):
+    pass
     
 @dataclass
 class PlayerAndFriendCodes(Player):

@@ -32,11 +32,11 @@ async def create_shadow_player(request: Request, body: CreatePlayerRequestData) 
 async def edit_player(request: Request, body: EditPlayerRequestData) -> Response:
     mod_player_id = request.state.user.player_id    
     command = UpdatePlayerCommand(body, mod_player_id)
-    succeeded = await handle(command)
-    if not succeeded:
+    player = await handle(command)
+    if not player:
         raise Problem("Player not found", status=404)
-    
-    return JSONResponse({}, status_code=200)
+
+    return JSONResponse(player, status_code=200)
 
 async def view_player(request: Request) -> Response:
     include_notes = False # only include notes if the viewer is a mod
