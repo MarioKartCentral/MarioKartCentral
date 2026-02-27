@@ -220,9 +220,9 @@ async def list_player_claims(request: Request) -> JSONResponse:
 
 @bind_request_body(MergePlayersRequestData)
 @require_permission(permissions.MERGE_PLAYERS)
-async def merge_players(request: Request, body: MergePlayersRequestData) -> JSONResponse:
+async def merge_players(request: Request, body: MergePlayersRequestData) -> Response:
     await handle(MergePlayersCommand(body.from_player_id, body.to_player_id))
-    return JSONResponse({})
+    return Response(status_code=204)
 
 async def player_lounge(request: Request) -> JSONResponse:
     player_id = int(request.path_params['id'])
