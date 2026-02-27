@@ -7,7 +7,7 @@ from common.data.models import *
 from datetime import datetime, timezone
 
 @dataclass
-class CreateFriendCodeCommand(Command[None]):
+class CreateFriendCodeCommand(Command[FriendCode]):
     player_id: int
     fc: str
     type: FriendCodeType
@@ -17,7 +17,7 @@ class CreateFriendCodeCommand(Command[None]):
     description: str | None
     is_privileged: bool
 
-    async def handle(self, db_wrapper: DBWrapper):
+    async def handle(self, db_wrapper: DBWrapper) -> FriendCode:
         is_primary = self.is_primary
         # make sure FC is in 0000-0000-0000 format
         match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", self.fc)
@@ -49,11 +49,19 @@ class CreateFriendCodeCommand(Command[None]):
                 if row:
                     raise Problem("Another player is currently using this friend code for this category", status=400)
             now = int(datetime.now(timezone.utc).timestamp())
-            async with db.execute("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            async with db.execute("""INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                    RETURNING id, fc, type, player_id, is_verified, is_primary, creation_date, description, is_active
+                                  """,
                              (self.player_id, self.type, self.fc, self.is_verified, is_primary, self.is_active, self.description, now)) as cursor:
-                fc_id = cursor.lastrowid
-            await db.execute("INSERT INTO friend_code_edits(fc_id, new_fc, date) VALUES(?, ?, ?)", (fc_id, self.fc, now)) # log friend code creation
+                db_fc = await cursor.fetchone()
+                if db_fc is None:
+                    raise Problem("Bad request", status=400)
+                friend_code = FriendCode(*db_fc)
+            await db.execute("INSERT INTO friend_code_edits(fc_id, new_fc, date) VALUES(?, ?, ?)", (friend_code.id, self.fc, now)) # log friend code creation
             await db.commit()
+            return friend_code
+
 
 @dataclass
 class EditFriendCodeCommand(Command[None]):

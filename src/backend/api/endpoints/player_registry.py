@@ -67,8 +67,8 @@ async def list_players(_: Request, filter: PlayerFilter) -> Response:
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSONResponse:
     command = CreateFriendCodeCommand(request.state.user.player_id, body.fc, body.type, False, body.is_primary, True, body.description, False)
-    await handle(command)
-    return JSONResponse({})
+    friend_code = await handle(command)
+    return JSONResponse(friend_code, status_code=201)
 
 @bind_request_body(ForceCreateFriendCodeRequestData)
 @check_word_filter
@@ -81,8 +81,8 @@ async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestDa
         await handle(DispatchNotificationCommand([user_id], notifications.FORCE_ADD_FRIEND_CODE, {'type': body.type}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = CreateFriendCodeCommand(body.player_id, body.fc, body.type, False, body.is_primary, True, body.description, True)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    friend_code = await handle(command)
+    return JSONResponse(friend_code, status_code=201, background=BackgroundTask(notify))
 
 @bind_request_body(ForceEditFriendCodeRequestData)
 @check_word_filter
