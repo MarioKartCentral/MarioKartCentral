@@ -97,8 +97,8 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
 
     mod_player_id = request.state.user.player_id
     command = EditFriendCodeCommand(body.player_id, body.id, body.fc, body.is_primary, body.is_active, body.description, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    friend_code = await handle(command)
+    return JSONResponse(friend_code, background=BackgroundTask(notify))
 
 @bind_request_body(EditMyFriendCodeRequestData)
 @check_word_filter
@@ -106,8 +106,8 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
 async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
     command = EditFriendCodeCommand(player_id, body.id, None, body.is_primary, None, body.description, None)
-    await handle(command)
-    return JSONResponse({})
+    friend_code = await handle(command)
+    return JSONResponse(friend_code)
 
 @bind_request_body(EditPrimaryFriendCodeRequestData)
 @require_logged_in()

@@ -64,7 +64,7 @@ class CreateFriendCodeCommand(Command[FriendCode]):
 
 
 @dataclass
-class EditFriendCodeCommand(Command[None]):
+class EditFriendCodeCommand(Command[FriendCode]):
     player_id: int
     id: int
     fc: str | None
@@ -73,7 +73,7 @@ class EditFriendCodeCommand(Command[None]):
     description: str | None
     mod_player_id: int | None
 
-    async def handle(self, db_wrapper: DBWrapper):
+    async def handle(self, db_wrapper: DBWrapper) -> FriendCode:
         
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT type, fc, is_active, is_primary FROM friend_codes WHERE id = ? AND player_id = ?", (self.id, self.player_id)) as cursor:
@@ -99,7 +99,14 @@ class EditFriendCodeCommand(Command[None]):
             # if this FC is now primary, make all the other FCs this player has for that type non-primary
             if self.is_primary and not curr_is_primary:
                 await db.execute("UPDATE friend_codes SET is_primary = 0 WHERE player_id = ? AND type = ? AND id != ?", (self.player_id, type, self.id))
-            await db.execute("UPDATE friend_codes SET fc = ?, is_active = ?, description = ?, is_primary = ? WHERE id = ?", (fc, is_active, self.description, self.is_primary, self.id))
+            async with db.execute("""
+                             UPDATE friend_codes SET fc = ?, is_active = ?, description = ?, is_primary = ? WHERE id = ?
+                             RETURNING id, fc, type, player_id, is_verified, is_primary, creation_date, description, is_active
+                             """, (fc, is_active, self.description, self.is_primary, self.id)) as cursor:
+                db_fc = await cursor.fetchone()
+                if db_fc is None:
+                    raise Problem("Bad request", status=400)
+
             # log fc edit if a mod changes it
             if self.mod_player_id:
                 now = int(datetime.now(timezone.utc).timestamp())
@@ -109,6 +116,7 @@ class EditFriendCodeCommand(Command[None]):
                 await db.execute("INSERT INTO friend_code_edits(fc_id, old_fc, new_fc, is_active, handled_by, date) VALUES(?, ?, ?, ?, ?, ?)",
                                  (self.id, old_fc, new_fc, is_active, self.mod_player_id, now))
             await db.commit()
+            return FriendCode(*db_fc)
 
 @dataclass
 class SetPrimaryFCCommand(Command[None]):
