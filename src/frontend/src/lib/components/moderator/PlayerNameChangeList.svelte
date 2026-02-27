@@ -47,11 +47,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await res.json();
+
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.MODERATOR.APPROVE_NAME_REQUEST_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.MODERATOR.APPROVE_NAME_REQUEST_FAILED()}: ${title}`);
     }
   }
 
@@ -66,11 +67,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await res.json();
+    
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.MODERATOR.DENY_NAME_REQUEST_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.MODERATOR.DENY_NAME_REQUEST_FAILED()}: ${title}`);
     }
   }
 </script>

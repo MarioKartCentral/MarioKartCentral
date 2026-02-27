@@ -152,8 +152,8 @@ async def approve_player_name_request(request: Request, body: ApprovePlayerNameR
         await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_APPROVED, {}, f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
     mod_player_id = request.state.user.player_id
     command = ApprovePlayerNameRequestCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    name_change_edit = await handle(command)
+    return JSONResponse(name_change_edit, background=BackgroundTask(notify))
 
 @bind_request_body(ApprovePlayerNameRequestData)
 @require_permission(permissions.EDIT_PLAYER)
@@ -163,8 +163,8 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
         await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_DENIED, {}, f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
     mod_player_id = request.state.user.player_id    
     command = DenyPlayerNameRequestCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    name_change_edit = await handle(command)
+    return JSONResponse(name_change_edit, background=BackgroundTask(notify))
 
 @bind_request_body(UpdatePlayerNotesRequestData)
 @require_permission(permissions.EDIT_PLAYER)

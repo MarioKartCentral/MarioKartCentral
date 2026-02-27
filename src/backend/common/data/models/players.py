@@ -147,6 +147,12 @@ class PlayerNameRequest:
     handled_by: PlayerBasic | None
 
 @dataclass
+class PlayerNameRequestUpdate:
+    id: int
+    approval_status: Approval
+    handled_by: PlayerBasic | None
+
+@dataclass
 class PlayerNameRequestFilter:
     approval_status: Approval
     page: int | None = None
