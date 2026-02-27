@@ -6,9 +6,9 @@ from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions, roles as user_roles
-from common.data import notifications
 from common.data.commands import *
-from common.data.models import *
+from common.data.models import PlayerBanRequestData, PlayerBanFilter, PlayerBanHistoricalFilter
+from common.data import notifications
 
 @bind_request_body(PlayerBanRequestData)
 @require_permission(permissions.BAN_PLAYER)
