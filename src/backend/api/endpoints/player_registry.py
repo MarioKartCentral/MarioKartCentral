@@ -111,14 +111,14 @@ async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSO
 
 @bind_request_body(EditPrimaryFriendCodeRequestData)
 @require_logged_in()
-async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestData) -> JSONResponse:
+async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestData) -> Response:
     command = SetPrimaryFCCommand(body.id, request.state.user.player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ModEditPrimaryFriendCodeRequestData)
 @require_logged_in()
-async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> JSONResponse:
+async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -127,7 +127,7 @@ async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeReque
 
     command = SetPrimaryFCCommand(body.id, body.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(PlayerRequestNameRequestData)
 @check_word_filter
