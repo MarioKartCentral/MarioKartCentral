@@ -12,6 +12,7 @@ EVENT_MOD = "Event Mod"
 BANNED = "Banned"
 TEAM_LEADER_BANNED = "Team Leader Banned"
 TIME_TRIAL_ADMIN = "Time Trial Admin"
+VERIFICATION_STAFF = "Verification Staff"
 
 # (roleid, name, role hierarchy pos)
 default_roles = [
@@ -26,7 +27,8 @@ default_roles = [
     (8, TEAM_LEADER_BANNED, 99),
     (9, LOUNGE_STAFF, 5),
     (10, SUPER_MODERATOR, 2),
-    (11, TIME_TRIAL_ADMIN, 6)
+    (11, TIME_TRIAL_ADMIN, 6),
+    (12, VERIFICATION_STAFF, 6),
 ]
 
 id_by_default_role = { name: roleid for roleid, name, _ in default_roles}
@@ -57,6 +59,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.VIEW_FINGERPRINTS,
         permissions.CREATE_DB_BACKUPS,
         permissions.VALIDATE_TIME_TRIAL_PROOF,
+        permissions.MANAGE_VERIFICATIONS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -104,6 +107,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         permissions.VIEW_FINGERPRINTS,
         permissions.CREATE_DB_BACKUPS,
         permissions.VALIDATE_TIME_TRIAL_PROOF,
+        permissions.MANAGE_VERIFICATIONS,
         team_permissions.EDIT_TEAM_NAME_TAG,
         team_permissions.EDIT_TEAM_INFO,
         team_permissions.CREATE_ROSTERS,
@@ -253,6 +257,12 @@ default_permissions_by_default_role: dict[str, list[str]] = {
     TIME_TRIAL_ADMIN: [ # Permissions for the new role
         permissions.VALIDATE_TIME_TRIAL_PROOF,
     ],
+    VERIFICATION_STAFF: [
+        permissions.MANAGE_VERIFICATIONS,
+        permissions.VIEW_ALT_FLAGS,
+        permissions.VIEW_USER_LOGINS,
+        permissions.VIEW_BASIC_IP_INFO,
+    ]
 }
 
 default_denied_permissions_by_default_role: dict[str, list[str]] = {
@@ -281,6 +291,7 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         permissions.EDIT_PROFILE,
         permissions.LINK_DISCORD,
         permissions.SUBMIT_TIME_TRIAL,
+        permissions.REQUEST_VERIFICATION,
     ],
     TEAM_LEADER_BANNED: [
         team_permissions.EDIT_TEAM_NAME_TAG, 
@@ -298,6 +309,7 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
     TIME_TRIAL_ADMIN: [], 
+    VERIFICATION_STAFF: [],
 }
 
 # roleid, permissionid, is_denied

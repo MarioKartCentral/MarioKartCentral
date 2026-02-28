@@ -44,7 +44,7 @@ class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
             
             players: list[RolePlayer] = []
             async with db.execute("""
-                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.join_date, ur.expires_on
+                SELECT p.id, p.name, p.country_code, p.is_hidden, p.is_shadow, p.is_banned, p.is_verified, p.join_date, ur.expires_on
                 FROM user_series_roles ur
                 JOIN users u ON u.id = ur.user_id
                 JOIN players p ON p.id = u.player_id
@@ -52,8 +52,8 @@ class GetSeriesRoleInfoCommand(Command[SeriesRoleInfo]):
                 """, (self.role_id, self.series_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, expires_on = row
-                    players.append(RolePlayer(player_id, player_name, country_code, is_hidden, is_shadow, is_banned, join_date, None, expires_on))
+                    player_id, player_name, country_code, is_hidden, is_shadow, is_banned, is_verified, join_date, expires_on = row
+                    players.append(RolePlayer(player_id, player_name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), bool(is_verified), join_date, None, expires_on))
             role_info = SeriesRoleInfo(self.role_id, role_name, position, permissions, players, self.series_id)
             return role_info
 

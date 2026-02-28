@@ -85,8 +85,8 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             async with db.execute("""SELECT c.id, c.date, c.approval_status,
-                                  c.player_id, p1.name, p1.country_code, p1.is_banned,
-                                  c.claimed_player_id, p2.name, p2.country_code, p2.is_banned
+                                  c.player_id, p1.name, p1.country_code, p1.is_banned, p1.is_verified,
+                                  c.claimed_player_id, p2.name, p2.country_code, p2.is_banned, p2.is_verified
                                   FROM player_claims c
                                   JOIN players p1 ON c.player_id = p1.id
                                   JOIN players p2 ON c.claimed_player_id = p2.id
@@ -94,9 +94,9 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
                 claims: list[PlayerClaim] = []
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (claim_id, date, approval_status, player_id, player_name, player_country, player_banned, 
-                     claim_player_id, claim_player_name, claim_player_country, claim_player_banned) = row
-                    player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
-                    claimed_player = PlayerBasic(claim_player_id, claim_player_name, claim_player_country, bool(claim_player_banned))
+                    (claim_id, date, approval_status, player_id, player_name, player_country, player_banned, player_verified,
+                     claim_player_id, claim_player_name, claim_player_country, claim_player_banned, claim_player_verified) = row
+                    player = PlayerBasic(player_id, player_name, player_country, bool(player_banned), bool(player_verified))
+                    claimed_player = PlayerBasic(claim_player_id, claim_player_name, claim_player_country, bool(claim_player_banned), bool(claim_player_verified))
                     claims.append(PlayerClaim(claim_id, date, approval_status, player, claimed_player))
         return claims

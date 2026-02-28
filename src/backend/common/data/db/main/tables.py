@@ -10,6 +10,7 @@ class Player(TableModel):
     is_shadow: bool
     is_banned: bool
     join_date: int
+    is_verified: bool
 
     @staticmethod
     def get_create_table_command():
@@ -20,7 +21,8 @@ class Player(TableModel):
             is_hidden BOOLEAN NOT NULL,
             is_shadow BOOLEAN NOT NULL,
             is_banned BOOLEAN NOT NULL,
-            join_date INTEGER NOT NULL DEFAULT 0
+            join_date INTEGER NOT NULL DEFAULT 0,
+            is_verified BOOLEAN NOT NULL DEFAULT 0
             )"""
 
 @dataclass
@@ -936,8 +938,79 @@ class JobState(TableModel):
             updated_on INTEGER NOT NULL
         )"""
 
+@dataclass
+class PlayerVerificationRequest(TableModel):
+    id: int
+    player_id: int
+    date: int
+    status: str
 
-    
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS player_verification_requests(
+            id INTEGER PRIMARY KEY,
+            player_id INTEGER NOT NULL REFERENCES players(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
+        )"""
+
+@dataclass
+class FriendCodeVerificationRequest(TableModel):
+    id: int
+    fc_id: int
+    date: int
+    status: str
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS friend_code_verification_requests(
+            id INTEGER PRIMARY KEY,
+            fc_id INTEGER NOT NULL REFERENCES friend_codes(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL
+        )"""
+
+@dataclass
+class PlayerVerificationRequestLog(TableModel):
+    id: int
+    verification_id: int
+    date: int
+    action: str
+    reason: str | None
+    handled_by: int
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS player_verification_request_log(
+            id INTEGER PRIMARY KEY,
+            verification_id INTEGER NOT NULL REFERENCES player_verification_requests(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL,
+            reason TEXT,
+            handled_by INTEGER NOT NULL REFERENCES players(id)
+        )"""
+
+@dataclass
+class FriendCodeVerificationRequestLog(TableModel):
+    id: int
+    verification_id: int
+    date: int
+    action: str
+    reason: str | None
+    handled_by: int
+
+    @staticmethod
+    def get_create_table_command():
+        return """CREATE TABLE IF NOT EXISTS friend_code_verification_request_log(
+            id INTEGER PRIMARY KEY,
+            verification_id INTEGER NOT NULL REFERENCES friend_code_verification_requests(id),
+            date INTEGER NOT NULL,
+            approval_status TEXT NOT NULL,
+            reason TEXT,
+            handled_by INTEGER NOT NULL REFERENCES players(id)
+        )"""
+
+
 all_tables : list[type[TableModel]] = [
     Player, FriendCode, User, UserDiscord, Role, Permission, UserRole, RolePermission, 
     TournamentSeries, Tournament, TournamentTemplate, TournamentRegistration, TournamentPlayer,
@@ -948,4 +1021,5 @@ all_tables : list[type[TableModel]] = [
     TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
     UserSettings, Notifications, PlayerBans, PlayerBansHistorical,
     PlayerNameEdit, PlayerClaim, FilteredWords,
-    Post, SeriesPost, TournamentPost, JobState]
+    Post, SeriesPost, TournamentPost, JobState,
+    PlayerVerificationRequest, FriendCodeVerificationRequest, PlayerVerificationRequestLog, FriendCodeVerificationRequestLog]
