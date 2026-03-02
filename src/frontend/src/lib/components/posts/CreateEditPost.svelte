@@ -12,7 +12,7 @@
   export let seriesId: number | null = null;
   export let tournamentId: number | null = null;
 
-  const isEdit = Boolean(postId)
+  const isEdit = Boolean(postId);
 
   let title = '';
   let isPublic = true;
@@ -20,31 +20,30 @@
   let working = false;
 
   $: baseApiPath = (() => {
-    if (tournamentId) return `/api/tournaments/${tournamentId}/posts`
-    if (seriesId) return `/api/tournaments/series/${seriesId}/posts`
-    return '/api/posts'
+    if (tournamentId) return `/api/tournaments/${tournamentId}/posts`;
+    if (seriesId) return `/api/tournaments/series/${seriesId}/posts`;
+    return '/api/posts';
   })();
 
   const getPagePath = (postId: number, tournamentId: number | null, seriesId: number | null): string => {
-    const searchParams = new URLSearchParams({ id: postId.toString() })
-    let path = `${$page.params.lang}`
+    const searchParams = new URLSearchParams({ id: postId.toString() });
+    let path = `${$page.params.lang}`;
 
     if (tournamentId) {
-      path += '/tournaments'
-      searchParams.append('tournament_id', tournamentId.toString())
+      path += '/tournaments';
+      searchParams.append('tournament_id', tournamentId.toString());
+    } else if (seriesId) {
+      path += '/tournaments/series';
+      searchParams.append('series_id', seriesId.toString());
     }
-    else if (seriesId) {
-      path += '/tournaments/series'
-      searchParams.append('series_id', seriesId.toString())
-    }
-    return `/${path}/posts/view?${searchParams.toString()}`
-  }
+    return `/${path}/posts/view?${searchParams.toString()}`;
+  };
 
   onMount(async () => {
     if (!isEdit) return;
     const response = await fetch(baseApiPath + `/${postId}`);
     if (response.ok) {
-      ({ is_public: isPublic, title, content } = await response.json() as Post)
+      ({ is_public: isPublic, title, content } = (await response.json()) as Post);
     }
   });
 
@@ -53,9 +52,9 @@
     const payload = {
       title,
       is_public: isPublic,
-      content
+      content,
     };
-    let endpoint = baseApiPath
+    let endpoint = baseApiPath;
     if (isEdit) endpoint += `/${postId}`;
     const response = await fetch(endpoint, {
       method: isEdit ? 'PATCH' : 'POST',
@@ -66,8 +65,8 @@
     const result = await response.json();
     if (response.ok) {
       postId = result['id'];
-      const path = getPagePath(postId as number, tournamentId, seriesId)
-      goto(path)
+      const path = getPagePath(postId as number, tournamentId, seriesId);
+      goto(path);
     } else {
       alert(`${$LL.POSTS.CREATE_EDIT_POST_FAILED()}: ${result['title']}`);
     }
