@@ -26,5 +26,5 @@
 </Section>
 
 {#key post_id}
-  <CreateEditPost id={post_id} {tournament_id} />
+  <CreateEditPost postId={post_id} tournamentId={tournament_id} />
 {/key}

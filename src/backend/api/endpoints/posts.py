@@ -88,16 +88,16 @@ async def view_post(request: Request) -> JSONResponse:
     return JSONResponse(post)
 
 routes: list[Route] = [
-    Route('/api/posts/create', create_post, methods=['POST']),
-    Route('/api/posts/{post_id:int}/edit', edit_post, methods=["POST"]),
     Route('/api/posts', list_posts),
+    Route('/api/posts', create_post, methods=['POST']),
     Route('/api/posts/{post_id:int}', view_post),
-    Route('/api/tournaments/series/{series_id:int}/posts/create', create_series_post, methods=["POST"]),
-    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}/edit', edit_series_post, methods=["POST"]),
+    Route('/api/posts/{post_id:int}', edit_post, methods=["PATCH"]),
     Route('/api/tournaments/series/{series_id:int}/posts', list_posts),
+    Route('/api/tournaments/series/{series_id:int}/posts', create_series_post, methods=["POST"]),
     Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}', view_post),
-    Route('/api/tournaments/{tournament_id:int}/posts/create', create_tournament_post, methods=["POST"]),
-    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}/edit', edit_tournament_post, methods=["POST"]),
+    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}', edit_series_post, methods=["PATCH"]),
     Route('/api/tournaments/{tournament_id:int}/posts', list_posts),
+    Route('/api/tournaments/{tournament_id:int}/posts', create_tournament_post, methods=["POST"]),
     Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}', view_post),
+    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}', edit_tournament_post, methods=["PATCH"]),
 ]
