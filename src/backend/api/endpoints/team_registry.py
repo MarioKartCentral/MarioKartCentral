@@ -282,7 +282,7 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
 
 @bind_request_body(LeaveRosterRequestData)
 @require_logged_in()
-async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResponse:
+async def leave_team(request: Request, body: LeaveRosterRequestData) -> Response:
     async def notify():
         player_id = request.state.user.player_id
         player_name = await handle(GetPlayerNameCommand(player_id,))
@@ -293,7 +293,7 @@ async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResp
 
     command = LeaveRosterCommand(request.state.user.player_id, body.roster_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(ApproveTransferRequestData)
 @require_permission(permissions.MANAGE_TRANSFERS)

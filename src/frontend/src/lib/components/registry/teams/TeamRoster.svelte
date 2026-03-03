@@ -39,12 +39,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+    
     if (response.status < 300) {
       window.location.reload();
       alert($LL.TEAMS.PROFILE.LEAVE_ROSTER_SUCCESS());
     } else {
-      alert(`${$LL.TEAMS.PROFILE.LEAVE_ROSTER_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TEAMS.PROFILE.LEAVE_ROSTER_FAILED()}: ${title}`);
     }
   }
 </script>
