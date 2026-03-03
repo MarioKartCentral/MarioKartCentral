@@ -20,7 +20,9 @@ async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResp
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
         body.logo_file, body.approval_status, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
     team_id = await handle(command)
-    return JSONResponse({'id': team_id})
+    return JSONResponse({'id': team_id}, status_code=201, headers={
+        'Location': f'/api/registry/teams/{team_id}'
+    })
 
 @bind_request_body(RequestCreateTeamRequestData)
 @check_word_filter
@@ -31,7 +33,9 @@ async def request_create_team(request: Request, body: RequestCreateTeamRequestDa
                                 body.logo_file, approval_status, False, body.game, body.mode, body.is_recruiting, 
                                 True, False, user_id=request.state.user.id)
     team_id = await handle(command)
-    return JSONResponse({'id': team_id})
+    return JSONResponse({'id': team_id}, status_code=201, headers={
+        'Location': f'/api/registry/teams/{team_id}'
+    })
 
 async def view_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
