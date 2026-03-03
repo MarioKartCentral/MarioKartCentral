@@ -452,7 +452,7 @@ async def approve_roster(request: Request) -> JSONResponse:
     roster_id = request.path_params['rosterId']
     command = ApproveRosterCommand(team_id, roster_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'id': roster_id, 'approval_status': 'approved'}, background=BackgroundTask(notify))
 
 @require_permission(permissions.MANAGE_TEAMS)
 async def deny_roster(request: Request) -> JSONResponse:
@@ -466,7 +466,7 @@ async def deny_roster(request: Request) -> JSONResponse:
     roster_id = request.path_params['rosterId']
     command = DenyRosterCommand(team_id, roster_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'id': roster_id, 'approval_status': 'denied'}, background=BackgroundTask(notify))
 
 @bind_request_query(RegisterableRostersRequestData)
 @require_logged_in()
