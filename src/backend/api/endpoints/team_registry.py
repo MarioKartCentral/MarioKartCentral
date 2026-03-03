@@ -74,7 +74,7 @@ async def approve_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'approved')
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'team_id': team_id, 'approval_status': 'approved'}, background=BackgroundTask(notify))
 
 @require_permission(permissions.MANAGE_TEAMS)
 async def deny_team(request: Request) -> JSONResponse:
@@ -86,7 +86,7 @@ async def deny_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'denied')
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'team_id': team_id, 'approval_status': 'denied'}, background=BackgroundTask(notify))
 
 # for editing non-essential team info such as description, color, etc
 @bind_request_body(ManagerEditTeamRequestData)
