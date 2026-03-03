@@ -65,6 +65,12 @@ class TeamEdit():
     handled_by: PlayerBasic | None
 
 @dataclass
+class TeamEditUpdate:
+    id: int
+    approval_status: Approval
+    handled_by: PlayerBasic
+
+@dataclass
 class TeamEditFilter:
     approval_status: Approval
     page: int | None = None
@@ -88,6 +94,12 @@ class RosterEdit():
     date: int
     approval_status: Approval
     handled_by: PlayerBasic | None
+
+@dataclass
+class RosterEditUpdate:
+    id: int
+    approval_status: Approval
+    handled_by: PlayerBasic
 
 @dataclass
 class RosterEditFilter:

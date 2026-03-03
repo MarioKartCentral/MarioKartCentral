@@ -116,8 +116,8 @@ async def approve_team_edit_request(request: Request, body: ApproveTeamEditReque
 
     mod_player_id = request.state.user.player_id
     command = ApproveTeamEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_body(DenyTeamEditRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -129,8 +129,8 @@ async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData
 
     mod_player_id = request.state.user.player_id
     command = DenyTeamEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_query(TeamEditFilter)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -202,8 +202,8 @@ async def approve_roster_edit_request(request: Request, body: EditRosterChangeRe
 
     mod_player_id = request.state.user.player_id
     command = ApproveRosterEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_body(EditRosterChangeRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -216,8 +216,8 @@ async def deny_roster_edit_request(request: Request, body: EditRosterChangeReque
 
     mod_player_id = request.state.user.player_id
     command = DenyRosterEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_body(InviteRosterPlayerRequestData)
 @require_team_permission(team_permissions.INVITE_PLAYERS)
