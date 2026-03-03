@@ -1,4 +1,5 @@
 from starlette.requests import Request
+from starlette.responses import Response
 from starlette.routing import Route
 from starlette.background import BackgroundTask
 from api.auth import require_permission, require_logged_in, require_team_permission
@@ -232,26 +233,26 @@ async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -
         await handle(DispatchNotificationCommand([user_id], notifications.TEAM_INVITE , content_args, '/registry/invites', notifications.SUCCESS))
 
     command = InvitePlayerCommand(body.player_id, body.roster_id, body.team_id, body.is_bagger_clause)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    invite = await handle(command)
+    return JSONResponse(invite, status_code=201, background=BackgroundTask(notify))
 
 @bind_request_body(DeleteInviteRequestData)
 @require_team_permission(team_permissions.INVITE_PLAYERS)
-async def delete_invite(request: Request, body: DeleteInviteRequestData) -> JSONResponse:
+async def delete_invite(request: Request, body: DeleteInviteRequestData) -> Response:
     command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(DeleteInviteRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
-async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> JSONResponse:
+async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> Response:
     command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(AcceptRosterInviteRequestData)
 @require_permission(permissions.JOIN_TEAM, check_denied_only=True)
-async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
+async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
@@ -260,11 +261,11 @@ async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -
 
     command = AcceptInviteCommand(body.invite_id, body.roster_leave_id, request.state.user.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(DeclineRosterInviteRequestData)
 @require_logged_in()
-async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> JSONResponse:
+async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> Response:
     async def notify():
         content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand(user_ids, notifications.DECLINE_INVITE, content_args, f'/registry/players/profile?id={request.state.user.player_id}', notifications.WARNING))
@@ -277,7 +278,7 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
 
     command = DeclineInviteCommand(body.invite_id, request.state.user.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(LeaveRosterRequestData)
 @require_logged_in()
