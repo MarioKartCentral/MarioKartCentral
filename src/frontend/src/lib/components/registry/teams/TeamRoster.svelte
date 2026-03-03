@@ -39,7 +39,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     if (response.status < 300) {
       window.location.reload();
       alert($LL.TEAMS.PROFILE.LEAVE_ROSTER_SUCCESS());

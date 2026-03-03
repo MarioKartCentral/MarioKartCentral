@@ -297,7 +297,7 @@ async def leave_team(request: Request, body: LeaveRosterRequestData) -> Response
 
 @bind_request_body(ApproveTransferRequestData)
 @require_permission(permissions.MANAGE_TRANSFERS)
-async def approve_transfer(request: Request, body: ApproveTransferRequestData) -> JSONResponse:
+async def approve_transfer(request: Request, body: ApproveTransferRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
@@ -310,11 +310,11 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
 
     command = ApproveTransferCommand(body.invite_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(DenyTransferRequestData)
 @require_permission(permissions.MANAGE_TRANSFERS)
-async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSONResponse:
+async def deny_transfer(request: Request, body: DenyTransferRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
@@ -327,7 +327,7 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
 
     command = DenyTransferCommand(body.invite_id, body.send_back)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_query(TransferFilter)
 async def view_approved_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
@@ -358,7 +358,7 @@ async def list_roster_edit_requests(request: Request, filter: RosterEditFilter) 
 
 @bind_request_body(ForceTransferPlayerRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
-async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> JSONResponse:
+async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> Response:
     async def notify():
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
@@ -368,7 +368,7 @@ async def force_transfer_player(request: Request, body: ForceTransferPlayerReque
 
     command = ForceTransferPlayerCommand(body.player_id, body.roster_id, body.team_id, body.roster_leave_id, body.is_bagger_clause)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(EditTeamMemberInfoRequestData)
 @require_permission(permissions.MANAGE_TEAMS)

@@ -94,11 +94,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await res.json();
+
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.MODERATOR.APPROVE_TRANSFER_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.MODERATOR.APPROVE_TRANSFER_FAILED()}: ${title}`);
     }
   }
 
@@ -115,11 +116,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await res.json();
+
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.MODERATOR.DENY_TRANSFER_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.MODERATOR.DENY_TRANSFER_FAILED()}: ${title}`);
     }
   }
 
