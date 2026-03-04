@@ -3,12 +3,12 @@
   import LL from '$i18n/i18n-svelte';
   import { permissions, check_permission } from '$lib/util/permissions';
   import { user as userStore } from '$lib/stores/stores';
-  import type { MyDiscord } from '$lib/types/my-discord';
+  import type { Discord } from '$lib/types/discord';
   import DiscordUser from './DiscordUser.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
 
   export let userId: number;
-  let linkedAccount: MyDiscord | null = null;
+  let linkedAccount: Discord | null = null;
   const forceEdit = check_permission($userStore, permissions.edit_user) && userId !== $userStore.id;
 
   onMount(async () => {
