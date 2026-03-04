@@ -20,10 +20,12 @@
   });
 
   async function linkDiscord() {
+    if (forceEdit) throw Error('Cannot link to another player');
     window.location.assign('/api/user/link_discord');
   }
 
   async function refreshDiscordData() {
+    if (forceEdit) throw Error("Cannot refresh another player's Discord");
     const endpoint = '/api/user/refresh_discord';
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -57,7 +59,9 @@
   }
 
   async function forceDeleteDiscordData() {
-    const confirm = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
+    if (!linkedAccount) throw Error('No account linked');
+    if (forceEdit) throw Error("Cannot unlink another player's Discord");
+    const confirm = window.confirm($LL.DISCORD.MOD_DELETE_DATA_CONFIRM({ username: linkedAccount.username }));
     if (!confirm) return;
     const endpoint = `/api/user/${userId}/discord/forceDelete`;
     const response = await fetch(endpoint, {

@@ -113,6 +113,7 @@ const ja: Translation = {
     REFRESH: '更新',
     REFRESH_ERROR: 'Discordデータの更新中にエラーが発生しました',
     DELETE_DATA_CONFIRM: 'Discordのデータを削除してもよろしいですか？',
+    MOD_DELETE_DATA_CONFIRM: 'Are you sure you would like to unlink this Discord data ({username})?',
     DELETE_DATA_ERROR: 'Discordデータの削除中にエラーが発生しました',
     SYNC_AVATAR: 'アイコン同期',
     SYNC_AVATAR_ERROR: 'Discordのアイコン同期に失敗しました',

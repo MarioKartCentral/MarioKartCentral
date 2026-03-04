@@ -110,6 +110,7 @@ const en_us: BaseTranslation = {
     REFRESH: 'Refresh',
     REFRESH_ERROR: 'An error occurred while refreshing Discord data',
     DELETE_DATA_CONFIRM: 'Are you sure you would like to delete your Discord data?',
+    MOD_DELETE_DATA_CONFIRM: 'Are you sure you would like to unlink this Discord data ({username:string})?',
     DELETE_DATA_ERROR: 'An error occurred while deleting Discord data',
     SYNC_AVATAR: 'Sync Avatar',
     SYNC_AVATAR_ERROR: 'Failed to sync Discord avatar',
