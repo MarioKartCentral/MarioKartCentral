@@ -292,7 +292,7 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
 
 @bind_request_body(MakeCaptainRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
-async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
+async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -307,11 +307,11 @@ async def change_squad_captain(request: Request, body: MakeCaptainRequestData) -
     await handle(command)
     command = ChangeSquadCaptainCommand(tournament_id, body.registration_id, body.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(MakeCaptainRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
-async def add_team_representative(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
+async def add_team_representative(request: Request, body: MakeCaptainRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -326,7 +326,7 @@ async def add_team_representative(request: Request, body: MakeCaptainRequestData
     await handle(command)
     command = AddRepresentativeCommand(tournament_id, body.registration_id, body.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(MakeCaptainRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
@@ -403,12 +403,12 @@ async def my_registration(request: Request) -> JSONResponse:
 
 @bind_request_body(TournamentCheckinRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
-async def toggle_checkin(request: Request, body: TournamentCheckinRequestData) -> JSONResponse:
+async def toggle_checkin(request: Request, body: TournamentCheckinRequestData) -> Response:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
     command = TogglePlayerCheckinCommand(tournament_id, body.registration_id, player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(AddRemoveRosterRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
