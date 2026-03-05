@@ -236,7 +236,7 @@ class RegisterTeamTournamentCommand(Command[int]):
             return registration_id
 
 @dataclass
-class EditSquadCommand(Command[None]):
+class EditSquadCommand(Command[TournamentSquadUpdate]):
     tournament_id: int
     registration_id: int
     squad_name: str | None
@@ -245,13 +245,13 @@ class EditSquadCommand(Command[None]):
     is_registered: bool | None
     is_approved: bool | None
 
-    async def handle(self, db_wrapper: DBWrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> TournamentSquadUpdate:
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_approved, name, tag, color, is_registered FROM tournament_registrations WHERE id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id)) as cursor:
+            async with db.execute("SELECT id, is_approved, name, tag, color, is_registered FROM tournament_registrations WHERE id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Squad not found", status=400)
-                curr_is_approved, curr_name, curr_tag, curr_color, curr_registered = row
+                squad_id, curr_is_approved, curr_name, curr_tag, curr_color, curr_registered = row
             is_approved = curr_is_approved if self.is_approved is None else self.is_approved
             name = curr_name if self.squad_name is None else self.squad_name
             tag = curr_tag if self.squad_tag is None else self.squad_tag
@@ -266,6 +266,7 @@ class EditSquadCommand(Command[None]):
             if not is_registered:
                 await db.execute("DELETE FROM tournament_players WHERE registration_id = ? AND tournament_id = ?", (self.registration_id, self.tournament_id))
             await db.commit()
+            return TournamentSquadUpdate(squad_id, name, tag, color, is_registered, is_approved)
 
 @dataclass
 class CheckSquadCaptainPermissionsCommand(Command[None]):

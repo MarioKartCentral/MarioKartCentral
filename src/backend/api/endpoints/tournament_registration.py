@@ -95,8 +95,8 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
 async def edit_squad(request: Request, body: EditSquadRequestData) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
     command = EditSquadCommand(tournament_id, body.registration_id, body.squad_name, body.squad_tag, body.squad_color, body.is_registered, body.is_approved)
-    await handle(command)
-    return JSONResponse({})
+    squad_update = await handle(command)
+    return JSONResponse(squad_update)
 
 @bind_request_body(EditMySquadRequestData)
 @check_word_filter
@@ -107,8 +107,8 @@ async def edit_my_squad(request: Request, body: EditMySquadRequestData) -> JSONR
     command = CheckSquadCaptainPermissionsCommand(tournament_id, body.registration_id, captain_player_id)
     await handle(command)
     command = EditSquadCommand(tournament_id, body.registration_id, body.squad_name, body.squad_tag, body.squad_color, True, None)
-    await handle(command)
-    return JSONResponse({})
+    squad_update = await handle(command)
+    return JSONResponse(squad_update)
 
 # used when the captain of a squad invites a player to their squad.
 # use force_register_player in tournament staff contexts
