@@ -89,6 +89,19 @@ class TournamentSquadDetails():
     rosters: list[RosterBasic]
 
 @dataclass
+class PlayerRegistrationUpdate:
+    id: int
+    is_checked_in: bool
+    is_approved: bool
+    mii_name: str | None
+    can_host: bool
+    selected_fc_id: int | None
+    is_squad_captain: bool
+    is_representative: bool
+    is_invite: bool
+    is_bagger_clause: bool
+    
+@dataclass
 class MyTournamentRegistration():
     squad: TournamentSquadDetails
     player: TournamentPlayerDetails | None

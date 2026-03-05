@@ -184,8 +184,8 @@ async def edit_registration(request: Request, body: EditPlayerRegistrationReques
     command = EditPlayerRegistrationCommand(tournament_id, body.registration_id, body.player_id, body.mii_name, body.can_host,
         body.is_invite, body.is_checked_in, body.is_squad_captain, body.selected_fc_id, body.is_representative, 
         body.is_bagger_clause, body.is_approved, True)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    registration_update = await handle(command)
+    return JSONResponse(registration_update, background=BackgroundTask(notify))
 
 @bind_request_body(EditMyRegistrationRequestData)
 @check_word_filter
@@ -199,8 +199,8 @@ async def edit_my_registration(request: Request, body: EditMyRegistrationRequest
         raise Problem("User does not have permission to register as a host", status=401)
     command = EditPlayerRegistrationCommand(tournament_id, body.registration_id, player_id, body.mii_name, body.can_host, False, None, None, body.selected_fc_id,
                                             None, None, None, False)
-    await handle(command)
-    return JSONResponse({})
+    registration_update = await handle(command)
+    return JSONResponse(registration_update)
 
 @bind_request_body(AcceptInviteRequestData)
 @check_word_filter
@@ -221,8 +221,8 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
     
     command = EditPlayerRegistrationCommand(tournament_id, body.registration_id, player_id, body.mii_name, body.can_host,
         False, False, False, body.selected_fc_id, None, None, None, False)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    registration_update = await handle(command)
+    return JSONResponse(registration_update, background=BackgroundTask(notify))
 
 @bind_request_body(DeclineInviteRequestData)
 @require_logged_in()

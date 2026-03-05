@@ -151,7 +151,7 @@ class RegisterPlayerCommand(Command[SquadPlayerDetails]):
             )
 
 @dataclass
-class EditPlayerRegistrationCommand(Command[None]):
+class EditPlayerRegistrationCommand(Command[PlayerRegistrationUpdate]):
     tournament_id: int
     registration_id: int
     player_id: int
@@ -166,7 +166,7 @@ class EditPlayerRegistrationCommand(Command[None]):
     is_approved: bool | None
     is_privileged: bool
     
-    async def handle(self, db_wrapper: DBWrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerRegistrationUpdate:
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT is_squad, mii_name_required, registrations_open, require_single_fc, bagger_clause_enabled, checkins_open FROM tournaments WHERE id = ?", 
                                   (self.tournament_id,)) as cursor:
@@ -196,7 +196,7 @@ class EditPlayerRegistrationCommand(Command[None]):
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Registration not found", status=404)
-                registration_id, curr_is_invite, curr_is_rep, curr_squad_captain, curr_is_checked_in, curr_bagger_clause, curr_approved = row
+                tp_id, curr_is_invite, curr_is_rep, curr_squad_captain, curr_is_checked_in, curr_bagger_clause, curr_approved = row
 
             # if we specify None on any of these fields, we don't want to change them
             is_representative = self.is_representative
@@ -264,8 +264,13 @@ class EditPlayerRegistrationCommand(Command[None]):
                                  (False, self.tournament_id, self.registration_id, self.player_id))
             await db.execute("""UPDATE tournament_players SET mii_name = ?, can_host = ?, is_invite = ?, is_checked_in = ?, is_squad_captain = ?, 
                              selected_fc_id = ?, is_representative = ?, is_bagger_clause = ?, is_approved = ? WHERE id = ?""", (
-                self.mii_name, self.can_host, self.is_invite, is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, is_bagger_clause, is_approved, registration_id))
+                self.mii_name, self.can_host, self.is_invite, is_checked_in, is_squad_captain, self.selected_fc_id, is_representative, is_bagger_clause, is_approved, tp_id))
             await db.commit()
+            return PlayerRegistrationUpdate(
+                tp_id, is_checked_in, is_approved, self.mii_name, self.can_host,
+                self.selected_fc_id, is_squad_captain, bool(is_representative),
+                self.is_invite, is_bagger_clause
+            )
 
 @dataclass
 class UnregisterPlayerCommand(Command[None]):
