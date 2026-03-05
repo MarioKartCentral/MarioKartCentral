@@ -128,8 +128,8 @@ async def invite_player(request: Request, body: InvitePlayerRequestData) -> JSON
     command = CheckSquadCaptainPermissionsCommand(tournament_id, body.registration_id, captain_player_id)
     await handle(command)
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.registration_id, False, False, None, False, True, None, body.is_representative, body.is_bagger_clause, False, False)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    player_registration = await handle(command)
+    return JSONResponse(player_registration, background=BackgroundTask(notify))
 
 # endpoint used when a user registers themself for a tournament
 @bind_request_body(RegisterPlayerRequestData)
@@ -143,8 +143,8 @@ async def register_me(request: Request, body: RegisterPlayerRequestData) -> JSON
     if body.can_host and not player_host_permission:
         raise Problem("User does not have permission to register as a host", status=401)
     command = RegisterPlayerCommand(player_id, tournament_id, None, False, False, body.mii_name, body.can_host, False, body.selected_fc_id, False, False, False, False)
-    await handle(command)
-    return JSONResponse({})
+    player_registration = await handle(command)
+    return JSONResponse(player_registration)
 
 # endpoint used when a tournament staff registers another player for a tournament (requires permissions)
 @bind_request_body(ForceRegisterPlayerRequestData)
@@ -166,8 +166,8 @@ async def force_register_player(request: Request, body: ForceRegisterPlayerReque
     tournament_id = request.path_params['tournament_id']
     command = RegisterPlayerCommand(body.player_id, tournament_id, body.registration_id, body.is_squad_captain, body.is_checked_in, 
         body.mii_name, body.can_host, body.is_invite, body.selected_fc_id, body.is_representative, body.is_bagger_clause, body.is_approved, True)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
+    player_registration = await handle(command)
+    return JSONResponse(player_registration, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 @bind_request_body(EditPlayerRegistrationRequestData)
 @check_word_filter

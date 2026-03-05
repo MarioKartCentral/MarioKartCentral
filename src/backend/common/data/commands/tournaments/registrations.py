@@ -7,7 +7,7 @@ from common.data.db import DBWrapper
 from common.data.models import *
 
 @dataclass
-class RegisterPlayerCommand(Command[None]):
+class RegisterPlayerCommand(Command[SquadPlayerDetails]):
     player_id: int
     tournament_id: int
     registration_id: int | None
@@ -22,16 +22,16 @@ class RegisterPlayerCommand(Command[None]):
     is_approved: bool
     is_privileged: bool #if True, bypasses check for tournament registrations being open
 
-    async def handle(self, db_wrapper: DBWrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> SquadPlayerDetails:
         timestamp = int(datetime.now(timezone.utc).timestamp())
         async with db_wrapper.connect() as db:
             # check if registrations are open and if mii name is required
-            async with db.execute("SELECT is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled, checkins_open FROM tournaments WHERE id = ?",
+            async with db.execute("SELECT game, is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled, checkins_open FROM tournaments WHERE id = ?",
                                   (self.tournament_id,)) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Tournament not found", status=404)
-                is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled, checkins_open = row
+                game, is_squad, max_squad_size, mii_name_required, registrations_open, team_members_only, require_single_fc, bagger_clause_enabled, checkins_open = row
                 if bool(is_squad) and self.registration_id is None:
                     raise Problem("Players may not register alone for squad tournaments", status=400)
                 if not bool(is_squad) and self.registration_id is not None:
@@ -53,12 +53,24 @@ class RegisterPlayerCommand(Command[None]):
                 if not require_single_fc:
                     selected_fc_id = None
                     
-            # check if player exists if we are force-registering them
-            if self.is_privileged:
-                async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
-                    row = await cursor.fetchone()
-                    if row is None:
-                        raise Problem("Player not found", status=404)
+
+            async with db.execute("SELECT name, country_code, is_banned FROM players WHERE id = ?", (self.player_id,)) as cursor:
+                db_player = await cursor.fetchone()
+                if db_player is None:
+                    raise Problem("Player not found", status=404)
+                player_name, player_country_code, player_is_banned = db_player
+            
+            user_id = None
+            discord = None
+            async with db.execute("SELECT id from users WHERE player_id = ?", (self.player_id,)) as cursor:
+                user_id = cursor.lastrowid
+
+            if user_id:
+                async with db.execute("SELECT discord_id, username, discriminator, global_name, avatar FROM user_discords WHERE user_id = ?",
+                                    (user_id,)) as cursor:
+                    db_discord = await cursor.fetchone()
+                    if db_discord is not None:
+                        discord = Discord(*db_discord)
             
             registration_id = self.registration_id
             # check if squad exists and if we are using the squad's tag in our mii name
@@ -114,11 +126,29 @@ class RegisterPlayerCommand(Command[None]):
             # checkin player if they're not being invited to the tournament
             is_checked_in = True if bool(checkins_open) and not self.is_invite else self.is_checked_in
                     
-            await db.execute("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
+            async with db.execute("""INSERT INTO tournament_players(player_id, tournament_id, registration_id, is_squad_captain, timestamp, is_checked_in, mii_name, can_host, is_invite, selected_fc_id, 
                              is_representative, is_bagger_clause, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.player_id, self.tournament_id, registration_id, self.is_squad_captain, timestamp, is_checked_in, self.mii_name, self.can_host, 
-                self.is_invite, selected_fc_id, self.is_representative, self.is_bagger_clause, self.is_approved))
+                self.is_invite, selected_fc_id, self.is_representative, self.is_bagger_clause, self.is_approved)) as cursor:
+                tp_id = cursor.lastrowid
+                if tp_id is None:
+                    raise Problem('Bad Request', status=400)
+            
+            async with db.execute(f"""
+                                SELECT id, fc, type, player_id, is_verified, is_primary, creation_date, description, is_active
+                                FROM friend_codes f WHERE f.player_id = ? AND f.type = ? AND f.is_active = true
+                                """, (self.player_id, game_fc_map[game])) as cursor:
+                rows = await cursor.fetchall()
+                friend_codes = [FriendCode(*row) for row in rows]
+            
             await db.commit()
+            return SquadPlayerDetails(
+                tp_id, self.player_id, registration_id, timestamp,
+                is_checked_in, self.is_approved, True,
+                self.mii_name, self.can_host, player_name,
+                player_country_code, player_is_banned, discord, self.selected_fc_id, friend_codes,
+                self.is_squad_captain, self.is_representative, self.is_invite,  self.is_bagger_clause
+            )
 
 @dataclass
 class EditPlayerRegistrationCommand(Command[None]):
