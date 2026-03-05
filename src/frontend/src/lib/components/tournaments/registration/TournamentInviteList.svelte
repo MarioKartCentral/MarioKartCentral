@@ -94,11 +94,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.DECLINE_INVITE_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.DECLINE_INVITE_FAILED()}: ${title}`);
     }
   }
 </script>

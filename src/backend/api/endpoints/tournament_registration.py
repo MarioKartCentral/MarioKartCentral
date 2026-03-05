@@ -1,4 +1,5 @@
 from starlette.requests import Request
+from starlette.responses import Response
 from starlette.routing import Route
 from starlette.background import BackgroundTask
 from api.auth import require_logged_in, require_tournament_permission, check_tournament_visiblity
@@ -225,7 +226,7 @@ async def accept_invite(request: Request, body: AcceptInviteRequestData) -> JSON
 
 @bind_request_body(DeclineInviteRequestData)
 @require_logged_in()
-async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JSONResponse:
+async def decline_invite(request: Request, body: DeclineInviteRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationSquadDataCommand(tournament_id, body.registration_id))
         player_name = await handle(GetPlayerNameCommand(player_id))
@@ -236,12 +237,12 @@ async def decline_invite(request: Request, body: DeclineInviteRequestData) -> JS
     player_id = request.state.user.player_id
     command = UnregisterPlayerCommand(tournament_id, body.registration_id, player_id, False)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 # used when a squad captain wants to remove a member from their squad
 @bind_request_body(KickSquadPlayerRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
-async def remove_player_from_squad(request: Request, body: KickSquadPlayerRequestData) -> JSONResponse:
+async def remove_player_from_squad(request: Request, body: KickSquadPlayerRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -256,22 +257,22 @@ async def remove_player_from_squad(request: Request, body: KickSquadPlayerReques
     await handle(command)
     command = UnregisterPlayerCommand(tournament_id, body.registration_id, body.player_id, False)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 # used when a player unregisters themself from the tournament
 @bind_request_body(UnregisterPlayerRequestData)
 @require_logged_in()
-async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> JSONResponse:
+async def unregister_me(request: Request, body: UnregisterPlayerRequestData) -> Response:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
     command = UnregisterPlayerCommand(tournament_id, body.registration_id, player_id, False)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 # used when a staff member force removes a player from the tournament
 @bind_request_body(StaffUnregisterPlayerRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
-async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> JSONResponse:
+async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestData) -> Response:
     @dispatch_notification_if(tournament_is_viewable)
     async def notify(tournament_id: int):
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
@@ -287,7 +288,7 @@ async def staff_unregister(request: Request, body: StaffUnregisterPlayerRequestD
     tournament_id = request.path_params['tournament_id']
     command = UnregisterPlayerCommand(tournament_id, body.registration_id, body.player_id, True)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
+    return Response(status_code=204, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 @bind_request_body(MakeCaptainRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
@@ -329,7 +330,7 @@ async def add_team_representative(request: Request, body: MakeCaptainRequestData
 
 @bind_request_body(MakeCaptainRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
-async def remove_team_representative(request: Request, body: MakeCaptainRequestData) -> JSONResponse:
+async def remove_team_representative(request: Request, body: MakeCaptainRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -344,22 +345,22 @@ async def remove_team_representative(request: Request, body: MakeCaptainRequestD
     await handle(command)
     command = RemoveRepresentativeCommand(tournament_id, body.registration_id, body.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(UnregisterSquadRequestData)
 @require_logged_in()
-async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
+async def unregister_squad(request: Request, body: UnregisterSquadRequestData) -> Response:
     tournament_id = request.path_params['tournament_id']
     captain_player_id = request.state.user.player_id
     command = CheckSquadCaptainPermissionsCommand(tournament_id, body.registration_id, captain_player_id)
     await handle(command)
     command = UnregisterSquadCommand(tournament_id, body.registration_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(UnregisterSquadRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
-async def force_unregister_squad(request: Request, body: UnregisterSquadRequestData) -> JSONResponse:
+async def force_unregister_squad(request: Request, body: UnregisterSquadRequestData) -> Response:
     @dispatch_notification_if(tournament_is_viewable)
     async def notify(tournament_id: int):
         await handle(DispatchNotificationCommand([data.captain_user_id], notifications.STAFF_UNREGISTER_TEAM, {'tournament_name': data.tournament_name}, f'/tournaments/details?id={tournament_id}', notifications.WARNING))
@@ -373,7 +374,7 @@ async def force_unregister_squad(request: Request, body: UnregisterSquadRequestD
     
     command = UnregisterSquadCommand(tournament_id, body.registration_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
+    return Response(status_code=204, background=BackgroundTask(notify, tournament_id=tournament_id))
 
 async def view_squad(request: Request) -> JSONResponse:
     tournament_id = request.path_params['tournament_id']
@@ -420,12 +421,12 @@ async def add_roster_to_squad(request: Request, body: AddRemoveRosterRequestData
 
 @bind_request_body(AddRemoveRosterRequestData)
 @require_tournament_permission(tournament_permissions.REGISTER_TOURNAMENT, check_denied_only=True)
-async def remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+async def remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> Response:
     tournament_id = request.path_params['tournament_id']
     player_id = request.state.user.player_id
     command = RemoveRosterFromSquadCommand(tournament_id, body.registration_id, body.roster_id, player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(AddRemoveRosterRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
@@ -437,11 +438,11 @@ async def force_add_roster_to_squad(request: Request, body: AddRemoveRosterReque
 
 @bind_request_body(AddRemoveRosterRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_REGISTRATIONS)
-async def force_remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> JSONResponse:
+async def force_remove_roster_from_squad(request: Request, body: AddRemoveRosterRequestData) -> Response:
     tournament_id = request.path_params['tournament_id']
     command = RemoveRosterFromSquadCommand(tournament_id, body.registration_id, body.roster_id, None, True)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 routes = [
     Route('/api/tournaments/{tournament_id:int}/register', register_me, methods=['POST']),
