@@ -9,7 +9,7 @@ from common.data.models import *
 
 
 @dataclass
-class CreateSquadCommand(Command[None]):
+class CreateSquadCommand(Command[int]):
     squad_name: str | None
     squad_tag: str | None
     squad_color: int
@@ -23,7 +23,7 @@ class CreateSquadCommand(Command[None]):
     is_approved: bool
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper: DBWrapper) -> None:
+    async def handle(self, db_wrapper: DBWrapper) -> int:
         timestamp = int(datetime.now(timezone.utc).timestamp())
         async with db_wrapper.connect() as db:
             # check if tournament registrations are open and that our arguments are correct for the current tournament
@@ -85,7 +85,9 @@ class CreateSquadCommand(Command[None]):
             async with db.execute("""INSERT INTO tournament_registrations(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
                 registration_id = cursor.lastrowid
-            await db.commit()
+
+                if registration_id is None:
+                    raise Problem("Bad request", status=400)
 
             is_checked_in = True if bool(checkins_open) else self.is_checked_in
             
@@ -94,9 +96,10 @@ class CreateSquadCommand(Command[None]):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (self.captain_player_id, self.tournament_id, registration_id, True, timestamp, is_checked_in, self.mii_name, self.can_host, False,
                 selected_fc_id, False, self.is_bagger_clause, self.is_approved))
             await db.commit()
+            return registration_id
 
 @dataclass
-class RegisterTeamTournamentCommand(Command[int | None]):
+class RegisterTeamTournamentCommand(Command[int]):
     tournament_id: int
     squad_name: str
     squad_tag: str
@@ -107,7 +110,7 @@ class RegisterTeamTournamentCommand(Command[int | None]):
     is_approved: bool
     is_privileged: bool = False
 
-    async def handle(self, db_wrapper: DBWrapper) -> int | None:
+    async def handle(self, db_wrapper: DBWrapper) -> int:
         if len(self.roster_ids) == 0:
             raise Problem("Must register at least one roster", status=400)
         if not self.is_privileged and len(self.players) == 0:
@@ -214,7 +217,8 @@ class RegisterTeamTournamentCommand(Command[int | None]):
             async with db.execute("""INSERT INTO tournament_registrations(name, tag, color, timestamp, tournament_id, is_registered, is_approved)
                 VALUES (?, ?, ?, ?, ?, ?, ?)""", (self.squad_name, self.squad_tag, self.squad_color, timestamp, self.tournament_id, True, self.is_approved)) as cursor:
                 registration_id = cursor.lastrowid
-            await db.commit()
+                if registration_id is None:
+                    raise Problem('Bad request', status=400)
             
             # link our rosters to this tournament squad
             team_squad_rows = [(roster, registration_id, self.tournament_id) for roster in self.roster_ids]

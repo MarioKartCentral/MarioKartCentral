@@ -27,8 +27,10 @@ async def create_my_squad(request: Request, body: CreateSquadRequestData) -> JSO
         raise Problem("User does not have permission to register as a host", status=401)
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, player_id, tournament_id, 
         False, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, False, is_privileged=False)
-    await handle(command)
-    return JSONResponse({})
+    registration_id = await handle(command)
+    return JSONResponse({'registration_id': registration_id}, status_code=201, headers={
+        'Location': f'/api/tournaments/{tournament_id}/squads/{registration_id}'
+    })
 
 # endpoint used when a non-moderator user registers a team for a tournament
 @bind_request_body(RegisterTeamRequestData)
@@ -39,8 +41,10 @@ async def register_my_team(request: Request, body: RegisterTeamRequestData) -> J
     player_id = request.state.user.player_id
     command = RegisterTeamTournamentCommand(tournament_id, body.squad_name, body.squad_tag, body.squad_color,
                                             player_id, body.roster_ids, body.players, False)
-    await handle(command)
-    return JSONResponse({})
+    registration_id = await handle(command)
+    return JSONResponse({'registration_id': registration_id}, status_code=201, headers={
+        'Location': f'/api/tournaments/{tournament_id}/squads/{registration_id}'
+    })
 
 @bind_request_body(RegisterTeamRequestData)
 @check_word_filter
@@ -57,7 +61,10 @@ async def force_register_team(request: Request, body: RegisterTeamRequestData) -
     command = RegisterTeamTournamentCommand(tournament_id, body.squad_name, body.squad_tag, body.squad_color,
                                             player_id, body.roster_ids, body.players, True, is_privileged=True)
     registration_id = await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
+    return JSONResponse({'registration_id': registration_id}, status_code=201, headers={
+        'Location': f'/api/tournaments/{tournament_id}/squads/{registration_id}'},
+        background=BackgroundTask(notify, tournament_id=tournament_id)
+    )
 
 # endpoint used when a tournament staff creates a squad with another user in it
 @bind_request_body(ForceCreateSquadRequestData)
@@ -75,8 +82,11 @@ async def force_create_squad(request: Request, body: ForceCreateSquadRequestData
     tournament_id = request.path_params['tournament_id']
     command = CreateSquadCommand(body.squad_name, body.squad_tag, body.squad_color, body.player_id, tournament_id, 
         body.is_checked_in, body.is_bagger_clause, body.mii_name, body.can_host, body.selected_fc_id, body.is_approved, is_privileged=True)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify, tournament_id=tournament_id))
+    registration_id = await handle(command)
+    return JSONResponse({'registration_id': registration_id}, status_code=201, headers={
+        'Location': f'/api/tournaments/{tournament_id}/squads/{registration_id}'},
+        background=BackgroundTask(notify, tournament_id=tournament_id)
+    )
 
 @bind_request_body(EditSquadRequestData)
 @check_word_filter
