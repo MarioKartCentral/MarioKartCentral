@@ -67,7 +67,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    
+
     if (res.status < 300) {
       window.location.reload();
     } else {
