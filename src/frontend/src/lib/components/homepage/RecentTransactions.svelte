@@ -61,7 +61,7 @@
                   <TagBadge tag={transfer.roster_leave.roster_tag} color={transfer.roster_leave.team_color} />
                 </a>
               {:else}
-                <i class="text-[9pt]">{$LL.TEAMS.TRANSFERS.NO_TEAM()}</i>
+                <i class="text-[10pt]">{$LL.TEAMS.TRANSFERS.NO_TEAM()}</i>
               {/if}
               <ArrowRight />
               {#if transfer.roster_join}
@@ -69,7 +69,7 @@
                   <TagBadge tag={transfer.roster_join.roster_tag} color={transfer.roster_join.team_color} />
                 </a>
               {:else}
-                {$LL.TEAMS.TRANSFERS.NO_TEAM()}
+                <i class="text-[10pt]">{$LL.TEAMS.TRANSFERS.NO_TEAM()}</i>
               {/if}
             </div>
           </div>
@@ -98,6 +98,6 @@
     gap: 5px;
   }
   .badges {
-    zoom: 80%;
+    zoom: 90%;
   }
 </style>
