@@ -36,7 +36,7 @@
 {#if user_info.is_checked && series_id}
   {#if check_series_permission(user_info, series_permissions.manage_series_posts, series_id)}
     {#key post_id}
-      <CreateEditPost id={post_id} {series_id} />
+      <CreateEditPost postId={post_id} seriesId={series_id} />
     {/key}
   {:else}
     {$LL.COMMON.NO_PERMISSION()}
