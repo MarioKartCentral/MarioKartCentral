@@ -23,7 +23,7 @@
   export let working = false;
   export let ariaLabel: string | undefined = undefined;
 
-  $: isLightColor = color === 'yellow' || color === 'light' || color === 'alternative' || color === 'none';
+  $: isLightColor = color === 'light' || color === 'alternative' || color === 'none';
   $: hoverTextClass = isLightColor ? 'hover:text-gray-800' : 'hover:text-white';
 </script>
 
