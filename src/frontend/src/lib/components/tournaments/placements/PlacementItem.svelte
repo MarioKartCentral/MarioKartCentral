@@ -87,11 +87,11 @@
   <td class="rank w-[50px]">
     {getPlacementText(placement)}
   </td>
-  <td class="sm:table-cell w-[10ch]" class:hidden={!placement.squad.name && placement.squad.players.length <= 4}>
-    {#if placement.squad.tag}
+  {#if placement.squad.tag}
+    <td class="sm:table-cell w-[10ch]" class:hidden={!placement.squad.name && placement.squad.players.length <= 4}>
       <TagBadge tag={placement.squad.tag} color={placement.squad.color} />
-    {/if}
-  </td>
+    </td>
+  {/if}
   <td>
     <SquadPlacementDisplay {placement} />
   </td>

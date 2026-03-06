@@ -21,7 +21,7 @@
       </a>
     {/each}
     {#if placement.description}
-      <div class="self-center text-white">{placement.description}</div>
+      <div class="self-center">{placement.description}</div>
     {/if}
   </div>
 {/if}
