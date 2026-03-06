@@ -7,6 +7,7 @@
   import PlacementItem from './PlacementItem.svelte';
   import { sort_placement_list } from '$lib/util/util';
   import LL from '$i18n/i18n-svelte';
+  import Table from '$lib/components/common/table/Table.svelte';
 
   export let tournament: Tournament;
   let placements: TournamentPlacementList;
@@ -44,8 +45,12 @@
         </button>
       {/if}
     </div>
-    {#each show_all ? placement_list : placement_list.slice(0, num_display) as placement (placement.id)}
+    <Table
+      containerClass="overflow-hidden"
+      data={show_all ? placement_list : placement_list.slice(0, num_display)}
+      let:item={placement}
+    >
       <PlacementItem {placement} is_edit={false} />
-    {/each}
+    </Table>
   </Section>
 {/if}
