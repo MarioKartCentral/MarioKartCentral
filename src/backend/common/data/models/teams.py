@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal
 from common.data.models.common import Approval, Game, GameMode
 from common.data.models.friend_codes import FriendCode
 from common.data.models.players import Player
@@ -294,8 +295,17 @@ class TeamFilter():
     is_historical: bool | None = None
     is_active: bool | None = None
     min_player_count: int | None = None
-    sort_by_newest: bool | None = False
+    sort_by: Literal['name', '-name', 'creation_date', '-creation_date'] = 'name'
     page: int | None = None
+
+    @staticmethod
+    def sanitise_sort(val: str) -> tuple[str, bool]:
+        """
+        Returns sort value and whether the sort direction is in reverse
+        """
+        if val.startswith('-'):
+            return val[1:], True
+        return val, False
 
 @dataclass
 class TeamInvite():
