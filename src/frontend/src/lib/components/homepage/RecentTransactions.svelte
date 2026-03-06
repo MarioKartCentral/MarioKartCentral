@@ -98,6 +98,6 @@
     gap: 5px;
   }
   .badges {
-    zoom: 80%;
+    zoom: 90%;
   }
 </style>
