@@ -3,6 +3,7 @@
   export let linkText: string | null = null;
   export let link: string | null = null;
   export let style: string | null = null;
+  export let wrapperClass: string = '';
 </script>
 
 <div class="container" {style}>
@@ -23,7 +24,7 @@
     </div>
   {/if}
   {#if $$slots.default}
-    <div class="wrapper">
+    <div class="wrapper {wrapperClass}">
       <div>
         <slot />
       </div>
