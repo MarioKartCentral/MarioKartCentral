@@ -342,6 +342,10 @@ type RootTranslation = {
 		 */
 		SORT_BY_NEWEST: string
 		/**
+		 * O​l​d​e​s​t
+		 */
+		SORT_BY_OLDEST: string
+		/**
 		 * W​o​r​k​i​n​g​.​.​.
 		 */
 		WORKING: string
@@ -5973,6 +5977,10 @@ export type TranslationFunctions = {
 		 * Newest
 		 */
 		SORT_BY_NEWEST: () => LocalizedString
+		/**
+		 * Oldest
+		 */
+		SORT_BY_OLDEST: () => LocalizedString
 		/**
 		 * Working...
 		 */
