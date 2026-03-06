@@ -513,6 +513,7 @@ class ListTeamsCommand(Command[TeamList]):
 
             # Join team_members table only if querying active members
             if team_filter.min_player_count:
+                filter_query["where_clauses"].append("m.leave_date is NULL")
                 filter_query["variable_parameters"].append(team_filter.min_player_count)
                 team_select +=  " LEFT JOIN team_members m on r.id = m.roster_id"
                 having_clause = "GROUP BY r.id HAVING COUNT(m.roster_id) >= ?"
