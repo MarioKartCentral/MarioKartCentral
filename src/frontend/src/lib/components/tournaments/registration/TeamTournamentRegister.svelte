@@ -41,9 +41,12 @@
   $: unselected_players = all_players.filter((p) => !players.some((p2) => p2.player_id === p.player_id));
   $: num_captains = players.filter((p) => p.is_captain).length;
   $: num_reps = players.filter((p) => p.is_captain || p.is_representative).length;
+  $: validMinReps = !(tournament.min_representatives && num_reps < tournament.min_representatives);
+  $: validMaxReps = !(tournament.max_representatives && num_reps > tournament.max_representatives);
+  $: validReps = validMinReps && validMaxReps;
   $: can_register =
     (!tournament.min_squad_size || num_captains === 1) &&
-    !(tournament.min_representatives && num_reps !== tournament.min_representatives) &&
+    validReps &&
     (!tournament.team_members_only || !tournament.min_squad_size || players.length >= tournament.min_squad_size) &&
     (!tournament.max_squad_size || players.length <= tournament.max_squad_size);
 
@@ -320,10 +323,13 @@
             {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_ONE_CAPTAIN()}
           </div>
         {/if}
-        {#if tournament.min_representatives && num_reps !== tournament.min_representatives}
+        {#if !validReps}
           <div>
             {$LL.TOURNAMENTS.REGISTRATIONS.SELECT_REPRESENTATIVES({
-              min_representatives: tournament.min_representatives,
+              count: {
+                min: tournament.min_representatives,
+                max: tournament.max_representatives,
+              },
             })}
           </div>
         {/if}
