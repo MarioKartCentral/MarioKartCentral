@@ -463,9 +463,9 @@ class ListTeamsCommand(Command[TeamList]):
 
             limit: int = 50
             offset: int = 0
-            
-            order_by = 't.creation_date' if team_filter.sort_by_newest else 't.name'
-            desc = 'DESC' if team_filter.sort_by_newest else ''
+            sort_by, sort_reverse = team_filter.sanitise_sort(team_filter.sort_by)
+            order_by = 't.creation_date' if sort_by == 'creation_date' else 't.name'
+            desc = 'DESC' if sort_reverse else ''
 
             filter_query: dict[str, list[Any]] = {
                 "where_clauses": [],
@@ -524,6 +524,8 @@ class ListTeamsCommand(Command[TeamList]):
                 f"ORDER BY {order_by} COLLATE NOCASE {desc}",
                 "LIMIT ? OFFSET ?"
             ])
+
+            print(team_query)
 
             teams: dict[int, Team] = {}
             async with db.execute(team_query, (*filter_query["variable_parameters"], limit, offset)) as cursor:

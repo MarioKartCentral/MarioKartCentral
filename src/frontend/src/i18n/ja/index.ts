@@ -88,6 +88,7 @@ const ja: Translation = {
     NEW: 'New',
     SORT_BY_ALPHABETICAL: 'アルファベット順',
     SORT_BY_NEWEST: '最新順',
+    SORT_BY_OLDEST: 'Oldest',
     WORKING: 'Working...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
