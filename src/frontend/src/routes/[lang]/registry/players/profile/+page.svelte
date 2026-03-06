@@ -93,12 +93,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
 
     if (response.status < 300) {
       alert($LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_SUCCESS());
     } else {
-      alert(`${$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.PLAYERS.PROFILE.SEND_PASSWORD_RESET_FAILED()}: ${title}`);
     }
   }
 </script>

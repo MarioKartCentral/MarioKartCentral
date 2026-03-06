@@ -29,10 +29,9 @@
   }
 
   async function refreshDiscordData() {
-    let endpoint = '/api/user/refresh_discord';
+    let endpoint = '/api/user/my_discord';
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
     });
     const result = await response.json();
     if (response.status === 200) {
@@ -45,16 +44,16 @@
   async function deleteDiscordData() {
     let conf = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
     if (!conf) return;
-    let endpoint = '/api/user/delete_discord';
+    let endpoint = '/api/user/my_discord';
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'DELETE',
     });
-    const result = await response.json();
-    if (response.status === 200) {
+
+    if (response.ok) {
       linked_account = null;
     } else {
-      alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${title}`);
     }
   }
 
