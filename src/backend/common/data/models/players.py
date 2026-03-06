@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from typing import Literal
 from common.data.models.common import FriendCodeType, CountryCode, Approval
 from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
 from common.data.models.user_settings import UserSettings
@@ -121,8 +121,17 @@ class PlayerFilter:
     registration_id: int | None = None
     matching_fcs_only: bool = False
     include_shadow_players: bool = False
-    sort_by_newest: bool | None = False
+    sort_by: Literal["name", "-name", "join_date", "-join_date"] = 'name'
     has_connected_user: bool | None = None
+
+    @staticmethod
+    def sanitise_sort(val: str) -> tuple[str, bool]:
+        """
+        Returns sort value and whether the sort direction is in reverse
+        """
+        if val.startswith('-'):
+            return val[1:], True
+        return val, False
 
 @dataclass
 class PlayerRequestNameRequestData:
