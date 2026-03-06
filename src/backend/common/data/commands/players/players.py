@@ -84,11 +84,11 @@ class CreatePlayerCommand(Command[Player]):
             return Player(int(player_id), name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
 
 @dataclass
-class UpdatePlayerCommand(Command[bool]):
+class UpdatePlayerCommand(Command[PlayerUpdate | None]):
     data: EditPlayerRequestData
     mod_player_id: int
 
-    async def handle(self, db_wrapper: DBWrapper) -> bool:
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerUpdate | None:
         data = self.data
         async with db_wrapper.connect() as db:
             if len(self.data.name) > 24:
@@ -100,19 +100,21 @@ class UpdatePlayerCommand(Command[bool]):
                 curr_name = row[0]
             update_query = """UPDATE players 
             SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?
-            WHERE id = ?"""
+            WHERE id = ? RETURNING id, name, country_code, is_hidden"""
             params = (data.name.strip(), data.country_code, data.is_hidden, data.is_shadow, data.player_id)
 
             async with db.execute(update_query, params) as cursor:
-                if cursor.rowcount != 1:
-                    return False
+                updated_player = await cursor.fetchone()
+                if updated_player is None:
+                    return None
+                
             if curr_name != data.name:
                 now = int(datetime.now(timezone.utc).timestamp())
                 await db.execute("""INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status, handled_by)
                                     VALUES(?, ?, ?, ?, ?, ?)""", (data.player_id, curr_name, data.name.strip(), now, "approved", self.mod_player_id))
 
             await db.commit()
-            return True
+            return PlayerUpdate(*updated_player)
 
 
 @dataclass

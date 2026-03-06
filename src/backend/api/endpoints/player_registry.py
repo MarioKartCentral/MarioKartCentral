@@ -32,11 +32,11 @@ async def create_shadow_player(request: Request, body: CreatePlayerRequestData) 
 async def edit_player(request: Request, body: EditPlayerRequestData) -> Response:
     mod_player_id = request.state.user.player_id    
     command = UpdatePlayerCommand(body, mod_player_id)
-    succeeded = await handle(command)
-    if not succeeded:
+    player = await handle(command)
+    if not player:
         raise Problem("Player not found", status=404)
-    
-    return JSONResponse({}, status_code=200)
+
+    return JSONResponse(player, status_code=200)
 
 async def view_player(request: Request) -> Response:
     include_notes = False # only include notes if the viewer is a mod
@@ -67,8 +67,8 @@ async def list_players(_: Request, filter: PlayerFilter) -> Response:
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
 async def create_fc(request: Request, body: CreateFriendCodeRequestData) -> JSONResponse:
     command = CreateFriendCodeCommand(request.state.user.player_id, body.fc, body.type, False, body.is_primary, True, body.description, False)
-    await handle(command)
-    return JSONResponse({})
+    friend_code = await handle(command)
+    return JSONResponse(friend_code, status_code=201)
 
 @bind_request_body(ForceCreateFriendCodeRequestData)
 @check_word_filter
@@ -81,8 +81,8 @@ async def force_create_fc(request: Request, body: ForceCreateFriendCodeRequestDa
         await handle(DispatchNotificationCommand([user_id], notifications.FORCE_ADD_FRIEND_CODE, {'type': body.type}, f'/registry/players/profile?id={body.player_id}', notifications.INFO))
 
     command = CreateFriendCodeCommand(body.player_id, body.fc, body.type, False, body.is_primary, True, body.description, True)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    friend_code = await handle(command)
+    return JSONResponse(friend_code, status_code=201, background=BackgroundTask(notify))
 
 @bind_request_body(ForceEditFriendCodeRequestData)
 @check_word_filter
@@ -97,8 +97,8 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
 
     mod_player_id = request.state.user.player_id
     command = EditFriendCodeCommand(body.player_id, body.id, body.fc, body.is_primary, body.is_active, body.description, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    friend_code = await handle(command)
+    return JSONResponse(friend_code, background=BackgroundTask(notify))
 
 @bind_request_body(EditMyFriendCodeRequestData)
 @check_word_filter
@@ -106,19 +106,19 @@ async def force_edit_fc(request: Request, body: ForceEditFriendCodeRequestData) 
 async def edit_my_fc(request: Request, body: EditMyFriendCodeRequestData) -> JSONResponse:
     player_id = request.state.user.player_id
     command = EditFriendCodeCommand(player_id, body.id, None, body.is_primary, None, body.description, None)
-    await handle(command)
-    return JSONResponse({})
+    friend_code = await handle(command)
+    return JSONResponse(friend_code)
 
 @bind_request_body(EditPrimaryFriendCodeRequestData)
 @require_logged_in()
-async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestData) -> JSONResponse:
+async def set_primary_fc(request: Request, body: EditPrimaryFriendCodeRequestData) -> Response:
     command = SetPrimaryFCCommand(body.id, request.state.user.player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ModEditPrimaryFriendCodeRequestData)
 @require_logged_in()
-async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> JSONResponse:
+async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeRequestData) -> Response:
     async def notify():
         user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
         if user_id is None:
@@ -127,7 +127,7 @@ async def force_primary_fc(request: Request, body: ModEditPrimaryFriendCodeReque
 
     command = SetPrimaryFCCommand(body.id, body.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(PlayerRequestNameRequestData)
 @check_word_filter
@@ -152,8 +152,8 @@ async def approve_player_name_request(request: Request, body: ApprovePlayerNameR
         await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_APPROVED, {}, f'/registry/players/profile?id={data.player_id}', notifications.SUCCESS))
     mod_player_id = request.state.user.player_id
     command = ApprovePlayerNameRequestCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    name_change_edit = await handle(command)
+    return JSONResponse(name_change_edit, background=BackgroundTask(notify))
 
 @bind_request_body(ApprovePlayerNameRequestData)
 @require_permission(permissions.EDIT_PLAYER)
@@ -163,8 +163,8 @@ async def deny_player_name_request(request: Request, body: ApprovePlayerNameRequ
         await handle(DispatchNotificationCommand([data.user_id], notifications.NAME_CHANGE_DENIED, {}, f'/registry/players/profile?id={data.player_id}', notifications.WARNING))
     mod_player_id = request.state.user.player_id    
     command = DenyPlayerNameRequestCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    name_change_edit = await handle(command)
+    return JSONResponse(name_change_edit, background=BackgroundTask(notify))
 
 @bind_request_body(UpdatePlayerNotesRequestData)
 @require_permission(permissions.EDIT_PLAYER)
@@ -189,28 +189,28 @@ async def toggle_transfer_item_visibility(request: Request) -> JSONResponse:
 @require_logged_in()
 async def claim_player(request: Request, body: ClaimPlayerRequestData) -> JSONResponse:
     command = ClaimPlayerCommand(request.state.user.player_id, body.player_id)
-    await handle(command)
-    return JSONResponse({})
+    claim = await handle(command)
+    return JSONResponse(claim, status_code=201)
 
 @bind_request_body(ApproveDenyPlayerClaimRequestData)
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
-async def approve_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+async def approve_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> Response:
     command = ApprovePlayerClaimCommand(body.claim_id)
     player_id, user_id, claimed_player_name = await handle(command)
     async def notify():
         content_args = {"player_name": claimed_player_name}
         await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_APPROVED, content_args, f'/registry/players/profile?id={player_id}', notifications.SUCCESS))
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(ApproveDenyPlayerClaimRequestData)
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
-async def deny_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> JSONResponse:
+async def deny_player_claim(request: Request, body: ApproveDenyPlayerClaimRequestData) -> Response:
     command = DenyPlayerClaimCommand(body.claim_id)
     player_id, user_id, claimed_player_name = await handle(command)
     async def notify():
         content_args = {"player_name": claimed_player_name}
         await handle(DispatchNotificationCommand([user_id], notifications.PLAYER_CLAIM_DENIED, content_args, f'/registry/players/profile?id={player_id}', notifications.WARNING))
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @require_permission(permissions.MANAGE_SHADOW_PLAYERS)
 async def list_player_claims(request: Request) -> JSONResponse:
@@ -220,9 +220,9 @@ async def list_player_claims(request: Request) -> JSONResponse:
 
 @bind_request_body(MergePlayersRequestData)
 @require_permission(permissions.MERGE_PLAYERS)
-async def merge_players(request: Request, body: MergePlayersRequestData) -> JSONResponse:
+async def merge_players(request: Request, body: MergePlayersRequestData) -> Response:
     await handle(MergePlayersCommand(body.from_player_id, body.to_player_id))
-    return JSONResponse({})
+    return Response(status_code=204)
 
 async def player_lounge(request: Request) -> JSONResponse:
     player_id = int(request.path_params['id'])

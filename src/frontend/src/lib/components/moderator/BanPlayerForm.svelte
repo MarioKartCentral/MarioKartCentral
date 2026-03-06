@@ -59,9 +59,9 @@
       comment: data.get('comment') || '',
     };
 
-    const endpoint = isEditBan ? `/api/registry/players/${playerId}/editBan` : `/api/registry/players/${playerId}/ban`;
+    const endpoint = `/api/registry/players/${playerId}/ban`;
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method: isEditBan ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
