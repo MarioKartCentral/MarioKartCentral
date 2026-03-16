@@ -431,6 +431,11 @@ type RootTranslation = {
 		 */
 		DELETE_DATA_CONFIRM: string
 		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​o​u​l​d​ ​l​i​k​e​ ​t​o​ ​u​n​l​i​n​k​ ​t​h​i​s​ ​D​i​s​c​o​r​d​ ​d​a​t​a​ ​(​{​u​s​e​r​n​a​m​e​}​)​?
+		 * @param {string} username
+		 */
+		MOD_DELETE_DATA_CONFIRM: RequiredParams<'username'>
+		/**
 		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​d​e​l​e​t​i​n​g​ ​D​i​s​c​o​r​d​ ​d​a​t​a
 		 */
 		DELETE_DATA_ERROR: string
@@ -6065,6 +6070,10 @@ export type TranslationFunctions = {
 		 * Are you sure you would like to delete your Discord data?
 		 */
 		DELETE_DATA_CONFIRM: () => LocalizedString
+		/**
+		 * Are you sure you would like to unlink this Discord data ({username})?
+		 */
+		MOD_DELETE_DATA_CONFIRM: (arg: { username: string }) => LocalizedString
 		/**
 		 * An error occurred while deleting Discord data
 		 */

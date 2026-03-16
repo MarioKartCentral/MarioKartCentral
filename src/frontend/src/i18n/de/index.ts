@@ -114,6 +114,7 @@ const de: Translation = {
     REFRESH: 'Aktualisieren',
     REFRESH_ERROR: 'Beim Aktualisieren der Discord-Daten ist ein Fehler aufgetreten',
     DELETE_DATA_CONFIRM: 'Sind Sie sicher, dass Sie Ihre Discord-Daten löschen möchten?',
+    MOD_DELETE_DATA_CONFIRM: 'Are you sure you would like to unlink this Discord data ({username})?',
     DELETE_DATA_ERROR: 'Beim Löschen Ihrer Discord-Daten ist ein Fehler aufgetreten',
     SYNC_AVATAR: 'Avatar synchronisieren',
     SYNC_AVATAR_ERROR: 'Synchronisierung des Discord-Avatars fehlgeschlagen',

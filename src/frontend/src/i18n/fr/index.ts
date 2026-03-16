@@ -114,6 +114,7 @@ const fr: Translation = {
     REFRESH: 'Actualiser',
     REFRESH_ERROR: "Une erreur est survenue lors de l'actualisation de votre compte Discord.",
     DELETE_DATA_CONFIRM: 'Êtes-vous sûr de vouloir supprimer votre compte Discord de Mariokart Central ?',
+    MOD_DELETE_DATA_CONFIRM: 'Are you sure you would like to unlink this Discord data ({username})?',
     DELETE_DATA_ERROR: 'Une erreur est survenue lors de la suppression de votre compte Discord de Mariokart Central.',
     SYNC_AVATAR: "Synchroniser l'avatar",
     SYNC_AVATAR_ERROR: "La synchronisation de l'avatar Discord a échoué",
