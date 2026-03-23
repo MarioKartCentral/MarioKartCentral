@@ -526,8 +526,6 @@ class ListTeamsCommand(Command[TeamList]):
                 "LIMIT ? OFFSET ?"
             ])
 
-            print(team_query)
-
             teams: dict[int, Team] = {}
             async with db.execute(team_query, (*filter_query["variable_parameters"], limit, offset)) as cursor:
                 rows = await cursor.fetchall()
@@ -540,9 +538,9 @@ class ListTeamsCommand(Command[TeamList]):
             rosters_query = f"""SELECT r.id, r.team_id, r.game, r.mode, r.name, r.tag, r.color, r.creation_date, r.is_recruiting,
                                         r.is_active, r.approval_status
                                         FROM team_rosters r
-                                        WHERE r.team_id IN ({", ".join([str(tid) for tid in team_ids])}) LIMIT ? OFFSET ?
+                                        WHERE r.team_id IN ({", ".join([str(tid) for tid in team_ids])})
                                         """
-            async with db.execute(rosters_query, (limit, offset)) as cursor:
+            async with db.execute(rosters_query) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     roster_id, team_id, game, mode, name, tag, roster_color, creation_date, is_recruiting, is_active, approval_status = row
@@ -551,7 +549,11 @@ class ListTeamsCommand(Command[TeamList]):
                                         bool(is_recruiting), bool(is_active), approval_status, roster_color if roster_color else team.color, [], [])
                     team.rosters.append(roster)
 
-            team_count: int = len(team_list)
+            count_query = f"""SELECT COUNT(*) FROM ({" ".join([team_select, where_clause, having_clause])})"""
+            async with db.execute(count_query, filter_query["variable_parameters"]) as cursor:
+                row = await cursor.fetchone()
+                assert row is not None
+                team_count = row[0]
             page_count: int = int(team_count / limit) + (1 if team_count % limit else 0)
   
             return TeamList(list(team_list), team_count, page_count)
