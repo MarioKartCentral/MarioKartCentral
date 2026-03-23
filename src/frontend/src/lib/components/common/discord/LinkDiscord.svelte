@@ -60,7 +60,6 @@
 
   async function forceDeleteDiscordData() {
     if (!linkedAccount) throw Error('No account linked');
-    if (forceEdit) throw Error("Cannot unlink another player's Discord");
     const confirm = window.confirm($LL.DISCORD.MOD_DELETE_DATA_CONFIRM({ username: linkedAccount.username }));
     if (!confirm) return;
     const endpoint = `/api/user/${userId}/discord/forceDelete`;
