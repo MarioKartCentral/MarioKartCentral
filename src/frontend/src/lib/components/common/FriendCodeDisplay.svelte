@@ -9,30 +9,28 @@
   export let selected_fc_id: number | null = null;
 
   // we want to display the selected FC if there is one, otherwise just display the first FC in the list
-  function get_display_fc() {
-    let fc = friend_codes.find((fc) => fc.id === selected_fc_id);
+  function get_display_fc(friendCodes: FriendCode[], selectedFcId: number | null) {
+    let fc = friendCodes.find((fc) => fc.id === selectedFcId);
     if (!fc) {
-      let filtered_fcs = friend_codes.filter((fc) => fc.is_active);
+      let filtered_fcs = friendCodes.filter((fc) => fc.is_active);
       if (!filtered_fcs.length) return null;
       fc = filtered_fcs[0];
     }
     return fc;
   }
 
-  let display_fc = get_display_fc();
+  $: display_fc = get_display_fc(friend_codes, selected_fc_id);
 
-  function get_other_fcs() {
-    if (!selected_fc_id) {
-      return friend_codes
-        .filter((fc) => fc.is_active)
-        .toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]);
+  function get_other_fcs(friendCodes: FriendCode[], selectedFcId: number | null, displayFc: FriendCode | null) {
+    if (!selectedFcId) {
+      return friendCodes.filter((fc) => fc.is_active).toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]);
     }
-    return friend_codes
-      .filter((fc) => fc !== display_fc && fc.is_active)
+    return friendCodes
+      .filter((fc) => fc !== displayFc && fc.is_active)
       .toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type]);
   }
 
-  let other_fcs = get_other_fcs();
+  $: other_fcs = get_other_fcs(friend_codes, selected_fc_id, display_fc);
 </script>
 
 {#if display_fc}
