@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PlayerInfo } from '$lib/types/player-info';
+  import type { FriendCode } from '$lib/types/friend-code';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
   import { ArrowUpRightFromSquareOutline } from 'flowbite-svelte-icons';
@@ -59,6 +60,13 @@
     const queryString = queryParams.join('&');
     return `/api/registry/players?${queryString}`;
   })();
+
+  function getFriendCode(friendCodes: FriendCode[]): string | null {
+    if (!friendCodes.length) return null;
+    // use the primary fc, fall back to first active
+    const activeFriendCodes = friendCodes.sort((fcA, fcB) => +fcB.is_primary - +fcA.is_primary);
+    return activeFriendCodes[0].fc;
+  }
 </script>
 
 <Search
@@ -105,10 +113,9 @@
     </span>
   </div>
   {#if showFriendCode}
+    {@const friendCode = getFriendCode(option.friend_codes)}
     <div class="hidden sm:block">
-      {#if option.friend_codes.length}
-        {option.friend_codes[0].fc}
-      {/if}
+      {friendCode ?? ''}
     </div>
   {/if}
   {#if showProfileLink}
