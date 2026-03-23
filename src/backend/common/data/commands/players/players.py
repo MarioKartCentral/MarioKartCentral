@@ -304,9 +304,9 @@ class ListPlayersCommand(Command[PlayerList]):
                     # includes shadow players in the results even if they don't have an
                     # FC for the type in the filter
                     if filter.include_shadow_players:
-                        fc_where_clauses.append("(f.type = ? OR p2.is_shadow = 1)")
+                        fc_where_clauses.append("((f.type = ? AND f.is_active = 1) OR p2.is_shadow = 1)")
                     else:
-                        fc_where_clauses.append("f.type = ?")
+                        fc_where_clauses.append("f.type = ? AND f.is_active = 1")
                     variable_parameters.append(filter.fc_type)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
@@ -333,6 +333,7 @@ class ListPlayersCommand(Command[PlayerList]):
             fc_where_clauses = []
             fc_variable_parameters: list[Any] = []
             # for player search, we want to return only the FCs with matching type and/or fc that we typed in
+            fc_where_clauses.append("f.is_active = 1")
             if filter.detailed and filter.matching_fcs_only:
                 if filter.fc_type is not None:
                     fc_where_clauses.append("f.type = ?")
