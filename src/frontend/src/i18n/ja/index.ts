@@ -88,6 +88,7 @@ const ja: Translation = {
     NEW: 'New',
     SORT_BY_ALPHABETICAL: 'アルファベット順',
     SORT_BY_NEWEST: '最新順',
+    SORT_BY_OLDEST: 'Oldest',
     WORKING: 'Working...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
@@ -1045,7 +1046,7 @@ const ja: Translation = {
       TOGGLE_REPRESENTATIVE: 'Toggle Representative',
       TOGGLE_BAGGER: 'Toggle Bagger',
       SELECT_ONE_CAPTAIN: 'キャプテンを1人選んでください。',
-      SELECT_REPRESENTATIVES: '{min_representatives}のキャプテン/代表者を選択してください',
+      SELECT_REPRESENTATIVES: '{count|formatNumberComparison}のキャプテン/代表者を選択してください',
       SELECT_MORE_PLAYERS: 'この大会に登録するには{count}人以上の{{プレイヤー|プレイヤー}}が必要です', //TODO: update "player" / "players"
       SELECT_LESS_PLAYERS:
         'この大会の最大スクワット人数は{max_squad_size}人です、最低でも{count}人のプレイヤーを削除してください',

@@ -87,6 +87,7 @@ const es: Translation = {
     NEW: 'Nuevo', //edited
     SORT_BY_ALPHABETICAL: 'Alfabético',
     SORT_BY_NEWEST: 'Más recientes',
+    SORT_BY_OLDEST: 'Oldest',
     WORKING: 'En proceso...',
     VIEW: 'View',
     NO_SPACE_INPUT_WARNING: 'Make sure that your input does not begin or end with a whitespace character!',
@@ -1049,7 +1050,7 @@ const es: Translation = {
       TOGGLE_REPRESENTATIVE: 'Alternar representante',
       TOGGLE_BAGGER: 'Alternar bagger',
       SELECT_ONE_CAPTAIN: 'Selecciona exactamente un capitán.',
-      SELECT_REPRESENTATIVES: 'Selecciona exactamente {min_representatives} capitanes/representantes.',
+      SELECT_REPRESENTATIVES: 'Por favor, selecciona {count|formatNumberComparison} capitanes/representantes.',
       SELECT_MORE_PLAYERS: 'Necesitas {count} {{jugador|jugadores}} más para inscribirte en este torneo.',
       SELECT_LESS_PLAYERS:
         'El tamaño máximo de escuadrón para este torneo es de {max_squad_size} jugadores, elimina al menos {count} jugadores.',

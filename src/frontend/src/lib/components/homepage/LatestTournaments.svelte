@@ -27,6 +27,7 @@
   linkText={$LL.HOMEPAGE.VIEW_ALL_TOURNAMENTS()}
   link="/{$page.params.lang}/tournaments"
   {style}
+  wrapperClass="!px-0 !pt-0"
 >
   <div>
     {#key tournaments}
