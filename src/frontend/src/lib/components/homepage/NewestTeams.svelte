@@ -10,7 +10,7 @@
   let latestTeams: Team[] = [];
 
   async function fetchLatestTeams() {
-    const res = await fetch(`/api/registry/teams?is_historical=false&is_active=true&sort_by_newest=true`);
+    const res = await fetch(`/api/registry/teams?is_historical=false&is_active=true&sort_by=-creation_date`);
     if (res.status === 200) {
       const body: TeamList = await res.json();
       latestTeams = body.teams.slice(0, 10);
