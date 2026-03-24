@@ -47,7 +47,7 @@
     const response = await fetch(endpoint, {
       method: 'DELETE',
     });
-  
+
     if (!response.ok) {
       const result = await response.json();
       alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
@@ -61,10 +61,9 @@
     if (!linkedAccount) throw Error('No account linked');
     const confirm = window.confirm($LL.DISCORD.MOD_DELETE_DATA_CONFIRM({ username: linkedAccount.username }));
     if (!confirm) return;
-    const endpoint = `/api/user/${userId}/discord/forceDelete`;
+    const endpoint = `/api/user/${userId}/discord`;
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'DELETE',
     });
     if (!response.ok) {
       const result = await response.json();

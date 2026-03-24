@@ -338,7 +338,7 @@ routes = [
     Route('/api/user/my_discord', refresh_discord_data, methods=['PATCH']),
     Route('/api/user/my_discord', delete_discord_data, methods=['DELETE']),
     Route('/api/user/{user_id:int}/discord', get_discord_data),
-    Route('/api/user/{user_id:int}/discord/forceDelete', force_delete_discord_data, methods=['POST']),
+    Route('/api/user/{user_id:int}/discord', force_delete_discord_data, methods=['DELETE']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
     Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
     Route('/api/user/{user_id:int}/create_api_token', create_api_token, methods=["POST"]),
