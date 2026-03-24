@@ -26,10 +26,9 @@
 
   async function refreshDiscordData() {
     if (forceEdit) throw Error("Cannot refresh another player's Discord");
-    const endpoint = '/api/user/refresh_discord';
+    const endpoint = '/api/user/my_discord';
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'PATCH',
     });
 
     const result = await response.json();
@@ -44,13 +43,13 @@
   async function deleteDiscordData() {
     const confirm = window.confirm($LL.DISCORD.DELETE_DATA_CONFIRM());
     if (!confirm) return;
-    const endpoint = '/api/user/delete_discord';
+    const endpoint = '/api/user/my_discord';
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'DELETE',
     });
-    const result = await response.json();
+
     if (!response.ok) {
+      const result = await response.json();
       alert(`${$LL.DISCORD.DELETE_DATA_ERROR()}: ${result['title']}`);
       return;
     }
@@ -62,10 +61,9 @@
     if (!linkedAccount) throw Error('No account linked');
     const confirm = window.confirm($LL.DISCORD.MOD_DELETE_DATA_CONFIRM({ username: linkedAccount.username }));
     if (!confirm) return;
-    const endpoint = `/api/user/${userId}/discord/forceDelete`;
+    const endpoint = `/api/user/${userId}/discord`;
     const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'DELETE',
     });
     if (!response.ok) {
       const result = await response.json();

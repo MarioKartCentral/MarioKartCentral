@@ -29,7 +29,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       alert($LL.LOGIN.EMAIL_CONFIRMATION_SUCCESS());
       if (user_info.player_id) {
@@ -38,7 +38,8 @@
         window.location.href = `/${$page.params.lang}/user/player-signup`;
       }
     } else {
-      alert(`${$LL.LOGIN.EMAIL_CONFIRMATION_FAILURE()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.EMAIL_CONFIRMATION_FAILURE()}: ${title}`);
     }
   });
 
@@ -47,14 +48,13 @@
     const endpoint = `/api/user/send_confirmation_email`;
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
     });
-    const result = await response.json();
     working = false;
     if (response.status < 300) {
       alert($LL.LOGIN.SEND_CONFIRMATION_EMAIL_SUCCESS());
     } else {
-      alert(`${$LL.LOGIN.SEND_CONFIRMATION_EMAIL_FAILURE()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.SEND_CONFIRMATION_EMAIL_FAILURE()}: ${title}`);
     }
   }
 </script>

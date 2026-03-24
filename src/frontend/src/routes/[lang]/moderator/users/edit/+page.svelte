@@ -72,11 +72,12 @@
       body: JSON.stringify(payload),
     });
     working = false;
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.API_TOKENS.CREATE_TOKEN_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.API_TOKENS.CREATE_TOKEN_FAILED()}: ${title}`);
     }
   }
 </script>

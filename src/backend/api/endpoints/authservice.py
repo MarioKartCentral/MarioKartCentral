@@ -114,7 +114,7 @@ async def sign_up(request: Request, body: SignupRequestData) -> Response:
 async def log_out(request: Request) -> Response:
     session_id = request.state.session_id
     await handle(DeleteSessionCommand(session_id))
-    resp = JSONResponse({}, status_code=200)
+    resp = Response(status_code=204)
     resp.delete_cookie('session')
     return resp
 
@@ -122,26 +122,26 @@ async def log_out(request: Request) -> Response:
 async def send_confirmation_email(request: Request) -> Response:
     command = SendEmailVerificationCommand(request.state.user.id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ConfirmEmailRequestData)
-async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> JSONResponse:
+async def confirm_email(request: Request, body: ConfirmEmailRequestData) -> Response:
     command = VerifyEmailCommand(body.token_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ForgotPasswordRequestData)
-async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> JSONResponse:
+async def forgot_password(request: Request, body: ForgotPasswordRequestData) -> Response:
     command = SendPasswordResetEmailCommand(body.email)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(SendPlayerPasswordResetRequestData)
 @require_permission(permissions.EDIT_PLAYER)
-async def send_player_password_reset(request: Request, body: SendPlayerPasswordResetRequestData) -> JSONResponse:
+async def send_player_password_reset(request: Request, body: SendPlayerPasswordResetRequestData) -> Response:
     command = SendPasswordResetToPlayerCommand(body.player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(CheckPasswordTokenRequestData)
 async def check_password_reset_token(request: Request, body: CheckPasswordTokenRequestData) -> JSONResponse:
@@ -149,22 +149,22 @@ async def check_password_reset_token(request: Request, body: CheckPasswordTokenR
     return JSONResponse(user_info)
 
 @bind_request_body(ResetPasswordTokenRequestData)
-async def reset_password_with_token(request: Request, body: ResetPasswordTokenRequestData) -> JSONResponse:
+async def reset_password_with_token(request: Request, body: ResetPasswordTokenRequestData) -> Response:
     new_password_hash = pw_hasher.hash(body.new_password)
     command = ResetPasswordWithTokenCommand(body.token_id, new_password_hash)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(ResetPasswordRequestData)
 @require_logged_in()
-async def reset_password(request: Request, body: ResetPasswordRequestData):
+async def reset_password(request: Request, body: ResetPasswordRequestData) -> Response:
     new_pw_hash = pw_hasher.hash(body.new_password)
     command = ResetPasswordCommand(request.state.user.id, body.old_password, new_pw_hash)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(TransferAccountRequestData)
-async def transfer_account(request: Request, body: TransferAccountRequestData):
+async def transfer_account(request: Request, body: TransferAccountRequestData) -> Response:
     existing_user_id = await handle(GetUserIdFromPlayerIdCommand(body.player_id))
     if existing_user_id is not None:
         raise Problem("Your account has already been transferred to the new site, check the email associated with your account for a password reset", status=400)
@@ -179,18 +179,18 @@ async def transfer_account(request: Request, body: TransferAccountRequestData):
     async def send_password_reset():
         command = SendPasswordResetEmailCommand(user.email)
         await handle(command)
-    return JSONResponse({}, background=BackgroundTask(send_password_reset))
+    return Response(status_code=204, background=BackgroundTask(send_password_reset))
 
 @bind_request_body(ChangeEmailRequestData)
 @require_logged_in()
-async def change_email(request: Request, body: ChangeEmailRequestData):
+async def change_email(request: Request, body: ChangeEmailRequestData) -> Response:
     command = ChangeEmailCommand(request.state.user.id, body.new_email, body.password)
     await handle(command)
 
     async def send_confirmation_email():
         command = SendEmailVerificationCommand(request.state.user.id)
         await handle(command)
-    return JSONResponse({}, background=BackgroundTask(send_confirmation_email))
+    return Response(status_code=204, background=BackgroundTask(send_confirmation_email))
 
 @require_permission(permissions.LINK_DISCORD, check_denied_only=True)
 async def link_discord(request: Request) -> Response:
@@ -255,10 +255,10 @@ async def refresh_discord_data(request: Request) -> JSONResponse:
     return JSONResponse(discord_data)
 
 @require_logged_in()
-async def delete_discord_data(request: Request) -> JSONResponse:
+async def delete_discord_data(request: Request) -> Response:
     command = DeleteUserDiscordDataCommand(request.state.user.id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @require_permission(permissions.EDIT_USER)
 async def force_delete_discord_data(request: Request) -> Response:
@@ -275,18 +275,20 @@ async def sync_discord_avatar(request: Request) -> JSONResponse:
 
 @bind_request_body(RemovePlayerAvatarRequestData)
 @require_permission(permissions.EDIT_PLAYER)
-async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> JSONResponse:
+async def delete_discord_avatar(request: Request, body: RemovePlayerAvatarRequestData) -> Response:
     command = RemoveDiscordAvatarCommand(body.player_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(CreateAPITokenRequestData)
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
-async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> JSONResponse:
+async def create_api_token(request: Request, body: CreateAPITokenRequestData) -> Response:
     user_id = request.path_params['user_id']
     command = CreateAPITokenCommand(user_id, request.state.user.id, body.name)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=201, headers={
+        'Location': '/api/user/api_tokens'
+    })
 
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
 async def user_api_tokens(request: Request) -> JSONResponse:
@@ -303,19 +305,19 @@ async def my_api_tokens(request: Request) -> JSONResponse:
 
 @bind_request_body(DeleteAPITokenRequestData)
 @require_permission(permissions.MANAGE_API_TOKENS, session_only=True)
-async def mod_delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+async def mod_delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> Response:
     user_id = request.path_params['user_id']
     command = DeleteAPITokenCommand(body.token_id, user_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(DeleteAPITokenRequestData)
 @require_logged_in(session_only=True)
-async def delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> JSONResponse:
+async def delete_api_token(request: Request, body: DeleteAPITokenRequestData) -> Response:
     user_id = request.state.user.id
     command = DeleteAPITokenCommand(body.token_id, user_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 routes = [
     Route('/api/user/signup', sign_up, methods=["POST"]),
@@ -333,10 +335,10 @@ routes = [
     Route('/api/user/link_discord', link_discord),
     Route('/api/user/discord_callback', discord_callback),
     Route('/api/user/my_discord', my_discord_data),
+    Route('/api/user/my_discord', refresh_discord_data, methods=['PATCH']),
+    Route('/api/user/my_discord', delete_discord_data, methods=['DELETE']),
     Route('/api/user/{user_id:int}/discord', get_discord_data),
-    Route('/api/user/refresh_discord', refresh_discord_data, methods=['POST']),
-    Route('/api/user/delete_discord', delete_discord_data, methods=['POST']),
-    Route('/api/user/{user_id:int}/discord/forceDelete', force_delete_discord_data, methods=['POST']),
+    Route('/api/user/{user_id:int}/discord', force_delete_discord_data, methods=['DELETE']),
     Route('/api/user/sync_discord_avatar', sync_discord_avatar, methods=['POST']),
     Route('/api/user/delete_discord_avatar', delete_discord_avatar, methods=["POST"]),
     Route('/api/user/{user_id:int}/create_api_token', create_api_token, methods=["POST"]),
