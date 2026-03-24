@@ -89,11 +89,11 @@ class RegisterPlayerCommand(Command[None]):
                         raise Problem("Player must be registered for a team roster linked to this squad", status=400)
                     
             # check if player has already registered for the tournament
-            async with db.execute("SELECT registration_id, is_bagger_clause from tournament_players WHERE player_id = ? AND tournament_id = ? AND is_invite = 0", 
+            async with db.execute("SELECT registration_id, is_bagger_clause, is_invite from tournament_players WHERE player_id = ? AND tournament_id = ?", 
                                   (self.player_id, self.tournament_id)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    existing_registration_id, is_bagger_clause = row
+                    existing_registration_id, is_bagger_clause, is_invite = row
                     # if row exists but existing_registration_id is None, it's a FFA and theyre already registered
                     if not existing_registration_id:
                         raise Problem("Player is already registered for this tournament", status=400)
@@ -101,7 +101,7 @@ class RegisterPlayerCommand(Command[None]):
                         raise Problem("Player is already invited to/registered for this squad", status=400)
                     # should still be able to invite someone if they are registered for the tournament
                     # if the registered player's bagger clause is the opposite of our current one, let them register
-                    if (not self.is_invite) and is_bagger_clause == self.is_bagger_clause:
+                    if not (is_invite or self.is_invite) and is_bagger_clause == self.is_bagger_clause:
                         raise Problem('Player is already registered for this tournament', status=400)
                     
             # check if player's squad is at maximum number of players
