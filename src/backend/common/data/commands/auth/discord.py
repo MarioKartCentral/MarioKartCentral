@@ -88,7 +88,7 @@ class LinkUserDiscordCommand(Command[None]):
             await db.commit()
 
 @dataclass
-class GetUserDiscordCommand(Command[MyDiscordData | None]):
+class GetUserDiscordCommand(Command[Discord | None]):
     user_id: int
 
     async def handle(self, db_wrapper: DBWrapper):
@@ -103,10 +103,10 @@ class GetUserDiscordCommand(Command[MyDiscordData | None]):
                 if row is None:
                     return None
                 discord_id, username, discriminator, global_name, avatar = row
-                return MyDiscordData(discord_id, username, discriminator, global_name, avatar, self.user_id)
+                return Discord(discord_id, username, discriminator, global_name, avatar)
             
 @dataclass
-class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
+class RefreshUserDiscordDataCommand(Command[Discord]):
     user_id: int
     
     async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
@@ -155,7 +155,7 @@ class RefreshUserDiscordDataCommand(Command[MyDiscordData]):
             await db.execute(update_query, params)
             await db.commit()
 
-        return MyDiscordData(discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar, self.user_id)
+        return Discord(discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar)
     
 @dataclass
 class DeleteUserDiscordDataCommand(Command[None]):

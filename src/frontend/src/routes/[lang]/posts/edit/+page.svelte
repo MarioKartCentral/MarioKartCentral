@@ -30,7 +30,7 @@
 
 {#if user_info.is_checked && post_id}
   {#if check_permission(user_info, permissions.manage_posts)}
-    <CreateEditPost id={post_id} />
+    <CreateEditPost postId={post_id} />
   {:else}
     {$LL.COMMON.NO_PERMISSION()}
   {/if}

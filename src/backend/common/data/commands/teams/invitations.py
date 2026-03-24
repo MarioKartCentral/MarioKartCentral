@@ -5,7 +5,7 @@ from common.data.db import DBWrapper
 from common.data.models import *
 
 @dataclass
-class InvitePlayerCommand(Command[None]):
+class InvitePlayerCommand(Command[RosterInvitedPlayer]):
     player_id: int
     roster_id: int
     team_id: int
@@ -24,14 +24,15 @@ class InvitePlayerCommand(Command[None]):
                     raise Problem("Roster is not part of specified team", status=400)
                 if self.is_bagger_clause and game != "mkw":
                     raise Problem("Cannot invite players as baggers for games other than MKW", status=400)
-            async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
-                row = await cursor.fetchone()
-                if not row:
+            async with db.execute("SELECT id, name, country_code, is_banned FROM players WHERE id = ?", (self.player_id,)) as cursor:
+                db_player = await cursor.fetchone()
+                if not db_player:
                     raise Problem("Player not found", status=404)
+                player_id, player_name, player_country_code, player_is_banned = db_player
             fc_type = game_fc_map[game]
-            async with db.execute("SELECT id FROM friend_codes WHERE type = ? AND player_id = ? AND is_active = ?", (fc_type, self.player_id, True)) as cursor:
-                row = await cursor.fetchone()
-                if not row:
+            async with db.execute("SELECT id, fc FROM friend_codes WHERE type = ? AND player_id = ? AND is_active = ?", (fc_type, self.player_id, True)) as cursor:
+                db_fc = await cursor.fetchone()
+                if not db_fc:
                     raise Problem("Player has no friend codes for this game", status=400)
             async with db.execute("SELECT id FROM team_members WHERE player_id = ? AND roster_id = ? AND leave_date IS ? AND is_bagger_clause = ?", 
                                   (self.player_id, self.roster_id, None, self.is_bagger_clause)) as cursor:
@@ -57,9 +58,13 @@ class InvitePlayerCommand(Command[None]):
                 if bagger_count >= 2:
                     raise Problem("Rosters may only have 2 bag-claused players at once", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_bagger_clause, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?, ?)", 
-                             (self.player_id, self.roster_id, creation_date, self.is_bagger_clause, False, "pending"))
+            async with db.execute("INSERT INTO team_transfers(player_id, roster_id, date, is_bagger_clause, is_accepted, approval_status) VALUES (?, ?, ?, ?, ?, ?) RETURNING date", 
+                             (self.player_id, self.roster_id, creation_date, self.is_bagger_clause, False, "pending")) as cursor:
+                    db_invite = await cursor.fetchone()
+                    if db_invite is None:
+                        raise Problem("Bad request", status=400)
             await db.commit()
+            return RosterInvitedPlayer(player_id, player_name, player_country_code, player_is_banned, None, db_invite[0], self.is_bagger_clause, db_fc[1])
 
 @dataclass
 class DeleteInviteCommand(Command[None]):

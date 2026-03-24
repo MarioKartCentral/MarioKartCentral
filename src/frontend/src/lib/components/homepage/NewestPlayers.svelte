@@ -15,7 +15,7 @@
 
   async function fetchLatestPlayers() {
     const res = await fetch(
-      `/api/registry/players?is_hidden=false&matching_fcs_only=false&include_shadow_players=false&sort_by_newest=true`,
+      `/api/registry/players?is_hidden=false&matching_fcs_only=false&include_shadow_players=false&sort_by=-join_date`,
     );
     if (res.status === 200) {
       const body: PlayerList = await res.json();

@@ -6,9 +6,9 @@ from api.auth import require_permission
 from api.data import handle
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from common.auth import permissions, roles as user_roles
-from common.data import notifications
 from common.data.commands import *
-from common.data.models import *
+from common.data.models import PlayerBanRequestData, PlayerBanFilter, PlayerBanHistoricalFilter
+from common.data import notifications
 
 @bind_request_body(PlayerBanRequestData)
 @require_permission(permissions.BAN_PLAYER)
@@ -86,7 +86,7 @@ async def list_banned_players_historical(request: Request, filter: PlayerBanHist
 
 routes = [
     Route('/api/registry/players/{id:int}/ban', ban_player, methods=['POST']), # dispatches notification
-    Route('/api/registry/players/{id:int}/editBan', edit_player_ban, methods=['POST']), # dispatches notification
+    Route('/api/registry/players/{id:int}/ban', edit_player_ban, methods=['PATCH']), # dispatches notification
     Route('/api/registry/players/{id:int}/ban', unban_player, methods=['DELETE']), # dispatches notification
     Route('/api/registry/players/bans', list_banned_players),
     Route('/api/registry/players/historicalBans', list_banned_players_historical)

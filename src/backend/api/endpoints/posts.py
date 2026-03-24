@@ -16,7 +16,9 @@ async def create_post(request: Request, body: CreateEditPostRequestData) -> JSON
     player_id = request.state.user.player_id
     command = CreatePostCommand(body.title, body.content, body.is_public, True, player_id)
     post_id = await handle(command)
-    return JSONResponse({"id": post_id})
+    return JSONResponse({"id": post_id}, status_code=201, headers={
+        'Location': f'/api/posts/{post_id}'
+    })
 
 @bind_request_body(CreateEditPostRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_POSTS)
@@ -26,7 +28,9 @@ async def create_series_post(request: Request, body: CreateEditPostRequestData) 
     series_id = request.path_params['series_id']
     command = CreatePostCommand(body.title, body.content, body.is_public, False, player_id, series_id=series_id)
     post_id = await handle(command)
-    return JSONResponse({"id": post_id})
+    return JSONResponse({"id": post_id}, status_code=201, headers={
+        'Location': f'/api/tournaments/series/{series_id}/posts/{post_id}'
+    })
 
 @bind_request_body(CreateEditPostRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_POSTS)
@@ -36,7 +40,9 @@ async def create_tournament_post(request: Request, body: CreateEditPostRequestDa
     tournament_id = request.path_params['tournament_id']
     command = CreatePostCommand(body.title, body.content, body.is_public, False, player_id, tournament_id=tournament_id)
     post_id = await handle(command)
-    return JSONResponse({"id": post_id})
+    return JSONResponse({"id": post_id}, status_code=201, headers={
+        'Location': f'/api/tournaments/{tournament_id}/posts/{post_id}'
+    })
 
 @bind_request_body(CreateEditPostRequestData)
 @require_permission(permissions.MANAGE_POSTS)
@@ -88,16 +94,16 @@ async def view_post(request: Request) -> JSONResponse:
     return JSONResponse(post)
 
 routes: list[Route] = [
-    Route('/api/posts/create', create_post, methods=['POST']),
-    Route('/api/posts/{post_id:int}/edit', edit_post, methods=["POST"]),
     Route('/api/posts', list_posts),
+    Route('/api/posts', create_post, methods=['POST']),
     Route('/api/posts/{post_id:int}', view_post),
-    Route('/api/tournaments/series/{series_id:int}/posts/create', create_series_post, methods=["POST"]),
-    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}/edit', edit_series_post, methods=["POST"]),
+    Route('/api/posts/{post_id:int}', edit_post, methods=["PATCH"]),
     Route('/api/tournaments/series/{series_id:int}/posts', list_posts),
+    Route('/api/tournaments/series/{series_id:int}/posts', create_series_post, methods=["POST"]),
     Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}', view_post),
-    Route('/api/tournaments/{tournament_id:int}/posts/create', create_tournament_post, methods=["POST"]),
-    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}/edit', edit_tournament_post, methods=["POST"]),
+    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}', edit_series_post, methods=["PATCH"]),
     Route('/api/tournaments/{tournament_id:int}/posts', list_posts),
+    Route('/api/tournaments/{tournament_id:int}/posts', create_tournament_post, methods=["POST"]),
     Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}', view_post),
+    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}', edit_tournament_post, methods=["PATCH"]),
 ]

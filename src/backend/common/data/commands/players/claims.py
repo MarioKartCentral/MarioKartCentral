@@ -4,22 +4,22 @@ from common.data.models import *
 from datetime import datetime, timezone
 
 @dataclass
-class ClaimPlayerCommand(Command[None]):
+class ClaimPlayerCommand(Command[PlayerClaim]):
     player_id: int
     claimed_player_id: int
 
-    async def handle(self, db_wrapper: DBWrapper):
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerClaim:
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id FROM players WHERE id = ?", (self.player_id,)) as cursor:
-                row = await cursor.fetchone()
-                if not row:
+            async with db.execute("SELECT id, name, country_code, is_banned FROM players WHERE id = ?", (self.player_id,)) as cursor:
+                db_player = await cursor.fetchone()
+                if db_player is None:
                     raise Problem("Claiming player not found", status=404)
-            async with db.execute("SELECT is_shadow FROM players WHERE id = ?", (self.claimed_player_id,)) as cursor:
+            async with db.execute("SELECT id, name, country_code, is_banned, is_shadow FROM players WHERE id = ?", (self.claimed_player_id,)) as cursor:
                 row = await cursor.fetchone()
-                if not row:
+                if row is None:
                     raise Problem("Claimed player not found", status=404)
-                is_shadow = bool(row[0])
-                if not is_shadow:
+                *db_claimed_player, is_shadow = row
+                if not bool(is_shadow):
                     raise Problem("Cannot claim a non-shadow player", status=400)
             async with db.execute("SELECT id FROM player_claims WHERE player_id = ? AND claimed_player_id = ? AND approval_status = ?",
                                   (self.player_id, self.claimed_player_id, "pending")) as cursor:
@@ -27,9 +27,16 @@ class ClaimPlayerCommand(Command[None]):
                 if row:
                     raise Problem("You already have a pending claim for this player", status=400)
             date = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("INSERT INTO player_claims(player_id, claimed_player_id, date, approval_status) VALUES(?, ?, ?, ?)",
-                             (self.player_id, self.claimed_player_id, date, "pending"))
+            async with db.execute("""INSERT INTO player_claims(player_id, claimed_player_id, date, approval_status)
+                             VALUES(?, ?, ?, ?) RETURNING id, date, approval_status""",
+                             (self.player_id, self.claimed_player_id, date, "pending")) as cursor:
+                row = await cursor.fetchone()
+                if row is None:
+                    raise Problem("Bad request", status=400)
+                claim_id, claim_date, approval_status = row
+
             await db.commit()
+            return PlayerClaim(claim_id, claim_date, approval_status, PlayerBasic(*db_player), PlayerBasic(*db_claimed_player))
 
 @dataclass
 class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):

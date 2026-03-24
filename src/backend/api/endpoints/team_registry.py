@@ -1,4 +1,5 @@
 from starlette.requests import Request
+from starlette.responses import Response
 from starlette.routing import Route
 from starlette.background import BackgroundTask
 from api.auth import require_permission, require_logged_in, require_team_permission
@@ -20,7 +21,9 @@ async def create_team(request: Request, body: CreateTeamRequestData) -> JSONResp
     command = CreateTeamCommand(body.name, body.tag, body.description, body.language, body.color,
         body.logo_file, body.approval_status, body.is_historical, body.game, body.mode, body.is_recruiting, body.is_active, True)
     team_id = await handle(command)
-    return JSONResponse({'id': team_id})
+    return JSONResponse({'id': team_id}, status_code=201, headers={
+        'Location': f'/api/registry/teams/{team_id}'
+    })
 
 @bind_request_body(RequestCreateTeamRequestData)
 @check_word_filter
@@ -31,7 +34,9 @@ async def request_create_team(request: Request, body: RequestCreateTeamRequestDa
                                 body.logo_file, approval_status, False, body.game, body.mode, body.is_recruiting, 
                                 True, False, user_id=request.state.user.id)
     team_id = await handle(command)
-    return JSONResponse({'id': team_id})
+    return JSONResponse({'id': team_id}, status_code=201, headers={
+        'Location': f'/api/registry/teams/{team_id}'
+    })
 
 async def view_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
@@ -70,7 +75,7 @@ async def approve_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'approved')
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'team_id': team_id, 'approval_status': 'approved'}, background=BackgroundTask(notify))
 
 @require_permission(permissions.MANAGE_TEAMS)
 async def deny_team(request: Request) -> JSONResponse:
@@ -82,7 +87,7 @@ async def deny_team(request: Request) -> JSONResponse:
     team_id = request.path_params['team_id']
     command = ApproveDenyTeamCommand(team_id, 'denied')
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'team_id': team_id, 'approval_status': 'denied'}, background=BackgroundTask(notify))
 
 # for editing non-essential team info such as description, color, etc
 @bind_request_body(ManagerEditTeamRequestData)
@@ -112,8 +117,8 @@ async def approve_team_edit_request(request: Request, body: ApproveTeamEditReque
 
     mod_player_id = request.state.user.player_id
     command = ApproveTeamEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_body(DenyTeamEditRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -125,8 +130,8 @@ async def deny_team_edit_request(request: Request, body: DenyTeamEditRequestData
 
     mod_player_id = request.state.user.player_id
     command = DenyTeamEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_query(TeamEditFilter)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -198,8 +203,8 @@ async def approve_roster_edit_request(request: Request, body: EditRosterChangeRe
 
     mod_player_id = request.state.user.player_id
     command = ApproveRosterEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_body(EditRosterChangeRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -212,8 +217,8 @@ async def deny_roster_edit_request(request: Request, body: EditRosterChangeReque
 
     mod_player_id = request.state.user.player_id
     command = DenyRosterEditCommand(body.request_id, mod_player_id)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    request_update = await handle(command)
+    return JSONResponse(request_update, background=BackgroundTask(notify))
 
 @bind_request_body(InviteRosterPlayerRequestData)
 @require_team_permission(team_permissions.INVITE_PLAYERS)
@@ -228,26 +233,26 @@ async def invite_player(request: Request, body: InviteRosterPlayerRequestData) -
         await handle(DispatchNotificationCommand([user_id], notifications.TEAM_INVITE , content_args, '/registry/invites', notifications.SUCCESS))
 
     command = InvitePlayerCommand(body.player_id, body.roster_id, body.team_id, body.is_bagger_clause)
-    await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    invite = await handle(command)
+    return JSONResponse(invite, status_code=201, background=BackgroundTask(notify))
 
 @bind_request_body(DeleteInviteRequestData)
 @require_team_permission(team_permissions.INVITE_PLAYERS)
-async def delete_invite(request: Request, body: DeleteInviteRequestData) -> JSONResponse:
+async def delete_invite(request: Request, body: DeleteInviteRequestData) -> Response:
     command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(DeleteInviteRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
-async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> JSONResponse:
+async def mod_delete_invite(request: Request, body: DeleteInviteRequestData) -> Response:
     command = DeleteInviteCommand(body.player_id, body.roster_id, body.team_id)
     await handle(command)
-    return JSONResponse({})
+    return Response(status_code=204)
 
 @bind_request_body(AcceptRosterInviteRequestData)
 @require_permission(permissions.JOIN_TEAM, check_denied_only=True)
-async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> JSONResponse:
+async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
@@ -256,11 +261,11 @@ async def accept_invite(request: Request, body: AcceptRosterInviteRequestData) -
 
     command = AcceptInviteCommand(body.invite_id, body.roster_leave_id, request.state.user.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(DeclineRosterInviteRequestData)
 @require_logged_in()
-async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> JSONResponse:
+async def decline_invite(request: Request, body: DeclineRosterInviteRequestData) -> Response:
     async def notify():
         content_args = {'player_name': data.player_name, 'roster_name': data.roster_name or data.team_name}
         await handle(DispatchNotificationCommand(user_ids, notifications.DECLINE_INVITE, content_args, f'/registry/players/profile?id={request.state.user.player_id}', notifications.WARNING))
@@ -273,11 +278,11 @@ async def decline_invite(request: Request, body: DeclineRosterInviteRequestData)
 
     command = DeclineInviteCommand(body.invite_id, request.state.user.player_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(LeaveRosterRequestData)
 @require_logged_in()
-async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResponse:
+async def leave_team(request: Request, body: LeaveRosterRequestData) -> Response:
     async def notify():
         player_id = request.state.user.player_id
         player_name = await handle(GetPlayerNameCommand(player_id,))
@@ -288,11 +293,11 @@ async def leave_team(request: Request, body: LeaveRosterRequestData) -> JSONResp
 
     command = LeaveRosterCommand(request.state.user.player_id, body.roster_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(ApproveTransferRequestData)
 @require_permission(permissions.MANAGE_TRANSFERS)
-async def approve_transfer(request: Request, body: ApproveTransferRequestData) -> JSONResponse:
+async def approve_transfer(request: Request, body: ApproveTransferRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
@@ -305,11 +310,11 @@ async def approve_transfer(request: Request, body: ApproveTransferRequestData) -
 
     command = ApproveTransferCommand(body.invite_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(DenyTransferRequestData)
 @require_permission(permissions.MANAGE_TRANSFERS)
-async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSONResponse:
+async def deny_transfer(request: Request, body: DenyTransferRequestData) -> Response:
     async def notify():
         data = await handle(GetNotificationDataFromTeamTransfersCommand(body.invite_id))
         user_ids = await handle(GetTeamManagerAndLeaderUserIdsCommand(data.team_id))
@@ -322,7 +327,7 @@ async def deny_transfer(request: Request, body: DenyTransferRequestData) -> JSON
 
     command = DenyTransferCommand(body.invite_id, body.send_back)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_query(TransferFilter)
 async def view_approved_transfers(request: Request, filter: TransferFilter) -> JSONResponse:
@@ -353,7 +358,7 @@ async def list_roster_edit_requests(request: Request, filter: RosterEditFilter) 
 
 @bind_request_body(ForceTransferPlayerRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
-async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> JSONResponse:
+async def force_transfer_player(request: Request, body: ForceTransferPlayerRequestData) -> Response:
     async def notify():
         player_name = await handle(GetPlayerNameCommand(body.player_id))
         data = await handle(GetNotificationTeamRosterDataCommand(body.roster_id))
@@ -363,7 +368,7 @@ async def force_transfer_player(request: Request, body: ForceTransferPlayerReque
 
     command = ForceTransferPlayerCommand(body.player_id, body.roster_id, body.team_id, body.roster_leave_id, body.is_bagger_clause)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return Response(status_code=204, background=BackgroundTask(notify))
 
 @bind_request_body(EditTeamMemberInfoRequestData)
 @require_permission(permissions.MANAGE_TEAMS)
@@ -447,7 +452,7 @@ async def approve_roster(request: Request) -> JSONResponse:
     roster_id = request.path_params['rosterId']
     command = ApproveRosterCommand(team_id, roster_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'id': roster_id, 'approval_status': 'approved'}, background=BackgroundTask(notify))
 
 @require_permission(permissions.MANAGE_TEAMS)
 async def deny_roster(request: Request) -> JSONResponse:
@@ -461,7 +466,7 @@ async def deny_roster(request: Request) -> JSONResponse:
     roster_id = request.path_params['rosterId']
     command = DenyRosterCommand(team_id, roster_id)
     await handle(command)
-    return JSONResponse({}, background=BackgroundTask(notify))
+    return JSONResponse({'id': roster_id, 'approval_status': 'denied'}, background=BackgroundTask(notify))
 
 @bind_request_query(RegisterableRostersRequestData)
 @require_logged_in()

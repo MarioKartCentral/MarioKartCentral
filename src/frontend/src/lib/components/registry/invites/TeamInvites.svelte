@@ -78,12 +78,12 @@
       body: JSON.stringify(payload),
     });
     working = false;
-    const result = await res.json();
     if (res.status < 300) {
       alert($LL.INVITES.ACCEPT_TEAM_INVITE_SUCCESS({ roster_name: invite.roster_name }));
       window.location.reload();
     } else {
-      alert(`${$LL.INVITES.ACCEPT_TEAM_INVITE_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.INVITES.ACCEPT_TEAM_INVITE_FAILED()}: ${title}`);
     }
   }
   async function declineInvite(invite: TeamInvite) {
@@ -98,11 +98,12 @@
       body: JSON.stringify(payload),
     });
     working = false;
-    const result = await res.json();
+
     if (res.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.INVITES.DECLINE_TEAM_INVITE_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.INVITES.DECLINE_TEAM_INVITE_FAILED()}: ${title}`);
     }
   }
 </script>

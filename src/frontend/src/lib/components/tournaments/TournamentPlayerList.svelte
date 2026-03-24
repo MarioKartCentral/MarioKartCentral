@@ -53,11 +53,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_PLAYER_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_PLAYER_FAILED()}: ${title}`);
     }
   }
 
@@ -77,11 +78,11 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.KICK_PLAYER_FAILED()}: ${title}`);
     }
   }
 
@@ -101,11 +102,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MAKE_CAPTAIN_FAILED()}: ${title}`);
     }
   }
 
@@ -121,11 +123,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.MAKE_REPRESENTATIVE_FAILED()}: ${title}`);
     }
   }
 
@@ -141,11 +144,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REMOVE_REPRESENTATIVE_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.REMOVE_REPRESENTATIVE_FAILED()}: ${title}`);
     }
   }
 
@@ -171,11 +175,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_FAILED()}: ${title}`);
     }
   }
 </script>

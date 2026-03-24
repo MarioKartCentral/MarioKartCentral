@@ -62,12 +62,13 @@
     });
     working = false;
     console.log(payload);
-    const result = await res.json();
+
     if (res.status < 300) {
       alert($LL.MODERATOR.FORCE_TRANSFER_SUCCESS({ player_name: player.name, roster_name: to_roster.name }));
       window.location.reload();
     } else {
-      alert(`${$LL.MODERATOR.FORCE_TRANSFER_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.MODERATOR.FORCE_TRANSFER_FAILED()}: ${title}`);
     }
   }
 
