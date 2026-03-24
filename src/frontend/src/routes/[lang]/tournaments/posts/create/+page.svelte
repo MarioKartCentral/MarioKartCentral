@@ -20,4 +20,4 @@
   </div>
 </Section>
 
-<CreateEditPost {tournament_id} />
+<CreateEditPost tournamentId={tournament_id} />
