@@ -384,7 +384,7 @@ class ViewTeamEditHistoryCommand(Command[list[TeamEdit]]):
         return edits
 
 @dataclass
-class ApproveTeamEditCommand(Command[None]):
+class ApproveTeamEditCommand(Command[TeamEditUpdate]):
     request_id: int
     mod_player_id: int | None
 
@@ -397,10 +397,16 @@ class ApproveTeamEditCommand(Command[None]):
                 team_id, name, tag = row
             await db.execute("UPDATE teams SET name = ?, tag = ? WHERE id = ?", (name, tag, team_id))
             await db.execute("UPDATE team_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
+            async with db.execute("SELECT id, name, country_code, is_banned FROM players WHERE id = ?", (self.mod_player_id,)) as cursor:
+                db_player = await cursor.fetchone()
+                if db_player is None:
+                    raise Problem("Bad request", status=400)
+                handled_by = PlayerBasic(*db_player)
             await db.commit()
+            return TeamEditUpdate(self.request_id, 'approved', handled_by)
 
 @dataclass
-class DenyTeamEditCommand(Command[None]):
+class DenyTeamEditCommand(Command[TeamEditUpdate]):
     request_id: int
     mod_player_id: int
 
@@ -410,7 +416,13 @@ class DenyTeamEditCommand(Command[None]):
                 rowcount = cursor.rowcount
                 if rowcount == 0:
                     raise Problem("Team edit request not found", status=404)
+            async with db.execute("SELECT id, name, country_code, is_banned FROM players WHERE id = ?", (self.mod_player_id,)) as cursor:
+                db_player = await cursor.fetchone()
+                if db_player is None:
+                    raise Problem("Bad request", status=400)
+                handled_by = PlayerBasic(*db_player)
             await db.commit()
+            return TeamEditUpdate(self.request_id, 'denied', handled_by)
 
 @dataclass
 class ListTeamEditRequestsCommand(Command[TeamEditList]):
