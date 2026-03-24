@@ -68,30 +68,47 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
         return PlayerNameRequestList(name_requests, request_count, page_count)
     
 @dataclass
-class ApprovePlayerNameRequestCommand(Command[None]):
+class ApprovePlayerNameRequestCommand(Command[PlayerNameRequestUpdate]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper: DBWrapper):
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerNameRequestUpdate:
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT player_id, new_name FROM player_name_edits WHERE id = ?", (self.request_id,)) as cursor:
-                row = await cursor.fetchone()
-                if not row:
-                    raise Problem("Name edit request not found", status=400)
-                player_id, name = row
-            await db.execute("UPDATE players SET name = ? WHERE id = ?", (name, player_id))
-            await db.execute("UPDATE player_name_edits SET approval_status = 'approved', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id))
+            async with db.execute("""
+                                  UPDATE player_name_edits SET approval_status = 'approved', handled_by = ?
+                                  WHERE id = ? RETURNING id, approval_status, handled_by, player_id, new_name""",
+                                  (self.mod_player_id, self.request_id)) as cursor:
+                db_name_request_edit = await cursor.fetchone()
+                if db_name_request_edit is None:
+                    raise Problem("Name edit request not found", status=404)
+                request_id, approval_status, handled_by_id, player_id, new_name = db_name_request_edit
+        
+            await db.execute("UPDATE players SET name = ? WHERE id = ?", (new_name, player_id))
             await db.commit()
+            async with db.execute("""SELECT id, name, country_code, is_banned from players where id = ?""", (handled_by_id, )) as cursor:
+                db_handled_by = await cursor.fetchone()
+                if db_handled_by is None:
+                    raise Problem("Bad Request", status=400)
+                return PlayerNameRequestUpdate(request_id, approval_status, PlayerBasic(*db_handled_by))
 
 @dataclass
-class DenyPlayerNameRequestCommand(Command[None]):
+class DenyPlayerNameRequestCommand(Command[PlayerNameRequestUpdate]):
     request_id: int
     mod_player_id: int
 
-    async def handle(self, db_wrapper: DBWrapper):
+    async def handle(self, db_wrapper: DBWrapper) -> PlayerNameRequestUpdate:
         async with db_wrapper.connect() as db:
-            async with db.execute("UPDATE player_name_edits SET approval_status = 'denied', handled_by = ? WHERE id = ?", (self.mod_player_id, self.request_id)) as cursor:
-                rowcount = cursor.rowcount
-                if rowcount == 0:
+            async with db.execute("""
+                                  UPDATE player_name_edits SET approval_status = 'denied', handled_by = ?
+                                  WHERE id = ? RETURNING id, approval_status, handled_by""",
+                                  (self.mod_player_id, self.request_id)) as cursor:
+                db_name_request_edit = await cursor.fetchone()
+                if db_name_request_edit is None:
                     raise Problem("Name edit request not found", status=404)
-                await db.commit()
+            request_id, approval_status, handled_by_id = db_name_request_edit
+            await db.commit()
+            async with db.execute("""SELECT id, name, country_code, is_banned from players where id = ?""", (handled_by_id, )) as cursor:
+                db_handled_by = await cursor.fetchone()
+                if db_handled_by is None:
+                    raise Problem("Bad Request", status=400)
+                return PlayerNameRequestUpdate(request_id, approval_status, PlayerBasic(*db_handled_by))
