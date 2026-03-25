@@ -38,12 +38,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await res.json();
+
     if (res.status < 300) {
       alert($LL.MODERATOR.MERGE_PLAYERS_SUCCESS());
       window.location.reload();
     } else {
-      alert(`${$LL.MODERATOR.MERGE_PLAYERS_FAILED()}: ${result['title']}`);
+      const { title } = await res.json();
+      alert(`${$LL.MODERATOR.MERGE_PLAYERS_FAILED()}: ${title}`);
     }
   }
 </script>

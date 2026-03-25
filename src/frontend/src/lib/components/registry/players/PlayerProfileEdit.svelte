@@ -88,12 +88,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       alert($LL.LOGIN.PASSWORD_RESET_SUCCESS());
       window.location.reload();
     } else {
-      alert(`${$LL.LOGIN.PASSWORD_RESET_FAILURE()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.PASSWORD_RESET_FAILURE()}: ${title}`);
     }
   }
 
@@ -107,12 +108,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       alert($LL.DISCORD.DELETE_AVATAR_SUCCESS());
       window.location.reload();
     } else {
-      alert(`${$LL.DISCORD.DELETE_AVATAR_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.DISCORD.DELETE_AVATAR_FAILED()}: ${title}`);
     }
   }
 </script>
@@ -139,10 +141,12 @@
     <Button on:click={deleteAvatar}>{$LL.DISCORD.DELETE_AVATAR()}</Button>
   </Section>
 {/if}
-{#if player.id === user_info.player?.id}
+{#if player.user_settings}
   <Section header={$LL.DISCORD.DISCORD()}>
-    <LinkDiscord />
+    <LinkDiscord userId={player.user_settings.user_id} />
   </Section>
+{/if}
+{#if player.id === user_info.player?.id}
   <Section header={$LL.LOGIN.CHANGE_EMAIL()}>
     <ChangeEmail />
   </Section>

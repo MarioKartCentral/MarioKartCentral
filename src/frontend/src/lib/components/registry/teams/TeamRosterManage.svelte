@@ -108,12 +108,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
       working = false;
-      alert(`${$LL.TEAMS.EDIT.DELETE_INVITE_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TEAMS.EDIT.DELETE_INVITE_FAILED()}: ${title}`);
     }
   }
 

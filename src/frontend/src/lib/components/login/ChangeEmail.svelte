@@ -14,13 +14,13 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    const result = await response.json();
 
     if (response.status < 300) {
       window.location.reload();
       alert($LL.LOGIN.CHANGE_EMAIL_SUCCESS());
     } else {
-      alert(`${$LL.LOGIN.CHANGE_EMAIL_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.CHANGE_EMAIL_FAILED()}: ${title}`);
     }
   }
 </script>

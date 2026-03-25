@@ -32,12 +32,13 @@
       body: JSON.stringify(payload),
     });
     working = false;
-    const result = await response.json();
+
     if (response.status < 300) {
       alert($LL.LOGIN.TRANSFER_ACCOUNT_SUCCESS());
       window.location.href = `/${$page.params.lang}/`;
     } else {
-      alert(`${$LL.LOGIN.TRANSFER_ACCOUNT_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.LOGIN.TRANSFER_ACCOUNT_FAILED()}: ${title}`);
     }
   }
 </script>

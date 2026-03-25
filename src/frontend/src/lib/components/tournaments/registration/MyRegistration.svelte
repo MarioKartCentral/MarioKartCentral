@@ -33,11 +33,12 @@
       body: JSON.stringify(payload),
     });
     working = false;
-    const result = await response.json();
+
     if (response.status < 300) {
       window.location.reload();
     } else {
-      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_OUT_FAILED()}: ${result['title']}`);
+      const { title } = await response.json();
+      alert(`${$LL.TOURNAMENTS.REGISTRATIONS.CHECK_IN_OUT_FAILED()}: ${title}`);
     }
   }
 </script>

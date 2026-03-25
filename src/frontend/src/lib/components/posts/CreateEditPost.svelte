@@ -8,58 +8,72 @@
   import type { Post } from '$lib/types/posts';
   import LL from '$i18n/i18n-svelte';
 
-  export let id: number | null = null;
-  export let series_id: number | null = null;
-  export let tournament_id: number | null = null;
+  export let postId: number | null = null;
+  export let seriesId: number | null = null;
+  export let tournamentId: number | null = null;
+
+  const isEdit = Boolean(postId);
 
   let title = '';
-  let is_public = true;
+  let isPublic = true;
   let content = '';
   let working = false;
 
+  $: baseApiPath = (() => {
+    if (tournamentId) return `/api/tournaments/${tournamentId}/posts`;
+    if (seriesId) return `/api/tournaments/series/${seriesId}/posts`;
+    return '/api/posts';
+  })();
+
+  const getPagePath = (postId: number, tournamentId: number | null, seriesId: number | null): string => {
+    const searchParams = new URLSearchParams({ id: postId.toString() });
+    let path = `${$page.params.lang}`;
+
+    if (tournamentId) {
+      path += '/tournaments';
+      searchParams.append('tournament_id', tournamentId.toString());
+    } else if (seriesId) {
+      path += '/tournaments/series';
+      searchParams.append('series_id', seriesId.toString());
+    }
+    return `/${path}/posts/view?${searchParams.toString()}`;
+  };
+
   onMount(async () => {
-    if (!id) return;
-    let path = tournament_id ? `tournaments/${tournament_id}/` : series_id ? `tournaments/series/${series_id}/` : ``;
-    let url = `/api/${path}posts/${id}`;
-    const res = await fetch(url);
-    if (res.status === 200) {
-      const body: Post = await res.json();
-      title = body.title;
-      is_public = body.is_public;
-      content = body.content;
+    if (!isEdit) return;
+    const response = await fetch(baseApiPath + `/${postId}`);
+    if (response.ok) {
+      ({ is_public: isPublic, title, content } = (await response.json()) as Post);
     }
   });
 
-  async function createEditPost(event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }) {
+  async function createEditPost() {
     working = true;
-    const formData = new FormData(event.currentTarget);
     const payload = {
-      title: formData.get('title'),
-      is_public: formData.get('is_public') === 'true',
-      content: formData.get('content'),
+      title,
+      is_public: isPublic,
+      content,
     };
-    let suffix = `${id ? `${id}/edit` : 'create'}`;
-    let path = tournament_id ? `tournaments/${tournament_id}/` : series_id ? `tournaments/series/${series_id}/` : ``;
-    const endpoint = `/api/${path}posts/${suffix}`;
+    let endpoint = baseApiPath;
+    if (isEdit) endpoint += `/${postId}`;
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method: isEdit ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
     working = false;
     const result = await response.json();
-    if (response.status < 300) {
-      let new_id = result['id'];
-      let page_path = tournament_id ? `tournaments/` : series_id ? `tournaments/series/` : '';
-      let page_suffix = tournament_id ? `&tournament_id=${tournament_id}` : series_id ? `&series_id=${series_id}` : '';
-      goto(`/${$page.params.lang}/${page_path}posts/view?id=${new_id}${page_suffix}`);
+    if (response.ok) {
+      postId = result['id'];
+      const path = getPagePath(postId as number, tournamentId, seriesId);
+      goto(path);
     } else {
       alert(`${$LL.POSTS.CREATE_EDIT_POST_FAILED()}: ${result['title']}`);
     }
   }
 </script>
 
-<Section header={id ? $LL.POSTS.EDIT_POST() : $LL.POSTS.CREATE_POST()}>
+<Section header={isEdit ? $LL.POSTS.EDIT_POST() : $LL.POSTS.CREATE_POST()}>
   <form on:submit|preventDefault={createEditPost}>
     <div class="option">
       <label for="title">{$LL.POSTS.POST_TITLE()}</label>
@@ -70,7 +84,7 @@
     <div class="option">
       <label for="is_public">{$LL.POSTS.VISIBILITY()}</label>
       <div>
-        <select name="is_public" bind:value={is_public} required>
+        <select name="is_public" bind:value={isPublic} required>
           <option value={true}>
             {$LL.POSTS.PUBLIC()}
           </option>
