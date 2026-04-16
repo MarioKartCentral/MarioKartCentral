@@ -14,15 +14,14 @@
   });
 </script>
 
-<Breadcrumb>
-  <BreadcrumbItem home href="/" />
-  <BreadcrumbItem href="/{$page.params.lang}/posts" returnText={$LL.POSTS.BACK_TO_ANNOUNCEMENTS()}
-    >{$LL.POSTS.ANNOUNCEMENTS()}</BreadcrumbItem
-  >
-  <BreadcrumbItem current>{$LL.POSTS.CREATE_POST()}</BreadcrumbItem>
-</Breadcrumb>
-
 {#if user_info.is_checked}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/posts" returnText={$LL.POSTS.BACK_TO_ANNOUNCEMENTS()}
+      >{$LL.POSTS.ANNOUNCEMENTS()}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{$LL.POSTS.CREATE_POST()}</BreadcrumbItem>
+  </Breadcrumb>
   {#if check_permission(user_info, permissions.manage_posts)}
     <CreateEditPost />
   {:else}
