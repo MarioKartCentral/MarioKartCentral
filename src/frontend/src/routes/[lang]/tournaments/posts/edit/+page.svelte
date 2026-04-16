@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import CreateEditPost from '$lib/components/posts/CreateEditPost.svelte';
   import { onMount } from 'svelte';
   import LL from '$i18n/i18n-svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let post_id = 0;
   let tournament_id = 0;
@@ -17,13 +17,19 @@
   });
 </script>
 
-<Section header={$LL.POSTS.BACK_TO_POST()}>
-  <div slot="header_content">
-    <Button href="/{$page.params.lang}/tournaments/posts/view?tournament_id={tournament_id}&id={post_id}"
-      >{$LL.COMMON.BACK()}</Button
+{#if tournament_id && post_id}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</BreadcrumbItem>
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments/details?id={tournament_id}">{tournament_id}</BreadcrumbItem>
+    <BreadcrumbItem>{$LL.POSTS.TOURNAMENT_ANNOUNCEMENTS()}</BreadcrumbItem>
+    <BreadcrumbItem
+      href="/{$page.params.lang}/tournaments/posts/view?tournament_id={tournament_id}&id={post_id}"
+      returnText={$LL.POSTS.BACK_TO_POST()}>{post_id}</BreadcrumbItem
     >
-  </div>
-</Section>
+    <BreadcrumbItem current>{$LL.POSTS.EDIT_POST()}</BreadcrumbItem>
+  </Breadcrumb>
+{/if}
 
 {#key post_id}
   <CreateEditPost postId={post_id} tournamentId={tournament_id} />

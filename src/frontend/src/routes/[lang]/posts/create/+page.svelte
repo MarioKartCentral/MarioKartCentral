@@ -1,12 +1,12 @@
 <script lang="ts">
-  import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import CreateEditPost from '$lib/components/posts/CreateEditPost.svelte';
   import LL from '$i18n/i18n-svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import { check_permission, permissions } from '$lib/util/permissions';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -14,13 +14,14 @@
   });
 </script>
 
-<Section header={$LL.POSTS.BACK_TO_ANNOUNCEMENTS()}>
-  <div slot="header_content">
-    <Button href="/{$page.params.lang}/posts">{$LL.COMMON.BACK()}</Button>
-  </div>
-</Section>
-
 {#if user_info.is_checked}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/posts" returnText={$LL.POSTS.BACK_TO_ANNOUNCEMENTS()}
+      >{$LL.POSTS.ANNOUNCEMENTS()}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{$LL.POSTS.CREATE_POST()}</BreadcrumbItem>
+  </Breadcrumb>
   {#if check_permission(user_info, permissions.manage_posts)}
     <CreateEditPost />
   {:else}

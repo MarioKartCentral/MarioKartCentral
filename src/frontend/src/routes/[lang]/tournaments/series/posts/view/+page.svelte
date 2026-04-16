@@ -2,9 +2,9 @@
   import PostDisplay from '$lib/components/posts/PostDisplay.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import Section from '$lib/components/common/Section.svelte';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let post_id = 0;
   let series_id = 0;
@@ -18,12 +18,16 @@
 </script>
 
 {#key post_id}
-  <Section header={$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES()}>
-    <div slot="header_content">
-      <Button href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{$LL.COMMON.BACK()}</Button>
-    </div>
-  </Section>
   {#if post_id}
+    <Breadcrumb>
+      <BreadcrumbItem home href="/" />
+      <BreadcrumbItem href="/{$page.params.lang}/tournaments/series">{$LL.NAVBAR.TOURNAMENT_SERIES()}</BreadcrumbItem>
+      <BreadcrumbItem
+        href="/{$page.params.lang}/tournaments/series/details?id={series_id}"
+        returnText={$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES()}>{series_id}</BreadcrumbItem
+      >
+      <BreadcrumbItem current>{$LL.POSTS.SERIES_ANNOUNCEMENTS()}</BreadcrumbItem>
+    </Breadcrumb>
     <PostDisplay id={post_id} {series_id} />
   {/if}
 {/key}

@@ -13,6 +13,8 @@
   import { user } from '$lib/stores/stores';
   import LogoUpload from '$lib/components/common/LogoUpload.svelte';
   import Input from '$lib/components/common/Input.svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   export let is_mod = false;
 
@@ -112,11 +114,15 @@
 </svelte:head>
 
 {#if team}
-  <Section header={$LL.TEAMS.EDIT.TEAM_PAGE()}>
-    <div slot="header_content">
-      <Button href="/{$page.params.lang}/registry/teams/profile?id={team.id}">{$LL.TEAMS.EDIT.BACK_TO_TEAM()}</Button>
-    </div>
-  </Section>
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/registry/teams">{$LL.NAVBAR.TEAMS()}</BreadcrumbItem>
+    <BreadcrumbItem
+      href="/{$page.params.lang}/registry/teams/profile?id={team.id}"
+      returnText={$LL.TEAMS.EDIT.BACK_TO_TEAM()}>{team.name}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{$LL.TEAMS.PROFILE.EDIT_TEAM()}</BreadcrumbItem>
+  </Breadcrumb>
   {#if !is_mod}
     {#if check_team_permission(user_info, team_permissions.edit_team_name_tag, id)}
       <Section header={$LL.TEAMS.EDIT.TEAM_NAME_TAG()}>
