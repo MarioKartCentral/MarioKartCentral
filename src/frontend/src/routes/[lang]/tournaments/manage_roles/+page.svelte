@@ -4,13 +4,14 @@
   import type { Role } from '$lib/types/role';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import { get_highest_tournament_role_position } from '$lib/util/permissions';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import type { Tournament } from '$lib/types/tournament';
   import LL from '$i18n/i18n-svelte';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let roles: Role[] = [];
   let tournament_id = 0;
@@ -49,13 +50,17 @@
 </script>
 
 {#if user_info.is_checked}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</BreadcrumbItem>
+    <BreadcrumbItem
+      href="/{$page.params.lang}/tournaments/details?id={tournament_id}"
+      returnText={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>{tournament_id}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{$LL.TOURNAMENTS.TOURNAMENT_ROLES()}</BreadcrumbItem>
+  </Breadcrumb>
   {#if check_tournament_permission(user_info, tournament_permissions.manage_tournament_roles, tournament_id, series_id)}
     <Section header={$LL.TOURNAMENTS.TOURNAMENT_ROLES()}>
-      <div slot="header_content">
-        <Button href="/{$page.params.lang}/tournaments/details?id={tournament_id}"
-          >{$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}</Button
-        >
-      </div>
       {#if roles.length}
         <div class="select">
           <select bind:value={selected_role}>

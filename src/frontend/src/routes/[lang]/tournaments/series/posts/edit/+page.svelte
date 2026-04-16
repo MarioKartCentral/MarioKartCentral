@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Section from '$lib/components/common/Section.svelte';
   import { page } from '$app/stores';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import CreateEditPost from '$lib/components/posts/CreateEditPost.svelte';
   import { onMount } from 'svelte';
   import LL from '$i18n/i18n-svelte';
   import { user } from '$lib/stores/stores';
   import type { UserInfo } from '$lib/types/user-info';
   import { check_series_permission, series_permissions } from '$lib/util/permissions';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let user_info: UserInfo;
   user.subscribe((value) => {
@@ -25,14 +25,19 @@
   });
 </script>
 
-<Section header={$LL.POSTS.BACK_TO_POST()}>
-  <div slot="header_content">
-    <Button href="/{$page.params.lang}/tournaments/series/posts/view?series_id={series_id}&id={post_id}"
-      >{$LL.COMMON.BACK()}</Button
+{#if post_id}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments/series">{$LL.NAVBAR.TOURNAMENT_SERIES()}</BreadcrumbItem>
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments/series/details?id={series_id}">{series_id}</BreadcrumbItem>
+    <BreadcrumbItem>{$LL.POSTS.SERIES_ANNOUNCEMENTS()}</BreadcrumbItem>
+    <BreadcrumbItem
+      href="/{$page.params.lang}/tournaments/series/posts/view?series_id={series_id}&id={post_id}"
+      returnText={$LL.POSTS.BACK_TO_POST()}>{post_id}</BreadcrumbItem
     >
-  </div>
-</Section>
-
+    <BreadcrumbItem current>{$LL.POSTS.EDIT_POST()}</BreadcrumbItem>
+  </Breadcrumb>
+{/if}
 {#if user_info.is_checked && series_id}
   {#if check_series_permission(user_info, series_permissions.manage_series_posts, series_id)}
     {#key post_id}

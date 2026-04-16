@@ -2,9 +2,9 @@
   import PostDisplay from '$lib/components/posts/PostDisplay.svelte';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import Section from '$lib/components/common/Section.svelte';
-  import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let post_id = 0;
 
@@ -14,11 +14,13 @@
   });
 </script>
 
-<Section header={$LL.POSTS.BACK_TO_ANNOUNCEMENTS()}>
-  <div slot="header_content">
-    <Button href="/{$page.params.lang}/posts">{$LL.COMMON.BACK()}</Button>
-  </div>
-</Section>
 {#if post_id}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/posts" returnText={$LL.POSTS.BACK_TO_ANNOUNCEMENTS()}
+      >{$LL.POSTS.ANNOUNCEMENTS()}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{post_id}</BreadcrumbItem>
+  </Breadcrumb>
   <PostDisplay id={post_id} />
 {/if}

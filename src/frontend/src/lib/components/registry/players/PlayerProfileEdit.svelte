@@ -13,6 +13,8 @@
   import EditPlayerDetails from './EditPlayerDetails.svelte';
   import RegisterForm from '$lib/components/login/RegisterForm.svelte';
   import ChangeEmail from '$lib/components/login/ChangeEmail.svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   export let player: PlayerInfo;
 
@@ -119,13 +121,15 @@
   }
 </script>
 
-<Section header={$LL.PLAYERS.PROFILE.PLAYER_PROFILE()}>
-  <div slot="header_content">
-    <Button href="/{$page.params.lang}/registry/players/profile?id={player.id}"
-      >{$LL.PLAYERS.PROFILE.BACK_TO_PROFILE()}</Button
-    >
-  </div>
-</Section>
+<Breadcrumb>
+  <BreadcrumbItem home href="/" />
+  <BreadcrumbItem href="/{$page.params.lang}/registry/players">{$LL.NAVBAR.PLAYERS()}</BreadcrumbItem>
+  <BreadcrumbItem
+    href="/{$page.params.lang}/registry/players/profile?id={player.id}"
+    returnText={$LL.PLAYERS.PROFILE.BACK_TO_PROFILE()}>{player.name}</BreadcrumbItem
+  >
+  <BreadcrumbItem current>{$LL.PLAYERS.PROFILE.EDIT_PROFILE()}</BreadcrumbItem>
+</Breadcrumb>
 
 {#if check_permission(user_info, permissions.edit_profile, true)}
   <Section header={$LL.PLAYERS.PROFILE.PLAYER_DETAILS()}>
