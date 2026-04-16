@@ -32,7 +32,6 @@
     font-size: 20px;
   }
   .section-container {
-    max-width: 1200px;
     margin: 20px auto 20px auto;
     background-color: rgba(255, 255, 255, 0.15);
   }
