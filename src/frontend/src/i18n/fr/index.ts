@@ -422,6 +422,7 @@ const fr: Translation = {
     SELECT: 'Selectionner un mode...',
     '150CC': '150cc',
     '200CC': '200cc',
+    KNOCKOUT_TOUR: 'Survie',
     MIXED_BATTLE: 'Batailles (Mixte)',
     BALLOON_BATTLE: 'Bataille de ballons',
     SHINE_THIEF: 'Capture de soleil',
