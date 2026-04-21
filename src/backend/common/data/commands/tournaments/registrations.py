@@ -243,15 +243,15 @@ class EditPlayerRegistrationCommand(Command[PlayerRegistrationUpdate]):
                     # disallow players from leaving their squad as captain if there is more than 1 player
                     if old_is_squad_captain and num_squad_players > 1:
                         raise Problem("Please unregister your current squad or give captain to another player in your squad before leaving your current squad", status=400)
-                    if num_squad_players == 1:
-                        # delete any invites as well
-                        await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND is_invite = 1", (self.tournament_id, self.registration_id))
-                        await db.execute("DELETE FROM tournament_placements WHERE registration_id = ?", (self.registration_id,))
-                        await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ?", (self.registration_id,))
-                        await db.execute("DELETE FROM tournament_registrations WHERE id = ?", (self.registration_id,))
                     await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND player_id = ? AND registration_id = ?",
                         (self.tournament_id, self.player_id, old_registration_id))
-                    
+                    if num_squad_players == 1:
+                        # delete any invites as well
+                        await db.execute("DELETE FROM tournament_players WHERE tournament_id = ? AND registration_id IS ? AND is_invite = 1", (self.tournament_id, old_registration_id))
+                        await db.execute("DELETE FROM tournament_placements WHERE registration_id = ?", (old_registration_id,))
+                        await db.execute("DELETE FROM team_squad_registrations WHERE registration_id = ?", (old_registration_id,))
+                        await db.execute("DELETE FROM tournament_registrations WHERE id = ?", (old_registration_id,))
+
                 # if we're accepting an invite and checkins are open, automatically check in
                 if bool(checkins_open):
                     is_checked_in = True
