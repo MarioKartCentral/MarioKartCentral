@@ -2,95 +2,114 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
-from api.auth import require_permission, require_series_permission, require_tournament_permission, check_post_privileges
+from api.auth import inject_current_user, require_permission, require_series_permission, require_tournament_permission, check_post_privileges
+from api.data import State
 from common.auth import permissions, series_permissions, tournament_permissions
 from common.data.commands import *
 from common.data.models import *
-from api.data import handle
 from api.utils.word_filter import check_word_filter
+
 
 @bind_request_body(CreateEditPostRequestData)
 @require_permission(permissions.MANAGE_POSTS)
 @check_word_filter
-async def create_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
-    player_id = request.state.user.player_id
-    command = CreatePostCommand(body.title, body.content, body.is_public, True, player_id)
-    post_id = await handle(command)
+@inject_current_user
+async def create_post(request: Request[State], user: User, body: CreateEditPostRequestData) -> JSONResponse:
+    player_id = user.player_id
+    command = CreatePostCommand(
+        body.title, body.content, body.is_public, True, player_id)
+    post_id = await request.state.command_handler.handle(command)
     return JSONResponse({"id": post_id}, status_code=201, headers={
         'Location': f'/api/posts/{post_id}'
     })
 
+
 @bind_request_body(CreateEditPostRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_POSTS)
 @check_word_filter
-async def create_series_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
-    player_id = request.state.user.player_id
+@inject_current_user
+async def create_series_post(request: Request[State], user: User, body: CreateEditPostRequestData) -> JSONResponse:
+    player_id = user.player_id
     series_id = request.path_params['series_id']
-    command = CreatePostCommand(body.title, body.content, body.is_public, False, player_id, series_id=series_id)
-    post_id = await handle(command)
+    command = CreatePostCommand(
+        body.title, body.content, body.is_public, False, player_id, series_id=series_id)
+    post_id = await request.state.command_handler.handle(command)
     return JSONResponse({"id": post_id}, status_code=201, headers={
         'Location': f'/api/tournaments/series/{series_id}/posts/{post_id}'
     })
 
+
 @bind_request_body(CreateEditPostRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_POSTS)
 @check_word_filter
-async def create_tournament_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
-    player_id = request.state.user.player_id
+@inject_current_user
+async def create_tournament_post(request: Request[State], user: User, body: CreateEditPostRequestData) -> JSONResponse:
+    player_id = user.player_id
     tournament_id = request.path_params['tournament_id']
-    command = CreatePostCommand(body.title, body.content, body.is_public, False, player_id, tournament_id=tournament_id)
-    post_id = await handle(command)
+    command = CreatePostCommand(
+        body.title, body.content, body.is_public, False, player_id, tournament_id=tournament_id)
+    post_id = await request.state.command_handler.handle(command)
     return JSONResponse({"id": post_id}, status_code=201, headers={
         'Location': f'/api/tournaments/{tournament_id}/posts/{post_id}'
     })
 
+
 @bind_request_body(CreateEditPostRequestData)
 @require_permission(permissions.MANAGE_POSTS)
 @check_word_filter
-async def edit_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
+async def edit_post(request: Request[State], body: CreateEditPostRequestData) -> JSONResponse:
     post_id = request.path_params['post_id']
-    command = EditPostCommand(post_id, body.title, body.content, body.is_public, True)
-    await handle(command)
+    command = EditPostCommand(
+        post_id, body.title, body.content, body.is_public, True)
+    await request.state.command_handler.handle(command)
     return JSONResponse({"id": post_id})
+
 
 @bind_request_body(CreateEditPostRequestData)
 @require_series_permission(series_permissions.MANAGE_SERIES_POSTS)
 @check_word_filter
-async def edit_series_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
+async def edit_series_post(request: Request[State], body: CreateEditPostRequestData) -> JSONResponse:
     post_id = request.path_params['post_id']
     series_id = request.path_params['series_id']
-    command = EditPostCommand(post_id, body.title, body.content, body.is_public, False, series_id=series_id)
-    await handle(command)
+    command = EditPostCommand(
+        post_id, body.title, body.content, body.is_public, False, series_id=series_id)
+    await request.state.command_handler.handle(command)
     return JSONResponse({"id": post_id})
+
 
 @bind_request_body(CreateEditPostRequestData)
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_POSTS)
 @check_word_filter
-async def edit_tournament_post(request: Request, body: CreateEditPostRequestData) -> JSONResponse:
+async def edit_tournament_post(request: Request[State], body: CreateEditPostRequestData) -> JSONResponse:
     post_id = request.path_params['post_id']
     tournament_id = request.path_params['tournament_id']
-    command = EditPostCommand(post_id, body.title, body.content, body.is_public, False, tournament_id=tournament_id)
-    await handle(command)
+    command = EditPostCommand(post_id, body.title, body.content,
+                              body.is_public, False, tournament_id=tournament_id)
+    await request.state.command_handler.handle(command)
     return JSONResponse({"id": post_id})
+
 
 @bind_request_query(PostFilter)
 @check_post_privileges
-async def list_posts(request: Request, filter: PostFilter) -> JSONResponse:
+async def list_posts(request: Request[State], filter: PostFilter) -> JSONResponse:
     series_id = request.path_params.get('series_id', None)
     tournament_id = request.path_params.get('tournament_id', None)
     is_global = series_id is None and tournament_id is None
-    command = ListPostsCommand(filter, is_global, request.state.is_privileged, series_id, tournament_id)
-    posts = await handle(command)
+    command = ListPostsCommand(
+        filter, is_global, request.state.is_privileged, series_id, tournament_id)
+    posts = await request.state.command_handler.handle(command)
     return JSONResponse(posts)
 
+
 @check_post_privileges
-async def view_post(request: Request) -> JSONResponse:
+async def view_post(request: Request[State]) -> JSONResponse:
     series_id = request.path_params.get('series_id', None)
     tournament_id = request.path_params.get('tournament_id', None)
     post_id = request.path_params['post_id']
     is_global = series_id is None and tournament_id is None
-    command = GetPostCommand(post_id, request.state.is_privileged, is_global, series_id, tournament_id)
-    post = await handle(command)
+    command = GetPostCommand(
+        post_id, request.state.is_privileged, is_global, series_id, tournament_id)
+    post = await request.state.command_handler.handle(command)
     return JSONResponse(post)
 
 routes: list[Route] = [
@@ -99,11 +118,17 @@ routes: list[Route] = [
     Route('/api/posts/{post_id:int}', view_post),
     Route('/api/posts/{post_id:int}', edit_post, methods=["PATCH"]),
     Route('/api/tournaments/series/{series_id:int}/posts', list_posts),
-    Route('/api/tournaments/series/{series_id:int}/posts', create_series_post, methods=["POST"]),
-    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}', view_post),
-    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}', edit_series_post, methods=["PATCH"]),
+    Route('/api/tournaments/series/{series_id:int}/posts',
+          create_series_post, methods=["POST"]),
+    Route(
+        '/api/tournaments/series/{series_id:int}/posts/{post_id:int}', view_post),
+    Route('/api/tournaments/series/{series_id:int}/posts/{post_id:int}',
+          edit_series_post, methods=["PATCH"]),
     Route('/api/tournaments/{tournament_id:int}/posts', list_posts),
-    Route('/api/tournaments/{tournament_id:int}/posts', create_tournament_post, methods=["POST"]),
-    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}', view_post),
-    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}', edit_tournament_post, methods=["PATCH"]),
+    Route('/api/tournaments/{tournament_id:int}/posts',
+          create_tournament_post, methods=["POST"]),
+    Route(
+        '/api/tournaments/{tournament_id:int}/posts/{post_id:int}', view_post),
+    Route('/api/tournaments/{tournament_id:int}/posts/{post_id:int}',
+          edit_tournament_post, methods=["PATCH"]),
 ]

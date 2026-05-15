@@ -1,9 +1,16 @@
+from abc import ABC, abstractmethod
 import aiohttp
 import msgspec
 from common.data.models import Problem, IPCheckResponse, IPInfoBasic
 
 
-class IPApi:
+class IPService(ABC):
+    @abstractmethod
+    async def check_ips(self, ips_to_check: list[IPInfoBasic]) -> list[IPCheckResponse]:
+        pass
+
+
+class IPApi(IPService):
     async def check_ips(self, ips_to_check: list[IPInfoBasic]) -> list[IPCheckResponse]:
         response_data: list[IPCheckResponse] = []
         async with aiohttp.ClientSession() as session:

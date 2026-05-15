@@ -4,6 +4,7 @@ from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
+
 @dataclass
 class CreatePlayerCommand(Command[Player]):
     user_id: int | None
@@ -16,9 +17,11 @@ class CreatePlayerCommand(Command[Player]):
     async def handle(self, db_wrapper: DBWrapper):
         name = self.name.strip()
         if len(name) < 2:
-            raise Problem("Player name must be at least 2 characters", status=400)
+            raise Problem(
+                "Player name must be at least 2 characters", status=400)
         if len(name) > 24:
-            raise Problem("Player name must be 24 characters or less", status=400)
+            raise Problem(
+                "Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect(db_name="main", attach=["auth"]) as db:
             if self.user_id is not None:
                 check_confirmed_email_query = """
@@ -32,20 +35,22 @@ class CreatePlayerCommand(Command[Player]):
                     assert row is not None
                     player_id, email_confirmed = row
                     if not bool(email_confirmed):
-                        raise Problem("You must confirm your email to complete the player signup")
+                        raise Problem(
+                            "You must confirm your email to complete the player signup")
                     if player_id is not None:
-                        raise Problem("Can only have one player per user", status=400)
+                        raise Problem(
+                            "Can only have one player per user", status=400)
             now = int(datetime.now(timezone.utc).timestamp())
             command = """INSERT INTO players(name, country_code, is_hidden, is_shadow, is_banned, join_date) 
                 VALUES (?, ?, ?, ?, ?, ?)"""
             player_row = await db.execute_insert(
-                command, 
+                command,
                 (name, self.country_code, self.is_hidden, self.is_shadow, False, now))
-            
+
             # TODO: Run queries to determine why it errored
             if player_row is None:
                 raise Problem("Failed to create player")
-            
+
             player_id = player_row[0]
 
             if self.user_id is not None:
@@ -53,35 +58,41 @@ class CreatePlayerCommand(Command[Player]):
                     # handle case where user with the given ID doesn't exist
                     if cursor.rowcount != 1:
                         raise Problem("Invalid User ID", status=404)
-                    
+
             fc_set = set([friend_code.fc for friend_code in self.friend_codes])
             if len(fc_set) < len(self.friend_codes):
                 raise Problem("Cannot have duplicate FCs", status=400)
-            fc_limits: dict[FriendCodeType, int] = {"switch": 1, "mkt": 1, "mkw": 4, "3ds": 1, "nnid": 1}
+            fc_limits: dict[FriendCodeType, int] = {
+                "switch": 1, "mkt": 1, "mkw": 4, "3ds": 1, "nnid": 1}
             for type in fc_limits.keys():
                 game_fcs = [fc for fc in self.friend_codes if fc.type == type]
                 if len(game_fcs) > fc_limits[type]:
-                    raise Problem(f"Too many friend codes were provided for the FC type {type} (limit {fc_limits[type]})", status=400)
-                    
+                    raise Problem(
+                        f"Too many friend codes were provided for the FC type {type} (limit {fc_limits[type]})", status=400)
+
             for friend_code in self.friend_codes:
                 match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", friend_code.fc)
                 if friend_code.type != "nnid" and not match:
-                    raise Problem(f"FC {friend_code.fc} of type {friend_code.type} is in incorrect format", status=400)
+                    raise Problem(
+                        f"FC {friend_code.fc} of type {friend_code.type} is in incorrect format", status=400)
                 if friend_code.type == "nnid" and len(friend_code.fc) > 16:
-                    raise Problem("NNIDs must be 16 characters or less", status=400)
-                
+                    raise Problem(
+                        "NNIDs must be 16 characters or less", status=400)
+
                 # check if friend code is currently in use
                 async with db.execute("SELECT id FROM friend_codes WHERE fc = ? AND type = ? AND is_active = ?", (friend_code.fc, friend_code.type, True)) as cursor:
                     row = await cursor.fetchone()
                     if row:
-                        raise Problem(f"Another player is currently using this {friend_code.type} friend code", status=400)
-                    
+                        raise Problem(
+                            f"Another player is currently using this {friend_code.type} friend code", status=400)
+
             friend_code_tuples = [(player_id, friend_code.type, friend_code.fc, False, friend_code.is_primary, True, friend_code.description, now)
                                   for friend_code in self.friend_codes]
             await db.executemany("INSERT INTO friend_codes(player_id, type, fc, is_verified, is_primary, is_active, description, creation_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    friend_code_tuples)
+                                 friend_code_tuples)
             await db.commit()
             return Player(int(player_id), name, self.country_code, self.is_hidden, self.is_shadow, False, now, None)
+
 
 @dataclass
 class UpdatePlayerCommand(Command[PlayerUpdate | None]):
@@ -92,7 +103,8 @@ class UpdatePlayerCommand(Command[PlayerUpdate | None]):
         data = self.data
         async with db_wrapper.connect() as db:
             if len(self.data.name) > 24:
-                raise Problem("Player name must be 24 characters or less", status=400)
+                raise Problem(
+                    "Player name must be 24 characters or less", status=400)
             async with db.execute("SELECT name FROM players WHERE id = ?", (data.player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
@@ -101,13 +113,14 @@ class UpdatePlayerCommand(Command[PlayerUpdate | None]):
             update_query = """UPDATE players 
             SET name = ?, country_code = ?, is_hidden = ?, is_shadow = ?
             WHERE id = ? RETURNING id, name, country_code, is_hidden"""
-            params = (data.name.strip(), data.country_code, data.is_hidden, data.is_shadow, data.player_id)
+            params = (data.name.strip(), data.country_code,
+                      data.is_hidden, data.is_shadow, data.player_id)
 
             async with db.execute(update_query, params) as cursor:
                 updated_player = await cursor.fetchone()
                 if updated_player is None:
                     return None
-                
+
             if curr_name != data.name:
                 now = int(datetime.now(timezone.utc).timestamp())
                 await db.execute("""INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status, handled_by)
@@ -128,22 +141,23 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
             query = "SELECT name, country_code, is_hidden, is_shadow, is_banned, join_date FROM players WHERE id = ?"
             async with db.execute(query, (self.id,)) as cursor:
                 player_row = await cursor.fetchone()
-            
+
             if player_row is None:
                 return None
-            
+
             name, country_code, is_hidden, is_shadow, is_banned, player_join_date = player_row
 
             fc_query = "SELECT id, type, fc, is_verified, is_primary, description, is_active, creation_date FROM friend_codes WHERE player_id = ?"
-            friend_code_rows = await db.execute_fetchall(fc_query, (self.id, ))
-            friend_codes = [FriendCode(id, fc, type, self.id, bool(is_verified), bool(is_primary), creation_date, description, bool(is_active)) for id, type, fc, is_verified, is_primary, 
+            friend_code_rows = await db.execute_fetchall(fc_query, (self.id,))
+            friend_codes = [FriendCode(id, fc, type, self.id, bool(is_verified), bool(is_primary), creation_date, description, bool(is_active)) for id, type, fc, is_verified, is_primary,
                             description, is_active, creation_date in friend_code_rows]
 
             user_query = "SELECT id FROM users WHERE player_id = ?"
             async with db.execute(user_query, (self.id,)) as cursor:
                 user_row = await cursor.fetchone()
-            
-            user = None if user_row is None else User(int(user_row[0]), self.id)
+
+            user = None if user_row is None else User(
+                int(user_row[0]), self.id)
 
             rosters: list[PlayerRoster] = []
             async with db.execute("""SELECT m.roster_id, m.join_date, t.id, t.name, t.tag, t.color, r.name, r.tag, r.game, r.mode, r.color, m.is_bagger_clause
@@ -158,7 +172,8 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     roster_name = roster_name if roster_name else team_name
                     roster_tag = roster_tag if roster_tag else team_tag
                     roster_color = roster_color if roster_color else team_color
-                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag, roster_color, roster_name, roster_tag, game, mode, bool(is_bagger_clause)))
+                    rosters.append(PlayerRoster(roster_id, join_date, team_id, team_name, team_tag,
+                                   roster_color, roster_name, roster_tag, game, mode, bool(is_bagger_clause)))
 
             ban_info = None
             if is_banned:
@@ -167,7 +182,8 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     ban_row = await cursor.fetchone()
                 unban_date = ban_row[1] if ban_row and self.include_unban_date else None
                 is_indefinite = ban_row[2] if ban_row and self.include_unban_date else None
-                ban_info = None if ban_row is None else PlayerBanBasic(self.id, ban_row[0], unban_date, is_indefinite)
+                ban_info = None if ban_row is None else PlayerBanBasic(
+                    self.id, ban_row[0], unban_date, is_indefinite)
 
             user_settings = None
             if user:
@@ -176,7 +192,8 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     settings_row = await cursor.fetchone()
                     if settings_row is not None:
                         avatar, about_me, language, color_scheme, timezone, hide_discord = settings_row
-                        user_settings = UserSettings(user.id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
+                        user_settings = UserSettings(
+                            user.id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
 
             discord = None
             if user:
@@ -191,7 +208,8 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     request_id, old_name, new_name, request_date, request_approval = row
-                    name_changes.append(PlayerNameChange(request_id, old_name, new_name, request_date, request_approval))
+                    name_changes.append(PlayerNameChange(
+                        request_id, old_name, new_name, request_date, request_approval))
 
             notes = None
             if self.include_notes:
@@ -209,8 +227,10 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                                 edited_by = None
                                 if player_row:
                                     p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date = player_row
-                                    edited_by = Player(p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
-                                notes = PlayerNotes(player_notes, edited_by, date)
+                                    edited_by = Player(
+                                        p_id, p_name, p_country_code, p_is_hidden, p_is_shadow, p_is_banned, p_join_date, None)
+                                notes = PlayerNotes(
+                                    player_notes, edited_by, date)
 
             roles: list[PlayerRole] = []
             if user:
@@ -222,11 +242,13 @@ class GetPlayerDetailedCommand(Command[PlayerDetailed | None]):
                     rows = await cursor.fetchall()
                     for row in rows:
                         role_id, role_name, role_position = row
-                        roles.append(PlayerRole(role_id, role_name, role_position))
+                        roles.append(PlayerRole(
+                            role_id, role_name, role_position))
 
-            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), player_join_date, discord, friend_codes, 
+            return PlayerDetailed(self.id, name, country_code, bool(is_hidden), bool(is_shadow), bool(is_banned), player_join_date, discord, friend_codes,
                                   rosters, ban_info, user_settings, name_changes, notes, roles)
-        
+
+
 @dataclass
 class ListPlayersCommand(Command[PlayerList]):
     filter: PlayerFilter
@@ -239,9 +261,9 @@ class ListPlayersCommand(Command[PlayerList]):
             fc_where_clauses: list[str] = []
 
             variable_parameters: list[Any] = []
-            
-            limit:int = 50
-            offset:int = 0
+
+            limit: int = 50
+            offset: int = 0
 
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
@@ -296,7 +318,8 @@ class ListPlayersCommand(Command[PlayerList]):
 
                 # check names and friend codes and discord ids
                 if filter.name_or_fc:
-                    fc_where_clauses.append("(f.fc LIKE ? OR p2.name LIKE ? OR d2.discord_id = ?)")
+                    fc_where_clauses.append(
+                        "(f.fc LIKE ? OR p2.name LIKE ? OR d2.discord_id = ?)")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
                     variable_parameters.append(f"%{filter.name_or_fc}%")
                     variable_parameters.append(filter.name_or_fc)
@@ -306,9 +329,11 @@ class ListPlayersCommand(Command[PlayerList]):
                     # includes shadow players in the results even if they don't have an
                     # FC for the type in the filter
                     if filter.include_shadow_players:
-                        fc_where_clauses.append("((f.type = ? AND f.is_active = 1) OR p2.is_shadow = 1)")
+                        fc_where_clauses.append(
+                            "((f.type = ? AND f.is_active = 1) OR p2.is_shadow = 1)")
                     else:
-                        fc_where_clauses.append("f.type = ? AND f.is_active = 1")
+                        fc_where_clauses.append(
+                            "f.type = ? AND f.is_active = 1")
                     variable_parameters.append(filter.fc_type)
 
                 fc_where_clauses_str = ' AND '.join(fc_where_clauses)
@@ -344,11 +369,13 @@ class ListPlayersCommand(Command[PlayerList]):
                     fc_where_clauses.append("f.fc LIKE ?")
                     fc_variable_parameters.append(f"%{filter.friend_code}%")
                 if filter.name_or_fc:
-                    match = re.fullmatch(r"\d{4}-\d{4}-\d{4}", filter.name_or_fc)
+                    match = re.fullmatch(
+                        r"\d{4}-\d{4}-\d{4}", filter.name_or_fc)
                     if match:
                         fc_where_clauses.append("f.fc LIKE ?")
                         fc_variable_parameters.append(f"%{filter.name_or_fc}%")
-                fc_where_clause = "" if not len(fc_where_clauses) else f"AND {' AND '.join(fc_where_clauses)}"
+                fc_where_clause = "" if not len(
+                    fc_where_clauses) else f"AND {' AND '.join(fc_where_clauses)}"
             friend_codes_query = f"""SELECT f.id, f.fc, f.type, f.player_id, f.is_verified, f.is_primary, f.description, f.is_active, f.creation_date FROM friend_codes f WHERE f.player_id IN (
                 SELECT p.id FROM players p
                 LEFT JOIN users u ON u.player_id = p.id
@@ -371,8 +398,10 @@ class ListPlayersCommand(Command[PlayerList]):
                      d_discriminator, d_global_name, d_avatar) = row
                     player_discord = None
                     if discord_id:
-                        player_discord = Discord(discord_id, d_username, d_discriminator, d_global_name, d_avatar)
-                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow, is_banned, join_date, player_discord, [], [], None, None, [], None, [])
+                        player_discord = Discord(
+                            discord_id, d_username, d_discriminator, d_global_name, d_avatar)
+                    player = PlayerDetailed(id, name, country_code, is_hidden, is_shadow,
+                                            is_banned, join_date, player_discord, [], [], None, None, [], None, [])
                     players.append(player)
                     friend_codes[player.id] = player.friend_codes
 
@@ -383,16 +412,19 @@ class ListPlayersCommand(Command[PlayerList]):
                 assert row is not None
                 player_count = row[0]
 
-            page_count = int(player_count / limit) + (1 if player_count % limit else 0)
+            page_count = int(player_count / limit) + \
+                (1 if player_count % limit else 0)
 
             if filter.detailed is not None:
                 async with db.execute(friend_codes_query, (*variable_parameters, limit, offset, *fc_variable_parameters)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
                         id, fc, fc_type, player_id, is_verified, is_primary, description, is_active, creation_date = row
-                        friend_codes[player_id].append(FriendCode(id, fc, fc_type, player_id, bool(is_verified), bool(is_primary), creation_date, description, bool(is_active)))
-                
+                        friend_codes[player_id].append(FriendCode(id, fc, fc_type, player_id, bool(
+                            is_verified), bool(is_primary), creation_date, description, bool(is_active)))
+
             return PlayerList(players, player_count, page_count)
+
 
 @dataclass
 class MergePlayersCommand(Command[None]):
@@ -406,12 +438,14 @@ class MergePlayersCommand(Command[None]):
             async with db.execute("SELECT id FROM players WHERE id = ?", (self.from_player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    raise Problem(f"Player with ID {self.from_player_id} not found", status=404)
+                    raise Problem(
+                        f"Player with ID {self.from_player_id} not found", status=404)
             async with db.execute("SELECT id FROM players WHERE id = ?", (self.to_player_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    raise Problem(f"Player with ID {self.to_player_id} not found", status=404)
-                
+                    raise Problem(
+                        f"Player with ID {self.to_player_id} not found", status=404)
+
             # merge the old player's info into the new player
             await db.execute("UPDATE friend_codes SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
             await db.execute("UPDATE tournament_players SET player_id = ? WHERE player_id = ?", (self.to_player_id, self.from_player_id))
@@ -423,6 +457,7 @@ class MergePlayersCommand(Command[None]):
             await db.execute("UPDATE users SET player_id = ? WHERE player_id = ?", (None, self.from_player_id))
             await db.execute("DELETE FROM players WHERE id = ?", (self.from_player_id,))
             await db.commit()
+
 
 @dataclass
 class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
@@ -440,13 +475,15 @@ class GetPlayerTransferHistoryCommand(Command[PlayerTransferHistory]):
                 WHERE player_id = ?
                 AND t.approval_status="approved"
                 ORDER BY tm.join_date ASC;''',
-                (self.player_id,)) as cursor:
+                                  (self.player_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     team_id, team_name, game, mode, item_id, join_date, leave_date, is_bagger_clause, is_hidden, roster_name = row
-                    history.append(PlayerTransferItem(item_id, team_id, team_name, game, mode, join_date, leave_date, bool(is_bagger_clause), roster_name, bool(is_hidden)))
+                    history.append(PlayerTransferItem(item_id, team_id, team_name, game, mode, join_date, leave_date, bool(
+                        is_bagger_clause), roster_name, bool(is_hidden)))
                 results = PlayerTransferHistory(history)
                 return results
+
 
 @dataclass
 class ToggleTransferHistoryItemVisibilityCommand(Command[None]):

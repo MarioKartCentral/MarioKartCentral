@@ -169,7 +169,7 @@ SITE_MODERATOR_PERMISSIONS = [
 3. Use it in an endpoint:
 ```python
 @require_permission(permissions.MANAGE_FUN_FACTS)
-async def delete_fun_fact(request: Request) -> JSONResponse:
+async def delete_fun_fact(request: Request[State]) -> JSONResponse:
     # Implementation
 ```
 

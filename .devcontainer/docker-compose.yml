@@ -2,7 +2,7 @@ version: '3'
 
 services:
   dev-environment:
-    image: mcr.microsoft.com/vscode/devcontainers/base:0-ubuntu-20.04
+    image: mcr.microsoft.com/vscode/devcontainers/base:ubuntu24.04
     init: true
     volumes:
       - .:/workspace:cached
