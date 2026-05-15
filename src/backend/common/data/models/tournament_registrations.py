@@ -2,11 +2,13 @@ from dataclasses import dataclass
 from common.data.models.friend_codes import FriendCode
 from common.data.models.discord_integration import Discord
 
+
 @dataclass
 class RegisterPlayerRequestData:
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
+
 
 @dataclass
 class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
@@ -19,12 +21,14 @@ class ForceRegisterPlayerRequestData(RegisterPlayerRequestData):
     is_bagger_clause: bool = False
     is_approved: bool = False
 
+
 @dataclass
-class EditMyRegistrationRequestData():
+class EditMyRegistrationRequestData:
     mii_name: str | None
     can_host: bool
     selected_fc_id: int | None
     registration_id: int
+
 
 @dataclass
 class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
@@ -36,14 +40,16 @@ class EditPlayerRegistrationRequestData(EditMyRegistrationRequestData):
     is_bagger_clause: bool | None
     is_approved: bool | None
 
+
 @dataclass
-class TournamentPlayerDetailsShort():
+class TournamentPlayerDetailsShort:
     player_id: int
     player_name: str
     registration_id: int
 
+
 @dataclass
-class TournamentPlayerDetails():
+class TournamentPlayerDetails:
     id: int
     player_id: int
     registration_id: int
@@ -60,13 +66,15 @@ class TournamentPlayerDetails():
     selected_fc_id: int | None
     friend_codes: list[FriendCode]
 
+
 @dataclass
-class TournamentRegistrationFilter():
+class TournamentRegistrationFilter:
     registered_only: bool = True
     eligible_only: bool = False
     hosts_only: bool = False
     is_approved: bool | None = None
 
+
 @dataclass
-class TournamentCheckinRequestData():
+class TournamentCheckinRequestData:
     registration_id: int

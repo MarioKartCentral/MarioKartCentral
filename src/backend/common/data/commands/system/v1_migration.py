@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 import msgspec
 from common.auth import roles as user_roles, series_roles, team_roles
@@ -15,7 +14,7 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         user_bytes = await s3_wrapper.get_object(MKCV1_BUCKET, "users.json")
         if user_bytes is None:
-            return None # we shouldn't interrupt login flow if this fails
+            return None  # we shouldn't interrupt login flow if this fails
         user_data = msgspec.json.decode(user_bytes, type=NewMKCUserData)
         if self.email.lower() not in user_data.users:
             return None
@@ -23,12 +22,16 @@ class GetMKCV1UserCommand(Command[NewMKCUser | None]):
         # make sure users cant claim an account if the linked player already has an account
         if v1_user.player_id is not None:
             async with db_wrapper.connect(readonly=True) as db:
-                async with db.execute("SELECT id FROM users WHERE player_id = ?", (v1_user.player_id,)) as cursor:
+                async with db.execute(
+                    "SELECT id FROM users WHERE player_id = ?",
+                    (v1_user.player_id,),
+                ) as cursor:
                     row = await cursor.fetchone()
                     if row:
                         return None
         return v1_user
-    
+
+
 @dataclass
 class GetMKCV1UserByPlayerIDCommand(Command[NewMKCUser | None]):
     player_id: int
@@ -50,11 +53,15 @@ class GetMKCV1UserByPlayerIDCommand(Command[NewMKCUser | None]):
         # make sure users cant transfer an account if they previously transferred their account and changed their email
         if v1_user.player_id is not None:
             async with db_wrapper.connect(readonly=True) as db:
-                async with db.execute("SELECT id FROM users WHERE player_id = ?", (v1_user.player_id,)) as cursor:
+                async with db.execute(
+                    "SELECT id FROM users WHERE player_id = ?",
+                    (v1_user.player_id,),
+                ) as cursor:
                     row = await cursor.fetchone()
                     if row:
                         return None
         return v1_user
+
 
 @dataclass
 class TransferMKCV1UserCommand(Command[UserLoginData]):
@@ -68,27 +75,40 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
     team_roles: list[NewMKCTeamRole]
 
     async def handle(self, db_wrapper: DBWrapper):
-        async with db_wrapper.connect(db_name='main', attach=["auth"]) as db:
+        async with db_wrapper.connect(db_name="main", attach=["auth"]) as db:
             email_confirmed = True
             force_password_reset = True
-            row = await db.execute_insert("INSERT INTO users(join_date, player_id) VALUES(:join_date, :player_id)", 
-                                          {"join_date": self.join_date, "player_id": self.player_id})
+            row = await db.execute_insert(
+                "INSERT INTO users(join_date, player_id) VALUES(:join_date, :player_id)",
+                {"join_date": self.join_date, "player_id": self.player_id},
+            )
             if row is None or not row[0]:
                 raise Problem("Failed to generate user ID from main table")
-            
+
             user_id = int(row[0])
 
-            insert_query = '''
+            insert_query = """
                 INSERT INTO auth.user_auth(user_id, email, password_hash, email_confirmed, force_password_reset)
                 VALUES(:user_id, :email, :password_hash, :email_confirmed, :force_password_reset)
-            '''
-            await db.execute_insert(insert_query, {"user_id": user_id, "email": self.email, "password_hash": self.password_hash,
-                                                   "email_confirmed": email_confirmed, "force_password_reset": force_password_reset})
+            """
+            await db.execute_insert(
+                insert_query,
+                {
+                    "user_id": user_id,
+                    "email": self.email,
+                    "password_hash": self.password_hash,
+                    "email_confirmed": email_confirmed,
+                    "force_password_reset": force_password_reset,
+                },
+            )
 
             is_banned = False
             expiration_date: int | None = None
             if self.player_id:
-                async with db.execute("SELECT expiration_date FROM player_bans WHERE player_id = ?", (self.player_id,)) as cursor:
+                async with db.execute(
+                    "SELECT expiration_date FROM player_bans WHERE player_id = ?",
+                    (self.player_id,),
+                ) as cursor:
                     row = await cursor.fetchone()
                     if row:
                         is_banned = True
@@ -96,18 +116,71 @@ class TransferMKCV1UserCommand(Command[UserLoginData]):
                             expiration_date = int(row[0])
 
             # add about me from old site data
-            await db.execute("INSERT INTO user_settings(user_id, about_me) VALUES(?, ?)", (user_id, self.about_me))
+            await db.execute(
+                "INSERT INTO user_settings(user_id, about_me) VALUES(?, ?)",
+                (user_id, self.about_me),
+            )
 
             # add user, series, team roles
-            insert_user_roles: set[tuple[int, int, int | None]] = set([(user_id, user_roles.id_by_default_role[role.role_name], None) for role in self.user_roles])
+            insert_user_roles: set[tuple[int, int, int | None]] = set(
+                [
+                    (
+                        user_id,
+                        user_roles.id_by_default_role[role.role_name],
+                        None,
+                    )
+                    for role in self.user_roles
+                ]
+            )
             if is_banned:
-                insert_user_roles.add((user_id, user_roles.id_by_default_role[user_roles.BANNED], expiration_date))
-            insert_series_roles = set([(user_id, series_roles.id_by_default_role[role.role_name], role.series_id) for role in self.series_roles])
-            insert_team_roles = set([(user_id, team_roles.id_by_default_role[role.role_name], role.team_id, role.team_id) for role in self.team_roles])
-            await db.executemany("""INSERT INTO user_roles(user_id, role_id, expires_on) VALUES(?, ?, ?)""", insert_user_roles)
-            await db.executemany("""INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""", insert_series_roles)
-            await db.executemany("""INSERT INTO user_team_roles(user_id, role_id, team_id)
+                insert_user_roles.add(
+                    (
+                        user_id,
+                        user_roles.id_by_default_role[user_roles.BANNED],
+                        expiration_date,
+                    )
+                )
+            insert_series_roles = set(
+                [
+                    (
+                        user_id,
+                        series_roles.id_by_default_role[role.role_name],
+                        role.series_id,
+                    )
+                    for role in self.series_roles
+                ]
+            )
+            insert_team_roles = set(
+                [
+                    (
+                        user_id,
+                        team_roles.id_by_default_role[role.role_name],
+                        role.team_id,
+                        role.team_id,
+                    )
+                    for role in self.team_roles
+                ]
+            )
+            await db.executemany(
+                """INSERT INTO user_roles(user_id, role_id, expires_on) VALUES(?, ?, ?)""",
+                insert_user_roles,
+            )
+            await db.executemany(
+                """INSERT INTO user_series_roles(user_id, role_id, series_id) VALUES(?, ?, ?)""",
+                insert_series_roles,
+            )
+            await db.executemany(
+                """INSERT INTO user_team_roles(user_id, role_id, team_id)
                                     SELECT ?, ?, ?
-                                    WHERE EXISTS(SELECT 1 FROM teams WHERE id = ?)""", insert_team_roles)
+                                    WHERE EXISTS(SELECT 1 FROM teams WHERE id = ?)""",
+                insert_team_roles,
+            )
             await db.commit()
-            return UserLoginData(user_id, self.player_id, email_confirmed, force_password_reset, self.email, self.password_hash)
+            return UserLoginData(
+                user_id,
+                self.player_id,
+                email_confirmed,
+                force_password_reset,
+                self.email,
+                self.password_hash,
+            )

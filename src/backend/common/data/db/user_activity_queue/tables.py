@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.db.common import TableModel
 
+
 @dataclass
 class UserActivityQueue(TableModel):
     id: int
@@ -20,5 +21,6 @@ class UserActivityQueue(TableModel):
             referer TEXT,
             timestamp INTEGER NOT NULL
         )"""
+
 
 all_tables: list[type[TableModel]] = [UserActivityQueue]

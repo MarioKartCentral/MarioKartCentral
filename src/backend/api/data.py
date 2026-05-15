@@ -16,14 +16,14 @@ if appsettings.USE_SES_FOR_EMAILS:
         site_url=appsettings.SITE_URL,
         access_key_id=appsettings.AWS_SES_ACCESS_KEY,
         secret_access_key=str(appsettings.AWS_SES_SECRET_KEY),
-        region=appsettings.AWS_SES_REGION
+        region=appsettings.AWS_SES_REGION,
     )
 else:
     email_service = SMTPEmailService(
         from_email=appsettings.MKC_EMAIL_ADDRESS,
         site_url=appsettings.SITE_URL,
         hostname=appsettings.MKC_EMAIL_HOSTNAME,
-        port=appsettings.MKC_EMAIL_PORT
+        port=appsettings.MKC_EMAIL_PORT,
     )
 
 _command_handler = CommandHandler(
@@ -35,11 +35,13 @@ _command_handler = CommandHandler(
     appsettings.DISCORD_CLIENT_ID,
     str(appsettings.DISCORD_CLIENT_SECRET),
     appsettings.DISCORD_OAUTH_CALLBACK,
-    email_service
+    email_service,
 )
+
 
 async def handle[T](command: Command[T]) -> T:
     return await _command_handler.handle(command)
+
 
 async def on_startup():
     await _command_handler.__aenter__()
@@ -49,7 +51,7 @@ async def on_startup():
         for db_name in db_paths.keys():
             await handle(ResetDbCommand(db_name=db_name))
     await handle(UpdateDbSchemaCommand())
-    
+
     if appsettings.RESET_DUCK_DB:
         await handle(ResetDuckDbCommand())
     # Initialize DuckDB schema

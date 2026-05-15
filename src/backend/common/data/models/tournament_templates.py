@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from common.data.models.tournaments import TournamentS3Fields
 from common.data.models.common import Game, GameMode
 
+
 @dataclass
 class TournamentTemplateRequestData(TournamentS3Fields):
     name: str
@@ -48,16 +49,19 @@ class TournamentTemplateRequestData(TournamentS3Fields):
     max_representatives: int | None = None
     sync_team_rosters: bool = False
 
+
 @dataclass
 class TournamentTemplate(TournamentTemplateRequestData):
     id: int | None = None
 
+
 @dataclass
-class TournamentTemplateMinimal():
+class TournamentTemplateMinimal:
     id: int
     template_name: str
     series_id: int | None
 
+
 @dataclass
-class TemplateFilter():
+class TemplateFilter:
     series_id: int | None = None

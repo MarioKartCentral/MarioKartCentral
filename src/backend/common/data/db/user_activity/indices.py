@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.db.common import IndexModel
 
+
 # Indexes for UserIPTimeRange table
 @dataclass
 class UserIPTimeRangesGranularityDateLatest(IndexModel):
@@ -9,12 +10,14 @@ class UserIPTimeRangesGranularityDateLatest(IndexModel):
         return """CREATE INDEX IF NOT EXISTS idx_user_ip_time_ranges_granularity
             ON user_ip_time_ranges(granularity, date_latest)"""
 
+
 @dataclass
 class UserIPTimeRangesUserIPId(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_user_ip_time_ranges_user_ip_id
             ON user_ip_time_ranges(user_ip_id)"""
+
 
 # Indexes for UserLogin table
 @dataclass
@@ -23,20 +26,23 @@ class UserLoginSessionID(IndexModel):
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_user_logins_session_id
             ON user_logins(session_id)"""
-    
+
+
 @dataclass
 class UserLoginFingerprintId(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_user_logins_fingerprint_id
             ON user_logins(fingerprint, id)"""
-    
+
+
 @dataclass
 class UserLoginUserID(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_user_logins_user_id
             ON user_logins(user_id)"""
+
 
 # Indexes for IPAddress table
 @dataclass
@@ -46,19 +52,22 @@ class IPAddressIsCheckedIsVPNCheckedAt(IndexModel):
         return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_is_checked_is_vpn_checked_at
             ON ip_addresses(is_checked, is_vpn, checked_at)"""
 
+
 @dataclass
 class IPAddressIsCheckedCheckedAt(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_is_checked_checked_at
             ON ip_addresses(is_checked, checked_at)"""
-    
+
+
 @dataclass
 class IPAddressIPCityASN(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_ip_city_asn
             ON ip_addresses(ip_address, city, asn)"""
+
 
 @dataclass
 class IPAddressCityASN(IndexModel):
@@ -67,12 +76,14 @@ class IPAddressCityASN(IndexModel):
         return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_city_asn
             ON ip_addresses(city, asn)"""
 
+
 @dataclass
 class IPAddressASN(IndexModel):
     @staticmethod
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_ip_addresses_asn
             ON ip_addresses(asn)"""
+
 
 # Indexes for UserIP table
 @dataclass
@@ -81,6 +92,7 @@ class UserIPIPAddressID(IndexModel):
     def get_create_index_command() -> str:
         return """CREATE INDEX IF NOT EXISTS idx_user_ips_ip_address_id
             ON user_ips(ip_address_id)"""
+
 
 all_indices: list[type[IndexModel]] = [
     UserIPTimeRangesGranularityDateLatest,
@@ -91,5 +103,5 @@ all_indices: list[type[IndexModel]] = [
     IPAddressIPCityASN,
     IPAddressCityASN,
     IPAddressASN,
-    UserIPIPAddressID
+    UserIPIPAddressID,
 ]

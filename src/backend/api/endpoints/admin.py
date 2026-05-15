@@ -7,11 +7,13 @@ from common.data.models import *
 from common.data.commands import *
 from common.auth import permissions
 
+
 @require_permission(permissions.CREATE_DB_BACKUPS)
 async def create_db_backup(request: Request) -> JSONResponse:
     await handle(BackupDatabasesCommand())
     return JSONResponse({})
 
+
 routes: list[Route] = [
-    Route('/api/admin/db_backup', create_db_backup, methods=["POST"]),
+    Route("/api/admin/db_backup", create_db_backup, methods=["POST"]),
 ]

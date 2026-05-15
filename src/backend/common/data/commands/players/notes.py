@@ -3,6 +3,7 @@ from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
+
 @dataclass
 class UpdatePlayerNotesCommand(Command[None]):
     player_id: int
@@ -10,7 +11,7 @@ class UpdatePlayerNotesCommand(Command[None]):
     edited_by: int
 
     async def handle(self, db_wrapper: DBWrapper):
-        async with db_wrapper.connect(db_name='player_notes') as db:
+        async with db_wrapper.connect(db_name="player_notes") as db:
             date = int(datetime.now(timezone.utc).timestamp())
             query = """INSERT INTO player_notes (player_id, notes, edited_by, date) VALUES (?, ?, ?, ?) 
                 ON CONFLICT (player_id) DO 

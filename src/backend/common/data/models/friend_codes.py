@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from common.data.models.common import FriendCodeType
 from common.data.models.player_basic import PlayerBasic
 
+
 @dataclass
 class FriendCode:
     id: int
@@ -15,6 +16,7 @@ class FriendCode:
     description: str | None = None
     is_active: bool = True
 
+
 @dataclass
 class CreateFriendCodeRequestData:
     fc: str
@@ -22,9 +24,11 @@ class CreateFriendCodeRequestData:
     is_primary: bool
     description: str | None
 
+
 @dataclass
 class ForceCreateFriendCodeRequestData(CreateFriendCodeRequestData):
     player_id: int
+
 
 @dataclass
 class EditMyFriendCodeRequestData:
@@ -32,23 +36,28 @@ class EditMyFriendCodeRequestData:
     is_primary: bool
     description: str | None
 
+
 @dataclass
 class ForceEditFriendCodeRequestData(EditMyFriendCodeRequestData):
     player_id: int
     fc: str
     is_active: bool
 
+
 @dataclass
 class EditPrimaryFriendCodeRequestData:
     id: int
+
 
 @dataclass
 class ModEditPrimaryFriendCodeRequestData(EditPrimaryFriendCodeRequestData):
     player_id: int
 
+
 @dataclass
 class FriendCodeEditFilter:
     page: int | None = None
+
 
 @dataclass
 class FriendCodeEdit:
@@ -60,6 +69,7 @@ class FriendCodeEdit:
     fc: FriendCode
     player: PlayerBasic
     handled_by: PlayerBasic | None
+
 
 @dataclass
 class FriendCodeEditList:
