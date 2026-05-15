@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 
 from common.data.db import DBWrapper
 
+
 @dataclass
 class EnqueueUserActivityCommand(Command[None]):
     user_id: int
@@ -17,10 +18,10 @@ class EnqueueUserActivityCommand(Command[None]):
         # Parse the URL to remove query parameters
         parsed_path = urlparse(self.path).path
         timestamp = int(self.timestamp.timestamp())
-        
+
         ip = self.ip_address if self.ip_address else "0.0.0.0"
-        
-        async with db_wrapper.connect(db_name='user_activity_queue') as db:
+
+        async with db_wrapper.connect(db_name="user_activity_queue") as db:
             await db.execute(
                 """
                 INSERT INTO user_activity_queue(user_id, ip_address, path, timestamp, referer)
@@ -31,17 +32,18 @@ class EnqueueUserActivityCommand(Command[None]):
                     "ip_address": ip,
                     "path": parsed_path,
                     "timestamp": timestamp,
-                    "referer": self.referer
-                }
+                    "referer": self.referer,
+                },
             )
             await db.commit()
+
 
 @dataclass
 class ProcessUserActivityQueueCommand(Command[None]):
     batch_size: int = 1000
 
     async def handle(self, db_wrapper: DBWrapper):
-        async with db_wrapper.connect(db_name='user_activity', attach=["user_activity_queue"]) as db:
+        async with db_wrapper.connect(db_name="user_activity", attach=["user_activity_queue"]) as db:
             get_id_range_command = """
                 SELECT MIN(id), MAX(id)
                 FROM user_activity_queue.user_activity_queue
@@ -51,10 +53,10 @@ class ProcessUserActivityQueueCommand(Command[None]):
                 id_range = await cursor.fetchone()
                 if not id_range or id_range[0] is None:
                     return  # No records to process
-                
+
                 min_id, max_possible_id = id_range
                 max_id = min(min_id + self.batch_size - 1, max_possible_id)
-            
+
             insert_missing_ips_command = """
                 INSERT INTO ip_addresses(ip_address, is_mobile, is_vpn, is_checked)
                 SELECT DISTINCT ip_address, FALSE, FALSE, FALSE
@@ -62,7 +64,10 @@ class ProcessUserActivityQueueCommand(Command[None]):
                 WHERE id BETWEEN :min_id AND :max_id
                 ON CONFLICT(ip_address) DO NOTHING
             """
-            await db.execute(insert_missing_ips_command, { "min_id": min_id, "max_id": max_id })
+            await db.execute(
+                insert_missing_ips_command,
+                {"min_id": min_id, "max_id": max_id},
+            )
             await db.commit()
 
             insert_user_ips_command = """
@@ -84,8 +89,11 @@ class ProcessUserActivityQueueCommand(Command[None]):
                 WHERE q.id BETWEEN :min_id AND :max_id
                 GROUP BY ui.id
             """
-            await db.execute(insert_user_ip_time_ranges_query, {"min_id": min_id, "max_id": max_id})
-            
+            await db.execute(
+                insert_user_ip_time_ranges_query,
+                {"min_id": min_id, "max_id": max_id},
+            )
+
             # Delete processed records
             delete_command = """
                 DELETE FROM user_activity_queue.user_activity_queue

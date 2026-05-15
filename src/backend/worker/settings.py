@@ -1,5 +1,6 @@
 import os
 
+
 def get_env_or_fail(env_name: str):
     val = os.getenv(env_name)
     if val is None:
@@ -7,7 +8,7 @@ def get_env_or_fail(env_name: str):
     return val
 
 
-DEBUG = os.getenv('DEBUG', "False").lower() == "true"
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 S3_ACCESS_KEY = get_env_or_fail("S3_ACCESS_KEY")
 S3_SECRET_KEY = get_env_or_fail("S3_SECRET_KEY")
 S3_ENDPOINT = get_env_or_fail("S3_ENDPOINT")

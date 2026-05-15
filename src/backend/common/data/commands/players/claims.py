@@ -3,6 +3,7 @@ from common.data.db import DBWrapper
 from common.data.models import *
 from datetime import datetime, timezone
 
+
 @dataclass
 class ClaimPlayerCommand(Command[PlayerClaim]):
     player_id: int
@@ -10,33 +11,53 @@ class ClaimPlayerCommand(Command[PlayerClaim]):
 
     async def handle(self, db_wrapper: DBWrapper) -> PlayerClaim:
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT id, name, country_code, is_banned FROM players WHERE id = ?", (self.player_id,)) as cursor:
+            async with db.execute(
+                "SELECT id, name, country_code, is_banned FROM players WHERE id = ?",
+                (self.player_id,),
+            ) as cursor:
                 db_player = await cursor.fetchone()
                 if db_player is None:
                     raise Problem("Claiming player not found", status=404)
-            async with db.execute("SELECT id, name, country_code, is_banned, is_shadow FROM players WHERE id = ?", (self.claimed_player_id,)) as cursor:
+            async with db.execute(
+                "SELECT id, name, country_code, is_banned, is_shadow FROM players WHERE id = ?",
+                (self.claimed_player_id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Claimed player not found", status=404)
                 *db_claimed_player, is_shadow = row
                 if not bool(is_shadow):
                     raise Problem("Cannot claim a non-shadow player", status=400)
-            async with db.execute("SELECT id FROM player_claims WHERE player_id = ? AND claimed_player_id = ? AND approval_status = ?",
-                                  (self.player_id, self.claimed_player_id, "pending")) as cursor:
+            async with db.execute(
+                "SELECT id FROM player_claims WHERE player_id = ? AND claimed_player_id = ? AND approval_status = ?",
+                (self.player_id, self.claimed_player_id, "pending"),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row:
-                    raise Problem("You already have a pending claim for this player", status=400)
+                    raise Problem(
+                        "You already have a pending claim for this player",
+                        status=400,
+                    )
             date = int(datetime.now(timezone.utc).timestamp())
-            async with db.execute("""INSERT INTO player_claims(player_id, claimed_player_id, date, approval_status)
+            async with db.execute(
+                """INSERT INTO player_claims(player_id, claimed_player_id, date, approval_status)
                              VALUES(?, ?, ?, ?) RETURNING id, date, approval_status""",
-                             (self.player_id, self.claimed_player_id, date, "pending")) as cursor:
+                (self.player_id, self.claimed_player_id, date, "pending"),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Bad request", status=400)
                 claim_id, claim_date, approval_status = row
 
             await db.commit()
-            return PlayerClaim(claim_id, claim_date, approval_status, PlayerBasic(*db_player), PlayerBasic(*db_claimed_player))
+            return PlayerClaim(
+                claim_id,
+                claim_date,
+                approval_status,
+                PlayerBasic(*db_player),
+                PlayerBasic(*db_claimed_player),
+            )
+
 
 @dataclass
 class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
@@ -45,28 +66,44 @@ class ApprovePlayerClaimCommand(Command[tuple[int, int, str]]):
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             # get the user id of requesting user as well as claimed player's info for notifications
-            async with db.execute("""SELECT c.player_id, u.id, c.claimed_player_id, p.name
+            async with db.execute(
+                """SELECT c.player_id, u.id, c.claimed_player_id, p.name
                                     FROM player_claims c
                                     LEFT JOIN users u ON u.player_id = c.player_id
                                     JOIN players p ON c.claimed_player_id = p.id
-                                    WHERE c.id = ?""", (self.claim_id,)) as cursor:
+                                    WHERE c.id = ?""",
+                (self.claim_id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player claim not found", status=404)
                 player_id, user_id, claimed_player_id, claimed_player_name = row
 
             # merge the claimed player's info into the new player
-            await db.execute("UPDATE friend_codes SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
-            await db.execute("UPDATE tournament_players SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
-            await db.execute("UPDATE team_members SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
-            await db.execute("UPDATE team_transfers SET player_id = ? WHERE player_id = ?", (player_id, claimed_player_id))
+            await db.execute(
+                "UPDATE friend_codes SET player_id = ? WHERE player_id = ?",
+                (player_id, claimed_player_id),
+            )
+            await db.execute(
+                "UPDATE tournament_players SET player_id = ? WHERE player_id = ?",
+                (player_id, claimed_player_id),
+            )
+            await db.execute(
+                "UPDATE team_members SET player_id = ? WHERE player_id = ?",
+                (player_id, claimed_player_id),
+            )
+            await db.execute(
+                "UPDATE team_transfers SET player_id = ? WHERE player_id = ?",
+                (player_id, claimed_player_id),
+            )
             # delete the player claim
             await db.execute("DELETE FROM player_claims WHERE id = ?", (self.claim_id,))
             # delete the claimed player after merging their data in
             await db.execute("DELETE FROM players WHERE id = ?", (claimed_player_id,))
             await db.commit()
             return player_id, user_id, claimed_player_name
-               
+
+
 @dataclass
 class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
     claim_id: int
@@ -74,11 +111,14 @@ class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect() as db:
             # get the user id of requesting user as well as claimed player's info for notifications
-            async with db.execute("""SELECT c.player_id, u.id, p.name
+            async with db.execute(
+                """SELECT c.player_id, u.id, p.name
                                     FROM player_claims c
                                     LEFT JOIN users u ON u.player_id = c.player_id
                                     JOIN players p ON c.claimed_player_id = p.id
-                                    WHERE c.id = ?""", (self.claim_id,)) as cursor:
+                                    WHERE c.id = ?""",
+                (self.claim_id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Player claim not found", status=404)
@@ -86,6 +126,7 @@ class DenyPlayerClaimCommand(Command[tuple[int, int, str]]):
             await db.execute("UPDATE player_claims SET approval_status = ?", ("denied",))
             await db.commit()
             return player_id, user_id, claimed_player_name
+
 
 @dataclass
 class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
@@ -101,9 +142,38 @@ class ListPlayerClaimsCommand(Command[list[PlayerClaim]]):
                 claims: list[PlayerClaim] = []
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (claim_id, date, approval_status, player_id, player_name, player_country, player_banned, 
-                     claim_player_id, claim_player_name, claim_player_country, claim_player_banned) = row
-                    player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
-                    claimed_player = PlayerBasic(claim_player_id, claim_player_name, claim_player_country, bool(claim_player_banned))
-                    claims.append(PlayerClaim(claim_id, date, approval_status, player, claimed_player))
+                    (
+                        claim_id,
+                        date,
+                        approval_status,
+                        player_id,
+                        player_name,
+                        player_country,
+                        player_banned,
+                        claim_player_id,
+                        claim_player_name,
+                        claim_player_country,
+                        claim_player_banned,
+                    ) = row
+                    player = PlayerBasic(
+                        player_id,
+                        player_name,
+                        player_country,
+                        bool(player_banned),
+                    )
+                    claimed_player = PlayerBasic(
+                        claim_player_id,
+                        claim_player_name,
+                        claim_player_country,
+                        bool(claim_player_banned),
+                    )
+                    claims.append(
+                        PlayerClaim(
+                            claim_id,
+                            date,
+                            approval_status,
+                            player,
+                            claimed_player,
+                        )
+                    )
         return claims

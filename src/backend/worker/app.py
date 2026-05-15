@@ -7,6 +7,7 @@ from worker.data import on_startup
 from worker import settings
 from worker.jobs import Job, get_all_jobs
 
+
 class JobRunner:
     def __init__(self, job: Job):
         self._job = job
@@ -22,7 +23,7 @@ class JobRunner:
                 attributes={
                     "job.name": self._job.name,
                     "job.delay_seconds": self._job.delay.total_seconds(),
-                }
+                },
             ):
                 try:
                     await self._job.run()
@@ -30,10 +31,10 @@ class JobRunner:
                     logging.error(
                         f"Job '{self._job.name}' failed",
                         exc_info=True,
-                        extra={"job_name": self._job.name}
+                        extra={"job_name": self._job.name},
                     )
                     raise
-        
+
         self._longer_than_delay = False
         self._last_run = datetime.now(timezone.utc)
         self._task = asyncio.create_task(run_with_error_handler())
@@ -42,7 +43,7 @@ class JobRunner:
         if self._last_run is None or self._task is None:
             self.start()
             return
-        
+
         time_since_last_run = datetime.now(timezone.utc) - self._last_run
         if time_since_last_run >= self._job.delay:
             if self._task.done():
@@ -53,7 +54,7 @@ class JobRunner:
                             "job_name": self._job.name,
                             "duration_seconds": time_since_last_run.total_seconds(),
                             "delay_seconds": self._job.delay.total_seconds(),
-                        }
+                        },
                     )
 
                 self.start()
@@ -65,7 +66,7 @@ class JobRunner:
                             "job_name": self._job.name,
                             "duration_seconds": time_since_last_run.total_seconds(),
                             "delay_seconds": self._job.delay.total_seconds(),
-                        }
+                        },
                     )
                     self._longer_than_delay = True
 
@@ -81,7 +82,8 @@ async def main():
 
 if __name__ == "__main__":
     if settings.DEBUG:
-        import debugpy # pyright: ignore[reportMissingTypeStubs]
+        import debugpy  # pyright: ignore[reportMissingTypeStubs]
+
         debugpy.listen(("0.0.0.0", 5678))
         debugpy.wait_for_client()  # blocks execution until client is attached
 

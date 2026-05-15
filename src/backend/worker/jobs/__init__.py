@@ -2,10 +2,10 @@ from worker.jobs.base import Job
 
 # Import all job modules at package level to ensure commands are registered
 from worker.jobs import (
-    role_checker, 
-    discord_refresh, 
-    unban_players_checker, 
-    ip_check, 
+    role_checker,
+    discord_refresh,
+    unban_players_checker,
+    ip_check,
     expired_token_check,
     activity_queue_processor,
     activity_compression,
@@ -14,10 +14,11 @@ from worker.jobs import (
     persistent_cookie_detection,
     fingerprint_match_detection,
     db_backup,
-    close_tournament_registrations
+    close_tournament_registrations,
 )
 
 _jobs: list[Job] = []
+
 
 def get_all_jobs():
     if not _jobs:

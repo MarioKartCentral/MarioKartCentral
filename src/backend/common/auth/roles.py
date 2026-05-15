@@ -1,4 +1,9 @@
-from common.auth import permissions, team_permissions, series_permissions, tournament_permissions
+from common.auth import (
+    permissions,
+    team_permissions,
+    series_permissions,
+    tournament_permissions,
+)
 
 SUPER_ADMINISTRATOR = "Super Administrator"
 ADMINISTRATOR = "Administrator"
@@ -26,14 +31,14 @@ default_roles = [
     (8, TEAM_LEADER_BANNED, 99),
     (9, LOUNGE_STAFF, 5),
     (10, SUPER_MODERATOR, 2),
-    (11, TIME_TRIAL_ADMIN, 6)
+    (11, TIME_TRIAL_ADMIN, 6),
 ]
 
-id_by_default_role = { name: roleid for roleid, name, _ in default_roles}
+id_by_default_role = {name: roleid for roleid, name, _ in default_roles}
 
 default_permissions_by_default_role: dict[str, list[str]] = {
     SUPER_ADMINISTRATOR: [
-        permissions.CREATE_USER_ROLES, 
+        permissions.CREATE_USER_ROLES,
         permissions.EDIT_USER_ROLES,
         permissions.MANAGE_USER_ROLES,
         permissions.EDIT_PLAYER,
@@ -81,7 +86,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
         tournament_permissions.MANAGE_TOURNAMENT_POSTS,
     ],
     ADMINISTRATOR: [
-        permissions.CREATE_USER_ROLES, 
+        permissions.CREATE_USER_ROLES,
         permissions.EDIT_USER_ROLES,
         permissions.MANAGE_USER_ROLES,
         permissions.EDIT_PLAYER,
@@ -250,7 +255,7 @@ default_permissions_by_default_role: dict[str, list[str]] = {
     SITE_SUPPORTER: [],
     BANNED: [],
     TEAM_LEADER_BANNED: [],
-    TIME_TRIAL_ADMIN: [ # Permissions for the new role
+    TIME_TRIAL_ADMIN: [  # Permissions for the new role
         permissions.VALIDATE_TIME_TRIAL_PROOF,
     ],
 }
@@ -266,13 +271,13 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
     SITE_SUPPORTER: [],
     BANNED: [
         tournament_permissions.REGISTER_TOURNAMENT,
-        team_permissions.EDIT_TEAM_NAME_TAG, 
-        team_permissions.EDIT_TEAM_INFO, 
-        team_permissions.CREATE_ROSTERS, 
+        team_permissions.EDIT_TEAM_NAME_TAG,
+        team_permissions.EDIT_TEAM_INFO,
+        team_permissions.CREATE_ROSTERS,
         team_permissions.MANAGE_ROSTERS,
-        team_permissions.MANAGE_TEAM_ROLES, 
-        team_permissions.INVITE_PLAYERS, 
-        team_permissions.KICK_PLAYERS, 
+        team_permissions.MANAGE_TEAM_ROLES,
+        team_permissions.INVITE_PLAYERS,
+        team_permissions.KICK_PLAYERS,
         team_permissions.REGISTER_TOURNAMENT,
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
         permissions.CREATE_TEAM,
@@ -283,13 +288,13 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         permissions.SUBMIT_TIME_TRIAL,
     ],
     TEAM_LEADER_BANNED: [
-        team_permissions.EDIT_TEAM_NAME_TAG, 
-        team_permissions.EDIT_TEAM_INFO, 
-        team_permissions.CREATE_ROSTERS, 
+        team_permissions.EDIT_TEAM_NAME_TAG,
+        team_permissions.EDIT_TEAM_INFO,
+        team_permissions.CREATE_ROSTERS,
         team_permissions.MANAGE_ROSTERS,
-        team_permissions.MANAGE_TEAM_ROLES, 
-        team_permissions.INVITE_PLAYERS, 
-        team_permissions.KICK_PLAYERS, 
+        team_permissions.MANAGE_TEAM_ROLES,
+        team_permissions.INVITE_PLAYERS,
+        team_permissions.KICK_PLAYERS,
         team_permissions.REGISTER_TOURNAMENT,
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
         permissions.CREATE_TEAM,
@@ -297,15 +302,27 @@ default_denied_permissions_by_default_role: dict[str, list[str]] = {
         team_permissions.REGISTER_TOURNAMENT,
         team_permissions.MANAGE_TOURNAMENT_ROSTERS,
     ],
-    TIME_TRIAL_ADMIN: [], 
+    TIME_TRIAL_ADMIN: [],
 }
 
 # roleid, permissionid, is_denied
 default_role_permission_ids: list[tuple[int, int, bool]] = []
 for role, role_perms in default_permissions_by_default_role.items():
     for permission in role_perms:
-        default_role_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission], False)]
+        default_role_permission_ids += [
+            (
+                id_by_default_role[role],
+                permissions.id_by_permissions[permission],
+                False,
+            )
+        ]
 
 for role, role_perms in default_denied_permissions_by_default_role.items():
     for permission in role_perms:
-        default_role_permission_ids += [(id_by_default_role[role], permissions.id_by_permissions[permission], True)]
+        default_role_permission_ids += [
+            (
+                id_by_default_role[role],
+                permissions.id_by_permissions[permission],
+                True,
+            )
+        ]

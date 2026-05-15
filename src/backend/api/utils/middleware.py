@@ -1,4 +1,7 @@
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.middleware.base import (
+    BaseHTTPMiddleware,
+    RequestResponseEndpoint,
+)
 from api.utils.responses import ProblemResponse
 from common.data.models import Problem
 from starlette.background import BackgroundTasks
@@ -14,9 +17,11 @@ from starlette.requests import Request
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
+
 async def handle_error(request: Request, exception: Exception):
     logging.getLogger().error("Unhandled Exception", exc_info=exception)
     return ProblemResponse(Problem("Unexpected Error"))
+
 
 async def handle_problem(request: Request, problem: Problem):
     if problem.status >= 500:
@@ -27,9 +32,10 @@ async def handle_problem(request: Request, problem: Problem):
         span.set_status(Status(StatusCode.ERROR, str(problem)))
     return ProblemResponse(problem)
 
+
 exception_handlers: dict[Any, Any] = {
     Problem: handle_problem,
-    500: handle_error
+    500: handle_error,
 }
 
 
@@ -37,6 +43,7 @@ class ProblemExceptionMiddleware:
     """
     Catches any Problems that might have been raised during the middleware
     """
+
     def __init__(self, app: ASGIApp):
         self.app = app
 
@@ -52,19 +59,17 @@ class ProblemExceptionMiddleware:
             response = ProblemResponse(problem)
             await response(scope, receive, send)
 
-        
+
 class IPLoggingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
         time = datetime.now(timezone.utc)
         path = request.url.path
-        
-        should_log = appsettings.ENABLE_IP_LOGGING and (
-            request.method == "POST" or
-            path == "/api/user/me" or 
-            path == "/api/user/me/player"
-        ) 
 
-        ip_address = request.headers.get('CF-Connecting-IP')
+        should_log = appsettings.ENABLE_IP_LOGGING and (
+            request.method == "POST" or path == "/api/user/me" or path == "/api/user/me/player"
+        )
+
+        ip_address = request.headers.get("CF-Connecting-IP")
         if ip_address is None and appsettings.ENV == "Development":
             if request.client is not None:
                 ip_address = request.client.host
@@ -77,15 +82,15 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
                 ip_address = ":".join(parts[:4]) + "::"
 
         request.state.ip_address = ip_address
-        
+
         response = await call_next(request)
-        
+
         async def log_activity():
             if not appsettings.ENABLE_IP_LOGGING:
                 return
-            
+
             # Try to get user from request.state first (might be set by auth middleware)
-            user = getattr(request.state, 'user', None)
+            user = getattr(request.state, "user", None)
             if user is None:
                 # If not available, check session and get user info
                 session_id = request.cookies.get("session", None)
@@ -94,39 +99,46 @@ class IPLoggingMiddleware(BaseHTTPMiddleware):
                 user = await handle(GetUserIdFromSessionCommand(session_id))
                 if not user:
                     return
-                
+
             # Get referer header if available
-            referer = request.headers.get('Referer', None)
+            referer = request.headers.get("Referer", None)
             # Log to activity queue instead of directly processing
-            await handle(EnqueueUserActivityCommand(
-                user_id=user.id,
-                ip_address=ip_address,
-                path=path,
-                timestamp=time,
-                referer=referer
-            ))
-        
+            await handle(
+                EnqueueUserActivityCommand(
+                    user_id=user.id,
+                    ip_address=ip_address,
+                    path=path,
+                    timestamp=time,
+                    referer=referer,
+                )
+            )
+
         # Only log for POST requests and specific endpoints
         if should_log:
             tasks = BackgroundTasks()
             if response.background:
                 tasks.add_task(response.background)
-                
+
             tasks.add_task(log_activity)
             response.background = tasks
-            
+
         return response
+
 
 class RateLimitByIPMiddleware:
     async def auth_function(self, scope: Scope):
         ip_address = scope["state"]["ip_address"]
-        return ip_address, 'default'
-    
+        return ip_address, "default"
+
     def on_blocked(self, retry_after: int):
         async def inside_on_blocked(scope: Scope, receive: Receive, send: Send):
-            raise Problem(f"You have been rate limited, try again in {retry_after} seconds", status=429)
+            raise Problem(
+                f"You have been rate limited, try again in {retry_after} seconds",
+                status=429,
+            )
+
         return inside_on_blocked
-    
+
     def __init__(self, app: ASGIApp):
         self.app = app
         self.rate_limit = RateLimitMiddleware(
@@ -146,8 +158,8 @@ class RateLimitByIPMiddleware:
                 r"/api/tournaments/\d+/create": [Rule(minute=3, hour=10)],
                 r"^/api/tournaments/\d+/edit": [Rule(minute=3, hour=30)],
             },
-            on_blocked=self.on_blocked
+            on_blocked=self.on_blocked,
         )
-    
+
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
         await self.rate_limit(scope, receive, send)

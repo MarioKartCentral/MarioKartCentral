@@ -11,41 +11,51 @@ from common.data.models import Problem
 
 PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)}")
 
+
 class SchemaGenerator(BaseSchemaGenerator):
     @staticmethod
-    def type_to_openapi(typ: Any, is_nullable: bool=False, root_type: Any | None = None) -> dict[str, Any]:
+    def type_to_openapi(typ: Any, is_nullable: bool = False, root_type: Any | None = None) -> dict[str, Any]:
         root_type = root_type or typ
-        if typ == str:
+        if typ is str:
             type_str = "string"
-        elif typ == int:
+        elif typ is int:
             type_str = "integer"
-        elif typ == bool:
+        elif typ is bool:
             type_str = "boolean"
-        elif typ == float:
+        elif typ is float:
             type_str = "number"
         elif get_origin(typ) is Literal:
             enum = list(get_args(typ))
             enum_type = cast(type[Any], type(enum[0]))
-            if not(all(enum_type == type(enum_val) for enum_val in enum)):
-                raise Problem("Literal contains values of different types", f"Literal contains values of different types: {typ}. Root type: {root_type}")
+            if not (all(enum_type is type(enum_val) for enum_val in enum)):
+                raise Problem(
+                    "Literal contains values of different types",
+                    f"Literal contains values of different types: {typ}. Root type: {root_type}",
+                )
             if is_nullable:
                 enum += [None]
             base_openapi = SchemaGenerator.type_to_openapi(enum_type, is_nullable, root_type)
             base_openapi["enum"] = enum
             return base_openapi
-        elif typ == typ | None: # Check if it's an optional type
+        elif typ == typ | None:  # Check if it's an optional type
             args = [a for a in get_args(typ) if a != NoneType]
             if len(args) != 1:
-                raise Problem("Unable to handle union types with more than one non-None type", f"Type: {typ}. Root type: {root_type}")
+                raise Problem(
+                    "Unable to handle union types with more than one non-None type",
+                    f"Type: {typ}. Root type: {root_type}",
+                )
 
             return SchemaGenerator.type_to_openapi(args[0], is_nullable=True, root_type=root_type)
         else:
-            raise Problem("Failed to map request param to type", f"Unhandled type in schema generation: {typ}. Root type: {root_type}")
-        return { "type": type_str, "nullable": is_nullable }
+            raise Problem(
+                "Failed to map request param to type",
+                f"Unhandled type in schema generation: {typ}. Root type: {root_type}",
+            )
+        return {"type": type_str, "nullable": is_nullable}
 
     def get_schema(self, routes: list[BaseRoute]):
-        schema: dict[Any, Any] = { 
-            "openapi": "3.0.0", 
+        schema: dict[Any, Any] = {
+            "openapi": "3.0.0",
             "info": {"title": "MKCentral API", "version": "1.0"},
         }
         schema.setdefault("paths", {})
@@ -55,15 +65,21 @@ class SchemaGenerator(BaseSchemaGenerator):
         for endpoint in endpoints:
             path_data: dict[str, Any] = {}
 
-            if hasattr(endpoint.func, 'spec_types'):
-                spec_types: RouteSpecTypes = getattr(endpoint.func, 'spec_types')
+            if hasattr(endpoint.func, "spec_types"):
+                spec_types: RouteSpecTypes = getattr(endpoint.func, "spec_types")
                 if spec_types.body_type is not None:
                     all_types.append(spec_types.body_type)
-                    path_data["requestBody"] = { "content": { "application/json": { "schema": { "$ref": f"#/components/schemas/{spec_types.body_type.__name__}" } } } }
+                    path_data["requestBody"] = {
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": f"#/components/schemas/{spec_types.body_type.__name__}"}
+                            }
+                        }
+                    }
                 if spec_types.query_type is not None:
                     if dataclasses.is_dataclass(spec_types.query_type):
                         params: list[dict[str, Any]] = []
-                        
+
                         type_hints = get_type_hints(spec_types.query_type)
                         for field in dataclasses.fields(spec_types.query_type):
                             field_type = type_hints[field.name]
@@ -73,12 +89,14 @@ class SchemaGenerator(BaseSchemaGenerator):
                                 param_schema["default"] = field.default
                                 is_required = False
 
-                            params.append({
-                                "name": field.name,
-                                "in": "query",
-                                "required": is_required,
-                                "schema": param_schema
-                            })
+                            params.append(
+                                {
+                                    "name": field.name,
+                                    "in": "query",
+                                    "required": is_required,
+                                    "schema": param_schema,
+                                }
+                            )
 
                         path_data["parameters"] = params
 
@@ -86,22 +104,24 @@ class SchemaGenerator(BaseSchemaGenerator):
                 param_name = param_match.groups()[0]
                 if "parameters" not in path_data:
                     path_data["parameters"] = []
-                
+
                 for param_entry in path_data["parameters"]:
                     if param_entry["name"] == param_name:
                         param_entry["in"] = "path"
                         break
                 else:
-                    path_data["parameters"].append({
-                        "name": param_name,
-                        "in": "path",
-                        "required": True,
-                        "schema": { "type": "string" }
-                    })
+                    path_data["parameters"].append(
+                        {
+                            "name": param_name,
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    )
 
-            path_data["responses"] = { 
-                "2XX": { "$ref": "#/components/responses/successJson" },
-                "default": { "$ref": "#/components/responses/error" }
+            path_data["responses"] = {
+                "2XX": {"$ref": "#/components/responses/successJson"},
+                "default": {"$ref": "#/components/responses/error"},
             }
 
             if endpoint.path not in schema["paths"]:
@@ -110,34 +130,32 @@ class SchemaGenerator(BaseSchemaGenerator):
             schema["paths"][endpoint.path][endpoint.http_method] = path_data
 
         _, components = msgspec.json.schema_components(all_types)
-        schema["components"] = { 
+        schema["components"] = {
             "responses": {
                 "successJson": {
                     "description": "Success",
-                    "content": {
-                        "application/json": {}
-                    }
+                    "content": {"application/json": {}},
                 },
                 "error": {
                     "description": "Failure",
                     "content": {
                         "application/problem+json": {},
-                        "text/plain": {}
-                    }
-                }
+                        "text/plain": {},
+                    },
+                },
             },
             "schemas": components,
             "securitySchemes": {
                 "cookieAuth": {
                     "type": "apiKey",
                     "in": "cookie",
-                    "name": "session"
+                    "name": "session",
                 },
                 "bearerAuth": {
                     "type": "http",
                     "scheme": "bearer",
                     "bearerFormat": "JWT",
-                }
+                },
             },
         }
         schema["security"] = [
@@ -147,10 +165,13 @@ class SchemaGenerator(BaseSchemaGenerator):
         ]
         return schema
 
+
 schemas = SchemaGenerator()
+
 
 def openapi_schema(request: Request):
     schema = schemas.get_schema(request.app.routes)
     return JSONResponse(schema, media_type="application/vnd.oai.openapi+json")
+
 
 schema_route = Route("/api/schema", endpoint=openapi_schema, include_in_schema=False)

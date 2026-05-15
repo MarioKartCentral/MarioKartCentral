@@ -11,7 +11,7 @@ from common.data.duckdb.wrapper import DuckDBWrapper
 @dataclass
 class SetupDuckDBSchemaCommand(Command[None]):
     """Initialize DuckDB schema with all required tables and indexes."""
-    
+
     async def handle(self, duckdb_wrapper: DuckDBWrapper) -> None:
         async with duckdb_wrapper.connection() as conn:
             # Then create/update tables

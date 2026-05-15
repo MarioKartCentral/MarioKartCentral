@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Literal
 from common.data.models.common import Game, GameMode, FriendCodeType
 
+
 @dataclass
 class XFUser:
     user_id: int
@@ -10,6 +11,7 @@ class XFUser:
     register_date: int
     is_banned: Literal[0, 1]
 
+
 @dataclass
 class XFUserBan:
     user_id: int
@@ -17,10 +19,12 @@ class XFUserBan:
     end_date: int
     user_reason: str | None
 
+
 @dataclass
 class XenforoData:
     xf_user: list[XFUser]
     xf_user_ban: list[XFUserBan]
+
 
 @dataclass
 class MKCEventPlacement:
@@ -31,14 +35,15 @@ class MKCEventPlacement:
     title: str | None
     placement_upper_bound: int | None
 
+
 @dataclass
 class MKCEventRegistration:
     id: int
     event_id: int
     player_id: int
     status: Literal["registered", "withdrawn", "rejected"]
-    created_at: str # timestamp
-    updated_at: str # timestamp
+    created_at: str  # timestamp
+    updated_at: str  # timestamp
     player_can_host: Literal[0, 1]
     team_id: int | None
     secondary_team_id: int | None
@@ -47,17 +52,32 @@ class MKCEventRegistration:
     checked_in: Literal[0, 1]
     verified: Literal[0, 1]
 
-MKCGameMode = Literal["mk7_vs_race", "mk8dx_150", "mk8dx_200", "mk8dx_battle_bobomb", "mk8dx_battle_renegade",
-                      "mk8dx_battle_coin", "mk8dx_battle_shine", "mk8dx_mixed", "mk8u_150", "mk8u_200", 
-                      "mktour_vs_race", "mkw_vs_race", "smk_match_race", "switch_other"]
+
+MKCGameMode = Literal[
+    "mk7_vs_race",
+    "mk8dx_150",
+    "mk8dx_200",
+    "mk8dx_battle_bobomb",
+    "mk8dx_battle_renegade",
+    "mk8dx_battle_coin",
+    "mk8dx_battle_shine",
+    "mk8dx_mixed",
+    "mk8u_150",
+    "mk8u_200",
+    "mktour_vs_race",
+    "mkw_vs_race",
+    "smk_match_race",
+    "switch_other",
+]
+
 
 @dataclass
 class MKCEvent:
     id: int
     title: str
-    start_date: str | None # timestamp
-    end_date: str | None # timestamp
-    event_format: Literal["0", "1", "2"] # 0 = team, 1 = solo, 2 = squad
+    start_date: str | None  # timestamp
+    end_date: str | None  # timestamp
+    event_format: Literal["0", "1", "2"]  # 0 = team, 1 = solo, 2 = squad
     minimum_team_size: int
     game_mode: MKCGameMode
     description: str
@@ -67,11 +87,22 @@ class MKCEvent:
     maximum_team_size: int
     team_tag_required: Literal[0, 1]
     team_name_required: Literal[0, 1]
-    transfer_date: str | None # timestamp
+    transfer_date: str | None  # timestamp
     show_on_profiles: Literal[0, 1]
     player_host_required: Literal[0, 1]
     player_mii_name_required: Literal[0, 1]
-    team_mode: Literal["200cc", "150cc", "mk8u_150cc", "mktour_vs", "mk7_vs", "mkw_vs", "mk8u_200cc"] | None
+    team_mode: (
+        Literal[
+            "200cc",
+            "150cc",
+            "mk8u_150cc",
+            "mktour_vs",
+            "mk7_vs",
+            "mkw_vs",
+            "mk8u_200cc",
+        ]
+        | None
+    )
     total_registrations_override: int | None
     pr_value: int
     post_registration_message: str | None
@@ -85,39 +116,43 @@ class MKCEvent:
     location: str | None
     series_stats_include: Literal[0, 1]
 
+
 @dataclass
 class MKCPlayerBan:
     id: int
     player_id: int
-    banned_by: int # player id
-    start_date: str # timestamp
-    end_date: str | None # timestamp
+    banned_by: int  # player id
+    start_date: str  # timestamp
+    end_date: str | None  # timestamp
     reason: str
+
 
 @dataclass
 class MKCPlayerOptout:
     id: int
     event_registration_id: int
     player_id: int
-    created_at: str # timestamp
+    created_at: str  # timestamp
+
 
 @dataclass
 class MKCPlayerRole:
     id: int
     player_id: int
-    role: str # administrate | event_admin | event_mod | moderate | supporter | series_admin:<N> | series_mod:<N>
+    role: str  # administrate | event_admin | event_mod | moderate | supporter | series_admin:<N> | series_mod:<N>
+
 
 @dataclass
 class MKCPlayer:
     id: int
-    user_id: int | None # xenforo user id
+    user_id: int | None  # xenforo user id
     display_name: str
     country: str
     region: str | None
     city: str | None
     switch_fc: str | None
-    created_at: str # timestamp
-    updated_at: str # timestamp
+    created_at: str  # timestamp
+    updated_at: str  # timestamp
     profile_message: str
     discord_tag: str | None
     discord_privacy: Literal["private", "public"]
@@ -126,18 +161,28 @@ class MKCPlayer:
     fc_3ds: str | None
     nnid: str | None
 
+
 @dataclass
 class MKCSquadMembership:
     id: int
     player_id: int
     squad_id: int
     captain: Literal[0, 1]
-    status: Literal["registered", "cancelled", "declined", "withdrawn", "kicked", "invited", "rejected"]
-    created_at: str # timestamp
-    updated_at: str # timestamp
+    status: Literal[
+        "registered",
+        "cancelled",
+        "declined",
+        "withdrawn",
+        "kicked",
+        "invited",
+        "rejected",
+    ]
+    created_at: str  # timestamp
+    updated_at: str  # timestamp
     player_can_host: Literal[0, 1]
     mii_name: str | None
     checked_in: Literal[0, 1]
+
 
 @dataclass
 class MKCSquad:
@@ -145,24 +190,27 @@ class MKCSquad:
     squad_name: str
     squad_tag: str
     color_number: int
-    created_at: str # timestamp
+    created_at: str  # timestamp
     is_shadow: Literal[0, 1]
+
 
 @dataclass
 class MKCTeamMembership:
     id: int
     player_id: int
     team_id: int
-    joined: str # timestamp
-    left: str | None # timestamp
+    joined: str  # timestamp
+    left: str | None  # timestamp
     team_leader: Literal[0, 1]
     roster_category: Literal["150cc", "200cc", "mktour_vs"]
+
 
 @dataclass
 class MKCTeamRepresentative:
     id: int
     player_id: int
     event_registration_id: int
+
 
 @dataclass
 class MKCTeamRosters:
@@ -172,6 +220,7 @@ class MKCTeamRosters:
     roster_active: Literal[0, 1]
     roster_name: str | None
 
+
 @dataclass
 class MKCTeam:
     id: int
@@ -179,17 +228,26 @@ class MKCTeam:
     team_tag: str
     picture_filename: str
     team_description: str
-    created_at: str # timestamp
-    updated_at: str # timestamp
+    created_at: str  # timestamp
+    updated_at: str  # timestamp
     status: Literal["approved", "banned", "disapproved", "unapproved"]
     recruitment_status: Literal["recruiting", "closed", "invite_only"]
     main_language: str
     is_historical: Literal[0, 1]
     color_number: int
-    team_category: Literal["150cc", "200cc", "mk7_vs", "mk8u_150cc", "mk8u_200cc", "mktour_vs", "mkw_vs"]
+    team_category: Literal[
+        "150cc",
+        "200cc",
+        "mk7_vs",
+        "mk8u_150cc",
+        "mk8u_200cc",
+        "mktour_vs",
+        "mkw_vs",
+    ]
     manager_player_id: int | None
     is_shadow: Literal[0, 1]
     primary_team_id: int | None
+
 
 @dataclass
 class MKCTournamentSeries:
@@ -202,8 +260,8 @@ class MKCTournamentSeries:
     default_game_mode: MKCGameMode | None
     full_description: str | None
     short_description: str
-    created_at: str # timestamp
-    updated_at: str # timestamp
+    created_at: str  # timestamp
+    updated_at: str  # timestamp
     published: Literal[0, 1]
     historical: Literal[0, 1]
     stats_aggregation_field: Literal["team_id", "player_id", "squad_name"] | None
@@ -211,16 +269,25 @@ class MKCTournamentSeries:
     organizer: Literal["mkc", "affiliate", "lan"]
     location: str | None
 
+
 @dataclass
 class MKCTransfer:
     id: int
     player_id: int
     from_team: int | None
     to_team: int | None
-    status: Literal["accepted", "cancelled_by_team", "decline", "declined", "invited", "rejected_by_mod"]
-    created_at: str # timestamp
+    status: Literal[
+        "accepted",
+        "cancelled_by_team",
+        "decline",
+        "declined",
+        "invited",
+        "rejected_by_mod",
+    ]
+    created_at: str  # timestamp
     updated_at: str
     roster_category: Literal["150cc", "200cc", "mktour_vs"]
+
 
 @dataclass
 class MKCSeriesTemplate:
@@ -249,6 +316,7 @@ class MKCSeriesTemplate:
     created_at: str
     updated_at: str
 
+
 @dataclass
 class MKCData:
     event_placements: list[MKCEventPlacement]
@@ -268,24 +336,29 @@ class MKCData:
     tournament_series: list[MKCTournamentSeries]
     transfers: list[MKCTransfer]
 
+
 @dataclass
 class MKCV1Data:
     xf: XenforoData
     mkc: MKCData
 
+
 @dataclass
 class NewMKCUserRole:
     role_name: str
+
 
 @dataclass
 class NewMKCSeriesRole:
     role_name: str
     series_id: int
 
+
 @dataclass
 class NewMKCTeamRole:
     role_name: str
     team_id: int
+
 
 @dataclass
 class NewMKCUser:
@@ -299,6 +372,7 @@ class NewMKCUser:
     series_roles: list[NewMKCSeriesRole]
     team_roles: list[NewMKCTeamRole]
 
+
 @dataclass
 class NewMKCPlayer:
     id: int
@@ -310,12 +384,14 @@ class NewMKCPlayer:
     join_date: int
     user: NewMKCUser | None
 
+
 @dataclass
 class NewMKCFriendCode:
     player_id: int
     fc: str
     type: FriendCodeType
     creation_date: int
+
 
 @dataclass
 class NewMKCPlayerBan:
@@ -326,6 +402,7 @@ class NewMKCPlayerBan:
     expiration_date: int
     reason: str
     comment: str
+
 
 @dataclass
 class NewMKCHistoricalBan:
@@ -339,7 +416,17 @@ class NewMKCHistoricalBan:
     reason: str
     comment: str
 
-TeamMode = Literal["200cc", "150cc", "mk8u_150cc", "mktour_vs", "mk7_vs", "mkw_vs", "mk8u_200cc"]
+
+TeamMode = Literal[
+    "200cc",
+    "150cc",
+    "mk8u_150cc",
+    "mktour_vs",
+    "mk7_vs",
+    "mkw_vs",
+    "mk8u_200cc",
+]
+
 
 @dataclass
 class NewMKCTeamMember:
@@ -347,6 +434,7 @@ class NewMKCTeamMember:
     player_id: int
     join_date: int
     leave_date: int | None
+
 
 @dataclass
 class NewMKCTeamRoster:
@@ -361,6 +449,7 @@ class NewMKCTeamRoster:
     is_active: bool
     approval_status: str
     members: list[NewMKCTeamMember]
+
 
 @dataclass
 class NewMKCTeam:
@@ -377,6 +466,7 @@ class NewMKCTeam:
     is_recruiting: bool
     rosters: dict[TeamMode, NewMKCTeamRoster]
 
+
 @dataclass
 class NewMKCTransfer:
     player_id: int
@@ -385,6 +475,7 @@ class NewMKCTransfer:
     date: int
     is_accepted: bool
     approval_status: str
+
 
 @dataclass
 class NewMKCSeries:
@@ -402,6 +493,7 @@ class NewMKCSeries:
     logo: str | None
     organizer: str
     location: str | None
+
 
 @dataclass
 class NewMKCTournament:
@@ -448,6 +540,7 @@ class NewMKCTournament:
     location: str | None
     ruleset: str
 
+
 @dataclass
 class NewMKCSquad:
     id: int
@@ -458,6 +551,7 @@ class NewMKCSquad:
     tournament_id: int
     is_registered: bool
     is_approved: bool
+
 
 @dataclass
 class NewMKCTournamentPlayer:
@@ -475,11 +569,13 @@ class NewMKCTournamentPlayer:
     is_representative: bool
     is_approved: bool
 
+
 @dataclass
 class NewMKCRosterSquadLink:
     roster_id: int
     registration_id: int
     tournament_id: int
+
 
 @dataclass
 class NewMKCSoloPlacement:
@@ -490,6 +586,7 @@ class NewMKCSoloPlacement:
     placement_lower_bound: int | None
     is_disqualified: bool
 
+
 @dataclass
 class NewMKCSquadPlacement:
     tournament_id: int
@@ -498,6 +595,7 @@ class NewMKCSquadPlacement:
     placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
+
 
 @dataclass
 class NewMKCTournamentTemplate:
@@ -548,8 +646,9 @@ class NewMKCTournamentTemplate:
 
 @dataclass
 class NewMKCUserData:
-    users: dict[str, NewMKCUser] # key: email
+    users: dict[str, NewMKCUser]  # key: email
+
 
 @dataclass
 class NewMKCUserDataByPlayer:
-    users: dict[int, NewMKCUser] # key: player id
+    users: dict[int, NewMKCUser]  # key: player id

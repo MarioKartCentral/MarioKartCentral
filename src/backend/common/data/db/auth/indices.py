@@ -20,5 +20,5 @@ class PasswordResetExpiresOn(IndexModel):
 
 all_indices: list[type[IndexModel]] = [
     EmailVerificationExpiresOn,
-    PasswordResetExpiresOn
+    PasswordResetExpiresOn,
 ]
