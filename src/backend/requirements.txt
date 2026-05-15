@@ -2,7 +2,7 @@ aiobotocore==2.25.1
 aioduckdb==0.1.0
 aiohttp==3.13.2
 aiosmtplib==5.0.0
-aiosqlite==0.21.0
+aiosqlite==0.22.1
 argon2-cffi==25.1.0
 asgi-ratelimit==0.10.0
 bcrypt==5.0.0
