@@ -41,7 +41,7 @@
           <LinkButton href="https://lounge.mkcentral.com/mk8dx">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
-          <DiscordInviteButton href="https://discord.gg/revmGkE" />
+          <DiscordInviteButton href="https://discord.gg/mk8dx" />
         </div>
       </div>
     </div>
