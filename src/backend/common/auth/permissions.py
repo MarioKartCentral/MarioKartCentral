@@ -1,4 +1,8 @@
-from common.auth import team_permissions, series_permissions, tournament_permissions
+from common.auth import (
+    team_permissions,
+    series_permissions,
+    tournament_permissions,
+)
 
 CREATE_USER_ROLES = "user_roles_create"
 EDIT_USER_ROLES = "user_roles_edit"
@@ -19,7 +23,7 @@ MERGE_PLAYERS = "player_merge"
 MERGE_TEAMS = "team_merge"
 MANAGE_WORD_FILTER = "word_filter_manage"
 EDIT_USER = "user_edit"
-IMPORT_V1_DATA = 'import_v1_data'
+IMPORT_V1_DATA = "import_v1_data"
 MANAGE_POSTS = "post_manage"
 VIEW_ALT_FLAGS = "alt_flag_view"
 MANAGE_API_TOKENS = "api_tokens_manage"
@@ -87,4 +91,4 @@ permissions_by_id: dict[int, str] = {
     52: VALIDATE_TIME_TRIAL_PROOF,
 }
 
-id_by_permissions = { v: k for k, v in permissions_by_id.items() }
+id_by_permissions = {v: k for k, v in permissions_by_id.items()}

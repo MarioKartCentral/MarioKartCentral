@@ -1,6 +1,7 @@
 # Import and re-export the database wrapper classes
 from common.data.db.db_wrapper import DBWrapper, DBWrapperConnection
-__all__ = ['DBWrapper', 'DBWrapperConnection', 'all_dbs']
+
+__all__ = ["DBWrapper", "DBWrapperConnection", "all_dbs"]
 
 from common.data.db.common import DatabaseSchema
 from common.data.db.main import schema as main_db

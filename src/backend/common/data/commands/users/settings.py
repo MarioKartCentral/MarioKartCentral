@@ -11,13 +11,17 @@ class CreateUserSettingsCommand(Command[None]):
 
     async def handle(self, db_wrapper: DBWrapper) -> None:
         async with db_wrapper.connect() as db:
-            async with db.execute("INSERT INTO user_settings(user_id) VALUES (?)", (self.user_id,)) as cursor:
+            async with db.execute(
+                "INSERT INTO user_settings(user_id) VALUES (?)",
+                (self.user_id,),
+            ) as cursor:
                 rows_inserted = cursor.rowcount
 
             if rows_inserted != 1:
                 raise Problem("Failed to create user settings")
-            
+
             await db.commit()
+
 
 @dataclass
 class GetUserSettingsCommand(Command[UserSettings | None]):
@@ -25,16 +29,28 @@ class GetUserSettingsCommand(Command[UserSettings | None]):
 
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("""SELECT avatar, about_me, language, 
-                color_scheme, timezone, hide_discord FROM user_settings WHERE user_id = ?""", (self.user_id,)) as cursor:
+            async with db.execute(
+                """SELECT avatar, about_me, language, 
+                color_scheme, timezone, hide_discord FROM user_settings WHERE user_id = ?""",
+                (self.user_id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     return None
-                
+
         avatar, about_me, language, color_scheme, timezone, hide_discord = row
 
-        return UserSettings(self.user_id, avatar, about_me, language, color_scheme, timezone, bool(hide_discord))
-    
+        return UserSettings(
+            self.user_id,
+            avatar,
+            about_me,
+            language,
+            color_scheme,
+            timezone,
+            bool(hide_discord),
+        )
+
+
 @dataclass
 class EditUserSettingsCommand(Command[bool]):
     user_id: int
@@ -72,7 +88,8 @@ class EditUserSettingsCommand(Command[bool]):
 
             await db.commit()
             return True
-        
+
+
 @dataclass
 class EditPlayerUserSettingsCommand(Command[None]):
     data: EditPlayerUserSettingsRequestData
@@ -87,7 +104,7 @@ class EditPlayerUserSettingsCommand(Command[None]):
                 if not row:
                     raise Problem("Player not found", status=404)
                 user_id = row[0]
-            
+
             set_clauses: list[str] = []
             variable_parameters: list[Any] = []
 

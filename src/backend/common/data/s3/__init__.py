@@ -15,6 +15,7 @@ FINGERPRINT_BUCKET = "mkc-fingerprints"
 IMAGE_BUCKET = "mkc-img"
 DB_BACKUP_BUCKET = "mkc-db-backups"
 
+
 @dataclass
 class S3Wrapper:
     _client: S3Client
@@ -24,7 +25,7 @@ class S3Wrapper:
 
     async def list_buckets(self) -> list[str]:
         buckets = await self._client.list_buckets()
-        return [b['Name'] for b in buckets['Buckets'] if 'Name' in b]
+        return [b["Name"] for b in buckets["Buckets"] if "Name" in b]
 
     async def get_object(self, bucket_name: str, key: str):
         try:
@@ -37,37 +38,41 @@ class S3Wrapper:
     async def get_object_metadata_and_body(self, bucket_name: str, key: str) -> dict[str, object] | None:
         try:
             head_response = await self._client.head_object(Bucket=bucket_name, Key=key)
-            last_modified: datetime = head_response['LastModified']
+            last_modified: datetime = head_response["LastModified"]
 
             get_response = await self._client.get_object(Bucket=bucket_name, Key=key)
             async with get_response["Body"] as stream:
                 body = await stream.read()
 
-            return {
-                "LastModified": last_modified,
-                "Body": body
-            }
+            return {"LastModified": last_modified, "Body": body}
 
         except self._client.exceptions.NoSuchKey:
             return None
         except Exception:
             return None
 
-    async def put_object(self, bucket_name: str, key: str, body: bytes, acl: ObjectCannedACLType = "private"):
+    async def put_object(
+        self,
+        bucket_name: str,
+        key: str,
+        body: bytes,
+        acl: ObjectCannedACLType = "private",
+    ):
         await self._client.put_object(Bucket=bucket_name, Key=key, Body=body, ACL=acl)
 
     async def list_objects(self, bucket_name: str) -> list[ObjectTypeDef]:
         """List objects in a bucket"""
         try:
             response = await self._client.list_objects_v2(Bucket=bucket_name)
-            if 'Contents' in response:
-                return response['Contents']
+            if "Contents" in response:
+                return response["Contents"]
             return []
         except Exception:
             return []
 
     async def delete_object(self, bucket_name: str, key: str):
         await self._client.delete_object(Bucket=bucket_name, Key=key)
+
 
 @dataclass
 class S3WrapperManager:
@@ -78,14 +83,20 @@ class S3WrapperManager:
 
     async def __aenter__(self) -> S3Wrapper:
         session = aiobotocore.session.get_session()
-        self.client = await session.create_client( # pyright: ignore[reportUnknownMemberType]
-            service_name='s3',
+        self.client = await session.create_client(  # pyright: ignore[reportUnknownMemberType]
+            service_name="s3",
             aws_secret_access_key=self.s3_secret_key,
             aws_access_key_id=self.s3_access_key,
-            endpoint_url=self.s3_endpoint).__aenter__()
+            endpoint_url=self.s3_endpoint,
+        ).__aenter__()
         return S3Wrapper(self.client)
 
-    async def __aexit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ):
         if self.client is not None:
             await self.client.__aexit__(exc_type, exc_val, exc_tb)
         self.client = None

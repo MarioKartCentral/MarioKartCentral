@@ -19,6 +19,4 @@ class PlayerNotes(TableModel):
             )"""
 
 
-all_tables : list[type[TableModel]] = [
-    PlayerNotes
-]
+all_tables: list[type[TableModel]] = [PlayerNotes]

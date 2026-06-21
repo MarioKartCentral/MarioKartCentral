@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class DBWrapperConnection():
+class DBWrapperConnection:
     connection: aiosqlite.Connection
     readonly: bool
     attach: dict[str, str]
@@ -27,12 +27,12 @@ class DBWrapperConnection():
             await db.execute("pragma synchronous = NORMAL;")
             await db.execute("PRAGMA busy_timeout = 5000")
         for name, path in self.attach.items():
-            await db.execute(f"ATTACH DATABASE :path AS :name", {"path": path, "name": name})
+            await db.execute("ATTACH DATABASE :path AS :name", {"path": path, "name": name})
 
         def set_autocommit(new_autocommit_value: bool):
-            self.connection._conn.autocommit = new_autocommit_value # pyright: ignore[reportPrivateUsage]
+            self.connection._conn.autocommit = new_autocommit_value  # pyright: ignore[reportPrivateUsage]
 
-        await self.connection._execute(set_autocommit, self.autocommit) # pyright: ignore[reportUnknownMemberType, reportPrivateUsage]
+        await self.connection._execute(set_autocommit, self.autocommit)  # pyright: ignore[reportUnknownMemberType, reportPrivateUsage]
         return db
 
     async def __aexit__(self, *_: Any) -> None:
@@ -40,19 +40,26 @@ class DBWrapperConnection():
 
 
 @dataclass
-class DBWrapper():
+class DBWrapper:
     db_paths: dict[str, str]
 
-    def reset_db(self, db_name: str = 'main'):
+    def reset_db(self, db_name: str = "main"):
         """Resets the specified database file. Defaults to 'main'."""
         path = self.db_paths.get(db_name)
         if path:
             logging.info(f"Resetting database file: {path}")
-            open(path, 'w').close()
+            open(path, "w").close()
         else:
             raise ValueError(f"Database '{db_name}' not configured for reset.")
 
-    def connect(self, db_name: str = 'main', attach: list[str] | None = None, readonly: bool = False, autocommit: bool = False, foreign_keys: bool = True):
+    def connect(
+        self,
+        db_name: str = "main",
+        attach: list[str] | None = None,
+        readonly: bool = False,
+        autocommit: bool = False,
+        foreign_keys: bool = True,
+    ):
         """Connects to the specified database."""
         path = self.db_paths.get(db_name)
         if not path:
@@ -73,9 +80,19 @@ class DBWrapper():
                 attach_dict[db] = f"file:{attach_dict[db]}?mode=ro"
 
         def connector() -> sqlite3.Connection:
-            conn = sqlite3.connect(path, autocommit=True) # Connection is created with autocommit=True, but it is disabled later
-            conn.setlimit(sqlite3.SQLITE_LIMIT_ATTACHED, len(attach_dict)) # Limit the number of attached dbs as a security measure
+            conn = sqlite3.connect(
+                path, autocommit=True
+            )  # Connection is created with autocommit=True, but it is disabled later
+            conn.setlimit(
+                sqlite3.SQLITE_LIMIT_ATTACHED, len(attach_dict)
+            )  # Limit the number of attached dbs as a security measure
             return conn
 
         db_connection = aiosqlite.Connection(connector, iter_chunk_size=64)
-        return DBWrapperConnection(db_connection, readonly, attach_dict, autocommit, foreign_keys=foreign_keys)
+        return DBWrapperConnection(
+            db_connection,
+            readonly,
+            attach_dict,
+            autocommit,
+            foreign_keys=foreign_keys,
+        )

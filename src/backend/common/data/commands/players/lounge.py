@@ -3,11 +3,13 @@ from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import Problem
 
+
 @dataclass
 class PlayerLoungeInfo:
     id: int
     switch_fc: str | None
     country_code: str
+
 
 @dataclass
 class GetPlayerLoungeInfoCommand(Command[PlayerLoungeInfo]):
@@ -28,7 +30,7 @@ class GetPlayerLoungeInfoCommand(Command[PlayerLoungeInfo]):
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Player not found", status=404)
-                
+
                 country_code, switch_fc = row
-                
+
             return PlayerLoungeInfo(self.player_id, switch_fc, country_code)

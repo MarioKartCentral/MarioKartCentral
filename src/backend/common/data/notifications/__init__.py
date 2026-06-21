@@ -1,4 +1,3 @@
-
 # content_ids
 # the actual content is found in frontend/src/i18n/en-us (and other localizations)
 BANNED = 0
@@ -28,8 +27,8 @@ FORCE_EDIT_FRIEND_CODE = 23
 FORCE_PRIMARY_FRIEND_CODE = 24
 NAME_CHANGE_APPROVED = 25
 NAME_CHANGE_DENIED = 26
-ROLE_ADD = 27 # does not include banned role
-ROLE_REMOVE = 28 # does not include banned role
+ROLE_ADD = 27  # does not include banned role
+ROLE_REMOVE = 28  # does not include banned role
 TEAM_ROLE_ADD = 29
 TEAM_ROLE_REMOVE = 30
 SERIES_ROLE_ADD = 31
@@ -56,7 +55,7 @@ PLAYER_CLAIM_APPROVED = 51
 PLAYER_CLAIM_DENIED = 52
 
 # types
-INFO = 0 # blue rounded ℹ️ icon
-WARNING = 1 # yellow ⚠️
-CRITICAL = 2 # red ⚠️
-SUCCESS = 3 # green rounded ℹ️ icon
+INFO = 0  # blue rounded ℹ️ icon
+WARNING = 1  # yellow ⚠️
+CRITICAL = 2  # red ⚠️
+SUCCESS = 3  # green rounded ℹ️ icon

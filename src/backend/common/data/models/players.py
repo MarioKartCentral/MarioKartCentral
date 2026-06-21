@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 from typing import Literal
 from common.data.models.common import FriendCodeType, CountryCode, Approval
-from common.data.models.friend_codes import FriendCode, CreateFriendCodeRequestData
+from common.data.models.friend_codes import (
+    FriendCode,
+    CreateFriendCodeRequestData,
+)
 from common.data.models.user_settings import UserSettings
 from common.data.models.player_bans import PlayerBanBasic
 from common.data.models.discord_integration import Discord
 from common.data.models.player_basic import PlayerBasic
+
 
 @dataclass
 class PlayerBase:
@@ -14,6 +18,7 @@ class PlayerBase:
     country_code: CountryCode
     is_hidden: bool
 
+
 @dataclass
 class Player(PlayerBase):
     is_shadow: bool
@@ -21,13 +26,16 @@ class Player(PlayerBase):
     join_date: int
     discord: Discord | None
 
+
 @dataclass
 class PlayerUpdate(PlayerBase):
     pass
-    
+
+
 @dataclass
 class PlayerAndFriendCodes(Player):
     friend_codes: list[FriendCode]
+
 
 @dataclass
 class PlayerRoster:
@@ -43,6 +51,7 @@ class PlayerRoster:
     mode: str
     is_bagger_clause: bool
 
+
 @dataclass
 class PlayerTransferItem:
     id: int
@@ -56,9 +65,11 @@ class PlayerTransferItem:
     roster_name: str
     is_hidden: bool
 
+
 @dataclass
 class PlayerTransferHistory:
     history: list[PlayerTransferItem]
+
 
 @dataclass
 class PlayerNameChange:
@@ -68,17 +79,20 @@ class PlayerNameChange:
     date: int
     approval_status: Approval
 
+
 @dataclass
 class PlayerNotes:
     notes: str
     edited_by: Player | None
     date: int
 
+
 @dataclass
 class PlayerRole:
     id: int
     name: str
     position: int
+
 
 @dataclass
 class PlayerDetailed(PlayerAndFriendCodes):
@@ -89,11 +103,13 @@ class PlayerDetailed(PlayerAndFriendCodes):
     notes: PlayerNotes | None
     roles: list[PlayerRole]
 
+
 @dataclass
 class PlayerList:
     player_list: list[PlayerDetailed]
     player_count: int
     page_count: int
+
 
 @dataclass
 class CreatePlayerRequestData:
@@ -102,7 +118,7 @@ class CreatePlayerRequestData:
     friend_codes: list[CreateFriendCodeRequestData]
     is_hidden: bool = False
     is_shadow: bool = False
-    
+
 
 @dataclass
 class EditPlayerRequestData:
@@ -111,6 +127,7 @@ class EditPlayerRequestData:
     country_code: CountryCode
     is_hidden: bool
     is_shadow: bool
+
 
 @dataclass
 class PlayerFilter:
@@ -128,7 +145,7 @@ class PlayerFilter:
     registration_id: int | None = None
     matching_fcs_only: bool = False
     include_shadow_players: bool = False
-    sort_by: Literal["name", "-name", "join_date", "-join_date"] = 'name'
+    sort_by: Literal["name", "-name", "join_date", "-join_date"] = "name"
     has_connected_user: bool | None = None
 
     @staticmethod
@@ -136,13 +153,15 @@ class PlayerFilter:
         """
         Returns sort value and whether the sort direction is in reverse
         """
-        if val.startswith('-'):
+        if val.startswith("-"):
             return val[1:], True
         return val, False
+
 
 @dataclass
 class PlayerRequestNameRequestData:
     name: str
+
 
 @dataclass
 class PlayerNameRequest:
@@ -155,16 +174,19 @@ class PlayerNameRequest:
     approval_status: Approval
     handled_by: PlayerBasic | None
 
+
 @dataclass
 class PlayerNameRequestUpdate:
     id: int
     approval_status: Approval
     handled_by: PlayerBasic | None
 
+
 @dataclass
 class PlayerNameRequestFilter:
     approval_status: Approval
     page: int | None = None
+
 
 @dataclass
 class PlayerNameRequestList:
@@ -172,21 +194,26 @@ class PlayerNameRequestList:
     count: int
     page_count: int
 
+
 @dataclass
 class ApprovePlayerNameRequestData:
     request_id: int
+
 
 @dataclass
 class UpdatePlayerNotesRequestData:
     notes: str
 
+
 @dataclass
 class ClaimPlayerRequestData:
     player_id: int
 
+
 @dataclass
 class ApproveDenyPlayerClaimRequestData:
     claim_id: int
+
 
 @dataclass
 class PlayerClaim:
@@ -195,6 +222,7 @@ class PlayerClaim:
     approval_status: Approval
     player: PlayerBasic
     claimed_player: PlayerBasic
+
 
 @dataclass
 class MergePlayersRequestData:

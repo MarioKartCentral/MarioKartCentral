@@ -3,19 +3,28 @@ from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import *
 
+
 @dataclass
 class CheckWordFilterCommand(Command[None]):
     request_body: dict[str, Any]
 
     async def handle(self, db_wrapper: DBWrapper):
         # convert the request body into a string to check in the word filter
-        string_body = ','.join(str(v).lower() for k, v in self.request_body.items() if k != 'logo_file') # sometimes bad words are in base64
+        string_body = ",".join(
+            str(v).lower() for k, v in self.request_body.items() if k != "logo_file"
+        )  # sometimes bad words are in base64
 
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT word FROM filtered_words WHERE ? LIKE '%'|| word ||'%'", (string_body,)) as cursor:
+            async with db.execute(
+                "SELECT word FROM filtered_words WHERE ? LIKE '%'|| word ||'%'",
+                (string_body,),
+            ) as cursor:
                 bad_words = list(await cursor.fetchall())
                 if len(bad_words):
-                    raise Problem(f"The following bad words were found in your input: {', '.join(row[0] for row in bad_words)}")
+                    raise Problem(
+                        f"The following bad words were found in your input: {', '.join(row[0] for row in bad_words)}"
+                    )
+
 
 @dataclass
 class EditWordFilterCommand(Command[None]):
@@ -26,8 +35,12 @@ class EditWordFilterCommand(Command[None]):
             await db.execute("DELETE FROM filtered_words")
             lowercase_words = set(w.lower().strip() for w in self.words.words)
             variable_parameters = [(w,) for w in lowercase_words]
-            await db.executemany("INSERT INTO filtered_words(word) VALUES(?)", (variable_parameters))
+            await db.executemany(
+                "INSERT INTO filtered_words(word) VALUES(?)",
+                (variable_parameters),
+            )
             await db.commit()
+
 
 @dataclass
 class GetWordFilterCommand(Command[FilteredWords]):

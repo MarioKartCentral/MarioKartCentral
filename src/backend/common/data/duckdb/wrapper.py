@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class DuckDBWrapperConnection:
     """Async context manager for DuckDB connections."""
-    
+
     def __init__(self, db_path: str):
         self.db_path = db_path
         self.conn: aioduckdb.Connection | None = None
@@ -24,7 +24,12 @@ class DuckDBWrapperConnection:
             logger.error(f"Failed to connect to DuckDB at {self.db_path}: {e}")
             raise
 
-    async def __aexit__(self, exc_type: type | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+    async def __aexit__(
+        self,
+        exc_type: type | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         if self.conn:
             try:
                 await self.conn.close()
@@ -37,7 +42,7 @@ class DuckDBWrapperConnection:
 
 class DuckDBWrapper:
     """DuckDB wrapper providing connection management."""
-    
+
     def __init__(self, db_path: str):
         self.db_path = db_path
         logger.info(f"Initialized DuckDB wrapper for {db_path}")
@@ -45,7 +50,7 @@ class DuckDBWrapper:
     def connection(self) -> DuckDBWrapperConnection:
         """Create a new connection context manager."""
         return DuckDBWrapperConnection(self.db_path)
-    
+
     def reset_db(self):
         logging.info(f"Resetting DuckDB file: {self.db_path}")
         try:

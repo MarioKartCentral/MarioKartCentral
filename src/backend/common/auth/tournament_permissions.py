@@ -18,4 +18,4 @@ permissions_by_id = {
     7: MANAGE_TOURNAMENT_POSTS,
 }
 
-id_by_permissions = { v: k for k, v in permissions_by_id.items() }
+id_by_permissions = {v: k for k, v in permissions_by_id.items()}

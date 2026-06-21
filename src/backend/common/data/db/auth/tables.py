@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.db.common import TableModel
 
+
 @dataclass
 class UserAuth(TableModel):
     user_id: int
@@ -19,6 +20,7 @@ class UserAuth(TableModel):
             force_password_reset BOOLEAN NOT NULL DEFAULT 0
             ) WITHOUT ROWID"""
 
+
 @dataclass
 class EmailVerification(TableModel):
     token_id: str
@@ -32,6 +34,7 @@ class EmailVerification(TableModel):
             user_id INTEGER NOT NULL,
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
 
+
 @dataclass
 class PasswordReset(TableModel):
     token_id: str
@@ -44,7 +47,8 @@ class PasswordReset(TableModel):
             token_id TEXT PRIMARY KEY NOT NULL,
             user_id INTEGER NOT NULL,
             expires_on INTEGER NOT NULL) WITHOUT ROWID"""
-    
+
+
 @dataclass
 class APIToken(TableModel):
     token_id: str
@@ -60,4 +64,10 @@ class APIToken(TableModel):
             ) WITHOUT ROWID
         """
 
-auth_tables: list[type[TableModel]] = [UserAuth, EmailVerification, PasswordReset, APIToken]
+
+auth_tables: list[type[TableModel]] = [
+    UserAuth,
+    EmailVerification,
+    PasswordReset,
+    APIToken,
+]

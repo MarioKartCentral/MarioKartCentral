@@ -26,4 +26,4 @@ permissions_by_id = {
     14: VIEW_HIDDEN_SERIES,
 }
 
-id_by_permissions = { v: k for k, v in permissions_by_id.items() }
+id_by_permissions = {v: k for k, v in permissions_by_id.items()}

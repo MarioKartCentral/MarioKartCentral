@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 
 from common.data.models.common import Game, GameMode
-from common.data.models.tournament_placements import TournamentPlacementDetailed
+from common.data.models.tournament_placements import (
+    TournamentPlacementDetailed,
+)
+
 
 @dataclass
-class TournamentDBFields():
+class TournamentDBFields:
     name: str
     game: Game
     mode: GameMode
@@ -46,14 +49,17 @@ class TournamentDBFields():
     location: str | None
     sync_team_rosters: bool
 
+
 @dataclass
-class TournamentS3Fields():
+class TournamentS3Fields:
     description: str
     ruleset: str
 
+
 @dataclass
-class CreateTournamentRequestData(TournamentDBFields, TournamentS3Fields): 
+class CreateTournamentRequestData(TournamentDBFields, TournamentS3Fields):
     logo_file: str | None
+
 
 @dataclass
 class GetTournamentRequestData(TournamentDBFields, TournamentS3Fields):
@@ -64,9 +70,10 @@ class GetTournamentRequestData(TournamentDBFields, TournamentS3Fields):
     series_url: str | None = None
     series_description: str | None = None
     series_ruleset: str | None = None
-    
+
+
 @dataclass
-class EditTournamentRequestData():
+class EditTournamentRequestData:
     name: str
     series_id: int | None
     registrations_open: bool
@@ -103,14 +110,16 @@ class EditTournamentRequestData():
     logo_file: str | None
     remove_logo: bool
 
+
 @dataclass
-class TournamentDataMinimal():
+class TournamentDataMinimal:
     id: int
     name: str
     game: Game
     mode: GameMode
     date_start: int
     date_end: int
+
 
 @dataclass
 class TournamentDataBasic(TournamentDataMinimal):
@@ -127,11 +136,13 @@ class TournamentDataBasic(TournamentDataMinimal):
     is_public: bool
     organizer: str
 
+
 @dataclass
 class TournamentList:
     tournaments: list[TournamentDataBasic]
     tournament_count: int
     page_count: int
+
 
 @dataclass
 class TournamentFilter:
@@ -145,6 +156,7 @@ class TournamentFilter:
     to_date: int | None = None
     page: int | None = None
 
+
 @dataclass
 class TournamentInvite:
     invite_id: int
@@ -157,6 +169,7 @@ class TournamentInvite:
     tournament_name: str
     tournament_game: Game
     tournament_mode: GameMode
+
 
 @dataclass
 class TournamentWithPlacements(TournamentDataBasic):

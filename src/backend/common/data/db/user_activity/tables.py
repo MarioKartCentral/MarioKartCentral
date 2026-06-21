@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.db.common import TableModel
 
+
 @dataclass
 class UserLogin(TableModel):
     id: int
@@ -27,6 +28,7 @@ class UserLogin(TableModel):
             logout_date INTEGER
         )"""
 
+
 @dataclass
 class IPAddress(TableModel):
     id: int
@@ -52,6 +54,7 @@ class IPAddress(TableModel):
             checked_at INTEGER
         )"""
 
+
 @dataclass
 class UserIP(TableModel):
     id: int
@@ -66,6 +69,7 @@ class UserIP(TableModel):
             ip_address_id INTEGER NOT NULL REFERENCES ip_addresses(id),
             UNIQUE(user_id, ip_address_id)
         )"""
+
 
 @dataclass
 class UserIPTimeRange(TableModel):
@@ -87,4 +91,10 @@ class UserIPTimeRange(TableModel):
             granularity INTEGER NOT NULL DEFAULT 0
         )"""
 
-all_tables: list[type[TableModel]] = [UserLogin, IPAddress, UserIP, UserIPTimeRange]
+
+all_tables: list[type[TableModel]] = [
+    UserLogin,
+    IPAddress,
+    UserIP,
+    UserIPTimeRange,
+]

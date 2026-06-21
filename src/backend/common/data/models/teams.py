@@ -6,8 +6,9 @@ from common.data.models.players import Player
 from common.data.models.player_basic import PlayerBasic
 from common.data.models.discord_integration import Discord
 
+
 @dataclass
-class RequestCreateTeamRequestData():
+class RequestCreateTeamRequestData:
     name: str
     tag: str
     description: str
@@ -18,14 +19,16 @@ class RequestCreateTeamRequestData():
     mode: GameMode
     is_recruiting: bool
 
+
 @dataclass
 class CreateTeamRequestData(RequestCreateTeamRequestData):
     approval_status: Approval
     is_historical: bool
     is_active: bool
 
+
 @dataclass
-class EditTeamRequestData():
+class EditTeamRequestData:
     team_id: int
     name: str
     tag: str
@@ -37,8 +40,9 @@ class EditTeamRequestData():
     approval_status: Approval
     is_historical: bool
 
+
 @dataclass
-class ManagerEditTeamRequestData():
+class ManagerEditTeamRequestData:
     team_id: int
     description: str
     language: str
@@ -46,14 +50,16 @@ class ManagerEditTeamRequestData():
     logo_file: str | None
     remove_logo: bool
 
+
 @dataclass
-class RequestEditTeamRequestData():
+class RequestEditTeamRequestData:
     team_id: int
     name: str
     tag: str
 
+
 @dataclass
-class TeamEdit():
+class TeamEdit:
     id: int
     team_id: int
     old_name: str
@@ -64,6 +70,7 @@ class TeamEdit():
     date: int
     approval_status: Approval
     handled_by: PlayerBasic | None
+
 
 @dataclass
 class TeamEditUpdate:
@@ -71,10 +78,12 @@ class TeamEditUpdate:
     approval_status: Approval
     handled_by: PlayerBasic
 
+
 @dataclass
 class TeamEditFilter:
     approval_status: Approval
     page: int | None = None
+
 
 @dataclass
 class TeamEditList:
@@ -82,8 +91,9 @@ class TeamEditList:
     count: int
     page_count: int
 
+
 @dataclass
-class RosterEdit():
+class RosterEdit:
     id: int
     roster_id: int
     team_id: int
@@ -96,16 +106,19 @@ class RosterEdit():
     approval_status: Approval
     handled_by: PlayerBasic | None
 
+
 @dataclass
 class RosterEditUpdate:
     id: int
     approval_status: Approval
     handled_by: PlayerBasic
 
+
 @dataclass
 class RosterEditFilter:
     approval_status: Approval
     page: int | None = None
+
 
 @dataclass
 class RosterEditList:
@@ -113,15 +126,17 @@ class RosterEditList:
     count: int
     page_count: int
 
+
 @dataclass
-class PartialTeamMember():
+class PartialTeamMember:
     player_id: int
     roster_id: int
     join_date: int
     is_bagger_clause: bool
 
+
 @dataclass
-class PartialPlayer():
+class PartialPlayer:
     player_id: int
     name: str
     country_code: str
@@ -129,8 +144,9 @@ class PartialPlayer():
     discord: Discord | None
     friend_codes: list[FriendCode]
 
+
 @dataclass
-class RosterPlayerInfo():
+class RosterPlayerInfo:
     player_id: int
     name: str
     country_code: str
@@ -142,8 +158,9 @@ class RosterPlayerInfo():
     is_bagger_clause: bool
     friend_codes: list[FriendCode]
 
+
 @dataclass
-class RosterInvitedPlayer():
+class RosterInvitedPlayer:
     player_id: int
     name: str
     country_code: str
@@ -152,9 +169,10 @@ class RosterInvitedPlayer():
     invite_date: int
     is_bagger_clause: bool
     friend_codes: list[FriendCode]
-    
+
+
 @dataclass
-class TeamRoster():
+class TeamRoster:
     id: int
     team_id: int
     game: Game
@@ -169,8 +187,9 @@ class TeamRoster():
     players: list[RosterPlayerInfo]
     invites: list[RosterInvitedPlayer]
 
+
 @dataclass
-class Team():
+class Team:
     id: int
     name: str
     tag: str
@@ -184,8 +203,9 @@ class Team():
     rosters: list[TeamRoster]
     managers: list[Player]
 
+
 @dataclass
-class RequestCreateRosterRequestData():
+class RequestCreateRosterRequestData:
     team_id: int
     game: Game
     mode: GameMode
@@ -194,8 +214,9 @@ class RequestCreateRosterRequestData():
     color: int | None
     is_recruiting: bool
 
+
 @dataclass
-class CreateRosterRequestData():
+class CreateRosterRequestData:
     team_id: int
     game: Game
     mode: GameMode
@@ -206,8 +227,9 @@ class CreateRosterRequestData():
     is_active: bool
     approval_status: Approval
 
+
 @dataclass
-class EditRosterRequestData():
+class EditRosterRequestData:
     roster_id: int
     team_id: int
     name: str
@@ -217,71 +239,85 @@ class EditRosterRequestData():
     is_active: bool
     approval_status: Approval
 
+
 @dataclass
-class DeleteInviteRequestData():
+class DeleteInviteRequestData:
     team_id: int
     player_id: int
     roster_id: int
+
 
 @dataclass
 class InviteRosterPlayerRequestData(DeleteInviteRequestData):
     is_bagger_clause: bool
 
+
 @dataclass
-class AcceptRosterInviteRequestData():
+class AcceptRosterInviteRequestData:
     invite_id: int
     roster_leave_id: int | None
 
-@dataclass
-class DeclineRosterInviteRequestData():
-    invite_id: int
 
 @dataclass
-class LeaveRosterRequestData():
+class DeclineRosterInviteRequestData:
+    invite_id: int
+
+
+@dataclass
+class LeaveRosterRequestData:
     roster_id: int
 
-@dataclass
-class ApproveTransferRequestData():
-    invite_id: int
 
 @dataclass
-class DenyTransferRequestData():
+class ApproveTransferRequestData:
+    invite_id: int
+
+
+@dataclass
+class DenyTransferRequestData:
     invite_id: int
     send_back: bool
 
-@dataclass
-class ApproveTeamEditRequestData():
-    request_id: int
 
 @dataclass
-class DenyTeamEditRequestData():
+class ApproveTeamEditRequestData:
     request_id: int
 
+
 @dataclass
-class RequestEditRosterRequestData():
+class DenyTeamEditRequestData:
+    request_id: int
+
+
+@dataclass
+class RequestEditRosterRequestData:
     roster_id: int
     team_id: int
     name: str
     tag: str
 
-@dataclass
-class ApproveRosterEditRequestData():
-    request_id: int
 
 @dataclass
-class DenyRosterEditRequestData():
+class ApproveRosterEditRequestData:
     request_id: int
 
+
 @dataclass
-class ForceTransferPlayerRequestData():
+class DenyRosterEditRequestData:
+    request_id: int
+
+
+@dataclass
+class ForceTransferPlayerRequestData:
     player_id: int
     roster_id: int
     team_id: int
     roster_leave_id: int | None
     is_bagger_clause: bool
 
+
 @dataclass
-class EditTeamMemberInfoRequestData():
+class EditTeamMemberInfoRequestData:
     player_id: int
     roster_id: int
     team_id: int
@@ -289,14 +325,16 @@ class EditTeamMemberInfoRequestData():
     leave_date: int | None
     is_bagger_clause: bool
 
+
 @dataclass
-class KickPlayerRequestData():
+class KickPlayerRequestData:
     player_id: int
     roster_id: int
     team_id: int
 
+
 @dataclass
-class TeamFilter():
+class TeamFilter:
     name: str | None = None
     tag: str | None = None
     name_or_tag: str | None = None
@@ -307,7 +345,7 @@ class TeamFilter():
     is_historical: bool | None = None
     is_active: bool | None = None
     min_player_count: int | None = None
-    sort_by: Literal['name', '-name', 'creation_date', '-creation_date'] = 'name'
+    sort_by: Literal["name", "-name", "creation_date", "-creation_date"] = "name"
     page: int | None = None
 
     @staticmethod
@@ -315,12 +353,13 @@ class TeamFilter():
         """
         Returns sort value and whether the sort direction is in reverse
         """
-        if val.startswith('-'):
+        if val.startswith("-"):
             return val[1:], True
         return val, False
 
+
 @dataclass
-class TeamInvite():
+class TeamInvite:
     invite_id: int
     date: int
     is_bagger_clause: bool
@@ -334,8 +373,9 @@ class TeamInvite():
     game: Game
     mode: GameMode
 
+
 @dataclass
-class RosterBasic():
+class RosterBasic:
     team_id: int
     team_name: str
     team_tag: str
@@ -344,8 +384,9 @@ class RosterBasic():
     roster_name: str | None
     roster_tag: str | None
 
+
 @dataclass
-class TeamTransfer():
+class TeamTransfer:
     invite_id: int
     date: int
     is_bagger_clause: bool
@@ -358,8 +399,9 @@ class TeamTransfer():
     roster_leave: RosterBasic | None
     roster_join: RosterBasic | None
 
+
 @dataclass
-class TransferFilter():
+class TransferFilter:
     game: Game | None = None
     mode: GameMode | None = None
     team_id: int | None = None
@@ -368,40 +410,47 @@ class TransferFilter():
     to_date: int | None = None
     page: int | None = None
 
+
 @dataclass
-class TransferList():
+class TransferList:
     transfers: list[TeamTransfer]
     transfer_count: int
     page_count: int
 
+
 @dataclass
-class RequestRosterChangeRequestData():
+class RequestRosterChangeRequestData:
     roster_id: int
     team_id: int
     name: str | None
     tag: str | None
 
-@dataclass
-class EditRosterChangeRequestData():
-    request_id: int
 
 @dataclass
-class ManagerEditRosterRequestData():
+class EditRosterChangeRequestData:
+    request_id: int
+
+
+@dataclass
+class ManagerEditRosterRequestData:
     roster_id: int
     team_id: int
     color: int
     is_recruiting: bool
 
+
 @dataclass
-class RegisterableRostersRequestData():
+class RegisterableRostersRequestData:
     tournament_id: int
     game: Game
     mode: GameMode
 
+
 @dataclass
-class MergeTeamsRequestData():
+class MergeTeamsRequestData:
     from_team_id: int
     to_team_id: int
+
 
 @dataclass
 class TeamList:
@@ -409,16 +458,19 @@ class TeamList:
     team_count: int
     page_count: int
 
+
 @dataclass
 class RosterList:
     rosters: list[TeamRoster]
     count: int
     page_count: int
 
+
 @dataclass
 class RosterFilter:
     approval_status: Approval
     page: int | None = None
+
 
 @dataclass
 class ToggleBaggerRequestData:

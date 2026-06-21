@@ -1,0 +1,20 @@
+[project]
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+extend-exclude = ["*.md"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+extend-select = ["E501"] # line-too-long
+# the following ignored rules may be removed in future
+ignore = [
+  "F403", # undefined-local-with-import-star
+  "F405" # undefined-local-with-import-star-usage
+]
+

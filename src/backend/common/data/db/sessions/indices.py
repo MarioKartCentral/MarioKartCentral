@@ -18,7 +18,4 @@ class SessionsExpiresOn(IndexModel):
             ON sessions(expires_on)"""
 
 
-all_indices: list[type[IndexModel]] = [
-    SessionsUserId,
-    SessionsExpiresOn
-]
+all_indices: list[type[IndexModel]] = [SessionsUserId, SessionsExpiresOn]

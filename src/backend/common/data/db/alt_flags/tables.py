@@ -24,7 +24,8 @@ class AltFlag(TableModel):
             login_id INTEGER,
             UNIQUE(type, flag_key)
         )"""
-    
+
+
 @dataclass
 class UserAltFlag(TableModel):
     user_id: int
@@ -38,6 +39,4 @@ class UserAltFlag(TableModel):
             PRIMARY KEY (user_id, flag_id)) WITHOUT ROWID"""
 
 
-all_tables : list[type[TableModel]] = [
-    AltFlag, UserAltFlag
-]
+all_tables: list[type[TableModel]] = [AltFlag, UserAltFlag]

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class PlayerBan:
     player_id: int
@@ -10,13 +11,16 @@ class PlayerBan:
     reason: str
     comment: str
 
+
 @dataclass
 class PlayerBanWithUserId(PlayerBan):
     user_id: int
 
+
 @dataclass
 class PlayerBanHistorical(PlayerBan):
     unbanned_by: int | None = None
+
 
 @dataclass
 class PlayerBanBasic:
@@ -24,6 +28,7 @@ class PlayerBanBasic:
     reason: str
     unban_date: int | None
     is_indefinite: bool | None
+
 
 @dataclass
 class PlayerBanDetailed:
@@ -43,12 +48,14 @@ class PlayerBanDetailed:
     unbanned_by_pid: int | None = None
     unbanned_by_name: str | None = None
 
+
 @dataclass
 class PlayerBanRequestData:
     is_indefinite: bool
     expiration_date: int
     reason: str
     comment: str
+
 
 @dataclass
 class PlayerBanFilter:
@@ -64,11 +71,13 @@ class PlayerBanFilter:
     comment: str | None = None
     page: int | None = None
 
+
 @dataclass
 class PlayerBanHistoricalFilter(PlayerBanFilter):
     unbanned_by: str | None = None
     unbanned_before: int | None = None
     unbanned_after: int | None = None
+
 
 @dataclass
 class PlayerBanList:

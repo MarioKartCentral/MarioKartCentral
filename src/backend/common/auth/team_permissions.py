@@ -17,7 +17,7 @@ permissions_by_id = {
     5: INVITE_PLAYERS,
     6: KICK_PLAYERS,
     7: REGISTER_TOURNAMENT,
-    8: MANAGE_TOURNAMENT_ROSTERS
+    8: MANAGE_TOURNAMENT_ROSTERS,
 }
 
-id_by_permissions = { v: k for k, v in permissions_by_id.items() }
+id_by_permissions = {v: k for k, v in permissions_by_id.items()}

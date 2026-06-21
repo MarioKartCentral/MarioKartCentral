@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.db.common import TableModel
 
+
 @dataclass
 class DiscordToken(TableModel):
     user_id: int
@@ -16,4 +17,5 @@ class DiscordToken(TableModel):
             token_expires_on INTEGER NOT NULL,
             refresh_token TEXT NOT NULL) WITHOUT ROWID"""
 
-all_tables : list[type[TableModel]] = [DiscordToken]
+
+all_tables: list[type[TableModel]] = [DiscordToken]

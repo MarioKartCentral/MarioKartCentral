@@ -4,6 +4,7 @@ from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import *
 
+
 @dataclass
 class GetModNotificationsCommand(Command[ModNotifications]):
     user_roles: list[UserRole]
@@ -36,12 +37,16 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     assert row is not None
                     mod_notifications.pending_team_edits += row[0]
             if permissions.MANAGE_TRANSFERS in string_perms:
-                async with db.execute("SELECT COUNT(id) FROM team_transfers WHERE is_accepted = 1 AND approval_status='pending'") as cursor:
+                async with db.execute(
+                    "SELECT COUNT(id) FROM team_transfers WHERE is_accepted = 1 AND approval_status='pending'"
+                ) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     mod_notifications.pending_transfers = row[0]
             if permissions.EDIT_PLAYER in string_perms:
-                async with db.execute("SELECT COUNT(id) FROM player_name_edits WHERE approval_status='pending'") as cursor:
+                async with db.execute(
+                    "SELECT COUNT(id) FROM player_name_edits WHERE approval_status='pending'"
+                ) as cursor:
                     row = await cursor.fetchone()
                     assert row is not None
                     mod_notifications.pending_player_name_changes = row[0]
@@ -51,4 +56,3 @@ class GetModNotificationsCommand(Command[ModNotifications]):
                     assert row is not None
                     mod_notifications.pending_player_claims = row[0]
         return mod_notifications
-    

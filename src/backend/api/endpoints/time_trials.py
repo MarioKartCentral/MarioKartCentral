@@ -2,7 +2,11 @@ from starlette.requests import Request
 from starlette.routing import Route
 from api.auth import require_permission
 from api.data import handle
-from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
+from api.utils.responses import (
+    JSONResponse,
+    bind_request_body,
+    bind_request_query,
+)
 from common.auth import permissions
 from common.data.commands import *
 from common.data.models import *
@@ -15,17 +19,25 @@ async def create_time_trial(request: Request, body: CreateTimeTrialRequestData) 
     user = request.state.user
 
     if not user.player_id:
-        raise Problem("User must have a linked player account to submit time trials", status=400)
-    
+        raise Problem(
+            "User must have a linked player account to submit time trials",
+            status=400,
+        )
+
     body_player_id = body.player_id
-    
+
     if not body_player_id:
         body_player_id = user.player_id
     elif body_player_id != user.player_id:
-        can_submit_other_player = await handle(CheckUserHasPermissionCommand(user.id, permissions.VALIDATE_TIME_TRIAL_PROOF))
+        can_submit_other_player = await handle(
+            CheckUserHasPermissionCommand(user.id, permissions.VALIDATE_TIME_TRIAL_PROOF)
+        )
         if not can_submit_other_player:
-            raise Problem("You do not have permission to submit time trials for other players", status=403)
-    
+            raise Problem(
+                "You do not have permission to submit time trials for other players",
+                status=403,
+            )
+
     command = CreateTimeTrialCommand(
         player_id=body_player_id,
         game=body.game,
@@ -33,9 +45,9 @@ async def create_time_trial(request: Request, body: CreateTimeTrialRequestData) 
         time_ms=body.time_ms,
         proofs=body.proofs,
     )
-    
+
     time_trial = await handle(command)
-    
+
     response_proofs = [
         ProofResponseData(
             id=proof.id,
@@ -58,21 +70,22 @@ async def create_time_trial(request: Request, body: CreateTimeTrialRequestData) 
         time_ms=time_trial.time_ms,
         created_at=time_trial.created_at,
         updated_at=time_trial.updated_at,
-        proofs=response_proofs
+        proofs=response_proofs,
     )
-    
+
     return JSONResponse(response_data)
+
 
 async def get_time_trial(request: Request) -> JSONResponse:
     """Get a specific time trial by ID."""
-    trial_id = request.path_params['trial_id']
-    
+    trial_id = request.path_params["trial_id"]
+
     command = GetTimeTrialCommand(trial_id=trial_id)
     time_trial = await handle(command)  # Command returns a TimeTrial or None
-    
+
     if time_trial is None:
-        return JSONResponse({'error': 'Time trial not found'}, status_code=404)
-    
+        return JSONResponse({"error": "Time trial not found"}, status_code=404)
+
     return JSONResponse(time_trial, headers={"Cache-Control": "public, max-age=60"})
 
 
@@ -98,10 +111,11 @@ async def mark_proof_invalid_endpoint(request: Request, body: MarkProofInvalidRe
         time_trial_id=time_trial_id,
         proof_id=proof_id,
         validated_by_player_id=current_player_id,
-        version=body.version
+        version=body.version,
     )
     result = await handle(command)
     return JSONResponse(result)
+
 
 @bind_request_body(MarkTimeTrialInvalidRequestData)
 @require_permission(permissions.VALIDATE_TIME_TRIAL_PROOF)
@@ -120,7 +134,7 @@ async def mark_time_trial_invalid(request: Request, body: MarkTimeTrialInvalidRe
     command = MarkTimeTrialInvalidCommand(
         time_trial_id=time_trial_id,
         validated_by_player_id=current_player_id,
-        version=body.version
+        version=body.version,
     )
 
     result = await handle(command)
@@ -148,7 +162,7 @@ async def mark_proof_valid_endpoint(request: Request, body: MarkProofValidReques
         proof_id=proof_id,
         validated_by_player_id=current_player_id,
         time_trial_id=time_trial_id,
-        version=body.version
+        version=body.version,
     )
 
     result = await handle(command)
@@ -156,7 +170,9 @@ async def mark_proof_valid_endpoint(request: Request, body: MarkProofValidReques
 
 
 @require_permission(permissions.VALIDATE_TIME_TRIAL_PROOF)
-async def list_proofs_for_validation_endpoint(request: Request) -> JSONResponse:
+async def list_proofs_for_validation_endpoint(
+    request: Request,
+) -> JSONResponse:
     """
     List all proofs requiring validation, along with the status of their properties.
     Requires VALIDATE_TIME_TRIAL_PROOF permission.
@@ -165,24 +181,29 @@ async def list_proofs_for_validation_endpoint(request: Request) -> JSONResponse:
     result: ListProofsForValidationResponseData = await handle(command)
     return JSONResponse(result)
 
+
 @bind_request_query(LeaderboardFilter)
 async def get_leaderboard(request: Request, filter: LeaderboardFilter) -> JSONResponse:
     """Get leaderboard showing only each player's best time for tracks."""
-    
+
     # Get game from query params or use provided one
-    game = filter.game if filter.game else request.query_params.get('game')
+    game = filter.game if filter.game else request.query_params.get("game")
     if not game:
-        return JSONResponse({'error': 'Game parameter is required'}, status_code=400)
-    
+        return JSONResponse({"error": "Game parameter is required"}, status_code=400)
+
     command = GetLeaderboardCommand(
         game=game,
         track=filter.track,
         include_unvalidated=filter.include_unvalidated,
         include_proofless=filter.include_proofless,
     )
-    
+
     records = await handle(command)
-    return JSONResponse(LeaderboardResponseData(records), headers={"Cache-Control": "public, max-age=60"})
+    return JSONResponse(
+        LeaderboardResponseData(records),
+        headers={"Cache-Control": "public, max-age=60"},
+    )
+
 
 @bind_request_body(EditTimeTrialRequestData)
 @require_permission(permissions.SUBMIT_TIME_TRIAL, check_denied_only=True)
@@ -201,7 +222,7 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
     # Check if user has validation permissions
     check_validate_permission = CheckUserHasPermissionCommand(
         user_id=request.state.user.id,
-        permission_name=permissions.VALIDATE_TIME_TRIAL_PROOF
+        permission_name=permissions.VALIDATE_TIME_TRIAL_PROOF,
     )
     can_validate = await handle(check_validate_permission)
 
@@ -209,13 +230,13 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
     proof_dicts: list[EditProofDictRequired] = []
     for proof in body.proofs:
         proof_dict: EditProofDictRequired = {
-            'id': proof.id,
-            'url': proof.url,
-            'type': proof.type,
-            'deleted': proof.deleted
+            "id": proof.id,
+            "url": proof.url,
+            "type": proof.type,
+            "deleted": proof.deleted,
         }
         if proof.status is not None:
-            proof_dict['status'] = proof.status
+            proof_dict["status"] = proof.status
         proof_dicts.append(proof_dict)
 
     command = EditTimeTrialCommand(
@@ -228,7 +249,7 @@ async def edit_time_trial(request: Request, body: EditTimeTrialRequestData) -> J
         current_player_id=current_player_id,
         player_id=body.player_id,
         is_invalid=body.is_invalid,
-        can_validate=can_validate
+        can_validate=can_validate,
     )
 
     result = await handle(command)
@@ -244,22 +265,25 @@ async def get_timesheet(request: Request, filter: TimesheetFilter) -> JSONRespon
     """
     command = GetTimesheetCommand(filter=filter)
     records = await handle(command)
-    
-    return JSONResponse(TimesheetResponseData(records), headers={"Cache-Control": "public, max-age=60"})
+
+    return JSONResponse(
+        TimesheetResponseData(records),
+        headers={"Cache-Control": "public, max-age=60"},
+    )
 
 
 routes = [
-    Route('/api/time-trials/create', create_time_trial, methods=['POST']),
-    Route('/api/time-trials/leaderboard', get_leaderboard, methods=['GET']),
-    Route('/api/time-trials/timesheet', get_timesheet, methods=['GET']),  # New timesheet endpoint
-    Route('/api/time-trials/{trial_id:str}', get_time_trial, methods=['GET']), # Ensure trial_id is string
+    Route("/api/time-trials/create", create_time_trial, methods=["POST"]),
+    Route("/api/time-trials/leaderboard", get_leaderboard, methods=["GET"]),
+    Route("/api/time-trials/timesheet", get_timesheet, methods=["GET"]),  # New timesheet endpoint
+    Route("/api/time-trials/{trial_id:str}", get_time_trial, methods=["GET"]),  # Ensure trial_id is string
     Route(
-        "/api/time-trials/{trial_id:str}/proofs/{proof_id:str}/mark-invalid", # New endpoint for marking entire proof invalid
+        "/api/time-trials/{trial_id:str}/proofs/{proof_id:str}/mark-invalid",
         mark_proof_invalid_endpoint,
         methods=["POST"],
     ),
     Route(
-        "/api/time-trials/{trial_id:str}/proofs/{proof_id:str}/mark-valid", # New endpoint for marking entire proof valid (MVP)
+        "/api/time-trials/{trial_id:str}/proofs/{proof_id:str}/mark-valid",
         mark_proof_valid_endpoint,
         methods=["POST"],
     ),

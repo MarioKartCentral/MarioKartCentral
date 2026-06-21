@@ -1,36 +1,43 @@
 from dataclasses import dataclass
 from common.data.models.squads import TournamentSquadDetails
-from common.data.models.tournament_registrations import TournamentPlayerDetailsShort
+from common.data.models.tournament_registrations import (
+    TournamentPlayerDetailsShort,
+)
 from common.data.models.teams import RosterBasic
 
+
 @dataclass
-class TournamentPlacement():
+class TournamentPlacement:
     registration_id: int
     placement: int | None
     placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
+
 @dataclass
-class TournamentPlacementFromPlayerIDs():
+class TournamentPlacementFromPlayerIDs:
     player_ids: list[int]
     placement: int | None
     placement_description: str | None
     placement_lower_bound: int | None
     is_disqualified: bool
 
+
 @dataclass
 class TournamentPlacementDetailed(TournamentPlacement):
     squad: TournamentSquadDetails
 
+
 @dataclass
-class TournamentPlacementList():
+class TournamentPlacementList:
     tournament_id: int
     placements: list[TournamentPlacementDetailed]
     unplaced: list[TournamentPlacementDetailed]
 
+
 @dataclass
-class PlayerTournamentPlacement():
+class PlayerTournamentPlacement:
     tournament_id: int
     tournament_name: str
     game: str
@@ -46,13 +53,15 @@ class PlayerTournamentPlacement():
     partners: list[TournamentPlayerDetailsShort]
     rosters: list[RosterBasic]
 
+
 @dataclass
-class PlayerTournamentResults():
+class PlayerTournamentResults:
     tournament_solo_and_squad_placements: list[PlayerTournamentPlacement]
     tournament_team_placements: list[PlayerTournamentPlacement]
 
+
 @dataclass
-class TeamTournamentPlacement():
+class TeamTournamentPlacement:
     tournament_id: int
     tournament_name: str
     game: str
@@ -66,6 +75,7 @@ class TeamTournamentPlacement():
     is_disqualified: bool
     rosters: list[RosterBasic]
 
+
 @dataclass
-class TeamTournamentResults():
+class TeamTournamentResults:
     tournament_team_placements: list[TeamTournamentPlacement]

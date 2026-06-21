@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from common.data.db.common import TableModel
 
+
 @dataclass
 class Player(TableModel):
     id: int
@@ -22,6 +23,7 @@ class Player(TableModel):
             is_banned BOOLEAN NOT NULL,
             join_date INTEGER NOT NULL DEFAULT 0
             )"""
+
 
 @dataclass
 class FriendCode(TableModel):
@@ -49,6 +51,7 @@ class FriendCode(TableModel):
             creation_date INTEGER NOT NULL
             )"""
 
+
 @dataclass
 class User(TableModel):
     id: int
@@ -62,6 +65,7 @@ class User(TableModel):
             player_id INTEGER REFERENCES players(id),
             join_date INTEGER NOT NULL DEFAULT 0
             )"""
+
 
 @dataclass
 class UserDiscord(TableModel):
@@ -83,6 +87,7 @@ class UserDiscord(TableModel):
         avatar TEXT
         )"""
 
+
 @dataclass
 class Role(TableModel):
     id: int
@@ -97,6 +102,7 @@ class Role(TableModel):
             position INTEGER NOT NULL
             )"""
 
+
 @dataclass
 class Permission(TableModel):
     id: int
@@ -107,6 +113,7 @@ class Permission(TableModel):
         return """CREATE TABLE IF NOT EXISTS permissions(
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL)"""
+
 
 @dataclass
 class UserRole(TableModel):
@@ -122,6 +129,7 @@ class UserRole(TableModel):
             expires_on INTEGER,
             PRIMARY KEY (user_id, role_id)) WITHOUT ROWID"""
 
+
 @dataclass
 class RolePermission(TableModel):
     role_id: int
@@ -135,6 +143,7 @@ class RolePermission(TableModel):
             permission_id INTEGER NOT NULL REFERENCES permissions(id),
             is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
 
 @dataclass
 class TournamentSeries(TableModel):
@@ -168,6 +177,7 @@ class TournamentSeries(TableModel):
             location TEXT,
             discord_invite TEXT
             )"""
+
 
 @dataclass
 class Tournament(TableModel):
@@ -261,6 +271,7 @@ class Tournament(TableModel):
             sync_team_rosters BOOLEAN NOT NULL DEFAULT TRUE
             )"""
 
+
 @dataclass
 class TournamentTemplate(TableModel):
     id: int
@@ -273,6 +284,7 @@ class TournamentTemplate(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             series_id INTEGER REFERENCES tournament_series(id))"""
+
 
 @dataclass
 class TournamentRegistration(TableModel):
@@ -297,6 +309,7 @@ class TournamentRegistration(TableModel):
             is_registered BOOLEAN NOT NULL,
             is_approved BOOLEAN DEFAULT FALSE NOT NULL
             )"""
+
 
 @dataclass
 class TournamentPlayer(TableModel):
@@ -335,7 +348,8 @@ class TournamentPlayer(TableModel):
             is_approved BOOLEAN DEFAULT FALSE NOT NULL,
             is_eligible BOOLEAN DEFAULT TRUE NOT NULL
             )"""
-    
+
+
 @dataclass
 class TournamentPlacements(TableModel):
     id: int
@@ -357,7 +371,8 @@ class TournamentPlacements(TableModel):
             placement_lower_bound INTEGER,
             is_disqualified BOOLEAN NOT NULL
         )"""
-    
+
+
 @dataclass
 class Team(TableModel):
     id: int
@@ -386,6 +401,7 @@ class Team(TableModel):
             is_historical BOOLEAN NOT NULL
             )
             """
+
 
 @dataclass
 class TeamRoster(TableModel):
@@ -418,6 +434,7 @@ class TeamRoster(TableModel):
             )
             """
 
+
 @dataclass
 class TeamMember(TableModel):
     id: int
@@ -441,6 +458,7 @@ class TeamMember(TableModel):
             )
             """
 
+
 @dataclass
 class TeamSquadRegistration(TableModel):
     roster_id: int
@@ -457,6 +475,7 @@ class TeamSquadRegistration(TableModel):
             ) WITHOUT ROWID
             """
 
+
 @dataclass
 class TeamRole(TableModel):
     id: int
@@ -469,7 +488,8 @@ class TeamRole(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             position INTEGER NOT NULL)"""
-    
+
+
 @dataclass
 class TeamPermission(TableModel):
     id: int
@@ -480,7 +500,8 @@ class TeamPermission(TableModel):
         return """CREATE TABLE IF NOT EXISTS team_permissions(
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL)"""
-    
+
+
 @dataclass
 class TeamRolePermission(TableModel):
     role_id: int
@@ -494,6 +515,7 @@ class TeamRolePermission(TableModel):
             permission_id INTEGER NOT NULL REFERENCES team_permissions(id),
             is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
 
 @dataclass
 class UserTeamRole(TableModel):
@@ -513,6 +535,7 @@ class UserTeamRole(TableModel):
             ) WITHOUT ROWID
             """
 
+
 @dataclass
 class SeriesRole(TableModel):
     id: int
@@ -525,7 +548,8 @@ class SeriesRole(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             position INTEGER NOT NULL)"""
-    
+
+
 @dataclass
 class SeriesPermission(TableModel):
     id: int
@@ -536,7 +560,8 @@ class SeriesPermission(TableModel):
         return """CREATE TABLE IF NOT EXISTS series_permissions(
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL)"""
-    
+
+
 @dataclass
 class SeriesRolePermission(TableModel):
     role_id: int
@@ -550,6 +575,7 @@ class SeriesRolePermission(TableModel):
             permission_id INTEGER NOT NULL REFERENCES series_permissions(id),
             is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
+
 
 @dataclass
 class UserSeriesRole(TableModel):
@@ -568,7 +594,8 @@ class UserSeriesRole(TableModel):
             PRIMARY KEY (user_id, role_id, series_id)
             ) WITHOUT ROWID
             """
-    
+
+
 @dataclass
 class TournamentRole(TableModel):
     id: int
@@ -581,7 +608,8 @@ class TournamentRole(TableModel):
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             position INTEGER NOT NULL)"""
-    
+
+
 @dataclass
 class TournamentPermission(TableModel):
     id: int
@@ -592,7 +620,8 @@ class TournamentPermission(TableModel):
         return """CREATE TABLE IF NOT EXISTS tournament_permissions(
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL)"""
-    
+
+
 @dataclass
 class TournamentRolePermission(TableModel):
     role_id: int
@@ -606,7 +635,8 @@ class TournamentRolePermission(TableModel):
             permission_id INTEGER NOT NULL REFERENCES tournament_permissions(id),
             is_denied BOOLEAN DEFAULT FALSE NOT NULL,
             PRIMARY KEY (role_id, permission_id)) WITHOUT ROWID"""
-    
+
+
 @dataclass
 class UserTournamentRole(TableModel):
     user_id: int
@@ -624,6 +654,7 @@ class UserTournamentRole(TableModel):
             PRIMARY KEY (user_id, role_id, tournament_id)
             ) WITHOUT ROWID
             """
+
 
 @dataclass
 class TeamTransfer(TableModel):
@@ -648,6 +679,7 @@ class TeamTransfer(TableModel):
             is_accepted BOOLEAN NOT NULL,
             approval_status TEXT NOT NULL
             )"""
+
 
 @dataclass
 class TeamEdit(TableModel):
@@ -674,7 +706,8 @@ class TeamEdit(TableModel):
             approval_status TEXT NOT NULL,
             handled_by INTEGER REFERENCES players(id)
             )"""
-    
+
+
 @dataclass
 class RosterEdit(TableModel):
     id: int
@@ -702,6 +735,7 @@ class RosterEdit(TableModel):
         )
         """
 
+
 @dataclass
 class FriendCodeEdit(TableModel):
     id: int
@@ -723,7 +757,8 @@ class FriendCodeEdit(TableModel):
         handled_by INTEGER REFERENCES players(id),
         date INTEGER NOT NULL
         )"""
-    
+
+
 @dataclass
 class UserSettings(TableModel):
     user_id: int
@@ -745,6 +780,7 @@ class UserSettings(TableModel):
             timezone TEXT DEFAULT 'UTC' NOT NULL,
             hide_discord BOOLEAN DEFAULT FALSE
             ) WITHOUT ROWID"""
+
 
 @dataclass
 class Notifications(TableModel):
@@ -770,7 +806,6 @@ class Notifications(TableModel):
             is_read INTEGER DEFAULT 0 NOT NULL)"""
 
 
-
 @dataclass
 class PlayerBans(TableModel):
     player_id: int
@@ -792,7 +827,8 @@ class PlayerBans(TableModel):
             reason TEXT NOT NULL,
             comment TEXT NOT NULL
             ) WITHOUT ROWID"""
-    
+
+
 @dataclass
 class PlayerBansHistorical(TableModel):
     id: int
@@ -819,7 +855,8 @@ class PlayerBansHistorical(TableModel):
             expiration_date INTEGER NOT NULL,
             reason TEXT NOT NULL,
             comment TEXT NOT NULL)"""
-    
+
+
 @dataclass
 class PlayerNameEdit(TableModel):
     id: int
@@ -842,6 +879,7 @@ class PlayerNameEdit(TableModel):
             handled_by INTEGER REFERENCES players(id)
             )"""
 
+
 @dataclass
 class PlayerClaim(TableModel):
     id: int
@@ -860,9 +898,7 @@ class PlayerClaim(TableModel):
             approval_status TEXT NOT NULL
         )"""
 
-    
 
-    
 @dataclass
 class FilteredWords(TableModel):
     id: int
@@ -874,7 +910,8 @@ class FilteredWords(TableModel):
             id INTEGER PRIMARY KEY,
             word TEXT NOT NULL
         )"""
-    
+
+
 @dataclass
 class Post(TableModel):
     id: int
@@ -894,7 +931,8 @@ class Post(TableModel):
             creation_date INTEGER NOT NULL,
             created_by INTEGER REFERENCES players(id)
         )"""
-    
+
+
 @dataclass
 class SeriesPost(TableModel):
     series_id: int
@@ -906,7 +944,8 @@ class SeriesPost(TableModel):
             series_id INTEGER NOT NULL REFERENCES tournament_series(id),
             post_id INTEGER NOT NULL REFERENCES posts(id),
             PRIMARY KEY (series_id, post_id)) WITHOUT ROWID"""
-    
+
+
 @dataclass
 class TournamentPost(TableModel):
     tournament_id: int
@@ -926,7 +965,7 @@ class JobState(TableModel):
     job_name: str
     state: str
     updated_on: int
-    
+
     @staticmethod
     def get_create_table_command():
         return """CREATE TABLE IF NOT EXISTS job_states(
@@ -937,15 +976,50 @@ class JobState(TableModel):
         )"""
 
 
-    
-all_tables : list[type[TableModel]] = [
-    Player, FriendCode, User, UserDiscord, Role, Permission, UserRole, RolePermission, 
-    TournamentSeries, Tournament, TournamentTemplate, TournamentRegistration, TournamentPlayer,
-    TournamentPlacements, Team, TeamRoster, TeamMember,
-    TeamSquadRegistration, TeamRole, TeamPermission, TeamRolePermission, UserTeamRole,
-    SeriesRole, SeriesPermission, SeriesRolePermission, UserSeriesRole, 
-    TournamentRole, TournamentPermission, TournamentRolePermission, UserTournamentRole,
-    TeamTransfer, TeamEdit, RosterEdit, FriendCodeEdit,
-    UserSettings, Notifications, PlayerBans, PlayerBansHistorical,
-    PlayerNameEdit, PlayerClaim, FilteredWords,
-    Post, SeriesPost, TournamentPost, JobState]
+all_tables: list[type[TableModel]] = [
+    Player,
+    FriendCode,
+    User,
+    UserDiscord,
+    Role,
+    Permission,
+    UserRole,
+    RolePermission,
+    TournamentSeries,
+    Tournament,
+    TournamentTemplate,
+    TournamentRegistration,
+    TournamentPlayer,
+    TournamentPlacements,
+    Team,
+    TeamRoster,
+    TeamMember,
+    TeamSquadRegistration,
+    TeamRole,
+    TeamPermission,
+    TeamRolePermission,
+    UserTeamRole,
+    SeriesRole,
+    SeriesPermission,
+    SeriesRolePermission,
+    UserSeriesRole,
+    TournamentRole,
+    TournamentPermission,
+    TournamentRolePermission,
+    UserTournamentRole,
+    TeamTransfer,
+    TeamEdit,
+    RosterEdit,
+    FriendCodeEdit,
+    UserSettings,
+    Notifications,
+    PlayerBans,
+    PlayerBansHistorical,
+    PlayerNameEdit,
+    PlayerClaim,
+    FilteredWords,
+    Post,
+    SeriesPost,
+    TournamentPost,
+    JobState,
+]

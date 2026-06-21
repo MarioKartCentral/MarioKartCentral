@@ -6,10 +6,16 @@ import msgspec
 from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import *
-from common.data.s3 import IMAGE_BUCKET, SERIES_BUCKET, TOURNAMENTS_BUCKET, S3Wrapper
+from common.data.s3 import (
+    IMAGE_BUCKET,
+    SERIES_BUCKET,
+    TOURNAMENTS_BUCKET,
+    S3Wrapper,
+)
 from common.auth import tournament_permissions
 from aiosqlite import Row
 import base64
+
 
 @dataclass
 class CreateTournamentCommand(Command[int | None]):
@@ -19,51 +25,120 @@ class CreateTournamentCommand(Command[int | None]):
         b = self.body
         # check for invalid body parameters
         if not b.is_squad and b.teams_allowed:
-            raise Problem('Individual tournaments cannot have teams linked', status=400)
+            raise Problem("Individual tournaments cannot have teams linked", status=400)
         if not b.teams_allowed and (b.teams_only or b.team_members_only):
-            raise Problem('Non-team tournaments cannot have teams_only, team_members_only, min_representatives enabled', status=400)
+            raise Problem(
+                "Non-team tournaments cannot have teams_only, team_members_only, min_representatives enabled",
+                status=400,
+            )
         if not b.is_squad and (b.min_squad_size or b.max_squad_size or b.squad_tag_required or b.squad_name_required):
-            raise Problem('Individual tournaments may not have settings for min_squad_size, max_squad_size, squad_tag_required, squad_name_required', status=400)
+            raise Problem(
+                """Individual tournaments may not have settings for
+                min_squad_size, max_squad_size,squad_tag_required, squad_name_required""",
+                status=400,
+            )
         if b.teams_allowed and (b.mii_name_required or b.host_status_required or b.require_single_fc):
-            raise Problem('Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled', status=400)
+            raise Problem(
+                "Team tournaments cannot have mii_name_required, host_status_required, or require_single_fc enabled",
+                status=400,
+            )
         if b.teams_allowed and (not b.squad_tag_required or not b.squad_name_required):
-            raise Problem('Team tournaments must require a squad tag/name', status=400)
+            raise Problem("Team tournaments must require a squad tag/name", status=400)
         if not b.series_id and b.use_series_logo:
-            raise Problem('Cannot use series logo if no series is selected', status=400)
-        if b.bagger_clause_enabled and not (b.game == 'mkw' and b.is_squad):
-            raise Problem('Game must be set to MKW and it must be a squad tournament to use bagger clause', status=400)
+            raise Problem("Cannot use series logo if no series is selected", status=400)
+        if b.bagger_clause_enabled and not (b.game == "mkw" and b.is_squad):
+            raise Problem(
+                "Game must be set to MKW and it must be a squad tournament to use bagger clause",
+                status=400,
+            )
 
         # store minimal data about each tournament in the SQLite DB
         async with db_wrapper.connect() as db:
             cursor = await db.execute(
-                """INSERT INTO tournaments(
-                    name, game, mode, series_id, is_squad, registrations_open, date_start, date_end, use_series_description, series_stats_include,
-                    logo, use_series_logo, url, registration_deadline, registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size, squad_tag_required,
-                    squad_name_required, mii_name_required, host_status_required, checkins_enabled, checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
-                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives, max_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location, sync_team_rosters
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                (b.name, b.game, b.mode, b.series_id, b.is_squad, b.registrations_open, b.date_start, b.date_end, b.use_series_description,
-                b.series_stats_include, None, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.teams_allowed, b.teams_only, b.team_members_only, b.min_squad_size,
-                b.max_squad_size, b.squad_tag_required, b.squad_name_required, b.mii_name_required, b.host_status_required, b.checkins_enabled, b.checkins_open, b.min_players_checkin, 
-                b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles, b.require_single_fc, b.min_representatives, b.max_representatives,
-                b.bagger_clause_enabled, b.use_series_ruleset, b.organizer, b.location, b.sync_team_rosters))
+                """
+                INSERT INTO tournaments(
+                    name, game, mode, series_id, is_squad, registrations_open, date_start, date_end,
+                    use_series_description, series_stats_include, logo, use_series_logo, url, registration_deadline,
+                    registration_cap, teams_allowed, teams_only, team_members_only, min_squad_size, max_squad_size,
+                    squad_tag_required, squad_name_required, mii_name_required, host_status_required, checkins_enabled,
+                    checkins_open, min_players_checkin, verification_required, verified_fc_required, is_viewable,
+                    is_public, is_deleted, show_on_profiles, require_single_fc, min_representatives,
+                    max_representatives, bagger_clause_enabled, use_series_ruleset, organizer, location,
+                    sync_team_rosters)
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    b.name,
+                    b.game,
+                    b.mode,
+                    b.series_id,
+                    b.is_squad,
+                    b.registrations_open,
+                    b.date_start,
+                    b.date_end,
+                    b.use_series_description,
+                    b.series_stats_include,
+                    None,
+                    b.use_series_logo,
+                    b.url,
+                    b.registration_deadline,
+                    b.registration_cap,
+                    b.teams_allowed,
+                    b.teams_only,
+                    b.team_members_only,
+                    b.min_squad_size,
+                    b.max_squad_size,
+                    b.squad_tag_required,
+                    b.squad_name_required,
+                    b.mii_name_required,
+                    b.host_status_required,
+                    b.checkins_enabled,
+                    b.checkins_open,
+                    b.min_players_checkin,
+                    b.verification_required,
+                    b.verified_fc_required,
+                    b.is_viewable,
+                    b.is_public,
+                    b.is_deleted,
+                    b.show_on_profiles,
+                    b.require_single_fc,
+                    b.min_representatives,
+                    b.max_representatives,
+                    b.bagger_clause_enabled,
+                    b.use_series_ruleset,
+                    b.organizer,
+                    b.location,
+                    b.sync_team_rosters,
+                ),
+            )
             tournament_id = cursor.lastrowid
 
             logo_filename = f"tournament_logos/{tournament_id}.png"
             logo_path = f"/img/{logo_filename}"
             if b.logo_file:
-                await db.execute("UPDATE tournaments SET logo = ? WHERE id = ?", (logo_path, tournament_id))
-            
+                await db.execute(
+                    "UPDATE tournaments SET logo = ? WHERE id = ?",
+                    (logo_path, tournament_id),
+                )
 
             s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
-            await s3_wrapper.put_object(TOURNAMENTS_BUCKET, f'{tournament_id}.json', s3_message)
+            await s3_wrapper.put_object(TOURNAMENTS_BUCKET, f"{tournament_id}.json", s3_message)
             if b.logo_file:
                 logo_data = base64.b64decode(b.logo_file)
-                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(
+                    IMAGE_BUCKET,
+                    key=logo_filename,
+                    body=logo_data,
+                    acl="public-read",
+                )
             await db.commit()
         return tournament_id
-          
+
+
 @dataclass
 class EditTournamentCommand(Command[None]):
     body: EditTournamentRequestData
@@ -71,9 +146,12 @@ class EditTournamentCommand(Command[None]):
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
         b = self.body
-        
+
         async with db_wrapper.connect() as db:
-            async with db.execute("SELECT is_squad, game, logo FROM tournaments WHERE id = ?", (self.id,)) as cursor:
+            async with db.execute(
+                "SELECT is_squad, game, logo FROM tournaments WHERE id = ?",
+                (self.id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if not row:
                     raise Problem("Tournament not found", status=404)
@@ -83,67 +161,116 @@ class EditTournamentCommand(Command[None]):
             elif b.remove_logo:
                 logo_path = None
             if b.series_id:
-                async with db.execute("SELECT id FROM tournament_series WHERE id = ?", (b.series_id,)) as cursor:
+                async with db.execute(
+                    "SELECT id FROM tournament_series WHERE id = ?",
+                    (b.series_id,),
+                ) as cursor:
                     row = await cursor.fetchone()
                     if not row:
-                        raise Problem("Series with provided ID cannot be found", status=404)
+                        raise Problem(
+                            "Series with provided ID cannot be found",
+                            status=404,
+                        )
             # check for invalid body parameters
             if not b.series_id and b.use_series_logo:
-                raise Problem('Cannot use series logo if no series is selected', status=400)
-            if b.bagger_clause_enabled and not (game == 'mkw' and is_squad):
-                raise Problem('Game must be set to MKW and it must be a squad tournament to use bagger clause', status=400)
-            cursor = await db.execute("""UPDATE tournaments
+                raise Problem(
+                    "Cannot use series logo if no series is selected",
+                    status=400,
+                )
+            if b.bagger_clause_enabled and not (game == "mkw" and is_squad):
+                raise Problem(
+                    "Game must be set to MKW and it must be a squad tournament to use bagger clause",
+                    status=400,
+                )
+            cursor = await db.execute(
+                """
+                UPDATE tournaments
                 SET name = ?,
-                series_id = ?,
-                registrations_open = ?,
-                date_start = ?,
-                date_end = ?,
-                use_series_description = ?,
-                use_series_ruleset = ?,
-                series_stats_include = ?,
-                logo = ?,
-                use_series_logo = ?,
-                url = ?,
-                registration_deadline = ?,
-                registration_cap = ?,
-                min_squad_size = ?,
-                max_squad_size = ?,
-                checkins_enabled = ?,
-                checkins_open = ?,
-                min_players_checkin = ?,
-                verification_required = ?,
-                verified_fc_required = ?,
-                is_viewable = ?,
-                is_public = ?,
-                is_deleted = ?,
-                show_on_profiles = ?,
-                min_representatives = ?,
-                max_representatives = ?,
-                organizer = ?,
-                location = ?,
-                sync_team_rosters = ?
-                WHERE id = ?""",
-                (b.name, b.series_id, b.registrations_open, b.date_start, b.date_end, b.use_series_description, b.use_series_ruleset, b.series_stats_include,
-                logo_path, b.use_series_logo, b.url, b.registration_deadline, b.registration_cap, b.min_squad_size,
-                b.max_squad_size, b.checkins_enabled, b.checkins_open,
-                b.min_players_checkin, b.verification_required, b.verified_fc_required, b.is_viewable, b.is_public, b.is_deleted, b.show_on_profiles,
-                b.min_representatives, b.max_representatives, b.organizer, b.location, b.sync_team_rosters, self.id))
+                    series_id = ?,
+                    registrations_open = ?,
+                    date_start = ?,
+                    date_end = ?,
+                    use_series_description = ?,
+                    use_series_ruleset = ?,
+                    series_stats_include = ?,
+                    logo = ?,
+                    use_series_logo = ?,
+                    url = ?,
+                    registration_deadline = ?,
+                    registration_cap = ?,
+                    min_squad_size = ?,
+                    max_squad_size = ?,
+                    checkins_enabled = ?,
+                    checkins_open = ?,
+                    min_players_checkin = ?,
+                    verification_required = ?,
+                    verified_fc_required = ?,
+                    is_viewable = ?,
+                    is_public = ?,
+                    is_deleted = ?,
+                    show_on_profiles = ?,
+                    min_representatives = ?,
+                    max_representatives = ?,
+                    organizer = ?,
+                    location = ?,
+                    sync_team_rosters = ?
+                WHERE id = ?
+                """,
+                (
+                    b.name,
+                    b.series_id,
+                    b.registrations_open,
+                    b.date_start,
+                    b.date_end,
+                    b.use_series_description,
+                    b.use_series_ruleset,
+                    b.series_stats_include,
+                    logo_path,
+                    b.use_series_logo,
+                    b.url,
+                    b.registration_deadline,
+                    b.registration_cap,
+                    b.min_squad_size,
+                    b.max_squad_size,
+                    b.checkins_enabled,
+                    b.checkins_open,
+                    b.min_players_checkin,
+                    b.verification_required,
+                    b.verified_fc_required,
+                    b.is_viewable,
+                    b.is_public,
+                    b.is_deleted,
+                    b.show_on_profiles,
+                    b.min_representatives,
+                    b.max_representatives,
+                    b.organizer,
+                    b.location,
+                    b.sync_team_rosters,
+                    self.id,
+                ),
+            )
             updated_rows = cursor.rowcount
             if updated_rows == 0:
-                raise Problem('No tournament found', status=404)
-            
+                raise Problem("No tournament found", status=404)
+
             s3_body = TournamentS3Fields(b.description, b.ruleset)
             s3_message = bytes(msgspec.json.encode(s3_body))
-            await s3_wrapper.put_object(TOURNAMENTS_BUCKET, f'{self.id}.json', s3_message)
+            await s3_wrapper.put_object(TOURNAMENTS_BUCKET, f"{self.id}.json", s3_message)
             if b.logo_file:
                 logo_filename = f"tournament_logos/{self.id}.png"
                 logo_data = base64.b64decode(b.logo_file)
-                await s3_wrapper.put_object(IMAGE_BUCKET, key=logo_filename, body=logo_data, acl="public-read")
+                await s3_wrapper.put_object(
+                    IMAGE_BUCKET,
+                    key=logo_filename,
+                    body=logo_data,
+                    acl="public-read",
+                )
             elif b.remove_logo:
                 logo_filename = f"tournament_logos/{self.id}.png"
                 await s3_wrapper.delete_object(IMAGE_BUCKET, key=logo_filename)
             await db.commit()
-            
+
+
 @dataclass
 class GetTournamentDataCommand(Command[GetTournamentRequestData]):
     id: int
@@ -160,63 +287,68 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                 row = await cursor.fetchone()
                 assert row is not None
                 logo = row[0]
-            s3_body = await s3_wrapper.get_object(TOURNAMENTS_BUCKET, f'{self.id}.json')
+            s3_body = await s3_wrapper.get_object(TOURNAMENTS_BUCKET, f"{self.id}.json")
             if s3_body is None:
-                raise Problem('No tournament found', status=404)
+                raise Problem("No tournament found", status=404)
             s3_fields = msgspec.json.decode(s3_body, type=TournamentS3Fields)
 
-            tournament_data = GetTournamentRequestData(id=self.id,
-                                                       name=t.name,
-                                                       game=t.game,
-                                                       mode=t.mode,
-                                                       series_id=t.series_id,
-                                                       is_squad=t.is_squad,
-                                                       registrations_open=t.registrations_open,
-                                                       date_start=t.date_start,
-                                                       date_end=t.date_end,
-                                                       description=s3_fields.description,
-                                                       use_series_description=t.use_series_description,
-                                                       series_stats_include=t.series_stats_include,
-                                                       logo=logo,
-                                                       use_series_logo=t.use_series_logo,
-                                                       url=t.url,
-                                                       registration_deadline=t.registration_deadline,
-                                                       registration_cap=t.registration_cap,
-                                                       teams_allowed=t.teams_allowed,
-                                                       teams_only=t.teams_only,
-                                                       team_members_only=t.team_members_only,
-                                                       min_squad_size=t.min_squad_size,
-                                                       max_squad_size=t.max_squad_size,
-                                                       squad_tag_required=t.squad_tag_required,
-                                                       squad_name_required=t.squad_name_required,
-                                                       mii_name_required=t.mii_name_required,
-                                                       host_status_required=t.host_status_required,
-                                                       checkins_enabled=t.checkins_enabled,
-                                                       checkins_open=t.checkins_open,
-                                                       min_players_checkin=t.min_players_checkin,
-                                                       verification_required=t.verification_required,
-                                                       verified_fc_required=t.verified_fc_required,
-                                                       is_viewable=t.is_viewable,
-                                                       is_public=t.is_public,
-                                                       show_on_profiles=t.show_on_profiles,
-                                                       require_single_fc=t.require_single_fc,
-                                                       min_representatives=t.min_representatives,
-                                                       max_representatives=t.max_representatives,
-                                                       bagger_clause_enabled=t.bagger_clause_enabled,
-                                                       is_deleted=t.is_deleted,
-                                                       use_series_ruleset=t.use_series_ruleset, 
-                                                       organizer=t.organizer,
-                                                       location=t.location,
-                                                       sync_team_rosters=t.sync_team_rosters,
-                                                       ruleset=s3_fields.ruleset,
-                                                       series_name=None,
-                                                       series_url=None,
-                                                       series_description=None,
-                                                       series_ruleset=None)
+            tournament_data = GetTournamentRequestData(
+                id=self.id,
+                name=t.name,
+                game=t.game,
+                mode=t.mode,
+                series_id=t.series_id,
+                is_squad=t.is_squad,
+                registrations_open=t.registrations_open,
+                date_start=t.date_start,
+                date_end=t.date_end,
+                description=s3_fields.description,
+                use_series_description=t.use_series_description,
+                series_stats_include=t.series_stats_include,
+                logo=logo,
+                use_series_logo=t.use_series_logo,
+                url=t.url,
+                registration_deadline=t.registration_deadline,
+                registration_cap=t.registration_cap,
+                teams_allowed=t.teams_allowed,
+                teams_only=t.teams_only,
+                team_members_only=t.team_members_only,
+                min_squad_size=t.min_squad_size,
+                max_squad_size=t.max_squad_size,
+                squad_tag_required=t.squad_tag_required,
+                squad_name_required=t.squad_name_required,
+                mii_name_required=t.mii_name_required,
+                host_status_required=t.host_status_required,
+                checkins_enabled=t.checkins_enabled,
+                checkins_open=t.checkins_open,
+                min_players_checkin=t.min_players_checkin,
+                verification_required=t.verification_required,
+                verified_fc_required=t.verified_fc_required,
+                is_viewable=t.is_viewable,
+                is_public=t.is_public,
+                show_on_profiles=t.show_on_profiles,
+                require_single_fc=t.require_single_fc,
+                min_representatives=t.min_representatives,
+                max_representatives=t.max_representatives,
+                bagger_clause_enabled=t.bagger_clause_enabled,
+                is_deleted=t.is_deleted,
+                use_series_ruleset=t.use_series_ruleset,
+                organizer=t.organizer,
+                location=t.location,
+                sync_team_rosters=t.sync_team_rosters,
+                ruleset=s3_fields.ruleset,
+                series_name=None,
+                series_url=None,
+                series_description=None,
+                series_ruleset=None,
+            )
             if tournament_data.series_id:
-                s3_body = await s3_wrapper.get_object(SERIES_BUCKET, f'{tournament_data.series_id}.json')
+                s3_body = await s3_wrapper.get_object(SERIES_BUCKET, f"{tournament_data.series_id}.json")
                 if s3_body:
-                    async with db.execute("SELECT name, url, logo FROM tournament_series WHERE id = ?", (tournament_data.series_id,)) as cursor:
+                    async with db.execute(
+                        "SELECT name, url, logo FROM tournament_series WHERE id = ?",
+                        (tournament_data.series_id,),
+                    ) as cursor:
                         row = await cursor.fetchone()
                         assert row is not None
                         series_name, series_url, series_logo = row
@@ -227,8 +359,9 @@ class GetTournamentDataCommand(Command[GetTournamentRequestData]):
                     tournament_data.series_ruleset = series.ruleset
                     if tournament_data.use_series_logo:
                         tournament_data.logo = series_logo
-                   
+
         return tournament_data
+
 
 @dataclass
 class GetTournamentListCommand(Command[TournamentList]):
@@ -240,9 +373,9 @@ class GetTournamentListCommand(Command[TournamentList]):
         async with db_wrapper.connect(readonly=True) as db:
             where_clauses: list[str] = []
             variable_parameters: list[Any] = []
-            
-            limit:int = 10
-            offset:int = 0
+
+            limit: int = 10
+            offset: int = 0
 
             if filter.page is not None:
                 offset = (filter.page - 1) * limit
@@ -253,7 +386,7 @@ class GetTournamentListCommand(Command[TournamentList]):
                     variable_parameters.append(filter_value)
 
             if filter.name is not None:
-                where_clauses.append(f"t.name LIKE ?")
+                where_clauses.append("t.name LIKE ?")
                 variable_parameters.append(f"%{filter.name}%")
 
             # if we are searching for tournaments which aren't public or viewable,
@@ -261,37 +394,45 @@ class GetTournamentListCommand(Command[TournamentList]):
             # are viewable. so, we check tournament permissions, then series permissions,
             # then global permissions.
             if (not filter.is_public or not filter.is_viewable) and self.user:
-                tournament_check = f"""
+                tournament_check = """
                     t.id IN (
                         SELECT DISTINCT ur.tournament_id
                         FROM tournament_roles r
                         JOIN user_tournament_roles ur ON ur.role_id = r.id
                         JOIN tournament_role_permissions rp ON rp.role_id = r.id
                         JOIN tournament_permissions p on rp.permission_id = p.id
-                        WHERE ur.user_id = ? AND p.name = ?
+                        WHERE ur.user_id = ?
+                            AND p.name = ?
                     )"""
-                series_check = f"""
+                series_check = """
                     t.series_id IN (
                         SELECT DISTINCT ur.series_id
                         FROM series_roles r
                         JOIN user_series_roles ur ON ur.role_id = r.id
                         JOIN series_role_permissions rp ON rp.role_id = r.id
                         JOIN series_permissions p on rp.permission_id = p.id
-                        WHERE ur.user_id = ? AND p.name = ?
+                        WHERE ur.user_id = ?
+                            AND p.name = ?
                     )"""
-                global_check = f"""
+                global_check = """
                     0 IN (
                         SELECT DISTINCT rp.is_denied
                         FROM roles r
                         JOIN user_roles ur ON ur.role_id = r.id
                         JOIN role_permissions rp ON rp.role_id = r.id
                         JOIN permissions p on rp.permission_id = p.id
-                        WHERE ur.user_id = ? AND p.name = ?
+                        WHERE ur.user_id = ?
+                            AND p.name = ?
                     )"""
                 final_check = f"(t.is_public = 1 OR {tournament_check} OR {series_check} OR {global_check})"
                 where_clauses.append(final_check)
                 for _ in range(3):
-                    variable_parameters.extend([self.user.id, tournament_permissions.VIEW_HIDDEN_TOURNAMENT])
+                    variable_parameters.extend(
+                        [
+                            self.user.id,
+                            tournament_permissions.VIEW_HIDDEN_TOURNAMENT,
+                        ]
+                    )
             # we should only be searching for public and viewable tournaments if the first condition isn't met
             else:
                 where_clauses.append("t.is_viewable = 1")
@@ -309,28 +450,68 @@ class GetTournamentListCommand(Command[TournamentList]):
             append_equal_filter(filter.series_id, "t.series_id")
             append_equal_filter(filter.is_viewable, "t.is_viewable")
             append_equal_filter(filter.is_public, "t.is_public")
-            
 
             where_clause = "" if not where_clauses else f" WHERE {' AND '.join(where_clauses)}"
-            tournaments_query = f"""SELECT t.id, t.name, t.game, t.mode, t.date_start, t.date_end, t.is_squad, t.registrations_open, 
-                                        t.teams_allowed, t.logo, t.use_series_logo, t.is_viewable, t.is_public, t.organizer,
-                                        s.id, s.name, s.url, s.short_description, s.logo
-                                        FROM tournaments t
-                                        LEFT JOIN tournament_series s ON t.series_id = s.id
-                                        {where_clause}
-                                        ORDER BY date_start DESC, date_end ASC LIMIT ? OFFSET ?"""
-            
+            tournaments_query = f"""
+                SELECT t.id, t.name, t.game, t.mode, t.date_start, t.date_end, t.is_squad, t.registrations_open, 
+                    t.teams_allowed, t.logo, t.use_series_logo, t.is_viewable, t.is_public, t.organizer,
+                    s.id, s.name, s.url, s.short_description, s.logo
+                FROM tournaments t
+                LEFT JOIN tournament_series s ON t.series_id = s.id
+                {where_clause}
+                ORDER BY date_start DESC, date_end ASC
+                LIMIT ? OFFSET ?
+            """
+
             tournaments: list[TournamentDataBasic] = []
             async with db.execute(tournaments_query, (*variable_parameters, limit, offset)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    (tournament_id, name, game, mode, date_start, date_end, is_squad, registrations_open,
-                      teams_allowed, logo, use_series_logo, is_viewable, is_public, organizer,
-                      series_id, series_name, series_url, series_short_description, series_logo) = row
+                    (
+                        tournament_id,
+                        name,
+                        game,
+                        mode,
+                        date_start,
+                        date_end,
+                        is_squad,
+                        registrations_open,
+                        teams_allowed,
+                        logo,
+                        use_series_logo,
+                        is_viewable,
+                        is_public,
+                        organizer,
+                        series_id,
+                        series_name,
+                        series_url,
+                        series_short_description,
+                        series_logo,
+                    ) = row
                     if bool(use_series_logo):
                         logo = series_logo
-                    tournaments.append(TournamentDataBasic(tournament_id, name, game, mode, date_start, date_end, series_id, series_name, series_url, series_short_description,
-                        bool(is_squad), bool(registrations_open), bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable), bool(is_public), organizer))
+                    tournaments.append(
+                        TournamentDataBasic(
+                            tournament_id,
+                            name,
+                            game,
+                            mode,
+                            date_start,
+                            date_end,
+                            series_id,
+                            series_name,
+                            series_url,
+                            series_short_description,
+                            bool(is_squad),
+                            bool(registrations_open),
+                            bool(teams_allowed),
+                            logo,
+                            bool(use_series_logo),
+                            bool(is_viewable),
+                            bool(is_public),
+                            organizer,
+                        )
+                    )
 
             count_query = f"SELECT COUNT(*) FROM tournaments t {where_clause}"
             page_count: int = 0
@@ -344,58 +525,75 @@ class GetTournamentListCommand(Command[TournamentList]):
 
             return TournamentList(tournaments, tournament_count, page_count)
 
+
 @dataclass
 class CheckIfSquadTournament(Command[bool]):
     tournament_id: int
 
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT is_squad FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute(
+                "SELECT is_squad FROM tournaments WHERE id = ?",
+                (self.tournament_id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Tournament not found", status=404)
                 is_squad = row[0]
                 return bool(is_squad)
-            
+
+
 @dataclass
 class CheckTournamentVisibilityCommand(Command[bool]):
     tournament_id: int
 
     async def handle(self, db_wrapper: DBWrapper):
         async with db_wrapper.connect(readonly=True) as db:
-            async with db.execute("SELECT is_viewable FROM tournaments WHERE id = ?", (self.tournament_id,)) as cursor:
+            async with db.execute(
+                "SELECT is_viewable FROM tournaments WHERE id = ?",
+                (self.tournament_id,),
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row is None:
                     raise Problem("Tournament not found", status=404)
                 is_viewable = row[0]
                 return bool(is_viewable)
 
+
 @dataclass
 class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]):
     series_id: int
 
     async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper):
-        cache_key = f'series_tournaments_{self.series_id}.json'
+        cache_key = f"series_tournaments_{self.series_id}.json"
         s3_object = await s3_wrapper.get_object_metadata_and_body(SERIES_BUCKET, cache_key)
 
         if s3_object:
-            last_modified = s3_object['LastModified']
-            s3_body = s3_object['Body']
+            last_modified = s3_object["LastModified"]
+            s3_body = s3_object["Body"]
 
             now = datetime.now(timezone.utc)
             if (now - datetime.fromisoformat(str(last_modified)).replace(tzinfo=timezone.utc)) < timedelta(hours=1):
-                return msgspec.json.decode(s3_body if isinstance(s3_body, bytes) else str(s3_body).encode('utf-8'), type=list[TournamentWithPlacements])
+                return msgspec.json.decode(
+                    s3_body if isinstance(s3_body, bytes) else str(s3_body).encode("utf-8"),
+                    type=list[TournamentWithPlacements],
+                )
 
         async with db_wrapper.connect(readonly=True) as db:
             series_id = self.series_id
-        
+
         async with db_wrapper.connect(readonly=True) as db:
             series_id = self.series_id
-            tournaments_query = f"""
-                SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public
-                FROM tournaments WHERE series_id = ? AND is_viewable = 1 AND is_public = 1 ORDER BY date_start DESC
+            tournaments_query = """
+                SELECT id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open,
+                    teams_allowed, logo, use_series_logo, is_viewable, is_public
+                FROM tournaments
+                WHERE series_id = ?
+                    AND is_viewable = 1
+                    AND is_public = 1
+                ORDER BY date_start DESC
             """
-            tournament_players_query = f"""
+            tournament_players_query = """
                 SELECT 
                     tp.id,
                     tp.tournament_id,
@@ -412,9 +610,16 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     LEFT JOIN tournament_registrations tr ON tp.registration_id = tr.id
                     JOIN tournament_placements pla ON tr.id = pla.registration_id
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 0 AND t.is_viewable = 1 AND t.is_public = 1)
+                    WHERE tp.tournament_id IN (
+                        SELECT t.id
+                        FROM tournaments t
+                        WHERE t.series_id = ?
+                            AND t.is_squad = 0
+                            AND t.is_viewable = 1
+                            AND t.is_public = 1
+                    )
              """
-            tournament_squads_query = f"""
+            tournament_squads_query = """
                  SELECT
                     tr.id,
                     tr.tournament_id,
@@ -428,7 +633,14 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     tr.timestamp
                     FROM tournament_registrations tr
                     JOIN tournament_placements pla ON pla.registration_id = tr.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)  
+                    WHERE tr.tournament_id IN (
+                        SELECT t.id
+                        FROM tournaments t
+                        WHERE t.series_id = ?
+                            AND t.is_squad = 1
+                            AND t.is_viewable = 1
+                            AND t.is_public = 1
+                    )  
             """
             squad_rosters_query = """
                 SELECT tsr.registration_id,
@@ -444,9 +656,16 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     JOIN team_rosters r ON tsr.roster_id = r.id
                     JOIN teams t ON r.team_id = t.id
                     JOIN tournament_registrations tr ON tsr.registration_id = tr.id
-                    WHERE tr.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
+                    WHERE tr.tournament_id IN (
+                        SELECT t.id
+                        FROM tournaments t
+                        WHERE t.series_id = ?
+                            AND t.is_squad = 1
+                            AND t.is_viewable = 1
+                            AND t.is_public = 1
+                    )
                 """
-            squad_players_query = f"""
+            squad_players_query = """
                 SELECT 
                     tp.id,
                     tp.tournament_id,
@@ -457,8 +676,14 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                     p.is_banned
                     FROM tournament_players tp
                     LEFT JOIN players p ON tp.player_id = p.id
-                    WHERE tp.tournament_id IN (SELECT t.id FROM tournaments t WHERE t.series_id = ? AND t.is_squad = 1 AND t.is_viewable = 1 AND t.is_public = 1)
-                    
+                    WHERE tp.tournament_id IN (
+                        SELECT t.id
+                        FROM tournaments t
+                        WHERE t.series_id = ?
+                            AND t.is_squad = 1
+                            AND t.is_viewable = 1
+                            AND t.is_public = 1
+                    )
             """
             tournaments: list[TournamentWithPlacements] = []
             placements: dict[int, list[TournamentPlacementDetailed]] = {}
@@ -468,12 +693,42 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             async with db.execute(tournaments_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    id, name, game, mode, date_start, date_end, series_id, is_squad, registrations_open, teams_allowed, logo, use_series_logo, is_viewable, is_public = row
+                    (
+                        id,
+                        name,
+                        game,
+                        mode,
+                        date_start,
+                        date_end,
+                        series_id,
+                        is_squad,
+                        registrations_open,
+                        teams_allowed,
+                        logo,
+                        use_series_logo,
+                        is_viewable,
+                        is_public,
+                    ) = row
                     tournament = TournamentWithPlacements(
-                        id, name, game, mode, date_start, date_end, series_id,
-                        None, None, None, bool(is_squad), bool(registrations_open),
-                        bool(teams_allowed), logo, bool(use_series_logo), bool(is_viewable),
-                        bool(is_public), "", []
+                        id,
+                        name,
+                        game,
+                        mode,
+                        date_start,
+                        date_end,
+                        series_id,
+                        None,
+                        None,
+                        None,
+                        bool(is_squad),
+                        bool(registrations_open),
+                        bool(teams_allowed),
+                        logo,
+                        bool(use_series_logo),
+                        bool(is_viewable),
+                        bool(is_public),
+                        "",
+                        [],
                     )
                     tournaments.append(tournament)
                     placements[tournament.id] = tournament.placements
@@ -482,7 +737,15 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
             async with db.execute(squad_players_query, (series_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
-                    id, tournament_id, player_id, squad_id, name, country_code, is_banned = row
+                    (
+                        id,
+                        tournament_id,
+                        player_id,
+                        squad_id,
+                        name,
+                        country_code,
+                        is_banned,
+                    ) = row
                     player = SquadPlayerDetails(
                         id=id,
                         player_id=player_id,
@@ -502,7 +765,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         is_invite=False,
                         is_bagger_clause=False,
                         is_eligible=True,
-                        is_banned=bool(is_banned)
+                        is_banned=bool(is_banned),
                     )
                     if squad_id not in squad_players_map:
                         squad_players_map[squad_id] = []
@@ -523,7 +786,7 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement_description,
                         placement_lower_bound,
                         is_disqualified,
-                        color
+                        color,
                     ) = row
                     color = color if color is not None else 1
                     placement = TournamentPlacementDetailed(
@@ -540,29 +803,31 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                             timestamp=0,
                             is_registered=True,
                             is_approved=True,
-                            players=[SquadPlayerDetails(
-                                id=id,
-                                player_id=player_id,
-                                registration_id=0,
-                                timestamp=0,
-                                is_checked_in=True,
-                                is_approved=True,
-                                mii_name="mii",
-                                can_host=False,
-                                name=name,
-                                country_code=country_code,
-                                discord=None,
-                                selected_fc_id=None,
-                                friend_codes=[],
-                                is_squad_captain=True,
-                                is_representative=True,
-                                is_invite=True,
-                                is_bagger_clause=False,
-                                is_eligible=True,
-                                is_banned=bool(is_banned)
-                            )],
-                            rosters=[]
-                        )
+                            players=[
+                                SquadPlayerDetails(
+                                    id=id,
+                                    player_id=player_id,
+                                    registration_id=0,
+                                    timestamp=0,
+                                    is_checked_in=True,
+                                    is_approved=True,
+                                    mii_name="mii",
+                                    can_host=False,
+                                    name=name,
+                                    country_code=country_code,
+                                    discord=None,
+                                    selected_fc_id=None,
+                                    friend_codes=[],
+                                    is_squad_captain=True,
+                                    is_representative=True,
+                                    is_invite=True,
+                                    is_bagger_clause=False,
+                                    is_eligible=True,
+                                    is_banned=bool(is_banned),
+                                )
+                            ],
+                            rosters=[],
+                        ),
                     )
                     placements[tournament_id].append(placement)
 
@@ -581,24 +846,23 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement_description,
                         placement_lower_bound,
                         is_disqualified,
-                        timestamp
+                        timestamp,
                     ) = row
 
                     # Get players for this squad
-                    squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [
-                    ])
+                    squad_players: list[SquadPlayerDetails] = squad_players_map.get(id, [])
 
                     squad = TournamentSquadDetails(
-                            id=id,
-                            name=name,
-                            tag=tag,
-                            color=color,
-                            timestamp=timestamp,
-                            is_registered=True,
-                            is_approved=True,
-                            players=squad_players,
-                            rosters=[]
-                        )
+                        id=id,
+                        name=name,
+                        tag=tag,
+                        color=color,
+                        timestamp=timestamp,
+                        is_registered=True,
+                        is_approved=True,
+                        players=squad_players,
+                        rosters=[],
+                    )
                     squad_dict[id] = squad
 
                     placement = TournamentPlacementDetailed(
@@ -607,25 +871,43 @@ class GetTournamentSeriesWithTournaments(Command[list[TournamentWithPlacements]]
                         placement_description=placement_description,
                         placement_lower_bound=placement_lower_bound,
                         is_disqualified=bool(is_disqualified),
-                        squad=squad
+                        squad=squad,
                     )
                     placements[tournament_id].append(placement)
 
                 async with db.execute(squad_rosters_query, (series_id,)) as cursor:
                     rows = await cursor.fetchall()
                     for row in rows:
-                        squad_id, roster_id, roster_name, roster_tag, roster_color, team_id, team_name, team_tag, team_color = row
+                        (
+                            squad_id,
+                            roster_id,
+                            roster_name,
+                            roster_tag,
+                            roster_color,
+                            team_id,
+                            team_name,
+                            team_tag,
+                            team_color,
+                        ) = row
                         squad = squad_dict.get(squad_id, None)
                         if not squad:
                             continue
-                        roster = RosterBasic(team_id, team_name, team_tag, roster_color if roster_color else team_color, roster_id, roster_name, roster_tag)
+                        roster = RosterBasic(
+                            team_id,
+                            team_name,
+                            team_tag,
+                            roster_color if roster_color else team_color,
+                            roster_id,
+                            roster_name,
+                            roster_tag,
+                        )
                         squad.rosters.append(roster)
-                
+
                 # Store the result in S3 cache
                 await s3_wrapper.put_object(
                     SERIES_BUCKET,
-                    f'series_tournaments_{self.series_id}.json',
-                    msgspec.json.encode(tournaments)
+                    f"series_tournaments_{self.series_id}.json",
+                    msgspec.json.encode(tournaments),
                 )
 
             return tournaments

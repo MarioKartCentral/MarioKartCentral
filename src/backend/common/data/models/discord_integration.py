@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class DiscordAuthCallbackData:
     code: str | None = None
     state: str | None = None
     error: str | None = None
+
 
 @dataclass
 class DiscordAccessTokenResponse:
@@ -14,6 +16,7 @@ class DiscordAccessTokenResponse:
     refresh_token: str
     scope: str
 
+
 @dataclass
 class DiscordUser:
     id: str
@@ -22,6 +25,7 @@ class DiscordUser:
     global_name: str | None
     avatar: str | None
 
+
 @dataclass
 class Discord:
     discord_id: str
@@ -29,6 +33,7 @@ class Discord:
     discriminator: str
     global_name: str | None
     avatar: str | None
+
 
 @dataclass
 class MyDiscordData(Discord):

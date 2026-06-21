@@ -10,6 +10,4 @@ class DiscordTokensExpiresOn(IndexModel):
             ON discord_tokens(token_expires_on)"""
 
 
-all_indices: list[type[IndexModel]] = [
-    DiscordTokensExpiresOn
-]
+all_indices: list[type[IndexModel]] = [DiscordTokensExpiresOn]

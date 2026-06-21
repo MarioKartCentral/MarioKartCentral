@@ -11,10 +11,11 @@ from common.data.duckdb.models import TimeTrial, TimeTrialProof
 from common.data.duckdb.wrapper import DuckDBWrapper
 from common.data.models import *
 
+
 def calculate_validation_status(proofs_data: list[TimeTrialProof], record_is_invalid: bool = False) -> str:
     """
     Calculate the validation status for a time trial record based on the new logic:
-    - valid: there exists a proof with status "valid" 
+    - valid: there exists a proof with status "valid"
     - invalid: is_invalid is true OR has proofs but all are marked "invalid"
     - unvalidated: there exists a proof with status "unvalidated", but no proof with status "valid"
     - proofless: there are no proofs at all
@@ -22,21 +23,21 @@ def calculate_validation_status(proofs_data: list[TimeTrialProof], record_is_inv
     # 1. If record is marked invalid, always return "invalid"
     if record_is_invalid:
         return "invalid"
-    
+
     # 2. If no proofs at all, return "proofless"
     if not proofs_data:
         return "proofless"
-    
+
     # 3. If any proof has status "valid", return "valid"
     for proof in proofs_data:
         if proof.status == "valid":
             return "valid"
-    
-    # 4. If any proof has status "unvalidated" (and no valid proofs), return "unvalidated"  
+
+    # 4. If any proof has status "unvalidated" (and no valid proofs), return "unvalidated"
     for proof in proofs_data:
         if proof.status == "unvalidated":
             return "unvalidated"
-    
+
     # 5. If we have proofs but all are "invalid", return "invalid" (not proofless)
     return "invalid"
 
@@ -48,31 +49,31 @@ class CreateTimeTrialCommand(Command[TimeTrial]):
     track: str
     time_ms: int
     proofs: list[ProofRequestData] = field(default_factory=lambda: [])
-    
+
     async def handle(self, duckdb_wrapper: DuckDBWrapper) -> TimeTrial:
         # Input validation following established patterns
         if self.time_ms <= 0:
             raise Problem("Time must be positive", status=400)
-        
+
         if self.player_id <= 0:  # Changed from string validation to integer validation
             raise Problem("Player ID is required", status=400)
-            
+
         track = self.track.strip()
         if not track:
             raise Problem("Track is required", status=400)
-            
+
         game = self.game.strip()
         if not game:
             raise Problem("Game is required", status=400)
-        
+
         for i, proof in enumerate(self.proofs):
             if not proof.url.strip():
                 raise Problem(f"Proof {i + 1}: URL is required", status=400)
             if not proof.type.strip():
                 raise Problem(f"Proof {i + 1}: Type is required", status=400)
-            
+
         now = datetime.now(timezone.utc).isoformat()
-        
+
         proofs_data: list[TimeTrialProof] = []
         for proof_request in self.proofs:
             proof_data = TimeTrialProof(
@@ -83,9 +84,9 @@ class CreateTimeTrialCommand(Command[TimeTrial]):
                 created_at=now,
             )
             proofs_data.append(proof_data)
-        
+
         initial_validation_status = calculate_validation_status(proofs_data, record_is_invalid=False)
-        
+
         time_trial = TimeTrial(
             player_id=self.player_id,  # Now using integer directly
             game=game,
@@ -95,35 +96,43 @@ class CreateTimeTrialCommand(Command[TimeTrial]):
             is_invalid=False,
             validation_status=initial_validation_status,
             created_at=now,
-            updated_at=now
+            updated_at=now,
         )
 
         async with duckdb_wrapper.connection() as conn:
             insert_time_trial_query = """
-                INSERT INTO time_trials (id, version, player_id, game, track, time_ms, proofs, is_invalid, validation_status, created_at, updated_at)
-                VALUES ($id, $version, $player_id, $game, $track, $time_ms, $proofs, $is_invalid, $validation_status, $created_at, $updated_at)
+                INSERT INTO time_trials (
+                    id, version, player_id, game, track, time_ms, proofs, is_invalid,
+                    validation_status, created_at, updated_at)
+                VALUES (
+                    $id, $version, $player_id, $game, $track, $time_ms,
+                    $proofs, $is_invalid, $validation_status, $created_at, $updated_at
+                )
             """
-            await conn.execute(insert_time_trial_query, {
-                "id": time_trial.id,
-                "version": time_trial.version,
-                "player_id": time_trial.player_id,
-                "game": time_trial.game,
-                "track": time_trial.track,
-                "time_ms": time_trial.time_ms,
-                "proofs": msgspec.json.encode(time_trial.proofs).decode(),
-                "is_invalid": time_trial.is_invalid,
-                "validation_status": time_trial.validation_status,
-                "created_at": time_trial.created_at,
-                "updated_at": time_trial.updated_at,
-            })
-        
+            await conn.execute(
+                insert_time_trial_query,
+                {
+                    "id": time_trial.id,
+                    "version": time_trial.version,
+                    "player_id": time_trial.player_id,
+                    "game": time_trial.game,
+                    "track": time_trial.track,
+                    "time_ms": time_trial.time_ms,
+                    "proofs": msgspec.json.encode(time_trial.proofs).decode(),
+                    "is_invalid": time_trial.is_invalid,
+                    "validation_status": time_trial.validation_status,
+                    "created_at": time_trial.created_at,
+                    "updated_at": time_trial.updated_at,
+                },
+            )
+
         return time_trial
 
 
 @dataclass
 class GetTimeTrialCommand(Command[TimeTrialResponseData | None]):
     """Retrieve a specific time trial by ID."""
-    
+
     trial_id: str
 
     async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> TimeTrialResponseData | None:
@@ -132,17 +141,29 @@ class GetTimeTrialCommand(Command[TimeTrialResponseData | None]):
 
         async with duckdb_wrapper.connection() as conn:
             # Retrieve time trial record with embedded proofs
-            get_time_trial_query = f"""
-                SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.created_at, tt.updated_at, tt.validation_status
+            get_time_trial_query = """
+                SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms,
+                    tt.proofs, tt.created_at, tt.updated_at, tt.validation_status
                 FROM time_trials tt
                 WHERE tt.id = $trial_id
             """
             async with conn.execute(get_time_trial_query, {"trial_id": self.trial_id}) as cursor:
-                row = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
+                row = cast(tuple[Any, ...] | None, await cursor.fetchone())  # pyright: ignore[reportUnknownMemberType]
                 if row is None:
                     return None
 
-        (id, version, player_id, game, track, time_ms, proofs_json, created_at, updated_at, validation_status) = row
+        (
+            id,
+            version,
+            player_id,
+            game,
+            track,
+            time_ms,
+            proofs_json,
+            created_at,
+            updated_at,
+            validation_status,
+        ) = row
         proofs_obj = msgspec.json.decode(proofs_json, type=list[TimeTrialProof]) if proofs_json else []
 
         player_name, player_country_code = None, None
@@ -185,7 +206,7 @@ class GetTimeTrialCommand(Command[TimeTrialResponseData | None]):
 @dataclass
 class MarkProofInvalidCommand(Command[None]):
     """Mark an entire proof as invalid"""
-    
+
     time_trial_id: str
     proof_id: str
     validated_by_player_id: int
@@ -197,7 +218,7 @@ class MarkProofInvalidCommand(Command[None]):
             raise Problem("Proof ID is required", status=400)
         if self.validated_by_player_id < 0:
             raise Problem("Validator player ID is required", status=400)
-            
+
         now_iso = datetime.now(timezone.utc).isoformat()
 
         async with duckdb_wrapper.connection() as conn:
@@ -208,19 +229,29 @@ class MarkProofInvalidCommand(Command[None]):
                 WHERE id = $trial_id
             """
             async with conn.execute(find_trial_query, {"trial_id": self.time_trial_id}) as cursor:
-                trial_rows = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
+                trial_rows = cast(tuple[Any, ...] | None, await cursor.fetchone())  # pyright: ignore[reportUnknownMemberType]
                 if not trial_rows:
-                    raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
-            
+                    raise Problem(
+                        f"Time trial with ID {self.time_trial_id} not found",
+                        status=404,
+                    )
+
             # Parse the JSON string to get the actual proofs data
             proofs_json, is_invalid, current_version = trial_rows
-            
+
             # Check version for optimistic locking
             if current_version != self.version:
-                raise Problem(f"Version mismatch. Expected version {self.version}, but current version is {current_version}. Please refresh and try again.", status=409)
-            
+                raise Problem(
+                    f"""Version mismatch. Expected version {self.version}, but current version is {current_version}.
+                    Please refresh and try again.""",
+                    status=409,
+                )
+
             if is_invalid:
-                raise Problem(f"Time trial {self.time_trial_id} is marked as invalid", status=400)
+                raise Problem(
+                    f"Time trial {self.time_trial_id} is marked as invalid",
+                    status=400,
+                )
 
             proofs_data = msgspec.json.decode(proofs_json, type=list[TimeTrialProof]) if proofs_json else []
 
@@ -229,9 +260,12 @@ class MarkProofInvalidCommand(Command[None]):
                 if proof.id == self.proof_id:
                     proof_data = proof
                     break
-            
+
             if proof_data is None:
-                raise Problem(f"Proof with id {self.proof_id} not found in time trial {self.time_trial_id}", status=404)
+                raise Problem(
+                    f"Proof with id {self.proof_id} not found in time trial {self.time_trial_id}",
+                    status=404,
+                )
 
             proof_data.status = "invalid"
             proof_data.validator_id = self.validated_by_player_id
@@ -242,23 +276,30 @@ class MarkProofInvalidCommand(Command[None]):
 
             update_trial_query = """
                 UPDATE time_trials 
-                SET proofs = $proofs, validation_status = $validation_status, version = $version, updated_at = $updated_at
-                WHERE id = $time_trial_id AND version = $current_version
+                SET proofs = $proofs,
+                    validation_status = $validation_status,
+                    version = $version,
+                    updated_at = $updated_at
+                WHERE id = $time_trial_id
+                    AND version = $current_version
             """
-            await conn.execute(update_trial_query, {
-                "proofs": msgspec.json.encode(proofs_data).decode(),
-                "validation_status": new_validation_status,
-                "version": new_version,
-                "updated_at": now_iso,
-                "time_trial_id": self.time_trial_id,
-                "current_version": current_version
-            })
+            await conn.execute(
+                update_trial_query,
+                {
+                    "proofs": msgspec.json.encode(proofs_data).decode(),
+                    "validation_status": new_validation_status,
+                    "version": new_version,
+                    "updated_at": now_iso,
+                    "time_trial_id": self.time_trial_id,
+                    "current_version": current_version,
+                },
+            )
 
 
 @dataclass
 class MarkProofValidCommand(Command[None]):
     """Mark an entire proof as valid (validates both track and time for MVP)."""
-    
+
     time_trial_id: str
     proof_id: str
     validated_by_player_id: int
@@ -269,7 +310,7 @@ class MarkProofValidCommand(Command[None]):
             raise Problem("Proof ID is required", status=400)
         if self.validated_by_player_id < 0:
             raise Problem("Validator player ID is required", status=400)
-            
+
         now_iso = datetime.now(timezone.utc).isoformat()
 
         async with duckdb_wrapper.connection() as conn:
@@ -280,18 +321,29 @@ class MarkProofValidCommand(Command[None]):
                 WHERE id = $time_trial_id
             """
             async with conn.execute(find_trial_query, {"time_trial_id": self.time_trial_id}) as cursor:
-                trial_rows = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
+                trial_rows = cast(tuple[Any, ...] | None, await cursor.fetchone())  # pyright: ignore[reportUnknownMemberType]
                 if not trial_rows:
-                    raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
-            
+                    raise Problem(
+                        f"Time trial with ID {self.time_trial_id} not found",
+                        status=404,
+                    )
+
             # Parse the JSON string to get the actual proofs data
             proofs_json, is_invalid, current_version = trial_rows
-            
+
             if current_version != self.version:
-                raise Problem(f"Version mismatch. Expected version {self.version}, but current version is {current_version}. Please refresh and try again.", status=409)
-            
+                raise Problem(
+                    f"""
+                    Version mismatch. Expected version {self.version}, but current version is {current_version}.
+                    Please refresh and try again.""",
+                    status=409,
+                )
+
             if is_invalid:
-                raise Problem(f"Time trial {self.time_trial_id} is marked as invalid", status=400)
+                raise Problem(
+                    f"Time trial {self.time_trial_id} is marked as invalid",
+                    status=400,
+                )
 
             proofs_data = msgspec.json.decode(proofs_json, type=list[TimeTrialProof]) if proofs_json else []
 
@@ -300,9 +352,12 @@ class MarkProofValidCommand(Command[None]):
                 if proof.id == self.proof_id:
                     proof_data = proof
                     break
-            
+
             if proof_data is None:
-                raise Problem(f"Proof with id {self.proof_id} not found in time trial {self.time_trial_id}", status=404)
+                raise Problem(
+                    f"Proof with id {self.proof_id} not found in time trial {self.time_trial_id}",
+                    status=404,
+                )
 
             proof_data.status = "valid"
             proof_data.validator_id = self.validated_by_player_id
@@ -310,45 +365,61 @@ class MarkProofValidCommand(Command[None]):
 
             new_validation_status = calculate_validation_status(proofs_data, record_is_invalid=False)
             new_version = current_version + 1
-            
+
             # Update the time trial with the modified proofs
             update_trial_query = """
                 UPDATE time_trials 
-                SET proofs = $proofs, validation_status = $validation_status, version = $version, updated_at = $updated_at
-                WHERE id = $time_trial_id AND version = $current_version
+                SET proofs = $proofs,
+                validation_status = $validation_status,
+                version = $version,
+                updated_at = $updated_at
+                WHERE id = $time_trial_id 
+                    AND version = $current_version
             """
-            await conn.execute(update_trial_query, {
-                "proofs": msgspec.json.encode(proofs_data).decode(),
-                "validation_status": new_validation_status,
-                "version": new_version,
-                "updated_at": now_iso,
-                "time_trial_id": self.time_trial_id,
-                "current_version": current_version
-            })
+            await conn.execute(
+                update_trial_query,
+                {
+                    "proofs": msgspec.json.encode(proofs_data).decode(),
+                    "validation_status": new_validation_status,
+                    "version": new_version,
+                    "updated_at": now_iso,
+                    "time_trial_id": self.time_trial_id,
+                    "current_version": current_version,
+                },
+            )
 
 
 @dataclass
 class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData]):
     """List all proofs with their validation statuses."""
-    
+
     async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> ListProofsForValidationResponseData:
         async with duckdb_wrapper.connection() as conn:
-            get_all_time_trials_query = f"""
+            get_all_time_trials_query = """
                 SELECT 
                     tt.id, tt.player_id, tt.game, tt.track, tt.time_ms, tt.proofs, tt.version
                 FROM time_trials tt
-                WHERE tt.validation_status = 'unvalidated' AND tt.is_invalid = false
+                WHERE tt.validation_status = 'unvalidated'
+                    AND tt.is_invalid = false
                 ORDER BY tt.created_at DESC
             """
 
             async with conn.execute(get_all_time_trials_query) as cursor:
-                all_trial_rows = cast(Iterable[tuple[Any, ...]], await cursor.fetchall()) # pyright: ignore[reportUnknownMemberType]
+                all_trial_rows = cast(Iterable[tuple[Any, ...]], await cursor.fetchall())  # pyright: ignore[reportUnknownMemberType]
 
         response_proofs: list[ProofWithValidationStatusResponseData] = []
         player_ids: set[int] = set()
         for trial_row in all_trial_rows:
-            tt_id, tt_player_id, tt_game, tt_track, tt_time_ms, tt_proofs_json, tt_version = trial_row
-            
+            (
+                tt_id,
+                tt_player_id,
+                tt_game,
+                tt_track,
+                tt_time_ms,
+                tt_proofs_json,
+                tt_version,
+            ) = trial_row
+
             try:
                 # Parse embedded proofs
                 proofs_data = msgspec.json.decode(tt_proofs_json, type=list[TimeTrialProof]) if tt_proofs_json else []
@@ -375,10 +446,10 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
 
                 # Check if this proof should be excluded from validation queue
                 should_include_proof = True
-                
+
                 if proof_status in ["valid", "invalid"]:
                     should_include_proof = False
-                
+
                 if not should_include_proof:
                     continue
 
@@ -397,11 +468,11 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
                         version=tt_version,
                     )
                 )
-        
+
         async with db_wrapper.connect() as conn:
             # Fetch player names and country codes in bulk
             if player_ids:
-                placeholders = ', '.join(['?'] * len(player_ids))
+                placeholders = ", ".join(["?"] * len(player_ids))
                 player_query = f"""
                     SELECT id, name, country_code 
                     FROM players 
@@ -409,14 +480,14 @@ class ListProofsForValidationCommand(Command[ListProofsForValidationResponseData
                 """
                 async with conn.execute(player_query, list(player_ids)) as cursor:
                     player_rows = await cursor.fetchall()
-                
+
                 player_map = {row[0]: (row[1], row[2]) for row in player_rows}
-                
+
                 # Update proofs with player names and country codes
                 for proof in response_proofs:
                     if proof.player_id in player_map:
                         proof.player_name, proof.player_country_code = player_map[proof.player_id]
-            
+
         return ListProofsForValidationResponseData(proofs=response_proofs)
 
 
@@ -425,24 +496,24 @@ class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
     game: str
     track: str
     include_unvalidated: bool = False  # Include records with unvalidated proofs
-    include_proofless: bool = False    # Include records without proofs
+    include_proofless: bool = False  # Include records without proofs
 
     async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> list[TimeTrialResponseData]:
         # Build validation status filter (additive logic)
         validation_filters = ["tt.validation_status = 'valid'"]  # Always include valid
-        
+
         if self.include_unvalidated:
             validation_filters.append("tt.validation_status = 'unvalidated'")
-            
+
         if self.include_proofless:
             validation_filters.append("tt.validation_status = 'proofless'")
-        
+
         # Never include invalid records (tt.validation_status = 'invalid')
         validation_condition = f"({' OR '.join(validation_filters)})"
-        
+
         # Build WHERE conditions
-        query_params = { "game": self.game, "track": self.track }
-        
+        query_params = {"game": self.game, "track": self.track}
+
         # Simple and efficient query using precomputed validation_status
         query = f"""
             WITH ranked_times AS (
@@ -454,7 +525,10 @@ class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
                         ORDER BY tt.time_ms ASC, tt.created_at ASC
                     ) as rn
                 FROM time_trials tt
-                WHERE {validation_condition} AND tt.is_invalid = false AND tt.game = $game AND tt.track = $track
+                WHERE {validation_condition}
+                    AND tt.is_invalid = false
+                    AND tt.game = $game
+                    AND tt.track = $track
             )
             SELECT 
                 ranked_times.id, version, player_id, game, track, time_ms,
@@ -471,7 +545,18 @@ class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
             async with conn.execute(query, query_params) as cursor:
                 async for row in cast(AsyncIterator[tuple[Any, ...]], cursor):
                     try:
-                        id, version, player_id, game, track, time_ms, proofs_str, created_at, updated_at, validation_status = row
+                        (
+                            id,
+                            version,
+                            player_id,
+                            game,
+                            track,
+                            time_ms,
+                            proofs_str,
+                            created_at,
+                            updated_at,
+                            validation_status,
+                        ) = row
                         # Parse proofs JSON and filter out invalid ones for response
                         proofs_data = msgspec.json.decode(proofs_str, type=list[TimeTrialProof]) if proofs_str else []
                         proof_responses: list[ProofResponseData] = []
@@ -479,18 +564,20 @@ class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
                             # Only include proofs that are not marked as invalid
                             proof_status = proof.status
                             if proof_status != "invalid":
-                                proof_responses.append(ProofResponseData(
-                                    id=proof.id,
-                                    url=proof.url,
-                                    type=proof.type,
-                                    created_at=proof.created_at,
-                                    status=proof_status,
-                                    validator_id=proof.validator_id,
-                                    validated_at=proof.validated_at,
-                                ))
+                                proof_responses.append(
+                                    ProofResponseData(
+                                        id=proof.id,
+                                        url=proof.url,
+                                        type=proof.type,
+                                        created_at=proof.created_at,
+                                        status=proof_status,
+                                        validator_id=proof.validator_id,
+                                        validated_at=proof.validated_at,
+                                    )
+                                )
 
                         player_ids.add(player_id)
-                        
+
                         record = TimeTrialResponseData(
                             id=id,
                             version=version,
@@ -503,19 +590,19 @@ class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
                             updated_at=updated_at,
                             player_name=None,
                             player_country_code=None,
-                            validation_status=validation_status
+                            validation_status=validation_status,
                         )
 
                         records.append(record)
-                        
+
                     except Exception as e:
                         getLogger().error(f"Error processing leaderboard record {row[0]}: {e}")
                         continue
-        
+
         async with db_wrapper.connect() as conn:
             # Fetch player names and country codes in bulk
             if player_ids:
-                placeholders = ', '.join(['?'] * len(player_ids))
+                placeholders = ", ".join(["?"] * len(player_ids))
                 player_query = f"""
                     SELECT id, name, country_code 
                     FROM players 
@@ -523,21 +610,21 @@ class GetLeaderboardCommand(Command[list[TimeTrialResponseData]]):
                 """
                 async with conn.execute(player_query, list(player_ids)) as cursor:
                     player_rows = await cursor.fetchall()
-                
+
                 player_map = {row[0]: (row[1], row[2]) for row in player_rows}
-                
+
                 # Update records with player names and country codes
                 for record in records:
                     if record.player_id in player_map:
                         record.player_name, record.player_country_code = player_map[record.player_id]
-           
+
         return records
 
 
 @dataclass
 class MarkTimeTrialInvalidCommand(Command[None]):
     """Mark an entire time trial record as invalid by setting is_invalid=true."""
-    
+
     time_trial_id: str
     validated_by_player_id: str
     version: int
@@ -548,7 +635,7 @@ class MarkTimeTrialInvalidCommand(Command[None]):
             raise Problem("Time trial ID is required", status=400)
         if not self.validated_by_player_id.strip():
             raise Problem("Validator player ID is required", status=400)
-            
+
         now_iso = datetime.now(timezone.utc).isoformat()
 
         async with duckdb_wrapper.connection() as conn:
@@ -559,36 +646,51 @@ class MarkTimeTrialInvalidCommand(Command[None]):
                 WHERE id = $time_trial_id
             """
             async with conn.execute(check_trial_query, {"time_trial_id": self.time_trial_id}) as cursor:
-                trial_row = cast(tuple[str, bool, int] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
+                trial_row = cast(tuple[str, bool, int] | None, await cursor.fetchone())  # pyright: ignore[reportUnknownMemberType]
                 if not trial_row:
-                    raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
-            
+                    raise Problem(
+                        f"Time trial with ID {self.time_trial_id} not found",
+                        status=404,
+                    )
+
             _, _, current_version = trial_row
-            
+
             # Check version for optimistic locking
             if current_version != self.version:
-                raise Problem(f"Version mismatch. Expected version {self.version}, but current version is {current_version}. Please refresh and try again.", status=409)
-            
+                raise Problem(
+                    f"""
+                    Version mismatch. Expected version {self.version}, but current version is {current_version}.
+                    Please refresh and try again.""",
+                    status=409,
+                )
+
             new_version = current_version + 1
-            
+
             # Mark the entire time trial as invalid
             update_query = """
                 UPDATE time_trials 
-                SET is_invalid = true, validation_status = 'invalid', version = $version, updated_at = $updated_at
-                WHERE id = $time_trial_id AND version = $current_version
+                SET is_invalid = true,
+                    validation_status = 'invalid',
+                    version = $version,
+                    updated_at = $updated_at
+                WHERE id = $time_trial_id
+                    AND version = $current_version
             """
-            await conn.execute(update_query, {
-                "version": new_version,
-                "updated_at": now_iso,
-                "time_trial_id": self.time_trial_id,
-                "current_version": current_version
-            })
+            await conn.execute(
+                update_query,
+                {
+                    "version": new_version,
+                    "updated_at": now_iso,
+                    "time_trial_id": self.time_trial_id,
+                    "current_version": current_version,
+                },
+            )
 
 
 @dataclass
 class EditTimeTrialCommand(Command[TimeTrialResponseData]):
     """Edit an existing time trial with comprehensive permission checking."""
-    
+
     time_trial_id: str
     game: str
     track: str
@@ -615,32 +717,52 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
 
         async with duckdb_wrapper.connection() as conn:
             # Get current time trial
-            get_trial_query = f"""
+            get_trial_query = """
                 SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, 
                        tt.proofs, tt.created_at, tt.updated_at, tt.is_invalid, tt.validation_status
                 FROM time_trials tt
                 WHERE tt.id = $time_trial_id
             """
-            
+
             async with conn.execute(get_trial_query, {"time_trial_id": self.time_trial_id}) as cursor:
-                row = cast(tuple[Any, ...] | None, await cursor.fetchone()) # pyright: ignore[reportUnknownMemberType]
+                row = cast(tuple[Any, ...] | None, await cursor.fetchone())  # pyright: ignore[reportUnknownMemberType]
                 if not row:
-                    raise Problem(f"Time trial with ID {self.time_trial_id} not found", status=404)
-            
-            (_, current_version, current_player_id_db, current_game, current_track, 
-             current_time_ms, current_proofs_json, created_at, _, current_is_invalid, 
-             _) = row
+                    raise Problem(
+                        f"Time trial with ID {self.time_trial_id} not found",
+                        status=404,
+                    )
+
+            (
+                _,
+                current_version,
+                current_player_id_db,
+                current_game,
+                current_track,
+                current_time_ms,
+                current_proofs_json,
+                created_at,
+                _,
+                current_is_invalid,
+                _,
+            ) = row
 
             # Version check
             if current_version != self.version:
-                raise Problem(f"Version mismatch. Expected version {self.version}, but current version is {current_version}. Please refresh and try again.", status=409)
+                raise Problem(
+                    f"""Version mismatch. Expected version {self.version}, but current version is {current_version}.
+                    Please refresh and try again.""",
+                    status=409,
+                )
 
             # Permission checks
             is_owner = current_player_id_db == self.current_player_id
-            
+
             # Only owner or validators can edit
             if not is_owner and not self.can_validate:
-                raise Problem("You don't have permission to edit this time trial", status=403)
+                raise Problem(
+                    "You don't have permission to edit this time trial",
+                    status=403,
+                )
 
             # Only validators can change player_id
             if self.player_id is not None and self.player_id != current_player_id_db and not self.can_validate:
@@ -649,49 +771,57 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
             # Only validators can modify is_invalid
             if self.is_invalid is not None and self.is_invalid != current_is_invalid and not self.can_validate:
                 raise Problem("Only validators can modify invalid status", status=403)
-            
+
             player_id = self.player_id if self.player_id is not None else int(current_player_id_db)
             is_invalid = self.is_invalid if self.is_invalid is not None else bool(current_is_invalid)
 
             # Parse current proofs
-            current_proofs_data = msgspec.json.decode(current_proofs_json, type=list[TimeTrialProof]) if current_proofs_json else []
-            
+            current_proofs_data = (
+                msgspec.json.decode(current_proofs_json, type=list[TimeTrialProof]) if current_proofs_json else []
+            )
+
             # Process proof changes
             updated_proofs: list[TimeTrialProof] = []
             core_fields_changed: bool = (
-                self.game != current_game or 
-                self.track != current_track or 
-                self.time_ms != current_time_ms or
-                player_id != current_player_id_db
+                self.game != current_game
+                or self.track != current_track
+                or self.time_ms != current_time_ms
+                or player_id != current_player_id_db
             )
 
             for proof_data in self.proofs:
-                if proof_data.get('deleted', False):
+                if proof_data.get("deleted", False):
                     # Check if user can delete this proof
-                    proof_id = proof_data.get('id')
+                    proof_id = proof_data.get("id")
                     if proof_id:
-                        existing_proof = next((p for p in current_proofs_data if p.id == proof_id), None)
+                        existing_proof = next(
+                            (p for p in current_proofs_data if p.id == proof_id),
+                            None,
+                        )
                         if existing_proof:
                             # Only validators can remove validated or invalid proofs
                             if existing_proof.status in ["valid", "invalid"] and not self.can_validate:
-                                raise Problem(f"Only validators can remove proofs that have been validated or marked invalid", status=403)
-                    
+                                raise Problem(
+                                    "Only validators can remove proofs that have been validated or marked invalid",
+                                    status=403,
+                                )
+
                     # Skip deleted proofs (they won't be included in updated_proofs)
                     continue
-                
-                proof_id = proof_data.get('id')
+
+                proof_id = proof_data.get("id")
                 if proof_id:
                     # Editing existing proof
-                    existing_proof = next((p for p in current_proofs_data if p.id == proof_id), None)
+                    existing_proof = next(
+                        (p for p in current_proofs_data if p.id == proof_id),
+                        None,
+                    )
                     if not existing_proof:
                         raise Problem(f"Proof with ID {proof_id} not found", status=400)
-                    
+
                     # Check if proof content changed
-                    proof_changed = (
-                        proof_data['url'] != existing_proof.url or
-                        proof_data['type'] != existing_proof.type
-                    )
-                    
+                    proof_changed = proof_data["url"] != existing_proof.url or proof_data["type"] != existing_proof.type
+
                     # Determine new status
                     if core_fields_changed or proof_changed:
                         # Core fields or proof changed - reset to unvalidated
@@ -700,10 +830,13 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                         validated_at = None
                     else:
                         # Check if validator is trying to change status
-                        requested_status = proof_data.get('status')
+                        requested_status = proof_data.get("status")
                         if requested_status is not None and requested_status != existing_proof.status:
                             if not self.can_validate:
-                                raise Problem("Only validators can modify proof validation status", status=403)
+                                raise Problem(
+                                    "Only validators can modify proof validation status",
+                                    status=403,
+                                )
                             new_status = requested_status
                             validator_id = self.current_player_id if requested_status in ["valid", "invalid"] else None
                             validated_at = now_iso if requested_status in ["valid", "invalid"] else None
@@ -712,67 +845,74 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                             new_status = existing_proof.status
                             validator_id = existing_proof.validator_id
                             validated_at = existing_proof.validated_at
-                    
+
                     updated_proof = TimeTrialProof(
                         id=proof_id,
-                        url=proof_data['url'].strip(),
-                        type=proof_data['type'].strip(),
+                        url=proof_data["url"].strip(),
+                        type=proof_data["type"].strip(),
                         status=new_status,
                         created_at=existing_proof.created_at,
                         validator_id=validator_id,
-                        validated_at=validated_at
+                        validated_at=validated_at,
                     )
                 else:
                     # New proof
-                    if not proof_data['url'].strip():
+                    if not proof_data["url"].strip():
                         raise Problem("Proof URL is required", status=400)
-                    if not proof_data['type'].strip():
+                    if not proof_data["type"].strip():
                         raise Problem("Proof type is required", status=400)
-                    
+
                     # New proofs start as unvalidated unless validator explicitly sets status
-                    requested_status = proof_data.get('status') or 'unvalidated'
-                    if requested_status != 'unvalidated' and not self.can_validate:
-                        raise Problem("Only validators can set initial proof validation status", status=403)
-                    
+                    requested_status = proof_data.get("status") or "unvalidated"
+                    if requested_status != "unvalidated" and not self.can_validate:
+                        raise Problem(
+                            "Only validators can set initial proof validation status",
+                            status=403,
+                        )
+
                     updated_proof = TimeTrialProof(
                         id=str(uuid.uuid4()),
-                        url=proof_data['url'].strip(),
-                        type=proof_data['type'].strip(),
+                        url=proof_data["url"].strip(),
+                        type=proof_data["type"].strip(),
                         status=requested_status,
                         created_at=now_iso,
                         validator_id=self.current_player_id if requested_status in ["valid", "invalid"] else None,
-                        validated_at=now_iso if requested_status in ["valid", "invalid"] else None
+                        validated_at=now_iso if requested_status in ["valid", "invalid"] else None,
                     )
-                
+
                 updated_proofs.append(updated_proof)
 
             # Calculate new validation status
             new_validation_status = calculate_validation_status(updated_proofs, is_invalid)
-            
+
             # Update the time trial
             updated_proofs_json = msgspec.json.encode(updated_proofs).decode()
-            
+
             update_query = """
                 UPDATE time_trials 
                 SET game = $game, track = $track, time_ms = $time_ms, proofs = $proofs,
                     player_id = $player_id, is_invalid = $is_invalid, 
                     validation_status = $validation_status, version = $version, updated_at = $updated_at
-                WHERE id = $time_trial_id AND version = $current_version
+                WHERE id = $time_trial_id
+                    AND version = $current_version
             """
-            
-            await conn.execute(update_query, {
-                "game": self.game,
-                "track": self.track,
-                "time_ms": self.time_ms,
-                "proofs": updated_proofs_json,
-                "player_id": player_id,
-                "is_invalid": is_invalid,
-                "validation_status": new_validation_status,
-                "version": new_version,
-                "updated_at": now_iso,
-                "time_trial_id": self.time_trial_id,
-                "current_version": current_version
-            })
+
+            await conn.execute(
+                update_query,
+                {
+                    "game": self.game,
+                    "track": self.track,
+                    "time_ms": self.time_ms,
+                    "proofs": updated_proofs_json,
+                    "player_id": player_id,
+                    "is_invalid": is_invalid,
+                    "validation_status": new_validation_status,
+                    "version": new_version,
+                    "updated_at": now_iso,
+                    "time_trial_id": self.time_trial_id,
+                    "current_version": current_version,
+                },
+            )
 
             # Return updated data
             response_proofs = [
@@ -783,7 +923,7 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                     created_at=proof.created_at,
                     status=proof.status,
                     validator_id=proof.validator_id,
-                    validated_at=proof.validated_at
+                    validated_at=proof.validated_at,
                 )
                 for proof in updated_proofs
             ]
@@ -800,13 +940,14 @@ class EditTimeTrialCommand(Command[TimeTrialResponseData]):
                 updated_at=now_iso,
                 validation_status=new_validation_status,
                 player_name=None,
-                player_country_code=None
+                player_country_code=None,
             )
+
 
 @dataclass
 class GetTimesheetCommand(Command[list[TimeTrialResponseData]]):
     """Get all time trials for a specific player and game across all tracks."""
-    
+
     filter: TimesheetFilter
 
     async def handle(self, db_wrapper: DBWrapper, duckdb_wrapper: DuckDBWrapper) -> list[TimeTrialResponseData]:
@@ -814,46 +955,53 @@ class GetTimesheetCommand(Command[list[TimeTrialResponseData]]):
             raise Problem("Player ID is required", status=400)
         if not self.filter.game.strip():
             raise Problem("Game is required", status=400)
-        
+
         async with db_wrapper.connect() as conn:
             player_query = "SELECT name, country_code FROM players WHERE id = :player_id"
             async with conn.execute(player_query, {"player_id": self.filter.player_id}) as cursor:
                 player_row = await cursor.fetchone()
                 if not player_row:
-                    raise Problem(f"Player with ID {self.filter.player_id} not found", status=404)
-                
+                    raise Problem(
+                        f"Player with ID {self.filter.player_id} not found",
+                        status=404,
+                    )
+
         player_name, player_country_code = player_row
 
         async with duckdb_wrapper.connection() as conn:
             validation_filters = ["tt.validation_status = 'valid'"]  # Always include valid
-            
+
             if self.filter.include_unvalidated:
                 validation_filters.append("tt.validation_status = 'unvalidated'")
-                
+
             if self.filter.include_proofless:
                 validation_filters.append("tt.validation_status = 'proofless'")
-            
+
             # Never include invalid records (tt.validation_status = 'invalid')
             validation_condition = f"({' OR '.join(validation_filters)})"
-            
+
             # Build the WHERE conditions based on filters
             where_conditions = [
                 "tt.player_id = $player_id",
                 "tt.game = $game",
                 "tt.is_invalid = false",  # Exclude invalid time trials
-                validation_condition  # Apply validation status filtering
+                validation_condition,  # Apply validation status filtering
             ]
-            
+
             # For outdated times logic: if include_outdated is False, we only want the best time per track
             if not self.filter.include_outdated:
                 # Use a window function to rank times per track, then filter to only rank 1
                 query = f"""
                     WITH ranked_times AS (
                         SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, 
-                               tt.proofs, tt.created_at, tt.updated_at, tt.validation_status,
-                               ROW_NUMBER() OVER (PARTITION BY tt.track ORDER BY tt.time_ms ASC, tt.created_at ASC) as rank
+                                tt.proofs, tt.created_at, tt.updated_at, tt.validation_status,
+                                ROW_NUMBER() OVER (
+                                    PARTITION BY tt.track
+                                    ORDER BY tt.time_ms ASC,
+                                    tt.created_at ASC
+                                ) as rank
                         FROM time_trials tt
-                        WHERE {' AND '.join(where_conditions)}
+                        WHERE {" AND ".join(where_conditions)}
                     )
                     SELECT id, version, player_id, game, track, time_ms, proofs, created_at, updated_at, 
                            validation_status
@@ -867,18 +1015,28 @@ class GetTimesheetCommand(Command[list[TimeTrialResponseData]]):
                     SELECT tt.id, tt.version, tt.player_id, tt.game, tt.track, tt.time_ms, 
                            tt.proofs, tt.created_at, tt.updated_at, tt.validation_status
                     FROM time_trials tt
-                    WHERE {' AND '.join(where_conditions)}
+                    WHERE {" AND ".join(where_conditions)}
                     ORDER BY tt.track ASC, tt.time_ms ASC, tt.created_at DESC
                 """
 
             records: list[TimeTrialResponseData] = []
-            async with conn.execute(query, {
-                "player_id": self.filter.player_id,
-                "game": self.filter.game
-            }) as cursor:
+            async with conn.execute(
+                query,
+                {"player_id": self.filter.player_id, "game": self.filter.game},
+            ) as cursor:
                 async for row in cast(AsyncIterator[tuple[Any, ...]], cursor):
-                    (trial_id, version, player_id, game, track, time_ms, 
-                     proofs_json, created_at, updated_at, validation_status) = row
+                    (
+                        trial_id,
+                        version,
+                        player_id,
+                        game,
+                        track,
+                        time_ms,
+                        proofs_json,
+                        created_at,
+                        updated_at,
+                        validation_status,
+                    ) = row
 
                     # Parse proofs and filter out invalid ones (like leaderboard does)
                     response_proofs: list[ProofResponseData] = []
@@ -896,26 +1054,28 @@ class GetTimesheetCommand(Command[list[TimeTrialResponseData]]):
                                             created_at=proof.created_at,
                                             status=proof.status,
                                             validator_id=proof.validator_id,
-                                            validated_at=proof.validated_at
+                                            validated_at=proof.validated_at,
                                         )
                                     )
                         except Exception:
                             # If proof parsing fails, continue without proofs
                             pass
 
-                    records.append(TimeTrialResponseData(
-                        id=trial_id,
-                        version=version,
-                        player_id=player_id,
-                        game=game,
-                        track=track,
-                        time_ms=time_ms,
-                        proofs=response_proofs,
-                        created_at=created_at,
-                        updated_at=updated_at,
-                        validation_status=validation_status,
-                        player_name=player_name,
-                        player_country_code=player_country_code
-                    ))
+                    records.append(
+                        TimeTrialResponseData(
+                            id=trial_id,
+                            version=version,
+                            player_id=player_id,
+                            game=game,
+                            track=track,
+                            time_ms=time_ms,
+                            proofs=response_proofs,
+                            created_at=created_at,
+                            updated_at=updated_at,
+                            validation_status=validation_status,
+                            player_name=player_name,
+                            player_country_code=player_country_code,
+                        )
+                    )
 
             return records
