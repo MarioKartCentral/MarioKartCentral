@@ -21,10 +21,10 @@
       headers: { 'Content-Type': 'application/json' },
     });
     working = false;
-    const result = await res.json();
-    if (res.status === 200) {
+    if (res.ok) {
       alert('Successfully backed up database!');
     } else {
+      const result = await res.json();
       alert(`Failed to backup database: ${result['title']}`);
     }
   }

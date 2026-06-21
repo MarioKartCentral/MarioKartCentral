@@ -3,6 +3,7 @@ from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import *
 
+
 @dataclass
 class RequestEditPlayerNameCommand(Command[None]):
     player_id: int
@@ -10,7 +11,8 @@ class RequestEditPlayerNameCommand(Command[None]):
 
     async def handle(self, db_wrapper: DBWrapper):
         if len(self.name) > 24:
-            raise Problem("Player name must be 24 characters or less", status=400)
+            raise Problem(
+                "Player name must be 24 characters or less", status=400)
         async with db_wrapper.connect() as db:
             async with db.execute("SELECT name FROM players WHERE id = ?", (self.player_id,)) as cursor:
                 row = await cursor.fetchone()
@@ -18,17 +20,20 @@ class RequestEditPlayerNameCommand(Command[None]):
                     raise Problem("Player not found", status=404)
                 curr_name = row[0]
                 if curr_name == self.name:
-                    raise Problem("Name must be different than current name", status=400)
+                    raise Problem(
+                        "Name must be different than current name", status=400)
             async with db.execute("SELECT date FROM player_name_edits WHERE player_id = ? AND date > ? AND approval_status != 'denied' LIMIT 1",
-                                    (self.player_id, (datetime.now(timezone.utc)-timedelta(days=90)).timestamp())) as cursor:
+                                  (self.player_id, (datetime.now(timezone.utc)-timedelta(days=90)).timestamp())) as cursor:
                 row = await cursor.fetchone()
                 if row:
-                    raise Problem("Player has requested name change in the last 90 days", status=400)
+                    raise Problem(
+                        "Player has requested name change in the last 90 days", status=400)
             creation_date = int(datetime.now(timezone.utc).timestamp())
-            await db.execute("INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status) VALUES (?, ?, ?, ?, ?)", 
+            await db.execute("INSERT INTO player_name_edits(player_id, old_name, new_name, date, approval_status) VALUES (?, ?, ?, ?, ?)",
                              (self.player_id, curr_name, self.name.strip(), creation_date, "pending"))
             await db.commit()
-                    
+
+
 @dataclass
 class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
     filter: PlayerNameRequestFilter
@@ -51,11 +56,13 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     (player_id, player_country, request_id, old_name, new_name, date, approval_status,
-                      handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
+                     handled_by_id, handled_by_name, handled_by_country, handled_by_banned) = row
                     handled_by = None
                     if handled_by_id:
-                        handled_by = PlayerBasic(handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
-                    name_requests.append(PlayerNameRequest(request_id, player_id, player_country, old_name, new_name, date, approval_status, handled_by))
+                        handled_by = PlayerBasic(
+                            handled_by_id, handled_by_name, handled_by_country, bool(handled_by_banned))
+                    name_requests.append(PlayerNameRequest(
+                        request_id, player_id, player_country, old_name, new_name, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"
             async with db.execute(count_query, (filter.approval_status,)) as cursor:
@@ -63,10 +70,12 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
                 assert row is not None
                 request_count = row[0]
 
-            page_count = int(request_count / limit) + (1 if request_count % limit else 0)
+            page_count = int(request_count / limit) + \
+                (1 if request_count % limit else 0)
 
         return PlayerNameRequestList(name_requests, request_count, page_count)
-    
+
+
 @dataclass
 class ApprovePlayerNameRequestCommand(Command[PlayerNameRequestUpdate]):
     request_id: int
@@ -82,14 +91,15 @@ class ApprovePlayerNameRequestCommand(Command[PlayerNameRequestUpdate]):
                 if db_name_request_edit is None:
                     raise Problem("Name edit request not found", status=404)
                 request_id, approval_status, handled_by_id, player_id, new_name = db_name_request_edit
-        
+
             await db.execute("UPDATE players SET name = ? WHERE id = ?", (new_name, player_id))
             await db.commit()
-            async with db.execute("""SELECT id, name, country_code, is_banned from players where id = ?""", (handled_by_id, )) as cursor:
+            async with db.execute("""SELECT id, name, country_code, is_banned from players where id = ?""", (handled_by_id,)) as cursor:
                 db_handled_by = await cursor.fetchone()
                 if db_handled_by is None:
                     raise Problem("Bad Request", status=400)
                 return PlayerNameRequestUpdate(request_id, approval_status, PlayerBasic(*db_handled_by))
+
 
 @dataclass
 class DenyPlayerNameRequestCommand(Command[PlayerNameRequestUpdate]):
@@ -107,7 +117,7 @@ class DenyPlayerNameRequestCommand(Command[PlayerNameRequestUpdate]):
                     raise Problem("Name edit request not found", status=404)
             request_id, approval_status, handled_by_id = db_name_request_edit
             await db.commit()
-            async with db.execute("""SELECT id, name, country_code, is_banned from players where id = ?""", (handled_by_id, )) as cursor:
+            async with db.execute("""SELECT id, name, country_code, is_banned from players where id = ?""", (handled_by_id,)) as cursor:
                 db_handled_by = await cursor.fetchone()
                 if db_handled_by is None:
                     raise Problem("Bad Request", status=400)
