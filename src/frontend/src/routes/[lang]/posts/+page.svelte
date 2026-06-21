@@ -15,11 +15,6 @@
   });
 </script>
 
-<Section header={$LL.POSTS.BACK_TO_HOMEPAGE()}>
-  <div slot="header_content">
-    <Button href="/{$page.params.lang}/">{$LL.COMMON.BACK()}</Button>
-  </div>
-</Section>
 <Section header={$LL.POSTS.ANNOUNCEMENTS()}>
   <div slot="header_content">
     {#if check_permission(user_info, permissions.manage_posts)}

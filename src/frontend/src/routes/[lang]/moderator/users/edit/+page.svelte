@@ -11,6 +11,8 @@
   import { check_permission, permissions } from '$lib/util/permissions';
   import LL from '$i18n/i18n-svelte';
   import ApiTokenDisplay from '$lib/components/user/APITokenDisplay.svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let id: number | null = null;
   let user_found = true;
@@ -84,13 +86,49 @@
 
 {#if check_permission(user_info, permissions.edit_user)}
   {#if edit_user}
-    <Section header={$LL.MODERATOR.MANAGE_USERS.BACK_TO_USER_LIST()}>
-      <div slot="header_content">
-        <Button href="/{$page.params.lang}/moderator/users">{$LL.COMMON.BACK()}</Button>
-      </div>
-    </Section>
+    <Breadcrumb>
+      <BreadcrumbItem home href="/" />
+      <BreadcrumbItem
+        href="/{$page.params.lang}/moderator/users"
+        returnText={$LL.MODERATOR.MANAGE_USERS.BACK_TO_USER_LIST()}
+      >
+        {$LL.NAVBAR.MOD_PANEL.MANAGE_USERS()}
+      </BreadcrumbItem>
+      <BreadcrumbItem current>{$LL.MODERATOR.MANAGE_USERS.EDIT_USER()}</BreadcrumbItem>
+    </Breadcrumb>
     <Section header={$LL.MODERATOR.MANAGE_USERS.EDIT_USER_HEADER({ user_id: edit_user.id })}>
       <form on:submit|preventDefault={editUser}>
+        <div class="option">
+          <div class="label">
+            {$LL.COMMON.PLAYER()}
+          </div>
+          <div>
+            {#if edit_user.player}
+              <a href="/{$page.params.lang}/registry/players/profile?id={edit_user.player.id}">
+                <div class="flex">
+                  <div>
+                    <Flag country_code={edit_user.player.country_code} />
+                  </div>
+                  <div>
+                    {edit_user.player.name}
+                  </div>
+                </div>
+              </a>
+            {:else}
+              {$LL.MODERATOR.MANAGE_USERS.USER_NO_PLAYER()}
+            {/if}
+          </div>
+        </div>
+        <div class="option">
+          <div class="label">{$LL.DISCORD.DISCORD()}</div>
+          <div>
+            {#if edit_user.player?.discord}
+              <DiscordDisplay discord={edit_user.player.discord} enableUserIdToggle />
+            {:else}
+              {$LL.MODERATOR.MANAGE_USERS.USER_NO_DISCORD()}
+            {/if}
+          </div>
+        </div>
         <div class="option">
           <div class="label">
             <label for="email">{$LL.LOGIN.EMAIL()}</label>
@@ -141,37 +179,6 @@
                   required
                 />
               </div>
-            {/if}
-          </div>
-        </div>
-        <div class="option">
-          <div class="label">
-            {$LL.COMMON.PLAYER()}
-          </div>
-          <div>
-            {#if edit_user.player}
-              <a href="/{$page.params.lang}/registry/players/profile?id={edit_user.player.id}">
-                <div class="flex">
-                  <div>
-                    <Flag country_code={edit_user.player.country_code} />
-                  </div>
-                  <div>
-                    {edit_user.player.name}
-                  </div>
-                </div>
-              </a>
-            {:else}
-              {$LL.MODERATOR.MANAGE_USERS.USER_NO_PLAYER()}
-            {/if}
-          </div>
-        </div>
-        <div class="option">
-          <div class="label">{$LL.DISCORD.DISCORD()}</div>
-          <div>
-            {#if edit_user.player?.discord}
-              <DiscordDisplay discord={edit_user.player.discord} enableUserIdToggle />
-            {:else}
-              {$LL.MODERATOR.MANAGE_USERS.USER_NO_DISCORD()}
             {/if}
           </div>
         </div>

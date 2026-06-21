@@ -8,6 +8,8 @@
   import LL from '$i18n/i18n-svelte';
   import { check_tournament_permission, tournament_permissions } from '$lib/util/permissions';
   import { user } from '$lib/stores/stores';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let tournamentId: number;
   let placements: TournamentPlacementList;
@@ -42,14 +44,16 @@
 </script>
 
 {#if isLoaded}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</BreadcrumbItem>
+    <BreadcrumbItem
+      href="/{$page.params.lang}/tournaments/details?id={placements.tournament_id}"
+      returnText={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>{placements.tournament_id}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}</BreadcrumbItem>
+  </Breadcrumb>
   {#if placements && check_tournament_permission($user, tournament_permissions.manage_placements, placements.tournament_id)}
-    <Section header={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>
-      <div slot="header_content">
-        <Button href="/{$page.params.lang}/tournaments/details?id={placements.tournament_id}"
-          >{$LL.COMMON.BACK()}</Button
-        >
-      </div>
-    </Section>
     <Section header={$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}>
       <div slot="header_content">
         <Button href="/{$page.params.lang}/tournaments/edit_placements/raw?id={placements.tournament_id}">

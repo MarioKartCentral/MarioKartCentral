@@ -12,6 +12,8 @@
   import AccordionItem from '$lib/components/common/AccordionItem.svelte';
   import LL from '$i18n/i18n-svelte';
   import TournamentPosts from '$lib/components/tournaments/TournamentPosts.svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let id = 0;
 
@@ -37,6 +39,13 @@
 </svelte:head>
 
 {#if tournament}
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments" returnText={$LL.NAVBAR.TOURNAMENT_LISTING()}
+      >{$LL.NAVBAR.TOURNAMENTS()}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{tournament.name}</BreadcrumbItem>
+  </Breadcrumb>
   <TournamentInfo {tournament} />
   <Section header={$LL.TOURNAMENTS.DETAILS()}>
     <Accordion>
