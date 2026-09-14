@@ -6,6 +6,7 @@
   import LogoMKTC from '$lib/assets/logo_loungemktc.png';
   import LogoMK7 from '$lib/assets/logo_loungemk7.png';
   import LogoMKWorld from '$lib/assets/logo_loungemkworld.gif';
+  import LogoKOTour from '$lib/assets/logo_loungekotour.png';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import DiscordInviteButton from '$lib/components/common/buttons/DiscordInviteButton.svelte';
   import LinkButton from '$lib/components/common/buttons/LinkButton.svelte';
@@ -26,6 +27,17 @@
         </div>
         <div class="mb-2 mx-2">
           <DiscordInviteButton href="https://discord.gg/WR6JKPn2v9" />
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Section header="Knockout Tour Lounge">
+    <div class="flex flex-row">
+      <img class="w-32 h-32" src={LogoKOTour} alt="Lounge" />
+      <div class="flex flex-col justify-start">
+        <div class="mb-2 mx-2">
+          <DiscordInviteButton href="https://discord.gg/bV9qjRun4Q" />
         </div>
       </div>
     </div>
