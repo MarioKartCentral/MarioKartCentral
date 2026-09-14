@@ -4,7 +4,7 @@ from api import appsettings
 from api.data import on_startup, on_shutdown
 from api.endpoints import (authservice, roleservice, userservice, tournaments, tournament_registration, 
                            tournament_placements, player_registry, player_bans, team_registry, 
-                           user_settings, notifications, moderation, posts, admin, time_trials)
+                           user_settings, notifications, moderation, posts, admin, time_trials, verification)
 from api.utils.middleware import IPLoggingMiddleware, RateLimitByIPMiddleware, ProblemExceptionMiddleware, exception_handlers
 from api.utils.schema_gen import schema_route
 from opentelemetry.instrumentation.starlette import StarletteInstrumentor
@@ -34,6 +34,7 @@ routes = [
     *notifications.routes,
     *posts.routes,
     *time_trials.routes,
+    *verification.routes,
     schema_route,
 ]
 

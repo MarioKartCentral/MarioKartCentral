@@ -28,6 +28,7 @@ export type PlayerInfo = {
   is_hidden: boolean;
   is_shadow: boolean;
   is_banned: boolean;
+  is_verified: boolean;
   discord: Discord | null;
   friend_codes: FriendCode[];
   join_date: number;

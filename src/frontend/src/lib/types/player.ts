@@ -5,6 +5,7 @@ export type PlayerBasic = {
   name: string;
   country_code: string;
   is_banned: boolean;
+  is_verified: boolean;
 };
 
 export type Player = PlayerBasic & {

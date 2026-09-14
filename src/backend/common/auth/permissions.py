@@ -30,6 +30,8 @@ VIEW_FINGERPRINTS = "fingerprints_view"
 CREATE_DB_BACKUPS = "db_backup_create"
 SUBMIT_TIME_TRIAL = "time_trial_submit"
 VALIDATE_TIME_TRIAL_PROOF = "time_trial_proof_validate"
+REQUEST_VERIFICATION = "verification_request"
+MANAGE_VERIFICATIONS = "verification_manage"
 
 permissions_by_id: dict[int, str] = {
     0: CREATE_USER_ROLES,
@@ -85,6 +87,8 @@ permissions_by_id: dict[int, str] = {
     50: CREATE_DB_BACKUPS,
     51: SUBMIT_TIME_TRIAL,
     52: VALIDATE_TIME_TRIAL_PROOF,
+    53: REQUEST_VERIFICATION,
+    54: MANAGE_VERIFICATIONS,
 }
 
 id_by_permissions = { v: k for k, v in permissions_by_id.items() }
