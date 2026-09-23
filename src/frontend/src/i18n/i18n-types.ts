@@ -1530,6 +1530,10 @@ type RootTranslation = {
 		 */
 		'200CC': string
 		/**
+		 * K​n​o​c​k​o​u​t​ ​T​o​u​r
+		 */
+		KNOCKOUT_TOUR: string
+		/**
 		 * B​a​t​t​l​e​ ​(​M​i​x​e​d​)
 		 */
 		MIXED_BATTLE: string
@@ -7148,6 +7152,10 @@ export type TranslationFunctions = {
 		 * 200cc
 		 */
 		'200CC': () => LocalizedString
+		/**
+		 * Knockout Tour
+		 */
+		KNOCKOUT_TOUR: () => LocalizedString
 		/**
 		 * Battle (Mixed)
 		 */

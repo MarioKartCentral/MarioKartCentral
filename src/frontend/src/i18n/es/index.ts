@@ -421,6 +421,7 @@ const es: Translation = {
     SELECT: 'Selecciona un modo...',
     '150CC': '150cc',
     '200CC': '200cc',
+    KNOCKOUT_TOUR: 'Supervivencia',
     MIXED_BATTLE: 'Batalla (Mixta)',
     BALLOON_BATTLE: 'Batalla de globos',
     SHINE_THIEF: 'Asalto al sol',

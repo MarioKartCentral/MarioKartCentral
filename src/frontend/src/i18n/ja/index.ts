@@ -419,6 +419,7 @@ const ja: Translation = {
     SELECT: 'Select a mode...',
     '150CC': '150cc',
     '200CC': '200cc',
+    KNOCKOUT_TOUR: 'サバイバル',
     MIXED_BATTLE: 'バトル (ミックス)',
     BALLOON_BATTLE: 'ふうせんバトル',
     SHINE_THIEF: 'いただきシャイン',
