@@ -24,7 +24,9 @@
   let name_requests: PlayerNameChangeRequest[] = [];
 
   async function fetchData() {
-    const res = await fetch(`/api/registry/players/nameChanges?approval_status=${approval_status}&player_id=${player?.id ?? null}&page=${currentPage}`);
+    const res = await fetch(
+      `/api/registry/players/nameChanges?approval_status=${approval_status}&player_id=${player?.id ?? null}&page=${currentPage}`,
+    );
     if (res.status === 200) {
       const body: PlayerNameChangeRequestList = await res.json();
       name_requests = body.change_list;
@@ -81,7 +83,7 @@
   }
 </script>
 
-<PlayerSearch bind:player on:change={fetchData}/>
+<PlayerSearch bind:player on:change={fetchData} />
 <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
 {#if name_requests.length}
   {$LL.MODERATOR.NAME_CHANGE_COUNT({ count: totalChanges })}

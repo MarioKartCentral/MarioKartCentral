@@ -17,7 +17,7 @@
   export let optionLabel: (option: T) => string;
   export let ariaLabel: string | undefined = undefined;
   export let ariaLabelledby: string | undefined = undefined;
-  
+
   // addresses nested slot prop unknown type issue with svelte 4
   // https://github.com/sveltejs/language-tools/issues/1344
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -37,7 +37,7 @@
   let activeDescendant: string | undefined;
 
   const getOptionId = (option: T) => `${id}-option-${option.id}`;
-  const dispatch = createEventDispatcher<{change: null}>();
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   function setOption(option: T | null) {
     handleOutclick();
