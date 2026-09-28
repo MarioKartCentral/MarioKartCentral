@@ -77,6 +77,7 @@
   bind:results
   bind:container
   oninput={handleSearch}
+  on:change
   optionLabel={(option) => `ID: ${option.id}, ${option.name}`}
   {ariaLabel}
   {ariaLabelledby}

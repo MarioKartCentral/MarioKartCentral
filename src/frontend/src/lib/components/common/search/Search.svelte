@@ -4,6 +4,7 @@
   import LL from '$i18n/i18n-svelte';
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import { clickOutside } from '$lib/actions/outclick.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let searchQuery: string | undefined;
   export let placeholder: string;
@@ -16,7 +17,7 @@
   export let optionLabel: (option: T) => string;
   export let ariaLabel: string | undefined = undefined;
   export let ariaLabelledby: string | undefined = undefined;
-
+  
   // addresses nested slot prop unknown type issue with svelte 4
   // https://github.com/sveltejs/language-tools/issues/1344
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -36,11 +37,13 @@
   let activeDescendant: string | undefined;
 
   const getOptionId = (option: T) => `${id}-option-${option.id}`;
+  const dispatch = createEventDispatcher<{change: null}>();
 
   function setOption(option: T | null) {
     handleOutclick();
     selected = option;
     activeDescendant = undefined;
+    dispatch('change');
   }
 
   function handleCancel() {
