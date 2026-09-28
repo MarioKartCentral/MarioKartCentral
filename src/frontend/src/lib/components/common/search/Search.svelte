@@ -4,6 +4,7 @@
   import LL from '$i18n/i18n-svelte';
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import { clickOutside } from '$lib/actions/outclick.svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let searchQuery: string | undefined;
   export let placeholder: string;
@@ -36,11 +37,13 @@
   let activeDescendant: string | undefined;
 
   const getOptionId = (option: T) => `${id}-option-${option.id}`;
+  const dispatch = createEventDispatcher<{ change: null }>();
 
   function setOption(option: T | null) {
     handleOutclick();
     selected = option;
     activeDescendant = undefined;
+    dispatch('change');
   }
 
   function handleCancel() {

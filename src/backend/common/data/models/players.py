@@ -164,6 +164,7 @@ class PlayerNameRequestUpdate:
 @dataclass
 class PlayerNameRequestFilter:
     approval_status: Approval
+    player_id: int | None = None
     page: int | None = None
 
 @dataclass

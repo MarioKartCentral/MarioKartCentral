@@ -45,9 +45,13 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
             request_query = """FROM player_name_edits r
                                 JOIN players p ON r.player_id = p.id
                                 LEFT JOIN players p2 ON r.handled_by = p2.id
-                                WHERE r.approval_status = ? ORDER BY r.date DESC"""
+                                WHERE r.approval_status = :approval_status
+                                AND (:player_id IS NULL OR p.id = :player_id)
+                                ORDER BY r.date DESC"""
+            query_params = {"approval_status": filter.approval_status, "player_id": filter.player_id, "limit": limit, "offset": offset}
             async with db.execute(f"""SELECT p.id, p.country_code, r.id, r.old_name, r.new_name, r.date, r.approval_status, r.handled_by, p2.name, p2.country_code, p2.is_banned
-                                  {request_query} LIMIT ? OFFSET ?""", (filter.approval_status, limit, offset)) as cursor:
+                                  {request_query} LIMIT :limit OFFSET :offset""", query_params
+                                  ) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (player_id, player_country, request_id, old_name, new_name, date, approval_status,
@@ -58,7 +62,7 @@ class ListPlayerNameRequestsCommand(Command[PlayerNameRequestList]):
                     name_requests.append(PlayerNameRequest(request_id, player_id, player_country, old_name, new_name, date, approval_status, handled_by))
 
             count_query = f"SELECT COUNT(*) {request_query}"
-            async with db.execute(count_query, (filter.approval_status,)) as cursor:
+            async with db.execute(count_query, query_params) as cursor:
                 row = await cursor.fetchone()
                 assert row is not None
                 request_count = row[0]

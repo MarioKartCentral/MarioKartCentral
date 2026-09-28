@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PlayerNameChangeRequestList, PlayerNameChangeRequest } from '$lib/types/player-name-change-request';
+  import type { PlayerInfo } from '$lib/types/player-info';
   import { onMount } from 'svelte';
   import LL from '$i18n/i18n-svelte';
   import Table from '../common/table/Table.svelte';
@@ -11,16 +12,21 @@
   import CancelButton from '$lib/components/common/buttons/CancelButton.svelte';
   import PageNavigation from '../common/PageNavigation.svelte';
   import Button from '../common/buttons/Button.svelte';
+  import PlayerSearch from '../common/search/PlayerSearch.svelte';
 
   export let approval_status: string;
 
   let currentPage = 1;
   let totalChanges = 0;
   let totalPages = 0;
+  let player: PlayerInfo | null = null;
+
   let name_requests: PlayerNameChangeRequest[] = [];
 
   async function fetchData() {
-    const res = await fetch(`/api/registry/players/nameChanges?approval_status=${approval_status}&page=${currentPage}`);
+    const res = await fetch(
+      `/api/registry/players/nameChanges?approval_status=${approval_status}&player_id=${player?.id ?? null}&page=${currentPage}`,
+    );
     if (res.status === 200) {
       const body: PlayerNameChangeRequestList = await res.json();
       name_requests = body.change_list;
@@ -77,6 +83,7 @@
   }
 </script>
 
+<PlayerSearch bind:player on:change={fetchData} />
 <PageNavigation bind:currentPage bind:totalPages refresh_function={fetchData} />
 {#if name_requests.length}
   {$LL.MODERATOR.NAME_CHANGE_COUNT({ count: totalChanges })}
