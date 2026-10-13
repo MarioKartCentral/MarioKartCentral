@@ -5,6 +5,8 @@
   import type { TournamentPlacementSimplePlayerIDs } from '$lib/types/tournament-placement';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import LL from '$i18n/i18n-svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   let id = 0;
   let is_loaded = false;
@@ -82,11 +84,15 @@
 </script>
 
 {#if is_loaded}
-  <Section header={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>
-    <div slot="header_content">
-      <Button href="/{$page.params.lang}/tournaments/details?id={id}">{$LL.COMMON.BACK()}</Button>
-    </div>
-  </Section>
+  <Breadcrumb>
+    <BreadcrumbItem home href="/" />
+    <BreadcrumbItem href="/{$page.params.lang}/tournaments">{$LL.NAVBAR.TOURNAMENTS()}</BreadcrumbItem>
+    <BreadcrumbItem
+      href="/{$page.params.lang}/tournaments/details?id={id}"
+      returnText={$LL.TOURNAMENTS.BACK_TO_TOURNAMENT()}>{id}</BreadcrumbItem
+    >
+    <BreadcrumbItem current>{$LL.TOURNAMENTS.PLACEMENTS.EDIT_PLACEMENTS()}</BreadcrumbItem>
+  </Breadcrumb>
   <Section header="Placements Raw Input (Player IDs)">
     <div slot="header_content">
       <Button href="/{$page.params.lang}/tournaments/edit_placements?id={id}"

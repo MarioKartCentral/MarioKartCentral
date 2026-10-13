@@ -9,6 +9,8 @@
   import MarkdownBox from '$lib/components/common/MarkdownBox.svelte';
   import LL from '$i18n/i18n-svelte';
   import DiscordInviteButton from '$lib/components/common/buttons/DiscordInviteButton.svelte';
+  import Breadcrumb from '$lib/components/common/breadcrumb/Breadcrumb.svelte';
+  import BreadcrumbItem from '$lib/components/common/breadcrumb/BreadcrumbItem.svelte';
 
   export let series: TournamentSeries;
 
@@ -18,9 +20,16 @@
   });
 </script>
 
+<Breadcrumb>
+  <BreadcrumbItem home href="/" />
+  <BreadcrumbItem
+    href="/{$page.params.lang}/tournaments/series"
+    returnText={$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES_LISTING()}>{$LL.NAVBAR.TOURNAMENT_SERIES()}</BreadcrumbItem
+  >
+  <BreadcrumbItem current>{series.series_name}</BreadcrumbItem>
+</Breadcrumb>
 <Section header={$LL.TOURNAMENTS.SERIES.SERIES_INFO()}>
   <div slot="header_content">
-    <Button href="/{$page.params.lang}/tournaments/series">{$LL.TOURNAMENTS.SERIES.BACK_TO_SERIES_LISTING()}</Button>
     {#if check_series_permission(user_info, series_permissions.edit_series, series.id)}
       <Button href="/{$page.params.lang}/tournaments/series/edit?id={series.id}">{$LL.TOURNAMENTS.SERIES.EDIT()}</Button
       >
