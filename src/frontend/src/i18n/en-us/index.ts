@@ -417,6 +417,7 @@ const en_us: BaseTranslation = {
     SELECT: 'Select a mode...',
     '150CC': '150cc',
     '200CC': '200cc',
+    KNOCKOUT_TOUR: 'Knockout Tour',
     MIXED_BATTLE: 'Battle (Mixed)',
     BALLOON_BATTLE: 'Balloon Battle',
     SHINE_THIEF: 'Shine Thief',

@@ -49,17 +49,18 @@ GameMode = Literal[
     "coin_runners",
     "renegade_roundup",
     "mixed",
+    "knockout_tour",
 ]
 FriendCodeType = Literal["switch", "nnid", "3ds", "mkw", "mkt"]
 game_fc_map: dict[Game, FriendCodeType] = {
-                    "mkworld": "switch",
-                    "mk8dx": "switch",
-                    "mk7": "3ds",
-                    "mk8": "nnid",
-                    "mkt": "mkt",
-                    "mkw": "mkw",
-                    "smk": "switch"
-                }
+    "mkworld": "switch",
+    "mk8dx": "switch",
+    "mk7": "3ds",
+    "mk8": "nnid",
+    "mkt": "mkt",
+    "mkw": "mkw",
+    "smk": "switch"
+}
 Approval = Literal["approved", "pending", "denied"]
 CountryCode = Literal["AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS",
                       "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BQ", "BA", "BW", "BV", "BR", "IO", "BN",

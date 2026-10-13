@@ -75,17 +75,18 @@ export const game_order: { [key: string]: number } = {
 export const mode_order: { [key: string]: number } = {
   '150cc': 0,
   '200cc': 1,
-  mixed_battle: 2,
-  balloon_battle: 3,
-  shine_thief: 4,
-  bobomb_blast: 5,
-  coin_runners: 6,
-  renegade_roundup: 7,
-  match_race: 8,
-  mixed: 9,
-  rt: 10,
-  ct: 11,
-  vsrace: 12,
+  knockout_tour: 2,
+  mixed_battle: 3,
+  balloon_battle: 4,
+  shine_thief: 5,
+  bobomb_blast: 6,
+  coin_runners: 7,
+  renegade_roundup: 8,
+  match_race: 9,
+  mixed: 10,
+  rt: 11,
+  ct: 12,
+  vsrace: 13,
 };
 export const fc_types = ['switch', 'nnid', 'mkw', 'mkt', '3ds'];
 export const game_fc_types: { [key: string]: string } = {
@@ -105,7 +106,7 @@ export const fc_type_order: { [key: string]: number } = {
   '3ds': 4,
 };
 export const valid_modes: { [key: string]: string[] } = {
-  mkworld: ['150cc'],
+  mkworld: ['150cc', 'knockout_tour', 'mixed_battle', 'balloon_battle', 'coin_runners', 'bobomb_blast', 'mixed'],
   mk8dx: [
     '150cc',
     '200cc',

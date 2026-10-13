@@ -130,7 +130,8 @@ span.badge {
 }
 
 .mode_200cc_badge,
-.mode_ct_badge {
+.mode_ct_badge,
+.mode_knockout_tour_badge {
   background-color: #d4008b;
   border: 1px solid #990063;
 }
