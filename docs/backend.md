@@ -13,6 +13,7 @@
   - [Background Tasks](#background-tasks)
   - [OpenAPI Schema Generation](#openapi-schema-generation)
 - [Background Worker](#background-worker)
+- [Testing](#testing)
 - [Complete Example: Fun Facts Feature](#complete-example-fun-facts-feature)
 
 The backend consists of two Python services built on a shared library:
@@ -166,7 +167,7 @@ class FunFactFilter:
     page_size: int = 20
 
 @bind_request_query(FunFactFilter)  
-async def list_fun_facts(request: Request, filter: FunFactFilter) -> JSONResponse:
+async def list_fun_facts(request: Request[State], filter: FunFactFilter) -> JSONResponse:
     command = ListFunFactsCommand(filter)
     facts = await handle(command)
     return JSONResponse(facts)
@@ -181,18 +182,18 @@ The API uses a sophisticated permission system with several levels of access con
 ```python
 # Basic permission check - user must have the permission granted
 @require_permission(permissions.MANAGE_USER_ROLES)
-async def list_roles(request: Request) -> JSONResponse:
+async def list_roles(request: Request[State]) -> JSONResponse:
     roles = await handle(ListRolesCommand())
     return JSONResponse(roles)
 
 # Team-specific permission check
 @require_team_permission(team_permissions.MANAGE_TEAM_ROLES)
-async def remove_team_role_from_player(request: Request, body: RemoveRoleRequestData):
+async def remove_team_role_from_player(request: Request[State], body: RemoveRoleRequestData):
     # ...
 
 # Tournament-specific permission check
 @require_tournament_permission(tournament_permissions.MANAGE_TOURNAMENT_ROLES)
-async def tournament_role_info(request: Request) -> JSONResponse:
+async def tournament_role_info(request: Request[State]) -> JSONResponse:
     # ...
 
 # Less restrictive permission check using check_denied_only
@@ -200,7 +201,7 @@ async def tournament_role_info(request: Request) -> JSONResponse:
 # doesn't have an explicit DENY for the permission. This is useful for
 # actions that should be allowed by default unless explicitly restricted.
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
-async def edit_settings(request: Request, body: EditUserSettingsRequestData):
+async def edit_settings(request: Request[State], body: EditUserSettingsRequestData):
     # ...
 ```
 
@@ -242,7 +243,7 @@ Tasks are useful for operations that:
 
 Tasks are defined as async functions and attached to responses:
 ```python
-async def example_endpoint(request: Request) -> JSONResponse:
+async def example_endpoint(request: Request[State]) -> JSONResponse:
     async def cleanup():
         # Background task won't affect response time
         await handle(CleanupTempFilesCommand())
@@ -298,6 +299,48 @@ class RemoveExpiredRolesJob(Job):
 
 Like the API endpoints, worker jobs use the same command pattern and access the same storage systems. This shared architecture means business logic can be reused across both synchronous API requests and background processing. For example, in the Fun Facts feature at the end of this document, both the API endpoint and its background notification task use the same command pattern to interact with the database.
 
+## Testing
+Testing is important to maintain the project as it grows in size. Tests encourage us to handle various cases, catch bugs, and document the expected behavior of the code. Writing clean and concise tests also improve code quality by decoupling dependencies into modular components, with the additional benefit of providing assurance during refactoring that changes have not broken other areas of the codebase.
+
+Tests can be performed at the following levels:
+
+1. Individual components in isolation like functions and methods (unit testing)
+2. Interactions between services such as databases, application routes and APIs (integration testing)
+3. At the application layer, simulating user behavior (end-to-end, or E2E testing)
+
+Pytest allows us to define context and perform setup for our tests that can be reused across multiple tests called fixtures. This includes setup of a clean database before each tests, mocked services, and ability to simulate logged-in users with varying degrees of permissions. Fixtures are defined in a `conftest.py` file and can be referenced as part of a test's arguments without the need for any imports.
+
+```python
+# tests/conftest.py
+import pytest
+from common.data.models.teams import Team
+
+@pytest.fixture
+def team() -> Team:
+    return Team(
+        name="A-Team",
+        tag="A",
+        description="The best team!",
+        color=0,
+        approval_status="approved",
+        is_historical=False
+    )
+
+@pytest.fixture
+def team_list(team: Team) -> list[Team]:
+    return [team]
+
+# tests/unit/test_team.py
+from common.data.models.teams import Team
+
+def test_team_list(team: Team, team_list: list[Team]):
+    assert team in team_list
+```
+
+Unit and integration tests can be ran with `python -m pytest`.
+
+It is beneficial to structure the test files so that it resembles that of the codebase. For example, if a unit-testable function lives in `/api/utils.py`, then the tests for this function should live in `/tests/unit/api/utils.py`.
+
 ## Complete Example: Fun Facts Feature
 
 Let's walk through implementing a complete feature that ties together the architectural patterns we've covered. We'll create a system that lets users share random fun facts about themselves and notify their followers when they do.
@@ -325,6 +368,115 @@ class FunFactFilter:
     user_id: int | None = None
     page: int = 1
     page_size: int = 20
+```
+
+2. Create Tests
+
+For example, for our `CreateFunFactCommand`:
+```python
+# tests/integration/api/common/data/commands/test_fun_facts.py
+import pytest
+from common.data.db import DBWrapper
+from common.data.models import Problem
+from common.data.commands.fun_facts import CreateFunFactCommand
+
+class TestCreateFunFactCommand:
+
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_long_fact_raises_exception(db_wrapper: DBWrapper):
+        with pytest.raises(Problem) as excinfo:
+            await CreateFunFactCommand(1, "This fact is over 500 characters long!").handle(db_wrapper) # in an imaginary world
+            assert excinfo.title == "Fun fact too long"
+            assert excinfo.detail == "Maximum length is 500 characters"
+
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_fact_created_returns_fact(db_wrapper: DBWrapper):
+        fact = await CreateFunFactCommand(1, "This is a cool fact!").handle(db_wrapper)
+        assert fact.fact == "This is a cool fact!"
+
+    @staticmethod
+    @pytest.mark.asyncio 
+    async def test_fact_created_in_database(db_wrapper: DBWrapper):
+        await CreateFunFactCommand(1, "This is a cool fact!").handle(db_wrapper)
+        async with db_wrapper.connect() as db:
+            async with db.execute("SELECT * FROM fun_facts") as cursor:
+                row = cursor.fetchone()
+                assert row is not None
+                assert row["id"] == 1
+                assert row["user_id"] == 1
+                assert row["fact"] == "This is a cool fact!"
+        
+
+# tests/integration/api/endpoints/test_fun_facts.py
+# Route tests for authorization and data integrity
+import pytest
+from starlette.testclient import TestClient
+from common.data.commands.fun_facts import CreateFunFactCommand
+from tests.integration.types import UserClientFactory
+
+class TestFunFactsCreateRoute:
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_route_returns_403_forbidden(user_client_factory: UserClientFactory, role_name: str | None):
+        client = await user_client_factory("Banned") # a user without permission
+        response = client.post(
+            "/api/fun-facts",
+            json={
+                "fact": "This is a cool fact!"
+            }
+        )
+        assert response.status_code == 403
+
+    @staticmethod
+    def test_route_returns_401_unauthorized(client: TestClient):
+        response = client.post(
+            "/api/fun-facts",
+            json={
+                "fact": "This is a cool fact!"
+            }
+        )
+        assert response.status_code == 401
+
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_route_returns_201_created(user_client_factory: UserClientFactory, role_name: str):
+        client = await user_client_factory("Administrator")
+        response = client.post(
+            "/api/fun-facts",
+            json={
+                "fact": "This is a cool fact!"
+            }
+        )
+        assert response.status_code == 201
+
+        data = response.json()
+        assert data["id"] == 1
+        assert data["user_id"] == 1
+        assert data["fact"] == "This is a cool fact!"
+        assert "created_at" in data
+    
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_invalid_method_returns_405_not_allowed(user_client_factory: UserClientFactory):
+        client = await user_client_factory("Administrator")
+        response = client.put(
+            "/api/fun-facts",
+            json={
+                "fact": "This is a cool fact!"
+            }
+        )
+        assert response.status_code == 405
+    
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_incomplete_data_returns_400_bad_request(user_client_factory: UserClientFactory)
+        client = await user_client_factory("Administrator")
+        response = client.post(
+            "/api/fun-facts"
+        )
+        assert response.status_code == 400
 ```
 
 2. Create the Database Table
@@ -388,10 +540,7 @@ class CreateFunFactCommand(Command[tuple[FunFact, str]]):
             fact_id = result[0]
             await db.commit()
             
-            return (
-                FunFact(fact_id, self.user_id, self.fact, created_at),
-                user_name
-            )
+            return FunFact(fact_id, self.user_id, self.fact, created_at)   
 
 @dataclass
 class ListFunFactsCommand(Command[list[FunFact]]):
@@ -424,7 +573,7 @@ from starlette.requests import Request
 from starlette.routing import Route
 from starlette.background import BackgroundTask
 from api.auth import require_logged_in, require_permission
-from api.data import handle
+from api.data import State
 from api.utils.responses import JSONResponse, bind_request_body, bind_request_query
 from api.utils.word_filter import check_word_filter
 from common.data import notifications
@@ -435,13 +584,13 @@ from common.auth import permissions
 @bind_request_body(CreateFunFactRequest)
 @check_word_filter  # Check for inappropriate content
 @require_permission(permissions.EDIT_PROFILE, check_denied_only=True)
-async def create_fun_fact(request: Request, body: CreateFunFactRequest) -> JSONResponse:
+async def create_fun_fact(request: Request[State], body: CreateFunFactRequest) -> JSONResponse:
     async def notify():
         # Notify followers that a new fun fact was posted
         followers_command = GetUserFollowersCommand(user_id)
         followers = await handle(followers_command)
         if followers:
-            content_args = {'user': user_name, 'fact': body.fact}
+            content_args = {'fact': body.fact}
             notify_command = DispatchNotificationCommand(
                 followers,
                 notifications.NEW_FUN_FACT,
@@ -453,11 +602,11 @@ async def create_fun_fact(request: Request, body: CreateFunFactRequest) -> JSONR
 
     user_id = request.state.user.id
     create_command = CreateFunFactCommand(user_id, body.fact)
-    fun_fact, user_name = await handle(create_command)
+    fun_fact = await request.state.command_handler.handle(create_command)
     return JSONResponse(fun_fact, status_code=201, background=BackgroundTask(notify))
 
 @bind_request_query(FunFactFilter)
-async def list_fun_facts(request: Request, filter: FunFactFilter) -> JSONResponse:
+async def list_fun_facts(request: Request[State], filter: FunFactFilter) -> JSONResponse:
     list_command = ListFunFactsCommand(filter)
     facts = await handle(list_command)
     return JSONResponse(facts)

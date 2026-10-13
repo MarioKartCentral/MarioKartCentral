@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12.0-slim-bookworm
+FROM python:3.12.12-slim-bookworm
 WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y gcc && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .

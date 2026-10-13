@@ -7,7 +7,8 @@ import msgspec
 from common.data.s3 import S3Wrapper, FINGERPRINT_BUCKET
 from datetime import datetime
 
-from common.ip_api import IPApi
+from common.ip_api import IPService
+
 
 @dataclass
 class LogFingerprintCommand(Command[None]):
@@ -17,6 +18,7 @@ class LogFingerprintCommand(Command[None]):
         fingerprint_bytes = msgspec.json.encode(self.fingerprint.data)
         await s3_wrapper.put_object(FINGERPRINT_BUCKET, f"{self.fingerprint.hash}.json", fingerprint_bytes)
 
+
 @dataclass
 class GetFingerprintDataCommand(Command[Fingerprint]):
     fingerprint_hash: str
@@ -25,16 +27,18 @@ class GetFingerprintDataCommand(Command[Fingerprint]):
         fingerprint_bytes = await s3_wrapper.get_object(FINGERPRINT_BUCKET, f"{self.fingerprint_hash}.json")
         if not fingerprint_bytes:
             raise Problem("Fingerprint not found", status=404)
-        fingerprint_data = msgspec.json.decode(fingerprint_bytes, type=dict[Any, Any])
+        fingerprint_data = msgspec.json.decode(
+            fingerprint_bytes, type=dict[Any, Any])
         fingerprint = Fingerprint(self.fingerprint_hash, fingerprint_data)
         return fingerprint
 
+
 @dataclass
 class CheckIPsCommand(Command[None]):
-    async def handle(self, db_wrapper: DBWrapper, ip_api: IPApi):
-        limit = 2000 # rate limit of 100 ips/request * 45 requests/min, 2000 just to be safe
+    async def handle(self, db_wrapper: DBWrapper, ip_api: IPService):
+        limit = 2000  # rate limit of 100 ips/request * 45 requests/min, 2000 just to be safe
         ips_to_check: list[IPInfoBasic] = []
-        
+
         # Get unchecked IP addresses
         async with db_wrapper.connect(db_name='user_activity', readonly=True) as db:
             get_unchecked_ips_command = "SELECT id, ip_address FROM ip_addresses WHERE is_checked = 0 LIMIT :limit"
@@ -44,19 +48,20 @@ class CheckIPsCommand(Command[None]):
                 for row in rows:
                     ip_id, ip_address = row
                     # Map ip_id to user_id when creating IPInfoBasic
-                    ips_to_check.append(IPInfoBasic(user_id=ip_id, ip_address=ip_address))
-                    
+                    ips_to_check.append(IPInfoBasic(
+                        user_id=ip_id, ip_address=ip_address))
+
         if len(ips_to_check) == 0:
             return
-            
+
         current_timestamp = int(datetime.now().timestamp())
         ip_response_data = await ip_api.check_ips(ips_to_check)
-        
+
         # Update the ip_addresses table with the check results
         query_parameters: list[dict[str, Any]] = [
             {
                 "id": ips_to_check[i].user_id,  # This is the ip_address.id
-                "is_mobile": ip_response_data[i].mobile, 
+                "is_mobile": ip_response_data[i].mobile,
                 "is_vpn": ip_response_data[i].proxy,
                 "country": ip_response_data[i].countryCode,
                 "region": ip_response_data[i].region,
@@ -65,7 +70,7 @@ class CheckIPsCommand(Command[None]):
                 "checked_at": current_timestamp
             } for i in range(len(ips_to_check))
         ]
-        
+
         async with db_wrapper.connect(db_name='user_activity') as db:
             update_ip_check_results_command = """
                 UPDATE ip_addresses 
@@ -76,6 +81,7 @@ class CheckIPsCommand(Command[None]):
             """
             await db.executemany(update_ip_check_results_command, query_parameters)
             await db.commit()
+
 
 @dataclass
 class ListAltFlagsCommand(Command[AltFlagList]):
@@ -123,7 +129,7 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                 LEFT JOIN main.players p ON u.player_id = p.id
                 ORDER BY f.date DESC
             """
-            
+
             flag_dict: dict[int, AltFlag] = {}
             async with db.execute(get_flags_query, {"limit": limit, "offset": offset, "type": self.filter.type,
                                                     "exclude_fingerprints": self.filter.exclude_fingerprints,
@@ -133,17 +139,20 @@ class ListAltFlagsCommand(Command[AltFlagList]):
                 for flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, user_id, player_id, player_name, player_country, player_banned in rows:
                     # Create flag if we haven't seen it yet
                     if flag_id not in flag_dict:
-                        flag_dict[flag_id] = AltFlag(flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, [])
-                    
+                        flag_dict[flag_id] = AltFlag(
+                            flag_id, flag_type, flag_key, data, score, date, fingerprint_hash, [])
+
                     # Add player if we have player data (might be NULL if no players associated)
                     if user_id is not None:
                         player = None
                         if player_id is not None:
-                            player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
+                            player = PlayerBasic(
+                                player_id, player_name, player_country, bool(player_banned))
                         flag_user = AltFlagUser(user_id, player)
                         flag_dict[flag_id].users.append(flag_user)
 
             return AltFlagList(list(flag_dict.values()), count, page_count)
+
 
 @dataclass
 class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
@@ -165,9 +174,9 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 if not row:
                     raise Problem("Player not found", status=404)
                 user_id, player_id, player_name, player_country, player_banned = row
-                current_player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
+                current_player = PlayerBasic(
+                    player_id, player_name, player_country, bool(player_banned))
                 current_user = AltFlagUser(user_id, current_player)
-                
 
             flag_dict: dict[int, AltFlag] = {}
             get_player_flags_command = """
@@ -183,7 +192,8 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                 rows = await cursor.fetchall()
                 for row in rows:
                     flag_id, type, flag_key, data, score, date, fingerprint_hash = row
-                    flag = AltFlag(flag_id, type, flag_key, data, score, date, fingerprint_hash, [current_user])
+                    flag = AltFlag(flag_id, type, flag_key, data,
+                                   score, date, fingerprint_hash, [current_user])
                     flag_dict[flag_id] = flag
 
            # get other players with the same flags
@@ -204,11 +214,13 @@ class ViewPlayerAltFlagsCommand(Command[list[AltFlag]]):
                     if flag:
                         current_player = None
                         if player_id:
-                            current_player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
+                            current_player = PlayerBasic(
+                                player_id, player_name, player_country, bool(player_banned))
                         flag.users.append(AltFlagUser(user_id, current_player))
-            
+
             return list(flag_dict.values())
-        
+
+
 @dataclass
 class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
     player_id: int
@@ -234,10 +246,13 @@ class ViewPlayerLoginHistoryCommand(Command[PlayerUserLogins]):
                     if not self.has_ip_permission:
                         ip_address = None
                         ip_city = None
-                    ip = IPAddress(ip_address_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country, ip_region, ip_city, ip_asn)
-                    login = UserLogin(login_id, user_id, fingerprint, bool(had_persistent_session), login_date, logout_date, ip)
+                    ip = IPAddress(ip_address_id, ip_address, bool(is_mobile), bool(
+                        is_vpn), ip_country, ip_region, ip_city, ip_asn)
+                    login = UserLogin(login_id, user_id, fingerprint, bool(
+                        had_persistent_session), login_date, logout_date, ip)
                     logins.append(login)
         return PlayerUserLogins(self.player_id, logins)
+
 
 @dataclass
 class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
@@ -263,12 +278,15 @@ class ViewPlayerIPHistoryCommand(Command[PlayerIPHistory]):
                     if not self.has_ip_permission:
                         ip_address = None
                         city = None
-                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), country, region, city, asn)
-                    time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
+                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(
+                        is_vpn), country, region, city, asn)
+                    time_range = UserIPTimeRange(
+                        time_range_id, user_id, ip, date_earliest, date_latest, times)
                     ips.append(time_range)
                 ip_history = PlayerIPHistory(self.player_id, ips)
                 return ip_history
-            
+
+
 @dataclass
 class ViewHistoryForIPCommand(Command[IPHistory]):
     ip_id: int
@@ -287,7 +305,7 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                                     JOIN users u ON uip.user_id = u.id
                                     LEFT JOIN players p ON u.player_id = p.id
                                     WHERE ip.id = ? ORDER BY tr.date_latest DESC""",
-                                    (self.ip_id,)) as cursor:
+                                  (self.ip_id,)) as cursor:
                 rows = await cursor.fetchall()
                 for row in rows:
                     (ip_id, ip_address, is_mobile, is_vpn, ip_country, ip_region, ip_city, ip_asn,
@@ -296,16 +314,21 @@ class ViewHistoryForIPCommand(Command[IPHistory]):
                     if not self.has_ip_permission:
                         ip_address = None
                         ip_city = None
-                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(is_vpn), ip_country, ip_region, ip_city, ip_asn)
-                    ip_time_range = UserIPTimeRange(time_range_id, user_id, ip, date_earliest, date_latest, times)
+                    ip = IPAddress(ip_id, ip_address, bool(is_mobile), bool(
+                        is_vpn), ip_country, ip_region, ip_city, ip_asn)
+                    ip_time_range = UserIPTimeRange(
+                        time_range_id, user_id, ip, date_earliest, date_latest, times)
                     player = None
                     if player_id:
-                        player = PlayerBasic(player_id, player_name, player_country, bool(player_banned))
-                    player_time_range = PlayerIPTimeRange(ip_time_range, player)
+                        player = PlayerBasic(
+                            player_id, player_name, player_country, bool(player_banned))
+                    player_time_range = PlayerIPTimeRange(
+                        ip_time_range, player)
                     time_ranges.append(player_time_range)
         ip_history = IPHistory(self.ip_id, time_ranges)
         return ip_history
-    
+
+
 @dataclass
 class SearchIPsCommand(Command[IPAddressList]):
     filter: IPFilter
@@ -343,9 +366,10 @@ class SearchIPsCommand(Command[IPAddressList]):
                     if not self.has_ip_permission:
                         ip_address = None
                         city = None
-                    ip = IPAddressWithUserCount(ip_id, ip_address, is_mobile, is_vpn, country, city, region, asn, user_count)
+                    ip = IPAddressWithUserCount(
+                        ip_id, ip_address, is_mobile, is_vpn, country, city, region, asn, user_count)
                     results.append(ip)
-            
+
             count_query = f"SELECT COUNT(*) FROM (SELECT ip.id {query})"
             async with db.execute(count_query, query_parameters) as cursor:
                 row = await cursor.fetchone()
@@ -353,7 +377,8 @@ class SearchIPsCommand(Command[IPAddressList]):
                 count = int(row[0])
             page_count = (count + limit - 1) // limit
             return IPAddressList(results, count, page_count)
-    
+
+
 @dataclass
 class GetIPIDFromAddressCommand(Command[int]):
     ip_address: int

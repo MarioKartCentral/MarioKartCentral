@@ -4,7 +4,8 @@ from common.data.command import Command
 from common.data.db import DBWrapper
 from common.data.models import *
 from common.data.s3 import IMAGE_BUCKET, S3Wrapper
-from common.discord import DiscordApi
+from common.discord import DiscordService
+
 
 @dataclass
 class CreateFakeUserDiscordCommand(Command[None]):
@@ -13,25 +14,25 @@ class CreateFakeUserDiscordCommand(Command[None]):
     async def handle(self, db_wrapper: DBWrapper):
         expires_on = 0
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens']) as db:
-            await db.execute("DELETE FROM user_discords WHERE user_id = :user_id", 
-                            {"user_id": self.user_id})
-            
+            await db.execute("DELETE FROM user_discords WHERE user_id = :user_id",
+                             {"user_id": self.user_id})
+
             insert_query = """
                 INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar)
                 VALUES(:user_id, :discord_id, :username, :discriminator, :global_name, :avatar)
             """
             await db.execute(insert_query, {
                 "user_id": self.user_id,
-                "discord_id": 0, 
-                "username": "test_user", 
-                "discriminator": 0, 
-                "global_name": None, 
+                "discord_id": 0,
+                "username": "test_user",
+                "discriminator": 0,
+                "global_name": None,
                 "avatar": None
             })
-            
-            await db.execute("DELETE FROM discord_tokens.discord_tokens WHERE user_id = :user_id", 
-                           {"user_id": self.user_id})
-            
+
+            await db.execute("DELETE FROM discord_tokens.discord_tokens WHERE user_id = :user_id",
+                             {"user_id": self.user_id})
+
             tokens_query = """
                 INSERT INTO discord_tokens.discord_tokens(user_id, access_token, token_expires_on, refresh_token)
                 VALUES(:user_id, :access_token, :token_expires_on, :refresh_token)
@@ -44,20 +45,21 @@ class CreateFakeUserDiscordCommand(Command[None]):
             })
             await db.commit()
 
+
 @dataclass
 class LinkUserDiscordCommand(Command[None]):
     user_id: int
     data: DiscordAuthCallbackData
 
-    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordService):
         token_resp, discord_user = await discord_api.handle_auth_callback(self.data)
         expires_in = timedelta(seconds=token_resp.expires_in)
         expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
-        
+
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens']) as db:
-            await db.execute("DELETE FROM user_discords WHERE user_id = :user_id", 
-                           {"user_id": self.user_id})
-            
+            await db.execute("DELETE FROM user_discords WHERE user_id = :user_id",
+                             {"user_id": self.user_id})
+
             profile_query = """
                 INSERT INTO user_discords(user_id, discord_id, username, discriminator, global_name, avatar)
                 VALUES(:user_id, :discord_id, :username, :discriminator, :global_name, :avatar)
@@ -70,10 +72,10 @@ class LinkUserDiscordCommand(Command[None]):
                 "global_name": discord_user.global_name,
                 "avatar": discord_user.avatar
             })
-            
-            await db.execute("DELETE FROM discord_tokens.discord_tokens WHERE user_id = :user_id", 
-                           {"user_id": self.user_id})
-            
+
+            await db.execute("DELETE FROM discord_tokens.discord_tokens WHERE user_id = :user_id",
+                             {"user_id": self.user_id})
+
             tokens_query = """
                 INSERT INTO discord_tokens.discord_tokens(user_id, access_token, token_expires_on, refresh_token) 
                 VALUES(:user_id, :access_token, :token_expires_on, :refresh_token)
@@ -84,8 +86,9 @@ class LinkUserDiscordCommand(Command[None]):
                 "token_expires_on": expires_on,
                 "refresh_token": token_resp.refresh_token
             })
-            
+
             await db.commit()
+
 
 @dataclass
 class GetUserDiscordCommand(Command[Discord | None]):
@@ -104,12 +107,13 @@ class GetUserDiscordCommand(Command[Discord | None]):
                     return None
                 discord_id, username, discriminator, global_name, avatar = row
                 return Discord(discord_id, username, discriminator, global_name, avatar)
-            
+
+
 @dataclass
 class RefreshUserDiscordDataCommand(Command[Discord]):
     user_id: int
-    
-    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
+
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordService):
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens'], readonly=True) as db:
             tokens_query = """
                 SELECT dt.access_token, dt.token_expires_on 
@@ -122,17 +126,21 @@ class RefreshUserDiscordDataCommand(Command[Discord]):
                     account_check = "SELECT 1 FROM user_discords WHERE user_id = :user_id"
                     async with db.execute(account_check, {"user_id": self.user_id}) as check_cursor:
                         if await check_cursor.fetchone():
-                            raise Problem("Discord tokens not found, please relink your Discord account", status=400)
+                            raise Problem(
+                                "Discord tokens not found, please relink your Discord account", status=400)
                         else:
-                            raise Problem("User does not have a Discord account linked", status=400)
-                
+                            raise Problem(
+                                "User does not have a Discord account linked", status=400)
+
                 access_token, token_expires_on = row
-                
-        token_expiration = datetime.fromtimestamp(token_expires_on, tz=timezone.utc)
+
+        token_expiration = datetime.fromtimestamp(
+            token_expires_on, tz=timezone.utc)
         now = datetime.now(timezone.utc)
         if now >= token_expiration:
-            raise Problem("Token is expired, please relink Discord account", status=400)
-        
+            raise Problem(
+                "Token is expired, please relink Discord account", status=400)
+
         discord_user = await discord_api.get_user(access_token)
         async with db_wrapper.connect() as db:
             update_query = """
@@ -156,12 +164,13 @@ class RefreshUserDiscordDataCommand(Command[Discord]):
             await db.commit()
 
         return Discord(discord_user.id, discord_user.username, discord_user.discriminator, discord_user.global_name, discord_user.avatar)
-    
+
+
 @dataclass
 class DeleteUserDiscordDataCommand(Command[None]):
     user_id: int
 
-    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordService):
         async with db_wrapper.connect(db_name='discord_tokens', readonly=True) as db:
             tokens_query = """
                 SELECT access_token, token_expires_on 
@@ -171,30 +180,33 @@ class DeleteUserDiscordDataCommand(Command[None]):
             async with db.execute(tokens_query, {"user_id": self.user_id}) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    raise Problem("User does not have a Discord account linked", status=400)
+                    raise Problem(
+                        "User does not have a Discord account linked", status=400)
                 access_token, token_expires_on = row
-        
+
         # If we have valid tokens, revoke them with Discord
         if access_token:
-            token_expiration = datetime.fromtimestamp(token_expires_on, tz=timezone.utc)
+            token_expiration = datetime.fromtimestamp(
+                token_expires_on, tz=timezone.utc)
             now = datetime.now(timezone.utc)
-            
+
             if now < token_expiration:
                 await discord_api.revoke_token(access_token)
-        
+
         async with db_wrapper.connect(db_name='main', attach=['discord_tokens']) as db:
             await db.execute("DELETE FROM user_discords WHERE user_id = :user_id", {"user_id": self.user_id})
             await db.execute("UPDATE user_settings SET avatar = NULL WHERE user_id = :user_id", {"user_id": self.user_id})
             await db.execute("DELETE FROM discord_tokens.discord_tokens WHERE user_id = :user_id", {"user_id": self.user_id})
             await db.commit()
 
+
 @dataclass
 class RefreshDiscordAccessTokensCommand(Command[None]):
-    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordApi):
+    async def handle(self, db_wrapper: DBWrapper, discord_api: DiscordService):
         now = datetime.now(timezone.utc)
         from_time = int(now.timestamp())
         to_time = int((now + timedelta(days=1)).timestamp())
-        
+
         tokens_to_refresh = []
         async with db_wrapper.connect(db_name='discord_tokens', readonly=True) as db:
             # get all tokens which expire in the next 24 hours
@@ -207,24 +219,25 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
             """
             async with db.execute(query, {"from_time": from_time, "to_time": to_time}) as cursor:
                 tokens_to_refresh = await cursor.fetchall()
-        
+
         refreshed_tokens: list[dict[str, Any]] = []
-        
+
         for user_id, refresh_token in tokens_to_refresh:
             token_resp = await discord_api.refresh_token(refresh_token)
             if not token_resp:
                 continue
 
             expires_in = timedelta(seconds=token_resp.expires_in)
-            expires_on = int((datetime.now(timezone.utc) + expires_in).timestamp())
-            
+            expires_on = int(
+                (datetime.now(timezone.utc) + expires_in).timestamp())
+
             refreshed_tokens.append({
                 "access_token": token_resp.access_token,
                 "token_expires_on": expires_on,
                 "refresh_token": token_resp.refresh_token,
                 "user_id": user_id
             })
-        
+
         if refreshed_tokens:
             async with db_wrapper.connect(db_name='discord_tokens') as db:
                 update_query = """
@@ -237,19 +250,21 @@ class RefreshDiscordAccessTokensCommand(Command[None]):
                 await db.executemany(update_query, refreshed_tokens)
                 await db.commit()
 
+
 @dataclass
 class SyncDiscordAvatarCommand(Command[str | None]):
     user_id: int
 
-    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper, discord_api: DiscordApi):
+    async def handle(self, db_wrapper: DBWrapper, s3_wrapper: S3Wrapper, discord_api: DiscordService):
         discord_id = None
         avatar = None
-        
+
         async with db_wrapper.connect(readonly=True) as db:
             async with db.execute("SELECT discord_id, avatar FROM user_discords WHERE user_id = ?", (self.user_id,)) as cursor:
                 row = await cursor.fetchone()
                 if not row:
-                    raise Problem("User does not have a Discord account linked", status=400)
+                    raise Problem(
+                        "User does not have a Discord account linked", status=400)
                 discord_id, avatar = row
                 if not avatar:
                     return None
@@ -258,23 +273,24 @@ class SyncDiscordAvatarCommand(Command[str | None]):
 
         filename = f"avatars/{discord_id}_{avatar}.png"
         await s3_wrapper.put_object(
-            bucket_name=IMAGE_BUCKET, 
-            key=filename, 
+            bucket_name=IMAGE_BUCKET,
+            key=filename,
             body=image_data,
             acl="public-read"
         )
-        
+
         avatar_path = f"/img/{filename}"
-        
+
         async with db_wrapper.connect() as db:
             await db.execute(
                 "UPDATE user_settings SET avatar = ? WHERE user_id = ?",
                 (avatar_path, self.user_id)
             )
             await db.commit()
-            
+
         return avatar_path
-            
+
+
 @dataclass
 class RemoveDiscordAvatarCommand(Command[None]):
     player_id: int
