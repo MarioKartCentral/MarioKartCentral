@@ -21,6 +21,13 @@
 
   let show_all = false;
   let display_limit = 12;
+  let player_sort_key = 'name';
+  let squad_sort_key = 'name';
+
+  $: sorted_players = [...(tournament_players ?? [])].sort((a, b) => {
+    const comparison = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+    return player_sort_key === '-name' ? -comparison : comparison;
+  });
 
   user.subscribe((value) => {
     user_info = value;
@@ -96,6 +103,7 @@
           <TournamentSquadList
             {tournament}
             bind:show_all
+            bind:sortKey={squad_sort_key}
             squads={tournament_squads}
             is_privileged={check_tournament_permission(
               user_info,
@@ -106,18 +114,18 @@
           />
         {/key}
       {:else}
-        {#key [tournament_players, show_all]}
-          <TournamentPlayerList
-            {tournament}
-            players={show_all ? tournament_players : tournament_players.slice(0, display_limit)}
-            is_privileged={check_tournament_permission(
-              user_info,
-              tournament_permissions.manage_tournament_registrations,
-              tournament.id,
-              tournament.series_id,
-            )}
-          />
-        {/key}
+        <TournamentPlayerList
+          {tournament}
+          players={show_all ? sorted_players : sorted_players.slice(0, display_limit)}
+          sortable
+          bind:sortKey={player_sort_key}
+          is_privileged={check_tournament_permission(
+            user_info,
+            tournament_permissions.manage_tournament_registrations,
+            tournament.id,
+            tournament.series_id,
+          )}
+        />
       {/if}
     {:else}
       {$LL.TOURNAMENTS.REGISTRATIONS.NO_REGISTRATIONS({ is_squad: tournament.is_squad })}

@@ -2,6 +2,7 @@
   import type { Tournament } from '$lib/types/tournament';
   import type { TournamentPlayer } from '$lib/types/tournament-player';
   import Table from '../common/table/Table.svelte';
+  import TableHeader from '../common/table/TableHeader.svelte';
   import Flag from '../common/Flag.svelte';
   import type { UserInfo } from '$lib/types/user-info';
   import { user } from '$lib/stores/stores';
@@ -21,6 +22,8 @@
   export let is_privileged = false;
   export let registration: RegistrationDetails | null = null;
   export let showInvites: boolean = false;
+  export let sortable = false;
+  export let sortKey = 'name';
   let user_info: UserInfo;
 
   user.subscribe((value) => {
@@ -29,10 +32,12 @@
 
   let edit_reg_dialog: EditPlayerRegistration;
 
-  function get_players() {
+  $: displayed_players = get_players(players, showInvites);
+
+  function get_players(players: TournamentPlayer[], showInvites: boolean) {
     if (showInvites) {
       const isInvite = (player: TournamentPlayer) => (player.is_invite ? 1 : 0);
-      return players.sort((playerA, playerB) => isInvite(playerA) - isInvite(playerB));
+      return [...players].sort((playerA, playerB) => isInvite(playerA) - isInvite(playerB));
     }
     return players.filter((p) => !p.is_invite);
   }
@@ -185,7 +190,7 @@
   }
 </script>
 
-<Table data={get_players()} let:item={player}>
+<Table data={displayed_players} let:item={player} bind:sortKey>
   <colgroup slot="colgroup">
     <col class="country" />
     <col class="name" />
@@ -205,7 +210,11 @@
   </colgroup>
   <tr slot="header">
     <th />
-    <th>{$LL.COMMON.NAME()}</th>
+    {#if sortable}
+      <TableHeader sortable sortKey="name">{$LL.COMMON.NAME()}</TableHeader>
+    {:else}
+      <th>{$LL.COMMON.NAME()}</th>
+    {/if}
     {#if tournament.mii_name_required}
       <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.IN_GAME_NAME()}</th>
     {/if}

@@ -4,6 +4,7 @@
   import { locale } from '$i18n/i18n-svelte';
   import TournamentPlayerList from './TournamentPlayerList.svelte';
   import Table from '$lib/components/common/table/Table.svelte';
+  import TableHeader from '$lib/components/common/table/TableHeader.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
   import { ChevronDownOutline } from 'flowbite-svelte-icons';
   import Dropdown from '../common/Dropdown.svelte';
@@ -20,7 +21,14 @@
 
   export let show_all = false;
   let display_limit = 12;
-  let sorted_by = 'register-date';
+  export let sortKey = 'name';
+
+  $: sorted_squads = [...squads].sort((a, b) => {
+    const comparison = sortKey.endsWith('register-date')
+      ? a.timestamp - b.timestamp
+      : (a.name ?? '').localeCompare(b.name ?? '', undefined, { sensitivity: 'base' });
+    return sortKey.startsWith('-') ? -comparison : comparison;
+  });
 
   let edit_squad_dialog: EditSquadDialog;
   let add_player_dialog: AddPlayerToSquad;
@@ -87,31 +95,9 @@
       alert(`${$LL.TOURNAMENTS.REGISTRATIONS.UNREGISTER_SQUAD_FAILED()}: ${title}`);
     }
   }
-
-  function sortSquadsByName() {
-    if (sorted_by !== 'name') {
-      squads.sort((a, b) => String(a.name).toLowerCase().localeCompare(String(b.name).toLowerCase()));
-    }
-    // sort in reverse if already sorted by name
-    else {
-      squads.reverse();
-    }
-    squads = squads;
-    sorted_by = 'name';
-  }
-
-  function sortSquadsByRegistrationDate() {
-    if (sorted_by !== 'register-date') {
-      squads.sort((a, b) => a.timestamp - b.timestamp);
-    } else {
-      squads.reverse();
-    }
-    squads = squads;
-    sorted_by = 'register-date';
-  }
 </script>
 
-<Table multiRow data={show_all ? squads : squads.slice(0, display_limit)} let:item={squad}>
+<Table multiRow data={show_all ? sorted_squads : sorted_squads.slice(0, display_limit)} let:item={squad} bind:sortKey>
   <colgroup slot="colgroup">
     <col class="id" />
     {#if tournament.squad_tag_required}
@@ -133,11 +119,7 @@
       <th>{$LL.COMMON.TAG()}</th>
     {/if}
     {#if tournament.squad_name_required}
-      <th>
-        <button class="show-players" on:click={sortSquadsByName}>
-          {$LL.COMMON.NAME()}
-        </button>
-      </th>
+      <TableHeader sortable sortKey="name">{$LL.COMMON.NAME()}</TableHeader>
     {/if}
     <th>
       {$LL.TOURNAMENTS.REGISTRATIONS.PLAYERS()}
@@ -148,11 +130,9 @@
       </button>
     </th>
     <th class="mobile-hide">{$LL.TOURNAMENTS.REGISTRATIONS.ELIGIBLE()}</th>
-    <th class="mobile-hide">
-      <button class="show-players" on:click={sortSquadsByRegistrationDate}>
-        {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_DATE()}
-      </button>
-    </th>
+    <TableHeader sortable sortKey="register-date" classes="mobile-hide">
+      {$LL.TOURNAMENTS.REGISTRATIONS.REGISTRATION_DATE()}
+    </TableHeader>
     {#if is_privileged}
       <th />
     {/if}
