@@ -64,7 +64,7 @@
       <img class="w-32 h-32" src={Logo200} alt="200cc Lounge" />
       <div class="flex flex-col justify-start">
         <div class="mb-2 mx-2">
-          <LinkButton href="https://200-lounge.com/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
+          <LinkButton href="https://200-lounge.up.railway.app/">{$LL.LOUNGE.WEBSITE()}</LinkButton>
         </div>
         <div class="mb-2 mx-2">
           <DiscordInviteButton href="https://discord.gg/dfdRkFu" />
