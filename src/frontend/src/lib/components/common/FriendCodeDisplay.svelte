@@ -12,7 +12,7 @@
   function get_display_fc(friendCodes: FriendCode[], selectedFcId: number | null) {
     let fc = friendCodes.find((fc) => fc.id === selectedFcId);
     if (!fc) {
-      let filtered_fcs = friendCodes.filter((fc) => fc.is_active);
+      let filtered_fcs = friendCodes.filter((fc) => fc.is_primary || fc.is_active).toSorted((a, b) => fc_type_order[a.type] - fc_type_order[b.type] || Number(b.is_primary) - Number(a.is_primary));
       if (!filtered_fcs.length) return null;
       fc = filtered_fcs[0];
     }

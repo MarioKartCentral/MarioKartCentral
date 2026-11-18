@@ -9,6 +9,7 @@
   import type { PlayerInfo } from '$lib/types/player-info';
   import LL from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
+  import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import RosterNameTagRequest from './RosterNameTagRequest.svelte';
@@ -326,11 +327,7 @@
             <RosterPlayerName {player} />
           </td>
           <td class="mobile-hide">
-            {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
-              {#if i === 0}
-                {fc.fc}
-              {/if}
-            {/each}
+            <FriendCodeDisplay friend_codes={player.friend_codes} />
           </td>
           <td class="mobile-hide">
             {new Date(player.join_date * 1000).toLocaleString($locale, options)}
@@ -409,7 +406,7 @@
               {/if}
             </td>
             <td class="mobile-hide">
-              {player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game])[0].fc}
+              <FriendCodeDisplay friend_codes={player.friend_codes} />
             </td>
             <td class="mobile-hide">
               {new Date(player.invite_date * 1000).toLocaleString($locale, options)}
