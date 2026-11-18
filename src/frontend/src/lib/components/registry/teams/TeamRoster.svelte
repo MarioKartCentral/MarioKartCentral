@@ -3,6 +3,7 @@
   import Table from '$lib/components/common/table/Table.svelte';
   import { LL, locale } from '$i18n/i18n-svelte';
   import Flag from '$lib/components/common/Flag.svelte';
+  import FriendCodeDisplay from '$lib/components/common/FriendCodeDisplay.svelte';
   import GameBadge from '$lib/components/badges/GameBadge.svelte';
   import ModeBadge from '$lib/components/badges/ModeBadge.svelte';
   import { user } from '$lib/stores/stores';
@@ -10,7 +11,6 @@
   import RosterPlayerName from './RosterPlayerName.svelte';
   import Button from '$lib/components/common/buttons/Button.svelte';
   import TagBadge from '$lib/components/badges/TagBadge.svelte';
-  import { game_fc_types } from '$lib/util/util';
 
   export let roster: TeamRoster;
 
@@ -85,11 +85,7 @@
           <RosterPlayerName {player} />
         </td>
         <td class="mobile-hide">
-          {#each player.friend_codes.filter((fc) => fc.type === game_fc_types[roster.game]) as fc, i (fc.id)}
-            {#if i === 0}
-              {fc.fc}
-            {/if}
-          {/each}
+          <FriendCodeDisplay friend_codes={player.friend_codes} />
         </td>
         <td class="mobile-hide">
           {new Date(player.join_date * 1000).toLocaleString($locale, options)}
